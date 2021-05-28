@@ -2569,6 +2569,7 @@
 <translation id="3742666961763734085">Չհաջողվեց գտնել այդ անունով ստորաբաժանում: Նորից փորձեք:</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3747077776423672805">Հավելվածներ հեռացնելու համար անցեք Կարգավորումներ &gt; Google Play Խանութ &gt; Կառավարել Android-ի կարգավորումները &gt; Հավելվածներ կամ Հավելվածների կառավարիչ: Այնուհետև հպեք այն հավելվածին, որը ցանկանում եք հեռացնել (անհրաժեշտ հավելվածը գտնելու համար, հնարավոր է, պահանջվի թերթել աջ կամ ձախ): Ապա սեղմեք Հեռացնել կամ Անջատել կոճակը:</translation>
+<translation id="3747220812138541072">Ցուցադրել ներտող հուշումներ տեքստ մուտքագրելիս</translation>
 <translation id="3748706263662799310">Հաղորդել վրիպակի մասին</translation>
 <translation id="3752582316358263300">Եղավ…</translation>
 <translation id="3753033997400164841">Պահեք մեկ անգամ և օգտագործեք ամենուրեք</translation>
@@ -3257,6 +3258,7 @@
 <translation id="4510614391273086606">Լինուքսի ֆայլերն ու հավելվածները վերականգնվում են իրենց պահուստավորված վիճակով։</translation>
 <translation id="451102079304155829">զամբյուղներ</translation>
 <translation id="4513275008300099962">Անջատել պատուհանի կառավարման տարրերի վրադրումը</translation>
+<translation id="4513872120116766993">Տեքստի կանխատեսում</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="451407183922382411">Մշակող՝ <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Նվագարկել կամ դադարեցնել տեսանյութը</translation>
@@ -4422,6 +4424,7 @@
 <translation id="5826395379250998812">Միացրեք <ph name="DEVICE_TYPE" /> սարքը ձեր հեռախոսին։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Կիսաթափանցիկ</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Հաջորդ բառի կանխատեսում</translation>
 <translation id="5828545842856466741">Ավելացնել պրոֆիլ...</translation>
 <translation id="5828633471261496623">Տպում…</translation>
 <translation id="5830720307094128296">Պահել էջը &amp;որպես…</translation>
@@ -6291,6 +6294,7 @@
 <translation id="78526636422538552">Այլ Google հաշիվներ ավելացնելու հնարավորությունն անջատված է</translation>
 <translation id="7853747251428735">Լրացուցիչ գործիքներ</translation>
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
+<translation id="7857093393627376423">Տեքստային հուշումներ</translation>
 <translation id="7857117644404132472">Ավելացնել բացառություն</translation>
 <translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

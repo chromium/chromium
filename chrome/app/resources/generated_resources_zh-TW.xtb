@@ -2568,6 +2568,7 @@
 <translation id="3742666961763734085">找不到使用該名稱的機構單位，請再試一次。</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3747077776423672805">如要移除應用程式，請依序前往 [設定] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕觸你要解除安裝的應用程式 (你可能需要向左或向右滑動才能找出所需應用程式)。接著，輕觸 [解除安裝] 或 [停用]。</translation>
+<translation id="3747220812138541072">在你輸入文字的同時，系統會顯示內嵌的書寫建議</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3752582316358263300">確定...</translation>
 <translation id="3753033997400164841">只要儲存一次，即可在所有裝置上使用。</translation>
@@ -3255,6 +3256,7 @@
 <translation id="4510614391273086606">系統正在將 Linux 檔案和應用程式還原到當初所備份的狀態。</translation>
 <translation id="451102079304155829">購物車</translation>
 <translation id="4513275008300099962">停用視窗控制項重疊顯示</translation>
+<translation id="4513872120116766993">預測書寫建議</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="451407183922382411">技術提供：<ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">在播放和暫停影片之間切換</translation>
@@ -4417,6 +4419,7 @@
 <translation id="5826395379250998812">請將 <ph name="DEVICE_TYPE" /> 連線至手機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">下一個字詞預測</translation>
 <translation id="5828545842856466741">新增設定檔...</translation>
 <translation id="5828633471261496623">列印中...</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
@@ -6287,6 +6290,7 @@
 <translation id="78526636422538552">新增 Google 帳戶的功能已停用</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
+<translation id="7857093393627376423">文字建議</translation>
 <translation id="7857117644404132472">新增例外狀況</translation>
 <translation id="7857949311770343000">這是你想要的新分頁嗎？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

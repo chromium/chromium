@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">همگام‌سازی متوقف شد.</translation>
 <translation id="1377321085342047638">شماره کارت</translation>
 <translation id="1383876407941801731">جستجو</translation>
-<translation id="1389974829397082527">نشانکی در اینجا وجود ندارد</translation>
 <translation id="1400642268715879018">۴ هفته گذشته</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1430915738399379752">چاپ</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">‏برای دریافت نشانک‌ها، گذرواژه‌ها، سابقه و تنظیمات دیگر در همه دستگاه‌هایتان، به سیستم حساب Google خودتان وارد شوید</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5017828934289857214">بعداً به من یادآوری شود</translation>
+<translation id="5037676449506322593">انتخاب همه</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مشکلاتی پیدا شد.</translation>
 <translation id="5059136629401106827">خوب</translation>
@@ -791,7 +791,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8976382372951310360">راهنما</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
 <translation id="8985320356172329008">‏ورود به سیستم Google به‌عنوان</translation>
-<translation id="8996526648899750015">افزودن حساب...</translation>
 <translation id="9034759925968272072">‏از حساب Google خود خارج نمی‌شوید. حساب Google شما ممکن است ممکن است اشکال دیگری از سابقه مرورتان در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> وجود داشته باشد.</translation>
 <translation id="9037965129289936994">نمایش مورد اصلی</translation>
 <translation id="9039373489628511875">پهنای باند</translation>

@@ -5562,12 +5562,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8217664958939773083">Jika kebijakan ini disetel ke <ph name="ENABLED" /> atau tidak disetel, penggunaan mode headless akan diizinkan. Jika kebijakan ini disetel ke <ph name="DISABLED" />, penggunaan mode headless tidak akan diizinkan.</translation>
 <translation id="8220023426952118761">Kecepatan download yang diinginkan dalam kbit/dtk.</translation>
 <translation id="8220156281401380422">Mengonfigurasi daftar pesan native yang diizinkan</translation>
-<translation id="8234316309673661069">Peringatan: 3DES akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> versi 95 (sekitar Oktober 2021) dan kebijakan ini akan berhenti berfungsi.
-
-      Jika kebijakan disetel ke benar (true), cipher suite 3DES di TLS akan diaktifkan. Jika kebijakan disetel ke salah (false), cipher suite 3DES di TLS akan dinonaktifkan. Jika kebijakan tidak disetel, cipher suite 3DES akan diaktifkan secara default. Cipher suite 3DES akan dinonaktifkan secara default di <ph name="PRODUCT_NAME" /> 93.
-
-      Di <ph name="PRODUCT_NAME" /> 92, kebijakan ini dapat digunakan untuk melihat pratinjau perubahan dan menguji inkompatibilitas. Di <ph name="PRODUCT_NAME" /> 93 dan yang lebih baru, kebijakan ini dapat digunakan untuk sementara waktu mempertahankan kompatibilitas dengan server yang sudah tidak berlaku. Ini adalah tindakan sementara dan server harus dikonfigurasi ulang.
-      </translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8244171102276095471">Mengaktifkan paket penyandian RC4 di TLS</translation>
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
@@ -6302,6 +6296,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
+<translation id="9190257149451871588">port 6566 (berakhir 15/10/2021)</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.
 
       Jika kebijakan tidak disetel atau disetel ke <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, mode default pengalaman aktivasi Asisten akan digunakan.

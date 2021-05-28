@@ -5516,12 +5516,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8217664958939773083">Wenn die Richtlinie auf <ph name="ENABLED" /> gesetzt oder nicht konfiguriert ist, kann der monitorlose Modus verwendet werden. Ist sie auf <ph name="DISABLED" /> gesetzt ist, kann der monitorlose Modus nicht verwendet werden.</translation>
 <translation id="8220023426952118761">Gewünschte Download-Rate in kbit/s.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
-<translation id="8234316309673661069">Achtung: 3DES wird in Version 95 vollständig aus <ph name="PRODUCT_NAME" /> entfernt (ungefähr im Oktober 2021) und diese Richtlinie funktioniert danach nicht mehr.
-
-      Wenn die Richtlinie auf „true“ gesetzt ist, werden Cipher Suites von 3DES in TLS aktiviert. Ist die Richtlinie auf „false“ festgelegt, werden die Cipher Suites von 3DES deaktiviert. Falls die Richtlinie nicht konfiguriert ist, sind Cipher Suites von 3DES aktuell standardmäßig aktiviert. Ab Version 93 von <ph name="PRODUCT_NAME" /> sind sie standardmäßig deaktiviert.
-
-      In Version 92 von <ph name="PRODUCT_NAME" /> kann diese Richtlinie verwendet werden, um eine Vorschau der Änderung zu erzeugen und diese auf mangelnde Kompatibilität zu testen. In Version 93 von <ph name="PRODUCT_NAME" /> und danach kann sie verwendet werden, um vorübergehend eine Kompatibilität mit einem veralteten Server herzustellen. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
-      </translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
@@ -6256,6 +6250,7 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
+<translation id="9190257149451871588">Port 6566 (gültig bis 15.10.2021)</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />" festgelegt ist, wird für die Einrichtung von Assistant der Standardmodus verwendet.

@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
-<translation id="1389974829397082527">यहाँ कुनै पुस्तक चिन्हहरू छैनन्</translation>
 <translation id="1400642268715879018">पछिल्लो ४ हप्ता</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">आफ्ना सबै यन्त्रहरूमा आफ्ना पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू प्राप्त गर्न आफ्नो Google खाता मार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
+<translation id="5037676449506322593">सबै चयन गर्नुहोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> वटा समस्या भेटिए।</translation>
 <translation id="5059136629401106827">ठिक छ</translation>
@@ -522,6 +522,7 @@
 <translation id="634878792104344809">आफ्ना सबै डिभाइसहरूमा तपाईंका बुकमार्क, पासवर्ड, इतिहास र अन्य कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="6362362396625799311">कुनै इन्कोग्निटो ट्याबहरू छैनन्</translation>
 <translation id="6363526231572697780">युजरनेम नामक क्षेत्रमा कुनै पनि नाम छैन</translation>
+<translation id="6366663624406569102">साइन आउट गर्नुहोस् र सिंक गर्ने सुविधा अफ गर्नुहोस्</translation>
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6377118281273296434">साइटको सुरक्षा</translation>
 <translation id="6380866119319257197">यदि तपाईँले आफ्नो पासफ्रेज बिर्सनुभयो वा यस सेटिङलाई परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सिंकलाई रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
@@ -788,7 +789,6 @@
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
 <translation id="8985320356172329008">Google मा यस रूपमा साइन इन गरियो</translation>
-<translation id="8996526648899750015">खाता थप्नुहोस्...</translation>
 <translation id="9034759925968272072">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा रहेको तपाईंको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>
 <translation id="9037965129289936994">मूल पाठ देखाउनुहोस्</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>

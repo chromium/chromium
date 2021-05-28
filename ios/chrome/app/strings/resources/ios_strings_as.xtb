@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">ছিংকৰ সুবিধাটোৱে কাম নকৰা হৈছে।</translation>
 <translation id="1377321085342047638">কার্ডৰ নম্বৰ</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1389974829397082527">ইয়াত কোনো বুকমাৰ্ক নাই</translation>
 <translation id="1400642268715879018">যোৱা ৪ সপ্তাহত</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">আপোনাৰ সকলো ডিভাইচত বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ পাবৰ বাবে Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="5017828934289857214">মোক পাছত মনত পেলাই দিয়ক</translation>
+<translation id="5037676449506322593">সকলো বাছনি কৰক</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5056446788882570708"><ph name="TIME" />ত সমস্যা পোৱা গৈছিল।</translation>
 <translation id="5059136629401106827">ঠিক আছে</translation>
@@ -788,7 +788,6 @@
 <translation id="8976382372951310360">সহায়</translation>
 <translation id="8981454092730389528">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
 <translation id="8985320356172329008">এই হিচাপে Googleত ছাইন ইন কৰক</translation>
-<translation id="8996526648899750015">একাউণ্ট যোগ কৰক...</translation>
 <translation id="9034759925968272072">আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰোৱা নহয়। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিবও পাৰে।</translation>
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>
 <translation id="9039373489628511875">বেণ্ডৱিথ</translation>

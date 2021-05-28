@@ -2586,6 +2586,7 @@
 <translation id="3742666961763734085">Не вдається знайти організаційний підрозділ із такою назвою. Повторіть спробу.</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3747077776423672805">Щоб видалити додатки, перейдіть у меню "Налаштування" &gt; "Google Play" &gt; "Змінити налаштування Android" &gt; "Додатки" або "Менеджер додатків". Торкніться додатка (якщо потрібно, проведіть пальцем управо або вліво, щоб знайти його) і натисніть "Видалити" або "Вимкнути".</translation>
+<translation id="3747220812138541072">Показувати вбудовані підказки під час введення тексту</translation>
 <translation id="3748706263662799310">Повідомити про помилку</translation>
 <translation id="3752582316358263300">ОК...</translation>
 <translation id="3753033997400164841">Збережіть один раз. Використовуйте на всіх пристроях</translation>
@@ -3275,6 +3276,7 @@
 <translation id="4510614391273086606">Файли та додатки Linux відновлено з резервної копії.</translation>
 <translation id="451102079304155829">картки</translation>
 <translation id="4513275008300099962">Вимкнути оверлей елементів керування вікном</translation>
+<translation id="4513872120116766993">Передбачення тексту</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="451407183922382411">Технологія <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Відтворити або призупинити відео</translation>
@@ -4437,6 +4439,7 @@
 <translation id="5826395379250998812">Під'єднайте <ph name="DEVICE_TYPE" /> до телефона. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Напівпрозоро</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Передбачення наступного слова</translation>
 <translation id="5828545842856466741">Додати профіль…</translation>
 <translation id="5828633471261496623">Друк...</translation>
 <translation id="5830720307094128296">Зберегти сторінку &amp;як...</translation>
@@ -6307,6 +6310,7 @@
 <translation id="78526636422538552">Не можна додавати інші облікові записи Google</translation>
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
+<translation id="7857093393627376423">Підказки тексту</translation>
 <translation id="7857117644404132472">Додати виняток</translation>
 <translation id="7857949311770343000">Це сторінка нової вкладки, яку ви очікували?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

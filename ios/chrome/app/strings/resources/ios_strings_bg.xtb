@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Синхронизирането спря да работи.</translation>
 <translation id="1377321085342047638">№ на картата</translation>
 <translation id="1383876407941801731">Търсене</translation>
-<translation id="1389974829397082527">Тук няма отметки</translation>
 <translation id="1400642268715879018">Последните 4 седмици</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="1430915738399379752">Печат</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5017828934289857214">Напомняне по-късно</translation>
+<translation id="5037676449506322593">Избиране на всички</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5056446788882570708">Бяха намерени проблеми <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">Помощ</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
 <translation id="8985320356172329008">Влезли сте в Google като</translation>
-<translation id="8996526648899750015">Добавяне на профил...</translation>
 <translation id="9034759925968272072">Няма да излезете от профила си в Google. Възможно е в него да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показване на оригинала</translation>
 <translation id="9039373489628511875">Капацитет</translation>

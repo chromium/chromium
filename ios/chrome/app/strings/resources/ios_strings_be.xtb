@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Сінхранізацыя перастала працаваць.</translation>
 <translation id="1377321085342047638">Нумар карткі</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1389974829397082527">Тут закладак няма</translation>
 <translation id="1400642268715879018">За апошнія 4 тыдні</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="1430915738399379752">Друк</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5017828934289857214">Нагадаць пазней</translation>
+<translation id="5037676449506322593">Выбраць усё</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5056446788882570708">Праблемы знойдзены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">Даведка</translation>
 <translation id="8981454092730389528">Параметры дзейнасці для Уліковых запісаў Google</translation>
 <translation id="8985320356172329008">Уваход у Google выкананы праз уліковы запіс</translation>
-<translation id="8996526648899750015">Дадаць уліковы запіс...</translation>
 <translation id="9034759925968272072">З Уліковага запісу Google вы не выйдзеце. На сайце <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
 <translation id="9039373489628511875">Паласа прапускання</translation>

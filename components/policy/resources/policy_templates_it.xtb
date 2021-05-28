@@ -5517,12 +5517,6 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8217664958939773083">Se questo criterio viene impostato su <ph name="ENABLED" /> o se non viene configurato, è possibile usare la modalità headless. Se questo criterio viene impostato su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
-<translation id="8234316309673661069">Attenzione: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (indicativamente a ottobre 2021); in quel momento, questo criterio smetterà di funzionare.
-
-      Se il criterio è impostato su true, le suite di crittografia 3DES in TLS saranno attivate. Se è impostato su false, saranno disattivate. Se il criterio non viene impostato, al momento le suite di crittografia 3DES sono attivate per impostazione predefinita. Saranno disattivate per impostazione predefinita in <ph name="PRODUCT_NAME" /> 93.
-
-      In <ph name="PRODUCT_NAME" /> 92, questo criterio potrebbe essere usato per visualizzare in anteprima la modifica e testare le eventuali incompatibilità. In <ph name="PRODUCT_NAME" /> 93 e versioni successive, potrebbe essere usato per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
-      </translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
@@ -6255,6 +6249,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
+<translation id="9190257149451871588">Porta 6566 (scadenza: 15/10/2021)</translation>
 <translation id="9190456586252617675">Questo criterio consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 
       Se il criterio non viene impostato o viene impostato su <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, viene usata la modalità predefinita dell'esperienza di onboarding dell'assistente.

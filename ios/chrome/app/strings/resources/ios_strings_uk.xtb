@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Синхронізація перестала працювати.</translation>
 <translation id="1377321085342047638">Номер картки</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1389974829397082527">Немає закладок</translation>
 <translation id="1400642268715879018">Останні 4 тижні</translation>
 <translation id="1407135791313364759">Відкрити все</translation>
 <translation id="1430915738399379752">Друк</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5017828934289857214">Нагадати пізніше</translation>
+<translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">Довідка</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
 <translation id="8985320356172329008">Ви ввійшли в обліковий запис Google як</translation>
-<translation id="8996526648899750015">Додати обліковий запис…</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>
 <translation id="9039373489628511875">Трафік</translation>

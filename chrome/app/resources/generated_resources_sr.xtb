@@ -2567,6 +2567,7 @@
 <translation id="3742666961763734085">Не можемо да пронађемо организациону јединицу са тим називом. Пробајте поново.</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3747077776423672805">Да бисте уклонили апликације, идите у одељак Подешавања &gt; Google Play продавница &gt; Управљајте Android подешавањима &gt; Апликације или Менаџер апликација. Додирните апликацију коју желите да деинсталирате (можда ћете морати да превучете надесно или налево да бисте пронашли апликацију). Онда додирните Деинсталирај или Онемогући.</translation>
+<translation id="3747220812138541072">Приказује предлоге за писање у тексту који се појављују док куцате</translation>
 <translation id="3748706263662799310">Пријавите грешку</translation>
 <translation id="3752582316358263300">Потврди...</translation>
 <translation id="3753033997400164841">Сачувајте једном. Користите свуда</translation>
@@ -3255,6 +3256,7 @@
 <translation id="4510614391273086606">Linux датотеке и апликације се враћају на верзију из резервне копије.</translation>
 <translation id="451102079304155829">корпе</translation>
 <translation id="4513275008300099962">Онемогућите преклопни елемент са контролама прозора</translation>
+<translation id="4513872120116766993">Писање са предвиђањем</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="451407183922382411">Омогућава <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Пушта или паузира видео</translation>
@@ -4418,6 +4420,7 @@
 <translation id="5826395379250998812">Повежите <ph name="DEVICE_TYPE" /> са телефоном. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Полутранспарентно</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Предвиђање следеће речи</translation>
 <translation id="5828545842856466741">Додај профил…</translation>
 <translation id="5828633471261496623">Штампање...</translation>
 <translation id="5830720307094128296">Сачувај страницу &amp;као...</translation>
@@ -6285,6 +6288,7 @@
 <translation id="78526636422538552">Додавање још Google налога је онемогућено</translation>
 <translation id="7853747251428735">Још а&amp;латки</translation>
 <translation id="7855678561139483478">Премести картицу у нов прозор</translation>
+<translation id="7857093393627376423">Текстуални предлози</translation>
 <translation id="7857117644404132472">Додај изузетак</translation>
 <translation id="7857949311770343000">Да ли је ово страница нове картице коју сте очекивали?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

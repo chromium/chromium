@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Sincronizarea a încetat să funcționeze.</translation>
 <translation id="1377321085342047638">Număr card</translation>
 <translation id="1383876407941801731">Caută</translation>
-<translation id="1389974829397082527">Dosarul nu conține marcaje</translation>
 <translation id="1400642268715879018">Din ultimele 4 săptămâni</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1430915738399379752">Printează</translation>
@@ -389,6 +388,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4979397965658815378">Conectează-te folosind Contul Google pentru a accesa marcajele, parolele, istoricul și alte setări pe toate dispozitivele</translation>
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5017828934289857214">Amintește-mi mai târziu</translation>
+<translation id="5037676449506322593">Selectează tot</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5056446788882570708">S-au găsit mai multe probleme <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8976382372951310360">Ajutor</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>
 <translation id="8985320356172329008">Conectat(ă) la Google ca</translation>
-<translation id="8996526648899750015">Adaugă un cont...</translation>
 <translation id="9034759925968272072">Nu vei fi deconectat(ă) de la Contul Google. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afișează versiunea originală</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>

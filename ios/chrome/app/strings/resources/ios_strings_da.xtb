@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Synkroniseringen fungerer ikke.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1383876407941801731">Søg</translation>
-<translation id="1389974829397082527">Der er ingen bogmærker her</translation>
 <translation id="1400642268715879018">Seneste fire uger</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1430915738399379752">Udskriv</translation>
@@ -389,6 +388,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
+<translation id="5037676449506322593">Vælg alle</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8976382372951310360">Hjælp</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
-<translation id="8996526648899750015">Tilføj konto...</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

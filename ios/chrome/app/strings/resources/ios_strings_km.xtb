@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">សមកាលកម្មបានឈប់ដំណើរការ</translation>
 <translation id="1377321085342047638">លេខកាត</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
-<translation id="1389974829397082527">គ្មានចំណាំនៅទីនេះទេ</translation>
 <translation id="1400642268715879018">4 សប្តាហ៍ចុងក្រោយ</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">ចូលដោយប្រើគណនី Google របស់អ្នកដើម្បីទទួលយកចំណាំ ពាក្យសម្ងាត់ ប្រវត្តិ និងការកំណត់ផ្សេងទៀតរបស់អ្នកនៅលើឧបករណ៍ទាំងអស់របស់អ្នក</translation>
 <translation id="5005498671520578047">ថតចម្លងពាក្យសម្ងាត់</translation>
 <translation id="5017828934289857214">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
+<translation id="5037676449506322593">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5056446788882570708">បានរកឃើញបញ្ហាកាលពី <ph name="TIME" />។</translation>
 <translation id="5059136629401106827">យល់ព្រម</translation>
@@ -791,7 +791,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8976382372951310360">ជំនួយ</translation>
 <translation id="8981454092730389528">ការគ្រប់គ្រងសកម្មភាព Google</translation>
 <translation id="8985320356172329008">បានចូល Google ជា</translation>
-<translation id="8996526648899750015">បន្ថែមគណនី...</translation>
 <translation id="9034759925968272072">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។ គណនី Google របស់អ្នកអាចនឹងមានទម្រង់ប្រវត្តិរុករកផ្សេងទៀតនៅ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">បង្ហាញប្រភពដើម</translation>
 <translation id="9039373489628511875">កម្រិតបញ្ជូន</translation>

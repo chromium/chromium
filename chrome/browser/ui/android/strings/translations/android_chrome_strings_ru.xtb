@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2979448359891869301">Невозможно расширить скриншот. Освободите память телефона и повторите попытку.</translation>
+<translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
 <translation id="2989523299700148168">Недавние</translation>
 <translation id="2992473221983447149">Описания изображений</translation>
@@ -943,7 +944,6 @@
 <translation id="6989267951144302301">Не удалось скачать</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="7001056293070445572">Файл большого размера (<ph name="FILE_SIZE" />).</translation>
-<translation id="7015203776128479407">Первоначальная настройка синхронизации не завершена. Синхронизация выключена.</translation>
 <translation id="7022756207310403729">Открыть в браузере</translation>
 <translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
 <translation id="7027549951530753705">Восстановлен объект "<ph name="ITEM_TITLE" />"</translation>
@@ -974,7 +974,6 @@
 <translation id="7286572596625053347">Изменить язык (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Переименование невозможно</translation>
 <translation id="7291910923717764901">На эту страницу были добавлены описания изображений.</translation>
-<translation id="7293171162284876153">Чтобы начать ее, нажмите "Синхронизировать данные Chrome".</translation>
 <translation id="7293429513719260019">Выбрать язык</translation>
 <translation id="729975465115245577">На устройстве не установлено приложение для хранения файлов паролей.</translation>
 <translation id="7302081693174882195">Сортировка по объему сэкономленного трафика</translation>

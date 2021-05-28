@@ -311,6 +311,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="2979025552038692506">Onglet de navigation privée sélectionné</translation>
 <translation id="2979448359891869301">Impossible d'étendre la capture d'écran. Réessayez lorsque votre téléphone ne sera plus occupé.</translation>
+<translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2987620471460279764">Texte partagé depuis un autre appareil</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
 <translation id="2992473221983447149">Descriptions d'images</translation>
@@ -943,7 +944,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6989267951144302301">Échec du téléchargement</translation>
 <translation id="6995899638241819463">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="7001056293070445572">Fichier volumineux (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">La configuration de la synchronisation initiale n'était pas terminée. La synchronisation est désactivée.</translation>
 <translation id="7022756207310403729">Ouvrir dans le navigateur</translation>
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
 <translation id="7027549951530753705">Téléchargement <ph name="ITEM_TITLE" /> restauré</translation>
@@ -974,7 +974,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7286572596625053347">Modifier <ph name="LANGUAGE" /> ?</translation>
 <translation id="7290209999329137901">Option de changement de nom indisponible</translation>
 <translation id="7291910923717764901">Des descriptions d'images ont été ajoutées pour cette page</translation>
-<translation id="7293171162284876153">Pour lancer la synchronisation, activez l'option "Synchroniser vos données Chrome".</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>
 <translation id="729975465115245577">Aucune application n'est installée sur votre appareil pour stocker le fichier de mots de passe.</translation>
 <translation id="7302081693174882195">Détails : tri effectué par volume de données enregistrées</translation>

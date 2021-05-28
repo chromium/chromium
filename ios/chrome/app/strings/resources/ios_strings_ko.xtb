@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">동기화가 중지되었습니다.</translation>
 <translation id="1377321085342047638">카드 번호</translation>
 <translation id="1383876407941801731">검색</translation>
-<translation id="1389974829397082527">이 폴더에는 북마크가 없습니다.</translation>
 <translation id="1400642268715879018">지난 4주</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1430915738399379752">인쇄</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5017828934289857214">나중에 알림</translation>
+<translation id="5037676449506322593">모두 선택</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5056446788882570708"><ph name="TIME" />에 문제가 발견되었습니다.</translation>
 <translation id="5059136629401106827">확인</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">도움말</translation>
 <translation id="8981454092730389528">Google 활동 제어</translation>
 <translation id="8985320356172329008">다음 계정으로 Google에 로그인함:</translation>
-<translation id="8996526648899750015">계정 추가...</translation>
 <translation id="9034759925968272072">Google 계정에서 로그아웃되지 않습니다. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />에서 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
 <translation id="9039373489628511875">대역폭</translation>

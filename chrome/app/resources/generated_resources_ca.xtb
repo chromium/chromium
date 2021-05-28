@@ -700,7 +700,7 @@
 <translation id="173628468822554835">D'acord. De manera predeterminada, els llocs webs nous que visitis no t'enviaran notificacions.</translation>
 <translation id="1736419249208073774">Explora</translation>
 <translation id="1737968601308870607">Arxiva l'error</translation>
-<translation id="1739684185846730053">Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin la zona de proves de privadesa mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
+<translation id="1739684185846730053">Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
 <translation id="174123615272205933">Personalitzats</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1743570585616704562">No s'ha reconegut</translation>
@@ -2568,6 +2568,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3742666961763734085">No es troba cap unitat organitzativa amb aquest nom. Torna-ho a provar.</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3747077776423672805">Per suprimir una aplicació, ves a Configuració &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Aplicacions o Gestor d'aplicacions. A continuació, toca l'aplicació que vulguis desinstal·lar (és possible que hagis de lliscar cap a la dreta o cap a l'esquerra per trobar-la). Tot seguit, toca Desinstal·la o Desactiva.</translation>
+<translation id="3747220812138541072">Mostra els suggeriments d'escriptura que apareixen entre línies mentre escrius</translation>
 <translation id="3748706263662799310">Informa d'un error</translation>
 <translation id="3752582316358263300">D'acord...</translation>
 <translation id="3753033997400164841">Desa-la una vegada. Fes-la servir a tot arreu.</translation>
@@ -3069,7 +3070,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4297813521149011456">Rotació de la pantalla</translation>
 <translation id="4299022904780065004">Finestra d'&amp;incògnit nova</translation>
 <translation id="4301671483919369635">Aquesta pàgina té permís per editar fitxers</translation>
-<translation id="4302605047395093221">Qualsevol usuari d'aquest dispositiu ha d'introduir el PIN per connectar-se a aquesta xarxa mòbil</translation>
+<translation id="4302605047395093221">Qualsevol persona que faci servir aquest dispositiu haurà d'introduir el PIN per connectar-se a aquesta xarxa mòbil</translation>
 <translation id="4303079906735388947">Configura un PIN nou per a la clau de seguretat</translation>
 <translation id="4305402730127028764">Copia al dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Canvia</translation>
@@ -3255,6 +3256,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4510614391273086606">S'estan restaurant els fitxers i les aplicacions de Linux a la seva còpia de seguretat.</translation>
 <translation id="451102079304155829">carretons</translation>
 <translation id="4513275008300099962">Desactiva la superposició dels controls de finestres</translation>
+<translation id="4513872120116766993">Escriptura predictiva</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="451407183922382411">Amb la tecnologia de: <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reprodueix o posa en pausa el vídeo</translation>
@@ -4419,6 +4421,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5826395379250998812">Connecta el dispositiu <ph name="DEVICE_TYPE" /> al telèfon. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparent</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Predicció de paraula següent</translation>
 <translation id="5828545842856466741">Afegeix un perfil...</translation>
 <translation id="5828633471261496623">S'està imprimint...</translation>
 <translation id="5830720307094128296">Anomena i desa la pà&amp;gina...</translation>
@@ -6289,6 +6292,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="78526636422538552">L'opció per afegir més Comptes de Google està desactivada</translation>
 <translation id="7853747251428735">Més &amp;eines</translation>
 <translation id="7855678561139483478">Mou la pestanya a una finestra nova</translation>
+<translation id="7857093393627376423">Suggeriments de text</translation>
 <translation id="7857117644404132472">Afegeix una excepció</translation>
 <translation id="7857949311770343000">Aquesta és la pàgina de la pestanya nova que volíeu?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6306,7 +6310,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7876027585589532670">No es pot editar la drecera</translation>
 <translation id="7877451762676714207">Error de servidor desconegut. Torneu-ho a provar o contacteu amb l'administrador del servidor.</translation>
 <translation id="7879631849810108578">Drecera definida: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Quan està activada i l'estat és que la prova està activa, Chrome utilitza el teu historial de navegació de 7 dies per determinar en quin grup o cohort ets. Els anunciants poden seleccionar anuncis per al grup. L'historial de navegació es desa en privat al teu dispositiu. Aquesta prova només està activa en
+<translation id="7880685873361171388">Quan està activada i la prova està activa, Chrome utilitza el teu historial de navegació de 7 dies per determinar en quin grup o cohort ets. Els anunciants poden seleccionar anuncis per al grup. L'historial de navegació es desa en privat al teu dispositiu. Aquesta prova només està activa en
 <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Les dades locals se suprimiran en reiniciar el dispositiu</translation>
 <translation id="7881066108824108340">DNS</translation>

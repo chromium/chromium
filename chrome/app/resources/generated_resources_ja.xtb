@@ -2568,6 +2568,7 @@
 <translation id="3742666961763734085">この名前の組織部門が見つかりません。もう一度お試しください。</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3747077776423672805">アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
+<translation id="3747220812138541072">入力中に予測候補をインラインで表示します</translation>
 <translation id="3748706263662799310">バグを報告</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
@@ -3256,6 +3257,7 @@
 <translation id="4510614391273086606">Linux のファイルとアプリをバックアップした状態に復元しています。</translation>
 <translation id="451102079304155829">カート</translation>
 <translation id="4513275008300099962">ウィンドウ コントロールのオーバーレイを無効にする</translation>
+<translation id="4513872120116766993">予測入力</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">動画の再生と一時停止を切り替え</translation>
@@ -4418,6 +4420,7 @@
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> をスマートフォンと接続します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">次の入力候補を予測</translation>
 <translation id="5828545842856466741">プロファイルを追加...</translation>
 <translation id="5828633471261496623">印刷中...</translation>
 <translation id="5830720307094128296">ページを別名で保存(&amp;A)...</translation>
@@ -6288,6 +6291,7 @@
 <translation id="78526636422538552">Google アカウントをさらに追加するオプションは無効になっています</translation>
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
+<translation id="7857093393627376423">テキスト候補</translation>
 <translation id="7857117644404132472">例外を追加</translation>
 <translation id="7857949311770343000">この新しいタブ ページでよろしいですか？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />（Windows）</translation>
@@ -6305,7 +6309,7 @@
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7877451762676714207">不明なサーバー エラーが発生しました。もう一度お試しになるか、サーバー管理者にご連絡ください。</translation>
 <translation id="7879631849810108578">ショートカットが設定されました: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">FLoC をオンにして、ステータスが有効な場合、Chrome で 7 日間の閲覧履歴に基づいて、特定の「コホート」つまりグループに分類されます。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
+<translation id="7880685873361171388">この設定をオンにして、ステータスが有効な場合、Chrome は 7 日間の閲覧履歴に基づいて、自身が属する特定の「コホート」つまりグループを特定します。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">アカウントを表示</translation>
@@ -7374,7 +7378,7 @@
 <translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
-<translation id="9035689366572880647">現在のPINを入力</translation>
+<translation id="9035689366572880647">現在の PIN を入力</translation>
 <translation id="9037640663275993951">デバイスは許可されていません</translation>
 <translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>

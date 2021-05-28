@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">A sincronización deixou de funcionar.</translation>
 <translation id="1377321085342047638">Nº tarxeta</translation>
 <translation id="1383876407941801731">Buscar</translation>
-<translation id="1389974829397082527">Non hai marcadores aquí</translation>
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -389,6 +388,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
+<translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
@@ -791,7 +791,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8976382372951310360">Axuda</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8985320356172329008">Iniciaches sesión en Google como</translation>
-<translation id="8996526648899750015">Engadir conta...</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar orixinal</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

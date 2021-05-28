@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
 <translation id="1377321085342047638">Numéro de carte</translation>
 <translation id="1383876407941801731">Rechercher</translation>
-<translation id="1389974829397082527">Aucun favori ici</translation>
 <translation id="1400642268715879018">4 dernières semaines</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1430915738399379752">Imprimer</translation>
@@ -389,6 +388,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
+<translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5056446788882570708">Problèmes identifiés <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -792,7 +792,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
-<translation id="8996526648899750015">Ajouter un compte…</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039373489628511875">Bande passante</translation>

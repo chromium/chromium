@@ -2574,6 +2574,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3742666961763734085">Selle nimega organisatsiooniüksust ei leitud. Proovige uuesti.</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3747077776423672805">Rakenduste eemaldamiseks avage menüü Seaded&gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.</translation>
+<translation id="3747220812138541072">Teksti sisestamise ajal kuvatakse samas reas soovitused</translation>
 <translation id="3748706263662799310">Teatage veast</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Salvestage üks kord. Kasutage kõikjal.</translation>
@@ -3262,6 +3263,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4510614391273086606">Linuxi failid ja rakendused taastatakse nende varundatud olekusse.</translation>
 <translation id="451102079304155829">ostukorvid</translation>
 <translation id="4513275008300099962">Akna juhtelementide ülekatte keelamine</translation>
+<translation id="4513872120116766993">Ennustamisega sisestamine</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="451407183922382411">Toetab <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Käivitab/peatab video</translation>
@@ -4424,6 +4426,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5826395379250998812">Ühendage seade <ph name="DEVICE_TYPE" /> oma telefoniga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Poolläbipaistev</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Järgmise sõna ennustamine</translation>
 <translation id="5828545842856466741">Lisa profiil …</translation>
 <translation id="5828633471261496623">Printimine ...</translation>
 <translation id="5830720307094128296">Salvesta leht &amp;nimega...</translation>
@@ -6294,6 +6297,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="78526636422538552">Google'i kontode lisamine on keelatud</translation>
 <translation id="7853747251428735">Rohkem töö&amp;riistu</translation>
 <translation id="7855678561139483478">Vahelehe teisaldamine uude aknasse</translation>
+<translation id="7857093393627376423">Teksti soovitused</translation>
 <translation id="7857117644404132472">Lisa erand</translation>
 <translation id="7857949311770343000">Kas see on uus vaheleht, mida ootasite?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

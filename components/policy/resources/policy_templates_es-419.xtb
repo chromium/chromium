@@ -216,7 +216,7 @@
 <translation id="1294263471858445589">Permite la autenticación ambiental en sesiones comunes y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita la función de dictado en la pantalla de acceso</translation>
 <translation id="1297182715641689552">Usar un script para proxy .pac</translation>
-<translation id="1297827666345629703">Una cuenta administrada debe ser una cuenta principal</translation>
+<translation id="1297827666345629703">Las cuentas administradas deben ser cuentas principales</translation>
 <translation id="1297961932043741908">Establece el límite de memoria en megabytes que puede usar una única instancia de Chrome</translation>
 <translation id="1304973015437969093">ID de extensiones/apps y direcciones URL de actualización para instalar en silencio</translation>
 <translation id="1305400589435476516">Si habilitas la política, se permitirá el roaming de datos para el dispositivo.
@@ -877,13 +877,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2168060657210442816">
       Para que esta política tenga efecto, debe establecerse la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> como verdadera.
 
-      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> al nivel de la máquina, todas las cuentas administradas deberán ser principales.
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> al nivel de la máquina, todas las cuentas administradas se considerarán principales.
       Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en una cuenta, esa cuenta siempre será principal, pero podrá tener cuentas secundarias en su perfil.
 
-      Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> al nivel de la máquina, todas las cuentas administradas deberán ser principales.
+      Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> al nivel de la máquina, todas las cuentas administradas se considerarán principales.
       Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en una cuenta, esa cuenta siempre será principal y no tendrá cuentas secundarias en su perfil.
 
-      Si la estableces como <ph name="POLICY_VALUE_NONE" /> o no la estableces, las cuentas administradas no tendrán restricciones. Por lo tanto, una cuenta administrada podrá ser secundaria. En ese caso, no podrá recibir las políticas que establezca el administrador en la cuenta.
+      Si la estableces como <ph name="POLICY_VALUE_NONE" /> o no la estableces, las cuentas administradas no tendrán restricciones. Así, una cuenta administrada podrá ser secundaria, en cuyo caso no recibirá las políticas que establezca el administrador en la cuenta.
     </translation>
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>
@@ -1800,11 +1800,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="3261592499545947104">La cantidad de segundos restantes para que caduque un certificado y se active la renovación.</translation>
-<translation id="3264706118366247207">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas de navegación. Los tipos de datos disponibles son el historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), el historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), las cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), la memoria caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, las opciones de Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), las contraseñas (<ph name="DATA_TYPE_PASSWORD" />), la configuración de los sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y los datos de las apps alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no tendrá prioridad sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+<translation id="3264706118366247207">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador. Los tipos de datos disponibles son el historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), el historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), las cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), la memoria caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, las opciones de Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), las contraseñas (<ph name="DATA_TYPE_PASSWORD" />), la configuración de los sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y los datos de las apps alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no tendrá prioridad sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
 
       Esta política requiere que se establezca la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera; de lo contrario, se ignorará. Si estableces esta política al nivel de la plataforma, se deberá inhabilitar la sincronización al nivel de la plataforma. Si la estableces al nivel del usuario, se deberá inhabilitar la sincronización para ese usuario a fin de que tenga efecto esta política.
 
-      Si no se logra salir de <ph name="PRODUCT_NAME" /> de forma correcta (p. ej., si falla el navegador o el SO), se borrarán los datos de navegación la próxima vez que se cargue el perfil.</translation>
+      Si se produce algún error al salir de <ph name="PRODUCT_NAME" /> (p. ej., si falla el navegador o el SO), se borrarán los datos de navegación la próxima vez que se cargue el perfil.</translation>
 <translation id="3264793472749429012">Codificación del proveedor de búsqueda predeterminado</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas para el usuario. Si inhabilitas esta política, el usuario no verá estas recomendaciones. Si la habilitas o no la estableces, el usuario verá las recomendaciones de contenido multimedia.</translation>
@@ -1869,7 +1869,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de inactividad.
 
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
-<translation id="3363360928811201045">Agregar restricciones en las cuentas administradas</translation>
+<translation id="3363360928811201045">Agregar restricciones en cuentas administradas</translation>
 <translation id="3367868895271989224">Si habilitas la política, se aislarán todos los sitios (cada sitio se ejecutará en su propio proceso). Si inhabilitas la política o no la estableces, no se desactivará el aislamiento de sitios, pero los usuarios podrán inhabilitarlo (p. ej., mediante la entrada para inhabilitar el aislamiento de sitios en chrome://flags).
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> también puede ser útil para aislar orígenes más precisos. En la versión 76 y anteriores del <ph name="PRODUCT_OS_NAME" />, establece la política de dispositivo <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> en el mismo valor (dado que, si los valores no coinciden, pueden producirse retrasos cuando se ingresa una sesión de usuario).
@@ -3049,7 +3049,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
-<translation id="5059201920681374653">Las cuentas administradas deben estar en un dispositivo administrado que esté afiliada</translation>
+<translation id="5059201920681374653">Las cuentas administradas deben estar en un dispositivo administrado que esté afiliado</translation>
 <translation id="5061114193960158745">Si estableces esta política, se controlará la lista de sitios web que nunca obligarán a cambiar de navegador. Cada elemento será tratado como una regla. Las reglas que coincidan no se abrirán en un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, las reglas se aplican en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> puede abrir estas URL en <ph name="PRODUCT_NAME" />.
 
       Si no estableces la política, no se agregarán sitios web a la lista.
@@ -4408,23 +4408,23 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />, anulará esta política.</translation>
 <translation id="6833988859168635883">Página de inicio, página principal y página Nueva pestaña</translation>
-<translation id="6834298774555537368">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
+<translation id="6834298774555537368">Si estableces la política, se especificará la configuración de proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especifiquen desde la línea de comandos.
 
        Si no la estableces, los usuarios podrán elegir su configuración de proxy.
 
        Si estableces la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se aceptarán los siguientes campos:
          * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> (podrás especificar el servidor proxy que usa Chrome y evitar que los usuarios cambien la configuración del proxy)
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> (una dirección URL a un archivo de proxy en formato .pac)
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> (una dirección URL al servidor proxy)
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> (una lista de hosts que omitirán el proxy)
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> (dirección URL a un archivo de proxy en formato .pac)
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> (dirección URL al servidor proxy)
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> (lista de hosts que omitirán el proxy)
 
        El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> dejó de estar disponible. En su lugar, aparece el campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
 
-        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si eliges uno de estos valores:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: no se usará nunca un proxy y se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: se usará el proxy del sistema y se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, puedes elegir alguno de los valores siguientes:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, no se usará nunca un proxy y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, se usará el proxy del sistema y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
 
       Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
@@ -5543,12 +5543,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8217664958939773083">Si estableces esta política como <ph name="ENABLED" /> o no la estableces, se podrá usar el modo sin interfaz gráfica. Si estableces esta política como <ph name="DISABLED" />, no se podrá usar el modo sin interfaz gráfica.</translation>
 <translation id="8220023426952118761">Tasa de descarga deseada en kbit/s.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>
-<translation id="8234316309673661069">Advertencia: 3DES se quitará por completo en la versión 95 de <ph name="PRODUCT_NAME" /> (alrededor de octubre de 2021) y esta política dejará de funcionar.
-
-      Si estableces la política como verdadera, se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS. Si la estableces como falsa, se inhabilitarán los conjuntos. Si no estableces la política, se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS de forma predeterminada. En la versión 93 de <ph name="PRODUCT_NAME" />, se inhabilitarán de forma predeterminada.
-
-      En la versión 92 de <ph name="PRODUCT_NAME" />, se puede usar esta política para previsualizar el cambio y buscar incompatibilidades. En la versión 93 de <ph name="PRODUCT_NAME" /> y versiones posteriores, se puede usar para asegurar la compatibilidad de forma temporal con un servidor desactualizado. Esta es una medida provisoria; deberás volver a configurar el servidor.
-      </translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
@@ -6305,6 +6299,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
+<translation id="9190257149451871588">puerto 6566 (caduca el 15/10/2021)</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.
 
       Si no se establece la política o se establece en <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, se utilizará el modo predeterminado de la experiencia de integración del Asistente.

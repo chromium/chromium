@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Sinxronizasiya işləmir.</translation>
 <translation id="1377321085342047638">Kart Nömrəsi</translation>
 <translation id="1383876407941801731">Axtar</translation>
-<translation id="1389974829397082527">Əlfəcin yoxdur</translation>
 <translation id="1400642268715879018">Son 4 Həftə</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1430915738399379752">Çap edin</translation>
@@ -389,6 +388,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="4979397965658815378">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün Google Hesabınız ilə daxil olun.</translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5017828934289857214">Sonra xatırladın</translation>
+<translation id="5037676449506322593">Hamısını seçin</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5056446788882570708">Problemlər tapıldı: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8981454092730389528">Google Fəaliyyət Nəzarəti</translation>
 <translation id="8985320356172329008">Google'a bu cür daxil olunub</translation>
-<translation id="8996526648899750015">Hesab əlavə edin...</translation>
 <translation id="9034759925968272072">Google Hesabından çıxmayacaqsınız. Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində başqa formada axtarış tarixçəsi ola bilər.</translation>
 <translation id="9037965129289936994">Orijinalı Göstərin</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>

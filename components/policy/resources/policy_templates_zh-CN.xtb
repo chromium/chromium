@@ -5481,12 +5481,6 @@
 <translation id="8217664958939773083">如果此政策设为 <ph name="ENABLED" /> 或未设置，即意味着允许使用无头模式。如果此政策设为 <ph name="DISABLED" />，则意味着禁止使用无头模式。</translation>
 <translation id="8220023426952118761">所需的下载速率，以 kb/s 为单位。</translation>
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
-<translation id="8234316309673661069">警告：我们将从 <ph name="PRODUCT_NAME" /> 的 95 版（将于 2021 年 10 月左右推出）中彻底移除 3DES。届时，此政策将不再有效。
-
-      如果此政策设为 true，系统将在传输层安全协议 (TLS) 中启用 3DES 加密套件。如果此政策设为 false，系统将在 TLS 中停用 3DES 加密套件。如果此政策未设置，目前系统会默认启用 3DES 加密套件，但在 <ph name="PRODUCT_NAME" /> 93 版中，系统将默认停用 3DES 加密套件。
-
-      在 <ph name="PRODUCT_NAME" /> 92 版中，此政策可用于预览更改和测试不兼容性。在 <ph name="PRODUCT_NAME" /> 93 版及更高版本中，此政策可用于暂时保持与过时服务器的兼容性。这只是一种权宜之计，正确的做法是重新配置服务器。
-      </translation>
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
@@ -6218,6 +6212,7 @@
       此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。移除此政策后，<ph name="PRODUCT_NAME" /> 将始终都能查询其他 DNS 类型。</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>
+<translation id="9190257149451871588">端口 6566（2021/10/15 到期）</translation>
 <translation id="9190456586252617675">此政策旨在控制 Google 助理新手入门体验的模式。
 
       如果此政策设为<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />或未设置，系统会使用 Google 助理新手入门体验的默认模式。

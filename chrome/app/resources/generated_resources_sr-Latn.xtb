@@ -2567,6 +2567,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3742666961763734085">Ne možemo da pronađemo organizacionu jedinicu sa tim nazivom. Probajte ponovo.</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3747077776423672805">Da biste uklonili aplikacije, idite u odeljak Podešavanja &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Aplikacije ili Menadžer aplikacija. Dodirnite aplikaciju koju želite da deinstalirate (možda ćete morati da prevučete nadesno ili nalevo da biste pronašli aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
+<translation id="3747220812138541072">Prikazuje predloge za pisanje u tekstu koji se pojavljuju dok kucate</translation>
 <translation id="3748706263662799310">Prijavite grešku</translation>
 <translation id="3752582316358263300">Potvrdi...</translation>
 <translation id="3753033997400164841">Sačuvajte jednom. Koristite svuda</translation>
@@ -3255,6 +3256,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4510614391273086606">Linux datoteke i aplikacije se vraćaju na verziju iz rezervne kopije.</translation>
 <translation id="451102079304155829">korpe</translation>
 <translation id="4513275008300099962">Onemogućite preklopni element sa kontrolama prozora</translation>
+<translation id="4513872120116766993">Pisanje sa predviđanjem</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="451407183922382411">Omogućava <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Pušta ili pauzira video</translation>
@@ -4418,6 +4420,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5826395379250998812">Povežite <ph name="DEVICE_TYPE" /> sa telefonom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Polutransparentno</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Predviđanje sledeće reči</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Štampanje...</translation>
 <translation id="5830720307094128296">Sačuvaj stranicu &amp;kao...</translation>
@@ -6285,6 +6288,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="78526636422538552">Dodavanje još Google naloga je onemogućeno</translation>
 <translation id="7853747251428735">Još a&amp;latki</translation>
 <translation id="7855678561139483478">Premesti karticu u nov prozor</translation>
+<translation id="7857093393627376423">Tekstualni predlozi</translation>
 <translation id="7857117644404132472">Dodaj izuzetak</translation>
 <translation id="7857949311770343000">Da li je ovo stranica nove kartice koju ste očekivali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

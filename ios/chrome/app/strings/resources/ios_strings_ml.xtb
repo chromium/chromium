@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">സമന്വയിപ്പിക്കുന്നത് നിർത്തി.</translation>
 <translation id="1377321085342047638">കാർഡ് നമ്പർ</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1389974829397082527">ഇവിടെ ബുക്ക്‌മാർക്കുകളൊന്നുമില്ല</translation>
 <translation id="1400642268715879018">കഴിഞ്ഞ 4 ആഴ്‌ചയിലെ</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ Google അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5017828934289857214">പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
+<translation id="5037676449506322593">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> പ്രശ്‌നങ്ങൾ കണ്ടെത്തി.</translation>
 <translation id="5059136629401106827">ശരി</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">സഹായം</translation>
 <translation id="8981454092730389528">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="8985320356172329008">ഇനിപ്പറയുന്ന പേരിൽ Google-ലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="8996526648899750015">അക്കൗണ്ട് ചേർക്കുക...</translation>
 <translation id="9034759925968272072">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല. Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="9037965129289936994">യഥാര്‍ത്ഥമായത് കാണിക്കുക</translation>
 <translation id="9039373489628511875">ബാൻഡ്‌വിഡ്‌ത്ത്</translation>

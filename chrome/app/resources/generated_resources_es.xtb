@@ -2568,6 +2568,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3742666961763734085">No se puede encontrar una unidad organizativa con ese nombre. Inténtalo de nuevo.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3747077776423672805">Para desinstalar aplicaciones, ve a Ajustes &gt; Google Play Store &gt; Gestionar las preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o hacia la izquierda para encontrar la aplicación) y toca Desinstalar o Inhabilitar.</translation>
+<translation id="3747220812138541072">Muestra sugerencias de texto a medida que escribes</translation>
 <translation id="3748706263662799310">Notifica un error</translation>
 <translation id="3752582316358263300">Aceptar...</translation>
 <translation id="3753033997400164841">Guárdalas una vez. Úsalas en todos sitios.</translation>
@@ -3255,6 +3256,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4510614391273086606">Se está restaurando el estado de copia de seguridad de los archivos y aplicaciones de Linux.</translation>
 <translation id="451102079304155829">carritos</translation>
 <translation id="4513275008300099962">Inhabilitar la superposición de los controles de ventanas</translation>
+<translation id="4513872120116766993">Escritura predictiva</translation>
 <translation id="4513946894732546136">Comentarios</translation>
 <translation id="451407183922382411">Con la tecnología de <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reproducir o pausar el video</translation>
@@ -4417,6 +4419,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5826395379250998812">Conecta tu <ph name="DEVICE_TYPE" /> al teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparente</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Sugerencia de siguiente palabra</translation>
 <translation id="5828545842856466741">Añadir perfil...</translation>
 <translation id="5828633471261496623">Imprimiendo...</translation>
 <translation id="5830720307094128296">Guardar página &amp;como...</translation>
@@ -5194,7 +5197,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
 <translation id="6681668084120808868">Sacar foto</translation>
-<translation id="6683087162435654533">Restaurar todas las pestañas</translation>
+<translation id="6683087162435654533">R&amp;estaurar todas las pestañas</translation>
 <translation id="6683948477137300040">Mostrar ventana emergente con EID y código QR del dispositivo</translation>
 <translation id="6684827949542560880">Descargando la última actualización</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
@@ -6287,6 +6290,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="78526636422538552">La opción para añadir más cuentas de Google está inhabilitada</translation>
 <translation id="7853747251428735">Más herramienta&amp;s</translation>
 <translation id="7855678561139483478">Mover pestaña a ventana nueva</translation>
+<translation id="7857093393627376423">Sugerencias de texto</translation>
 <translation id="7857117644404132472">Añadir excepción</translation>
 <translation id="7857949311770343000">¿Es esta la página Nueva pestaña que esperabas?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6502,7 +6506,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8082106343289440791">¿Quieres emparejar "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Si se inhabilita la depuración ADB, se restablecerá la configuración de fábrica de este <ph name="DEVICE_TYPE" />. Se borrarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="8084114998886531721">Contraseña guardada</translation>
-<translation id="8084510406207562688">Restaurar todas las pestañas</translation>
+<translation id="8084510406207562688">R&amp;estaurar todas las pestañas</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Este archivo está cifrado. Pídele al propietario que lo descifre.}other{Algunos de estos archivos están cifrados. Pídele al propietario que los descifre.}}</translation>

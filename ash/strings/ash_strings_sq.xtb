@@ -245,6 +245,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalo aplikacione, shtesa dhe tema</translation>
 <translation id="2977598380246111477">Numri tjetër</translation>
+<translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
 <translation id="2995447421581609334">Shfaq pajisjet e transmetimit.</translation>
 <translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
@@ -255,6 +256,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3038571455154067151">Për t'u identifikuar, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="3039939407102840004">Bateria e stilolapsit është <ph name="PERCENTAGE" /> për qind.</translation>
 <translation id="3045488863354895414">Mirëdita,</translation>
+<translation id="3051189971848907985">Profili po riemërtohet. Prit disa minuta.</translation>
 <translation id="3055162170959710888">Sot e ke përdorur këtë pajisje për <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Zgjero menynë</translation>
@@ -295,6 +297,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3371140690572404006">Pajisja USB-C (porta e përparme, djathtas)</translation>
 <translation id="3375634426936648815">Lidhur</translation>
+<translation id="3378442621503952303">Po lidhet me profilin. Prit disa minuta.</translation>
 <translation id="3386978599540877378">zmadhuesi në ekran të plotë</translation>
 <translation id="3400357268283240774">Cilësimet shtesë</translation>
 <translation id="3410336247007142655">Shfaq cilësimet e "Temës së errët"</translation>
@@ -351,6 +354,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
+<translation id="3835880383832568924">Për të shikuar përditësimet, hap aplikacionin "Shkurtoret"</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="3846214748874656680">Dil nga ekrani i plotë</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
@@ -471,6 +475,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4705716602320768426">Dërgo komente</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Numri është ndryshuar. Për të përdorur tastet e funksioneve, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + një tast në rreshtin e sipërm.</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
+<translation id="6921188888306725546">Shkurtoret e tastierës janë përmirësuar</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
@@ -934,6 +940,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8631727435199967028">Cilësimet e qasshmërisë</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> të mbetura</translation>
+<translation id="8641805545866562088">Lista e profilit po rifreskohet. Prit disa minuta.</translation>
 <translation id="8646417893960517480">Kohëmatësi: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Për të shtuar një person, fut kodin e qasjes së prindit për Family Link.</translation>
 <translation id="8649101189709089199">Zgjidh që të thuhet</translation>
@@ -961,6 +968,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Cilësimet e metodave të hyrjes</translation>
+<translation id="8818320199597151042">Profili po hiqet. Prit disa minuta.</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>
@@ -1006,6 +1014,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="9091626656156419976">Ekrani <ph name="DISPLAY_NAME" /> u hoq</translation>
 <translation id="9098969848082897657">Vendose telefonin në heshtje</translation>
 <translation id="9099154003160514616">Ofrohet përditësim i Lacros</translation>
+<translation id="9100887602489003640">Profili po shtohet. Prit disa minuta.</translation>
 <translation id="9105450214093926548">Identifikimi si përdorues i dytë nuk mbështetet kur shfletuesi Lacros është në ekzekutim. Përdor një profil të dytë të shfletuesit në Lacros më mirë ose mbylle Lacros dhe provo përsëri.</translation>
 <translation id="9133335900048457298">Përmbajtja e mbrojtur nuk mund të regjistrohet</translation>
 <translation id="9151726767154816831">Rifillo dhe bëj Powerwash për të përditësuar</translation>

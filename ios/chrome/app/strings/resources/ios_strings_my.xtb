@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">စင့်ခ်ပြုလုပ်ခြင်း ရပ်တန့်သွားပါပြီ။</translation>
 <translation id="1377321085342047638">ကဒ်နံပါတ်</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
-<translation id="1389974829397082527">ဒီမှာ စာညှပ် မရှိပါ</translation>
 <translation id="1400642268715879018">နောက်ဆုံး ၄ ပတ်</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">သင့်စက်ပစ္စည်းများအားလုံးပေါ်တွင် စာညှပ်များ၊ စကားဝှက်များ၊ မှတ်တမ်းနှင့် အခြားဆက်တင်များ ရယူအသုံးပြုနိုင်ရန် သင့် Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="5005498671520578047">စကားဝှက်ကို ကူးယူပါ</translation>
 <translation id="5017828934289857214">နောက်မှ သတိပေးရန်</translation>
+<translation id="5037676449506322593">အားလုံးကို ရွေးရန်</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> တွင် ပြဿနာတွေ့သည်။</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -790,7 +790,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8976382372951310360">အကူအညီ</translation>
 <translation id="8981454092730389528">Google လုပ်ဆောင်ချက်များ ထိန်းချုပ်ရန်</translation>
 <translation id="8985320356172329008">အဖြစ် Google သို့လက်မှတ်ထိုးဝင်ထားသည်</translation>
-<translation id="8996526648899750015">အကောင့် ထည့်ရန်</translation>
 <translation id="9034759925968272072">သင့် Google အကောင့်မှ ထွက်သွားမည်မဟုတ်ပါ။ သင့် Google အကောင့်တွင် <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ၌အင်တာနက်အသုံးပြုမှု မှတ်တမ်းအခြားပုံစံများ ရှိနိုင်ပါသည်။</translation>
 <translation id="9037965129289936994">မူရင်းကို ပြရန်</translation>
 <translation id="9039373489628511875">လှိုင်းခွင်</translation>

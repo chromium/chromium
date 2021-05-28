@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Синхронизацијата престана да работи.</translation>
 <translation id="1377321085342047638">Број на картичка</translation>
 <translation id="1383876407941801731">Барај</translation>
-<translation id="1389974829397082527">Нема обележувачи тука</translation>
 <translation id="1400642268715879018">Минатите 4 седмици</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="1430915738399379752">Печати</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Најавете се со сметката на Google за да ги добиете обележувачите, лозинките, историјата и другите поставки на сите ваши уреди.</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5017828934289857214">Потсети ме подоцна</translation>
+<translation id="5037676449506322593">Избери сè</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5056446788882570708">Најдени се проблеми <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Во ред</translation>
@@ -791,7 +791,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8976382372951310360">Помош</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
 <translation id="8985320356172329008">Најавени сте на Google како</translation>
-<translation id="8996526648899750015">Додајте сметка...</translation>
 <translation id="9034759925968272072">Нема да ве одјавиме од сметката на Google. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи го оригиналот</translation>
 <translation id="9039373489628511875">Проток</translation>

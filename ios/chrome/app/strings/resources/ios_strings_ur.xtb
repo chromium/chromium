@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">مطابقت پذیری نے کام کرنا بند کر دیا ہے۔</translation>
 <translation id="1377321085342047638">کارڈ نمبر</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
-<translation id="1389974829397082527">یہاں کوئی بُک مارکس نہیں ہیں</translation>
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">‏اپنے سبھی آلات پر اپنے بُک مارکس، پاس ورڈز، سرگزشت اور دیگر ترتیبات حاصل کرنے کیلئے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5017828934289857214">مجھے بعد میں یاد دلائیں</translation>
+<translation id="5037676449506322593">سبھی منتخب کریں</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
@@ -523,6 +523,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="634878792104344809">اپنے سبھی آلات پر اپنے پاس ورڈز، سرگزشت اور مزید کی مطابقت پذیری کریں</translation>
 <translation id="6362362396625799311">کوئی پوشیدگی ٹیبز نہیں ہیں</translation>
 <translation id="6363526231572697780">کوئی صارف نام نہیں ہے</translation>
+<translation id="6366663624406569102">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6377118281273296434">سائٹ کی سیکیورٹی</translation>
 <translation id="6380866119319257197">اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
@@ -790,7 +791,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8976382372951310360">مدد</translation>
 <translation id="8981454092730389528">‏Google سرگرمی کنٹرولز</translation>
 <translation id="8985320356172329008">‏Google میں سائن ان ہے بطور</translation>
-<translation id="8996526648899750015">اکاؤنٹ شامل کریں…</translation>
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>

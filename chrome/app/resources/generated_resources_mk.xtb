@@ -2584,6 +2584,7 @@
 <translation id="3742666961763734085">Не може да се најде организациска единица со тоа име. Обидете се повторно.</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3747077776423672805">За да ги отстраните апликациите, одете во „Поставки &gt; Google Play Store &gt; Управувајте со поставките за Android &gt; Апликации“ или „Управникот со апликации“. Потоа допрете ја апликацијата што сакате да ја деинсталирате (можеби ќе треба да повлечете десно или лево за да ја најдете). Потоа допрете „Деинсталирај“ или „Оневозможи“.</translation>
+<translation id="3747220812138541072">Прикажувај предлози за пишување во текот на пишувањето</translation>
 <translation id="3748706263662799310">Пријавете грешка</translation>
 <translation id="3752582316358263300">Во ред...</translation>
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
@@ -3273,6 +3274,7 @@
 <translation id="4510614391273086606">Датотеките и апликациите на Linux се враќаат од бекапот.</translation>
 <translation id="451102079304155829">кошнички</translation>
 <translation id="4513275008300099962">Оневозможете преклопување на контролите за прозорци</translation>
+<translation id="4513872120116766993">Предвидливо пишување</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
 <translation id="451407183922382411">Овозможено од <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Копче за пуштање или паузирање видео</translation>
@@ -4435,6 +4437,7 @@
 <translation id="5826395379250998812">Поврзете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Полупроѕирно</translation>
 <translation id="5827266244928330802">Сафари</translation>
+<translation id="5827733057563115968">Предвидување следен збор</translation>
 <translation id="5828545842856466741">Додајте профил…</translation>
 <translation id="5828633471261496623">Се печати…</translation>
 <translation id="5830720307094128296">Зачувај страница &amp;како...</translation>
@@ -6305,6 +6308,7 @@
 <translation id="78526636422538552">Додавањето повеќе сметки на Google е оневозможено</translation>
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
+<translation id="7857093393627376423">Предлози за текст</translation>
 <translation id="7857117644404132472">Додајте исклучок</translation>
 <translation id="7857949311770343000">Дали е ова страницата од новата картичка што ја очекувавте?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

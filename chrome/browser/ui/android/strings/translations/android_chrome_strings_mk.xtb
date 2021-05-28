@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
 <translation id="2979025552038692506">Избрана инкогнито-картичка</translation>
 <translation id="2979448359891869301">Не може да се прошири сликата од екранот. Обидете се повторно кога вашиот телефон нема да биде зафатен.</translation>
+<translation id="2979639724566107830">Отвори во нов прозорец</translation>
 <translation id="2987620471460279764">Текст споделен од друг уред</translation>
 <translation id="2989523299700148168">Неодамна посетени</translation>
 <translation id="2992473221983447149">Описи на слики</translation>
@@ -943,7 +944,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6989267951144302301">Не може да се преземе</translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="7001056293070445572">Датотекава е голема (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">Првичното поставување на синхронизацијата не беше завршено. Синхронизацијата е исклучена.</translation>
 <translation id="7022756207310403729">Отвори во прелистувач</translation>
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
@@ -974,7 +974,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7286572596625053347">Да се промени <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименување не е достапно</translation>
 <translation id="7291910923717764901">Додадени се описи на слики за страницава</translation>
-<translation id="7293171162284876153">За да започне синхронизацијата, вклучете „Синхронизирајте ги податоците од Chrome“.</translation>
 <translation id="7293429513719260019">Избери јазик</translation>
 <translation id="729975465115245577">Уредот нема апликација за складирање на датотеката со лозинки.</translation>
 <translation id="7302081693174882195">Детали: подредени по количината на зачувани податоци</translation>

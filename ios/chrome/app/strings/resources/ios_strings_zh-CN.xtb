@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">同步功能已停止工作。</translation>
 <translation id="1377321085342047638">卡号</translation>
 <translation id="1383876407941801731">搜索</translation>
-<translation id="1389974829397082527">该文件夹中没有书签</translation>
 <translation id="1400642268715879018">过去 4 周</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1430915738399379752">打印</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">登录 Google 帐号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
+<translation id="5037676449506322593">全选</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
 <translation id="5059136629401106827">知道了</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
-<translation id="8996526648899750015">添加帐号…</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039373489628511875">带宽</translation>

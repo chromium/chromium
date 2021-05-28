@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">La sincronización dejó de funcionar.</translation>
 <translation id="1377321085342047638">N. tarjeta</translation>
 <translation id="1383876407941801731">Buscar</translation>
-<translation id="1389974829397082527">Aquí no hay favoritos</translation>
 <translation id="1400642268715879018">Últimas cuatro semanas</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -389,6 +388,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
+<translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5056446788882570708">Se encontraron problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
@@ -791,7 +791,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
-<translation id="8996526648899750015">Agregar cuenta…</translation>
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>

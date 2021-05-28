@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Sinkronisering het ophou werk.</translation>
 <translation id="1377321085342047638">Kaartnommer</translation>
 <translation id="1383876407941801731">Soek</translation>
-<translation id="1389974829397082527">Geen boekmerke hier nie</translation>
 <translation id="1400642268715879018">Afgelope vier weke</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1430915738399379752">Druk uit</translation>
@@ -389,6 +388,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4979397965658815378">Meld met jou Google-rekening aan om jou boekmerke, wagwoorde, geskiedenis en ander instellings op al jou toestelle te kry</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
 <translation id="5017828934289857214">Herinner my later</translation>
+<translation id="5037676449506322593">Kies alles</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5056446788882570708">Kwessies <ph name="TIME" /> gekry.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8981454092730389528">Google-aktiwiteitkontroles</translation>
 <translation id="8985320356172329008">By Google aangemeld as</translation>
-<translation id="8996526648899750015">Voeg rekening by …</translation>
 <translation id="9034759925968272072">Jy sal nie uit jou Google-rekening afgemeld word nie. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">Wys oorspronklike</translation>
 <translation id="9039373489628511875">Bandwydte</translation>

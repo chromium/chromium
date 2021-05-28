@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1383876407941801731">Zoeken</translation>
-<translation id="1389974829397082527">Geen bookmarks</translation>
 <translation id="1400642268715879018">Afgelopen 4 weken</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
@@ -389,6 +388,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5017828934289857214">Later herinneren</translation>
+<translation id="5037676449506322593">Selecteer alles</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
 <translation id="8985320356172329008">Ingelogd bij Google als</translation>
-<translation id="8996526648899750015">Account toevoegen…</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Origineel tonen</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>

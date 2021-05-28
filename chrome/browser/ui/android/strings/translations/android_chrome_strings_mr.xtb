@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
 <translation id="2979025552038692506">निवडलेला गुप्त टॅब</translation>
 <translation id="2979448359891869301">स्क्रीनशॉटचा विस्तार करू शकत नाही. तुमचा फोन व्यग्र नसताना पुन्हा करून पहा.</translation>
+<translation id="2979639724566107830">नवीन विंडोमध्ये उघडा</translation>
 <translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
 <translation id="2992473221983447149">इमेजची वर्णने</translation>
@@ -943,7 +944,6 @@
 <translation id="6989267951144302301">डाउनलोड करता आले नाही</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="7001056293070445572">ही फाइल मोठी आहे (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही. सिंक बंद आहे.</translation>
 <translation id="7022756207310403729">ब्राउझरमध्ये उघडा</translation>
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोअर केले</translation>
@@ -974,7 +974,6 @@
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> बदलायची आहे का?</translation>
 <translation id="7290209999329137901">नाव बदलणे उपलब्ध नाही</translation>
 <translation id="7291910923717764901">या पेजसाठी इमेजची वर्णने जोडली</translation>
-<translation id="7293171162284876153">सिंक सुरू करण्यासाठी, "तुमचा Chrome डेटा सिंक करा" सुरू करा.</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="729975465115245577">पासवर्ड फाइल स्टोअर करण्यासाठी तुमच्या डिव्हाइसमध्ये अ‍ॅप नाही.</translation>
 <translation id="7302081693174882195">तपशील: सेव्ह केलेल्या डेटाच्या प्रमाणानुसार क्रमाने लावलेले</translation>

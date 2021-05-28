@@ -2567,6 +2567,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3742666961763734085">Organizační jednotku s daným názvem nelze najít. Zkuste to prosím znovu.</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3747077776423672805">Chcete-li odstranit aplikace, přejděte do Nastavení &gt; Obchod Google Play &gt; Spravovat nastavení aplikací Android &gt; Aplikace nebo Správce aplikací. Poté klepněte na aplikaci, kterou chcete odinstalovat (možná bude třeba aplikacemi listovat doprava či doleva). Následně klepněte na Odinstalovat nebo Deaktivovat.</translation>
+<translation id="3747220812138541072">Zobrazovat na řádku návrhy psaní, zatímco budete psát</translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Uložte jednou. Používejte všude</translation>
@@ -3254,6 +3255,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4510614391273086606">Soubory a aplikace systému Linux se obnovují do zálohovaného stavu.</translation>
 <translation id="451102079304155829">nákupní košíky</translation>
 <translation id="4513275008300099962">Vypnout překryvné ovládací prvky oken</translation>
+<translation id="4513872120116766993">Předvídání psaní</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="451407183922382411">Založeno na technologii <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Přepnout mezi přehráváním a pozastavením videa</translation>
@@ -4416,6 +4418,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5826395379250998812">Propojte své zařízení <ph name="DEVICE_TYPE" /> s telefonem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Polotransparentní</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Předvídání následujícího slova</translation>
 <translation id="5828545842856466741">Přidat profil…</translation>
 <translation id="5828633471261496623">Tisk...</translation>
 <translation id="5830720307094128296">Uložit stránku j&amp;ako...</translation>
@@ -6284,6 +6287,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="78526636422538552">Přidávání dalších účtů Google je zakázáno</translation>
 <translation id="7853747251428735">&amp;Další nástroje</translation>
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
+<translation id="7857093393627376423">Textové návrhy</translation>
 <translation id="7857117644404132472">Přidat výjimku</translation>
 <translation id="7857949311770343000">Je toto stránka nové karty, kterou jste očekávali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

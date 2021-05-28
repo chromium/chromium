@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
 <translation id="2979448359891869301">Не ўдаецца зрабіць большы здымак экрана. Паўтарыце спробу, калі памяць тэлефона будзе менш загружанай.</translation>
+<translation id="2979639724566107830">Адкрыць у новым акне</translation>
 <translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2992473221983447149">Апісанні відарысаў</translation>
@@ -943,7 +944,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6989267951144302301">Не ўдалося спампаваць</translation>
 <translation id="6995899638241819463">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="7001056293070445572">Гэта вялікі файл (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">Першапачатковая наладка сінхранізацыі не завершана. Сінхранізацыя выключана.</translation>
 <translation id="7022756207310403729">Адкрыць у браўзеры</translation>
 <translation id="702463548815491781">Рэкамендуецца, калі ўключаны TalkBack або доступ праз пераключальнікі</translation>
 <translation id="7027549951530753705">Адноўлена: <ph name="ITEM_TITLE" /></translation>
@@ -974,7 +974,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7286572596625053347">Змяніць мову (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Перайменаванне недаступнае</translation>
 <translation id="7291910923717764901">Дададзены апісанні відарысаў на гэтай старонцы</translation>
-<translation id="7293171162284876153">Каб пачаць сінхранізацыю, уключыце "Сінхранізацыю даных Chrome".</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
 <translation id="729975465115245577">На вашай прыладзе няма праграмы для захоўвання файла з паролямі.</translation>
 <translation id="7302081693174882195">Падрабязныя звесткі: Адсартавана па аб'ёме захаваных даных</translation>

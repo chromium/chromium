@@ -2583,6 +2583,7 @@
 <translation id="3742666961763734085">इस नाम की संगठनात्मक इकाई नहीं मिल पा रही है. कृपया फिर से कोशिश करें.</translation>
 <translation id="3744111561329211289">बैकग्राउंड सिंक</translation>
 <translation id="3747077776423672805">ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; 'Google Play स्टोर' &gt; Android से जुड़ी पसंद प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन मैनेजर पर जाएं. उसके बाद उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर 'अनइंस्टॉल करें' या 'बंद करें' पर टैप करें.</translation>
+<translation id="3747220812138541072">टाइप करते समय दिखने वाले इनलाइन लिखने के सुझाव दिखाएं</translation>
 <translation id="3748706263662799310">बग की रिपोर्ट करें</translation>
 <translation id="3752582316358263300">ठीक है...</translation>
 <translation id="3753033997400164841">एक बार सेव करें. हर जगह इस्तेमाल करें</translation>
@@ -3271,6 +3272,7 @@
 <translation id="4510614391273086606">Linux फ़ाइलों और ऐप्लिकेशन को उनकी बैक अप की गई स्थिति में वापस लाया जा रहा है.</translation>
 <translation id="451102079304155829">कार्ट</translation>
 <translation id="4513275008300099962">विंडो को ऊपर लाने की सुविधा बंद करें</translation>
+<translation id="4513872120116766993">टाइप करने पर, शब्दों का अनुमान दिखाने की सुविधा</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> के उपयोग से</translation>
 <translation id="4514610446763173167">वीडियो को 'चलाएं' या 'रोकें' पर टॉगल करें</translation>
@@ -4433,6 +4435,7 @@
 <translation id="5826395379250998812">अपने <ph name="DEVICE_TYPE" /> को फ़ोन से कनेक्ट करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">आधा-पारदर्शी</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">अगले शब्द का अनुमान</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
@@ -6302,6 +6305,7 @@
 <translation id="78526636422538552">और Google खाते जोड़ने की सुविधा बंद है</translation>
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
+<translation id="7857093393627376423">टाइपिंग के समय मिलने वाले शब्दों के सुझाव</translation>
 <translation id="7857117644404132472">अपवाद जोड़ें</translation>
 <translation id="7857949311770343000">क्या यह वही नया टैब पेज है जिसकी आप अपेक्षा कर रहे थे?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows) में खोलें</translation>

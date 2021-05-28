@@ -567,7 +567,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="1755310913456007816">オンライン失効確認の既存の設定を使用する</translation>
 <translation id="1760951637494635692">シリアル API を許可するサイトを指定します</translation>
-<translation id="1765503534110351026">このポリシーはサポートが終了しています。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
+<translation id="1765503534110351026">このポリシーは非推奨となりました。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
 
        このポリシーを設定した場合、<ph name="PRODUCT_NAME" /> では、ここで指定したホストリストに対してプロキシを一切使用しません。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを指定せずに、<ph name="PROXY_MODE_POLICY_NAME" /> を <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> または <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> のいずれかに指定した場合のみ適用されます。
 
@@ -4260,7 +4260,7 @@
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
          * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシを使用しないホストのリスト
 
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドはサポートを終了しました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドは非推奨となりました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
 
         <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
           * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
@@ -5359,12 +5359,6 @@
 <translation id="8217664958939773083">このポリシーを <ph name="ENABLED" /> に設定するか未設定のままにした場合、ヘッドレス モードの使用が許可されます。このポリシーを <ph name="DISABLED" /> に設定した場合、ヘッドレス モードの使用は許可されません。</translation>
 <translation id="8220023426952118761">希望するダウンロード速度（キロビット/秒）です。</translation>
 <translation id="8220156281401380422">ネイティブ メッセージングの許可リストを設定する</translation>
-<translation id="8234316309673661069">警告: 3DES は <ph name="PRODUCT_NAME" /> バージョン 95（2021 年 10 月頃公開）で完全に削除され、それ以後、このポリシーも機能しなくなります。
-
-      このポリシーを true に設定すると、TLS の 3DES 暗号スイートが有効になります。false に設定すると、無効になります。このポリシーを未設定のままにすると、現時点では 3DES 暗号スイートはデフォルトで有効になります。<ph name="PRODUCT_NAME" /> 93 ではデフォルトで無効になります。
-
-      <ph name="PRODUCT_NAME" /> 92 では、このポリシーは変更のプレビューや非互換性のテストに使用できます。<ph name="PRODUCT_NAME" /> 93 以降では、古いサーバーとの互換性の一時的な保持に使用できます。これは暫定的な措置であり、サーバーの再設定が必要です。
-      </translation>
 <translation id="8238421250255592181">画面キーボードでオートコンプリートを有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="8244171102276095471">TLS の RC4 暗号スイートを有効にする</translation>
 <translation id="8244525275280476362">ポリシーの失効から取得までの最大時間</translation>
@@ -6094,6 +6088,7 @@
       このポリシーは一時的なもので、今後リリースされるバージョン <ph name="PRODUCT_NAME" /> で削除される予定です。ポリシーの削除後は、<ph name="PRODUCT_NAME" /> はその他の DNS タイプのクエリを常に行えるようになります。</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" /> ファイルアプリでドライブを無効にする</translation>
 <translation id="9187743794267626640">外部ストレージのマウントを無効にする</translation>
+<translation id="9190257149451871588">ポート 6566（有効期限: 2021 年 10 月 15 日）</translation>
 <translation id="9190456586252617675">このポリシーでは、アシスタントのオンボーディング エクスペリエンスのモードを管理します。
 
       このポリシーを未設定のままにするか <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスではデフォルトのモードが使用されます。

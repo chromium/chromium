@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1389974829397082527">No bookmarks here</translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1430915738399379752">Print</translation>
@@ -389,6 +388,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5017828934289857214">Remind me later</translation>
+<translation id="5037676449506322593">Select all</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8976382372951310360">Help</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
-<translation id="8996526648899750015">Add account...</translation>
 <translation id="9034759925968272072">You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

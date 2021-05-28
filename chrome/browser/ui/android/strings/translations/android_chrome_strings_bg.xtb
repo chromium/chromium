@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2979448359891869301">Екранната снимка не може да се разшири. Опитайте отново, когато телефонът не се използва за други цели.</translation>
+<translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2992473221983447149">Описания на изображенията</translation>
@@ -943,7 +944,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="7001056293070445572">Този файл е голям (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">Първоначалното настройване на синхронизирането не бе завършено. Синхронизирането е изключено.</translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
 <translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7027549951530753705">Файлът „<ph name="ITEM_TITLE" />“ бе възстановен</translation>
@@ -974,7 +974,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>
 <translation id="7291910923717764901">Бяха добавени описания за изображенията на тази страница</translation>
-<translation id="7293171162284876153">За да стартирате синхронизирането, включете „Синхронизиране на данните ви в Chrome“.</translation>
 <translation id="7293429513719260019">Избор на език</translation>
 <translation id="729975465115245577">На устройството ви няма приложение за съхраняване на файла с паролите.</translation>
 <translation id="7302081693174882195">Подробности: сортирани по количество спестени данни</translation>

@@ -2569,6 +2569,7 @@
 <translation id="3742666961763734085">Не удалось найти организационное подразделение с таким названием. Повторите попытку.</translation>
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
 <translation id="3747077776423672805">Чтобы удалить приложение, нажмите "Настройки &gt; Google Play Маркет &gt; Управление настройками Android &gt; Приложения (или Диспетчер приложений)" и найдите его в списке (возможно, придется пролистать экран вправо или влево). Выберите приложение и нажмите "Удалить" или "Отключить".</translation>
+<translation id="3747220812138541072">Показывать подсказки при вводе текста</translation>
 <translation id="3748706263662799310">Сообщить об ошибке</translation>
 <translation id="3752582316358263300">ОК...</translation>
 <translation id="3753033997400164841">Автозаполнение паролей</translation>
@@ -3257,6 +3258,7 @@
 <translation id="4510614391273086606">Восстановление файлов и приложений Linux из резервной копии</translation>
 <translation id="451102079304155829">корзины</translation>
 <translation id="4513275008300099962">Отключить оверлей элементов управления окном</translation>
+<translation id="4513872120116766993">Подсказки</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="451407183922382411">Технологии <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Запустить или приостановить видео</translation>
@@ -4419,6 +4421,7 @@
 <translation id="5826395379250998812">Подключите устройство <ph name="DEVICE_TYPE" /> к телефону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Полупрозрачный</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Подсказка следующего слова</translation>
 <translation id="5828545842856466741">Добавить профиль…</translation>
 <translation id="5828633471261496623">Печать...</translation>
 <translation id="5830720307094128296">Сохранить страницу как...</translation>
@@ -6289,6 +6292,7 @@
 <translation id="78526636422538552">Добавлять другие аккаунты Google нельзя.</translation>
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
+<translation id="7857093393627376423">Текстовые подсказки</translation>
 <translation id="7857117644404132472">Добавить исключение</translation>
 <translation id="7857949311770343000">Другая страница быстрого доступа?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

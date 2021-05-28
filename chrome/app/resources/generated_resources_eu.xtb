@@ -2567,6 +2567,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3742666961763734085">Ez da aurkitu izen hori duen antolamendu-unitaterik. Saiatu berriro.</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3747077776423672805">Aplikazioak kentzeko, joan Ezarpenak &gt; Google Play Store &gt; Kudeatu Android hobespenak &gt; Aplikazioak edo Aplikazioen kudeatzailea atalera. Sakatu desinstalatu nahi duzun aplikazioa (baliteke hatza eskuinera edo ezkerrera pasatu behar izatea hura aurkitzeko). Ondoren, sakatu Desinstalatu edo Desgaitu.</translation>
+<translation id="3747220812138541072">Erakutsi idazketa-iradokizunak idatzi ahala</translation>
 <translation id="3748706263662799310">Eman akats baten berri</translation>
 <translation id="3752582316358263300">Ados…</translation>
 <translation id="3753033997400164841">Gorde behin. Erabili edonon.</translation>
@@ -3255,6 +3256,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4510614391273086606">Linux-eko fitxategiak eta aplikazioak babeskopiako egoerara ari dira leheneratzen.</translation>
 <translation id="451102079304155829">saskiak</translation>
 <translation id="4513275008300099962">Desgaitu leihoak kontrolatzeko aukeren gainjartzea</translation>
+<translation id="4513872120116766993">Idazketa iragarlea</translation>
 <translation id="4513946894732546136">Iritzia</translation>
 <translation id="451407183922382411">Garatzailea: <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Erreproduzitu edo pausatu bideoa</translation>
@@ -4102,7 +4104,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5471768120198416576">Kaixo! Testua ahots bihurtzeko eginbidearen ahotsa naiz.</translation>
 <translation id="5472627187093107397">Gorde webgune honetako pasahitzak</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodeak karaktere bat izan behar du gutxienez}other{PIN kodeak # karaktere izan behar ditu gutxienez}}</translation>
-<translation id="5473333559083690127">Idatzi berriro PIN kodea</translation>
+<translation id="5473333559083690127">Idatzi berriro PINa</translation>
 <translation id="5481273127572794904">Ezin dituzte hainbat fitxategi deskargatu automatikoki</translation>
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
 <translation id="5483785310822538350">Baliogabetu fitxategietarako eta gailurako sarbidea</translation>
@@ -4417,6 +4419,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5826395379250998812">Konektatu <ph name="DEVICE_TYPE" /> telefonoarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Erdi-gardena</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Hurrengo hitzaren iragarpena</translation>
 <translation id="5828545842856466741">Gehitu profil bat…</translation>
 <translation id="5828633471261496623">Inprimatzen…</translation>
 <translation id="5830720307094128296">Gorde orria &amp;honela…</translation>
@@ -4739,7 +4742,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6170498031581934115">Ezin izan da gaitu ADB arazketa. Joan ezarpenetara eta saiatu berriro.</translation>
 <translation id="617213288191670920">Ez da gehitu hizkuntzarik</translation>
-<translation id="6173623053897475761">Idatzi berriro PIN kodea</translation>
+<translation id="6173623053897475761">Idatzi berriro PINa</translation>
 <translation id="6175314957787328458">Microsoft domeinuen GUID identifikatzailea</translation>
 <translation id="6176043333338857209">Aldi baterako aktibatuko da Bluetooth-a, segurtasun-giltzarekin konektatzeko</translation>
 <translation id="6178664161104547336">Hautatu ziurtagiri bat</translation>
@@ -6287,6 +6290,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="78526636422538552">Google-ko kontuak gehitzeko aukera desgaituta dago</translation>
 <translation id="7853747251428735">&amp;Tresna gehiago</translation>
 <translation id="7855678561139483478">Eraman fitxa leiho berri batera</translation>
+<translation id="7857093393627376423">Testuzko iradokizunak</translation>
 <translation id="7857117644404132472">Gehitu salbuespena</translation>
 <translation id="7857949311770343000">Espero zenuen fitxa berrien orria al da hau?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

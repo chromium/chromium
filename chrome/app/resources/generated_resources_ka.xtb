@@ -2568,6 +2568,7 @@
 <translation id="3742666961763734085">ამ სახელის მქონე ორგანიზაციული ერთეული ვერ მოიძებნა. გთხოვთ, სცადოთ ხელახლა.</translation>
 <translation id="3744111561329211289">ფონური სინქრონიზაცია</translation>
 <translation id="3747077776423672805">აპების ამოსაშლელად გადადით აქ: პარამეტრები &gt; Google Play Store &gt; Android პარამეტრების მართვა &gt; აპები ან აპლიკაციების მენეჯერი. შემდეგ შეეხეთ აპს, რომლის დეინსტალაციაც გსურთ (აპის საპოვნელად შეიძლება დაგჭირდეთ მარჯვნივ ან მარცხნივ გადაფურცვლა). ბოლოს კი შეეხეთ დეინსტალაციას ან გათიშვას.</translation>
+<translation id="3747220812138541072">ტექსტის აკრეფისას შემოთავაზებების ჩვენება</translation>
 <translation id="3748706263662799310">ხარვეზის შესახებ შეტყობინება</translation>
 <translation id="3752582316358263300">კარგი...</translation>
 <translation id="3753033997400164841">შეინახეთ ერთხელ. გამოიყენეთ ყველგან</translation>
@@ -3256,6 +3257,7 @@
 <translation id="4510614391273086606">მიმდინარეობს Linux ფაილებისა და აპების აღდგენა სარეზერვო მდგომარეობაზე.</translation>
 <translation id="451102079304155829">კალათები</translation>
 <translation id="4513275008300099962">ფანჯრის მართვის საშუალებების გადაფარვის გათიშვა</translation>
+<translation id="4513872120116766993">პროგნოზირებული წერა</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="451407183922382411">უზრუნველყოფს <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">ვიდეოს დაკვრა ან დაპაუზება</translation>
@@ -4418,6 +4420,7 @@
 <translation id="5826395379250998812">დაუკავშირეთ <ph name="DEVICE_TYPE" /> თქვენს ტელეფონს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">ნახევრადგამჭვირვალე</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">შემდეგი სიტყვის ამოცნობა</translation>
 <translation id="5828545842856466741">პროფილის დამატება…</translation>
 <translation id="5828633471261496623">ბეჭდვა…</translation>
 <translation id="5830720307094128296">&amp;შეინახეთ გვერდი როგორც…</translation>
@@ -6288,6 +6291,7 @@
 <translation id="78526636422538552">სხვა Google ანგარიშების დამატება გათიშულია</translation>
 <translation id="7853747251428735">დამატებითი ხე&amp;ლსაწყოები</translation>
 <translation id="7855678561139483478">ჩანართის ახალ ფანჯარაში გადატანა</translation>
+<translation id="7857093393627376423">ტექსტური შემოთავაზებები</translation>
 <translation id="7857117644404132472">გამონაკლისის დამატება</translation>
 <translation id="7857949311770343000">ეს ის ჩანართია, რომელსაც მოელოდით?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

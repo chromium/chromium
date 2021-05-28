@@ -2568,6 +2568,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3742666961763734085">Impossibile trovare un'unità organizzativa con il nome indicato. Riprova.</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3747077776423672805">Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.</translation>
+<translation id="3747220812138541072">Vengono mostrati suggerimenti di scrittura incorporati visualizzati durante la digitazione</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Memorizza una volta, usa ovunque</translation>
@@ -3256,6 +3257,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4510614391273086606">È in corso il ripristino dello stato di backup delle app e dei file Linux.</translation>
 <translation id="451102079304155829">carrelli</translation>
 <translation id="4513275008300099962">Disattiva overlay "window-controls"</translation>
+<translation id="4513872120116766993">Scrittura predittiva</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Con tecnologia <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Attiva/disattiva il video per riprodurre o mettere in pausa</translation>
@@ -4418,6 +4420,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5826395379250998812">Connetti <ph name="DEVICE_TYPE" /> con il tuo telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitrasparente</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Previsione della parola seguente</translation>
 <translation id="5828545842856466741">Aggiungi profilo…</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
 <translation id="5830720307094128296">S&amp;alva pagina con nome...</translation>
@@ -6288,6 +6291,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
 <translation id="7855678561139483478">Sposta scheda in una nuova finestra</translation>
+<translation id="7857093393627376423">Suggerimenti testuali</translation>
 <translation id="7857117644404132472">Aggiungi eccezione</translation>
 <translation id="7857949311770343000">È la pagina Nuova scheda prevista?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">संकालनाने कार्य करणे थांबविले आहे.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1389974829397082527">येथे कोणतेही बुकमार्क नाहीत</translation>
 <translation id="1400642268715879018">मागील 4 आठवडे</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
@@ -390,6 +389,7 @@
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5017828934289857214">मला नंतर आठवण करून द्या</translation>
+<translation id="5037676449506322593">सर्व निवडा</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> समस्या आढळल्या.</translation>
 <translation id="5059136629401106827">ओके</translation>
@@ -793,7 +793,6 @@
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="8985320356172329008">Google मध्ये हे म्हणून साइन इन केले</translation>
-<translation id="8996526648899750015">खाते जोडा...</translation>
 <translation id="9034759925968272072">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही. आपल्या Google खात्यात <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची इतर स्वरूपे असू शकतात.</translation>
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>

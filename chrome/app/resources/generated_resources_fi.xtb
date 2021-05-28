@@ -2582,6 +2582,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3742666961763734085">Tämännimistä organisaatioyksikköä ei löydy. Yritä uudelleen.</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3747077776423672805">Jos haluat poistaa sovelluksia, valitse Asetukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Sovellukset tai Sovellusten hallinta. Valitse sitten sovellus, jonka haluat poistaa (jos sovellusta ei näy, pyyhkäise oikealle tai vasemmalle). Valitse sitten Poista tai Poista käytöstä.</translation>
+<translation id="3747220812138541072">Näytä tekstirivillä kirjoitusehdotuksia samalla kun kirjoitat</translation>
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Tallenna kerran. Käytä kaikkialla.</translation>
@@ -3268,6 +3269,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4510614391273086606">Linux-tiedostot ja ‑sovellukset palautetaan varmuuskopioituun tilaan.</translation>
 <translation id="451102079304155829">ostoskoreja</translation>
 <translation id="4513275008300099962">Poista ikkunan säätimien peittokuva käytöstä</translation>
+<translation id="4513872120116766993">Ennakoiva tekstinsyöttö</translation>
 <translation id="4513946894732546136">Palaute</translation>
 <translation id="451407183922382411">Palvelun tarjoaa <ph name="COMPANY_NAME" />.</translation>
 <translation id="4514610446763173167">Valitse videon toisto tai keskeytys</translation>
@@ -4430,6 +4432,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5826395379250998812">Yhdistä <ph name="DEVICE_TYPE" /> puhelimeesi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Puolittain läpinäkyvä</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Seuraavan sanan ennakointi</translation>
 <translation id="5828545842856466741">Lisää profiili…</translation>
 <translation id="5828633471261496623">Tulostetaan...</translation>
 <translation id="5830720307094128296">Tallenn&amp;a sivu nimellä...</translation>
@@ -6299,6 +6302,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="78526636422538552">Uusien Google-tilien lisäämistä ei sallita</translation>
 <translation id="7853747251428735">&amp;Lisää työkaluja</translation>
 <translation id="7855678561139483478">Siirrä välilehti uuteen ikkunaan</translation>
+<translation id="7857093393627376423">Tekstiehdotukset</translation>
 <translation id="7857117644404132472">Lisää poikkeus</translation>
 <translation id="7857949311770343000">Onko tämä haluamasi Uusi välilehti -sivu?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

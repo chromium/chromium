@@ -5461,11 +5461,6 @@
 <translation id="8217664958939773083">如將這項政策設為「<ph name="ENABLED" />」或不設定，系統就會允許使用無頭模式；如將這項政策設為「<ph name="DISABLED" />」，則系統會禁止使用無頭模式。</translation>
 <translation id="8220023426952118761">理想的下載速率 (kbit/秒)。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
-<translation id="8234316309673661069">警告：我們將從 <ph name="PRODUCT_NAME" /> 第 95 版中 (約在 2021 年 10 月推出) 完全移除 3DES，屆時這項政策也會停止運作。
-      如果將這項政策設為 True，系統會啟用傳輸層安全標準 (TLS) 中的 3DES 加密套件。如果設為 False，系統將停用這些加密套件。如果不設定這項政策，3DES 加密套件目前預設為啟用，不過自 <ph name="PRODUCT_NAME" /> 第 93 版起將預設為停用。
-
-      在 <ph name="PRODUCT_NAME" /> 第 92 版中，這項政策可以用來預覽變更及測試不相容問題。自 <ph name="PRODUCT_NAME" /> 第 93 版起，這項政策可以用來暫時保持與過舊伺服器的相容性。這種方法是權宜之計，伺服器應重新設定，才是正確的做法。
-      </translation>
 <translation id="8238421250255592181">布林值標記，表示螢幕小鍵盤是否能提供自動完成功能。</translation>
 <translation id="8244171102276095471">在傳輸層安全標準 (TLS) 中啟用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效後的最大擷取延遲</translation>
@@ -6197,6 +6192,7 @@
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
+<translation id="9190257149451871588">通訊埠 6566 (2021 年 10 月 15 日到期)</translation>
 <translation id="9190456586252617675">這項政策可控管 Google 助理入門使用體驗的模式。
 
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。

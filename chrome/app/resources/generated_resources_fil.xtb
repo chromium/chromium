@@ -2584,6 +2584,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3742666961763734085">Hindi makahanap ng unit ng organisasyon na may ganyang pangalan. Pakisubukang muli.</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3747077776423672805">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
+<translation id="3747220812138541072">Magpakita ng inline na mga suhestyon sa pagsusulat na lalabas habang nagta-type ka</translation>
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">I-store nang isang beses. Gamitin kahit saan</translation>
@@ -3273,6 +3274,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4510614391273086606">Nire-restore ang mga Linux file at app sa naka-back up na status ng mga ito.</translation>
 <translation id="451102079304155829">mga cart</translation>
 <translation id="4513275008300099962">I-disable ang pag-overlay ng mga kontrol sa window</translation>
+<translation id="4513872120116766993">Paghula sa pagsusulat</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Pinapagana ng <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">I-toggle ang video para mag-play o mag-pause</translation>
@@ -4435,6 +4437,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5826395379250998812">Ikonekta ang iyong <ph name="DEVICE_TYPE" /> sa telepono mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semi-transparent</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Paghuhula sa susunod na salita</translation>
 <translation id="5828545842856466741">Magdagdag ng profile...</translation>
 <translation id="5828633471261496623">Nagpi-print...</translation>
 <translation id="5830720307094128296">Save Page &amp;As...</translation>
@@ -6305,6 +6308,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="78526636422538552">Naka-disable ang pagdaragdag ng higit pang Google Account</translation>
 <translation id="7853747251428735">Higit Pang Mga Too&amp;l</translation>
 <translation id="7855678561139483478">Ilipat ang tab sa bagong window</translation>
+<translation id="7857093393627376423">Mga suhestyong text</translation>
 <translation id="7857117644404132472">Magdagdag ng exception</translation>
 <translation id="7857949311770343000">Ito ba ang page ng bagong tab na inaasahan mo?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

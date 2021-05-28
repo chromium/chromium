@@ -577,13 +577,13 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1755310913456007816">Usar as configurações on-line existentes de verificação da revogação</translation>
 <translation id="1760951637494635692">Permitir a API Serial nesses sites</translation>
-<translation id="1765503534110351026">O uso desta política foi suspenso. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+<translation id="1765503534110351026">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, o <ph name="PRODUCT_NAME" /> ignorará todos os proxies em favor da lista de hosts apresentada aqui. Esta política só terá efeito se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ou <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> para <ph name="PROXY_MODE_POLICY_NAME" />.
 
        Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
 
-       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
+       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett (link em inglês).</translation>
 <translation id="1767673020408652620">Ativar recomendações de app no estado inicial da caixa de pesquisa</translation>
 <translation id="1780323582106687813">Esta política está obsoleta. Use <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.
 
@@ -881,7 +881,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
       Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> em uma conta, essa conta será sempre principal e não terá nenhuma conta secundária no perfil.
 
-      Se esta política for definida como <ph name="POLICY_VALUE_NONE" /> ou não for definida, contas gerenciadas não terão restrições. Isso pode resultar em uma conta gerenciada secundária, o que desativa a capacidade de receber políticas definidas para a conta pelo administrador.
+      Se esta política for definida como <ph name="POLICY_VALUE_NONE" /> ou não for definida, contas gerenciadas não terão restrições. Isso pode tornar uma conta secundária a conta gerenciada. Com isso ela perde a capacidade de receber políticas definidas na conta pelo administrador.
     </translation>
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
@@ -4416,7 +4416,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
 
-      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
+      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett (link em inglês).</translation>
 <translation id="6835883744948188639">Mostrar um prompt recorrente ao usuário indicando que a reinicialização é necessária</translation>
 <translation id="683688607121170501">Esta configuração permite que os usuários alternem entre Contas do Google na área de conteúdo da janela do navegador e nos aplicativos Android, depois de fazer login no dispositivo <ph name="PRODUCT_OS_NAME" />.
 
@@ -5533,12 +5533,6 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8217664958939773083">Se esta política for definida como <ph name="ENABLED" /> ou for deixada sem definição, o modo headless poderá ser usado. Se ela for definida como <ph name="DISABLED" />, o uso do modo headless será negado.</translation>
 <translation id="8220023426952118761">Velocidade de download desejada, em kbits/s.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
-<translation id="8234316309673661069">Aviso: o padrão 3DES será completamente removido na versão 95 do <ph name="PRODUCT_NAME" /> por volta de outubro de 2021 e esta política só funcionará até essa data.
-
-      Se esta política for definida como "verdadeira", os pacotes de criptografia 3DES em TLS serão ativados. Se for definida como "falsa", eles serão desativados. Se a política não estiver definida, os pacotes de criptografia 3DES ficarão ativados por padrão. Eles serão desativadas por padrão na versão 93 do <ph name="PRODUCT_NAME" />.
-
-      Na versão 92 do <ph name="PRODUCT_NAME" />, esta política pode ser usada para visualizar a mudança e testar incompatibilidades. Na versão 93 do <ph name="PRODUCT_NAME" /> e mais recentes, ela pode ser usada para oferecer compatibilidade temporariamente com um servidor desatualizado. Esta é uma medida temporária e o servidor precisará ser reconfigurado.
-      </translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
@@ -6274,6 +6268,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
+<translation id="9190257149451871588">porta 6566 (expira em 15/10/2021)</translation>
 <translation id="9190456586252617675">Esta política controla o modo da experiência de integração do Assistente.
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.

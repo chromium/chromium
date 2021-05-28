@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Синк ажиллахаа больсон байна.</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
 <translation id="1383876407941801731">Хайлт</translation>
-<translation id="1389974829397082527">Энд ямар ч хавчуурга байхгүй байна</translation>
 <translation id="1400642268715879018">Сүүлийн 4 долоо хоног</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
@@ -388,6 +387,7 @@
 <translation id="4979397965658815378">Хавчуурга, нууц үг, түүх болон бусад тохиргоог бүх төхөөрөмждөө авахын тулд Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5017828934289857214">Надад дараа сануулна уу</translation>
+<translation id="5037676449506322593">Бүгдийг сонгох</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5056446788882570708">Асуудлыг <ph name="TIME" />-д олсон</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -790,7 +790,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8976382372951310360">Тусламж</translation>
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
-<translation id="8996526648899750015">Бүртгэл нэмэх ...</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9039373489628511875">Мессежийн өргөн</translation>

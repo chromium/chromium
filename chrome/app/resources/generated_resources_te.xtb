@@ -2582,6 +2582,7 @@
 <translation id="3742666961763734085">ఈ పేరుతో సంస్థాగత యూనిట్ కనుగొనబడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="3747077776423672805">యాప్‌లను తీసివేయడం కోసం, సెట్టింగ్‌లు &gt; Google Play స్టోర్ &gt; Android ప్రాధాన్యతలను నిర్వహించు &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌లోకి వెళ్లండి. ఆపై, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయిని ఎంచుకోండి.</translation>
+<translation id="3747220812138541072">మీరు టైప్ చేస్తున్నప్పుడు కనిపించే ఇన్‌లైన్ వ్రాత సూచనలను చూడండి</translation>
 <translation id="3748706263662799310">ఒక బగ్‌ను నివేదించండి</translation>
 <translation id="3752582316358263300">సరే...</translation>
 <translation id="3753033997400164841">ఒకసారి సేవ్ చేయండి. ప్రతి చోటా ఉపయోగించండి</translation>
@@ -3271,6 +3272,7 @@
 <translation id="4510614391273086606">Linux ఫైల్‌లు మరియు యాప్‌లు వాటి బ్యాకప్ స్థితికి పునరుద్ధరించబడుతున్నాయి.</translation>
 <translation id="451102079304155829">కార్ట్‌లు</translation>
 <translation id="4513275008300099962">విండో కంట్రోల్‌ల ఓవర్‌లేలను డిజేబుల్ చేయండి</translation>
+<translation id="4513872120116766993">సూచనాత్మక వ్రాత</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> అందిస్తోంది</translation>
 <translation id="4514610446763173167">ప్లే లేదా పాజ్ చేయడానికి వీడియోని టోగుల్ చేయండి</translation>
@@ -4433,6 +4435,7 @@
 <translation id="5826395379250998812">మీ <ph name="DEVICE_TYPE" />ను మీ ఫోన్‌తో కనెక్ట్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">పాక్షిక పారదర్శకత</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">తదుపరి పద సూచన</translation>
 <translation id="5828545842856466741">ప్రొఫైల్‌ను జోడించండి...</translation>
 <translation id="5828633471261496623">ముద్రిస్తోంది...</translation>
 <translation id="5830720307094128296">&amp;లాగా పేజీని సేవ్ చేయి...</translation>
@@ -6302,6 +6305,7 @@
 <translation id="78526636422538552">మరిన్ని Google ఖాతాలను జోడించడం నిలిపివేయబడింది</translation>
 <translation id="7853747251428735">మరిన్ని సాధనా&amp;లు</translation>
 <translation id="7855678561139483478">ట్యాబ్‌ను కొత్త విండోకు తరలించు</translation>
+<translation id="7857093393627376423">టెక్స్ట్ సూచనలు</translation>
 <translation id="7857117644404132472">మినహాయింపును జోడించు</translation>
 <translation id="7857949311770343000">మీరు ఆశిస్తున్న కొత్త ట్యాబ్ పేజీ ఇదేనా?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (విండోలు)</translation>

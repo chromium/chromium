@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">సమకాలీకరణ పని చేయడం ఆపివేయబడింది.</translation>
 <translation id="1377321085342047638">కార్డ్ సంఖ్య</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
-<translation id="1389974829397082527">ఇక్కడ బుక్‌మార్క్‌లు ఏవీ లేవు</translation>
 <translation id="1400642268715879018">గత 4 వారాలు</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, చరిత్ర మరియు ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాలలో పొందడానికి మీ Google ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5017828934289857214">నాకు తర్వాత గుర్తు చేయి</translation>
+<translation id="5037676449506322593">అన్నీ ఎంచుకోండి</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5056446788882570708">సమస్యలు కనుగొనబడింది: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">సరే</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">సహాయం</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
 <translation id="8985320356172329008">Googleకి ఇలా సైన్ ఇన్ చేసారు</translation>
-<translation id="8996526648899750015">ఖాతాను జోడించండి...</translation>
 <translation id="9034759925968272072">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />లో మీ Google ఖాతా ఇతర రకాల బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="9037965129289936994">అసలైనది చూపు</translation>
 <translation id="9039373489628511875">బ్యాండ్‌విడ్త్</translation>

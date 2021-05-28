@@ -2564,6 +2564,7 @@
 <translation id="3742666961763734085">找不到使用该名称的组织单元。请重试。</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
+<translation id="3747220812138541072">在您输入内容的同时就地显示撰写建议</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3752582316358263300">确定...</translation>
 <translation id="3753033997400164841">一次储存，随时随地使用</translation>
@@ -3251,6 +3252,7 @@
 <translation id="4510614391273086606">正在将 Linux 文件和应用恢复为备份状态。</translation>
 <translation id="451102079304155829">购物车</translation>
 <translation id="4513275008300099962">禁止窗口控件叠加</translation>
+<translation id="4513872120116766993">预测性撰写</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="451407183922382411">由 <ph name="COMPANY_NAME" /> 提供技术支持</translation>
 <translation id="4514610446763173167">在播放视频和暂停视频之间切换</translation>
@@ -4413,6 +4415,7 @@
 <translation id="5826395379250998812">请将您的 <ph name="DEVICE_TYPE" /> 连接到手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">下一字词预测</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
@@ -6283,6 +6286,7 @@
 <translation id="78526636422538552">禁止添加更多 Google 帐号</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
+<translation id="7857093393627376423">文字建议</translation>
 <translation id="7857117644404132472">添加例外情况</translation>
 <translation id="7857949311770343000">这是您想要的新标签页吗？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

@@ -5490,12 +5490,6 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8217664958939773083">Als je het beleid instelt op <ph name="ENABLED" /> of niet instelt, sta je het gebruik van de stand zonder interface toe. Als je het beleid instelt op <ph name="DISABLED" />, sta je het gebruik van de stand zonder interface niet toe.</translation>
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
-<translation id="8234316309673661069">Waarschuwing: 3DES wordt volledig verwijderd uit <ph name="PRODUCT_NAME" /> vanaf versie 95 (rond oktober 2021). Dit beleid werkt dan niet meer.
-
-      Als je het beleid instelt op True, worden 3DES cipher suites in TLS aangezet. Als je het beleid instelt op False, worden ze uitgezet. Als je het beleid niet instelt, worden 3DES cipher suites momenteel standaard aangezet. In <ph name="PRODUCT_NAME" /> 93 worden ze standaard uitgezet.
-
-      In <ph name="PRODUCT_NAME" /> 92 kun je dit beleid gebruiken om een voorbeeld van de verandering te bekijken en te testen op incompatibiliteiten. In <ph name="PRODUCT_NAME" /> 93 en later kun je dit beleid gebruiken om de compatibiliteit met een verouderde server te behouden. Dit is slechts een noodoplossing. De server moet opnieuw worden ingesteld.
-      </translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
@@ -6234,6 +6228,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
 <translation id="9187743794267626640">Koppeling van externe opslag uitzetten</translation>
+<translation id="9190257149451871588">poort 6566 (verloopt op 15-10-2021)</translation>
 <translation id="9190456586252617675">Met dit beleid wordt de modus voor introductie van de Assistent beheerd.
 
       Als dit beleid niet is ingesteld of is ingesteld op <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, wordt de standaard modus voor introductie van de Assistent gebruikt.

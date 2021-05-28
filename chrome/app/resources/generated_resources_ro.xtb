@@ -2569,6 +2569,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3742666961763734085">Nu s-a găsit nicio unitate organizațională cu acest nume. Încearcă din nou.</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3747077776423672805">Pentru a elimina aplicații, accesează Setări &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Aplicații sau Manager de aplicații. Apoi atinge aplicația pe care dorești să o dezinstalezi (poate fi necesar să glisezi la dreapta sau la stânga pentru a găsi aplicația). Apoi, atinge Dezinstalează sau Dezactivează.</translation>
+<translation id="3747220812138541072">Afișează sugestii de scriere inline care apar pe măsură ce introduci text</translation>
 <translation id="3748706263662799310">Raportați o eroare</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Stocheaz-o o singură dată. Folosește-o peste tot</translation>
@@ -3257,6 +3258,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4510614391273086606">Fișierele și aplicațiile din Linux sunt restabilite la starea de backup.</translation>
 <translation id="451102079304155829">coșuri de cumpărături</translation>
 <translation id="4513275008300099962">Dezactivează suprapunerea comenzilor din fereastră</translation>
+<translation id="4513872120116766993">Scriere predictivă</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Cu tehnologia <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Redă sau întrerupe videoclipul</translation>
@@ -4419,6 +4421,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5826395379250998812">Conectează-ți dispozitivul <ph name="DEVICE_TYPE" /> cu telefonul. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparent</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Predicția cuvântului următor</translation>
 <translation id="5828545842856466741">Adaugă un profil...</translation>
 <translation id="5828633471261496623">Se printează...</translation>
 <translation id="5830720307094128296">Salvează pagina c&amp;a...</translation>
@@ -6289,6 +6292,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="78526636422538552">Adăugarea mai multor Conturi Google este dezactivată</translation>
 <translation id="7853747251428735">Mai multe instru&amp;mente</translation>
 <translation id="7855678561139483478">Mută fila în fereastră nouă</translation>
+<translation id="7857093393627376423">Sugestii de text</translation>
 <translation id="7857117644404132472">Adaugă o excepție</translation>
 <translation id="7857949311770343000">Aceasta este pagina Filă nouă pe care o așteptați?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

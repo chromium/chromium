@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Ошибка синхронизации.</translation>
 <translation id="1377321085342047638">Номер карты</translation>
 <translation id="1383876407941801731">Поиск</translation>
-<translation id="1389974829397082527">Закладок пока нет.</translation>
 <translation id="1400642268715879018">Последние 4 недели</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1430915738399379752">Печать</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Войдите в аккаунт Google, чтобы пользоваться своими закладками, паролями, историей и другими настройками на любом устройстве</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5017828934289857214">Напомнить позже</translation>
+<translation id="5037676449506322593">Выделить все</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">ОК</translation>
@@ -791,7 +791,6 @@
 <translation id="8976382372951310360">Справка</translation>
 <translation id="8981454092730389528">Отслеживание действий в Google</translation>
 <translation id="8985320356172329008">Вы вошли в аккаунт</translation>
-<translation id="8996526648899750015">Добавить аккаунт</translation>
 <translation id="9034759925968272072">Вы не выйдете из аккаунта Google. Остальная история ваших действий в Интернете доступна на странице <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показать оригинал</translation>
 <translation id="9039373489628511875">Контроль трафика</translation>

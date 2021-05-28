@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
 <translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="2979448359891869301">ဖန်သားပြင်ဓာတ်ပုံကို ချဲ့၍မရပါ။ သင့်ဖုန်း အလုပ်မများချိန်တွင် ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="2979639724566107830">ဝင်းဒိုးအသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="2987620471460279764">အခြားစက်ပစ္စည်းမှ မျှဝေထားသော စာတို</translation>
 <translation id="2989523299700148168">လောလောလတ်လတ် ကြည့်ရှုခဲ့သော ဆိုက်များ</translation>
 <translation id="2992473221983447149">ပုံရှင်းလင်းချက်များ</translation>
@@ -942,7 +943,6 @@
 <translation id="6989267951144302301">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
 <translation id="6995899638241819463">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက်များ ဖော်ထုတ်ခံရသည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="7001056293070445572">ဤဖိုင်သည် ကြီးမားသည် (<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">ကနဦး စင့်ခ်လုပ်ရန် စနစ်ထည့်သွင်းမှု အပြီးသတ်မထားပါ။ စင့်ခ်လုပ်ခြင်း ပိတ်ထားသည်။</translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
 <translation id="702463548815491781">TalkBack သို့မဟုတ် 'ခလုတ်အသုံးပြုခွင့်' ဖွင့်ထားသည့်အခါ အကြံပြုသည်</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
@@ -973,7 +973,6 @@
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> ပြောင်းမလား။</translation>
 <translation id="7290209999329137901">အမည်ပြောင်း၍ မရပါ</translation>
 <translation id="7291910923717764901">ဤစာမျက်နှာအတွက် ပုံအကြောင်းအရာများကို ထည့်လိုက်သည်</translation>
-<translation id="7293171162284876153">စင့်ခ် စတင်ရန်အတွက် "သင်၏ Chrome ဒေတာ စင့်ခ်လုပ်ပါ" ကို ဖွင့်ပါ။</translation>
 <translation id="7293429513719260019">ဘာသာစကားရွေးချယ်ရန်</translation>
 <translation id="729975465115245577">သင့်စက်ပစ္စည်းတွင် စကားဝှက်ဖိုင်ကို သိမ်းရန် အက်ပ်မရှိပါ။</translation>
 <translation id="7302081693174882195">အသေးစိတ်များ− သိမ်းဆည်းထားသည့် ဒေတာပမာဏအလိုက် စီထားသည်</translation>

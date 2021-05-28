@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Синхронизација више не функционише.</translation>
 <translation id="1377321085342047638">Број картице</translation>
 <translation id="1383876407941801731">Претражи</translation>
-<translation id="1389974829397082527">Овде нема обележивача</translation>
 <translation id="1400642268715879018">Последње 4 недеље</translation>
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="1430915738399379752">Штампај</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Пријавите се помоћу Google налога да бисте имали обележиваче, лозинке, историју и друга подешавања на свим уређајима</translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5017828934289857214">Подсети ме касније</translation>
+<translation id="5037676449506322593">Изабери све</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5056446788882570708">Проблеми су пронађени <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Потврди</translation>
@@ -791,7 +791,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8976382372951310360">Помоћ</translation>
 <translation id="8981454092730389528">Google контроле активности</translation>
 <translation id="8985320356172329008">Пријављени сте на Google као</translation>
-<translation id="8996526648899750015">Додај налог...</translation>
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи оригинал</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>

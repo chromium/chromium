@@ -5541,12 +5541,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8217664958939773083">Si cette règle est définie sur <ph name="ENABLED" /> ou si elle n'est pas configurée, le mode sans interface graphique est autorisé. Si elle est définie sur <ph name="DISABLED" />, ce mode est refusé.</translation>
 <translation id="8220023426952118761">Débit de téléchargement souhaité en kbit/s.</translation>
 <translation id="8220156281401380422">Configurer la liste d'autorisation de messagerie native</translation>
-<translation id="8234316309673661069">Avertissement : 3DES sera complètement supprimé de <ph name="PRODUCT_NAME" /> dans la version 95 (autour d'octobre 2021). Cette règle cessera alors de fonctionner.
-
-      Si cette règle est définie sur "True", les suites de chiffrement 3DES dans TLS seront activées. Si cette règle est définie sur "False", celles-ci seront désactivées. Si cette règle n'est pas configurée, les suites de chiffrement 3DES sont activées par défaut. Elles seront désactivées par défaut dans <ph name="PRODUCT_NAME" /> 93.
-
-      Dans <ph name="PRODUCT_NAME" /> 92, cette règle peut être utilisée pour afficher un aperçu des modifications et tester les incompatibilités. Dans <ph name="PRODUCT_NAME" /> 93 et les versions ultérieures, elle peut être utilisée pour assurer temporairement la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire et il est conseillé de reconfigurer le serveur.
-      </translation>
 <translation id="8238421250255592181">Indicateur booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
@@ -6286,6 +6280,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
       Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Après la suppression de cette règle, il sera toujours possible d'envoyer d'autres types de requêtes DNS avec <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9167719789236691545">Désactiver Drive dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Désactiver le montage de périphériques de stockage externe</translation>
+<translation id="9190257149451871588">port 6566 (expire le 15/10/2021)</translation>
 <translation id="9190456586252617675">Cette règle permet de gérer le mode du processus de prise en main de l'Assistant.
 
       Si elle n'est pas configurée ou si elle est définie sur <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, le mode par défaut du processus de prise en main de l'Assistant est utilisé.

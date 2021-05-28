@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1383876407941801731">Որոնում</translation>
-<translation id="1389974829397082527">Էջանիշներ չկան</translation>
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1430915738399379752">Տպում</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Մուտք գործեք ձեր Google հաշվով՝ ձեր էջանիշները, գաղտնաբառերը, պատմությունը և այլ կարգավորումները ձեր բոլոր սարքերում օգտագործելու համար:</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5017828934289857214">Հիշեցնել ինձ ավելի ուշ</translation>
+<translation id="5037676449506322593">Select All</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5056446788882570708">Խնդիրները հայտնաբերվել են <ph name="TIME" />։</translation>
 <translation id="5059136629401106827">Եղավ</translation>
@@ -791,7 +791,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8976382372951310360">Օգնություն</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
 <translation id="8985320356172329008">Մուտք եք գործել Google որպես՝</translation>
-<translation id="8996526648899750015">Ավելացնել հաշիվ…</translation>
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>

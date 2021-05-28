@@ -311,6 +311,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
 <translation id="2979025552038692506">선택된 시크릿 탭</translation>
 <translation id="2979448359891869301">스크린샷을 확장할 수 없습니다. 휴대전화 사용량이 적을 때 다시 시도하세요.</translation>
+<translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2989523299700148168">최근 방문</translation>
 <translation id="2992473221983447149">이미지 설명</translation>
@@ -943,7 +944,6 @@
 <translation id="6989267951144302301">다운로드할 수 없음</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="7001056293070445572">파일이 너무 큼(<ph name="FILE_SIZE" />)</translation>
-<translation id="7015203776128479407">초기 동기화 설정이 완료되지 않았습니다. 동기화가 사용 중지되었습니다.</translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
@@ -974,7 +974,6 @@
 <translation id="7286572596625053347"><ph name="LANGUAGE" />를 변경하시겠습니까?</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>
-<translation id="7293171162284876153">동기화를 시작하려면 'Chrome 데이터 동기화'를 사용 설정하세요.</translation>
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="729975465115245577">기기에 비밀번호 파일을 저장할 수 있는 앱이 없습니다.</translation>
 <translation id="7302081693174882195">세부정보: 저장된 데이터 양에 따라 정렬</translation>

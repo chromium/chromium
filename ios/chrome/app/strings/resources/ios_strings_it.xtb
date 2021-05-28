@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">La sincronizzazione si è interrotta.</translation>
 <translation id="1377321085342047638">Numero carta</translation>
 <translation id="1383876407941801731">Cerca</translation>
-<translation id="1389974829397082527">Nessun preferito qui</translation>
 <translation id="1400642268715879018">Ultime quattro settimane</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1430915738399379752">Stampa</translation>
@@ -389,6 +388,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
+<translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8976382372951310360">Guida</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
 <translation id="8985320356172329008">Accesso effettuato a Google come</translation>
-<translation id="8996526648899750015">Aggiungi account...</translation>
 <translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra originale</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>

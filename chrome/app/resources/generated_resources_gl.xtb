@@ -2566,6 +2566,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3742666961763734085">Non se atopou ningunha unidade organizativa con ese nome. Téntao outra vez.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3747077776423672805">Para eliminar aplicacións, accede a Configuración &gt; Google Play Store &gt; Xestionar preferencias de Android &gt; Aplicacións —ou Xestionar aplicacións— e toca a aplicación que queiras desinstalar (é posible que debas pasar o dedo cara á dereita ou á esquerda para atopala). Despois, toca Desinstalar ou Desactivar.</translation>
+<translation id="3747220812138541072">A medida que escribes, mostra suxestións para inserir texto</translation>
 <translation id="3748706263662799310">Informar dun erro</translation>
 <translation id="3752582316358263300">Aceptar...</translation>
 <translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
@@ -3254,6 +3255,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4510614391273086606">Estanse restaurando os ficheiros e as aplicacións de Linux co estado que tiñan cando se crearon as copias de seguranza.</translation>
 <translation id="451102079304155829">carros</translation>
 <translation id="4513275008300099962">Desactivar a superposición dos controis de ventás</translation>
+<translation id="4513872120116766993">Escritura preditiva</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="451407183922382411">Con tecnoloxía de <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Alternar a reprodución ou pausa do vídeo</translation>
@@ -4416,6 +4418,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5826395379250998812">Conecta o <ph name="DEVICE_TYPE" /> co teu teléfono. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparente</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Predición da seguinte palabra</translation>
 <translation id="5828545842856466741">Engadir perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
 <translation id="5830720307094128296">Gardar páxina &amp;como...</translation>
@@ -6286,6 +6289,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="78526636422538552">Non está permitido engadir máis Contas de Google</translation>
 <translation id="7853747251428735">Máis ferrament&amp;as</translation>
 <translation id="7855678561139483478">Mover pestana a ventá nova</translation>
+<translation id="7857093393627376423">Suxestións de texto</translation>
 <translation id="7857117644404132472">Engadir excepción</translation>
 <translation id="7857949311770343000">Esta é a páxina da pestana nova que esperabas?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

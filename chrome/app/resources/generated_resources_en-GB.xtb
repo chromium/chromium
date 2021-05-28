@@ -2583,6 +2583,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3742666961763734085">Can’t find an organisational unit with that name. Please try again.</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
+<translation id="3747220812138541072">Show inline writing suggestions that appear as you type</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Store once. Use everywhere</translation>
@@ -3272,6 +3273,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4510614391273086606">Linux files and apps are being restored to their backed up state.</translation>
 <translation id="451102079304155829">baskets</translation>
 <translation id="4513275008300099962">Disable window controls overlay</translation>
+<translation id="4513872120116766993">Predictive writing</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Toggle video to play or pause</translation>
@@ -4434,6 +4436,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5826395379250998812">Connect your <ph name="DEVICE_TYPE" /> with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semi-transparent</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Next word prediction</translation>
 <translation id="5828545842856466741">Add profile…</translation>
 <translation id="5828633471261496623">Printing...</translation>
 <translation id="5830720307094128296">Save Page &amp;As...</translation>
@@ -6304,6 +6307,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="78526636422538552">Addition of more Google accounts is disabled</translation>
 <translation id="7853747251428735">More Too&amp;ls</translation>
 <translation id="7855678561139483478">Move tab to new window</translation>
+<translation id="7857093393627376423">Text suggestions</translation>
 <translation id="7857117644404132472">Add exception</translation>
 <translation id="7857949311770343000">Is this the new tab page that you were expecting?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

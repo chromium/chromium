@@ -2574,6 +2574,7 @@
 <translation id="3742666961763734085">لم يتم إيجاد وحدة تنظيمية تحمل هذا الاسم. يُرجى إعادة المحاولة.</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3747077776423672805">‏لإزالة التطبيقات، انتقِل إلى "الإعدادات" &gt; "متجر Google Play" &gt; إدارة إعدادات Android المفضّلة &gt; "التطبيقات" أو "مدير التطبيقات". ثم انقر على التطبيق الذي تريد إلغاء تثبيته (عليك التمرير السريع لليمين أو اليسار للعثور على التطبيق)، ثم انقر على "إلغاء التثبيت" أو "إيقاف".</translation>
+<translation id="3747220812138541072">عرض اقتراحات نصية مضمّنة تظهر أثناء الكتابة</translation>
 <translation id="3748706263662799310">الإبلاغ عن خطأ</translation>
 <translation id="3752582316358263300">حسنًا...</translation>
 <translation id="3753033997400164841">حفظ كلمة المرور مرة واحدة وإتاحتها على جميع الأجهزة</translation>
@@ -3259,6 +3260,7 @@
 <translation id="4510614391273086606">‏تتم الآن استعادة البيانات الاحتياطية الخاصّة بملفات نظام التشغيل Linux وتطبيقاته.</translation>
 <translation id="451102079304155829">سلات التسوّق</translation>
 <translation id="4513275008300099962">إيقاف تراكب عناصر التحكم في النوافذ</translation>
+<translation id="4513872120116766993">اقتراحات نصية توقّعية</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="451407183922382411">تم التشغيل من قبل <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">تبديل الفيديو لتشغيله أو إيقافه مؤقتًا</translation>
@@ -4421,6 +4423,7 @@
 <translation id="5826395379250998812">يمكنك ربط الجهاز <ph name="DEVICE_TYPE" /> بهاتفك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">شبه شفاف</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">توقُّع الكلمة التالية</translation>
 <translation id="5828545842856466741">إضافة ملف شخصي...</translation>
 <translation id="5828633471261496623">الطباعة جارية...</translation>
 <translation id="5830720307094128296">حفظ &amp;صفحة باسم...</translation>
@@ -6291,6 +6294,7 @@
 <translation id="78526636422538552">‏تم إيقاف إمكانية إضافة المزيد من حسابات Google.</translation>
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>
 <translation id="7855678561139483478">نقل علامة التبويب إلى نافذة جديدة</translation>
+<translation id="7857093393627376423">اقتراحات نصية</translation>
 <translation id="7857117644404132472">إضافة استثناء</translation>
 <translation id="7857949311770343000">هل هذه هي صفحة علامة التبويب الجديدة التي كنت تتوقع ظهورها؟</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

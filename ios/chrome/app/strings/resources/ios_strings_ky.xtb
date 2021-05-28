@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Шайкештирүү иштебей калды.</translation>
 <translation id="1377321085342047638">Карт номер</translation>
 <translation id="1383876407941801731">Издөө</translation>
-<translation id="1389974829397082527">Бул жерде кыстармалар жок</translation>
 <translation id="1400642268715879018">Акыркы 4 аптада</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
@@ -389,6 +388,7 @@
 <translation id="4979397965658815378">Бардык түзмөктөрүңүздөн кыстармалар, сырсөздөр, таржымал жана башка жөндөөлөрүңүздү алуу үчүн аккаунтка кириңиз</translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5017828934289857214">Мага кийинчерээк эскертилсин</translation>
+<translation id="5037676449506322593">Баарын тандоо</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> маселелер табылды.</translation>
 <translation id="5059136629401106827">Жарайт</translation>
@@ -791,7 +791,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8976382372951310360">Жардам</translation>
 <translation id="8981454092730389528">Google'дагы аракеттерди башкаруу каражаттары</translation>
 <translation id="8985320356172329008">Google'га төмөнкү ат менен кирдиңиз</translation>
-<translation id="8996526648899750015">Аккаунт кошуу…</translation>
 <translation id="9034759925968272072">Google Каттоо эсебиңизден чыкпайсыз. Google Аккаунтуңуздун серептөө таржымалынын башка түрлөрү <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="9037965129289936994">Түпкү бетин көрсөтүү</translation>
 <translation id="9039373489628511875">Өткөрүү жөндөмдүүлүгү</translation>

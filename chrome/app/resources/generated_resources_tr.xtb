@@ -2567,6 +2567,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3742666961763734085">Belirtilen ada sahip bir kuruluş birimi bulunamadı. Lütfen tekrar deneyin.</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3747077776423672805">Uygulamaları kaldırmak için Ayarlar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Uygulamalar veya Uygulama yöneticisi'ne gidin. Daha sonra, yüklemesini kaldırmak istediğiniz uygulamaya dokunun (uygulamayı bulmak için sağa veya sola doğru hızlıca kaydırmanız gerekebilir). Ardından, Kaldır veya Devre Dışı Bırak'a dokunun.</translation>
+<translation id="3747220812138541072">Yazma esnasında satır içi yazım önerileri gösterilir</translation>
 <translation id="3748706263662799310">Hata bildir</translation>
 <translation id="3752582316358263300">Tamam...</translation>
 <translation id="3753033997400164841">Bir kere depolayın. Her yerde kullanın</translation>
@@ -3255,6 +3256,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4510614391273086606">Linux dosyaları ve uygulamaları yedeklenmiş durumlarına geri yükleniyor.</translation>
 <translation id="451102079304155829">alışveriş sepetleri</translation>
 <translation id="4513275008300099962">Pencere denetimi yer paylaşımını devre dışı bırak</translation>
+<translation id="4513872120116766993">Tahmine dayalı yazım</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> tarafından destekleniyor</translation>
 <translation id="4514610446763173167">Oynatmak veya duraklatmak için videoyu aç/kapat</translation>
@@ -4418,6 +4420,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> cihazınızı telefonunuza bağlayın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Yarı şeffaf</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Sonraki kelime tahmini</translation>
 <translation id="5828545842856466741">Profil ekle...</translation>
 <translation id="5828633471261496623">Yazdırılıyor...</translation>
 <translation id="5830720307094128296">Sayfayı &amp;Farklı Kaydet...</translation>
@@ -6286,6 +6289,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="78526636422538552">Başka Google Hesaplarının eklenmesi devre dışı bırakıldı</translation>
 <translation id="7853747251428735">&amp;Diğer Araçlar</translation>
 <translation id="7855678561139483478">Sekmeyi yeni pencereye taşı</translation>
+<translation id="7857093393627376423">Metin önerileri</translation>
 <translation id="7857117644404132472">İstisna ekle</translation>
 <translation id="7857949311770343000">Bu, beklediğiniz yeni sekme sayfası mı?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

@@ -51,7 +51,6 @@
 <translation id="1377255359165588604">Đồng bộ hóa đã ngừng hoạt động.</translation>
 <translation id="1377321085342047638">Số thẻ</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
-<translation id="1389974829397082527">Không có dấu trang ở đây</translation>
 <translation id="1400642268715879018">4 tuần qua</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="1430915738399379752">In</translation>
@@ -389,6 +388,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4979397965658815378">Đăng nhập bằng Tài khoản Google để nhận dấu trang, mật khẩu, lịch sử và các cài đặt khác trên tất cả thiết bị của bạn</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5017828934289857214">Nhắc tôi sau</translation>
+<translation id="5037676449506322593">Chọn Tất cả</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -791,7 +791,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8976382372951310360">Trợ giúp</translation>
 <translation id="8981454092730389528">Kiểm soát hoạt động trên Google</translation>
 <translation id="8985320356172329008">Đã đăng nhập vào Google bằng</translation>
-<translation id="8996526648899750015">Thêm tài khoản...</translation>
 <translation id="9034759925968272072">Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Hiển thị văn bản gốc</translation>
 <translation id="9039373489628511875">Băng thông</translation>

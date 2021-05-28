@@ -2570,6 +2570,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3742666961763734085">Nepodarilo sa nájsť organizačnú jednotku s daným názvom. Skúste to znova.</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3747077776423672805">Ak chcete odstrániť aplikácie, prejdite do časti Nastavenia &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím prstom doľava alebo doprava). Potom klepnite na možnosť Odinštalovať alebo Deaktivovať.</translation>
+<translation id="3747220812138541072">Zobrazovať v texte návrhy písania, kým píšete</translation>
 <translation id="3748706263662799310">Nahlásiť chybu</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Raz uložte. Používajte všade.</translation>
@@ -3258,6 +3259,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4510614391273086606">Prebieha obnovenie zálohovaného stavu súborov a aplikácií pre Linux.</translation>
 <translation id="451102079304155829">košíky</translation>
 <translation id="4513275008300099962">Deaktivovať prekrytie s ovládaním okna</translation>
+<translation id="4513872120116766993">Predvídanie písania</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="451407183922382411">Používa technológiu <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Prepnutím prehráte alebo pozastavíte video</translation>
@@ -4420,6 +4422,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5826395379250998812">Pripojte zariadenie <ph name="DEVICE_TYPE" /> k svojmu telefónu. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Polotransparentné</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Predvídanie ďalšieho slova</translation>
 <translation id="5828545842856466741">Pridať profil…</translation>
 <translation id="5828633471261496623">Prebieha tlač...</translation>
 <translation id="5830720307094128296">Uložiť stránku &amp;ako...</translation>
@@ -6290,6 +6293,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="78526636422538552">Pridávanie ďalších účtov Google je zakázané</translation>
 <translation id="7853747251428735">Ďalšie nástro&amp;je</translation>
 <translation id="7855678561139483478">Presun karty do nového okna</translation>
+<translation id="7857093393627376423">Textové návrhy</translation>
 <translation id="7857117644404132472">Pridať výnimku</translation>
 <translation id="7857949311770343000">Je toto stránka na novej karte, ktorú ste čakali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
