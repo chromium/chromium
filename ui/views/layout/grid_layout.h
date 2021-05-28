@@ -27,8 +27,7 @@
 //                          // resized.
 //                    1.0,  // This column has a resize weight of 1.
 //                    ColumnSize::kUsePreferred, // Use the preferred size of
-//                    the
-//                                          // view.
+//                                               // the view.
 //                    0,   // Ignored for kUsePref.
 //                    0);  // A minimum width of 0.
 // columns->AddPaddingColumn(kFixedSize, // The padding column is not resizable.
