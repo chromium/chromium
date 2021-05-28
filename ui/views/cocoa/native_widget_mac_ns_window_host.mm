@@ -464,13 +464,33 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
   }
 }
 
-void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen) {
+void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen, bool delay) {
   // Note that when the NSWindow begins a fullscreen transition, the value of
   // |target_fullscreen_state_| updates via OnWindowFullscreenTransitionStart.
   // The update here is necessary for the case where we are currently in
   // transition (and therefore OnWindowFullscreenTransitionStart will not be
   // called until the current transition completes).
   target_fullscreen_state_ = fullscreen;
+
+  if (delay) {
+    // Synchronously requesting fullscreen after moving the window to another
+    // display causes the window to resign key. Workaround this OS-specific
+    // quirk by delaying the fullscreen request, after setting the target state,
+    // to encapsulate some of these details from the calling client window code,
+    // i.e. so BrowserView::ProcessFullscreen will still hide its frame, etc.
+    // TODO(crbug.com/1034783): Refine cross-display fullscreen implementations.
+    // Maybe add fullscreen-on-target-display helpers on views::Widget, etc. to
+    // better encapsulate per-platform complexity, or at least wait for the
+    // window move before entering fullscreen, instead of posting a task with a
+    // locally-tested delay.
+    auto callback = base::BindOnce(
+        &remote_cocoa::mojom::NativeWidgetNSWindow::SetFullscreen,
+        base::Unretained(GetNSWindowMojo()), target_fullscreen_state_);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, std::move(callback), base::TimeDelta::FromMilliseconds(1));
+    return;
+  }
+
   GetNSWindowMojo()->SetFullscreen(target_fullscreen_state_);
 }
 

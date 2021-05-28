@@ -3307,6 +3307,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
   // Toggle fullscreen mode; move the window between displays as needed.
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
+  bool entering_cross_screen_fullscreen = false;
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -3335,19 +3336,23 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
       } else {
         frame_->SetFullscreen(false);
       }
+      entering_cross_screen_fullscreen = true;
       frame_->SetBounds({display.work_area().origin(),
                          frame_->GetWindowBoundsInScreen().size()});
     }
   }
 
+#if defined(OS_MAC)
+  // On Mac, the fullscreen state change must be requested with a delay after
+  // moving the window to the target display; see http://crbug.com/1210548
+  frame_->SetFullscreen(fullscreen, entering_cross_screen_fullscreen);
+#else   // OS_MAC
   frame_->SetFullscreen(fullscreen);
-
-#if !defined(OS_MAC)
   // On Mac, the pre-fullscreen bounds must be restored after an asynchronous
   // transition out of the fullscreen workspace; see http://crbug.com/1039874
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
-#endif  // !OS_MAC
+#endif  // OS_MAC
 
   // Enable immersive before the browser refreshes its list of enabled commands.
   const bool should_stay_in_immersive =

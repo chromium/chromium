@@ -906,7 +906,7 @@ void DesktopNativeWidgetAura::Restore() {
     desktop_window_tree_host_->Restore();
 }
 
-void DesktopNativeWidgetAura::SetFullscreen(bool fullscreen) {
+void DesktopNativeWidgetAura::SetFullscreen(bool fullscreen, bool delay) {
   if (content_window_)
     desktop_window_tree_host_->SetFullscreen(fullscreen);
 }

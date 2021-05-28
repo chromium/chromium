@@ -769,12 +769,12 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen) {
+void Widget::SetFullscreen(bool fullscreen, bool delay) {
   if (IsFullscreen() == fullscreen)
     return;
 
   auto weak_ptr = GetWeakPtr();
-  native_widget_->SetFullscreen(fullscreen);
+  native_widget_->SetFullscreen(fullscreen, delay);
   if (!weak_ptr)
     return;
 

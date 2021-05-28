@@ -700,7 +700,7 @@ void NativeWidgetAura::Restore() {
     window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
 }
 
-void NativeWidgetAura::SetFullscreen(bool fullscreen) {
+void NativeWidgetAura::SetFullscreen(bool fullscreen, bool delay) {
   if (!window_ || IsFullscreen() == fullscreen)
     return;  // Nothing to do.
 

@@ -644,10 +644,10 @@ void NativeWidgetMac::Restore() {
   GetNSWindowMojo()->SetMiniaturized(false);
 }
 
-void NativeWidgetMac::SetFullscreen(bool fullscreen) {
+void NativeWidgetMac::SetFullscreen(bool fullscreen, bool delay) {
   if (!ns_window_host_)
     return;
-  ns_window_host_->SetFullscreen(fullscreen);
+  ns_window_host_->SetFullscreen(fullscreen, delay);
 }
 
 bool NativeWidgetMac::IsFullscreen() const {
