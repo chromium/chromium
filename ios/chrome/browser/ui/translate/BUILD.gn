@@ -2,46 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("legacy_translate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "legacy_translate_infobar_coordinator.h",
-    "legacy_translate_infobar_coordinator.mm",
-    "legacy_translate_infobar_mediator.h",
-    "legacy_translate_infobar_mediator.mm",
-  ]
-  deps = [
-    ":legacy_translate_constants",
-    ":translate_ui",
-    "//base",
-    "//components/strings:components_strings_grit",
-    "//components/translate/core/browser",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/translate",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
-    "//ios/chrome/browser/ui/popup_menu/public:ui_constants",
-    "//ios/chrome/browser/ui/presenters",
-    "//ios/chrome/browser/ui/translate/cells",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/web/public",
-    "//ui/base",
-  ]
-}
-
-source_set("legacy_translate_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "legacy_translate_infobar_constants.h",
-    "legacy_translate_infobar_constants.mm",
-  ]
-}
-
 source_set("translate_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -89,28 +49,5 @@ source_set("translate_ui_constants") {
   sources = [
     "translate_infobar_view_constants.h",
     "translate_infobar_view_constants.mm",
-  ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "translate_infobar_mediator_unittest.mm" ]
-  deps = [
-    ":legacy_translate",
-    "//components/language/ios/browser",
-    "//components/translate/core/browser:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/translate",
-    "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
-    "//ios/chrome/browser/ui/translate:translate_ui",
-    "//ios/chrome/browser/ui/translate/cells",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
-    "//ios/web/public/test",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock:ocmock",
   ]
 }

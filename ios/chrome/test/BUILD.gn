@@ -328,7 +328,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/toolbar:unit_tests",
     "//ios/chrome/browser/ui/toolbar/fullscreen:unit_tests",
     "//ios/chrome/browser/ui/toolbar_container:unit_tests",
-    "//ios/chrome/browser/ui/translate:unit_tests",
     "//ios/chrome/browser/ui/util:unit_tests",
     "//ios/chrome/browser/ui/voice:unit_tests",
     "//ios/chrome/browser/update_client:unit_tests",

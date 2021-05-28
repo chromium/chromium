@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/ui/translate/legacy_translate_infobar_coordinator.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -193,11 +192,6 @@
 
 // Coordinator for Text Zoom.
 @property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
-
-// Coordinator for the translate infobar's language selection and translate
-// option popup menus.
-@property(nonatomic, strong)
-    LegacyTranslateInfobarCoordinator* translateInfobarCoordinator;
 
 // Coordinator that manages the default browser promo modal.
 @property(nonatomic, strong)
@@ -411,10 +405,6 @@
                          browser:self.browser];
   [self.snackbarCoordinator start];
 
-  self.translateInfobarCoordinator = [[LegacyTranslateInfobarCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.translateInfobarCoordinator start];
 
   self.passKitCoordinator =
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
@@ -517,9 +507,6 @@
 
   [self.textZoomCoordinator stop];
   self.textZoomCoordinator = nil;
-
-  [self.translateInfobarCoordinator stop];
-  self.translateInfobarCoordinator = nil;
 
   [self.addCreditCardCoordinator stop];
   self.addCreditCardCoordinator = nil;
