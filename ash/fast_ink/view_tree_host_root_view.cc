@@ -300,8 +300,10 @@ ViewTreeHostRootView::ObtainResource() {
 }
 
 ViewTreeHostRootView::~ViewTreeHostRootView() {
-  LayerTreeViewTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_));
+  if (frame_sink_holder_) {
+    LayerTreeViewTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
+        std::move(frame_sink_holder_));
+  }
 }
 
 void ViewTreeHostRootView::Paint() {
