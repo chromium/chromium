@@ -108,6 +108,8 @@
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -10688,10 +10690,30 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(using_speculative_rfh, nav_manager.was_committed());
 }
 
-// Test that triggering fallback handling for <object> with an HTTP error does
-// not result in the renderer ignoring a `CommitNavigation()` IPC.
+namespace {
+
+// Helper for various <object> navigation test cases that trigger fallback
+// handling. Fallback handling should never reach ready-to-commit navigation, so
+// this helper forces test failure if a ReadyToCommitNavigation() is received.
+class AssertNoReadyToCommitNavigationCalls : public WebContentsObserver {
+ public:
+  explicit AssertNoReadyToCommitNavigationCalls(WebContents* contents)
+      : WebContentsObserver(contents) {}
+
+ private:
+  // WebContentsObserver overrides:
+  void ReadyToCommitNavigation(NavigationHandle* handle) override {
+    ASSERT_TRUE(false);
+  }
+};
+
+}  // namespace
+
+// Test that a same-site navigation in <object> that fails with an HTTP error
+// directly triggers fallback handling, rather than triggering fallback handling
+// in the renderer after it receives a `CommitNavigation()` IPC.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       CommitNavigationWithHTTPErrorInObjectTag) {
+                       ObjectTagSameSiteNavigationWithHTTPError) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   // TODO(dcheng): In the future, it might be useful to also have a test where
   // the child frame is same-site but cross-origin, and have the parent
@@ -10704,15 +10726,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // And there should be no fallback content displayed.
   EXPECT_EQ("", EvalJs(web_contents(), "document.body.innerText"));
 
-  // Now navigate the first child to another same-site page that will result in
-  // a 404. Note that with subframe RenderDocument, this will create a
-  // speculative RFH.
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a same-site page that will result in a 404.
+  // Note that with subframe RenderDocument, this will create a speculative RFH.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   GURL url2(embedded_test_server()->GetURL("a.com", "/page404.html"));
   TestNavigationManager nav_manager(web_contents(), url2);
   FrameTreeNode* first_child = root->child_at(0);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), url2));
+
+  const bool using_speculative_rfh =
+      !!first_child->render_manager()->speculative_frame_host();
+  EXPECT_EQ(using_speculative_rfh,
+            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
 
   nav_manager.WaitForNavigationFinished();
   // There should be no commit...
@@ -10728,16 +10757,233 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
 }
 
-// Test that triggering fallback handling for <object> with a network error that
-// is routed via a `CommitFailedNavigation()` IPC ends up being ignored.
+// Test that a cross-site navigation in <object> that fails with an HTTP error
+// directly triggers fallback handling, rather than triggering fallback handling
+// in the renderer after it receives a `CommitNavigation()` IPC.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       CommitFailedNavigationInObjectTag) {
+                       ObjectTagCrossSiteNavigationWithHTTPError) {
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  // TODO(dcheng): In the future, it might be useful to also have a test where
+  // the child frame is same-site but cross-origin, and have the parent
+  // initiate the navigation in the child frame.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // There should be one nested browsing context.
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  // And there should be no fallback content displayed.
+  EXPECT_EQ("", EvalJs(web_contents(), "document.body.innerText"));
+
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a cross-site page that will result in a
+  // 404.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL url2(embedded_test_server()->GetURL("b.com", "/page404.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), url2));
+
+  // Cross-site navigations always force a speculative RFH to be created.
+  EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
+
+  nav_manager.WaitForNavigationFinished();
+  // There should be no commit...
+  EXPECT_FALSE(nav_manager.was_committed());
+  // .. and the navigation should have been aborted.
+  EXPECT_FALSE(nav_manager.was_successful());
+  // Fallback handling should discard the child browsing context and render the
+  // fallback contents.
+  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
+  // fallback content, which is supposed to discard the nested browsing
+  // context...
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
+}
+
+// Test that a same-site navigation in <object> that fails with an HTTP error
+// and also subsequently fails to load the body still directly triggers fallback
+// handling, rather than triggering fallback handling in the renderer after it
+// receives a `CommitNavigation()` IPC.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    ObjectTagSameSiteNavigationWithHTTPErrorAndFailedBodyLoad) {
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  // TODO(dcheng): In the future, it might be useful to also have a test where
+  // the child frame is same-site but cross-origin, and have the parent
+  // initiate the navigation in the child frame.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // There should be one nested browsing context.
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  // And there should be no fallback content displayed.
+  EXPECT_EQ("", EvalJs(web_contents(), "document.body.innerText"));
+
+  // This test differs from CommitNavigationWithHTTPErrorInObjectTag by
+  // triggering a body load failure. `ObjectNavigationFallbackBodyLoader`
+  // detects this by setting a disconnect handler on the `mojo::Receiver` for
+  // `network:;mojom::URLLoaderClient`. Exercise this code path by:
+  // 1. inserting a test `NavigationThrottle`
+  // 2. replacing the `network::mojom::URLLoaderClient` endpoint with one where
+  //    the corresponding `mojo::Remote` is simply closed at
+  //    `WILL_PROCESS_RESPONSE` time.
+  TestNavigationThrottleInserter navigation_throttle_inserter(
+      web_contents(),
+      base::BindRepeating(
+          [](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetCallback(
+                TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                base::BindLambdaForTesting([handle]() {
+                  // Swap out the URL loader client endpoint and just drop the
+                  // mojo::Remote. This will trigger the mojo::Receiver to be
+                  // disconnected, which should still trigger fallback handling
+                  // despite body loading failing.
+                  mojo::Remote<network::mojom::URLLoaderClient>
+                      remote_to_be_dropped;
+                  auto* request = static_cast<NavigationRequest*>(handle);
+                  request->mutable_url_loader_client_endpoints_for_testing()
+                      ->url_loader_client =
+                      remote_to_be_dropped.BindNewPipeAndPassReceiver();
+                }));
+            return throttle;
+          }));
+
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a same-site page that will result in a 404,
+  // though the body loading will fail. Note that with subframe RenderDocument,
+  // this will create a speculative RFH.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL url2(embedded_test_server()->GetURL("a.com", "/page404.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), url2));
+
+  const bool using_speculative_rfh =
+      !!first_child->render_manager()->speculative_frame_host();
+  EXPECT_EQ(using_speculative_rfh,
+            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
+
+  nav_manager.WaitForNavigationFinished();
+  // There should be no commit...
+  EXPECT_FALSE(nav_manager.was_committed());
+  // .. and the navigation should have been aborted.
+  EXPECT_FALSE(nav_manager.was_successful());
+  // Fallback handling should discard the child browsing context and render the
+  // fallback contents.
+  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
+  // fallback content, which is supposed to discard the nested browsing
+  // context...
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
+
+  // `WaitForNavigationFinished()` should imply the `NavigationRequest` has been
+  // cleaned up as well, but check to be sure.
+  EXPECT_FALSE(first_child->navigation_request());
+}
+
+// Test that a cross-site navigation in <object> that fails with an HTTP error
+// and also subsequently fails to load the body still directly triggers fallback
+// handling, rather than triggering fallback handling in the renderer after it
+// receives a `CommitNavigation()` IPC.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    ObjectTagCrossSiteNavigationWithHTTPErrorAndFailedBodyLoad) {
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  // TODO(dcheng): In the future, it might be useful to also have a test where
+  // the child frame is same-site but cross-origin, and have the parent
+  // initiate the navigation in the child frame.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // There should be one nested browsing context.
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  // And there should be no fallback content displayed.
+  EXPECT_EQ("", EvalJs(web_contents(), "document.body.innerText"));
+
+  // This test differs from CommitNavigationWithHTTPErrorInObjectTag by
+  // triggering a body load failure. `ObjectNavigationFallbackBodyLoader`
+  // detects this by setting a disconnect handler on the `mojo::Receiver` for
+  // `network:;mojom::URLLoaderClient`. Exercise this code path by:
+  // 1. inserting a test `NavigationThrottle`
+  // 2. replacing the `network::mojom::URLLoaderClient` endpoint with one where
+  //    the corresponding `mojo::Remote` is simply closed at
+  //    `WILL_PROCESS_RESPONSE` time.
+  TestNavigationThrottleInserter navigation_throttle_inserter(
+      web_contents(),
+      base::BindRepeating(
+          [](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetCallback(
+                TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                base::BindLambdaForTesting([handle]() {
+                  // Swap out the URL loader client endpoint and just drop the
+                  // mojo::Remote. This will trigger the mojo::Receiver to be
+                  // disconnected, which should still trigger fallback handling
+                  // despite body loading failing.
+                  mojo::Remote<network::mojom::URLLoaderClient>
+                      remote_to_be_dropped;
+                  auto* request = static_cast<NavigationRequest*>(handle);
+                  request->mutable_url_loader_client_endpoints_for_testing()
+                      ->url_loader_client =
+                      remote_to_be_dropped.BindNewPipeAndPassReceiver();
+                }));
+            return throttle;
+          }));
+
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a cross-site page that will result in a
+  // 404, though the body loading will fail.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL url2(embedded_test_server()->GetURL("b.com", "/page404.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), url2));
+
+  // Cross-site navigations always force a speculative RFH to be created.
+  EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
+
+  nav_manager.WaitForNavigationFinished();
+  // There should be no commit...
+  EXPECT_FALSE(nav_manager.was_committed());
+  // .. and the navigation should have been aborted.
+  EXPECT_FALSE(nav_manager.was_successful());
+  // Fallback handling should discard the child browsing context and render the
+  // fallback contents.
+  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
+  // fallback content, which is supposed to discard the nested browsing
+  // context...
+  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
+
+  // `WaitForNavigationFinished()` should imply the `NavigationRequest` has been
+  // cleaned up as well, but check to be sure.
+  EXPECT_FALSE(first_child->navigation_request());
+}
+
+// Test that a same-site navigation in <object> that fails with a network error
+// directly triggers fallback handling, rather than triggering fallback handling
+// in the renderer after it receives a `CommitFailedNavigation()` IPC.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       ObjectTagSameSiteNavigationWithNetworkError) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
   EXPECT_TRUE(NavigateToURL(web_contents(), url1));
 
-  // Now navigate the first child to another same-site page that will result in
-  // a network error. Note that with subframe RenderDocument, this will create a
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a same-site page that will result in a
+  // network error. Note that with subframe RenderDocument, this will create a
   // speculative RFH.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   GURL error_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
@@ -10749,15 +10995,51 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), error_url));
 
-  // Note: this needs to be checked before `WaitForResponse()`, as the
-  // `CommitFailedNavigation()` IPC is sent somewhere inside
-  // `WaitForResponse()`.
-  bool using_speculative_rfh =
+  const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
   EXPECT_EQ(using_speculative_rfh,
             GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
 
-  // Returns false the test server has already been shutdown.
+  // `WaitForResponse()` should signal failure by returning `false` false since
+  // the URLLoaderInterceptor forces a network error.
+  EXPECT_FALSE(nav_manager.WaitForResponse());
+
+  nav_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  // Make sure that the speculative RFH has been cleaned up, if needed.
+  EXPECT_EQ(nullptr, first_child->render_manager()->speculative_frame_host());
+}
+
+// Test that a cross-site navigation in <object> that fails with a network error
+// directly triggers fallback handling, rather than triggering fallback handling
+// in the renderer after it receives a `CommitFailedNavigation()` IPC.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       ObjectTagCrossSiteNavigationWithNetworkError) {
+  // Set up a test page with a same-site child frame hosted in an <object> tag.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // <object> fallback handling should never reach ReadyToCommitNavigation.
+  AssertNoReadyToCommitNavigationCalls asserter(web_contents());
+
+  // Now navigate the first child to a cross-site page that will result in a
+  // network error.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  GURL error_url(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_CONNECTION_REFUSED);
+  TestNavigationManager nav_manager(web_contents(), error_url);
+  FrameTreeNode* first_child = root->child_at(0);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(
+      first_child->render_manager()->current_frame_host(), error_url));
+
+  // Cross-site navigations always force a speculative RFH to be created.
+  EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
+
+  // `WaitForResponse()` should signal failure by returning `false` false since
+  // the URLLoaderInterceptor forces a network error.
   EXPECT_FALSE(nav_manager.WaitForResponse());
 
   nav_manager.WaitForNavigationFinished();
