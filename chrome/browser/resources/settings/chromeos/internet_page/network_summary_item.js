@@ -478,10 +478,10 @@ Polymer({
           return true;
         }
         // When network type is Cellular and |updatedCellularActivationUi| is
-        // enabled, always show "Mobile data" subpage, when eSim is available
-        // or multiple pSimSlots are available
+        // enabled, always show "Mobile data" subpage, when at least one eSIM
+        // or pSIM slot is available
         const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
-        if (eSimSlots > 0 || pSimSlots > 1) {
+        if (eSimSlots > 0 || pSimSlots > 0) {
           return true;
         }
       } else if (this.simLockedOrAbsent_(deviceState)) {
