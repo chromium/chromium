@@ -206,7 +206,14 @@ void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
 }
 
 void SnapCoordinator::ResnapAllContainersIfNeeded() {
-  for (const auto* container : snap_containers_) {
+  std::vector<LayoutBox*> container_vector;
+  for (LayoutBox* container : snap_containers_) {
+    container_vector.push_back(container);
+  }
+  std::sort(container_vector.begin(), container_vector.end(),
+            recordreplay::CompareByPointerId());
+
+  for (const auto* container : container_vector) {
     if (!container->GetScrollableArea()->NeedsResnap())
       continue;
 
