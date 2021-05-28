@@ -240,14 +240,11 @@ void DMServerJobConfiguration::OnURLLoadComplete(
   DeviceManagementStatus code =
       MapNetErrorAndResponseCodeToDMStatus(net_error, response_code);
 
-  // Parse the response even if |response_code| is not a success since the
-  // response data may contain an error message.
   em::DeviceManagementResponse response;
-  if (code == DM_STATUS_SUCCESS &&
-      (!response.ParseFromString(response_body) ||
-       response_code != DeviceManagementService::kSuccess)) {
+  if (code == DM_STATUS_SUCCESS && !response.ParseFromString(response_body)) {
     code = DM_STATUS_RESPONSE_DECODING_ERROR;
-    em::DeviceManagementResponse response;
+    LOG(WARNING) << "DMServer sent an invalid response";
+  } else if (response_code != DeviceManagementService::kSuccess) {
     if (response.ParseFromString(response_body)) {
       LOG(WARNING) << "DMServer sent an error response: " << response_code
                    << ". " << response.error_message();
