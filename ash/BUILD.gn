@@ -1784,6 +1784,7 @@ component("ash") {
 
   public_deps = [
     "//ash/public/cpp",
+    "//ash/public/cpp/app_list/vector_icons:vector_icons",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/resources/vector_icons",
     "//ash/strings",

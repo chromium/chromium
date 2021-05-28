@@ -5,6 +5,7 @@
 #include "ash/quick_answers/ui/quick_answers_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
@@ -54,6 +55,10 @@ constexpr int kMaxRows = 3;
 // Assistant icon.
 constexpr int kAssistantIconSizeDip = 16;
 constexpr gfx::Insets kAssistantIconInsets(10, 10, 0, 8);
+
+// Google icon.
+constexpr int kGoogleIconSizeDip = 16;
+constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 8);
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
@@ -283,6 +288,15 @@ void QuickAnswersView::AddAssistantIcon() {
       chromeos::kAssistantIcon, kAssistantIconSizeDip, gfx::kPlaceholderColor));
 }
 
+void QuickAnswersView::AddGoogleIcon() {
+  // Add Google icon.
+  auto* google_icon =
+      main_view_->AddChildView(std::make_unique<views::ImageView>());
+  google_icon->SetBorder(views::CreateEmptyBorder(kGoogleIconInsets));
+  google_icon->SetImage(gfx::CreateVectorIcon(
+      kGoogleColorIcon, kGoogleIconSizeDip, gfx::kPlaceholderColor));
+}
+
 void QuickAnswersView::AddDogfoodButton() {
   auto* dogfood_view = AddChildView(std::make_unique<View>());
   auto* layout =
@@ -334,8 +348,12 @@ void QuickAnswersView::InitLayout() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  // Add Assistant icon.
-  AddAssistantIcon();
+  // Add branding icon.
+  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+    AddGoogleIcon();
+  } else {
+    AddAssistantIcon();
+  }
 
   // Add content view.
   content_view_ = main_view_->AddChildView(std::make_unique<View>());
