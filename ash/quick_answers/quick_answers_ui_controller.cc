@@ -4,7 +4,9 @@
 
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
 #include "ash/quick_answers/ui/user_notice_view.h"
@@ -14,6 +16,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +24,12 @@
 
 using chromeos::quick_answers::QuickAnswer;
 namespace ash {
+
+namespace {
+
+constexpr char kGoogleSearchUrlPrefix[] = "https://www.google.com/search?q=";
+
+}  // namespace
 
 QuickAnswersUiController::QuickAnswersUiController(
     QuickAnswersControllerImpl* controller)
@@ -53,9 +62,16 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(/*is_active=*/true);
 
-  ash::AssistantInteractionController::Get()->StartTextInteraction(
-      query_, /*allow_tts=*/false,
-      chromeos::assistant::AssistantQuerySource::kQuickAnswers);
+  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+    NewWindowDelegate::GetInstance()->NewTabWithUrl(
+        GURL(kGoogleSearchUrlPrefix +
+             net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
+        /*from_user_interaction=*/true);
+  } else {
+    ash::AssistantInteractionController::Get()->StartTextInteraction(
+        query_, /*allow_tts=*/false,
+        chromeos::assistant::AssistantQuerySource::kQuickAnswers);
+  }
   controller_->OnQuickAnswerClick();
 }
 
