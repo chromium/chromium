@@ -166,6 +166,8 @@ class FollowManagementMediator {
     private void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
         String updatesUnavailable =
                 mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
+
+        // Add the list items (if any) to the recycler view.
         for (WebFeedMetadata page : followedWebFeeds) {
             String title = page.title;
             GURL url = page.visitUrl;
@@ -194,6 +196,14 @@ class FollowManagementMediator {
 
             // getFavicon is async.  We'll get the favicon, then add it to the model.
             faviconProvider.startFaviconFetch();
+        }
+        // If there are no subscribed feeds, show the empty state instead.
+        if (followedWebFeeds.isEmpty()) {
+            // Inflate and show the empty state view inside the recycler view.
+            PropertyModel pageModel = new PropertyModel();
+            SimpleRecyclerViewAdapter.ListItem listItem = new SimpleRecyclerViewAdapter.ListItem(
+                    FollowManagementItemProperties.EMPTY_ITEM_TYPE, pageModel);
+            mModelList.add(listItem);
         }
     }
 

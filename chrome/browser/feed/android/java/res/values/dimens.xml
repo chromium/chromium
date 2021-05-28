@@ -26,4 +26,5 @@
     <dimen name="follow_arrow_size">24dp</dimen>
     <dimen name="follow_margin">16dp</dimen>
     <dimen name="follow_item_margin">10dp</dimen>
+    <dimen name="follow_empty_margin">24dp</dimen>
 </resources>

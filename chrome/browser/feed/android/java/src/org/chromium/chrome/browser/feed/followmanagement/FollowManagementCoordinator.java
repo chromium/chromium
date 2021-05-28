@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
 public class FollowManagementCoordinator {
+    private static final String TAG = "FollowMMCoordinator";
     private FollowManagementMediator mMediator;
     private Activity mActivity;
     private final View mView;
@@ -32,9 +34,13 @@ public class FollowManagementCoordinator {
         ModelList listItems = new ModelList();
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listItems);
+        // Register types for both the full and empty states.
         adapter.registerType(FollowManagementItemProperties.DEFAULT_ITEM_TYPE,
                 new LayoutViewBuilder<FollowManagementItemView>(R.layout.follow_management_item),
                 FollowManagementItemViewBinder::bind);
+        adapter.registerType(FollowManagementItemProperties.EMPTY_ITEM_TYPE,
+                new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_empty_state),
+                (unusedModel, unusedView, unusedKey) -> {});
 
         // Inflate the XML for the activity.
         mView = LayoutInflater.from(activity).inflate(R.layout.follow_management_activity, null);

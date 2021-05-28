@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+
+<!-- The empty state will only appear if the recycler view is empty. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/follow_management_empty_state"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:layout_margin="@dimen/follow_empty_margin"
+      style="@style/TextAppearance.TextMedium.Secondary"
+      android:padding="@dimen/follow_empty_margin"
+      android:background="@drawable/hairline_border_card_background"
+      android:text="@string/follow_manage_following_empty_state" />
+
+</LinearLayout>
