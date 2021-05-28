@@ -4,13 +4,36 @@
 
 #include "remoting/protocol/webrtc_video_track_source.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
+
+using testing::Property;
+using webrtc::BasicDesktopFrame;
+using webrtc::DesktopSize;
+using webrtc::VideoFrame;
 
 namespace remoting {
 namespace protocol {
+
+namespace {
+
+class MockVideoSink : public rtc::VideoSinkInterface<VideoFrame> {
+ public:
+  ~MockVideoSink() override = default;
+
+  MOCK_METHOD(void, OnFrame, (const VideoFrame& frame), (override));
+};
+
+}  // namespace
 
 class WebrtcVideoTrackSourceTest : public testing::Test {
  public:
@@ -19,13 +42,27 @@ class WebrtcVideoTrackSourceTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  MockVideoSink video_sink_;
 };
 
 TEST_F(WebrtcVideoTrackSourceTest, AddSinkTriggersCallback) {
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source =
       new rtc::RefCountedObject<WebrtcVideoTrackSource>(
           base::MakeExpectedRunAtLeastOnceClosure(FROM_HERE));
-  source->AddOrUpdateSink(nullptr, rtc::VideoSinkWants());
+  source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(WebrtcVideoTrackSourceTest, CapturedFrameSentToAddedSink) {
+  auto frame = std::make_unique<BasicDesktopFrame>(DesktopSize(123, 234));
+  EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::width, 123)));
+
+  rtc::scoped_refptr<WebrtcVideoTrackSource> source =
+      new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::DoNothing());
+  source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
+  source->SendCapturedFrame(std::move(frame), nullptr);
 
   task_environment_.FastForwardUntilNoTasksRemain();
 }
