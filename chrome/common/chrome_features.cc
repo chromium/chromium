@@ -743,6 +743,11 @@ const base::Feature kPermissionAuditing{"PermissionAuditing",
 const base::Feature kPermissionPredictions{"PermissionPredictions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<double> kPermissionPredictionsHoldbackChance(
+    &kPermissionPredictions,
+    "holdback_chance",
+    0.0);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
 const base::Feature kPluginVm{"PluginVm", base::FEATURE_DISABLED_BY_DEFAULT};
