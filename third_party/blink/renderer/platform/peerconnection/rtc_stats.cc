@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
 
@@ -305,6 +306,32 @@ Vector<String> RTCStatsMember::ValueSequenceString() const {
   for (size_t i = 0; i < sequence.size(); ++i)
     wtf_sequence[i] = String::FromUTF8(sequence[i]);
   return wtf_sequence;
+}
+
+HashMap<String, uint64_t> RTCStatsMember::ValueMapStringUint64() const {
+  DCHECK(IsDefined());
+  const std::map<std::string, uint64_t>& map =
+      *member_
+           ->cast_to<webrtc::RTCStatsMember<std::map<std::string, uint64_t>>>();
+  HashMap<String, uint64_t> wtf_map;
+  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  for (auto& elem : map) {
+    wtf_map.insert(String::FromUTF8(elem.first), elem.second);
+  }
+  return wtf_map;
+}
+
+HashMap<String, double> RTCStatsMember::ValueMapStringDouble() const {
+  DCHECK(IsDefined());
+  const std::map<std::string, double>& map =
+      *member_
+           ->cast_to<webrtc::RTCStatsMember<std::map<std::string, double>>>();
+  HashMap<String, double> wtf_map;
+  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  for (auto& elem : map) {
+    wtf_map.insert(String::FromUTF8(elem.first), elem.second);
+  }
+  return wtf_map;
 }
 
 rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>

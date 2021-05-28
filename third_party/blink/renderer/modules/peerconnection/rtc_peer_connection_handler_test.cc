@@ -255,9 +255,26 @@ std::vector<T> ToSequence(T value) {
 }
 
 template <typename T>
+std::map<std::string, T> ToMap(const std::string& key, T value) {
+  std::map<std::string, T> map;
+  map[key] = value;
+  return map;
+}
+
+template <typename T>
 void ExpectSequenceEquals(const Vector<T>& sequence, T value) {
   EXPECT_EQ(sequence.size(), static_cast<size_t>(1));
   EXPECT_EQ(sequence[0], value);
+}
+
+template <typename T>
+void ExpectMapEquals(const HashMap<String, T>& map,
+                     const String& key,
+                     T value) {
+  EXPECT_EQ(map.size(), static_cast<size_t>(1));
+  auto it = map.find(key);
+  EXPECT_NE(it, map.end());
+  EXPECT_EQ(it->value, value);
 }
 
 class RTCPeerConnectionHandlerUnderTest : public RTCPeerConnectionHandler {
@@ -934,6 +951,8 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   stats_defined_members->m_sequence_uint64 = ToSequence<uint64_t>(42);
   stats_defined_members->m_sequence_double = ToSequence<double>(42);
   stats_defined_members->m_sequence_string = ToSequence<std::string>("42");
+  stats_defined_members->m_map_string_uint64 = ToMap<uint64_t>("42", 42);
+  stats_defined_members->m_map_string_double = ToMap<double>("42", 42.0);
   report->AddStats(
       std::unique_ptr<const webrtc::RTCStats>(stats_defined_members.release()));
 
@@ -1019,11 +1038,19 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
             ExpectSequenceEquals(member->ValueSequenceString(),
                                  String::FromUTF8("42"));
             break;
+          case webrtc::RTCStatsMemberInterface::kMapStringUint64:
+            ExpectMapEquals(member->ValueMapStringUint64(),
+                            String::FromUTF8("42"), static_cast<uint64_t>(42));
+            break;
+          case webrtc::RTCStatsMemberInterface::kMapStringDouble:
+            ExpectMapEquals(member->ValueMapStringDouble(),
+                            String::FromUTF8("42"), 42.0);
+            break;
           default:
             NOTREACHED();
         }
       }
-      EXPECT_EQ(members.size(), static_cast<size_t>(14));
+      EXPECT_EQ(members.size(), static_cast<size_t>(16));
     } else {
       NOTREACHED();
     }

@@ -15,6 +15,21 @@ namespace blink {
 
 namespace {
 
+template <typename T>
+v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
+                                    HashMap<String, T>&& map) {
+  V8ObjectBuilder builder(script_state);
+  for (auto& it : map) {
+    builder.Add(it.key, it.value);
+  }
+  v8::Local<v8::Object> v8_object = builder.V8Value();
+  if (v8_object.IsEmpty()) {
+    NOTREACHED();
+    return v8::Undefined(script_state->GetIsolate());
+  }
+  return v8_object;
+}
+
 v8::Local<v8::Value> RTCStatsToValue(ScriptState* script_state,
                                      const RTCStats* stats) {
   V8ObjectBuilder builder(script_state);
@@ -71,6 +86,14 @@ v8::Local<v8::Value> RTCStatsToValue(ScriptState* script_state,
         break;
       case webrtc::RTCStatsMemberInterface::kSequenceString:
         builder.Add(name, member->ValueSequenceString());
+        break;
+      case webrtc::RTCStatsMemberInterface::kMapStringUint64:
+        builder.Add(
+            name, HashMapToValue(script_state, member->ValueMapStringUint64()));
+        break;
+      case webrtc::RTCStatsMemberInterface::kMapStringDouble:
+        builder.Add(
+            name, HashMapToValue(script_state, member->ValueMapStringDouble()));
         break;
       default:
         NOTREACHED();

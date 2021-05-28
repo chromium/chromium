@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
@@ -112,6 +113,8 @@ class PLATFORM_EXPORT RTCStatsMember {
   Vector<uint64_t> ValueSequenceUint64() const;
   Vector<double> ValueSequenceDouble() const;
   Vector<String> ValueSequenceString() const;
+  HashMap<String, uint64_t> ValueMapStringUint64() const;
+  HashMap<String, double> ValueMapStringDouble() const;
 
  private:
   // Reference to keep the report that owns |member_|'s stats object alive.

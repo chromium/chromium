@@ -676,6 +676,8 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       case webrtc::RTCStatsMemberInterface::Type::kSequenceUint64:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceDouble:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceString:
+      case webrtc::RTCStatsMemberInterface::Type::kMapStringUint64:
+      case webrtc::RTCStatsMemberInterface::Type::kMapStringDouble:
       default:
         return base::Value(member.ValueToString());
     }
