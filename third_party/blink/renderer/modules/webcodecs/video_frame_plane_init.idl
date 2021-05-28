@@ -5,8 +5,10 @@
 // https://github.com/WICG/web-codecs
 
 dictionary VideoFramePlaneInit {
+  required VideoPixelFormat format;
+
   required long long timestamp;  // microseconds
-  unsigned long long duration;  // microseconds
+  unsigned long long duration;   // microseconds
 
   required [EnforceRange] unsigned long codedWidth;
   required [EnforceRange] unsigned long codedHeight;

@@ -61,7 +61,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const VideoFrameInit* init,
                             ExceptionState& exception_state);
   static VideoFrame* Create(ScriptState*,
-                            const String& format,
                             const HeapVector<Member<PlaneInit>>&,
                             const VideoFramePlaneInit*,
                             ExceptionState&);

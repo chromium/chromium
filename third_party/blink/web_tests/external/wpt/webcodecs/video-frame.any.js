@@ -106,13 +106,14 @@ test(t => {
 }, 'Test constructing VideoFrames from closed ImageBitmap throws.');
 
 test(t => {
-  let vfInit = {timestamp: 1234, codedWidth: 4, codedHeight: 2};
+  let vfInit = {format: 'ABCD', timestamp: 1234, codedWidth: 4,
+                codedHeight: 2};
   assert_throws_js(TypeError, () => {
-    let frame = new VideoFrame('ABCD', [], vfInit);
+    let frame = new VideoFrame([], vfInit);
   }, 'invalid pixel format');
 
   assert_throws_js(TypeError, () => {
-    let frame = new VideoFrame('ARGB', [], {timestamp: 1234});
+    let frame = new VideoFrame([], {format: 'ARGB', timestamp: 1234});
   }, 'missing coded size');
 
   function constructFrame(init) {
@@ -120,7 +121,8 @@ test(t => {
     let uPlaneData = new Uint8Array([1, 2]);                    // 2x1
     let yPlane = {src: yPlaneData, stride: 4};
     let uPlane = vPlane = {src: uPlaneData, stride: 2};
-    let frame = new VideoFrame('I420', [yPlane, uPlane, vPlane], init);
+    let frame = new VideoFrame([yPlane, uPlane, vPlane],
+                               {...init, format: 'I420'});
   }
 
   assert_throws_dom(
@@ -190,14 +192,14 @@ test(t => {
 
 test(t => {
   let fmt = 'I420';
-  let vfInit = {timestamp: 1234, codedWidth: 4, codedHeight: 2};
+  let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let yPlaneData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);  // 4x2
   let uPlaneData = new Uint8Array([1, 2]);                    // 2x1
   // TODO(sandersd): Remove |rows| if/when VideoFrame.planes[] is removed.
   // The value is used only by verifyPlane().
   let yPlane = {src: yPlaneData, stride: 4, rows: 2};
   let uPlane = vPlane = {src: uPlaneData, stride: 2, rows: 1};
-  let frame = new VideoFrame(fmt, [yPlane, uPlane, vPlane], vfInit);
+  let frame = new VideoFrame([yPlane, uPlane, vPlane], vfInit);
   assert_equals(frame.planes.length, 3, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
   verifyPlane(yPlane, frame.planes[0]);
@@ -206,43 +208,43 @@ test(t => {
   frame.close();
 
   assert_throws_dom('ConstraintError', () => {
-    let frame = new VideoFrame(fmt, [yPlane, uPlane], vfInit);
+    let frame = new VideoFrame([yPlane, uPlane], vfInit);
   }, 'too few planes');
   assert_throws_dom('ConstraintError', () => {
     let badYPlane = {...yPlane};
     badYPlane.stride = 1;
-    let frame = new VideoFrame(fmt, [badYPlane, uPlane, vPlane], vfInit);
+    let frame = new VideoFrame([badYPlane, uPlane, vPlane], vfInit);
   }, 'y stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badUPlane = {...uPlane};
     badUPlane.stride = 1;
-    let frame = new VideoFrame(fmt, [yPlane, badUPlane, vPlane], vfInit);
+    let frame = new VideoFrame([yPlane, badUPlane, vPlane], vfInit);
   }, 'u stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badVPlane = {...vPlane};
     badVPlane.stride = 1;
-    let frame = new VideoFrame(fmt, [yPlane, uPlane, badVPlane], vfInit);
+    let frame = new VideoFrame([yPlane, uPlane, badVPlane], vfInit);
   }, 'v stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badYPlane = {...yPlane};
     badYPlane.src = yPlaneData.slice(1, 4);
-    let frame = new VideoFrame(fmt, [badYPlane, uPlane, vPlane], vfInit);
+    let frame = new VideoFrame([badYPlane, uPlane, vPlane], vfInit);
   }, 'y plane size too small');
   assert_throws_dom('ConstraintError', () => {
     let badUPlane = {...uPlane};
     badUPlane.src = uPlaneData.slice(1, 1);
-    let frame = new VideoFrame(fmt, [yPlane, badUPlane, vPlane], vfInit);
+    let frame = new VideoFrame([yPlane, badUPlane, vPlane], vfInit);
   }, 'u plane size too small');
   assert_throws_dom('ConstraintError', () => {
     let badVPlane = {...vPlane};
     badVPlane.src = uPlaneData.slice(1, 1);
-    let frame = new VideoFrame(fmt, [yPlane, uPlane, badVPlane], vfInit);
+    let frame = new VideoFrame([yPlane, uPlane, badVPlane], vfInit);
   }, 'v plane size too small');
 }, 'Test planar constructed I420 VideoFrame');
 
 test(t => {
   let fmt = 'I420';
-  let vfInit = {timestamp: 1234, codedWidth: 4, codedHeight: 2};
+  let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let yPlaneData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);  // 4x2
   let uPlaneData = new Uint8Array([1, 2]);                    // 2x1
   // TODO(sandersd): Remove |rows| if/when VideoFrame.planes[] is removed.
@@ -251,7 +253,7 @@ test(t => {
   let uPlane = vPlane = {src: uPlaneData, stride: 2, rows: 1};
   let aPlaneData = yPlaneData.reverse();
   let aPlane = {src: aPlaneData, stride: 4, rows: 2};
-  let frame = new VideoFrame(fmt, [yPlane, uPlane, vPlane, aPlane], vfInit);
+  let frame = new VideoFrame([yPlane, uPlane, vPlane, aPlane], vfInit);
   assert_equals(frame.planes.length, 4, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
   verifyPlane(yPlane, frame.planes[0]);
@@ -266,26 +268,26 @@ test(t => {
     let badAPlane = {...aPlane};
     badAPlane.stride = 1;
     let frame =
-        new VideoFrame(fmt, [yPlane, uPlane, vPlane, badAPlane], vfInit);
+        new VideoFrame([yPlane, uPlane, vPlane, badAPlane], vfInit);
   }, 'a stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badAPlane = {...yPlane};
     badAPlane.src = aPlaneData.slice(1, 4);
     let frame =
-        new VideoFrame(fmt, [yPlane, uPlane, vPlane, badAPlane], vfInit);
+        new VideoFrame([yPlane, uPlane, vPlane, badAPlane], vfInit);
   }, 'a plane size too small');
 }, 'Test planar constructed I420+Alpha VideoFrame');
 
 test(t => {
   let fmt = 'NV12';
-  let vfInit = {timestamp: 1234, codedWidth: 4, codedHeight: 2};
+  let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let yPlaneData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);  // 4x2
   // TODO(sandersd): Remove |rows| if/when VideoFrame.planes[] is removed.
   // The value is used only by verifyPlane().
   let yPlane = {src: yPlaneData, stride: 4, rows: 2};
   let uvPlaneData = new Uint8Array([1, 2, 3, 4]);
   let uvPlane = {src: uvPlaneData, stride: 4, rows: 1};
-  let frame = new VideoFrame(fmt, [yPlane, uvPlane], vfInit);
+  let frame = new VideoFrame([yPlane, uvPlane], vfInit);
   assert_equals(frame.planes.length, 2, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
   verifyPlane(yPlane, frame.planes[0]);
@@ -293,27 +295,27 @@ test(t => {
   frame.close();
 
   assert_throws_dom('ConstraintError', () => {
-    let frame = new VideoFrame(fmt, [yPlane], vfInit);
+    let frame = new VideoFrame([yPlane], vfInit);
   }, 'too few planes');
   assert_throws_dom('ConstraintError', () => {
     let badYPlane = {...yPlane};
     badYPlane.stride = 1;
-    let frame = new VideoFrame(fmt, [badYPlane, uvPlane], vfInit);
+    let frame = new VideoFrame([badYPlane, uvPlane], vfInit);
   }, 'y stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badUVPlane = {...uvPlane};
     badUVPlane.stride = 2;
-    let frame = new VideoFrame(fmt, [yPlane, badUVPlane], vfInit);
+    let frame = new VideoFrame([yPlane, badUVPlane], vfInit);
   }, 'uv stride too small');
   assert_throws_dom('ConstraintError', () => {
     let badYPlane = {...yPlane};
     badYPlane.src = yPlaneData.slice(1, 4);
-    let frame = new VideoFrame(fmt, [badYPlane, uvPlane], vfInit);
+    let frame = new VideoFrame([badYPlane, uvPlane], vfInit);
   }, 'y plane size too small');
   assert_throws_dom('ConstraintError', () => {
     let badUVPlane = {...uvPlane};
     badUVPlane.src = uvPlaneData.slice(1, 1);
-    let frame = new VideoFrame(fmt, [yPlane, badUVPlane], vfInit);
+    let frame = new VideoFrame([yPlane, badUVPlane], vfInit);
   }, 'u plane size too small');
 }, 'Test planar constructed NV12 VideoFrame');
 
@@ -324,25 +326,25 @@ test(t => {
   // TODO(sandersd): Remove |rows| if/when VideoFrame.planes[] is removed.
   // The value is used only by verifyPlane().
   let argbPlane = {src: argbPlaneData, stride: 4 * 4, rows: 2};
-  let frame = new VideoFrame('ABGR', [argbPlane], vfInit);
+  let frame = new VideoFrame([argbPlane], {...vfInit, format: 'ABGR'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'ABGR', 'plane format');
   verifyPlane(argbPlane, frame.planes[0]);
   frame.close();
 
-  frame = new VideoFrame('ARGB', [argbPlane], vfInit);
+  frame = new VideoFrame([argbPlane], {...vfInit, format: 'ARGB'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'ARGB', 'plane format');
   verifyPlane(argbPlane, frame.planes[0]);
   frame.close();
 
-  frame = new VideoFrame('XBGR', [argbPlane], vfInit);
+  frame = new VideoFrame([argbPlane], {...vfInit, format: 'XBGR'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'XBGR', 'plane format');
   verifyPlane(argbPlane, frame.planes[0]);
   frame.close();
 
-  frame = new VideoFrame('XRGB', [argbPlane], vfInit);
+  frame = new VideoFrame([argbPlane], {...vfInit, format: 'XRGB'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'XRGB', 'plane format');
   verifyPlane(argbPlane, frame.planes[0]);
@@ -350,17 +352,17 @@ test(t => {
 
   ['ABGR', 'ARGB', 'XBGR', 'XRGB'].forEach(fmt => {
     assert_throws_dom('ConstraintError', () => {
-      let frame = new VideoFrame(fmt, [], vfInit);
+      let frame = new VideoFrame([], {...vfInit, format: fmt});
     }, fmt + ': too few planes');
     assert_throws_dom('ConstraintError', () => {
       let badARGBPlane = {...argbPlane};
       badARGBPlane.stride = 1;
-      let frame = new VideoFrame(fmt, [badARGBPlane], vfInit);
+      let frame = new VideoFrame([badARGBPlane], {...vfInit, format: fmt});
     }, fmt + ': stride too small');
     assert_throws_dom('ConstraintError', () => {
       let badARGBPlane = {...argbPlane};
       badARGBPlane.src = argbPlaneData.slice(1, 4);
-      let frame = new VideoFrame(fmt, [badARGBPlane], vfInit);
+      let frame = new VideoFrame([badARGBPlane], {...vfInit, format: fmt});
     }, fmt + ': plane size too small');
   });
 }, 'Test planar constructed RGB VideoFrames');
@@ -403,14 +405,14 @@ test(t => {
 
 test(t => {
   let fmt = 'I420';
-  let vfInit = {timestamp: 1234, codedWidth: 4, codedHeight: 2};
+  let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let yPlaneData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);  // 4x2
   let uPlaneData = new Uint8Array([1, 2]);                    // 2x1
   let yPlane = {src: yPlaneData, stride: 4};
   let uPlane = vPlane = {src: uPlaneData, stride: 2};
   let aPlaneData = yPlaneData.reverse();
   let aPlane = {src: aPlaneData, stride: 4};
-  let frame = new VideoFrame(fmt, [yPlane, uPlane, vPlane, aPlane], vfInit);
+  let frame = new VideoFrame([yPlane, uPlane, vPlane, aPlane], vfInit);
   assert_equals(frame.planes.length, 4, 'plane count');
   assert_equals(frame.format, fmt, 'plane format');
 
@@ -432,7 +434,7 @@ test(t => {
   let argbPlaneData =
       new Uint8Array(new Uint32Array([1, 2, 3, 4, 5, 6, 7, 8]).buffer);
   let argbPlane = {src: argbPlaneData, stride: 4 * 4};
-  let frame = new VideoFrame('ABGR', [argbPlane], vfInit);
+  let frame = new VideoFrame([argbPlane], {...vfInit, format: 'ABGR'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'ABGR', 'plane format');
 
@@ -446,7 +448,7 @@ test(t => {
   opaque_frame_copy.close();
   frame.close();
 
-  frame = new VideoFrame('ARGB', [argbPlane], vfInit);
+  frame = new VideoFrame([argbPlane], {...vfInit, format: 'ARGB'});
   assert_equals(frame.planes.length, 1, 'plane count');
   assert_equals(frame.format, 'ARGB', 'plane format');
 

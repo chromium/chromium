@@ -12,8 +12,7 @@
   [CallWith=ScriptState, RaisesException]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
   [CallWith=ScriptState, RaisesException]
-  constructor(VideoPixelFormat format,
-              sequence<PlaneInit> planes,
+  constructor(sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
 
   // TODO(sandersd): It's not clear whether it's better to use undefined, or a
