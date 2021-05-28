@@ -35,6 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -69,10 +70,12 @@ public class CustomTabIntentDataProviderTest {
                 .build()
                 .intent;
 
-        CustomTabIntentDataProvider lightProvider = new CustomTabIntentDataProvider(
-                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_LIGHT);
-        CustomTabIntentDataProvider darkProvider = new CustomTabIntentDataProvider(
-                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_DARK);
+        ColorProvider lightProvider = new CustomTabIntentDataProvider(
+                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_LIGHT)
+                                              .getColorProvider();
+        ColorProvider darkProvider = new CustomTabIntentDataProvider(
+                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_DARK)
+                                             .getColorProvider();
 
         assertEquals((int) lightParams.toolbarColor, lightProvider.getToolbarColor());
         assertEquals((int) darkParams.toolbarColor, darkProvider.getToolbarColor());

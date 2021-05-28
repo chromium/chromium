@@ -39,6 +39,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -248,7 +249,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final int[] mGsaExperimentIds;
 
     @NonNull
-    private final CustomTabColorProvider mColorProvider;
+    private final ColorProvider mColorProvider;
 
     /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
@@ -470,8 +471,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (shareState == CustomTabsIntent.SHARE_STATE_ON
                 || shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
-                mToolbarButtons.add(
-                        CustomButtonParamsImpl.createShareButton(context, getToolbarColor()));
+                mToolbarButtons.add(CustomButtonParamsImpl.createShareButton(
+                        context, getColorProvider().getToolbarColor()));
                 logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
@@ -631,25 +632,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public int getToolbarColor() {
-        return mColorProvider.getToolbarColor();
-    }
-
-    @Override
-    public boolean hasCustomToolbarColor() {
-        return mColorProvider.hasCustomToolbarColor();
-    }
-
-    @Override
-    @Nullable
-    public Integer getNavigationBarColor() {
-        return mColorProvider.getNavigationBarColor();
-    }
-
-    @Override
-    @Nullable
-    public Integer getNavigationBarDividerColor() {
-        return mColorProvider.getNavigationBarDividerColor();
+    public ColorProvider getColorProvider() {
+        return mColorProvider;
     }
 
     @Override
@@ -676,11 +660,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public List<CustomButtonParams> getCustomButtonsOnBottombar() {
         return mBottombarButtons;
-    }
-
-    @Override
-    public int getBottomBarColor() {
-        return mColorProvider.getBottomBarColor();
     }
 
     @Override
@@ -753,11 +732,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean isFromMediaLauncherActivity() {
         return mIsFromMediaLauncherActivity;
-    }
-
-    @Override
-    public int getInitialBackgroundColor() {
-        return mColorProvider.getInitialBackgroundColor();
     }
 
     @Override

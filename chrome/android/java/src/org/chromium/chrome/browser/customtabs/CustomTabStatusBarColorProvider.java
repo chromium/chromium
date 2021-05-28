@@ -56,7 +56,7 @@ public class CustomTabStatusBarColorProvider {
             case ToolbarColorType.DEFAULT_COLOR:
                 return DEFAULT_STATUS_BAR_COLOR;
             case ToolbarColorType.INTENT_TOOLBAR_COLOR:
-                return mIntentDataProvider.getToolbarColor();
+                return mIntentDataProvider.getColorProvider().getToolbarColor();
         }
         return DEFAULT_STATUS_BAR_COLOR;
     }

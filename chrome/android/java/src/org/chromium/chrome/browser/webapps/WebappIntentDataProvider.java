@@ -21,6 +21,7 @@ import androidx.browser.trusted.sharing.ShareData;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -31,8 +32,6 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
  * Stores info about a web app.
  */
 public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider {
-    private final int mToolbarColor;
-    private final boolean mHasCustomToolbarColor;
     private final Drawable mCloseButtonIcon;
     private final TrustedWebActivityDisplayMode mTwaDisplayMode;
     private final ShareData mShareData;
@@ -40,6 +39,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final @Nullable WebApkExtras mWebApkExtras;
     private final @ActivityType int mActivityType;
     private final Intent mIntent;
+    private final ColorProviderImpl mColorProvider;
 
     /**
      * Returns the toolbar color to use if a custom color is not specified by the webapp.
@@ -52,8 +52,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
             boolean hasCustomToolbarColor, @Nullable ShareData shareData,
             @NonNull WebappExtras webappExtras, @Nullable WebApkExtras webApkExtras) {
         mIntent = intent;
-        mToolbarColor = toolbarColor;
-        mHasCustomToolbarColor = hasCustomToolbarColor;
+        mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(
                 ContextUtils.getApplicationContext(), R.drawable.btn_close);
         mTwaDisplayMode = (webappExtras.displayMode == WebDisplayMode.FULLSCREEN)
@@ -92,13 +91,9 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public int getToolbarColor() {
-        return mToolbarColor;
-    }
-
-    @Override
-    public boolean hasCustomToolbarColor() {
-        return mHasCustomToolbarColor;
+    @NonNull
+    public ColorProvider getColorProvider() {
+        return mColorProvider;
     }
 
     @Override
@@ -158,5 +153,47 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     @Override
     public int getDefaultOrientation() {
         return mWebappExtras.orientation;
+    }
+
+    private static final class ColorProviderImpl implements ColorProvider {
+        private final int mToolbarColor;
+        private final boolean mHasCustomToolbarColor;
+
+        ColorProviderImpl(int toolbarColor, boolean hasCustomToolbarColor) {
+            mToolbarColor = toolbarColor;
+            mHasCustomToolbarColor = hasCustomToolbarColor;
+        }
+
+        @Override
+        public int getToolbarColor() {
+            return mToolbarColor;
+        }
+
+        @Override
+        public boolean hasCustomToolbarColor() {
+            return mHasCustomToolbarColor;
+        }
+
+        @Override
+        @Nullable
+        public Integer getNavigationBarColor() {
+            return null;
+        }
+
+        @Override
+        @Nullable
+        public Integer getNavigationBarDividerColor() {
+            return null;
+        }
+
+        @Override
+        public int getBottomBarColor() {
+            return getToolbarColor();
+        }
+
+        @Override
+        public int getInitialBackgroundColor() {
+            return Color.TRANSPARENT;
+        }
     }
 }

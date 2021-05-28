@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,7 +65,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
     private final Bundle mAnimationBundle;
-    private final CustomTabColorProvider mColorProvider;
+    private final ColorProvider mColorProvider;
     private final int mTitleVisibilityState;
     private final Drawable mCloseButtonIcon;
     private final boolean mShowShareItem;
@@ -291,13 +292,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public int getToolbarColor() {
-        return mColorProvider.getToolbarColor();
-    }
-
-    @Override
-    public boolean hasCustomToolbarColor() {
-        return mColorProvider.hasCustomToolbarColor();
+    public ColorProvider getColorProvider() {
+        return mColorProvider;
     }
 
     @Override
@@ -309,27 +305,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     @Override
     public boolean shouldShowShareMenuItem() {
         return mShowShareItem;
-    }
-
-    @Override
-    public int getBottomBarColor() {
-        return mColorProvider.getBottomBarColor();
-    }
-
-    @Override
-    public int getInitialBackgroundColor() {
-        return mColorProvider.getInitialBackgroundColor();
-    }
-
-    @Override
-    public Integer getNavigationBarColor() {
-        return mColorProvider.getNavigationBarColor();
-    }
-
-    @Override
-    @Nullable
-    public Integer getNavigationBarDividerColor() {
-        return mColorProvider.getNavigationBarDividerColor();
     }
 
     @Override

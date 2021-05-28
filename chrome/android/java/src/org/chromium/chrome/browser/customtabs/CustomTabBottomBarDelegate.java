@@ -151,7 +151,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
         if (items.isEmpty()) return;
         LinearLayout layout = new LinearLayout(mActivity);
         layout.setId(R.id.custom_tab_bottom_bar_wrapper);
-        layout.setBackgroundColor(mDataProvider.getBottomBarColor());
+        layout.setBackgroundColor(mDataProvider.getColorProvider().getBottomBarColor());
         for (CustomButtonParams params : items) {
             if (params.showOnToolbar()) continue;
             final PendingIntent pendingIntent = params.getPendingIntent();

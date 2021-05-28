@@ -27,8 +27,9 @@ public class CustomTabNavigationBarController {
      */
     public static void update(Window window, BrowserServicesIntentDataProvider intentDataProvider,
             Resources resources) {
-        Integer navigationBarColor = intentDataProvider.getNavigationBarColor();
-        Integer navigationBarDividerColor = intentDataProvider.getNavigationBarDividerColor();
+        Integer navigationBarColor = intentDataProvider.getColorProvider().getNavigationBarColor();
+        Integer navigationBarDividerColor =
+                intentDataProvider.getColorProvider().getNavigationBarDividerColor();
 
         int lightBackgroundDividerColor = ApiCompatibilityUtils.getColor(
                 resources, org.chromium.chrome.R.color.black_alpha_12);

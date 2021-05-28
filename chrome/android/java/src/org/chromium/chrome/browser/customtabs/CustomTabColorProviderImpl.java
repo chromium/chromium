@@ -18,14 +18,15 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /**
- * CustomTabColorProvider implementation used for normal profiles, in some cases incognito
+ * ColorProvider implementation used for normal profiles, in some cases incognito
  * profiles.
  */
-public final class CustomTabColorProviderImpl implements CustomTabColorProvider {
+public final class CustomTabColorProviderImpl implements ColorProvider {
     private static final String TAG = "CustomTabColorPrvdr";
 
     private final boolean mHasCustomToolbarColor;

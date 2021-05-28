@@ -488,7 +488,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     private void prepareTabBackground(final Tab tab) {
         if (!CustomTabIntentDataProvider.isTrustedCustomTab(mIntent, mSession)) return;
 
-        int backgroundColor = mIntentDataProvider.getInitialBackgroundColor();
+        int backgroundColor = mIntentDataProvider.getColorProvider().getInitialBackgroundColor();
         if (backgroundColor == Color.TRANSPARENT) return;
 
         // Set the background color.

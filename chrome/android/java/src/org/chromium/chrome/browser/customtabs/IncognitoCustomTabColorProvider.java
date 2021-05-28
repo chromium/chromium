@@ -9,13 +9,13 @@ import android.graphics.Color;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /**
- * CustomTabColorProvider implementation used for normal provides, and some times incognito
- * profiles.
+ * ColorProvider implementation used for incognito profiles.
  */
-public final class IncognitoCustomTabColorProvider implements CustomTabColorProvider {
+public final class IncognitoCustomTabColorProvider implements ColorProvider {
     private final int mToolbarColor;
     private final int mBottomBarColor;
     private final int mNavigationBarColor;

@@ -103,7 +103,7 @@ public class WebappInfo {
      * ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING otherwise.
      */
     public long toolbarColor() {
-        return hasValidToolbarColor() ? mProvider.getToolbarColor()
+        return hasValidToolbarColor() ? mProvider.getColorProvider().getToolbarColor()
                                       : ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING;
     }
 
@@ -111,7 +111,7 @@ public class WebappInfo {
      * Returns whether the toolbar color specified in the Intent is valid.
      */
     public boolean hasValidToolbarColor() {
-        return mProvider.hasCustomToolbarColor();
+        return mProvider.getColorProvider().hasCustomToolbarColor();
     }
 
     /**

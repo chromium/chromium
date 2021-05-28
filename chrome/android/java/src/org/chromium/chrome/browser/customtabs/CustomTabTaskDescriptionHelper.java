@@ -96,8 +96,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
         mDefaultThemeColor = ApiCompatibilityUtils.getColor(
                 mActivity.getResources(), R.color.default_primary_color);
         if (webappExtras != null) {
-            if (mIntentDataProvider.hasCustomToolbarColor()) {
-                mDefaultThemeColor = mIntentDataProvider.getToolbarColor();
+            if (mIntentDataProvider.getColorProvider().hasCustomToolbarColor()) {
+                mDefaultThemeColor = mIntentDataProvider.getColorProvider().getToolbarColor();
             }
             mForceIcon = webappExtras.icon.bitmap();
             mForceTitle = webappExtras.shortName;

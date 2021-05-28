@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/intents/BitmapHelper.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserServicesIntentDataProvider.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/ColorProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
