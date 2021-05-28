@@ -1632,7 +1632,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
                        SafetyTipOnPrerender) {
   // Start test server.
-  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
   base::RunLoop run_loop_for_prerenderer;

@@ -3466,7 +3466,7 @@ class PDFExtensionPrerenderTest : public PDFExtensionTest {
 IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
                        LoadPdfWhilePrerenderedDoesNotCrash) {
   const GURL initial_url =
-      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+      embedded_test_server()->GetURL("a.test", "/empty.html");
   const GURL pdf_url =
       embedded_test_server()->GetURL("a.test", "/pdf/test.pdf");
   content::WebContents* web_contents =

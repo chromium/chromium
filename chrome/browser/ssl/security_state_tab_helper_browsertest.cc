@@ -2128,7 +2128,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   SetUpMockCertVerifierForHttpsServer(*test_server, 0, net::OK);
 
   // Load a valid HTTPS page.
-  auto primary_url = test_server->GetURL("/prerender/add_prerender.html");
+  auto primary_url = test_server->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), primary_url);
   CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
                              false, false,
@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
   SetUpMockCertVerifierForHttpsServer(*test_server, 0, net::OK);
 
   // Load a valid HTTPS page.
-  auto primary_url = test_server->GetURL("/prerender/add_prerender.html");
+  auto primary_url = test_server->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), primary_url);
   CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
                              false, false,

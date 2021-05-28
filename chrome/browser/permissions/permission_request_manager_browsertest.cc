@@ -1041,8 +1041,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
                        RequestForPermission) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
   ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
@@ -1069,8 +1068,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
                        DuplicateRequestForPermission) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
   ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
@@ -1100,8 +1098,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
                        PrerenderLoadsWhileRequestsPending) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL next_url = embedded_test_server()->GetURL("b.test", "/title1.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);

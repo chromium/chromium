@@ -105,17 +105,8 @@ class PrerenderTestHelper {
   //
   // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
   // the completion of prerendering.
-  //
-  // NOTE: this function requires that the add_prerender.html has been
-  // loaded. This is most easily accomplished by using PrerenderBrowserTest,
-  // but if that's not possible, ensure that you have this file loaded before
-  // making this call.
   int AddPrerender(const GURL& gurl);
   void AddPrerenderAsync(const GURL& gurl);
-
-  // Adds <link rel=prerender> in the current main frame without loading
-  // add_prerender.html and waits until the completion of prerendering.
-  int AddPrerenderWithTestUtilJS(const GURL& gurl);
 
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting

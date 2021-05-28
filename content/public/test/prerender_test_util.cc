@@ -22,6 +22,13 @@ namespace content {
 namespace test {
 namespace {
 
+constexpr char kAddPrerenderScript[] = R"({
+    const link = document.createElement('link');
+    link.rel = 'prerender';
+    link.href = $1;
+    document.head.appendChild(link);
+  })";
+
 constexpr char kAddSpeculationRuleScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
@@ -261,11 +268,8 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
 }
 
 int PrerenderTestHelper::AddPrerender(const GURL& gurl) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  AddPrerenderAsync(gurl);
 
-  // Add the link tag that will prerender the URL.
-  EXPECT_TRUE(ExecJs(GetWebContents(), JsReplace("add_prerender($1)", gurl)))
-      << "AddPrerender failed. Did you load add_prerender.html?";
   WaitForPrerenderLoadCompletion(gurl);
   int host_id = GetHostForUrl(gurl);
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
@@ -275,41 +279,9 @@ int PrerenderTestHelper::AddPrerender(const GURL& gurl) {
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& gurl) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  auto script = JsReplace("add_prerender($1)", gurl);
+  const auto script = JsReplace(kAddPrerenderScript, gurl);
   GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
-}
-
-int PrerenderTestHelper::AddPrerenderWithTestUtilJS(const GURL& gurl) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  std::string start_prerender = R"(
-      (() => {
-        const script = document.createElement('script');
-        script.addEventListener('load', () => {
-          window.domAutomationController.send(true);
-        });
-        script.addEventListener('error', () => {
-          window.domAutomationController.send(false);
-        });
-        script.src = '/prerender/test_utils.js';
-        document.body.appendChild(script);
-      })();
-    )";
-  bool script_loaded = false;
-  // Load test_utils.js and wait util loading done.
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(GetWebContents()->GetMainFrame(),
-                                          start_prerender, &script_loaded));
-  EXPECT_TRUE(script_loaded);
-
-  EXPECT_TRUE(ExecJs(GetWebContents(), JsReplace("add_prerender($1)", gurl)))
-      << "AddPrerender failed. Did you set the right path to load "
-         "/prerender/test_utils.js?";
-
-  WaitForPrerenderLoadCompletion(gurl);
-  int host_id = GetHostForUrl(gurl);
-  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-  return host_id;
 }
 
 int PrerenderTestHelper::AddSpeculationRules(const GURL& prerendering_url) {

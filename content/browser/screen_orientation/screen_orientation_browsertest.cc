@@ -479,8 +479,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a site.
-  GURL initial_url =
-      embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), initial_url, 1);
 
   EXPECT_TRUE(ExecuteScript(web_contents()->GetMainFrame(),

@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(MediaHistoryForPrerenderBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
 
   // We should not fetch the URL while prerendering.
-  prerender_helper_.AddPrerenderWithTestUtilJS(prerender_url);
+  prerender_helper_.AddPrerender(prerender_url);
 
   EXPECT_TRUE(SetMediaMetadataWithArtwork(browser()));
   auto expected_artwork = GetExpectedArtwork();

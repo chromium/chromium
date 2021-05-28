@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Adds <link rel=prerender> for the URL.
-function add_prerender(url) {
-  const link = document.createElement('link');
-  link.rel = 'prerender';
-  link.href = url;
-  document.head.appendChild(link);
-}
-
 // Creates a new iframe with the URL, and returns a promise.
 function add_iframe(url) {
   const frame = document.createElement('iframe');

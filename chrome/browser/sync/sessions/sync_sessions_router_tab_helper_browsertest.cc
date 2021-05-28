@@ -128,7 +128,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
 // SyncSessionsWebContentsRouter while a page without a title is prerendered.
 IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
                        SyncSessionRouterWithoutTitleInPrerender) {
-  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL url = embedded_test_server()->GetURL("/empty.html");
   // Set LanguageDetectionObserver to make sure that it starts prerendering
   // after OnLanguageDetermined() on the current loading which could trigger a
   // session sync.

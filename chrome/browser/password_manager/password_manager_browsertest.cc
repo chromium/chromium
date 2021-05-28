@@ -4269,7 +4269,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   login_observer.Register(
       content::Source<content::NavigationController>(nav_controller));
 
-  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
   content::test::PrerenderHostRegistryObserver registry_observer(
@@ -4319,7 +4319,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 // Tests that saving password doesn't work in the prerendering.
 IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
                        SavePasswordInPrerender) {
-  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
   auto prerender_url =
@@ -4362,7 +4362,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 // Tests that it defers to bind mojom::CredentialManager in the prerendering.
 IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
                        BindCredentialManagerInPrerender) {
-  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  GURL url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
   auto prerender_url =

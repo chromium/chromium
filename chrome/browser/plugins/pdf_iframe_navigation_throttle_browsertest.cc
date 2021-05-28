@@ -86,8 +86,7 @@ class PDFIFrameNavigationThrottleBrowserTest : public InProcessBrowserTest {
 // the fallback HTML content even while it is prerendering.
 IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
                        HTMLFallbackInPrerender) {
-  const GURL kUrl(
-      embedded_test_server()->GetURL("/prerender/add_prerender.html"));
+  const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
   ui_test_utils::NavigateToURL(browser(), kUrl);
 
   const GURL kPrerenderUrl =

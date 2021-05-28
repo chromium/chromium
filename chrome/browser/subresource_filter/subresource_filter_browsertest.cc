@@ -1167,8 +1167,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
                        PrerenderingMainFrameActivated) {
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/page_with_iframe.html");
-  const GURL kInitialUrl =
-      embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));

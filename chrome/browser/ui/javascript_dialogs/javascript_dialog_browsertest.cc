@@ -402,7 +402,7 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL("/prerender/add_prerender.html"));
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
   ui_test_utils::NavigateToURL(browser(), url);
 
   javascript_dialogs::TabModalDialogManager* js_helper =
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {
   JavaScriptCallbackHelper callback_helper;
   bool did_suppress = false;
 
-  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
 
   // Prerender to another site.
   prerender_helper_.AddPrerenderAsync(prerender_url);
