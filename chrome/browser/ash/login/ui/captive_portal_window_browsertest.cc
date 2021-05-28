@@ -215,7 +215,9 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
 };
 
-IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
+// TODO(https://crbug.com/1213549): Flaky on linux-chromeos-rel.
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
+                       DISABLED_OpenPortalDialog) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   ASSERT_TRUE(host);
   OobeUI* oobe = host->GetOobeUI();
