@@ -224,6 +224,13 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The autocomplete attribute may prevent Autofill import, crbug/1213301. This
+// feature addresses the issue. For now, the fix only concerns fields with the
+// signature 2281611779.
+// TODO(crbug/1213301): Remove this.
+const base::Feature kAutofillIgnoreAutocompleteForImport{
+    "AutofillIgnoreAutocompleteForImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if a server prediction with a prediction source |OVERRIDE| is
 // granted precedence over html type attributes.
 // TODO(crbug.com/1170384) Remove once launched
