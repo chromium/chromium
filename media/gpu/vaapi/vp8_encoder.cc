@@ -51,8 +51,9 @@ VP8Encoder::~VP8Encoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool VP8Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
-                            const AcceleratedVideoEncoder::Config& ave_config) {
+bool VP8Encoder::Initialize(
+    const VideoEncodeAccelerator::Config& config,
+    const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (VideoCodecProfileToVideoCodec(config.output_profile) != kCodecVP8) {
     DVLOGF(1) << "Invalid profile: " << GetProfileName(config.output_profile);

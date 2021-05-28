@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/accelerated_video_encoder.h"
+#include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
 
@@ -15,7 +15,7 @@
 
 namespace media {
 
-AcceleratedVideoEncoder::EncodeJob::EncodeJob(
+VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
     bool keyframe,
     base::OnceClosure execute_cb,
@@ -35,7 +35,7 @@ AcceleratedVideoEncoder::EncodeJob::EncodeJob(
   DCHECK(!execute_callback_.is_null());
 }
 
-AcceleratedVideoEncoder::EncodeJob::EncodeJob(
+VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
     bool keyframe,
     base::OnceClosure execute_cb)
@@ -46,27 +46,27 @@ AcceleratedVideoEncoder::EncodeJob::EncodeJob(
   DCHECK(!execute_callback_.is_null());
 }
 
-AcceleratedVideoEncoder::EncodeJob::~EncodeJob() = default;
+VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
-void AcceleratedVideoEncoder::EncodeJob::AddSetupCallback(
+void VaapiVideoEncoderDelegate::EncodeJob::AddSetupCallback(
     base::OnceClosure cb) {
   DCHECK(!cb.is_null());
   setup_callbacks_.push(std::move(cb));
 }
 
-void AcceleratedVideoEncoder::EncodeJob::AddPostExecuteCallback(
+void VaapiVideoEncoderDelegate::EncodeJob::AddPostExecuteCallback(
     base::OnceClosure cb) {
   DCHECK(!cb.is_null());
   post_execute_callbacks_.push(std::move(cb));
 }
 
-void AcceleratedVideoEncoder::EncodeJob::AddReferencePicture(
+void VaapiVideoEncoderDelegate::EncodeJob::AddReferencePicture(
     scoped_refptr<CodecPicture> ref_pic) {
   DCHECK(ref_pic);
   reference_pictures_.push_back(ref_pic);
 }
 
-void AcceleratedVideoEncoder::EncodeJob::Execute() {
+void VaapiVideoEncoderDelegate::EncodeJob::Execute() {
   while (!setup_callbacks_.empty()) {
     std::move(setup_callbacks_.front()).Run();
     setup_callbacks_.pop();
@@ -80,31 +80,32 @@ void AcceleratedVideoEncoder::EncodeJob::Execute() {
   }
 }
 
-VABufferID AcceleratedVideoEncoder::EncodeJob::coded_buffer_id() const {
+VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
   return coded_buffer_->id();
 }
 
 const scoped_refptr<VASurface>&
-AcceleratedVideoEncoder::EncodeJob::input_surface() const {
+VaapiVideoEncoderDelegate::EncodeJob::input_surface() const {
   return input_surface_;
 }
-const scoped_refptr<CodecPicture>& AcceleratedVideoEncoder::EncodeJob::picture()
-    const {
+const scoped_refptr<CodecPicture>&
+VaapiVideoEncoderDelegate::EncodeJob::picture() const {
   return picture_;
 }
 
-size_t AcceleratedVideoEncoder::GetBitstreamBufferSize() const {
+size_t VaapiVideoEncoderDelegate::GetBitstreamBufferSize() const {
   return GetEncodeBitstreamBufferSize(GetCodedSize());
 }
 
-void AcceleratedVideoEncoder::BitrateControlUpdate(
+void VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
-  NOTREACHED() << __func__ << "() is called to on an"
-               << "AcceleratedVideoEncoder that doesn't support BitrateControl"
-               << "::kConstantQuantizationParameter";
+  NOTREACHED()
+      << __func__ << "() is called to on an"
+      << "VaapiVideoEncoderDelegate that doesn't support BitrateControl"
+      << "::kConstantQuantizationParameter";
 }
 
-BitstreamBufferMetadata AcceleratedVideoEncoder::GetMetadata(
+BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
     EncodeJob* encode_job,
     size_t payload_size) {
   return BitstreamBufferMetadata(

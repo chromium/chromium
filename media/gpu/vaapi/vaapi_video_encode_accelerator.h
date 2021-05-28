@@ -17,8 +17,8 @@
 #include "base/single_thread_task_runner.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/vaapi/accelerated_video_encoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -52,7 +52,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   class VP8Accelerator;
   class VP9Accelerator;
 
-  using EncodeJob = AcceleratedVideoEncoder::EncodeJob;
+  using EncodeJob = VaapiVideoEncoderDelegate::EncodeJob;
 
   // Encoder state.
   enum State {
@@ -204,7 +204,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   State state_;
 
   // Encoder instance managing video codec state and preparing encode jobs.
-  std::unique_ptr<AcceleratedVideoEncoder> encoder_;
+  std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
 
   // VA surfaces available for encoding.
   std::vector<VASurfaceID> available_va_surface_ids_;

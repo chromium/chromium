@@ -69,7 +69,7 @@ H264Encoder::~H264Encoder() {
 
 bool H264Encoder::Initialize(
     const VideoEncodeAccelerator::Config& config,
-    const AcceleratedVideoEncoder::Config& ave_config) {
+    const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (config.output_profile) {
     case H264PROFILE_BASELINE:

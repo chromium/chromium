@@ -16,7 +16,7 @@ using ::testing::Return;
 namespace media {
 namespace {
 
-AcceleratedVideoEncoder::Config kDefaultAVEConfig{10};
+VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{10};
 
 VideoEncodeAccelerator::Config kDefaultVEAConfig(
     PIXEL_FORMAT_I420,
@@ -35,13 +35,13 @@ class MockH264Accelerator : public H264Encoder::Accelerator {
   MockH264Accelerator() = default;
   MOCK_METHOD1(
       GetPicture,
-      scoped_refptr<H264Picture>(AcceleratedVideoEncoder::EncodeJob* job));
+      scoped_refptr<H264Picture>(VaapiVideoEncoderDelegate::EncodeJob* job));
   MOCK_METHOD3(SubmitPackedHeaders,
-               bool(AcceleratedVideoEncoder::EncodeJob*,
+               bool(VaapiVideoEncoderDelegate::EncodeJob*,
                     scoped_refptr<H264BitstreamBuffer>,
                     scoped_refptr<H264BitstreamBuffer>));
   MOCK_METHOD7(SubmitFrameParameters,
-               bool(AcceleratedVideoEncoder::EncodeJob*,
+               bool(VaapiVideoEncoderDelegate::EncodeJob*,
                     const H264Encoder::EncodeParams&,
                     const H264SPS&,
                     const H264PPS&,
@@ -70,7 +70,7 @@ void H264EncoderTest::SetUp() {
 
   // Set default behaviors for mock methods for convenience.
   ON_CALL(*accelerator_, GetPicture(_))
-      .WillByDefault(Invoke([](AcceleratedVideoEncoder::EncodeJob*) {
+      .WillByDefault(Invoke([](VaapiVideoEncoderDelegate::EncodeJob*) {
         return new H264Picture();
       }));
   ON_CALL(*accelerator_, SubmitPackedHeaders(_, _, _))
@@ -80,16 +80,16 @@ void H264EncoderTest::SetUp() {
 }
 
 TEST_F(H264EncoderTest, Initialize) {
-  VideoEncodeAccelerator::Config vea_config = kDefaultVEAConfig;
-  AcceleratedVideoEncoder::Config ave_config = kDefaultAVEConfig;
-  EXPECT_TRUE(encoder_->Initialize(vea_config, ave_config));
+  auto vea_config = kDefaultVEAConfig;
+  const auto vea_delegate_config = kDefaultVEADelegateConfig;
+  EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
   // Profile is unspecified, H264Encoder will select the default level, 4.0.
   // 4.0 will be proper with |vea_config|'s values.
   ExpectLevel(H264SPS::kLevelIDC4p0);
 
   // Initialize with 4k size. The level will be adjusted to 5.1 by H264Encoder.
   vea_config.input_visible_size.SetSize(3840, 2160);
-  EXPECT_TRUE(encoder_->Initialize(vea_config, ave_config));
+  EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
   ExpectLevel(H264SPS::kLevelIDC5p1);
 }
 

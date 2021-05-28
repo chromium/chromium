@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_ACCELERATED_VIDEO_ENCODER_H_
-#define MEDIA_GPU_VAAPI_ACCELERATED_VIDEO_ENCODER_H_
+#ifndef MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_
+#define MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <vector>
 
@@ -29,20 +29,20 @@ class VASurface;
 // Verbatim from va/va.h.
 typedef unsigned int VABufferID;
 
-// An AcceleratedVideoEncoder (AVE) performs high-level, platform-independent
+// An VaapiVideoEncoderDelegate  performs high-level, platform-independent
 // encoding process tasks, such as managing codec state, reference frames, etc.,
 // but may require support from an external accelerator (typically a hardware
 // accelerator) to offload some stages of the actual encoding process, using
-// the parameters that AVE prepares beforehand.
+// the parameters that the Delegate prepares beforehand.
 //
 // For each frame to be encoded, clients provide an EncodeJob object to be set
-// up by an AVE with job parameters, and execute the job afterwards. Any
-// resources required for the job are also provided by the clients, and
-// associated with the EncodeJob object.
-class AcceleratedVideoEncoder {
+// up by a Delegate subclass with job parameters, and execute the job
+// afterwards. Any resources required for the job are also provided by the
+// clients, and associated with the EncodeJob object.
+class VaapiVideoEncoderDelegate {
  public:
-  AcceleratedVideoEncoder() = default;
-  virtual ~AcceleratedVideoEncoder() = default;
+  VaapiVideoEncoderDelegate() = default;
+  virtual ~VaapiVideoEncoderDelegate() = default;
 
   enum class BitrateControl {
     kConstantBitrate,  // Constant Bitrate mode. This class relies on other
@@ -64,9 +64,9 @@ class AcceleratedVideoEncoder {
   };
 
   // An abstraction of an encode job for one frame. Parameters required for an
-  // EncodeJob to be executed are prepared by an AcceleratedVideoEncoder, while
-  // the accelerator-specific callbacks required to set up and execute it are
-  // provided by the accelerator itself, based on these parameters.
+  // EncodeJob to be executed are prepared by an VaapiVideoEncoderDelegate,
+  // while the accelerator-specific callbacks required to set up and execute it
+  // are provided by the accelerator itself, based on these parameters.
   // Accelerators are also responsible for providing any resources (such as
   // memory for output and reference pictures, etc.) as needed.
   class EncodeJob {
@@ -168,7 +168,7 @@ class AcceleratedVideoEncoder {
   // supported, true on success.
   virtual bool Initialize(
       const VideoEncodeAccelerator::Config& config,
-      const AcceleratedVideoEncoder::Config& ave_config) = 0;
+      const VaapiVideoEncoderDelegate::Config& ave_config) = 0;
 
   // Updates current framerate and/or bitrate to |framerate| in FPS
   // and the specified video bitrate allocation.
@@ -193,8 +193,8 @@ class AcceleratedVideoEncoder {
   virtual bool PrepareEncodeJob(EncodeJob* encode_job) = 0;
 
   // Notifies the encoded chunk size in bytes to update a bitrate controller in
-  // AcceleratedVideoEncoder. This should be called only if
-  // AcceleratedVideoEncoder is configured with
+  // VaapiVideoEncoderDelegate. This should be called only if
+  // VaapiVideoEncoderDelegate is configured with
   // BitrateControl::kConstantQuantizationParameter.
   virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 
@@ -204,4 +204,4 @@ class AcceleratedVideoEncoder {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_VAAPI_ACCELERATED_VIDEO_ENCODER_H_
+#endif  // MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_

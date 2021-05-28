@@ -149,15 +149,15 @@ class VaapiVideoEncodeAccelerator::H264Accelerator
 
   // H264Encoder::Accelerator implementation.
   scoped_refptr<H264Picture> GetPicture(
-      AcceleratedVideoEncoder::EncodeJob* job) override;
+      VaapiVideoEncoderDelegate::EncodeJob* job) override;
 
   bool SubmitPackedHeaders(
-      AcceleratedVideoEncoder::EncodeJob* job,
+      VaapiVideoEncoderDelegate::EncodeJob* job,
       scoped_refptr<H264BitstreamBuffer> packed_sps,
       scoped_refptr<H264BitstreamBuffer> packed_pps) override;
 
   bool SubmitFrameParameters(
-      AcceleratedVideoEncoder::EncodeJob* job,
+      VaapiVideoEncoderDelegate::EncodeJob* job,
       const H264Encoder::EncodeParams& encode_params,
       const H264SPS& sps,
       const H264PPS& pps,
@@ -178,9 +178,9 @@ class VaapiVideoEncodeAccelerator::VP8Accelerator
 
   // VP8Encoder::Accelerator implementation.
   scoped_refptr<VP8Picture> GetPicture(
-      AcceleratedVideoEncoder::EncodeJob* job) override;
+      VaapiVideoEncoderDelegate::EncodeJob* job) override;
 
-  bool SubmitFrameParameters(AcceleratedVideoEncoder::EncodeJob* job,
+  bool SubmitFrameParameters(VaapiVideoEncoderDelegate::EncodeJob* job,
                              const VP8Encoder::EncodeParams& encode_params,
                              scoped_refptr<VP8Picture> pic,
                              const Vp8ReferenceFrameVector& ref_frames,
@@ -200,10 +200,10 @@ class VaapiVideoEncodeAccelerator::VP9Accelerator
 
   // VP9Encoder::Accelerator implementation.
   scoped_refptr<VP9Picture> GetPicture(
-      AcceleratedVideoEncoder::EncodeJob* job) override;
+      VaapiVideoEncoderDelegate::EncodeJob* job) override;
 
   bool SubmitFrameParameters(
-      AcceleratedVideoEncoder::EncodeJob* job,
+      VaapiVideoEncoderDelegate::EncodeJob* job,
       const VP9Encoder::EncodeParams& encode_params,
       scoped_refptr<VP9Picture> pic,
       const Vp9ReferenceFrameVector& ref_frames,
@@ -342,7 +342,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   VLOGF(2);
 
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
-  AcceleratedVideoEncoder::Config ave_config{};
+  VaapiVideoEncoderDelegate::Config ave_config{};
   DCHECK_EQ(IsConfiguredForTesting(), !!encoder_);
   switch (output_codec_) {
     case kCodecH264:
@@ -351,7 +351,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
             std::make_unique<H264Accelerator>(this));
       }
       DCHECK_EQ(ave_config.bitrate_control,
-                AcceleratedVideoEncoder::BitrateControl::kConstantBitrate);
+                VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case kCodecVP8:
       if (!IsConfiguredForTesting()) {
@@ -359,14 +359,14 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
             std::make_unique<VP8Accelerator>(this));
       }
       DCHECK_EQ(ave_config.bitrate_control,
-                AcceleratedVideoEncoder::BitrateControl::kConstantBitrate);
+                VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case kCodecVP9:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9Encoder>(
             std::make_unique<VP9Accelerator>(this));
       }
-      ave_config.bitrate_control = AcceleratedVideoEncoder::BitrateControl::
+      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
           kConstantQuantizationParameter;
       break;
     default:
@@ -625,7 +625,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   EncodePendingInputs();
 }
 
-std::unique_ptr<AcceleratedVideoEncoder::EncodeJob>
+std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
                                              bool force_keyframe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -1018,7 +1018,7 @@ static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
 }
 
 bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitFrameParameters(
-    AcceleratedVideoEncoder::EncodeJob* job,
+    VaapiVideoEncoderDelegate::EncodeJob* job,
     const H264Encoder::EncodeParams& encode_params,
     const H264SPS& sps,
     const H264PPS& pps,
@@ -1190,13 +1190,13 @@ bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitFrameParameters(
 
 scoped_refptr<H264Picture>
 VaapiVideoEncodeAccelerator::H264Accelerator::GetPicture(
-    AcceleratedVideoEncoder::EncodeJob* job) {
+    VaapiVideoEncoderDelegate::EncodeJob* job) {
   return base::WrapRefCounted(
       reinterpret_cast<H264Picture*>(job->picture().get()));
 }
 
 bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitPackedHeaders(
-    AcceleratedVideoEncoder::EncodeJob* job,
+    VaapiVideoEncoderDelegate::EncodeJob* job,
     scoped_refptr<H264BitstreamBuffer> packed_sps,
     scoped_refptr<H264BitstreamBuffer> packed_pps) {
   // Submit SPS.
@@ -1232,13 +1232,13 @@ bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitPackedHeaders(
 
 scoped_refptr<VP8Picture>
 VaapiVideoEncodeAccelerator::VP8Accelerator::GetPicture(
-    AcceleratedVideoEncoder::EncodeJob* job) {
+    VaapiVideoEncoderDelegate::EncodeJob* job) {
   return base::WrapRefCounted(
       reinterpret_cast<VP8Picture*>(job->picture().get()));
 }
 
 bool VaapiVideoEncodeAccelerator::VP8Accelerator::SubmitFrameParameters(
-    AcceleratedVideoEncoder::EncodeJob* job,
+    VaapiVideoEncoderDelegate::EncodeJob* job,
     const VP8Encoder::EncodeParams& encode_params,
     scoped_refptr<VP8Picture> pic,
     const Vp8ReferenceFrameVector& ref_frames,
@@ -1404,13 +1404,13 @@ bool VaapiVideoEncodeAccelerator::VP8Accelerator::SubmitFrameParameters(
 
 scoped_refptr<VP9Picture>
 VaapiVideoEncodeAccelerator::VP9Accelerator::GetPicture(
-    AcceleratedVideoEncoder::EncodeJob* job) {
+    VaapiVideoEncoderDelegate::EncodeJob* job) {
   return base::WrapRefCounted(
       reinterpret_cast<VP9Picture*>(job->picture().get()));
 }
 
 bool VaapiVideoEncodeAccelerator::VP9Accelerator::SubmitFrameParameters(
-    AcceleratedVideoEncoder::EncodeJob* job,
+    VaapiVideoEncoderDelegate::EncodeJob* job,
     const VP9Encoder::EncodeParams& encode_params,
     scoped_refptr<VP9Picture> pic,
     const Vp9ReferenceFrameVector& ref_frames,

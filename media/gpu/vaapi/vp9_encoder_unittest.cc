@@ -32,9 +32,9 @@ namespace {
 
 constexpr size_t kDefaultMaxNumRefFrames = kVp9NumRefsPerFrame;
 
-AcceleratedVideoEncoder::Config kDefaultAcceleratedVideoEncoderConfig{
+VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
     kDefaultMaxNumRefFrames,
-    AcceleratedVideoEncoder::BitrateControl::kConstantQuantizationParameter};
+    VaapiVideoEncoderDelegate::BitrateControl::kConstantQuantizationParameter};
 
 VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,
@@ -170,11 +170,12 @@ class MockVP9Accelerator : public VP9Encoder::Accelerator {
  public:
   MockVP9Accelerator() = default;
   ~MockVP9Accelerator() override = default;
-  MOCK_METHOD1(GetPicture,
-               scoped_refptr<VP9Picture>(AcceleratedVideoEncoder::EncodeJob*));
+  MOCK_METHOD1(
+      GetPicture,
+      scoped_refptr<VP9Picture>(VaapiVideoEncoderDelegate::EncodeJob*));
 
   MOCK_METHOD5(SubmitFrameParameters,
-               bool(AcceleratedVideoEncoder::EncodeJob*,
+               bool(VaapiVideoEncoderDelegate::EncodeJob*,
                     const VP9Encoder::EncodeParams&,
                     scoped_refptr<VP9Picture>,
                     const Vp9ReferenceFrameVector&,
@@ -198,7 +199,7 @@ struct VP9EncoderTestParam;
 
 class VP9EncoderTest : public ::testing::TestWithParam<VP9EncoderTestParam> {
  public:
-  using BitrateControl = AcceleratedVideoEncoder::BitrateControl;
+  using BitrateControl = VaapiVideoEncoderDelegate::BitrateControl;
 
   VP9EncoderTest() = default;
   ~VP9EncoderTest() override = default;
@@ -217,7 +218,7 @@ class VP9EncoderTest : public ::testing::TestWithParam<VP9EncoderTestParam> {
                        size_t num_temporal_layers);
 
  private:
-  std::unique_ptr<AcceleratedVideoEncoder::EncodeJob> CreateEncodeJob(
+  std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
       bool keyframe);
   void UpdateRatesSequence(const VideoBitrateAllocation& bitrate_allocation,
                            uint32_t framerate,
@@ -235,7 +236,7 @@ void VP9EncoderTest::SetUp() {
   encoder_ = std::make_unique<VP9Encoder>(std::move(mock_accelerator));
 }
 
-std::unique_ptr<AcceleratedVideoEncoder::EncodeJob>
+std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VP9EncoderTest::CreateEncodeJob(bool keyframe) {
   auto input_frame = VideoFrame::CreateFrame(
       kDefaultVideoEncodeAcceleratorConfig.input_format,
@@ -244,14 +245,14 @@ VP9EncoderTest::CreateEncodeJob(bool keyframe) {
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
       base::TimeDelta());
   LOG_ASSERT(input_frame) << " Failed to create VideoFrame";
-  return std::make_unique<AcceleratedVideoEncoder::EncodeJob>(
+  return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
       input_frame, keyframe, base::DoNothing());
 }
 
 void VP9EncoderTest::InitializeVP9Encoder(BitrateControl bitrate_control,
                                           size_t num_temporal_layers) {
   auto config = kDefaultVideoEncodeAcceleratorConfig;
-  auto ave_config = kDefaultAcceleratedVideoEncoderConfig;
+  auto ave_config = kDefaultVaapiVideoEncoderDelegateConfig;
   ave_config.bitrate_control = bitrate_control;
   ASSERT_EQ(bitrate_control, BitrateControl::kConstantQuantizationParameter);
 
@@ -296,8 +297,9 @@ void VP9EncoderTest::EncodeConstantQuantizationParameterSequence(
   auto encode_job = CreateEncodeJob(is_keyframe);
   scoped_refptr<VP9Picture> picture(new VP9Picture);
   EXPECT_CALL(*mock_accelerator_, GetPicture(encode_job.get()))
-      .WillOnce(Invoke(
-          [picture](AcceleratedVideoEncoder::EncodeJob*) { return picture; }));
+      .WillOnce(Invoke([picture](VaapiVideoEncoderDelegate::EncodeJob*) {
+        return picture;
+      }));
 
   FRAME_TYPE libvpx_frame_type =
       is_keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;

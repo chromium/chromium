@@ -177,8 +177,9 @@ VP9Encoder::~VP9Encoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool VP9Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
-                            const AcceleratedVideoEncoder::Config& ave_config) {
+bool VP9Encoder::Initialize(
+    const VideoEncodeAccelerator::Config& config,
+    const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (VideoCodecProfileToVideoCodec(config.output_profile) != kCodecVP9) {
     DVLOGF(1) << "Invalid profile: " << GetProfileName(config.output_profile);
@@ -196,8 +197,8 @@ bool VP9Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
 
   // Even though VP9Encoder might support other bitrate control modes, only
   // the kConstantQuantizationParameter is used.
-  if (ave_config.bitrate_control !=
-      AcceleratedVideoEncoder::BitrateControl::kConstantQuantizationParameter) {
+  if (ave_config.bitrate_control != VaapiVideoEncoderDelegate::BitrateControl::
+                                        kConstantQuantizationParameter) {
     DVLOGF(1) << "Only CQ bitrate control is supported";
     return false;
   }
@@ -283,7 +284,7 @@ bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
 BitstreamBufferMetadata VP9Encoder::GetMetadata(EncodeJob* encode_job,
                                                 size_t payload_size) {
   auto metadata =
-      AcceleratedVideoEncoder::GetMetadata(encode_job, payload_size);
+      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
   auto picture = accelerator_->GetPicture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;

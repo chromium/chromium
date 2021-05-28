@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/vaapi/accelerated_video_encoder.h"
+#include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
 namespace media {
 
@@ -25,7 +25,7 @@ namespace media {
 //
 // Names used in documentation of this class refer directly to naming used
 // in the H.264 specification (http://www.itu.int/rec/T-REC-H.264).
-class H264Encoder : public AcceleratedVideoEncoder {
+class H264Encoder : public VaapiVideoEncoderDelegate {
  public:
   struct EncodeParams {
     EncodeParams();
@@ -105,9 +105,9 @@ class H264Encoder : public AcceleratedVideoEncoder {
   explicit H264Encoder(std::unique_ptr<Accelerator> accelerator);
   ~H264Encoder() override;
 
-  // AcceleratedVideoEncoder implementation.
+  // VaapiVideoEncoderDelegate implementation.
   bool Initialize(const VideoEncodeAccelerator::Config& config,
-                  const AcceleratedVideoEncoder::Config& ave_config) override;
+                  const VaapiVideoEncoderDelegate::Config& ave_config) override;
   bool UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;

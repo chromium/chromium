@@ -33,8 +33,6 @@ source_set("vaapi") {
   assert(use_libgav1_parser)
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "accelerated_video_encoder.cc",
-    "accelerated_video_encoder.h",
     "av1_vaapi_video_decoder_delegate.cc",
     "av1_vaapi_video_decoder_delegate.h",
     "h264_encoder.cc",
@@ -63,6 +61,8 @@ source_set("vaapi") {
     "vaapi_video_decoder_delegate.h",
     "vaapi_video_encode_accelerator.cc",
     "vaapi_video_encode_accelerator.h",
+    "vaapi_video_encoder_delegate.cc",
+    "vaapi_video_encoder_delegate.h",
     "vaapi_webp_decoder.cc",
     "vaapi_webp_decoder.h",
     "vp8_encoder.cc",
