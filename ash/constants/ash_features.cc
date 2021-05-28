@@ -650,7 +650,7 @@ const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
 
 // Enables or disables sticky settings in the Scan app.
 const base::Feature kScanAppStickySettings{"ScanAppStickySettings",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables long kill timeout for session manager daemon. When
 // enabled, session manager daemon waits for a longer time (e.g. 12s) for chrome
