@@ -1666,8 +1666,12 @@ bool XMLHttpRequest::ResponseIsHTML() const {
 }
 
 int XMLHttpRequest::status() const {
+  recordreplay::Assert("XMLHttpRequest::status %d %d", (int)state_, error_);
+
   if (state_ == kUnsent || state_ == kOpened || error_)
     return 0;
+
+  recordreplay::Assert("XMLHttpRequest::status #1 %d", response_.HttpStatusCode());
 
   if (response_.HttpStatusCode())
     return response_.HttpStatusCode();
