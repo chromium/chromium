@@ -62,14 +62,14 @@ Euicc::RequestPendingProfilesCallback CreateTimedRequestPendingProfilesCallback(
     Euicc::RequestPendingProfilesCallback callback) {
   return base::BindOnce(
       [](Euicc::RequestPendingProfilesCallback callback,
-         base::Time installation_start_time,
+         base::Time refresh_profile_start_time,
          mojom::ESimOperationResult result) -> void {
         std::move(callback).Run(result);
         if (result != mojom::ESimOperationResult::kSuccess)
           return;
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "Network.Cellular.ESim.ProfileDiscovery.Latency",
-            base::Time::Now() - installation_start_time);
+            base::Time::Now() - refresh_profile_start_time);
       },
       std::move(callback), base::Time::Now());
 }
@@ -140,9 +140,13 @@ void Euicc::InstallProfileFromActivationCode(
 }
 
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
-  NET_LOG(EVENT) << "Requesting Pending profiles";
-  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
-      CellularInhibitor::InhibitReason::kRefreshingProfileList,
+  // Before requesting pending profiles, we also request installed profiles.
+  // This ensures that if an error occurs and Chrome's installed profile cache
+  // goes out of sync with Hermes, we re-sync at this point. See b/187459880 for
+  // details.
+  NET_LOG(EVENT) << "Requesting installed and pending profiles";
+  esim_manager_->cellular_esim_profile_handler()->RefreshProfileList(
+      path_,
       base::BindOnce(
           &Euicc::PerformRequestPendingProfiles, weak_ptr_factory_.GetWeakPtr(),
           CreateTimedRequestPendingProfilesCallback(std::move(callback))));
@@ -346,11 +350,13 @@ void Euicc::PerformRequestPendingProfiles(
     RequestPendingProfilesCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
-    NET_LOG(ERROR) << "Error inhibiting cellular device";
+    NET_LOG(ERROR) << "Error requesting installed profiles. Path: "
+                   << path_.value();
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
   }
 
+  NET_LOG(EVENT) << "Requesting pending profiles";
   HermesEuiccClient::Get()->RequestPendingProfiles(
       path_, /*root_smds=*/std::string(),
       base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
