@@ -85,6 +85,11 @@ std::string HashToString(const flat::Hash* hash) {
                      hash->data()->size());
 }
 
+void RecordScorerCreationStatus(ScorerCreationStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.FlatBufferScorer.CreationStatus",
+                            status, SCORER_STATUS_MAX);
+}
+
 }  // namespace
 
 FlatBufferModelScorer::FlatBufferModelScorer() = default;

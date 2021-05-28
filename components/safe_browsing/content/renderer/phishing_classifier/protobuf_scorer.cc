@@ -69,6 +69,12 @@ std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
 
   return request;
 }
+
+void RecordScorerCreationStatus(ScorerCreationStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ProtobufScorer.CreationStatus",
+                            status, SCORER_STATUS_MAX);
+}
+
 }  // namespace
 
 ProtobufModelScorer::ProtobufModelScorer() = default;

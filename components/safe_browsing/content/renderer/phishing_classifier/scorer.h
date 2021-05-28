@@ -126,11 +126,6 @@ class Scorer {
   Scorer(const Scorer&) = delete;
   Scorer& operator=(const Scorer&) = delete;
 
-  static void RecordScorerCreationStatus(ScorerCreationStatus status) {
-    UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ScorerCreationStatus", status,
-                              SCORER_STATUS_MAX);
-  }
-
  protected:
   // Helper function which converts log odds to a probability in the range
   // [0.0,1.0].

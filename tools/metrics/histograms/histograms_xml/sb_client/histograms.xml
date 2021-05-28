@@ -548,6 +548,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.FlatBufferScorer.CreationStatus"
+    enum="SBClientPhishingScorerCreationStatus" expires_after="M94">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the status when we create a FlatBuffer scorer object for the
+    client-side phishing detection classifier.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.IllegalFeatureValue" units="units"
     expires_after="M90">
   <obsolete>
@@ -641,6 +651,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ProtobufScorer.CreationStatus"
+    enum="SBClientPhishingScorerCreationStatus" expires_after="M94">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the status when we create a Protobuf scorer object for the
+    client-side phishing detection classifier.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ReportLimitSkipped" enum="BooleanHit"
     expires_after="2021-01-27">
   <obsolete>
@@ -689,6 +709,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientPhishing.ScorerCreationStatus"
     enum="SBClientPhishingScorerCreationStatus" expires_after="M94">
+  <obsolete>
+    Removed 05-27-2021. Using SBClientPhishing.ProtobufScorer.CreationStatus and
+    SBClientPhishing.FlatBufferScorer.CreationStatus
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
