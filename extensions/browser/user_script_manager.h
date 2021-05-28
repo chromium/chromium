@@ -66,6 +66,10 @@ class UserScriptManager : public ExtensionRegistryObserver {
   std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
       const Extension* extension);
 
+  // Creates a ExtensionUserScriptLoader object.
+  ExtensionUserScriptLoader* CreateExtensionUserScriptLoader(
+      const Extension* extension);
+
   // Creates a WebUIUserScriptLoader object.
   WebUIUserScriptLoader* CreateWebUIUserScriptLoader(const GURL& url);
 
