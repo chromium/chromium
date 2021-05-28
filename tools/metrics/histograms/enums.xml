@@ -32750,6 +32750,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3924" label="FontFaceDescentOverride"/>
   <int value="3925" label="FontFaceLineGapOverride"/>
   <int value="3926" label="FontFaceSizeAdjust"/>
+  <int value="3927" label="HiddenBackfaceWith3D"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
