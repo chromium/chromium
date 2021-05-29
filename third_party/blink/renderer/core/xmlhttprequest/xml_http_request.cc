@@ -294,9 +294,12 @@ XMLHttpRequest::XMLHttpRequest(ExecutionContext* context,
       isolated_world_security_origin_(world_ && world_->IsIsolatedWorld()
                                           ? world_->IsolatedWorldSecurityOrigin(
                                                 context->GetAgentClusterID())
-                                          : nullptr) {}
+                                          : nullptr) {
+  recordreplay::RegisterPointer(this);
+}
 
 XMLHttpRequest::~XMLHttpRequest() {
+  recordreplay::UnregisterPointer(this);
   binary_response_builder_ = nullptr;
   length_downloaded_to_blob_ = 0;
   ReportMemoryUsageToV8();
@@ -560,6 +563,9 @@ void XMLHttpRequest::ChangeState(State new_state) {
 }
 
 void XMLHttpRequest::DispatchReadyStateChangeEvent() {
+  recordreplay::Assert("XMLHttpRequest::DispatchReadyStateChangeEvent %lu",
+                       recordreplay::PointerId(this));
+
   if (!GetExecutionContext())
     return;
 
@@ -1264,6 +1270,9 @@ void XMLHttpRequest::ClearResponse() {
   // be careful with this initialization.
   received_length_ = 0;
 
+  recordreplay::Assert("XMLHttpRequest::ClearResponse Start %lu",
+                       recordreplay::PointerId(this));
+
   response_ = ResourceResponse();
 
   response_text_.Clear();
@@ -1666,7 +1675,8 @@ bool XMLHttpRequest::ResponseIsHTML() const {
 }
 
 int XMLHttpRequest::status() const {
-  recordreplay::Assert("XMLHttpRequest::status %d %d", (int)state_, error_);
+  recordreplay::Assert("XMLHttpRequest::status %lu %d %d",
+                       recordreplay::PointerId((void*)this), (int)state_, error_);
 
   if (state_ == kUnsent || state_ == kOpened || error_)
     return 0;
@@ -1876,6 +1886,9 @@ void XMLHttpRequest::DidReceiveResponse(uint64_t identifier,
                                         const ResourceResponse& response) {
   // TODO(yhirano): Remove this CHECK: see https://crbug.com/570946.
   CHECK(&response);
+
+  recordreplay::Assert("XMLHttpRequest::DidReceiveResponse Start %lu %d",
+                       recordreplay::PointerId(this), response.HttpStatusCode());
 
   DVLOG(1) << this << " didReceiveResponse(" << identifier << ")";
   ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
