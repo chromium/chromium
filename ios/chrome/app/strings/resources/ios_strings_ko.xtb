@@ -524,6 +524,7 @@
 <translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
 <translation id="6362362396625799311">시크릿 탭 없음</translation>
 <translation id="6363526231572697780">사용자 이름 없음</translation>
+<translation id="6366663624406569102">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6377118281273296434">사이트 보안</translation>
 <translation id="6380866119319257197">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
@@ -616,7 +617,6 @@
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7062545763355031412">동의 및 계정 전환</translation>
-<translation id="708844789167408367">로그아웃하고 동기화 사용 중지...</translation>
 <translation id="7099761977003084116">최근 탭</translation>
 <translation id="7102005569666697658">다운로드 중… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">숨기기</translation>

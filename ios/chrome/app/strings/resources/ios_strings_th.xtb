@@ -524,6 +524,7 @@
 <translation id="634878792104344809">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="6362362396625799311">ไม่มีแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6363526231572697780">ไม่มีชื่อผู้ใช้</translation>
+<translation id="6366663624406569102">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6377118281273296434">ความปลอดภัยของเว็บไซต์</translation>
 <translation id="6380866119319257197">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ โปรด<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7062545763355031412">ยอมรับและเปลี่ยนบัญชี</translation>
-<translation id="708844789167408367">ออกจากระบบและปิดการซิงค์...</translation>
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>

@@ -372,7 +372,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3384347053049321195">Partager l'image</translation>
 <translation id="3387650086002190359">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison d'erreurs liées au système de fichiers.</translation>
 <translation id="3389286852084373014">Volume de texte trop important</translation>
-<translation id="3391512812407811893">Essayer Privacy Sandbox</translation>
+<translation id="3391512812407811893">Essais Privacy Sandbox</translation>
 <translation id="3398320232533725830">Ouvrir le gestionnaire de favoris</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
@@ -982,7 +982,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7333031090786104871">L'ajout du site précédent est toujours en cours</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
-<translation id="7352339641508007922">Faites glisser pour prendre une capture d'écran pleine page</translation>
+<translation id="7352339641508007922">Faites glisser pour prendre une capture d'écran étendue</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7352939065658542140">VIDÉO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partager 1 élément sélectionné}one{Partager # élément sélectionné}other{Partager # éléments sélectionnés}}</translation>
@@ -1061,7 +1061,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7805768142964895445">État</translation>
 <translation id="7808889146555843082">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="SITE" />. Modifiez votre mot de passe ou supprimez votre compte sur <ph name="SITE" /> pour le protéger des autres utilisateurs.</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
-<translation id="7815484226266492798">Capture d'écran pleine page</translation>
+<translation id="7815484226266492798">Capture d'écran étendue</translation>
 <translation id="7821588508402923572">Vos économies de données s'affichent ici</translation>
 <translation id="78270725016672455">L'ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
@@ -1169,7 +1169,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que l'appareil <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
-<translation id="8481921391193215807">Lorsque cette option est activée, les sites peuvent utiliser les techniques présentées ici, qui préservent la vie privée, pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersite. D'autres méthodes pourront être mises à l'essai par la suite.
+<translation id="8481921391193215807">Lorsque cette option est activée, les sites peuvent utiliser les techniques qui préservent la vie privée présentées ici pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersite. D'autres essais pourront être ajoutés par la suite.
 
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser le FLoC.<ph name="END_LIST_ITEM1" />
 

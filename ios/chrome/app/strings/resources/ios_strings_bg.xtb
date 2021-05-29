@@ -524,6 +524,7 @@
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
 <translation id="6363526231572697780">Няма потребителско име</translation>
+<translation id="6366663624406569102">Излизане от профила и изключване на синхронизирането</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6377118281273296434">Сигурност на сайта</translation>
 <translation id="6380866119319257197">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
-<translation id="708844789167408367">Излизане от профила и изключване на синхронизирането...</translation>
 <translation id="7099761977003084116">Скорошни раздели</translation>
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Скриване</translation>

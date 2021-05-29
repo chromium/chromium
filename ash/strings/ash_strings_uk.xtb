@@ -474,7 +474,7 @@
 <translation id="4705716602320768426">Надіслати відгук</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
-<translation id="4735498845456076464">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + цифра змінено. Щоб створити емуляцію функціональних клавіш, натисніть <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
+<translation id="4735498845456076464">Комбінацію клавіш "<ph name="LAUNCHER_KEY_NAME" /> + цифра" змінено. Щоб скористатися функціональними клавішами, натисніть <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>

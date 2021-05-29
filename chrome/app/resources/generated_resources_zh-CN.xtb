@@ -5179,7 +5179,7 @@
 <translation id="6664774537677393800">打开您的个人资料时出了点问题。请先退出，然后重新登录。</translation>
 <translation id="6670142487971298264">现在可以使用“<ph name="APP_NAME" />”了</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
-<translation id="6671497123040790595">正在设置由 <ph name="MANAGER" /> 管理</translation>
+<translation id="6671497123040790595">正在设置为受 <ph name="MANAGER" /> 管理</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="6675665718701918026">已连接指针设备</translation>
@@ -5934,7 +5934,7 @@
 <translation id="7506541170099744506">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务。</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">状态响应程序证书</translation>
-<translation id="7509097596023256288">正在设置受管理</translation>
+<translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7511415964832680006">如果此控件已开启，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。</translation>
 <translation id="7513029293694390567">使用存储的凭据自动登录网站。停用该功能后，系统会在您每次登录网站时要求您进行确认。</translation>
@@ -7444,7 +7444,7 @@
 <translation id="9112748030372401671">更换您的壁纸</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 进行扫描？</translation>
 <translation id="9112987648460918699">查找...</translation>
-<translation id="9113240369465613386">仅限页码为齐数的页面</translation>
+<translation id="9113240369465613386">仅限页码为奇数的页面</translation>
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>
 <translation id="9116465289595958864">上次修改时间</translation>

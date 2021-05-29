@@ -524,6 +524,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="634878792104344809">Sincronize os seus marcadores, palavras-passe, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6362362396625799311">Sem separadores de navegação anónima</translation>
 <translation id="6363526231572697780">Sem nome de utilizador</translation>
+<translation id="6366663624406569102">Terminar sessão e desativar sincronização</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6380866119319257197">Se se esquecer da frase de acesso ou pretender alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e mudar de contas</translation>
-<translation id="708844789167408367">Terminar sessão e desativar a sincronização…</translation>
 <translation id="7099761977003084116">Separadores recentes</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>

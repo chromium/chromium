@@ -524,6 +524,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="634878792104344809">Синхронизујте, лозинке, историју и друго на свим уређајима</translation>
 <translation id="6362362396625799311">Нема картица без архивирања</translation>
 <translation id="6363526231572697780">Нема корисничког имена</translation>
+<translation id="6366663624406569102">Одјави ме и искључи синхронизацију</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6377118281273296434">Безбедност сајта</translation>
 <translation id="6380866119319257197">Ако заборавите приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7062545763355031412">Прихватам, промени налог</translation>
-<translation id="708844789167408367">Одјавите се и искључите синхронизацију...</translation>
 <translation id="7099761977003084116">Недавне картице</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7108338896283013870">Сакриј</translation>

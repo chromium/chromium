@@ -2290,7 +2290,7 @@
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="3441653493275994384">화면</translation>
 <translation id="3441663102605358937">계정을 인증하려면 <ph name="ACCOUNT" />에 다시 로그인하세요.</translation>
-<translation id="3444641828375597683">광고주와 게시자는 이 페이지에서 나중에 설명되는 FLoC을 사용할 수 있습니다.</translation>
+<translation id="3444641828375597683">광고주와 게시자는 이 페이지에서 나중에 설명하는 FLoC을 사용할 수 있습니다.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
@@ -3081,7 +3081,7 @@
 <translation id="4297813521149011456">화면 회전</translation>
 <translation id="4299022904780065004">새 시크릿 창(&amp;I)</translation>
 <translation id="4301671483919369635">이 페이지에서 파일을 수정할 수 있습니다.</translation>
-<translation id="4302605047395093221">이 모바일 네트워크에 연결하려면 이 기기를 사용하는 모든 사용자는 PIN을 입력해야 합니다.</translation>
+<translation id="4302605047395093221">이 모바일 네트워크에 연결하려면 설정 중인 기기를 사용하는 모든 사용자는 PIN을 입력해야 합니다.</translation>
 <translation id="4303079906735388947">보안 키의 새로운 PIN을 설정하세요.</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />(으)로 복사</translation>
 <translation id="4305817255990598646">전환</translation>
@@ -5158,7 +5158,7 @@
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 콘텐츠가 있습니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="6624687053722465643">달콤</translation>
 <translation id="6628328486509726751">업로드 시간: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="6629518321609546825">4자 이상 입력하세요</translation>
+<translation id="6629518321609546825">4개 이상의 숫자를 입력하세요.</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />에서 사용자를 대신하여 인증하기 위해 인증서에 대한 영구적인 액세스 권한을 요청합니다.</translation>
 <translation id="6635362468090274700">나를 공개하기 전에는 아무도 나와 파일을 공유할 수 없습니다.<ph name="BR" /><ph name="BR" />일시적으로 나를 공개하려면 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다.</translation>
 <translation id="6635944431854494329">소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.</translation>
@@ -5954,7 +5954,7 @@
 <translation id="7507930499305566459">상태 응답자 인증서</translation>
 <translation id="7509097596023256288">관리 설정 중</translation>
 <translation id="7509246181739783082">본인 확인</translation>
-<translation id="7511415964832680006">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 여기에는 크로스 사이트 추적의 대안이 포함됩니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.</translation>
+<translation id="7511415964832680006">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 크로스 사이트 추적의 대안이 되는 기술 등이 있습니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.</translation>
 <translation id="7513029293694390567">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
@@ -6315,7 +6315,7 @@
 <translation id="7876027585589532670">바로가기를 수정할 수 없음</translation>
 <translation id="7877451762676714207">알 수 없는 서버 오류입니다. 다시 시도하거나 서버 관리자에게 문의하시기 바랍니다.</translation>
 <translation id="7879631849810108578">단축키 조합: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">사용 설정되어 있고 활성 상태인 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '사용자 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 이 무료 체험은
+<translation id="7880685873361171388">사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '동질 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 이 무료 체험은
     <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="7880823633812189969">다시 시작하면 로컬 데이터가 삭제됩니다</translation>
 <translation id="7881066108824108340">DNS</translation>

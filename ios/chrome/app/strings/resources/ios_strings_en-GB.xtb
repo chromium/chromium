@@ -524,6 +524,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sync your passwords, history and more on all of your devices</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">No username</translation>
+<translation id="6366663624406569102">Sign out and turn off sync</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377118281273296434">Site security</translation>
 <translation id="6380866119319257197">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
-<translation id="708844789167408367">Sign out and turn off sync…</translation>
 <translation id="7099761977003084116">Recent Tabs</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Hide</translation>

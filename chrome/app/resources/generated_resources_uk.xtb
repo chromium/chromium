@@ -6599,7 +6599,7 @@
 <translation id="816055135686411707">Помилка під час налаштування довіри сертифікату</translation>
 <translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">За допомогою <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> команда Chrome розробляє нові технології, які захистять вас від механізмів відстеження на різних сайтах, зберігаючи відкриту мережу.</translation>
+<translation id="81610453212785426">За допомогою <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> команда Chrome розробляє нові технології, які захистять вас від механізмів відстеження на різних сайтах, зберігаючи відкритість і незалежність мережі Інтернет.</translation>
 <translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
 <translation id="8165997195302308593">Переадресація порту в Crostini</translation>

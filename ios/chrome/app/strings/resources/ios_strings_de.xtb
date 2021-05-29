@@ -524,6 +524,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="634878792104344809">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="6362362396625799311">Keine Inkognito-Tabs</translation>
 <translation id="6363526231572697780">Kein Nutzername</translation>
+<translation id="6366663624406569102">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6377118281273296434">Websitesicherheit</translation>
 <translation id="6380866119319257197">Wenn Sie Ihre Passphrase vergessen oder diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
@@ -616,7 +617,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7062545763355031412">Akzeptieren und Konto wechseln</translation>
-<translation id="708844789167408367">Abmelden und die Synchronisierung ausschalten…</translation>
 <translation id="7099761977003084116">Letzte Tabs</translation>
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ausblenden</translation>
