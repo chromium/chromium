@@ -19,11 +19,10 @@ namespace media {
 // devices in the different platforms. VCDFs are created by MediaStreamManager
 // on UI thread and plugged into VideoCaptureManager, who owns and operates them
 // in Device Thread (a.k.a. Audio Thread).
-// Typical operation is to first call GetDeviceDescriptors() to obtain
-// information about available devices. The obtained descriptors can then be
-// used to either obtain the supported formats of a device using
-// GetSupportedFormats(), or to create an instance of VideoCaptureDevice for
-// the device using CreateDevice().
+// Typical operation is to first call GetDevicesInfo() to obtain information
+// about available devices. The obtained descriptors can then be used to either
+// obtain the supported formats of a device using GetSupportedFormats(), or to
+// create an instance of VideoCaptureDevice for the device using CreateDevice().
 // TODO(chfremer): Add a layer on top of the platform-specific implementations
 // that uses strings instead of descriptors as keys for accessing devices.
 // crbug.com/665065
