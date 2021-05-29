@@ -886,6 +886,11 @@ const viz::LocalSurfaceId& RemoteFrame::GetLocalSurfaceId() const {
   return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
+void RemoteFrame::SetCcLayerForTesting(scoped_refptr<cc::Layer> layer,
+                                       bool is_surface_layer) {
+  SetCcLayer(layer, is_surface_layer);
+}
+
 viz::FrameSinkId RemoteFrame::GetFrameSinkId() {
   return frame_sink_id_;
 }

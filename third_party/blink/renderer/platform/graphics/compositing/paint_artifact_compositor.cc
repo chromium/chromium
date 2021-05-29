@@ -332,6 +332,9 @@ bool NeedsFullUpdateAfterPaintingChunk(
     const PaintArtifact& previous_artifact,
     const PaintChunk& repainted,
     const PaintArtifact& repainted_artifact) {
+  if (repainted.is_moved_from_cached_subsequence)
+    return false;
+
   if (!repainted.Matches(previous))
     return true;
 
@@ -1598,7 +1601,8 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
   for (auto* pending_layer_it = pending_layers_.begin();
        pending_layer_it != pending_layers_.end(); pending_layer_it++) {
     auto compositing_type = pending_layer_it->compositing_type;
-    if (compositing_type == PendingLayer::kForeignLayer) {
+    if (compositing_type == PendingLayer::kForeignLayer &&
+        !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       // These layers are fully managed externally and do not need an update.
     } else if (compositing_type == PendingLayer::kPreCompositedLayer) {
       // These are Pre-CompositeAfterPaint layers where the raster invalidation

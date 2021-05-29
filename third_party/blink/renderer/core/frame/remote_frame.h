@@ -230,6 +230,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   viz::FrameSinkId GetFrameSinkId();
 
+  void SetCcLayerForTesting(scoped_refptr<cc::Layer>, bool is_surface_layer);
+
  private:
   // Frame protected overrides:
   bool DetachImpl(FrameDetachType) override;

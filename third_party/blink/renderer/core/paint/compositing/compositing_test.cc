@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/layers/surface_layer.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -2374,6 +2376,45 @@ TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
       CSSPropertyID::kVisibility, CSSValueID::kHidden);
   Compositor().BeginFrame();
   EXPECT_FALSE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+}
+
+TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
+  SimRequest main_resource("https://origin-a.com/a.html", "text/html");
+  LoadURL("https://origin-a.com/a.html");
+  main_resource.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style> iframe { isolation: isolate; } </style>
+      <iframe sandbox src="https://origin-b.com/b.html"></iframe>
+      <div id="target" style="background: blue;">a</div>
+  )HTML");
+
+  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
+  FakeRemoteFrameHost remote_frame_host;
+  remote_frame_host.Init(remote_frame_client.GetRemoteAssociatedInterfaces());
+  WebRemoteFrameImpl* remote_frame =
+      frame_test_helpers::CreateRemote(&remote_frame_client);
+  MainFrame().FirstChild()->Swap(remote_frame);
+
+  Compositor().BeginFrame();
+
+  auto remote_surface_layer = cc::SurfaceLayer::Create();
+  remote_frame->GetFrame()->SetCcLayerForTesting(remote_surface_layer, true);
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Modifying paint in a simple way only requires a repaint update.
+  auto* target_element = GetElementById("target");
+  target_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+
+  remote_frame->Detach();
 }
 
 }  // namespace blink
