@@ -1135,6 +1135,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                         Node* node,
                                         LayoutObject* layout_object = nullptr);
 
+  // Compute parent for an AccessibleNode, which is not backed up a DOM node
+  // or layout object.
+  static AXObject* ComputeAccessibleNodeParent(AXObjectCacheImpl& cache,
+                                               AccessibleNode& accessible_node);
+
   // Returns true if |parent_| is null and not at the root.
   bool IsMissingParent() const;
 

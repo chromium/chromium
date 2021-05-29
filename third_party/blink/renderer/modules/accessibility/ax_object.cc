@@ -670,25 +670,29 @@ AXObject* AXObject::ComputeParent() const {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!IsDetached());
 
-  SANITIZER_CHECK(!IsVirtualObject())
-      << "A virtual object must have a parent, and cannot exist without one. "
-         "The parent is set when the object is constructed.";
 
   SANITIZER_CHECK(!IsMockObject())
       << "A mock object must have a parent, and cannot exist without one. "
          "The parent is set when the object is constructed.";
 
-  SANITIZER_CHECK(GetNode() || GetLayoutObject())
+  SANITIZER_CHECK(GetNode() || GetLayoutObject() || IsVirtualObject())
       << "Can't compute parent on AXObjects without a backing Node "
-         "or LayoutObject. Objects without those must set the "
+         "LayoutObject, "
+         " or AccessibleNode. Objects without those must set the "
          "parent in Init(), |this| = "
       << RoleValue();
 #endif
 
-  AXObject* ax_parent =
-      AXObjectCache().IsAriaOwned(this)
-          ? AXObjectCache().GetAriaOwnedParent(this)
-          : ComputeNonARIAParent(AXObjectCache(), GetNode(), GetLayoutObject());
+  AXObject* ax_parent;
+  if (AXObjectCache().IsAriaOwned(this)) {
+    ax_parent = AXObjectCache().GetAriaOwnedParent(this);
+  } else if (IsVirtualObject()) {
+    ax_parent =
+        ComputeAccessibleNodeParent(AXObjectCache(), *GetAccessibleNode());
+  } else {
+    ax_parent =
+        ComputeNonARIAParent(AXObjectCache(), GetNode(), GetLayoutObject());
+  }
 
   CHECK(!ax_parent || !ax_parent->IsDetached())
       << "Computed parent should never be detached:"
@@ -722,6 +726,33 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
     return false;
 
   return true;
+}
+
+// static
+AXObject* AXObject::ComputeAccessibleNodeParent(
+    AXObjectCacheImpl& cache,
+    AccessibleNode& accessible_node) {
+  if (AccessibleNode* parent_accessible_node = accessible_node.GetParent()) {
+    if (AXObject* parent = cache.Get(parent_accessible_node))
+      return parent;
+
+    // If |accessible_node|'s parent is attached to a DOM element, we return the
+    // AXObject of the DOM element as the parent AXObject of |accessible_node|,
+    // since the accessible node directly attached to an element should not have
+    // its own AXObject.
+    if (Element* element = parent_accessible_node->element())
+      return cache.GetOrCreate(element);
+
+    // Compute grandparent first, since constructing parent AXObject for
+    // |accessible_node| requires grandparent to be provided.
+    AXObject* grandparent_object =
+        AXObject::ComputeAccessibleNodeParent(cache, *parent_accessible_node);
+
+    if (grandparent_object)
+      return cache.GetOrCreate(parent_accessible_node, grandparent_object);
+  }
+
+  return nullptr;
 }
 
 // static
@@ -4062,12 +4093,8 @@ AXObject* AXObject::ParentObject() const {
   // detached, but the children still exist. One example of this is when
   // a <select size="1"> changes to <select size="2">, where the
   // Role::kMenuListPopup is detached.
-  if (IsMissingParent()) {
-    DCHECK(!IsVirtualObject())
-        << "A virtual object must have a parent, and cannot exist without one. "
-           "The parent is set when the object is constructed.";
+  if (IsMissingParent())
     RepairMissingParent();
-  }
 
   return parent_;
 }

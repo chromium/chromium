@@ -1046,7 +1046,9 @@
     "bases": ["accessibility/slot-poison.html",
               "accessibility/details-summary-crash.html",
               "accessibility/virtual-node-child-removal.html",
-              "accessibility/virtual-node-parent-removal.html"],
+              "accessibility/virtual-node-parent-removal.html",
+              "accessibility/virtual-node-build-parent.html",
+              "accessibility/virtual-node-build-parent-multiple.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
