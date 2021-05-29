@@ -301,8 +301,6 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   // Set properties that foreign layers would normally control for themselves
   // here to avoid changing foreign layers. This includes things set by
   // GraphicsLayer on the ContentsLayer() or by video clients etc.
-  // TODO(pdr): Can these be set in |UpdateLayerProperties| so we can avoid a
-  // full update when they change (see: |NeedsFullUpdateAfterPaintingChunk|)?
   bool contents_opaque = pending_layer.rect_known_to_be_opaque.Contains(
       FloatRect(cc_combined_bounds));
   cc_layer->SetContentsOpaque(contents_opaque);
@@ -350,8 +348,6 @@ bool NeedsFullUpdateAfterPaintingChunk(
     return true;
   }
 
-  // TODO(pdr): Can the following be set in |UpdateLayerProperties| so we can
-  // still do a repaint update when they change?
   // Opaqueness of individual chunks is used to set the cc::Layer's contents
   // opaque property.
   if (previous.known_to_be_opaque != repainted.known_to_be_opaque)
