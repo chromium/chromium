@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -116,8 +117,6 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
                          POLICY_SOURCE_ACTIVE_DIRECTORY, base::Value("maybe"),
                          nullptr);
 
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-
     SetPolicy(kTestPolicy);
     SetSchema(kTestSchema);
 
@@ -128,7 +127,6 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   }
 
   ~ComponentActiveDirectoryPolicyServiceTest() override {
-    chromeos::SessionManagerClient::Shutdown();
     // Make sure all StorePolicy() calls succeeded.
     EXPECT_EQ(store_policy_call_count_, store_policy_succeeded_count_);
   }
@@ -211,6 +209,8 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   }
 
   ComponentActiveDirectoryPolicyBuilder builder_;
+  chromeos::ScopedFakeInMemorySessionManagerClient
+      scoped_session_manager_client_;
   std::string curr_schema_;
   int store_policy_call_count_ = 0;
   int store_policy_succeeded_count_ = 0;

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_test_utils.h"
@@ -32,12 +33,6 @@ class ComponentActiveDirectoryPolicyRetrieverTest : public testing::Test {
  protected:
   ComponentActiveDirectoryPolicyRetrieverTest() = default;
 
-  void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-  }
-
-  void TearDown() override { chromeos::SessionManagerClient::Shutdown(); }
-
   RetrieveCallback CreateRetrieveCallback() {
     return base::BindOnce(
         &ComponentActiveDirectoryPolicyRetrieverTest::OnPoliciesRetrieved,
@@ -59,6 +54,7 @@ class ComponentActiveDirectoryPolicyRetrieverTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::vector<RetrieveResult> results_;
+  chromeos::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
   bool policy_stored_ = false;
   bool callback_called_ = false;
 };

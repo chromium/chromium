@@ -374,6 +374,18 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
+class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeSessionManagerClient {
+ public:
+  ScopedFakeSessionManagerClient();
+  ~ScopedFakeSessionManagerClient();
+};
+
+class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeInMemorySessionManagerClient {
+ public:
+  ScopedFakeInMemorySessionManagerClient();
+  ~ScopedFakeInMemorySessionManagerClient();
+};
+
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when moved to ash.

@@ -346,7 +346,6 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   NetworkConfigurationUpdaterTest() : certificate_importer_(NULL) {}
 
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFake();
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
 
@@ -498,6 +497,7 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
 
   base::Value fake_network_configs_;
   base::DictionaryValue fake_global_network_config_;
+  chromeos::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
 TEST_F(NetworkConfigurationUpdaterTest, CellularAllowRoaming) {

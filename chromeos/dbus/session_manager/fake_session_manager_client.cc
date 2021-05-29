@@ -798,4 +798,22 @@ void FakeSessionManagerClient::set_on_start_device_wipe_callback(
   on_start_device_wipe_callback_ = std::move(callback);
 }
 
+ScopedFakeSessionManagerClient::ScopedFakeSessionManagerClient() {
+  SessionManagerClient::InitializeFake();
+}
+
+ScopedFakeSessionManagerClient::~ScopedFakeSessionManagerClient() {
+  SessionManagerClient::Shutdown();
+}
+
+ScopedFakeInMemorySessionManagerClient::
+    ScopedFakeInMemorySessionManagerClient() {
+  SessionManagerClient::InitializeFakeInMemory();
+}
+
+ScopedFakeInMemorySessionManagerClient::
+    ~ScopedFakeInMemorySessionManagerClient() {
+  SessionManagerClient::Shutdown();
+}
+
 }  // namespace chromeos

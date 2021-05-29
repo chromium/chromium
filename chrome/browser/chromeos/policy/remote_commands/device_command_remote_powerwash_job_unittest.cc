@@ -87,6 +87,7 @@ class DeviceCommandRemotePowerwashJobTest : public testing::Test {
 
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
+  chromeos::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DeviceCommandRemotePowerwashJobTest);
@@ -97,12 +98,10 @@ DeviceCommandRemotePowerwashJobTest::DeviceCommandRemotePowerwashJobTest()
           base::TestMockTimeTaskRunner::Type::kBoundToThread)),
       client_(std::make_unique<MockCloudPolicyClient>()),
       service_(std::make_unique<TestingRemoteCommandsService>(client_.get())) {
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
 }
 
-DeviceCommandRemotePowerwashJobTest::~DeviceCommandRemotePowerwashJobTest() {
-  chromeos::SessionManagerClient::Shutdown();
-}
+DeviceCommandRemotePowerwashJobTest::~DeviceCommandRemotePowerwashJobTest() =
+    default;
 
 // Make sure that the command is still valid 5*365-1 days after being issued.
 TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandLifetime) {
