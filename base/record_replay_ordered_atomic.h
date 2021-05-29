@@ -56,10 +56,19 @@ class OrderedAtomic {
     return value_.fetch_and(v, memory_order);
   }
 
+  T exchange(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
+    AutoOrderedLock ordered(ordered_lock_id_);
+    return value_.exchange(v, memory_order);
+  }
+
   bool compare_exchange_weak(T& a, T b,
                              std::memory_order memory_order = std::memory_order_seq_cst) {
     AutoOrderedLock ordered(ordered_lock_id_);
     return value_.compare_exchange_weak(a, b, memory_order);
+  }
+
+  bool is_lock_free() const {
+    return value_.is_lock_free();
   }
 
  private:
