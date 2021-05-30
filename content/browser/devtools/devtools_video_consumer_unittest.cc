@@ -27,6 +27,9 @@ namespace {
 constexpr gfx::Size kResolution = gfx::Size(320, 180);  // Arbitrarily chosen.
 constexpr media::VideoPixelFormat kFormat = media::PIXEL_FORMAT_I420;
 
+// Video buffer parameters.
+constexpr bool kNotPremapped = false;
+
 // A non-zero FrameSinkId to prevent validation errors when
 // DevToolsVideoConsumer::ChangeTarget(viz::FrameSinkId) is called
 // (which eventually fails in FrameSinkVideoCapturerStubDispatch::Accept).
@@ -193,7 +196,8 @@ class DevToolsVideoConsumerTest : public testing::Test {
 
     media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New(
         base::TimeDelta(), media::VideoFrameMetadata(), kFormat, kResolution,
-        gfx::Rect(kResolution), gfx::ColorSpace::CreateREC709(), nullptr);
+        gfx::Rect(kResolution), kNotPremapped, gfx::ColorSpace::CreateREC709(),
+        nullptr);
 
     consumer_->OnFrameCaptured(std::move(data), std::move(info),
                                gfx::Rect(kResolution),

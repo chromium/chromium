@@ -137,6 +137,12 @@ class CAPTURE_EXPORT VideoCaptureDevice
       int frame_feedback_id;
       std::unique_ptr<HandleProvider> handle_provider;
       std::unique_ptr<ScopedAccessPermission> access_permission;
+
+      // Some buffer types may be preemptively mapped in the capturer if
+      // requested by the consumer.
+      // This is used to notify the client that a shared memory region
+      // associated with the buffer is valid.
+      bool is_premapped = false;
     };
 
     // Result code for calls to ReserveOutputBuffer()

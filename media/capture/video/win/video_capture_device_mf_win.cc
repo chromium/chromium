@@ -1497,9 +1497,15 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   auto gmb_handle = capture_buffer.handle_provider->GetGpuMemoryBufferHandle();
   hr = CopyTextureToGpuMemoryBuffer(texture, gmb_handle.dxgi_handle.Get());
 
+  capture_buffer.is_premapped = false;
   if (last_feedback_.require_mapped_frame) {
-    gmb_handle.region =
-        capture_buffer.handle_provider->DuplicateAsUnsafeRegion();
+    // Only a flag on the Buffer is set here; the region itself isn't passed
+    // anywhere because it was passed when the buffer was created.
+    // Now the flag would tell the consumer that the region contains actual
+    // frame data.
+    if (capture_buffer.handle_provider->DuplicateAsUnsafeRegion().IsValid()) {
+      capture_buffer.is_premapped = true;
+    }
   }
 
   if (FAILED(hr)) {

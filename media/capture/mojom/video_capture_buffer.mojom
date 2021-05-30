@@ -19,6 +19,11 @@ struct VideoFrameInfo{
   VideoCapturePixelFormat pixel_format;
   gfx.mojom.Size coded_size;
   gfx.mojom.Rect visible_rect;
+  // Some buffer types may be preemtively mapped in the capturer.
+  // In that case a shared memory region is passed to the consumer together
+  // with a GMB handle, and this flag here is passed to notify the consumer
+  // that the region has valid data.
+  bool is_premapped;
   // This field is only optional to work around the issue of native enums
   // not being usable for non-Chromium Mojo clients.
   // TODO(chfremer): Make this non-optional once gfx.mojom.ColorSpace has been
