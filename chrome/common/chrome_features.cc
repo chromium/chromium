@@ -835,7 +835,7 @@ const base::Feature kRequestDesktopSiteForTablets{
 
 #if defined(OS_WIN)
 const base::Feature kSafetyCheckChromeCleanerChild{
-    "SafetyCheckChromeCleanerChild", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafetyCheckChromeCleanerChild", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kSafetyCheckWeakPasswords{"SafetyCheckWeakPasswords",

@@ -6903,21 +6903,6 @@
             ]
         }
     ],
-    "SafetyCheckChromeCleanerChild": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafetyCheckChromeCleanerChild"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrollResamplingRollout": [
         {
             "platforms": [
