@@ -16,6 +16,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
 #include "base/task/post_task.h"
@@ -538,6 +539,8 @@ std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
                     base::BindRepeating(
                         [](const std::unique_ptr<v8::JobTask>& job_task,
                            base::JobDelegate* delegate) {
+                          recordreplay::Assert("V8Platform::PostJob callback %lu",
+                                               recordreplay::PointerId(delegate));
                           JobDelegateImpl delegate_impl(delegate);
                           job_task->Run(&delegate_impl);
                         },
