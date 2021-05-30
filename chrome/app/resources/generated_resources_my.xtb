@@ -1593,7 +1593,6 @@
 <translation id="2672142220933875349">ဆိုးရွားသော crx ဖိုင်၊ ရှင်းလင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="2673135533890720193">သင်၏ ဘရောင်ဇာ မှတ်တမ်းကို ဖတ်ကြည့်ရန်</translation>
 <translation id="2674764818721168631">ပိတ်ရန်</translation>
-<translation id="2676518761349096749">အမြင့်ဆုံးအရည်အသွေးရှိသော ကာကွယ်ထားသည့် ဗီဒီယိုနှင့် အသံကို ဖွင့်နိုင်ရန်အတွက် သင်၏စက်ကို <ph name="DOMAIN" /> က သီးသန့်ခွဲခြားဖော်ထုတ်လိုသည်။</translation>
 <translation id="2678063897982469759">ပြန်ဖွင့်ထားရန်</translation>
 <translation id="268053382412112343">မှတ်&amp;တမ်း</translation>
 <translation id="2681124317993121768">ဧည့်သည်ပရိုဖိုင်များကို ပံ့ပိုးမထားပါ</translation>
@@ -3630,6 +3629,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။</translation>
 <translation id="4902546322522096650">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="49027928311173603">ဆာဗာမှ ဒေါင်းလုပ်လုပ်ထားသည့် ပေါ်လစီသည် မမှန်ကန်ပါ: <ph name="VALIDATION_ERROR" />။</translation>
+<translation id="4905269543817054577">‘ရုပ်ဖျက်မုဒ်’ တွင် မှတ်တမ်းကို မသိမ်းပါ</translation>
 <translation id="4906490889887219338">ကွန်ရက် ဖိုင်မျှဝေမှုများကို စနစ်သတ်မှတ်ရန် သို့မဟုတ် စီမံရန်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ <ph name="PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ အသေးစိတ်</translation>
 <translation id="4907161631261076876">ဤဖိုင်ကို အများအားဖြင့် ဒေါင်းလုဒ်လုပ်လေ့ မရှိပါ။ အန္တရာယ်ရှိနိုင်ပါသည်။</translation>

@@ -1594,7 +1594,6 @@
 <translation id="2672142220933875349">Κατεστραμμένο αρχείο crx, η αποσυσκευασία απέτυχε.</translation>
 <translation id="2673135533890720193">Ανάγνωση του ιστορικού περιήγησής σας</translation>
 <translation id="2674764818721168631">Ανενεργό</translation>
-<translation id="2676518761349096749">Ο τομέας <ph name="DOMAIN" /> θέλει να προσδιορίσει μοναδικά τη συσκευή σας, ώστε να μπορεί να αναπαράγει προστατευμένα βίντεο και ήχο στην υψηλότερη δυνατή ποιότητα.</translation>
 <translation id="2678063897982469759">Εκ νέου ενεργοποίηση</translation>
 <translation id="268053382412112343">Ιστορικό</translation>
 <translation id="2681124317993121768">Δεν υποστηρίζονται τα προφίλ επισκεπτών</translation>
@@ -3632,6 +3631,7 @@
 <translation id="4901309472892185668">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="4902546322522096650">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="49027928311173603">Η πολιτική της οποίας έγινε λήψη από το διακομιστή δεν είναι έγκυρη: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">Το ιστορικό δεν αποθηκεύεται σε κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="4906490889887219338">Ρύθμιση ή διαχείριση κοινής χρήσης αρχείων δικτύου. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
 <translation id="4907161631261076876">Δεν πραγματοποιείται συχνά λήψη αυτού του αρχείου και ενδέχεται να είναι επικίνδυνη.</translation>

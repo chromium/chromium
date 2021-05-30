@@ -1809,7 +1809,7 @@
 
       У <ph name="MS_WIN_NAME" /> ця функція доступна лише для Windows 10 Pro або версій, зареєстрованих у домені <ph name="MS_AD_NAME" /> чи в сервісі <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. У <ph name="MAC_OS_NAME" /> ця функція доступна лише для машин, які контролюються через Керування мобільними пристроями або зареєстровані в домені через MCX.</translation>
 <translation id="3261592499545947104">За скільки секунд до закінчення терміну дії сертифіката має активуватися поновлення</translation>
-<translation id="3264706118366247207">Налаштовує список типів даних веб-перегляду, які потрібно видаляти, коли користувач закриває всі вікна веб-переглядача. Доступні типи даних: історія веб-перегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Воно не має пріоритету над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+<translation id="3264706118366247207">Налаштовує список типів даних веб-перегляду, які потрібно видаляти, коли користувач закриває всі вікна веб-переглядача. Доступні типи даних: історія веб-перегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Це правило не має пріоритету над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
 
       Це правило діє, лише якщо для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> вибрано значення true. Інакше воно ігноруватиметься. Якщо налаштувати це правило на рівні платформи, потрібно вимкнути синхронізацію для всієї платформи. Якщо це правило налаштовано на рівні користувача, воно діє, лише якщо вимкнути синхронізацію для цього користувача.
 
@@ -4422,13 +4422,13 @@
 <translation id="6833988859168635883">Стартова й домашня сторінки та сторінка нової вкладки</translation>
 <translation id="6834298774555537368">За допомогою налаштувань цього правила можна вибрати параметри проксі для Chrome і додатків ARC, які ігнорують усі опції проксі, указані в командному рядку.
 
-       Якщо не налаштувати це правило, користувачі зможуть самостійно вибирати налаштування проксі.
+       Якщо не налаштувати це правило, користувачі зможуть самостійно вибирати параметри проксі.
 
        Якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> налаштовано, буде прийнято ці поля:
          * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> визначає проксі-сервер для Chrome і забороняє користувачам змінювати ці налаштування;
          * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> – URL-адреса файлу .pac проксі-сервера;
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> – URL-адреса проксі-сервера;
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів, для яких проксі ігноруватиметься.
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів, які працюватимуть в обхід проксі-сервера.
 
        Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> застаріле. Замість нього використовується поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
 

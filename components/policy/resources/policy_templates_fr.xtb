@@ -4400,7 +4400,7 @@ Si vous sélectionnez les options suivantes :
        Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
 
        Si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> est configurée, les champs suivants sont proposés :
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> vous permet de spécifier le serveur proxy que Chrome utilise, et empêche les utilisateurs de modifier les paramètres de proxy
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> : qui vous permet de spécifier le serveur proxy que Chrome utilise et empêche les utilisateurs de modifier les paramètres de proxy
          * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> : URL d'un fichier .pac de proxy
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> : URL du serveur proxy
          * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> : liste d'hôtes pour lesquels le proxy sera contourné

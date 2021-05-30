@@ -1577,7 +1577,6 @@
 <translation id="2672142220933875349">ଖରାପ crx ଫାଇଲ୍‌, ଅନ୍‍ପ୍ୟାକିଂ ବିଫଳ ହେଲା।</translation>
 <translation id="2673135533890720193">ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ପଢ଼ନ୍ତୁ</translation>
 <translation id="2674764818721168631">ବନ୍ଦ ଅଛି</translation>
-<translation id="2676518761349096749"><ph name="DOMAIN" /> ଆପଣଙ୍କ ଡିଭାଇସକୁ ସ୍ୱତନ୍ତ୍ର ଭାବରେ ଚିହ୍ନଟ କରିବାକୁ ଚାହେଁ ଯାହା ଫଳରେ ଏହା ଉଚ୍ଚତମ ଗୁଣବତ୍ତାର ସୁରକ୍ଷିତ ଭିଡିଓ ଏବଂ ଅଡିଓ ଚଲାଇପାରିବ।</translation>
 <translation id="2678063897982469759">ପୁନଃ-ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="268053382412112343">&amp;ଇତିବୃତ୍ତି</translation>
 <translation id="2681124317993121768">ଅତିଥି ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -2566,6 +2565,7 @@
 <translation id="3742666961763734085">ସେହି ନାମରେ ଏକ ସଂଗଠନାତ୍ମକ ୟୁନିଟ୍ ମିଳୁନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3744111561329211289">ପୃଷ୍ଠପଟ ସିଙ୍କ୍‌</translation>
 <translation id="3747077776423672805">ଆପଗୁଡ଼ିକୁ କାଢ଼ିବା ପାଇଁ, 'ସେଟିଂସ୍ &gt; Google Play ଷ୍ଟୋର୍ &gt; Android ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ &gt; ଆପ୍ସ କିମ୍ବା ଆପ୍ଲିକେସନ୍ ପରିଚାଳକ'କୁ ଯାଆନ୍ତୁ। ତାପରେ, ଆପଣ ଅନଇନଷ୍ଟଲ୍ କରିବାକୁ ଚାହୁଁଥିବା ଆପରେ ଟାପ୍ କରନ୍ତୁ (ଆପଟିକୁ ଖୋଜି ପାଇବା ପାଇଁ ଆପଣଙ୍କୁ ଡାହାଣ ବା ବାମକୁ ସ୍ଵାଇପ୍ କରିବାକୁ ପଡ଼ିପାରେ)। ତାପରେ 'ଅନଇନଷ୍ଟଲ୍' କିମ୍ବା 'ଅକ୍ଷମ କରନ୍ତୁ'ରେ ଟାପ୍ କରନ୍ତୁ।</translation>
+<translation id="3747220812138541072">ଆପଣ ଟାଇପ୍ କରିବା ସମୟରେ ଦେଖାଯାଉଥିବା ଲିଖିତ ଇନଲାଇନ୍ ପରାମର୍ଶଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="3748706263662799310">ଏକ ବଗ୍ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3752582316358263300">ଠିକ୍ ଅଛି...</translation>
 <translation id="3753033997400164841">ଥରେ ଷ୍ଟୋର୍ କରନ୍ତୁ। ସର୍ବତ୍ର ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -3254,6 +3254,7 @@
 <translation id="4510614391273086606">Linux ଫାଇଲ୍ ଏବଂ ଆପଗୁଡ଼ିକୁ ସେଗୁଡ଼ିକର ବ୍ୟାକଅପ୍ କରାଯାଇଥିବା ସ୍ଥିତିରେ ରିଷ୍ଟୋର୍ କରାଯାଉଛି।</translation>
 <translation id="451102079304155829">କାର୍ଟଗୁଡ଼ିକ</translation>
 <translation id="4513275008300099962">ୱିଣ୍ଡୋ ନିୟନ୍ତ୍ରଣ ଓଭରଲେକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="4513872120116766993">ପୂର୍ବାନୁମାନ ଲିଖିତ ପରାମର୍ଶ</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> ଦ୍ୱାରା ସମର୍ଥିତ</translation>
 <translation id="4514610446763173167">ଭିଡିଓକୁ ଚଲାଇବା କିମ୍ବା ବିରତ କରିବା ପାଇଁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
@@ -3612,6 +3613,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ପରୀକ୍ଷଣ ପାଇଁ ପରୀକ୍ଷଣର ସ୍ଥିତି ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="49027928311173603">ସର୍ଭର୍‌ରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ: <ph name="VALIDATION_ERROR" />।</translation>
+<translation id="4905269543817054577">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଇତିହାସ ସେଭ୍ ହୁଏ ନାହିଁ</translation>
 <translation id="4906490889887219338">ନେଟ୍‍ୱାର୍କ ଫାଇଲ୍ ସେୟାର୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ କିମ୍ବା ପରିଚାଳନା କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
 <translation id="4907161631261076876">ଏହି ଫାଇଲ୍ ସାଧାରଣତଃ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଏ ନାହିଁ ଏବଂ ଏହା ହୁଏତ ବିପଜ୍ଜନକ ହୋଇଥାଇପାରେ।</translation>
@@ -4416,6 +4418,7 @@
 <translation id="5826395379250998812">ଆପଣଙ୍କର ଫୋନ୍ ସହ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ସଂଯୁକ୍ତ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">ଅର୍ଦ୍ଧ-ପାରଦର୍ଶୀ</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">ପରବର୍ତ୍ତୀ ଶବ୍ଦ ପୂର୍ବାନୁମାନ</translation>
 <translation id="5828545842856466741">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="5828633471261496623">ପ୍ରିଣ୍ଟିଂ...</translation>
 <translation id="5830720307094128296">&amp;ଏହି ଭାବେ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ...</translation>
@@ -6288,6 +6291,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="78526636422538552">ଅଧିକ Google ଆକାଉଣ୍ଟ ଯୋଗ କରିବାକୁ ଅକ୍ଷମ କରିଦିଆଯାଇଛି</translation>
 <translation id="7853747251428735">ଅଧିକ ଟୁ&amp;ଲ୍‌ସ୍</translation>
 <translation id="7855678561139483478">ଟାବ୍‍କୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
+<translation id="7857093393627376423">ଟେକ୍ସଟ୍ ପରାମର୍ଶ</translation>
 <translation id="7857117644404132472">ବ୍ୟତିକ୍ରମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7857949311770343000">ଏହା କ'ଣ ଆପଣ ପ୍ରତ୍ୟାଶିତ କରୁଥିବା ନୂଆ ଟାବ୍ ପୃଷ୍ଠା ଅଟେ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

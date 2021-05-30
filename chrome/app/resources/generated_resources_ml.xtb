@@ -1578,7 +1578,6 @@
 <translation id="2672142220933875349">crx ഫയൽ മോശമാണ്, അൺപാക്കുചെയ്യൽ പരാജയപ്പെട്ടു.</translation>
 <translation id="2673135533890720193">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം വായിക്കുക</translation>
 <translation id="2674764818721168631">ഓഫാണ്</translation>
-<translation id="2676518761349096749">ഏറ്റവും ഉയർന്ന നിലവാരമുള്ള പരിരക്ഷിത വീഡിയോയും ഓഡിയോയും പ്ലേ ചെയ്യുന്നതിന് നിങ്ങളുടെ ഉപകരണം സവിശേഷമായി തിരിച്ചറിയാൻ <ph name="DOMAIN" /> ആഗ്രഹിക്കുന്നു.</translation>
 <translation id="2678063897982469759">വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="268053382412112343">ച&amp;രിത്രം</translation>
 <translation id="2681124317993121768">അതിഥി പ്രൊഫൈലുകൾക്ക് പിന്തുണയില്ല</translation>
@@ -2567,6 +2566,7 @@
 <translation id="3742666961763734085">ആ പേരിലുള്ള ഒരു ഓർഗനൈസേഷണൽ യൂണിറ്റ് കണ്ടെത്താനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3744111561329211289">പശ്ചാത്തല സമന്വയിപ്പിക്കൽ</translation>
 <translation id="3747077776423672805">ആപ്പുകൾ നീക്കം ചെയ്യാൻ, ക്രമീകരണം &gt; Google Play സ്‌റ്റോർ &gt; Android മുൻഗണനകൾ മാനേജ് ചെയ്യുക &gt; ആപ്പുകൾ അല്ലെങ്കിൽ ആപ്പ് മാനേജർ എന്നതിലേക്ക് പോവുക. അൺഇൻസ്‌റ്റാൾ ചെയ്യാനാഗ്രഹിക്കുന്ന ആപ്പിൽ ടാപ്പ് ചെയ്യുക (ആപ്പ് കണ്ടെത്താൻ വലത്തോട്ടോ ഇടത്തോട്ടോ സ്വൈപ്പ് ചെയ്യേണ്ടതായി വന്നേക്കാം). തുടർന്ന്, അൺഇൻസ്‌റ്റാൾ ചെയ്യുക എന്നതിലോ പ്രവർത്തനരഹിതമാക്കുക എന്നതിലോ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="3747220812138541072">നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്നതിന് അനുസരിച്ച് ദൃശ്യമാകുന്ന ഇൻലൈൻ എഴുത്ത് നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="3748706263662799310">ഒരു ബഗ് റിപ്പോര്‍ട്ടുചെയ്യുക</translation>
 <translation id="3752582316358263300">ശരി...</translation>
 <translation id="3753033997400164841">ഒരു തവണ സംഭരിക്കൂ. എല്ലായിടത്തും ഉപയോഗിക്കൂ</translation>
@@ -3254,6 +3254,7 @@
 <translation id="4510614391273086606">Linux ഫയലുകളും ആപ്പുകളും അവയുടെ ബാക്കപ്പ് നിലയിലേക്ക് പുനഃസ്ഥാപിക്കുന്നു.</translation>
 <translation id="451102079304155829">കാർട്ടുകൾ</translation>
 <translation id="4513275008300099962">വിൻഡോ നിയന്ത്രണങ്ങളുടെ ഓവർലേ പ്രവർത്തനരഹിതമാക്കുക</translation>
+<translation id="4513872120116766993">എഴുത്ത് പ്രവചിക്കൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> നൽകുന്നത്</translation>
 <translation id="4514610446763173167">പ്ലേ ചെയ്യാനോ നിർത്താനോ വീഡിയോ മാറ്റുക</translation>
@@ -3612,6 +3613,7 @@
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="49027928311173603">സെർവറിൽ നിന്നും ഡൗൺലോഡ് ചെയ്‌ത നയം അസാധുവാണ്: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4905269543817054577">അദൃശ്യ മോഡിൽ ചരിത്രം സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="4906490889887219338">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ സജ്ജീകരിക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="4907161631261076876">അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ ഈ ഫയൽ സാധാരണ ഡൗൺലോഡ് ചെയ്യാറില്ല.</translation>
@@ -4417,6 +4419,7 @@
 <translation id="5826395379250998812">നിങ്ങളുടെ ഫോണുമായി <ph name="DEVICE_TYPE" /> കണക്‌റ്റ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">ഭാഗികമായി സുതാര്യം</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">അടുത്ത വാക്ക് പ്രവ‌ചനം</translation>
 <translation id="5828545842856466741">പ്രൊഫൈൽ ചേർക്കുക...</translation>
 <translation id="5828633471261496623">പ്രിന്‍റ് ചെയ്യുന്നു...</translation>
 <translation id="5830720307094128296">പേജ് &amp;ഇതായി സംരക്ഷിക്കുക...</translation>
@@ -6288,6 +6291,7 @@
 <translation id="78526636422538552">കൂടുതൽ Google അക്കൗണ്ടുകൾ ചേർക്കുന്നത് പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="7853747251428735">കൂടുതൽ ഉപകരണങ്ങൾ</translation>
 <translation id="7855678561139483478">ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക</translation>
+<translation id="7857093393627376423">ടെക്‌സ്‌റ്റ് നിർദ്ദേശങ്ങൾ</translation>
 <translation id="7857117644404132472">ഒഴിവാക്കൽ ചേർക്കുക</translation>
 <translation id="7857949311770343000">നിങ്ങൾ ഉദ്ദേശിച്ച പുതിയ ടാബ് പേജ് ഇതാണോ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

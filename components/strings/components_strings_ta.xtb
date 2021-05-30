@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">விளம்பரங்கள்</translation>
 <translation id="1919367280705858090">குறிப்பிட்ட பிழைச் செய்திக்கான உதவியைப் பெறுங்கள்</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ஏதுமில்லை}=1{1 தளம்}other{# தளங்கள்}}</translation>
+<translation id="1924727005275031552">புதிய முகவரி</translation>
 <translation id="1945968466830820669">உங்கள் நிறுவனத்தின் கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும் அல்லது அடையாளத் திருட்டை எதிர்கொள்ளக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றும்படி Chromium பரிந்துரைக்கிறது.</translation>
 <translation id="1947454675006758438">ஸ்டேப்பில் டாப் ரைட்</translation>
 <translation id="1958218078413065209">உங்கள் அதிகபட்ச ஸ்கோர்: <ph name="SCORE" />.</translation>
@@ -398,6 +399,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{ஒரு நாளுக்குள்}=1{ஒரு நாளில்}other{{NUM_DAYS} நாட்களில்}}</translation>
 <translation id="2359629602545592467">பல</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
+<translation id="2359961752320758691">உங்கள் விர்ச்சுவல் கார்டு எண் பயன்படுத்தப்பட்டது.</translation>
 <translation id="2367567093518048410">நிலை</translation>
 <translation id="2372464001869762664">நீங்கள் உறுதிப்படுத்திய பிறகு, உங்கள் Google கணக்கிலிருக்கும் கார்டு விவரங்கள் இந்தத் தளத்துடன் பகிரப்படும். உங்கள் Plex கணக்கு விவரங்களில் CVCயைக் கண்டறியவும்.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -408,6 +410,7 @@
 <translation id="239429038616798445">இந்த ஷிப்பிங் முறை இல்லை. வேறு முறையைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="2396249848217231973">&amp;நீக்குதலைச் செயல்தவிர்</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">பழைய முகவரி</translation>
 <translation id="2413528052993050574">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் திரும்பப்பெறப்பட்டிருக்கலாம். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
 <translation id="2414886740292270097">அடர்</translation>
 <translation id="2438874542388153331">குவாட் பஞ்ச் ரைட்</translation>
@@ -908,12 +911,14 @@
 <translation id="4275830172053184480">உங்கள் சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="4277028893293644418">கடவுச்சொல்லை மீட்டமை</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{இந்தக் கார்டு உங்கள் Google கணக்கில் சேமிக்கப்பட்டது}other{இந்தக் கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்பட்டன}}</translation>
+<translation id="4287885627794386150">சோதனைக்குத் தகுதிபெற்றுள்ளது. ஆனால் செயலில் இல்லை</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> பக்கத்தின் சிறு படம்</translation>
 <translation id="42981349822642051">விரி</translation>
 <translation id="4300675098767811073">மல்டிப்பில் பஞ்ச் ரைட்</translation>
 <translation id="4302514097724775343">விளையாட டைனோசரைத் தட்டுங்கள்</translation>
 <translation id="4302965934281694568">Chou3 (என்வலப்)</translation>
 <translation id="4305666528087210886">உங்கள் கோப்பினை அணுக முடியவில்லை</translation>
+<translation id="4306529830550717874">முகவரியைச் சேமிக்கவா?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">தடு (இயல்பு)</translation>
 <translation id="4314815835985389558">ஒத்திசைவை நிர்வகிக்கும் பக்கம்</translation>
@@ -1402,6 +1407,7 @@
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> என்ற முகவரியில், உங்கள் Google கணக்கிற்கான பிற வகை உலாவல் வரலாறும் இருக்கக்கூடும்</translation>
 <translation id="6116338172782435947">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும் பார்க்க விரும்புகிறது</translation>
 <translation id="6120179357481664955">உங்கள் UPI ஐடியைச் சேமிக்கவா?</translation>
+<translation id="6123290840358279103">விர்ச்சுவல் கார்டைக் காட்டு</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">கேபிள்களைச் சரிபார்த்து, நீங்கள் பயன்படுத்தக்கூடிய ரூட்டர்கள், மோடம்கள் அல்லது பிற நெட்வொர்க் சாதனங்களை மறுதொடக்கம் செய்யவும்.</translation>
 <translation id="614940544461990577">இவற்றைச் செய்து பார்க்கவும்:</translation>
@@ -1680,8 +1686,8 @@
 <translation id="7292031607255951991">பெறுநரின் பெயர்</translation>
 <translation id="7298195798382681320">பரிந்துரைத்தவை</translation>
 <translation id="7300012071106347854">அடர் நீலம்</translation>
-<translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">அதிகமானது</translation>
+<translation id="7305756307268530424">மெதுவான வேகத்தில் தொடங்கு</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">இணைப்பிற்கான உதவி</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" பிரிவை மறைக்கும்</translation>
@@ -1707,6 +1713,7 @@
 <translation id="7378594059915113390">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="7378627244592794276">வேண்டாம்</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">பொருந்தாது</translation>
 <translation id="7390545607259442187">கார்டை உறுதிசெய்</translation>
 <translation id="7392089738299859607">முகவரியை மாற்றுங்கள்</translation>
 <translation id="7399802613464275309">பாதுகாப்புச் சரிபார்ப்பு</translation>
@@ -1759,6 +1766,7 @@
 <translation id="7548892272833184391">இணைப்புப் பிழைகளைச் சரிசெய்யவும்</translation>
 <translation id="7549584377607005141">சரியாக காண்பிக்கப்படுவதற்கு நீங்கள் ஏற்கனவே உள்ளிட்ட தரவு இந்த இணையப்பக்கத்திற்கு தேவைப்படுகிறது. இந்த தரவை நீங்கள் மீண்டும் அனுப்பலாம், ஆனால் அவ்வாறு செய்வதனால் இந்தப் பக்கம் ஏற்கனவே செயற்படுத்திய எல்லாச் செயலையும் மீண்டும் செய்வீர்கள்.</translation>
 <translation id="7550637293666041147">உங்கள் சாதன மற்றும் Chrome பயனர்பெயர்</translation>
+<translation id="755279583747225797">சோதனை செயலில் உள்ளது</translation>
 <translation id="7552846755917812628">பின்வரும் உதவிக் குறிப்புகளைச் செய்து பார்க்கவும்:</translation>
 <translation id="7554475479213504905">பரவாயில்லை, ரெஃப்ரெஷ் செய்து காட்டு</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
@@ -1854,6 +1862,7 @@
 <translation id="7894280532028510793">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (என்வலப்)</translation>
 <translation id="7931318309563332511">தெரியவில்லை</translation>
+<translation id="793209273132572360">முகவரியை மாற்றவா?</translation>
 <translation id="7932579305932748336">கோட்</translation>
 <translation id="79338296614623784">சரியான ஃபோன் எண்ணை உள்ளிடவும்</translation>
 <translation id="7934052535022478634">பேமெண்ட் நிறைவடைந்தது</translation>
