@@ -140,6 +140,23 @@ typedef FILE* FileHandle;
 #include "base/files/scoped_file.h"
 #endif
 
+static void (*gRecordReplayPrintFn)(const char*, va_list);
+
+static void RecordReplayPrint(const char* aFormat, ...) {
+  if (!gRecordReplayPrintFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayPrint");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayPrintFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayPrintFn(aFormat, ap);
+  va_end(ap);
+}
+
 namespace logging {
 
 namespace {
@@ -584,6 +601,9 @@ LogMessage::~LogMessage() {
 #endif
   stream_ << std::endl;
   std::string str_newline(stream_.str());
+
+  RecordReplayPrint("LogMessage %s", str_newline.c_str());
+
   TRACE_LOG_MESSAGE(
       file_, base::StringPiece(str_newline).substr(message_start_), line_);
 
