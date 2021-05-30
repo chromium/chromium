@@ -246,6 +246,7 @@ PipelineImpl::RendererWrapper::RendererWrapper(
       playback_rate_(kDefaultPlaybackRate),
       volume_(kDefaultVolume),
       cdm_context_(nullptr),
+      shared_state_lock_("PipelineImpl::RendererWrapper.shared_state_lock_"),
       state_(kCreated),
       status_(PIPELINE_OK),
       renderer_ended_(false),
