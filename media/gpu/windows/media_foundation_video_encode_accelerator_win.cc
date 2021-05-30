@@ -25,10 +25,12 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 using media::MediaBufferScopedPointer;
@@ -404,6 +406,10 @@ void MediaFoundationVideoEncodeAccelerator::Destroy() {
   }
 
   delete this;
+}
+
+bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
+  return true;
 }
 
 // static
@@ -853,18 +859,41 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     HRESULT hr = d3d_device.As(&device1);
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
     hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&texture));
+                                      IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
 
+    // Check if we need to scale the input texture
+    D3D11_TEXTURE2D_DESC input_desc = {};
+    input_texture->GetDesc(&input_desc);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
+    if (input_desc.Width != uint32_t{input_visible_size_.width()} ||
+        input_desc.Height != uint32_t{input_visible_size_.height()}) {
+      hr = PerformD3DScaling(input_texture.Get());
+      RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
+      sample_texture = scaled_d3d11_texture_;
+    } else {
+      sample_texture = input_texture;
+    }
+
     Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
-    hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D), texture.Get(), 0,
-                                   FALSE, &input_buffer);
+    hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                   sample_texture.Get(), 0, FALSE,
+                                   &input_buffer);
     RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
 
+    // Some encoder MFTs (e.g. Qualcomm) depend on the sample buffer having a
+    // valid current length. Call GetMaxLength() to compute the plane size.
+    DWORD buffer_length = 0;
+    hr = input_buffer->GetMaxLength(&buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+    hr = input_buffer->SetCurrentLength(buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+
     hr = input_sample_->RemoveAllBuffers();
-    RETURN_ON_HR_FAILURE(hr, "Failed remove buffers from sample", hr);
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
     hr = input_sample_->AddBuffer(input_buffer.Get());
     RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
     return S_OK;
@@ -1255,6 +1284,163 @@ void MediaFoundationVideoEncodeAccelerator::ReleaseEncoderResources() {
   imf_output_media_type_.Reset();
   input_sample_.Reset();
   output_sample_.Reset();
+}
+
+HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
+    ID3D11Texture2D* input_texture) {
+  D3D11_TEXTURE2D_DESC input_desc = {};
+  input_texture->GetDesc(&input_desc);
+  if (vp_desc_.InputWidth == input_desc.Width &&
+      vp_desc_.InputHeight == input_desc.Height) {
+    return S_OK;
+  }
+
+  // Input/output framerates are dummy values for passthrough.
+  D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc = {
+      .InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE,
+      .InputFrameRate = {60, 1},
+      .InputWidth = input_desc.Width,
+      .InputHeight = input_desc.Height,
+      .OutputFrameRate = {60, 1},
+      .OutputWidth = input_visible_size_.width(),
+      .OutputHeight = input_visible_size_.height(),
+      .Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL};
+
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  input_texture->GetDevice(&texture_device);
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  HRESULT hr = texture_device.As(&video_device);
+  RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoDevice", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
+      video_processor_enumerator;
+  hr = video_device->CreateVideoProcessorEnumerator(
+      &vp_desc, &video_processor_enumerator);
+  RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessorEnumerator failed", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
+  hr = video_device->CreateVideoProcessor(video_processor_enumerator.Get(), 0,
+                                          &video_processor);
+  RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessor failed", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  texture_device->GetImmediateContext(&device_context);
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context;
+  hr = device_context.As(&video_context);
+  RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoContext", hr);
+
+  // Auto stream processing (the default) can hurt power consumption.
+  video_context->VideoProcessorSetStreamAutoProcessingMode(
+      video_processor.Get(), 0, FALSE);
+
+  D3D11_TEXTURE2D_DESC scaled_desc = {
+      .Width = input_visible_size_.width(),
+      .Height = input_visible_size_.height(),
+      .MipLevels = 1,
+      .ArraySize = 1,
+      .Format = DXGI_FORMAT_NV12,
+      .SampleDesc = {1, 0},
+      .Usage = D3D11_USAGE_DEFAULT,
+      .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
+      .CPUAccessFlags = 0,
+      .MiscFlags = 0};
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> scaled_d3d11_texture;
+  hr = texture_device->CreateTexture2D(&scaled_desc, nullptr,
+                                       &scaled_d3d11_texture);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create texture", hr);
+
+  D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_desc = {};
+  output_desc.ViewDimension = D3D11_VPOV_DIMENSION_TEXTURE2D;
+  output_desc.Texture2D.MipSlice = 0;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view;
+  hr = video_device->CreateVideoProcessorOutputView(
+      scaled_d3d11_texture.Get(), video_processor_enumerator.Get(),
+      &output_desc, &vp_output_view);
+  RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessorOutputView failed", hr);
+
+  video_device_ = std::move(video_device);
+  video_processor_enumerator_ = std::move(video_processor_enumerator);
+  video_processor_ = std::move(video_processor);
+  video_context_ = std::move(video_context);
+  vp_desc_ = std::move(vp_desc);
+  scaled_d3d11_texture_ = std::move(scaled_d3d11_texture);
+  vp_output_view_ = std::move(vp_output_view);
+  return S_OK;
+}
+
+HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
+    ID3D11Texture2D* input_texture) {
+  HRESULT hr = InitializeD3DVideoProcessing(input_texture);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't initialize D3D video processing", hr);
+
+  // Set the color space for passthrough.
+  auto src_color_space = gfx::ColorSpace::CreateSRGB();
+  auto output_color_space = gfx::ColorSpace::CreateSRGB();
+
+  D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
+      gfx::ColorSpaceWin::GetD3D11ColorSpace(src_color_space);
+  video_context_->VideoProcessorSetStreamColorSpace(video_processor_.Get(), 0,
+                                                    &src_d3d11_color_space);
+  D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
+      gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
+  video_context_->VideoProcessorSetOutputColorSpace(video_processor_.Get(),
+                                                    &output_d3d11_color_space);
+
+  {
+    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
+    if (SUCCEEDED(hr)) {
+      // The producer may still be using this texture for a short period of
+      // time, so wait long enough to hopefully avoid glitches. For example,
+      // all levels of the texture share the same keyed mutex, so if the
+      // hardware decoder acquired the mutex to decode into a different array
+      // level then it still may block here temporarily.
+      constexpr int kMaxSyncTimeMs = 100;
+      hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
+      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
+    }
+
+    // Setup |video_context_| for VPBlt operation.
+    D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_desc = {};
+    input_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
+    input_desc.Texture2D.ArraySlice = 0;
+    Microsoft::WRL::ComPtr<ID3D11VideoProcessorInputView> input_view;
+    hr = video_device_->CreateVideoProcessorInputView(
+        input_texture, video_processor_enumerator_.Get(), &input_desc,
+        &input_view);
+    RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessorInputView failed", hr);
+
+    D3D11_VIDEO_PROCESSOR_STREAM stream = {.Enable = true,
+                                           .OutputIndex = 0,
+                                           .InputFrameOrField = 0,
+                                           .PastFrames = 0,
+                                           .FutureFrames = 0,
+                                           .pInputSurface = input_view.Get()};
+
+    D3D11_TEXTURE2D_DESC input_texture_desc = {};
+    input_texture->GetDesc(&input_texture_desc);
+    RECT source_rect = {0, 0, input_texture_desc.Width,
+                        input_texture_desc.Height};
+    video_context_->VideoProcessorSetStreamSourceRect(video_processor_.Get(), 0,
+                                                      TRUE, &source_rect);
+
+    D3D11_TEXTURE2D_DESC output_texture_desc = {};
+    scaled_d3d11_texture_->GetDesc(&output_texture_desc);
+    RECT dest_rect = {0, 0, output_texture_desc.Width,
+                      output_texture_desc.Height};
+    video_context_->VideoProcessorSetOutputTargetRect(video_processor_.Get(),
+                                                      TRUE, &dest_rect);
+    video_context_->VideoProcessorSetStreamDestRect(video_processor_.Get(), 0,
+                                                    TRUE, &dest_rect);
+
+    hr = video_context_->VideoProcessorBlt(
+        video_processor_.Get(), vp_output_view_.Get(), 0, 1, &stream);
+    RETURN_ON_HR_FAILURE(hr, "VideoProcessorBlt failed", hr);
+  }
+
+  return hr;
 }
 
 }  // namespace media
