@@ -906,6 +906,9 @@ void WebURLLoader::PopulateURLResponse(
   if (!headers)
     return;
 
+  recordreplay::Assert("WebURLLoader::PopulateURLResponse #5 %d",
+                       headers->response_code());
+
   WebURLResponse::HTTPVersion version = WebURLResponse::kHTTPVersionUnknown;
   if (headers->GetHttpVersion() == net::HttpVersion(0, 9))
     version = WebURLResponse::kHTTPVersion_0_9;

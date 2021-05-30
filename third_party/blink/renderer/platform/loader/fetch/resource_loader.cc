@@ -922,6 +922,9 @@ void ResourceLoader::DidReceiveResponse(const WebURLResponse& response) {
 
 void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response) {
+  recordreplay::Assert("ResourceLoader::DidReceiveResponseInternal %d",
+                       response.HttpStatusCode());
+
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
   if (request.IsAutomaticUpgrade()) {
