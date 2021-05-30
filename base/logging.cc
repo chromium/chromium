@@ -27,9 +27,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#ifdef OS_MAC
 #include <dlfcn.h>
-#endif
 
 #if defined(OS_WIN)
 #include <io.h>
