@@ -561,7 +561,7 @@ TEST(GURLTest, ClearFragmentOnDataUrl) {
   GURL url(" data: one ? two # three ");
 
   // By default the trailing whitespace will have been stripped.
-  EXPECT_EQ("data: one ? two # three", url.spec());
+  EXPECT_EQ("data: one ? two #%20three", url.spec());
   GURL::Replacements repl;
   repl.ClearRef();
   GURL url_no_ref = url.ReplaceComponents(repl);

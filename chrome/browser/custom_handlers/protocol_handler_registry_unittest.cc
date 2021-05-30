@@ -1026,7 +1026,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/<>`{}#?\"'😂"));
   ASSERT_EQ(translated_url, GURL("https://test.com/"
                                  "url=web%2Bcustom%3A%2F%2Fcustom%2F%3C%3E%60%"
-                                 "7B%7D%23%3F%22'%25F0%259F%2598%2582"));
+                                 "7B%7D%23%3F%2522'%25F0%259F%2598%2582"));
 
   // ASCII characters from the C0 controls percent-encode set.
   // GURL constructor encodes U+001F and U+007F as "%1F" and "%7F" first,

@@ -62,8 +62,8 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   new_parsed->password.reset();
   new_parsed->host.reset();
   new_parsed->port.reset();
-  // We allow path URLs to have the path, query and fragment components, but we
-  // will canonicalize each of the via the weaker path URL rules.
+
+  // Canonicalize path and query via the weaker path URL rules.
   //
   // Note: parsing the path part should never cause a failure, see
   // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
@@ -71,8 +71,8 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
                                            output, &new_parsed->path);
   DoCanonicalizePathComponent<CHAR, UCHAR>(source.query, parsed.query, '?',
                                            output, &new_parsed->query);
-  DoCanonicalizePathComponent<CHAR, UCHAR>(source.ref, parsed.ref, '#', output,
-                                           &new_parsed->ref);
+
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
 
   return success;
 }

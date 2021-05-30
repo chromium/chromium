@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 606 tests; 435 PASS, 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 606 tests; 437 PASS, 169 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -14,7 +14,7 @@ PASS Parsing: <	   :foo.com
 PASS Parsing: < foo.com  > against <http://example.org/foo/bar>
 PASS Parsing: <a:	 foo.com> against <http://example.org/foo/bar>
 PASS Parsing: <http://f:21/ b ? d # e > against <http://example.org/foo/bar>
-FAIL Parsing: <lolscheme:x x#x x> against <about:blank> assert_equals: href expected "lolscheme:x x#x%20x" but got "lolscheme:x x#x x"
+PASS Parsing: <lolscheme:x x#x x> against <about:blank>
 PASS Parsing: <http://f:/c> against <http://example.org/foo/bar>
 PASS Parsing: <http://f:0/c> against <http://example.org/foo/bar>
 PASS Parsing: <http://f:00000000000000/c> against <http://example.org/foo/bar>
@@ -169,7 +169,7 @@ PASS Parsing: <http://example.com/﻿/foo> against <about:blank>
 PASS Parsing: <http://example.com/‮/foo/‭/bar> against <about:blank>
 PASS Parsing: <http://www.google.com/foo?bar=baz#> against <about:blank>
 PASS Parsing: <http://www.google.com/foo?bar=baz# »> against <about:blank>
-FAIL Parsing: <data:test# »> against <about:blank> assert_equals: href expected "data:test#%20%C2%BB" but got "data:test# %C2%BB"
+PASS Parsing: <data:test# »> against <about:blank>
 PASS Parsing: <http://www.google.com> against <about:blank>
 PASS Parsing: <http://192.0x00A80001> against <about:blank>
 FAIL Parsing: <http://www/foo%2Ehtml> against <about:blank> assert_equals: href expected "http://www/foo%2Ehtml" but got "http://www/foo.html"
@@ -684,7 +684,7 @@ FAIL Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
 FAIL Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank> assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 FAIL Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/? !\"$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 PASS Parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
-FAIL Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/#%20!%22#$%&'()*+,-./:;%3C=%3E?@[\\]^_%60{|}~" but got "foo://host/dir/# !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+FAIL Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: host expected "host" but got ""
 PASS Parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 Harness: the test ran to completion.
 
