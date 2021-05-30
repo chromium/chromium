@@ -654,6 +654,56 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The amount of time it takes to probe hardware components.</summary>
 </histogram>
 
+<histogram name="ChromeOS.IioService.SensorClientConcurrent" units="clients"
+    expires_after="2021-11-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the maximum number of concurrent sensor clients within an hour,
+    which indicates how many apps are using sensors. Recorded once every hour.
+    Might not be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorObserver" units="observers"
+    expires_after="2021-11-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the maximum number of running observers within an hour to any
+    sensor. It indicates how widely used the sensor samples are. Recorded once
+    every hour. Might not be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorObserverOpen" units="observers"
+    expires_after="2021-11-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the number of opened observer within an hour, which indicates how
+    often sensors are enabled and disabled. Recorded once every hour. Might not
+    be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorUsage.{Frequency}Hz"
+    enum="ChromeOSIioServiceSensorUsage" expires_after="2021-11-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the usage of the sensor within an hour with at least {Frequency} Hz.
+    Recorded once every hour. Might not be recorded for tail-end usage during a
+    session.
+  </summary>
+  <token key="Frequency">
+    <variant name="0"/>
+    <variant name="10"/>
+    <variant name="50"/>
+    <variant name="100"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.IsLacrosBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: Used to identify lacros binary in metrics backend. -->
 
