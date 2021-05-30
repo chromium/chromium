@@ -241,18 +241,20 @@ TEST_F(EuiccTest, RequestPendingProfiles) {
 
   base::HistogramTester histogram_tester;
 
-  const uint64_t profile_discovery_latency = 3000;
+  constexpr base::TimeDelta kHermesInteractiveDelay =
+      base::TimeDelta::FromMilliseconds(3000);
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      base::TimeDelta::FromMilliseconds(profile_discovery_latency));
+      kHermesInteractiveDelay);
 
   // Verify that successful request returns correct status code.
   EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
             RequestPendingProfiles(euicc));
 
+  // Before requesting pending profiles, we request installed profiles, so we
+  // expect that there will be 2 delays (one for installed, one for pending).
   histogram_tester.ExpectTimeBucketCount(
       "Network.Cellular.ESim.ProfileDiscovery.Latency",
-      base::TimeDelta::FromMilliseconds(profile_discovery_latency), 1);
-
+      2 * kHermesInteractiveDelay, 1);
   histogram_tester.ExpectTotalCount(
       "Network.Cellular.ESim.ProfileDiscovery.Latency", 1);
 }
