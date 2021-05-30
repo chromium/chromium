@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -20,7 +19,6 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
-#include "ui/base/ui_base_features.h"
 
 namespace content {
 
@@ -32,7 +30,6 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(embedded_test_server()->Start());
-    features_.InitWithFeatures({features::kClipboardFilenames}, {});
     ui::TestClipboard::CreateForCurrentThread();
     ContentBrowserTest::SetUp();
   }
@@ -61,7 +58,6 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
@@ -170,60 +166,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, Directory) {
   // to have child with name matching the base name of `file_inside_dir`.
   shell()->web_contents()->Paste();
   EXPECT_EQ(file_inside_dir.BaseName().AsUTF8Unsafe(), EvalJs(shell(), "p"));
-}
-
-class FileSystemAccessClipboardDisabledBrowserTest : public ContentBrowserTest {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(embedded_test_server()->Start());
-    features_.InitWithFeatures({}, {features::kClipboardFilenames});
-    ContentBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    ContentBrowserTest::TearDown();
-    ASSERT_TRUE(temp_dir_.Delete());
-  }
-
- protected:
-  base::ScopedTempDir temp_dir_;
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardDisabledBrowserTest, Disabled) {
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-
-  // Create a promise that will reject if clipboard contains any files.
-  ASSERT_TRUE(
-      ExecJs(shell(),
-             "var p = new Promise((resolve, reject) => {"
-             "  window.document.onpaste = async (event) => {"
-             "    if (event.clipboardData.files.length !== 0) {"
-             "      reject('There were ' + event.clipboardData.files.length +"
-             "             ' clipboard files. Expected 0.');"
-             "    }"
-             "    resolve(true);"
-             "  };"
-             "});"));
-
-  // Create a file and place on the clipboard.
-  base::FilePath test_file_path;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(
-        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &test_file_path));
-  }
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteFilenames(ui::FileInfosToURIList(
-        {ui::FileInfo(test_file_path, base::FilePath())}));
-  }
-
-  // Send paste event and wait for JS promise to resolve.
-  shell()->web_contents()->Paste();
-  EXPECT_EQ(true, EvalJs(shell(), "p"));
 }
 
 }  // namespace content

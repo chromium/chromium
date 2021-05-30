@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
@@ -39,7 +38,6 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -224,10 +222,6 @@ void TrimAfterNull(StringType* result) {
 }
 
 bool ReadFilenamesAvailable() {
-  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
-  if (!base::FeatureList::IsEnabled(features::kClipboardFilenames))
-    return false;
-
   return ::IsClipboardFormatAvailable(
              ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat) ||
          ::IsClipboardFormatAvailable(

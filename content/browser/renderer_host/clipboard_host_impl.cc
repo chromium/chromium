@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -44,7 +43,6 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -385,11 +383,6 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
   if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
     std::move(callback).Run(std::move(result));
     return;
   }

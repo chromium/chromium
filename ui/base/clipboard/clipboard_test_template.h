@@ -28,7 +28,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -48,7 +47,6 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
@@ -421,8 +419,6 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 #if !defined(OS_ANDROID)
 // Filenames is not implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, FilenamesTest) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kClipboardFilenames}, {});
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

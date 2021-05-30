@@ -67,14 +67,6 @@ class DataExchangeDelegate {
                           const base::Pickle& pickle,
                           SendDataCallback callback) = 0;
 
-  // Reads filenames from text/uri-list |data| which was provided by |source|
-  // endpoint. Translates paths into filesystem URLs suitable for FilesApp by
-  // setting custom mime type fs/tag to 'exo' and fs/sources with
-  // newline-separated filesystem URLs.
-  virtual base::Pickle CreateClipboardFilenamesPickle(
-      ui::EndpointType source,
-      const std::vector<uint8_t>& data) const = 0;
-
   // Reads pickle for FilesApp fs/sources with newline-separated filesystem
   // URLs. Validates that |source| is FilesApp.
   virtual std::vector<ui::FileInfo> ParseFileSystemSources(

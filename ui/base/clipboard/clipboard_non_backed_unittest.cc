@@ -10,10 +10,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ui {
 namespace {
@@ -92,8 +90,6 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, TextURIList) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kClipboardFilenames}, {});
   EXPECT_EQ("text/uri-list", ClipboardFormatType::GetFilenamesType().GetName());
 
   auto data = std::make_unique<ClipboardData>();

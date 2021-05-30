@@ -254,9 +254,6 @@ extern const char kClickToOpenPDFDescription[];
 extern const char kClientStorageAccessContextAuditingName[];
 extern const char kClientStorageAccessContextAuditingDescription[];
 
-extern const char kClipboardFilenamesName[];
-extern const char kClipboardFilenamesDescription[];
-
 extern const char kConditionalTabStripAndroidName[];
 extern const char kConditionalTabStripAndroidDescription[];
 
