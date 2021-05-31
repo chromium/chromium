@@ -62,7 +62,7 @@ PhysicalOffset AccumulatedScrollOffsetForFixedBackground(
        block && !skip_info.AncestorSkipped();
        block = block->ContainingBlock(&skip_info)) {
     if (block->IsScrollContainer())
-      result += PhysicalOffsetToBeNoop(block->ScrolledContentOffset());
+      result += block->ScrolledContentOffset();
     if (block == container)
       break;
   }
@@ -355,7 +355,7 @@ PhysicalRect FixedAttachmentPositioningArea(
       return rect;
     // The LayoutView is the only object that can paint a fixed background into
     // its scrolling contents layer, so it gets a special adjustment here.
-    rect.offset = PhysicalOffsetToBeNoop(layout_view->ScrolledContentOffset());
+    rect.offset = layout_view->ScrolledContentOffset();
   }
 
   rect.Move(AccumulatedScrollOffsetForFixedBackground(obj, container));

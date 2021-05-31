@@ -1806,7 +1806,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // See README.md for an explanation of scroll origin.
   IntSize OriginAdjustmentForScrollbars() const;
   IntPoint ScrollOrigin() const;
-  LayoutSize ScrolledContentOffset() const;
+  PhysicalOffset ScrolledContentOffset() const;
 
   // Scroll offset as snapped to physical pixels. This value should be used in
   // any values used after layout and inside "layout code" that cares about

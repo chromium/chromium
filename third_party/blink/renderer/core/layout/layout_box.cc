@@ -1860,11 +1860,12 @@ IntPoint LayoutBox::ScrollOrigin() const {
   return GetScrollableArea() ? GetScrollableArea()->ScrollOrigin() : IntPoint();
 }
 
-LayoutSize LayoutBox::ScrolledContentOffset() const {
+PhysicalOffset LayoutBox::ScrolledContentOffset() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
   DCHECK(GetScrollableArea());
-  return LayoutSize(GetScrollableArea()->GetScrollOffset());
+  return PhysicalOffset::FromFloatSizeFloor(
+      GetScrollableArea()->GetScrollOffset());
 }
 
 IntPoint LayoutBox::PixelSnappedScrolledContentOffset() const {
@@ -1973,9 +1974,9 @@ bool LayoutBox::MapVisualRectToContainer(
   // c) Container scroll offset.
   if (container_object->IsBox() && container_object != ancestor &&
       To<LayoutBox>(container_object)->ContainedContentsScroll(*this)) {
-    LayoutSize offset(
+    PhysicalOffset offset(
         -To<LayoutBox>(container_object)->ScrolledContentOffset());
-    transform.PostTranslate(offset.Width(), offset.Height());
+    transform.PostTranslate(offset.left, offset.top);
   }
 
   bool has_perspective = container_object && container_object->HasLayer() &&
@@ -2026,7 +2027,7 @@ bool LayoutBox::MapContentsRectToBoxSpace(
     return true;
 
   if (ContainedContentsScroll(contents))
-    transform_state.Move(PhysicalOffset(-ScrolledContentOffset()));
+    transform_state.Move(-ScrolledContentOffset());
 
   return ApplyBoxClips(transform_state, accumulation, visual_rect_flags);
 }

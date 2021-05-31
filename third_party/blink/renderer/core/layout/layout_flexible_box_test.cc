@@ -76,7 +76,7 @@ static void CheckFlexBoxPhysicalGeometries(const LayoutBox* flex_box) {
               flex_box->PhysicalContentBoxRect());
   }
 
-  EXPECT_EQ(LayoutSize(), flex_box->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), flex_box->ScrolledContentOffset());
   EXPECT_EQ(ScrollOffset(), flex_box->GetScrollableArea()->GetScrollOffset());
 }
 

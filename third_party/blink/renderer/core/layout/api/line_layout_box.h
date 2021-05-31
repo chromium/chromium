@@ -79,7 +79,7 @@ class LineLayoutBox : public LineLayoutBoxModel {
 
   void SetSize(const LayoutSize& size) { return ToBox()->SetSize(size); }
 
-  LayoutSize ScrolledContentOffset() const {
+  PhysicalOffset ScrolledContentOffset() const {
     return ToBox()->ScrolledContentOffset();
   }
 

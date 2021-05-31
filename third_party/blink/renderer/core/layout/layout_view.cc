@@ -566,8 +566,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
 
 PhysicalOffset LayoutView::OffsetForFixedPosition() const {
   NOT_DESTROYED();
-  return IsScrollContainer() ? PhysicalOffset(ScrolledContentOffset())
-                             : PhysicalOffset();
+  return IsScrollContainer() ? ScrolledContentOffset() : PhysicalOffset();
 }
 
 PhysicalOffset LayoutView::PixelSnappedOffsetForFixedPosition() const {

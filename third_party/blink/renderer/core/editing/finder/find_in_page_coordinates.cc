@@ -77,7 +77,7 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   // For scrolling we need to get where the actual origin is independently of
   // the scroll.
   if (container->IsScrollContainer())
-    overflow_rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
+    overflow_rect.Move(-container->ScrolledContentOffset());
 
   FloatRect container_rect(container->LocalToAbsoluteRect(overflow_rect));
 

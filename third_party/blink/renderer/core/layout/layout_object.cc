@@ -3471,7 +3471,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
   DCHECK(container->IsScrollContainer());
   const auto* box = To<LayoutBox>(container);
   if (!ignore_scroll_offset)
-    return -PhysicalOffset(box->ScrolledContentOffset());
+    return -box->ScrolledContentOffset();
 
   // ScrollOrigin accounts for other writing modes whose content's origin is not
   // at the top-left.

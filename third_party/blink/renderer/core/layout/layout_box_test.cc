@@ -1433,7 +1433,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
 
 #define EXPECT_ZERO_SCROLL(box)                                      \
   do {                                                               \
-    EXPECT_EQ(LayoutSize(), box->ScrolledContentOffset());           \
+    EXPECT_EQ(PhysicalOffset(), box->ScrolledContentOffset());       \
     const auto* scrollable_area = box->GetScrollableArea();          \
     EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());        \
     EXPECT_EQ(IntPoint(), scrollable_area->ScrollOrigin());          \
@@ -1538,7 +1538,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* normal = GetLayoutBoxByElementId("normal");
   const auto* scrollable_area = normal->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), normal->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), normal->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), normal->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // 50 = border_left, 20 = border_top
@@ -1560,7 +1560,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* vlr = GetLayoutBoxByElementId("vlr");
   scrollable_area = vlr->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), vlr->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), vlr->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // 2060 = child_width + padding_left + padding_right
@@ -1581,7 +1581,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
   scrollable_area = vrl->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), vrl->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), vrl->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
@@ -1598,7 +1598,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* rtl = GetLayoutBoxByElementId("rtl");
   scrollable_area = rtl->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), rtl->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), rtl->ScrolledContentOffset());
   EXPECT_EQ(IntSize(15, 0), rtl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // The contents overflow to the left.
@@ -1618,7 +1618,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* rtl_vlr = GetLayoutBoxByElementId("rtl-vlr");
   scrollable_area = rtl_vlr->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), rtl_vlr->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), rtl_vlr->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), rtl_vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // 2060 = child_width + padding_left + padding_right
@@ -1637,7 +1637,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
 
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
   scrollable_area = rtl_vrl->GetScrollableArea();
-  EXPECT_EQ(LayoutSize(), rtl_vrl->ScrolledContentOffset());
+  EXPECT_EQ(PhysicalOffset(), rtl_vrl->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), rtl_vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.

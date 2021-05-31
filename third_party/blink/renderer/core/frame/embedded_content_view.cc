@@ -31,9 +31,9 @@ IntPoint EmbeddedContentView::Location() const {
     if (owner_layout_view->IsScrollContainer()) {
       // Floored because the frame_rect in a content view is an IntRect. We may
       // want to reevaluate that since scroll offsets/layout can be fractional.
-      IntSize scroll_offset(
-          FlooredIntSize(owner_layout_view->ScrolledContentOffset()));
-      location.SaturatedMove(-scroll_offset.Width(), -scroll_offset.Height());
+      IntPoint scroll_offset(
+          FlooredIntPoint(owner_layout_view->ScrolledContentOffset()));
+      location.SaturatedMove(-scroll_offset.X(), -scroll_offset.Y());
     }
   }
   return location;
