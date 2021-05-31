@@ -433,6 +433,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   // such policies.
   expected_values.SetDictionary("extensionPolicies",
                                 std::make_unique<base::DictionaryValue>());
+  expected_values.SetDictionary("status",
+                                std::make_unique<base::DictionaryValue>());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   expected_values.SetDictionary("loginScreenExtensionPolicies",
                                 std::make_unique<base::DictionaryValue>());

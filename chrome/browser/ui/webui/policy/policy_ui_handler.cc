@@ -935,6 +935,11 @@ void PolicyUIHandler::AddExtensionPolicyNames(
 void PolicyUIHandler::SendStatus() {
   if (!IsJavascriptAllowed())
     return;
+
+  FireWebUIListener("status-updated", GetStatusValue(/*for_webui*/ true));
+}
+
+base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
   std::unique_ptr<base::DictionaryValue> device_status(
       new base::DictionaryValue);
   device_status_provider_->GetStatus(device_status.get());
@@ -958,26 +963,29 @@ void PolicyUIHandler::SendStatus() {
 
   base::DictionaryValue status;
   if (!device_status->DictEmpty()) {
-    device_status->SetString("boxLegendKey", "statusDevice");
+    if (for_webui)
+      device_status->SetString("boxLegendKey", "statusDevice");
     status.Set("device", std::move(device_status));
   }
 
   if (!machine_status->DictEmpty()) {
-    machine_status->SetString("boxLegendKey", "statusMachine");
+    if (for_webui)
+      machine_status->SetString("boxLegendKey", "statusMachine");
     status.Set("machine", std::move(machine_status));
   }
 
   if (!user_status->DictEmpty()) {
-    user_status->SetString("boxLegendKey", "statusUser");
+    if (for_webui)
+      user_status->SetString("boxLegendKey", "statusUser");
     status.Set("user", std::move(user_status));
   }
 
   if (!updater_status->DictEmpty()) {
-    updater_status->SetString("boxLegendKey", "statusUpdater");
+    if (for_webui)
+      updater_status->SetString("boxLegendKey", "statusUpdater");
     status.Set("updater", std::move(updater_status));
   }
-
-  FireWebUIListener("status-updated", status);
+  return status;
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::ListValue* args) {
@@ -1100,6 +1108,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
                          base::Value(version_info::GetLastChange()));
 
   dict.SetKey("chromeMetadata", std::move(chrome_metadata));
+  dict.SetKey("status", GetStatusValue(/*for_webui*/ false));
 
   std::string json_policies;
   base::JSONWriter::WriteWithOptions(

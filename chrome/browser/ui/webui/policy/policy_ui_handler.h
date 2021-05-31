@@ -108,10 +108,14 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void ReloadUpdaterPoliciesAndState();
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // Send the status of cloud policy to the UI. For each scope that has cloud
-  // policy enabled (device and/or user), a dictionary containing status
-  // information is sent.
+  // Send the status of cloud policy to the UI.
   void SendStatus();
+
+  // Get the status of cloud policy. For each scope that has cloud policy
+  // enabled (device and/or user), a dictionary containing status information.
+  // If |for_webui| is true, values needed for webui will be included
+  // additionally.
+  base::DictionaryValue GetStatusValue(bool for_webui) const;
 
   // Build a JSON string of all the policies.
   std::string GetPoliciesAsJson();
