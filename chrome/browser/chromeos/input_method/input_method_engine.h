@@ -45,11 +45,6 @@ class InputMethodEngine : public InputMethodEngineBase,
     MENU_ITEM_MODIFIED_CHECKED = 0x0010,
   };
 
-  enum CandidateWindowPosition {
-    WINDOW_POS_CURSOR,
-    WINDOW_POS_COMPOSITTION,
-  };
-
   struct UsageEntry {
     std::string title;
     std::string body;
