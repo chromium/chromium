@@ -96,6 +96,10 @@ static bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {
   return (obj->IsBR() || (obj->IsText() && To<LayoutText>(obj)->IsWordBreak()));
 }
 
+static bool IsParentInlineLayoutObject(const LayoutObject* obj) {
+  return (obj && obj->Parent() && obj->Parent()->IsLayoutInline());
+}
+
 LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
     const Element& element) {
   LayoutObject* parent_layout_object = nullptr;
@@ -140,6 +144,13 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       if (FirstLetterLength(str.get()) ||
           IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
         break;
+
+      // In case of inline level content made of punctuation and there is no
+      // sibling, we'll apply style to it.
+      if (IsParentInlineLayoutObject(first_letter_text_layout_object) &&
+          str->length() && !first_letter_text_layout_object->NextSibling())
+        break;
+
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (first_letter_text_layout_object->IsListMarkerIncludingAll()) {
@@ -341,6 +352,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* fi
   // FIXME: This would already have been calculated in firstLetterLayoutObject.
   // Can we pass the length through?
   unsigned length = FirstLetterPseudoElement::FirstLetterLength(old_text);
+
+  // In case of inline level content made of punctuation, we use
+  // first_letter_text length instead of FirstLetterLength.
+  if (IsParentInlineLayoutObject(first_letter_text) && length == 0 &&
+      first_letter_text->TextLength())
+    length = first_letter_text->TextLength();
+
   unsigned remaining_length = old_text.length() - length;
 
   // Construct a text fragment for the text after the first letter.
