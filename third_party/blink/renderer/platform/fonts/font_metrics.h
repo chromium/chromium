@@ -58,7 +58,7 @@ class FontMetrics {
   float FloatAscent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return ascent_;
-    return FloatHeight() / 2;
+    return FloatAscentInternal(baseline_type);
   }
 
   void SetAscent(float ascent) {
@@ -69,7 +69,7 @@ class FontMetrics {
   float FloatDescent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return descent_;
-    return FloatHeight() - FloatAscent(baseline_type);
+    return FloatHeight() - FloatAscentInternal(baseline_type);
   }
 
   void SetDescent(float descent) {
@@ -98,13 +98,13 @@ class FontMetrics {
   int Ascent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return ascent_int_;
-    return Height() - Height() / 2;
+    return IntAscentInternal(baseline_type);
   }
 
   int Descent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return descent_int_;
-    return Height() - Ascent(baseline_type);
+    return Height() - IntAscentInternal(baseline_type);
   }
 
   int Height() const { return ascent_int_ + descent_int_; }
@@ -198,6 +198,9 @@ class FontMetrics {
     underline_thickness_.reset();
     underline_position_.reset();
   }
+
+  PLATFORM_EXPORT float FloatAscentInternal(FontBaseline baseline_type) const;
+  PLATFORM_EXPORT int IntAscentInternal(FontBaseline baseline_type) const;
 
   unsigned units_per_em_;
   float ascent_;
