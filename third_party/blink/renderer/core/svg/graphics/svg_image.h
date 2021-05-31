@@ -147,14 +147,14 @@ class CORE_EXPORT SVGImage final : public Image {
     FloatSize CalculateResidualScale() const;
     float Zoom() const { return zoom_; }
     const FloatSize& ContainerSize() const { return container_size_; }
-    const LayoutSize& RoundedContainerSize() const {
+    const IntSize& RoundedContainerSize() const {
       return rounded_container_size_;
     }
     const KURL& Url() const { return url_; }
 
    private:
     const FloatSize container_size_;
-    const LayoutSize rounded_container_size_;
+    const IntSize rounded_container_size_;
     const float zoom_;
     const KURL& url_;
   };

@@ -371,7 +371,7 @@ SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
                              float zoom,
                              const KURL& url)
     : container_size_(container_size),
-      rounded_container_size_(RoundedLayoutSize(container_size)),
+      rounded_container_size_(RoundedIntSize(container_size)),
       zoom_(zoom),
       url_(url) {}
 
@@ -527,11 +527,10 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   // re-laying out the image.
   ImageObserverDisabler disable_image_observer(this);
 
-  const LayoutSize layout_container_size = draw_info.RoundedContainerSize();
   if (LayoutSVGRoot* layout_root = LayoutRoot())
-    layout_root->SetContainerSize(layout_container_size);
+    layout_root->SetContainerSize(RoundedLayoutSize(draw_info.ContainerSize()));
   LocalFrameView* view = GetFrame()->View();
-  const IntSize rounded_container_size = RoundedIntSize(layout_container_size);
+  const IntSize rounded_container_size = draw_info.RoundedContainerSize();
   view->Resize(rounded_container_size);
   page_->GetVisualViewport().SetSize(rounded_container_size);
 
