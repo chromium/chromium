@@ -6,7 +6,8 @@
 
 #include <iterator>
 #include <memory>
-#include <vector>
+#include <set>
+#include <utility>
 
 #include "base/bind.h"
 #include "ui/base/clipboard/clipboard_constants.h"

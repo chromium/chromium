@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "ui/gfx/x/keysyms/keysyms.h"

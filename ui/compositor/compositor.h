@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"

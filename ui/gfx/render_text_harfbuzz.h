@@ -5,19 +5,21 @@
 #ifndef UI_GFX_RENDER_TEXT_HARFBUZZ_H_
 #define UI_GFX_RENDER_TEXT_HARFBUZZ_H_
 
+#include <hb.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/gfx/render_text.h"
-
-#include <hb.h>
 
 namespace gfx {
 

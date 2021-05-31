@@ -9,7 +9,10 @@
 #include <stdint.h>
 
 #include <ctime>
+#include <map>
+#include <memory>
 #include <ostream>
+#include <set>
 #include <unordered_set>
 #include <vector>
 
