@@ -776,6 +776,7 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
       }
     }
   }
+  scrollView.showsHorizontalScrollIndicator = NO;
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
