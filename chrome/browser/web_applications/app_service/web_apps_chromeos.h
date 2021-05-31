@@ -149,10 +149,6 @@ class WebAppsChromeOs : public WebAppsBase,
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
 
-  apps::IconEffects GetIconEffects(const WebApp* web_app,
-                                   bool paused,
-                                   bool is_disabled);
-
   // Get the equivalent Chrome app from |arc_package_name| and set the Chrome
   // app badge on the icon effects for the equivalent Chrome apps. If the
   // equivalent ARC app is installed, add the Chrome app badge, otherwise,

@@ -102,17 +102,6 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const AppId& app_id) {
   Publish(publisher_helper().ConvertUninstalledWebApp(web_app), subscribers_);
 }
 
-IconEffects WebAppsBase::GetIconEffects(const WebApp* web_app) {
-  IconEffects icon_effects = IconEffects::kNone;
-  if (!web_app->is_locally_installed()) {
-    icon_effects =
-        static_cast<IconEffects>(icon_effects | IconEffects::kBlocked);
-  }
-  icon_effects =
-      static_cast<IconEffects>(icon_effects | IconEffects::kRoundCorners);
-  return icon_effects;
-}
-
 content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
@@ -409,7 +398,8 @@ void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
   auto app = apps::mojom::App::New();
   app->app_type = app_type_;
   app->app_id = app_id;
-  app->icon_key = icon_key_factory().MakeIconKey(GetIconEffects(web_app));
+  app->icon_key = icon_key_factory().MakeIconKey(
+      publisher_helper().GetIconEffects(web_app, false, false));
   Publish(std::move(app), subscribers_);
 }
 

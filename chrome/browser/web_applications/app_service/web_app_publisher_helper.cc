@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,12 @@
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/extensions/gfx_utils.h"
+#endif
+
+using apps::IconEffects;
 
 namespace web_app {
 
@@ -230,6 +237,43 @@ void WebAppPublisherHelper::UninstallWebApp(
                              base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
                          kAvoidClosingConnections, base::DoNothing());
+}
+
+apps::IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app,
+                                                        bool paused,
+                                                        bool is_disabled) {
+  IconEffects icon_effects = IconEffects::kRoundCorners;
+  if (!web_app->is_locally_installed()) {
+    icon_effects |= IconEffects::kBlocked;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effects |= web_app->is_generated_icon()
+                        ? IconEffects::kCrOsStandardMask
+                        : IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effects |= IconEffects::kResizeAndPad;
+  }
+#endif
+
+// TODO(crbug.com/1214707): Implement badging for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
+                                                       web_app->app_id())) {
+    icon_effects |= IconEffects::kChromeBadge;
+  }
+#endif
+
+  if (paused) {
+    icon_effects |= IconEffects::kPaused;
+  }
+
+  if (is_disabled) {
+    icon_effects |= IconEffects::kBlocked;
+  }
+
+  return icon_effects;
 }
 
 }  // namespace web_app

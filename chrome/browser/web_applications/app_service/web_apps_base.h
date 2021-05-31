@@ -71,8 +71,6 @@ class WebAppsBase : public apps::PublisherBase,
       const std::string& app_id,
       const base::Time& last_launch_time) override;
 
-  apps::IconEffects GetIconEffects(const WebApp* web_app);
-
   content::WebContents* LaunchAppWithIntentImpl(
       const std::string& app_id,
       int32_t event_flags,

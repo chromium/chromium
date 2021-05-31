@@ -402,8 +402,9 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const AppId& app_id,
                   : apps::mojom::Readiness::kReady;
   apps::mojom::AppPtr app =
       publisher_helper().ConvertWebApp(web_app, readiness);
-  app->icon_key = icon_key_factory().MakeIconKey(
-      GetIconEffects(web_app, paused_apps_.IsPaused(app_id), is_disabled));
+  app->icon_key =
+      icon_key_factory().MakeIconKey(publisher_helper().GetIconEffects(
+          web_app, paused_apps_.IsPaused(app_id), is_disabled));
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
@@ -657,7 +658,7 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
 
   bool paused = paused_apps_.IsPaused(web_app->app_id());
   app->icon_key = icon_key_factory().MakeIconKey(
-      GetIconEffects(web_app, paused, is_disabled));
+      publisher_helper().GetIconEffects(web_app, paused, is_disabled));
 
   apps::mojom::OptionalBool has_notification =
       app_notifications_.HasNotification(web_app->app_id())
@@ -667,33 +668,6 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
   app->paused = paused ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
   return app;
-}
-
-IconEffects WebAppsChromeOs::GetIconEffects(const WebApp* web_app,
-                                            bool paused,
-                                            bool is_disabled) {
-  IconEffects icon_effects = IconEffects::kNone;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    icon_effects |= web_app->is_generated_icon()
-                        ? IconEffects::kCrOsStandardMask
-                        : IconEffects::kCrOsStandardIcon;
-  } else {
-    icon_effects |= IconEffects::kResizeAndPad;
-  }
-  if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
-                                                       web_app->app_id())) {
-    icon_effects |= IconEffects::kChromeBadge;
-  }
-  icon_effects |= WebAppsBase::GetIconEffects(web_app);
-  if (paused) {
-    icon_effects |= IconEffects::kPaused;
-  }
-
-  if (is_disabled) {
-    icon_effects |= IconEffects::kBlocked;
-  }
-
-  return icon_effects;
 }
 
 void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {
@@ -718,8 +692,8 @@ void WebAppsChromeOs::SetIconEffect(const std::string& app_id) {
   app->app_id = app_id;
   DCHECK(web_app->chromeos_data().has_value());
   app->icon_key = icon_key_factory().MakeIconKey(
-      GetIconEffects(web_app, paused_apps_.IsPaused(app_id),
-                     web_app->chromeos_data()->is_disabled));
+      publisher_helper().GetIconEffects(web_app, paused_apps_.IsPaused(app_id),
+                                        web_app->chromeos_data()->is_disabled));
   Publish(std::move(app), subscribers());
 }
 

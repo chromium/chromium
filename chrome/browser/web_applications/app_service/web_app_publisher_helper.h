@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -62,6 +63,10 @@ class WebAppPublisherHelper {
                        apps::mojom::UninstallSource uninstall_source,
                        bool clear_site_data,
                        bool report_abuse);
+
+  apps::IconEffects GetIconEffects(const WebApp* web_app,
+                                   bool paused,
+                                   bool is_disabled);
 
   Profile* profile() { return profile_; }
 

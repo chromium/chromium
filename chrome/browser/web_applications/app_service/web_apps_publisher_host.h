@@ -59,6 +59,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   Profile* profile() { return profile_; }
   WebAppRegistrar& registrar() const;
 
+  WebAppPublisherHelper& publisher_helper() { return publisher_helper_; }
+
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
  private:
