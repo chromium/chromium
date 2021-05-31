@@ -25,10 +25,10 @@
 #include <memory>
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -97,8 +97,9 @@ LayoutObject* AltTextContentData::CreateLayoutObject(
 LayoutObject* CounterContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style,
-    LegacyLayout) const {
-  LayoutObject* layout_object = new LayoutCounter(pseudo, *this);
+    LegacyLayout legacy) const {
+  LayoutObject* layout_object =
+      LayoutObjectFactory::CreateCounter(pseudo, *this, legacy);
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }

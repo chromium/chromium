@@ -12,6 +12,7 @@
 namespace blink {
 
 class ComputedStyle;
+class CounterContentData;
 class HTMLElement;
 class LayoutBlock;
 class LayoutBlockFlow;
@@ -24,6 +25,7 @@ class LayoutTableCaption;
 class LayoutText;
 class LayoutTextFragment;
 class Node;
+class PseudoElement;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
 // need to be of different types, depending on whether or not LayoutNG is to be
@@ -70,6 +72,9 @@ class LayoutObjectFactory {
   static LayoutObject* CreateButton(Node& node,
                                     const ComputedStyle& style,
                                     LegacyLayout legacy);
+  static LayoutObject* CreateCounter(PseudoElement& pseduo,
+                                     const CounterContentData& counter,
+                                     LegacyLayout legacy);
   static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutBlockFlow* CreateFileUploadControl(Node& node,
                                                   const ComputedStyle& style,

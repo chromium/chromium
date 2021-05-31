@@ -51,7 +51,7 @@ using CounterMap = HashMap<AtomicString, scoped_refptr<CounterNode>>;
 //
 // Keeping the map up to date is the reason why LayoutObjects need to call into
 // LayoutCounter during their lifetime (see the static functions below).
-class LayoutCounter final : public LayoutText {
+class LayoutCounter : public LayoutText {
  public:
   LayoutCounter(PseudoElement&, const CounterContentData&);
   ~LayoutCounter() override;
