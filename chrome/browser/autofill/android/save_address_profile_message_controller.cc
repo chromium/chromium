@@ -62,6 +62,7 @@ void SaveAddressProfileMessageController::DisplayMessage(
 
   message_->SetTitle(GetTitle());
   message_->SetDescription(GetDescription());
+  message_->SetDescriptionMaxLines(1);
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS));

@@ -144,6 +144,7 @@ TEST_F(SaveAddressProfileMessageControllerTest, SaveMessageContent) {
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
             GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(1, GetMessageWrapper()->GetDescriptionMaxLines());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
@@ -163,6 +164,7 @@ TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"Jane A. Smith, 123 Main Street",
             GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(1, GetMessageWrapper()->GetDescriptionMaxLines());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
