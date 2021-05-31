@@ -267,10 +267,7 @@ struct ToV8Traits<
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* dictionary) {
     DCHECK(dictionary);
-    v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
-        script_state->GetIsolate(), script_state->GetContext()->Global());
-    DCHECK(!v8_value.IsEmpty());
-    return v8_value;
+    return dictionary->ToV8Value(script_state);
   }
 };
 

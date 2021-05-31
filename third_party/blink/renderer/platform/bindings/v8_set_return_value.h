@@ -426,16 +426,6 @@ void V8SetReturnValue(const CallbackInfo& info,
   V8ReturnValue::SetWrapper(info, wrappable, creation_context);
 }
 
-// DictionaryBase
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const bindings::DictionaryBase* dictionary) {
-  DCHECK(dictionary);
-  v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
-      info.GetIsolate(), V8ReturnValue::CreationContext(info));
-  V8SetReturnValue(info, v8_value);
-}
-
 // EnumerationBase
 template <typename CallbackInfo, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,

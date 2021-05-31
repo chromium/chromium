@@ -416,6 +416,7 @@ component("platform") {
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
     "bindings/custom_wrappable.h",
+    "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",
     "bindings/dom_data_store.cc",
     "bindings/dom_data_store.h",

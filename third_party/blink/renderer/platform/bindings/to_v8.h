@@ -56,10 +56,9 @@ inline v8::Local<v8::Value> ToV8(const bindings::DictionaryBase* dictionary,
                                  v8::Isolate* isolate) {
   if (UNLIKELY(!dictionary))
     return v8::Null(isolate);
-  v8::Local<v8::Value> v8_value =
-      dictionary->CreateV8Object(isolate, creation_context);
-  DCHECK(!v8_value.IsEmpty());
-  return v8_value;
+  ScriptState* script_state =
+      ScriptState::From(creation_context->CreationContext());
+  return dictionary->ToV8Value(script_state).ToLocalChecked();
 }
 
 // Callback function

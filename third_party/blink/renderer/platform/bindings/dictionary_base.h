@@ -11,43 +11,36 @@
 
 namespace blink {
 
+class ScriptState;
+
 namespace bindings {
 
-// This class is the base class for all IDL dictionary implementations.  This is
-// designed to collaborate with NativeValueTraits and ToV8 with supporting type
-// dispatching (SFINAE, etc.).
+// DictionaryBase is the common base class of all the IDL dictionary classes.
+// Most importantly this class provides a way of type dispatching (e.g. overload
+// resolutions, SFINAE technique, etc.) so that it's possible to distinguish
+// IDL dictionaries from anything else.  Also it provides a common
+// implementation of IDL dictionaries.
 class PLATFORM_EXPORT DictionaryBase : public GarbageCollected<DictionaryBase> {
  public:
   virtual ~DictionaryBase() = default;
 
-  v8::Local<v8::Value> CreateV8Object(
-      v8::Isolate* isolate,
-      v8::Local<v8::Object> creation_context) const {
-    v8::Local<v8::Context> context = creation_context->CreationContext();
-    DCHECK(!context.IsEmpty());
-    v8::Local<v8::Object> v8_object;
-    {
-      v8::Context::Scope context_scope(context);
-      v8_object = v8::Object::New(isolate);
-    }
-    FillWithMembers(isolate, creation_context, v8_object);
-    return v8_object;
-  }
+  v8::MaybeLocal<v8::Value> ToV8Value(ScriptState* script_state) const;
 
   virtual void Trace(Visitor*) const {}
 
  protected:
   DictionaryBase() = default;
-  explicit DictionaryBase(v8::Isolate* isolate) {}
 
   DictionaryBase(const DictionaryBase&) = delete;
   DictionaryBase(const DictionaryBase&&) = delete;
   DictionaryBase& operator=(const DictionaryBase&) = delete;
   DictionaryBase& operator=(const DictionaryBase&&) = delete;
 
-  virtual bool FillWithMembers(v8::Isolate* isolate,
-                               v8::Local<v8::Object> creation_context,
-                               v8::Local<v8::Object> v8_object) const = 0;
+  // Fills the given v8::Object with the dictionary members.  Returns true on
+  // success, otherwise returns false with throwing an exception.
+  virtual bool FillV8ObjectWithMembers(
+      ScriptState* script_state,
+      v8::Local<v8::Object> v8_dictionary) const = 0;
 };
 
 }  // namespace bindings
