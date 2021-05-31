@@ -43,21 +43,9 @@ public abstract class SignInPromo {
     private static boolean sDisablePromoForTests;
 
     /**
-     * Whether the promo has been dismissed by the user.
-     */
-    private boolean mDismissed;
-
-    /**
      * Whether the signin status means that the user has the possibility to sign in.
      */
     private boolean mCanSignIn;
-
-    /**
-     * Whether the list of accounts is ready to be displayed. An attempt to display SignInPromo
-     * while accounts are not ready may cause ANR since the UI thread would be synchronously waiting
-     * for the accounts list.
-     */
-    private boolean mAccountsReady;
 
     /**
      * Whether personalized suggestions can be shown. If it's not the case, we have no reason to
@@ -76,7 +64,6 @@ public abstract class SignInPromo {
         // TODO(bsazonov): Signin manager should check for native status in isSignInAllowed
         mCanSignIn = signinManager.isSignInAllowed()
                 && !signinManager.getIdentityManager().hasPrimaryAccount();
-        mAccountsReady = AccountManagerFacadeProvider.getInstance().isCachePopulated();
         updateVisibility();
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
@@ -148,10 +135,12 @@ public abstract class SignInPromo {
     protected abstract void notifyDataChanged();
 
     private void updateVisibility() {
+        final boolean isAccountsCachePopulated =
+                AccountManagerFacadeProvider.getInstance().getGoogleAccounts().isPresent();
         boolean canShowPersonalizedSigninPromo =
-                !mDismissed && mCanSignIn && mCanShowPersonalizedSuggestions && mAccountsReady;
-        boolean canShowPersonalizedSyncPromo = !mDismissed && isUserSignedInButNotSyncing()
-                && mCanShowPersonalizedSuggestions && mAccountsReady;
+                mCanSignIn && mCanShowPersonalizedSuggestions && isAccountsCachePopulated;
+        boolean canShowPersonalizedSyncPromo = isUserSignedInButNotSyncing()
+                && mCanShowPersonalizedSuggestions && isAccountsCachePopulated;
         setVisibilityInternal(canShowPersonalizedSigninPromo || canShowPersonalizedSyncPromo);
     }
 
@@ -242,7 +231,6 @@ public abstract class SignInPromo {
         // AccountsChangeObserver implementation.
         @Override
         public void onAccountsChanged() {
-            mAccountsReady = mAccountManagerFacade.isCachePopulated();
             // We don't change the visibility here to avoid the promo popping up in the feed
             // unexpectedly. If accounts are ready, the promo will be shown up on the next reload.
             notifyDataChanged();

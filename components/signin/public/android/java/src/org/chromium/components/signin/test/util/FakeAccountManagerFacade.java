@@ -22,6 +22,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ProfileDataSource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,7 +88,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public List<Account> tryGetGoogleAccounts() {
-        return getGoogleAccounts().get();
+        return getGoogleAccounts().or(Collections.emptyList());
     }
 
     @Override

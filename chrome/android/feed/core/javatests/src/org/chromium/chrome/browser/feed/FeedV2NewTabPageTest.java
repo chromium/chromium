@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.not;
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
+import android.accounts.Account;
 import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -38,6 +39,8 @@ import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+
+import com.google.common.base.Optional;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -133,11 +136,14 @@ public class FeedV2NewTabPageTest {
     private final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeAccountManagerFacade(null) {
                 @Override
-                public boolean isCachePopulated() {
+                public Optional<List<Account>> getGoogleAccounts() {
                     // Attention. When isCachePopulated() returns false,
                     // runAfterCacheIsPopulated(...) shouldn't run. If this becomes a problem,
                     // we can override runAfterCacheIsPopulated(...) as well.
-                    return mIsCachePopulatedInAccountManagerFacade;
+                    if (mIsCachePopulatedInAccountManagerFacade) {
+                        return super.getGoogleAccounts();
+                    }
+                    return Optional.absent();
                 }
             });
 
