@@ -1027,6 +1027,23 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
   return promise;
 }
 
+void XRSystem::RequestSessionInternal(
+    device::mojom::blink::XRSessionMode session_mode,
+    PendingRequestSessionQuery* query,
+    ExceptionState* exception_state) {
+  // The various session request methods may have other checks that would reject
+  // before needing to create the vr service, so we don't try to create it here.
+  switch (session_mode) {
+    case device::mojom::blink::XRSessionMode::kImmersiveVr:
+    case device::mojom::blink::XRSessionMode::kImmersiveAr:
+      RequestImmersiveSession(query, exception_state);
+      break;
+    case device::mojom::blink::XRSessionMode::kInline:
+      RequestInlineSession(query, exception_state);
+      break;
+  }
+}
+
 void XRSystem::RequestImmersiveSession(PendingRequestSessionQuery* query,
                                        ExceptionState* exception_state) {
   DVLOG(2) << __func__;
@@ -1382,18 +1399,17 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     query->SetDepthSensingConfiguration(preferred_usage, preferred_format);
   }
 
-  // The various session request methods may have other checks that would reject
-  // before needing to create the vr service, so we don't try to create it here.
-  switch (session_mode) {
-    case device::mojom::blink::XRSessionMode::kImmersiveVr:
-    case device::mojom::blink::XRSessionMode::kImmersiveAr:
-      RequestImmersiveSession(query, &exception_state);
-      break;
-    case device::mojom::blink::XRSessionMode::kInline:
-      RequestInlineSession(query, &exception_state);
-      break;
+  // Defer to request the session until the prerendering page is activated.
+  if (DomWindow()->document()->IsPrerendering()) {
+    // Pass a nullptr instead of |exception_state| because we can't guarantee
+    // this object is alive until the prerendering page is activate.
+    DomWindow()->document()->AddPostPrerenderingActivationStep(WTF::Bind(
+        &XRSystem::RequestSessionInternal, WrapWeakPersistent(this),
+        session_mode, WrapPersistent(query), /*exception_state=*/nullptr));
+    return promise;
   }
 
+  RequestSessionInternal(session_mode, query, &exception_state);
   return promise;
 }
 

@@ -350,6 +350,10 @@ class XRSystem final : public EventTargetWithInlineData,
       XRSessionInit* session_init,
       mojom::ConsoleMessageLevel error_level);
 
+  void RequestSessionInternal(device::mojom::blink::XRSessionMode session_mode,
+                              PendingRequestSessionQuery* query,
+                              ExceptionState* exception_state);
+
   void RequestImmersiveSession(PendingRequestSessionQuery* query,
                                ExceptionState* exception_state);
 
