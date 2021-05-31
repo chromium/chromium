@@ -238,7 +238,7 @@ NGInlineCursor NGInlineCursor::CursorForMovingAcrossFragmentainer() const {
     return *this;
   NGInlineCursor cursor(*GetLayoutBlockFlow());
   const auto& item = *CurrentItem();
-  while (cursor && !cursor.TryToMoveTo(item))
+  while (cursor && !cursor.TryMoveTo(item))
     cursor.MoveToNextFragmentainer();
   DCHECK(cursor) << *this;
   return cursor;
@@ -569,7 +569,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
     const NGFragmentItem* child_item = CurrentItem();
     DCHECK(child_item);
     if (child_item->Type() == NGFragmentItem::kLine) {
-      if (!CursorForDescendants().TryToMoveToFirstInlineLeafChild()) {
+      if (!CursorForDescendants().TryMoveToFirstInlineLeafChild()) {
         // editing/selection/last-empty-inline.html requires this to skip
         // empty <span> with padding.
         MoveToNextSkippingChildren();
@@ -885,12 +885,12 @@ inline wtf_size_t NGInlineCursor::SpanIndexFromItemIndex(unsigned index) const {
 }
 
 void NGInlineCursor::MoveTo(const NGFragmentItem& fragment_item) {
-  if (TryToMoveTo(fragment_item))
+  if (TryMoveTo(fragment_item))
     return;
   NOTREACHED() << *this << " " << fragment_item;
 }
 
-bool NGInlineCursor::TryToMoveTo(const NGFragmentItem& fragment_item) {
+bool NGInlineCursor::TryMoveTo(const NGFragmentItem& fragment_item) {
   DCHECK(HasRoot());
   // Note: We use address instead of iterator because we can't compare
   // iterators in different span. See |base::CheckedContiguousIterator<T>|.
@@ -936,7 +936,7 @@ void NGInlineCursor::MoveToFirst() {
 
 void NGInlineCursor::MoveToFirstChild() {
   DCHECK(Current().CanHaveChildren());
-  if (!TryToMoveToFirstChild())
+  if (!TryMoveToFirstChild())
     MakeNull();
 }
 
@@ -962,11 +962,11 @@ void NGInlineCursor::MoveToFirstLogicalLeaf() {
   // TODO(yosin): We should check direction of each container instead of line
   // box.
   if (IsLtr(Current().Style().Direction())) {
-    while (TryToMoveToFirstChild())
+    while (TryMoveToFirstChild())
       continue;
     return;
   }
-  while (TryToMoveToLastChild())
+  while (TryMoveToLastChild())
     continue;
 }
 
@@ -999,7 +999,7 @@ void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
 
 void NGInlineCursor::MoveToLastChild() {
   DCHECK(Current().CanHaveChildren());
-  if (!TryToMoveToLastChild())
+  if (!TryMoveToLastChild())
     MakeNull();
 }
 
@@ -1021,11 +1021,11 @@ void NGInlineCursor::MoveToLastLogicalLeaf() {
   // TODO(yosin): We should check direction of each container instead of line
   // box.
   if (IsLtr(Current().Style().Direction())) {
-    while (TryToMoveToLastChild())
+    while (TryMoveToLastChild())
       continue;
     return;
   }
-  while (TryToMoveToFirstChild())
+  while (TryMoveToFirstChild())
     continue;
 }
 
@@ -1160,14 +1160,14 @@ void NGInlineCursor::MoveToPreviousLine() {
   NOTREACHED();
 }
 
-bool NGInlineCursor::TryToMoveToFirstChild() {
+bool NGInlineCursor::TryMoveToFirstChild() {
   if (!Current().HasChildren())
     return false;
   MoveToItem(current_.item_iter_ + 1);
   return true;
 }
 
-bool NGInlineCursor::TryToMoveToFirstInlineLeafChild() {
+bool NGInlineCursor::TryMoveToFirstInlineLeafChild() {
   while (IsNotNull()) {
     if (Current().IsInlineLeaf())
       return true;
@@ -1176,7 +1176,7 @@ bool NGInlineCursor::TryToMoveToFirstInlineLeafChild() {
   return false;
 }
 
-bool NGInlineCursor::TryToMoveToLastChild() {
+bool NGInlineCursor::TryMoveToLastChild() {
   if (!Current().HasChildren())
     return false;
   const auto end = current_.item_iter_ + CurrentItem()->DescendantsCount();

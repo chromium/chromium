@@ -314,7 +314,7 @@ TEST_P(NGInlineCursorTest, FirstChild) {
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
   cursor.MoveToFirstChild();
   EXPECT_EQ("abc", ToDebugString(cursor));
-  EXPECT_FALSE(cursor.TryToMoveToFirstChild());
+  EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
 TEST_P(NGInlineCursorTest, FirstChild2) {
@@ -327,7 +327,7 @@ TEST_P(NGInlineCursorTest, FirstChild2) {
   EXPECT_EQ("#first", ToDebugString(cursor));
   cursor.MoveToFirstChild();
   EXPECT_EQ("abc", ToDebugString(cursor));
-  EXPECT_FALSE(cursor.TryToMoveToFirstChild());
+  EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
 TEST_P(NGInlineCursorTest, FirstLastLogicalLeafInSimpleText) {
@@ -430,7 +430,7 @@ TEST_P(NGInlineCursorTest, LastChild) {
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
   cursor.MoveToLastChild();
   EXPECT_EQ("xyz", ToDebugString(cursor));
-  EXPECT_FALSE(cursor.TryToMoveToLastChild());
+  EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
 TEST_P(NGInlineCursorTest, LastChild2) {
@@ -443,7 +443,7 @@ TEST_P(NGInlineCursorTest, LastChild2) {
   EXPECT_EQ("#last", ToDebugString(cursor));
   cursor.MoveToLastChild();
   EXPECT_EQ("xyz", ToDebugString(cursor));
-  EXPECT_FALSE(cursor.TryToMoveToLastChild());
+  EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
 TEST_P(NGInlineCursorTest, Next) {
