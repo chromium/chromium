@@ -8471,6 +8471,7 @@ if (!is_android) {
     sources = [
       "//chrome/browser/vr/test/conditional_skipping.cc",
       "//chrome/browser/vr/test/conditional_skipping.h",
+      "//chrome/browser/vr/test/multi_class_browser_test.h",
       "//chrome/browser/vr/test/webxr_browser_test.cc",
       "//chrome/browser/vr/test/webxr_browser_test.h",
       "//chrome/browser/vr/test/webxr_vr_browser_test.cc",
@@ -8481,8 +8482,8 @@ if (!is_android) {
 
     # Tests
     sources += [
+      "//chrome/browser/vr/webxr_vr_runtimeless_browser_test.cc",
       "//chrome/browser/vr/webxr_vr_spatial_tracking_test.cc",
-      "//chrome/browser/vr/webxr_vr_transition_browser_test.cc",
     ]
 
     deps = [
@@ -8501,6 +8502,13 @@ if (!is_android) {
       "//chrome/test/data/xr/e2e_test_files/",
       "//third_party/blink/web_tests/resources/testharness.js",
     ]
+
+    if (is_win) {
+      deps += [
+        "//device/vr",
+        "//device/vr:directx_helpers",
+      ]
+    }
 
     if (!is_mac) {
       data_deps = [ "//chrome:packed_resources" ]

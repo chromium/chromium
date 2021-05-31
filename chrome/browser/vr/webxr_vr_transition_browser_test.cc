@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "device/vr/buildflags/buildflags.h"
 
 // Browser test equivalent of
@@ -23,18 +22,6 @@ void TestApiDisabledWithoutFlagSetImpl(WebXrVrBrowserTestBase* t,
   t->WaitOnJavaScriptStep();
   t->EndTest();
 }
-
-// Tests that WebXR does not return any devices if all runtime support is
-// disabled.
-IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
-                       TestWebXrNoDevicesWithoutRuntime) {
-  LoadFileAndAwaitInitialization("test_webxr_does_not_return_device");
-  WaitOnJavaScriptStep();
-  EndTest();
-}
-
-// Windows-specific tests.
-#ifdef OS_WIN
 
 #if BUILDFLAG(ENABLE_OPENXR)
 IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrOpenXrBrowserTestWebXrDisabled,
@@ -154,7 +141,5 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {
   this->EndTest();
 }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
-
-#endif  // OS_WIN
 
 }  // namespace vr

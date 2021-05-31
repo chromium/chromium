@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
-#include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/webxr_browser_test.h"
 #include "chrome/browser/vr/test/xr_browser_test.h"
 #include "components/permissions/permission_request_manager.h"
