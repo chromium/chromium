@@ -54,12 +54,6 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kSystemLatinPhysicalTyping)) {
-    input_engine_ = std::make_unique<SystemEngine>(this);
-  } else {
-    input_engine_ = std::make_unique<DecoderEngine>(this);
-  }
 }
 
 ImeService::~ImeService() = default;
@@ -80,7 +74,12 @@ void ImeService::ConnectToImeEngine(
     mojo::PendingRemote<mojom::InputChannel> from_engine,
     const std::vector<uint8_t>& extra,
     ConnectToImeEngineCallback callback) {
-  DCHECK(input_engine_);
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kSystemLatinPhysicalTyping)) {
+    input_engine_ = std::make_unique<SystemEngine>(this);
+  } else {
+    input_engine_ = std::make_unique<DecoderEngine>(this);
+  }
   bool bound = input_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
