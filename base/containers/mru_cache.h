@@ -44,7 +44,7 @@ size_t DoEstimateMemoryUsageForMruCache(const MruCacheType&);
 // that template template params and default template params interact.
 template <class KeyType, class ValueType, class CompareType>
 struct MRUCacheStandardMap {
-  typedef std::map<KeyType, ValueType, CompareType> Type;
+  using Type = std::map<KeyType, ValueType, CompareType>;
 };
 
 // Base class for the MRU cache specializations defined below.
@@ -57,26 +57,26 @@ class MRUCacheBase {
  public:
   // The payload of the list. This maintains a copy of the key so we can
   // efficiently delete things given an element of the list.
-  typedef std::pair<KeyType, PayloadType> value_type;
+  using value_type = std::pair<KeyType, PayloadType>;
 
  private:
-  typedef std::list<value_type> PayloadList;
-  typedef typename MapType<KeyType,
-                           typename PayloadList::iterator,
-                           HashOrCompareType>::Type KeyIndex;
+  using PayloadList = std::list<value_type>;
+  using KeyIndex = typename MapType<KeyType,
+                                    typename PayloadList::iterator,
+                                    HashOrCompareType>::Type;
 
  public:
-  typedef typename PayloadList::size_type size_type;
+  using size_type = typename PayloadList::size_type;
 
-  typedef typename PayloadList::iterator iterator;
-  typedef typename PayloadList::const_iterator const_iterator;
-  typedef typename PayloadList::reverse_iterator reverse_iterator;
-  typedef typename PayloadList::const_reverse_iterator const_reverse_iterator;
+  using iterator = typename PayloadList::iterator;
+  using const_iterator = typename PayloadList::const_iterator;
+  using reverse_iterator = typename PayloadList::reverse_iterator;
+  using const_reverse_iterator = typename PayloadList::const_reverse_iterator;
 
   enum { NO_AUTO_EVICT = 0 };
 
   // The max_size is the size at which the cache will prune its members to when
-  // a new item is inserted. If the caller wants to manager this itself (for
+  // a new item is inserted. If the caller wants to manage this itself (for
   // example, maybe it has special work to do when something is evicted), it
   // can pass NO_AUTO_EVICT to not restrict the cache size.
   explicit MRUCacheBase(size_type max_size) : max_size_(max_size) {}
@@ -127,7 +127,7 @@ class MRUCacheBase {
   }
 
   // Retrieves the payload associated with a given key and returns it via
-  // result without affecting the ordering (unlike Get).
+  // result without affecting the ordering (unlike Get()).
   iterator Peek(const KeyType& key) {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
     if (index_iter == index_.end())
@@ -239,7 +239,7 @@ class MRUCache : public MRUCacheBase<KeyType, PayloadType, CompareType> {
 
 template <class KeyType, class ValueType, class HashType>
 struct MRUCacheHashMap {
-  typedef std::unordered_map<KeyType, ValueType, HashType> Type;
+  using Type = std::unordered_map<KeyType, ValueType, HashType>;
 };
 
 // This class is similar to MRUCache, except that it uses std::unordered_map as
