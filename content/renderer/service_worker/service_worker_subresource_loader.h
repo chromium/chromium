@@ -223,7 +223,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
 
   // |controller_connector| is used to get a connection to the controller
   // ServiceWorker.
-  // |network_loader_factory| is used to get the associated loading context's
+  // |fallback_factory| is used to get the associated loading context's
   // default URLLoaderFactory for network fallback. This should be the
   // URLLoaderFactory that directly goes to network without going through
   // any custom URLLoader factories.
