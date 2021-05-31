@@ -17,35 +17,8 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
     ":test_support_modules_type_check",
-    ":test_support_type_check",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
-  deps = [
-    ":app_util",
-    ":async_util",
-    ":error_counter",
-    ":file_operation_common",
-    ":file_type",
-    ":files_app_entry_types",
-    ":filtered_volume_manager",
-    ":importer_common",
-    ":lru_cache",
-    ":metrics",
-    ":metrics_base",
-    ":mock_entry",
-    ":power",
-    ":progress_center_common",
-    ":storage_adapter",
-    ":trash",
-    ":util",
-    ":volume_manager_types",
-    ":xfm",
   ]
 }
 
@@ -77,17 +50,6 @@ js_type_check("closure_compile_jsmodules") {
                     "js_module_root=../../ui",
                     "hide_warnings_for=third_party/",
                   ]
-}
-
-js_type_check("test_support_type_check") {
-  uses_legacy_modules = true
-  testonly = true
-  deps = [
-    ":mock_chrome",
-    ":test_error_reporting",
-    ":test_importer_common",
-    ":unittest_util",
-  ]
 }
 
 js_type_check("test_support_modules_type_check") {

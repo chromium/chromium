@@ -12,7 +12,6 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
   ]
 }
@@ -32,18 +31,6 @@ js_type_check("closure_compile_jsmodules") {
     ":video_player.m",
     ":video_player_metrics.m",
     ":video_player_native_controls.m",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
-  deps = [
-    ":background",
-    ":closure_compile_externs",
-    ":error_util",
-    ":video_player",
-    ":video_player_metrics",
-    ":video_player_native_controls",
   ]
 }
 

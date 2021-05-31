@@ -15,7 +15,6 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
   ]
 }
@@ -51,34 +50,6 @@ js_type_check("closure_compile_jsmodules") {
     ":mpeg_parser.m",
     ":multi_metadata_provider.m",
     ":thumbnail_model.m",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
-  deps = [
-    ":byte_reader",
-    ":content_metadata_provider",
-    ":exif_constants",
-    ":exif_parser",
-    ":external_metadata_provider",
-    ":file_system_metadata_provider",
-    ":function_parallel",
-    ":function_sequence",
-    ":id3_parser",
-    ":image_orientation",
-    ":image_parsers",
-    ":metadata_cache_item",
-    ":metadata_cache_set",
-    ":metadata_dispatcher",
-    ":metadata_item",
-    ":metadata_model",
-    ":metadata_parser",
-    ":metadata_provider",
-    ":metadata_request",
-    ":mpeg_parser",
-    ":multi_metadata_provider",
-    ":thumbnail_model",
   ]
 }
 
