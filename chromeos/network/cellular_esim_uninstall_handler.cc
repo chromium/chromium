@@ -262,32 +262,8 @@ void CellularESimUninstallHandler::OnRefreshProfileListResult(
 
 void CellularESimUninstallHandler::AttemptDisableProfile() {
   DCHECK_EQ(state_, UninstallState::kDisablingProfile);
-
-  const dbus::ObjectPath& esim_profile_path =
-      *uninstall_requests_.front()->esim_profile_path;
-  HermesProfileClient::Properties* esim_profile_properties =
-      HermesProfileClient::Get()->GetProperties(esim_profile_path);
-
-  if (!esim_profile_properties) {
-    NET_LOG(ERROR) << "eSIM profile not exposed by Hermes. ICCID: "
-                   << GetIccidForCurrentRequest();
-    CompleteCurrentRequest(/*success=*/false);
-    return;
-  }
-
-  if (esim_profile_properties->state().value() !=
-      hermes::profile::State::kActive) {
-    NET_LOG(EVENT) << "eSIM profile with ICCID " << GetIccidForCurrentRequest()
-                   << "is not active and does "
-                   << "not need to be disabled. State: "
-                   << esim_profile_properties->state().value();
-    TransitionToUninstallState(UninstallState::kUninstallingProfile);
-    AttemptUninstallProfile();
-    return;
-  }
-
   HermesProfileClient::Get()->DisableCarrierProfile(
-      esim_profile_path,
+      *uninstall_requests_.front()->esim_profile_path,
       base::BindOnce(&CellularESimUninstallHandler::OnDisableProfile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
