@@ -33,6 +33,15 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
   void AddMainThreadEvent(const v8::metrics::WasmModuleTieredUp& event,
                           ContextId context_id) override;
 
+  void AddMainThreadEvent(const v8::metrics::GarbageCollectionFullCycle& event,
+                          ContextId context_id) override;
+  void AddMainThreadEvent(
+      const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
+      ContextId context_id) override;
+  void AddMainThreadEvent(
+      const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
+      ContextId context_id) override;
+
   void NotifyIsolateDisposal() override;
 
  private:

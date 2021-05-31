@@ -363,6 +363,257 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.CollectionRate.Full.Cpp" units="KB/ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    The percentage of managed C++ memory that has been collected by a garbage
+    collection of the managed C++ heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.Full.Cpp" units="KB/ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    The speed at which garbage collection of the managed C++ heap reclaims
+    unused memory. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.MainThread.Full.Cpp" units="KB/ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    The speed at which garbage collection of the managed C++ heap reclaims
+    unused memory on the main thread only. This histogram ignores concurrent
+    garbage collection. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Compact.Cpp" units="ms" expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on compaction during a whole garbage collection of the managed
+    C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Cpp" units="ms" expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Overall duration of a whole garbage collection of the managed C++ heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Mark.Cpp" units="ms" expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on marking during a whole garbage collection of the managed C++
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms" expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on sweeping during a whole garbage collection of the managed C++
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Full.Weak.Cpp" units="ms" expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on weakness handling during a whole garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Compact.Cpp" units="ms"
+    expires_after="2021-08-09">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on compaction on the main thread during a whole garbage
+    collection of the cpp heap. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Main thread only duration of a whole garbage collection of the managed C++
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Mark.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on marking on the main thread during a whole garbage collection
+    of the managed C++ heap. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Sweep.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on sweeping on the main thread during a whole garbage collection
+    of the managed C++ heap. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Weak.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Time spent on weakness handling on the main thread during a whole garbage
+    collection of the managed C++ heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Memory.Freed.Full.Cpp" units="KB"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Amount of allocated memory freed by a garbage collection of the managed C++
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Objects.After.Full.Cpp" units="KB"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Amount of used memory after a garbage collection of the managed C++ heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Objects.Before.Full.Cpp" units="KB"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Amount of used memory before a garbage collection of the managed C++ heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Objects.Freed.Full.Cpp" units="KB"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Amount of used memory freed by a garbage collection of the managed C++ heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Atomic.Compact.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual compaction steps on the main thread during the atomic
+    pause of a garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Atomic.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual steps on the main thread during the atomic pause of a
+    garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Atomic.Mark.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual marking steps on the main thread during the atomic
+    pause of a garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Atomic.Sweep.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual sweeping steps on the main thread during the atomic
+    pause of a garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Atomic.Weak.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual weakness handling steps on the main thread during the
+    atomic pause of a garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Incremental.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual incremental steps on the main thread during a garbage
+    collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual incremental marking steps on the main thread during a
+    garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Duration of individual incremental sweeping steps on the main thread during
+    a garbage collection of the managed C++ heap.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.TimeToCollectionOnBackground" units="microseconds"
     expires_after="2021-10-01">
   <owner>dinfuehr@chromium.org</owner>
