@@ -39,11 +39,6 @@ void TestProcessKeypressForRulebasedCallback(
     res_out->operations.push_back(std::move(response->operations[i]));
   }
 }
-void TestGetRulebasedKeypressCountForTestingCallback(int32_t* res_out,
-                                                     int32_t response) {
-  *res_out = response;
-}
-
 class ImeServiceTest : public testing::Test {
  public:
   ImeServiceTest() : service_(remote_service_.BindNewPipeAndPassReceiver()) {}
@@ -83,50 +78,6 @@ TEST_F(ImeServiceTest, ConnectInvalidImeEngine) {
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_FALSE(success);
-}
-
-TEST_F(ImeServiceTest, MultipleClientsRulebased) {
-  bool success = false;
-  MockInputChannel test_channel_1;
-  MockInputChannel test_channel_2;
-  mojo::Remote<mojom::InputChannel> remote_engine_1;
-  mojo::Remote<mojom::InputChannel> remote_engine_2;
-
-  remote_manager_->ConnectToImeEngine(
-      "m17n:ar", remote_engine_1.BindNewPipeAndPassReceiver(),
-      test_channel_1.CreatePendingRemote(), extra,
-      base::BindOnce(&ConnectCallback, &success));
-  remote_manager_.FlushForTesting();
-
-  remote_manager_->ConnectToImeEngine(
-      "m17n:ar", remote_engine_2.BindNewPipeAndPassReceiver(),
-      test_channel_2.CreatePendingRemote(), extra,
-      base::BindOnce(&ConnectCallback, &success));
-  remote_manager_.FlushForTesting();
-
-  mojom::KeypressResponseForRulebased response;
-  remote_engine_1->ProcessKeypressForRulebased(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
-  remote_engine_1.FlushForTesting();
-
-  remote_engine_2->ProcessKeypressForRulebased(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
-  remote_engine_2.FlushForTesting();
-
-  int32_t count;
-  remote_engine_1->GetRulebasedKeypressCountForTesting(
-      base::BindOnce(&TestGetRulebasedKeypressCountForTestingCallback, &count));
-  remote_engine_1.FlushForTesting();
-  EXPECT_EQ(1, count);
-
-  remote_engine_2->GetRulebasedKeypressCountForTesting(
-      base::BindOnce(&TestGetRulebasedKeypressCountForTestingCallback, &count));
-  remote_engine_2.FlushForTesting();
-  EXPECT_EQ(1, count);
 }
 
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {

@@ -68,18 +68,7 @@ bool IsModifierKey(const std::string& key_code) {
 
 }  // namespace
 
-InputEngineContext::InputEngineContext(const std::string& ime) {
-  // The |ime|'s format for rule based imes is: "m17n:<id>".
-  std::string id = GetIdFromImeSpec(ime);
-  if (rulebased::Engine::IsImeSupported(id)) {
-    engine = std::make_unique<rulebased::Engine>();
-    engine->Activate(id);
-  }
-}
-
-InputEngineContext::~InputEngineContext() = default;
-
-InputEngine::InputEngine() = default;
+InputEngine::InputEngine() : receiver_(this) {}
 
 InputEngine::~InputEngine() = default;
 
@@ -91,8 +80,11 @@ bool InputEngine::BindRequest(
   if (!IsImeSupportedByRulebased(ime_spec))
     return false;
 
-  channel_receivers_.Add(this, std::move(receiver),
-                         std::make_unique<InputEngineContext>(ime_spec));
+  engine_ = std::make_unique<rulebased::Engine>();
+  engine_->Activate(GetIdFromImeSpec(ime_spec));
+
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
 
   return true;
   // TODO(https://crbug.com/837156): Registry connection error handler.
@@ -133,9 +125,6 @@ void InputEngine::OnCompositionCanceled() {
 void InputEngine::ProcessKeypressForRulebased(
     mojom::PhysicalKeyEventPtr event,
     ProcessKeypressForRulebasedCallback callback) {
-  auto& context = channel_receivers_.current_context();
-  auto& engine = context.get()->engine;
-
   // According to the W3C spec, |altKey| is false if the AltGr key
   // is pressed [1]. However, all rule-based input methods on Chrome OS use
   // the US QWERTY layout as a base layout, with AltGr implemented at this
@@ -155,7 +144,7 @@ void InputEngine::ProcessKeypressForRulebased(
   // Mojo service may accept, but don't send the keys themselves to Mojo.
   // - Ctrl+? and Alt+? are shortcut keys, so don't send them to the rule based
   // engine.
-  if (!engine || event->type != mojom::KeyEventType::kKeyDown ||
+  if (!engine_ || event->type != mojom::KeyEventType::kKeyDown ||
       (IsModifierKey(event->code) || event->modifier_state->control ||
        isAltDown)) {
     std::move(callback).Run(mojom::KeypressResponseForRulebased::New(
@@ -163,7 +152,7 @@ void InputEngine::ProcessKeypressForRulebased(
     return;
   }
 
-  rulebased::ProcessKeyResult process_key_result = engine->ProcessKey(
+  rulebased::ProcessKeyResult process_key_result = engine_->ProcessKey(
       event->code, GenerateModifierValueForRulebased(event->modifier_state,
                                                      isAltRightDown_));
   mojom::KeypressResponseForRulebasedPtr keypress_response =
@@ -178,21 +167,17 @@ void InputEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
 }
 
 void InputEngine::ResetForRulebased() {
-  auto& context = channel_receivers_.current_context();
-  auto& engine = context.get()->engine;
   // TODO(https://crbug.com/1633694) Handle the case when the engine is not
   // defined
-  if (engine) {
-    engine->Reset();
+  if (engine_) {
+    engine_->Reset();
   }
   isAltRightDown_ = false;
 }
 
 void InputEngine::GetRulebasedKeypressCountForTesting(
     GetRulebasedKeypressCountForTestingCallback callback) {
-  auto& context = channel_receivers_.current_context();
-  auto& engine = context.get()->engine;
-  std::move(callback).Run(engine ? engine->process_key_count() : -1);
+  std::move(callback).Run(engine_ ? engine_->process_key_count() : -1);
 }
 
 void InputEngine::CommitText(const std::string& text,

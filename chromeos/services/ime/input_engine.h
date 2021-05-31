@@ -18,16 +18,6 @@ namespace rulebased {
 class Engine;
 }
 
-class InputEngineContext {
- public:
-  explicit InputEngineContext(const std::string& ime);
-  InputEngineContext(const InputEngineContext&) = delete;
-  InputEngineContext& operator=(const InputEngineContext&) = delete;
-  ~InputEngineContext();
-
-  std::unique_ptr<rulebased::Engine> engine;
-};
-
 // A basic implementation of InputEngine without using any decoder.
 // TODO(https://crbug.com/1019541): Rename this to RuleBasedEngine.
 class InputEngine : public mojom::InputChannel {
@@ -85,8 +75,8 @@ class InputEngine : public mojom::InputChannel {
   bool IsImeSupportedByRulebased(const std::string& ime_spec);
 
  private:
-  mojo::ReceiverSet<mojom::InputChannel, std::unique_ptr<InputEngineContext>>
-      channel_receivers_;
+  mojo::Receiver<mojom::InputChannel> receiver_;
+  std::unique_ptr<rulebased::Engine> engine_;
 
   // Whether the AltRight key is held down or not. Only used for rule-based.
   bool isAltRightDown_ = false;
