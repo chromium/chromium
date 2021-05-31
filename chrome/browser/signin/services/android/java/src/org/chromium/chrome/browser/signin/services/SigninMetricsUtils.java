@@ -20,6 +20,7 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -119,7 +120,8 @@ public class SigninMetricsUtils {
             protected List<String> doInBackground() {
                 AccountManagerFacade accountManagerFacade =
                         AccountManagerFacadeProvider.getInstance();
-                List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+                List<Account> accounts =
+                        accountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
                 List<String> gaiaIds = new ArrayList<>();
                 for (Account account : accounts) {
                     String gaiaId = accountManagerFacade.getAccountGaiaId(account.name);

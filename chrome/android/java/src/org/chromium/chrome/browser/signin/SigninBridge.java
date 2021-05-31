@@ -33,6 +33,8 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Collections;
+
 /**
  * The bridge regroups methods invoked by native code to interact with Android Signin UI.
  */
@@ -78,7 +80,10 @@ final class SigninBridge {
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;
         }
-        if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
+        if (AccountManagerFacadeProvider.getInstance()
+                        .getGoogleAccounts()
+                        .or(Collections.emptyList())
+                        .isEmpty()) {
             // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
             //  in the future. This disabling is only temporary.
             SigninMetricsUtils.logAccountConsistencyPromoAction(

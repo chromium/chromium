@@ -22,6 +22,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,7 +66,8 @@ class AccountPickerMediator {
      * Implements {@link AccountsChangeObserver}.
      */
     private void updateAccounts() {
-        List<Account> accounts = mAccountManagerFacade.tryGetGoogleAccounts();
+        List<Account> accounts =
+                mAccountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
         mListModel.clear();
 
         // Add an "existing account" row for each account

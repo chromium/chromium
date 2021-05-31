@@ -26,6 +26,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -127,7 +128,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      * Implements {@link AccountsChangeObserver}.
      */
     private void onAccountListUpdated() {
-        List<Account> accounts = mAccountManagerFacade.tryGetGoogleAccounts();
+        List<Account> accounts =
+                mAccountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
         if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list is collapsed or expanded,
             // we will go to the zero account screen.
