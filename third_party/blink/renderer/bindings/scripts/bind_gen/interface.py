@@ -9,6 +9,7 @@ import web_idl
 from . import name_style
 from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
+from .blink_v8_bridge import make_default_value_expr
 from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import make_v8_to_blink_value_variadic
 from .blink_v8_bridge import native_value_tag
@@ -96,9 +97,25 @@ def backward_compatible_api_func(cg_context):
 
 def callback_function_name(cg_context,
                            overload_index=None,
+                           argument_count=None,
                            for_cross_origin=False):
+    """
+    Args:
+        cg_context: A CodeGenContext of the target IDL construct.
+        overload_index: An overload index if the target is an overloaded
+            IDL operation.
+        argument_count: When the target is an IDL operation that has optional
+            arguments and is annotated with [NoAllocDirectCall], the value is
+            the number of arguments that V8 passes in (excluding the fixed
+            arguments like the receiver object and the
+            v8::FastApiCallbackOptions.)
+        for_cross_origin: True if the target is the cross origin accessible
+            version.
+    """
+
     assert isinstance(cg_context, CodeGenContext)
     assert overload_index is None or isinstance(overload_index, int)
+    assert argument_count is None or isinstance(argument_count, int)
     assert isinstance(for_cross_origin, bool)
 
     def _cxx_name(name):
@@ -149,14 +166,24 @@ def callback_function_name(cg_context,
     elif cg_context.stringifier:
         kind = "Operation"
 
+    if cg_context.no_alloc_direct_call:
+        nadc = "NoAllocDirectCall"
+    elif cg_context.no_alloc_direct_call_for_testing:
+        nadc = "NoAllocDirectCallForTesting"
+    else:
+        nadc = ""
+
+    overload = ""
+    if overload_index is not None and (len(cg_context.constructor_group
+                                           or cg_context.operation_group) > 1):
+        overload += "Overload{}".format(overload_index + 1)
+    if argument_count is not None:
+        overload += "Arg{}".format(argument_count)
+
     if for_cross_origin:
         suffix = "CrossOrigin"
-    elif overload_index is not None:
-        suffix = "Overload{}".format(overload_index + 1)
-    elif cg_context.no_alloc_direct_call:
-        suffix = "NoAllocDirectCallCallback"
-    elif cg_context.no_alloc_direct_call_for_testing:
-        suffix = "NoAllocDirectCallForTestingCallback"
+    elif nadc or overload:
+        suffix = nadc + overload
     else:
         suffix = "Callback"
 
@@ -2193,13 +2220,73 @@ v8_private_named_constructor.Set(${v8_receiver}, v8_value);
     return SequenceNode([named_ctor_def, EmptyNode(), func_def])
 
 
-def make_no_alloc_direct_call_callback_def(cg_context, function_name):
+def list_no_alloc_direct_call_callbacks(cg_context):
+    """
+    Returns a list of [NoAllocDirectCall] callback functions to be registered
+    at V8, including all overloaded operations annotated with
+    [NoAllocDirectCall] and their variants of optional arguments.
+
+    Example:
+      Given the following Web IDL fragments,
+        void f(DOMString);                                             // (a)
+        [NoAllocDirectCall] void f(Node node);                         // (b)
+        [NoAllocDirectCall] void f(optional long a, optional long b);  // (c)
+      the following callback functions should be generated,
+        void F(v8::Local<v8::Value> node);  // (b)
+        void F();                           // (c)
+        void F(int32_t a);                  // (c)
+        void F(int32_t a, int32_t b);       // (c)
+      thus the following entries are returned.
+        [
+          Entry(operation=(b), argument_count=1),  # overload_index=2
+          Entry(operation=(c), argument_count=2),  # overload_index=3
+          Entry(operation=(c), argument_count=1),  # overload_index=3
+          Entry(operation=(c), argument_count=0),  # overload_index=3
+        ]
+    """
+    assert isinstance(cg_context, CodeGenContext)
+
+    class Entry(object):
+        def __init__(self, operation, argument_count):
+            self.operation = operation
+            self.argument_count = argument_count
+            self.callback_name = callback_function_name(
+                cg_context,
+                overload_index=self.operation.overload_index,
+                argument_count=self.argument_count)
+
+    entries = []
+    for operation in cg_context.operation_group:
+        if "NoAllocDirectCall" not in operation.extended_attributes:
+            continue
+        for argument in reversed(operation.arguments):
+            entries.append(Entry(operation, argument.index + 1))
+            if not argument.is_optional:
+                break
+        else:
+            entries.append(Entry(operation, 0))
+    return entries
+
+
+def make_no_alloc_direct_call_callback_def(cg_context, function_name,
+                                           argument_count):
+    """
+    Args:
+        cg_context: A CodeGenContext of the target IDL construct.
+        function_name: The function name to be produced.
+        argument_count: The number of arguments that the produced function
+            takes, which may be different from the number of arguments of
+            the target cg_context.function_like due to optional arguments.
+    """
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
+    assert isinstance(argument_count, int)
 
     S = SymbolNode
     T = TextNode
     F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+
+    function_like = cg_context.function_like
 
     class ArgumentInfo(object):
         def __init__(self, v8_type, v8_arg_name, blink_arg_name, symbol_node):
@@ -2222,7 +2309,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
                       "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
 
     arg_list = []
-    for argument in cg_context.operation.arguments:
+    for argument in function_like.arguments:
+        if not (argument.index < argument_count):
+            break
         blink_arg_name = name_style.arg_f("arg{}_{}", argument.index + 1,
                                           argument.identifier)
         v8_arg_name = name_style.arg_f("v8_arg{}_{}", argument.index + 1,
@@ -2236,8 +2325,8 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
         map(lambda arg: "{} {}".format(arg.v8_type, arg.v8_arg_name),
             arg_list)) +
                  ["v8::FastApiCallbackOptions& v8_arg_callback_options"])
-    return_type = ("void" if cg_context.operation.return_type.is_void else
-                   blink_type_info(cg_context.operation.return_type).value_t)
+    return_type = ("void" if function_like.return_type.is_void else
+                   blink_type_info(function_like.return_type).value_t)
 
     func_def = CxxFuncDefNode(name=function_name,
                               arg_decls=arg_decls,
@@ -2276,6 +2365,20 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
 
     blink_arguments = list(
         map(lambda arg: "${{{}}}".format(arg.blink_arg_name), arg_list))
+    # If there are following optional arguments with default values, append
+    # them filled with the default values.
+    for argument in function_like.arguments[argument_count:]:
+        if not argument.default_value:
+            break
+        blink_arg_name = name_style.arg_f("arg{}_{}", argument.index + 1,
+                                          argument.identifier)
+        default_expr = make_default_value_expr(argument.idl_type,
+                                               argument.default_value)
+        body.register_code_symbol(
+            S((blink_arg_name),
+              "auto&& {}{{{}}};".format(blink_arg_name,
+                                        default_expr.initializer_expr)))
+        blink_arguments.append("${{{}}}".format(blink_arg_name))
     if cg_context.may_throw_exception:
         blink_arguments.append("${exception_state}")
     body.append(
@@ -2328,10 +2431,10 @@ def make_no_alloc_direct_call_for_testing_call(cg_context):
             "v8::FastApiCallbackOptions ${v8_fast_api_callback_options}"
             " = v8::FastApiCallbackOptions::CreateForTesting(${isolate});"))
     scope.extend([
-        F(
-            "{}(${info}, ${v8_fast_api_callback_options});",
-            callback_function_name(
-                cg_context.make_copy(no_alloc_direct_call_for_testing=True))),
+        F(("{}(${info}, ${v8_fast_api_callback_options});"),
+          callback_function_name(
+              cg_context.make_copy(no_alloc_direct_call_for_testing=True),
+              overload_index=cg_context.operation.overload_index)),
         CxxUnlikelyIfNode(cond="${blink_receiver}->HasDeferredActions()",
                           body=[
                               T("${blink_receiver}->FlushDeferredActions();"),
@@ -2343,6 +2446,7 @@ def make_no_alloc_direct_call_for_testing_call(cg_context):
 
     return ListNode([
         T("#if DCHECK_IS_ON()"),
+        T("// [NoAllocDirectCall]"),
         CxxUnlikelyIfNode(cond=("RuntimeEnabledFeatures::"
                                 "FakeNoAllocDirectCallForTestingEnabled()"),
                           body=scope),
@@ -2356,12 +2460,15 @@ def make_no_alloc_direct_call_flush_deferred_actions(cg_context):
     if "NoAllocDirectCall" not in cg_context.operation.extended_attributes:
         return None
 
-    return CxxUnlikelyIfNode(
-        cond="UNLIKELY(${blink_receiver}->HasDeferredActions())",
-        body=[
-            TextNode("${blink_receiver}->FlushDeferredActions();"),
-            TextNode("return;"),
-        ])
+    return SequenceNode([
+        TextNode("// [NoAllocDirectCall]"),
+        CxxUnlikelyIfNode(
+            cond="UNLIKELY(${blink_receiver}->HasDeferredActions())",
+            body=[
+                TextNode("${blink_receiver}->FlushDeferredActions();"),
+                TextNode("return;"),
+            ]),
+    ])
 
 
 def make_operation_entry(cg_context):
@@ -2392,8 +2499,6 @@ def make_operation_function_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_no_alloc_direct_call_flush_deferred_actions(cg_context),
-        EmptyNode(),
     ])
 
     if "Custom" in cg_context.property_.extended_attributes:
@@ -2403,6 +2508,8 @@ def make_operation_function_def(cg_context, function_name):
         return func_def
 
     body.extend([
+        make_no_alloc_direct_call_flush_deferred_actions(cg_context),
+        EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
         make_steps_of_ce_reactions(cg_context),
@@ -2417,9 +2524,7 @@ def make_operation_function_def(cg_context, function_name):
     return func_def
 
 
-def make_operation_callback_def(cg_context,
-                                function_name,
-                                no_alloc_direct_callback_name=None):
+def make_operation_callback_def(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
@@ -2427,48 +2532,54 @@ def make_operation_callback_def(cg_context,
 
     assert (not ("Custom" in operation_group.extended_attributes)
             or len(operation_group) == 1)
-    assert (not ("NoAllocDirectCall" in operation_group.extended_attributes)
-            or len(operation_group) == 1)
 
+    nodes = SequenceNode()
     if "NoAllocDirectCall" in operation_group.extended_attributes:
-        nodes = ListNode()
-        cgc = cg_context.make_copy(operation=operation_group[0],
-                                   no_alloc_direct_call=True)
-        nodes.extend([
-            make_no_alloc_direct_call_callback_def(
-                cgc, no_alloc_direct_callback_name),
-            EmptyNode(),
-        ])
-        cgc = cg_context.make_copy(operation=operation_group[0],
-                                   no_alloc_direct_call_for_testing=True)
-        nodes.extend([
-            make_no_alloc_direct_call_for_testing_callback_def(
-                cgc, callback_function_name(cgc)),
-            EmptyNode(),
-        ])
-        cgc = cg_context.make_copy(operation=operation_group[0])
-        nodes.extend([
-            make_operation_function_def(cgc, function_name),
-        ])
-        return nodes
+        for entry in list_no_alloc_direct_call_callbacks(cg_context):
+            cgc = cg_context.make_copy(operation=entry.operation,
+                                       no_alloc_direct_call=True)
+            nodes.extend([
+                make_no_alloc_direct_call_callback_def(
+                    cgc,
+                    callback_function_name(
+                        cgc,
+                        overload_index=entry.operation.overload_index,
+                        argument_count=entry.argument_count),
+                    argument_count=entry.argument_count),
+                EmptyNode(),
+            ])
+        for operation in operation_group:
+            if "NoAllocDirectCall" not in operation.extended_attributes:
+                continue
+            cgc = cg_context.make_copy(operation=operation,
+                                       no_alloc_direct_call_for_testing=True)
+            nodes.extend([
+                make_no_alloc_direct_call_for_testing_callback_def(
+                    cgc,
+                    callback_function_name(
+                        cgc, overload_index=operation.overload_index)),
+                EmptyNode(),
+            ])
 
     if len(operation_group) == 1:
-        return make_operation_function_def(
-            cg_context.make_copy(operation=operation_group[0]), function_name)
+        nodes.append(
+            make_operation_function_def(
+                cg_context.make_copy(operation=operation_group[0]),
+                function_name))
+        return nodes
 
-    node = SequenceNode()
     for operation in operation_group:
         cgc = cg_context.make_copy(operation=operation)
-        node.extend([
+        nodes.extend([
             make_operation_function_def(
                 cgc,
                 callback_function_name(
                     cgc, overload_index=operation.overload_index)),
             EmptyNode(),
         ])
-    node.append(
+    nodes.append(
         make_overload_dispatcher_function_def(cg_context, function_name))
-    return node
+    return nodes
 
 
 def make_stringifier_callback_def(cg_context, function_name):
@@ -4642,13 +4753,6 @@ def _make_property_entry_receiver_check(property_):
         return "unsigned(IDLMemberInstaller::FlagReceiverCheck::kCheck)"
 
 
-def _make_property_entry_v8_c_function(entry):
-    if entry.no_alloc_direct_callback_name is None:
-        return None
-    return "v8::CFunction::MakeWithFallbackSupport({})".format(
-        entry.no_alloc_direct_callback_name)
-
-
 def _make_property_entry_v8_cached_accessor(property_):
     return "unsigned(V8PrivateProperty::CachedAccessor::{})".format(
         property_.extended_attributes.value_of("CachedAccessor") or "kNone")
@@ -4696,20 +4800,20 @@ def _make_attribute_registration_table(table_name, attribute_entries):
     T = TextNode
 
     entry_nodes = []
+    pattern = ("{{"
+               "\"{property_name}\", "
+               "{attribute_get_callback}, "
+               "{attribute_set_callback}, "
+               "{v8_property_attribute}, "
+               "{location}, "
+               "{world}, "
+               "{receiver_check}, "
+               "{cross_origin_check_for_get}, "
+               "{cross_origin_check_for_set}, "
+               "{v8_side_effect}, "
+               "{v8_cached_accessor}"
+               "}},")
     for entry in attribute_entries:
-        pattern = ("{{"
-                   "\"{property_name}\", "
-                   "{attribute_get_callback}, "
-                   "{attribute_set_callback}, "
-                   "{v8_property_attribute}, "
-                   "{location}, "
-                   "{world}, "
-                   "{receiver_check}, "
-                   "{cross_origin_check_for_get}, "
-                   "{cross_origin_check_for_set}, "
-                   "{v8_side_effect}, "
-                   "{v8_cached_accessor}"
-                   "}},")
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
@@ -4752,8 +4856,12 @@ def _make_constant_callback_registration_table(table_name, constant_entries):
     T = TextNode
 
     entry_nodes = []
+    pattern = (
+        "{{"  #
+        "\"{property_name}\", "
+        "{constant_callback}"
+        "}},")
     for entry in constant_entries:
-        pattern = ("{{" "\"{property_name}\", " "{constant_callback}" "}},")
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
@@ -4778,11 +4886,12 @@ def _make_constant_value_registration_table(table_name, constant_entries):
     T = TextNode
 
     entry_nodes = []
+    pattern = (
+        "{{"  #
+        "\"{property_name}\", "
+        "{constant_value}"
+        "}},")
     for entry in constant_entries:
-        pattern = ("{{"
-                   "\"{property_name}\", "
-                   "{constant_value}"
-                   "}},")
         text = _format(pattern,
                        property_name=entry.property_.identifier,
                        constant_value=entry.const_constant_name)
@@ -4833,30 +4942,51 @@ def _make_operation_registration_table(table_name, operation_entries):
         for entry in operation_entries)
 
     T = TextNode
+    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
 
-    no_alloc_direct_call_count = 0
-    for entry in operation_entries:
-        if entry.no_alloc_direct_callback_name:
-            no_alloc_direct_call_count += 1
+    no_alloc_direct_call_count = len(
+        list(
+            filter(lambda entry: entry.no_alloc_direct_call_callbacks,
+                   operation_entries)))
     assert (no_alloc_direct_call_count == 0
             or no_alloc_direct_call_count == len(operation_entries))
-    no_alloc_direct_call_enabled = no_alloc_direct_call_count > 0
+    no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
 
     entry_nodes = []
+    nadc_overload_nodes = ListNode()
+    pattern = ("{{"
+               "\"{property_name}\", "
+               "{operation_callback}, "
+               "{function_length}, "
+               "{v8_property_attribute}, "
+               "{location}, "
+               "{world}, "
+               "{receiver_check}, "
+               "{cross_origin_check}, "
+               "{v8_side_effect}"
+               "}}, ")
+    if no_alloc_direct_call_enabled:
+        pattern = ("{{" + pattern + "{v8_cfunction_table}, "
+                   "base::size({v8_cfunction_table})}}, ")
     for entry in operation_entries:
-        pattern = ("{{"
-                   "\"{property_name}\", "
-                   "{operation_callback}, "
-                   "{function_length}, "
-                   "{v8_property_attribute}, "
-                   "{location}, "
-                   "{world}, "
-                   "{receiver_check}, "
-                   "{cross_origin_check}, "
-                   "{v8_side_effect}"
-                   "}}, ")
         if no_alloc_direct_call_enabled:
-            pattern = "{{" + pattern + "{v8_c_function}}}, "
+            nadc_overload_table_name = name_style.constant(
+                "no_alloc_direct_call_overloads_of_",
+                entry.property_.identifier)
+            nadc_overload_nodes.append(
+                ListNode([
+                    T("static const v8::CFunction " +
+                      nadc_overload_table_name + "[] = {"),
+                    ListNode([
+                        F("v8::CFunctionBuilder().Fn({}).Build(),",
+                          nadc_entry.callback_name)
+                        for nadc_entry in entry.no_alloc_direct_call_callbacks
+                    ]),
+                    T("};"),
+                ]))
+        else:
+            nadc_overload_table_name = None
+
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
@@ -4872,7 +5002,7 @@ def _make_operation_registration_table(table_name, operation_entries):
                 entry.property_),
             v8_side_effect=_make_property_entry_v8_side_effect(
                 entry.property_),
-            v8_c_function=_make_property_entry_v8_c_function(entry))
+            v8_cfunction_table=nadc_overload_table_name)
         entry_nodes.append(T(text))
 
     table_decl_before_name = (
@@ -4881,11 +5011,18 @@ def _make_operation_registration_table(table_name, operation_entries):
         table_decl_before_name = (
             "static const "
             "IDLMemberInstaller::NoAllocDirectCallOperationConfig")
-    return ListNode([
+    node = ListNode()
+    if nadc_overload_nodes:
+        node.extend([
+            nadc_overload_nodes,
+            EmptyNode(),
+        ])
+    node.extend([
         T(table_decl_before_name + " " + table_name + "[] = {"),
         ListNode(entry_nodes),
         T("};"),
     ])
+    return node
 
 
 class _PropEntryBase(object):
@@ -4954,7 +5091,7 @@ class _PropEntryOperationGroup(_PropEntryBase):
                  operation_group,
                  op_callback_name,
                  op_func_length,
-                 no_alloc_direct_callback_name=None):
+                 no_alloc_direct_call_callbacks=None):
         assert isinstance(op_callback_name, str)
         assert isinstance(op_func_length, int)
 
@@ -4962,7 +5099,7 @@ class _PropEntryOperationGroup(_PropEntryBase):
                                 exposure_conditional, world, operation_group)
         self.op_callback_name = op_callback_name
         self.op_func_length = op_func_length
-        self.no_alloc_direct_callback_name = no_alloc_direct_callback_name
+        self.no_alloc_direct_call_callbacks = no_alloc_direct_call_callbacks
 
 
 def make_property_entries_and_callback_defs(cg_context, attribute_entries,
@@ -5163,14 +5300,12 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         cgc = cg_context.make_copy(
             operation_group=operation_group, for_world=world)
         op_callback_name = callback_function_name(cgc)
-        no_alloc_direct_callback_name = (
-            callback_function_name(cgc.make_copy(no_alloc_direct_call=True))
+        op_callback_node = make_operation_callback_def(cgc, op_callback_name)
+        no_alloc_direct_call_callbacks = (
+            list_no_alloc_direct_call_callbacks(
+                cgc.make_copy(no_alloc_direct_call=True))
             if "NoAllocDirectCall" in operation_group.extended_attributes else
             None)
-        op_callback_node = make_operation_callback_def(
-            cgc,
-            op_callback_name,
-            no_alloc_direct_callback_name=no_alloc_direct_callback_name)
 
         callback_def_nodes.extend([
             op_callback_node,
@@ -5185,7 +5320,7 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 operation_group=operation_group,
                 op_callback_name=op_callback_name,
                 op_func_length=operation_group.min_num_of_required_arguments,
-                no_alloc_direct_callback_name=no_alloc_direct_callback_name))
+                no_alloc_direct_call_callbacks=no_alloc_direct_call_callbacks))
 
     def process_stringifier(_, is_context_dependent, exposure_conditional,
                             world):
@@ -5917,12 +6052,12 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         install_func="IDLMemberInstaller::InstallOperations",
         table_name=table_name)
     entries = list(
-        filter(lambda entry: not entry.no_alloc_direct_callback_name,
+        filter(lambda entry: not entry.no_alloc_direct_call_callbacks,
                operation_entries))
     install_properties(table_name, entries, _make_operation_registration_table,
                        installer_call_text)
     entries = list(
-        filter(lambda entry: entry.no_alloc_direct_callback_name,
+        filter(lambda entry: entry.no_alloc_direct_call_callbacks,
                operation_entries))
     install_properties(table_name, entries, _make_operation_registration_table,
                        installer_call_text)
