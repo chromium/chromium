@@ -26,6 +26,7 @@ class GraphicsContext;
 class GraphicsContextStateSaver;
 class Node;
 class SVGLengthContext;
+class TextDecorationOffsetBase;
 struct PaintInfo;
 
 // Base class for text painting. Has no dependencies on the layout tree and thus
@@ -101,6 +102,22 @@ class CORE_EXPORT TextPainterBase {
       float stripe_width,
       float dilation,
       const Vector<Font::TextIntercept>& text_intercepts);
+
+  // We have two functions to paint text decoations, because we should paint
+  // text and decorations in following order:
+  //   1. Paint text decorations except line through
+  //   2. Paint text
+  //   3. Paint line throguh
+  void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
+                                         TextDecorationInfo&,
+                                         const PaintInfo&,
+                                         const Vector<AppliedTextDecoration>&,
+                                         const TextPaintStyle& text_style,
+                                         bool* has_line_through_decoration);
+  void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
+                                       const PaintInfo&,
+                                       const Vector<AppliedTextDecoration>&,
+                                       const TextPaintStyle&);
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 

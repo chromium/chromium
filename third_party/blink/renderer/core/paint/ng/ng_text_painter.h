@@ -58,7 +58,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                          const PhysicalRect& selection_rect,
                          DOMNodeId node_id);
 
-  // Based on legacy TextPainter.
   void PaintDecorationsExceptLineThrough(
       const NGFragmentItem& text_item,
       const PaintInfo& paint_info,
@@ -68,7 +67,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
       const absl::optional<AppliedTextDecoration>& selection_decoration,
       bool* has_line_through_decoration);
 
-  // Based on legacy TextPainter.
   void PaintDecorationsOnlyLineThrough(
       const NGFragmentItem& text_item,
       const PaintInfo& paint_info,

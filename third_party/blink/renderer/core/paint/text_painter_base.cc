@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -283,6 +284,130 @@ void TextPainterBase::DecorationsStripeIntercepts(
     if (!clip_rect.IsFinite())
       continue;
     graphics_context_.ClipOut(clip_rect);
+  }
+}
+
+void TextPainterBase::PaintDecorationsExceptLineThrough(
+    const TextDecorationOffsetBase& decoration_offset,
+    TextDecorationInfo& decoration_info,
+    const PaintInfo& paint_info,
+    const Vector<AppliedTextDecoration>& decorations,
+    const TextPaintStyle& text_style,
+    bool* has_line_through_decoration) {
+  GraphicsContext& context = paint_info.context;
+  GraphicsContextStateSaver state_saver(context);
+  UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
+
+  // text-underline-position may flip underline and overline.
+  ResolvedUnderlinePosition underline_position =
+      decoration_info.UnderlinePosition();
+  bool flip_underline_and_overline = false;
+  if (underline_position == ResolvedUnderlinePosition::kOver) {
+    flip_underline_and_overline = true;
+    underline_position = ResolvedUnderlinePosition::kUnder;
+  }
+
+  for (size_t applied_decoration_index = 0;
+       applied_decoration_index < decorations.size();
+       ++applied_decoration_index) {
+    const AppliedTextDecoration& decoration =
+        decorations[applied_decoration_index];
+    TextDecoration lines = decoration.Lines();
+    bool has_underline = EnumHasFlags(lines, TextDecoration::kUnderline);
+    bool has_overline = EnumHasFlags(lines, TextDecoration::kOverline);
+    if (flip_underline_and_overline)
+      std::swap(has_underline, has_overline);
+
+    decoration_info.SetDecorationIndex(applied_decoration_index);
+
+    float resolved_thickness = decoration_info.ResolvedThickness();
+    context.SetStrokeThickness(resolved_thickness);
+
+    if (has_underline && decoration_info.FontData()) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
+
+      const int paint_underline_offset =
+          decoration_offset.ComputeUnderlineOffset(
+              underline_position, decoration_info.Style().ComputedFontSize(),
+              decoration_info.FontData()->GetFontMetrics(), line_offset,
+              resolved_thickness);
+      decoration_info.SetPerLineData(
+          TextDecoration::kUnderline, paint_underline_offset,
+          TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
+      PaintDecorationUnderOrOverLine(context, decoration_info,
+                                     TextDecoration::kUnderline);
+    }
+
+    if (has_overline && decoration_info.FontData()) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? decoration.UnderlineOffset() : Length();
+
+      FontVerticalPositionType position =
+          flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
+                                      : FontVerticalPositionType::TextTop;
+      const int paint_overline_offset =
+          decoration_offset.ComputeUnderlineOffsetForUnder(
+              line_offset, decoration_info.Style().ComputedFontSize(),
+              resolved_thickness, position);
+      decoration_info.SetPerLineData(
+          TextDecoration::kOverline, paint_overline_offset,
+          -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
+          1);
+      PaintDecorationUnderOrOverLine(context, decoration_info,
+                                     TextDecoration::kOverline);
+    }
+
+    // We could instead build a vector of the TextDecoration instances needing
+    // line-through but this is a rare case so better to avoid vector overhead.
+    *has_line_through_decoration |=
+        EnumHasFlags(lines, TextDecoration::kLineThrough);
+  }
+}
+
+void TextPainterBase::PaintDecorationsOnlyLineThrough(
+    TextDecorationInfo& decoration_info,
+    const PaintInfo& paint_info,
+    const Vector<AppliedTextDecoration>& decorations,
+    const TextPaintStyle& text_style) {
+  GraphicsContext& context = paint_info.context;
+  GraphicsContextStateSaver state_saver(context);
+  UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
+
+  for (size_t applied_decoration_index = 0;
+       applied_decoration_index < decorations.size();
+       ++applied_decoration_index) {
+    const AppliedTextDecoration& decoration =
+        decorations[applied_decoration_index];
+    TextDecoration lines = decoration.Lines();
+    if (EnumHasFlags(lines, TextDecoration::kLineThrough)) {
+      decoration_info.SetDecorationIndex(applied_decoration_index);
+
+      float resolved_thickness = decoration_info.ResolvedThickness();
+      context.SetStrokeThickness(resolved_thickness);
+
+      // For increased line thickness, the line-through decoration needs to grow
+      // in both directions from its origin, subtract half the thickness to keep
+      // it centered at the same origin.
+      const float line_through_offset =
+          2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
+      // Floor double_offset in order to avoid double-line gap to appear
+      // of different size depending on position where the double line
+      // is drawn because of rounding downstream in
+      // GraphicsContext::DrawLineForText.
+      decoration_info.SetPerLineData(
+          TextDecoration::kLineThrough, line_through_offset,
+          floorf(TextDecorationInfo::DoubleOffsetFromThickness(
+              resolved_thickness)),
+          0);
+      AppliedDecorationPainter decoration_painter(context, decoration_info,
+                                                  TextDecoration::kLineThrough);
+      // No skip: ink for line-through,
+      // compare https://github.com/w3c/csswg-drafts/issues/711
+      decoration_painter.Paint();
+    }
   }
 }
 
