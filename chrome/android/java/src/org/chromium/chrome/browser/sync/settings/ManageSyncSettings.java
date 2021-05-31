@@ -129,6 +129,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
+    private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
     private final ProfileSyncService mProfileSyncService = ProfileSyncService.get();
 
@@ -637,7 +638,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     /**
      * Called upon completion of an activity started by a previous call to startActivityForResult()
-     * via SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog().
+     * via SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog() or
+     * SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog().
      * @param requestCode Request code of the requested intent.
      * @param resultCode Result code of the requested intent.
      * @param data The data returned by the intent.
@@ -649,6 +651,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // harmless to issue a redundant notifyKeysChanged().
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL) {
             TrustedVaultClient.get().notifyKeysChanged();
+        }
+        if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
+            // TODO(crbug.com/1100279): Broadcast completion via TrustedVaultClient.
         }
     }
 
@@ -709,7 +714,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 return;
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                // TODO(crbug.com/1100279): Implement logic.
+                SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog(this,
+                        primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 mProfileSyncService.setSyncRequested(true);

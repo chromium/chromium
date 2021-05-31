@@ -68,6 +68,20 @@ public class TrustedVaultClient {
         default Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
             return Promise.fulfilled(false);
         }
+
+        /**
+         * Gets a PendingIntent that can be used to display a UI that allows the user to resolve a
+         * degraded recoverability state, usually involving reauthentication.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise for a PendingIntent object. The promise will be rejected if no
+         *         user action is actually required.
+         */
+        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
+        default Promise<PendingIntent> createRecoverabilityDegradedIntent(
+                CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
     }
 
     /**
@@ -138,6 +152,17 @@ public class TrustedVaultClient {
         for (long nativeTrustedVaultClientAndroid : mNativeTrustedVaultClientAndroidSet) {
             TrustedVaultClientJni.get().notifyKeysChanged(nativeTrustedVaultClientAndroid);
         }
+    }
+
+    /**
+     * Creates an intent that launches an activity that triggers the degraded recoverability UI.
+     *
+     * @param accountInfo Account representing the user.
+     * @return a promise with the intent for opening the degraded recoverability activity. The
+     *         promise will be rejected if no user action is actually required.
+     */
+    public Promise<PendingIntent> createRecoverabilityDegradedIntent(CoreAccountInfo accountInfo) {
+        return mBackend.createRecoverabilityDegradedIntent(accountInfo);
     }
 
     /**

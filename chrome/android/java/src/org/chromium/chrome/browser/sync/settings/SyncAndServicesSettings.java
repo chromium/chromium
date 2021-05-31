@@ -115,6 +115,7 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
+    private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
     private final ProfileSyncService mProfileSyncService = ProfileSyncService.get();
     private final PrefService mPrefService = UserPrefs.get(getProfile());
@@ -527,7 +528,13 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         if (mCurrentSyncError == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
                 || mCurrentSyncError
                         == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS) {
-            // TODO(crbug.com/1100279): Implement logic.
+            CoreAccountInfo primaryAccountInfo = IdentityServicesProvider.get()
+                                                         .getIdentityManager(getProfile())
+                                                         .getPrimaryAccountInfo(ConsentLevel.SYNC);
+            if (primaryAccountInfo != null) {
+                SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog(this,
+                        primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
+            }
             return;
         }
     }
@@ -678,7 +685,8 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
 
     /**
      * Called upon completion of an activity started by a previous call to startActivityForResult()
-     * via SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog().
+     * via SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog() or
+     * SyncSettingsUtils.openTrustedVaultRecoverabilityDegradedDialog().
      * @param requestCode Request code of the requested intent.
      * @param resultCode Result code of the requested intent.
      * @param data The data returned by the intent.
@@ -690,6 +698,9 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         // harmless to issue a redundant notifyKeysChanged().
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL) {
             TrustedVaultClient.get().notifyKeysChanged();
+        }
+        if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
+            // TODO(crbug.com/1100279): Broadcast completion via TrustedVaultClient.
         }
     }
 }

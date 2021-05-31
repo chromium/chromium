@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.sync.settings;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -22,6 +23,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -385,6 +387,39 @@ public class SyncSettingsUtils {
     }
 
     /**
+     * Upon promise completion, opens a dialog by starting the intent representing a user action
+     * required for managing a trusted vault.
+     *
+     * @param fragment Fragment to use when starting the dialog.
+     * @param accountInfo Account representing the user.
+     * @param requestCode Arbitrary request code that upon completion will be passed back via
+     *         Fragment.onActivityResult().
+     * @param pendingIntentPromise promise that provides the intent to be started.
+     */
+    private static void openTrustedVaultDialogForPendingIntent(Fragment fragment,
+            CoreAccountInfo accountInfo, int requestCode,
+            Promise<PendingIntent> pendingIntentPromise) {
+        pendingIntentPromise.then(
+                (pendingIntent)
+                        -> {
+                    try {
+                        fragment.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                                requestCode,
+                                /* fillInIntent */ null, /* flagsMask */ 0,
+                                /* flagsValues */ 0, /* extraFlags */ 0,
+                                /* options */ null);
+                    } catch (IntentSender.SendIntentException exception) {
+                        Log.w(TAG, "Error sending trusted vault intent for code ", requestCode,
+                                ": ", exception);
+                    }
+                },
+                (exception) -> {
+                    Log.e(TAG, "Error opening trusted vault dialog for code ", requestCode, ": ",
+                            exception);
+                });
+    }
+
+    /**
      * Displays a UI that allows the user to reauthenticate and retrieve the sync encryption keys
      * from a trusted vault.
      *
@@ -396,24 +431,23 @@ public class SyncSettingsUtils {
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
         ProfileSyncService.get().recordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA.SETTINGS);
-        TrustedVaultClient.get()
-                .createKeyRetrievalIntent(accountInfo)
-                .then(
-                        (pendingIntent)
-                                -> {
-                            try {
-                                fragment.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                                        requestCode,
-                                        /* fillInIntent */ null, /* flagsMask */ 0,
-                                        /* flagsValues */ 0, /* extraFlags */ 0,
-                                        /* options */ null);
-                            } catch (IntentSender.SendIntentException exception) {
-                                Log.w(TAG, "Error sending key retrieval intent: ", exception);
-                            }
-                        },
-                        (exception) -> {
-                            Log.e(TAG, "Error opening key retrieval dialog: ", exception);
-                        });
+        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+                TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
+    }
+
+    /**
+     * Displays a UI that allows the user to improve recoverability of the trusted vault data,
+     * typically involving reauthentication.
+     *
+     * @param fragment Fragment to use when starting the dialog.
+     * @param accountInfo Account representing the user.
+     * @param requestCode Arbitrary request code that upon completion will be passed back via
+     *         Fragment.onActivityResult().
+     */
+    public static void openTrustedVaultRecoverabilityDegradedDialog(
+            Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
+        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+                TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));
     }
 
     /**
