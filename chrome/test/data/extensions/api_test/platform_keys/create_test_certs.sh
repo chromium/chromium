@@ -7,10 +7,12 @@
 # Generates the following trees of certificates:
 #
 #     client_root (self-signed root)
-#     \   \
-#      \   \--> client_1_ca --> client_1 (end-entity)
-#       \
-#        \----> client_2_ca --> client_2 (end-entity)
+#     \   \   \
+#      \   \   \-> client_1_ca --> client_1 (end-entity)
+#       \   \
+#        \   \---> client_2_ca --> client_2 (end-entity)
+#         \
+#          \-----> client_3_ca --> client_3 (end-entity)
 #
 #     root (self-signed root)
 #     \   \
@@ -53,13 +55,20 @@ echo 1000 > out/client_root-serial
 
 touch out/client_root-index.txt
 
+# Generate CA keys
+try openssl genrsa -out "out/client_1_ca.key" 2048
+try openssl genrsa -out "out/client_2_ca.key" 2048
+try openssl ecparam -out out/client_3_ca.key -name prime256v1 -genkey
 
-for i in 1 2
+# Generate client keys
+try openssl genrsa -out "out/client_1.key" 2048
+try openssl genrsa -out "out/client_2.key" 2048
+try openssl ecparam -out out/client_3.key -name prime256v1 -genkey
+
+for i in 1 3
 do
 
-  # Create client_{1,2}_ca
-
-  try openssl genrsa -out "out/client_${i}_ca.key" 2048
+  # Create client_{1,2,3}_ca
 
   COMMON_NAME="Client Cert ${i} CA" \
     ID="client_${i}_ca" \
@@ -83,9 +92,7 @@ do
   touch "out/client_${i}_ca-index.txt"
 
 
-  # Create client_{1,2}
-
-  try openssl genrsa -out "out/client_${i}.key" 2048
+  # Create client_{1,2,3}
 
   COMMON_NAME="Client Cert ${i}" \
     ID="client_${i}" \
@@ -189,6 +196,5 @@ CA_ID=root CN=l1_interm \
 
 CA_ID=l1_interm CN=l2_leaf SAN="DNS:${CN}"\
   try issue_cert l2_leaf leaf_cert_san as_der
-
 
 try rm -rf out

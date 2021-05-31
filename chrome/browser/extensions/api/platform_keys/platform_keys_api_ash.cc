@@ -257,10 +257,6 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
       LOG(ERROR) << "Could not retrieve public key info.";
       continue;
     }
-    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
-      LOG(ERROR) << "Skipping unsupported certificate with non-RSA key.";
-      continue;
-    }
 
     api_pk::Match result_match;
     base::StringPiece der_encoded_cert =
@@ -268,8 +264,21 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    chromeos::platform_keys::BuildWebCryptoRSAAlgorithmDictionary(
-        key_info, &result_match.key_algorithm.additional_properties);
+    switch (key_info.key_type) {
+      case net::X509Certificate::kPublicKeyTypeRSA:
+        chromeos::platform_keys::BuildWebCryptoRSAAlgorithmDictionary(
+            key_info, &result_match.key_algorithm.additional_properties);
+        break;
+      case net::X509Certificate::kPublicKeyTypeECDSA:
+        chromeos::platform_keys::BuildWebCryptoEcdsaAlgorithmDictionary(
+            key_info, &result_match.key_algorithm.additional_properties);
+        break;
+      default:
+        LOG(ERROR) << "Skipping unsupported certificate with key type "
+                   << key_info.key_type;
+        continue;
+    }
+
     result_matches.push_back(std::move(result_match));
   }
   Respond(ArgumentList(

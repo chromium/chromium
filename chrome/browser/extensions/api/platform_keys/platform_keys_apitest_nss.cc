@@ -156,6 +156,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   scoped_refptr<net::X509Certificate> client_cert1_;
   // Imported into system slot.
   scoped_refptr<net::X509Certificate> client_cert2_;
+  // Signed using an elliptic curve (ECDSA) algorithm.
+  // Imported in the same slot as |client_cert1_|.
+  scoped_refptr<net::X509Certificate> client_cert3_;
   const extensions::Extension* extension_;
 
  private:
@@ -219,6 +222,10 @@ class PlatformKeysTest : public PlatformKeysTestBase {
         extension_path(), "client_2.pem", "client_2.pk8",
         test_system_slot()->slot());
     ASSERT_TRUE(client_cert2_.get());
+
+    client_cert3_ = net::ImportClientCertAndKeyFromFile(
+        extension_path(), "client_3.pem", "client_3.pk8", slot.get());
+    ASSERT_TRUE(client_cert3_.get());
   }
 
   void SetupTestCACerts() {
@@ -336,13 +343,14 @@ IN_PROC_BROWSER_TEST_P(UnmanagedPlatformKeysTest, PRE_Basic) {
   RunPreTest();
 }
 
-// At first interactively selects |client_cert1_| and |client_cert2_| to grant
-// permissions and afterwards runs more basic tests.
+// At first interactively selects |client_cert1_|, |client_cert2_| and
+// |client_cert3_| to grant permissions and afterwards runs more basic tests.
 // After the initial two interactive calls, the simulated user does not select
 // any cert.
 IN_PROC_BROWSER_TEST_P(UnmanagedPlatformKeysTest, Basic) {
   net::CertificateList certs;
   certs.push_back(nullptr);
+  certs.push_back(client_cert3_);
   certs.push_back(client_cert2_);
   certs.push_back(client_cert1_);
 
