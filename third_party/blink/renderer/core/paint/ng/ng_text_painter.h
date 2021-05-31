@@ -87,8 +87,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                      unsigned truncation_point,
                      DOMNodeId node_id);
 
-  void PaintEmphasisMarkForCombinedText();
-
   NGTextFragmentPaintInfo fragment_paint_info_;
   const IntRect& visual_rect_;
 };

@@ -333,6 +333,4 @@ void NGTextPainter::ClipDecorationsStripe(float upper,
   DecorationsStripeIntercepts(upper, stripe_width, dilation, text_intercepts);
 }
 
-void NGTextPainter::PaintEmphasisMarkForCombinedText() {}
-
 }  // namespace blink
