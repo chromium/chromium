@@ -80,6 +80,11 @@ bool ModuleInfoKey::operator<(const ModuleInfoKey& mik) const {
          std::tie(mik.module_path, mik.module_size, mik.module_time_date_stamp);
 }
 
+bool ModuleInfoKey::operator==(const ModuleInfoKey& mik) const {
+  return std::tie(module_path, module_size, module_time_date_stamp) ==
+         std::tie(mik.module_path, mik.module_size, mik.module_time_date_stamp);
+}
+
 // ModuleInspectionResult ------------------------------------------------------
 
 ModuleInspectionResult::ModuleInspectionResult() = default;

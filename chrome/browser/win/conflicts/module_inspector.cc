@@ -145,10 +145,12 @@ void ModuleInspector::IncreaseInspectionPriority() {
 }
 
 bool ModuleInspector::IsIdle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return queue_.empty();
 }
 
 void ModuleInspector::OnModuleDatabaseIdle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeUpdateInspectionResultsCache();
 }
 
@@ -199,6 +201,7 @@ void ModuleInspector::OnStartupFinished() {
 
 void ModuleInspector::OnInspectionResultsCacheRead(
     InspectionResultsCache inspection_results_cache) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_after_startup_);
   DCHECK(!inspection_results_cache_read_);
 
@@ -224,6 +227,7 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
 }
 
 void ModuleInspector::StartInspectingModule() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inspection_results_cache_read_);
   DCHECK(!queue_.empty());
 
@@ -299,6 +303,11 @@ void ModuleInspector::OnInspectionFinished(
     const ModuleInfoKey& module_key,
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(https://crbug.com/1213241): Change to DCHECKs once the issue is
+  // resolved.
+  CHECK(!queue_.empty());
+  CHECK(queue_.front() == module_key);
 
   // Pop first, because the callback may want to know if there is any work left
   // to be done, which is caracterized by a non-empty queue.

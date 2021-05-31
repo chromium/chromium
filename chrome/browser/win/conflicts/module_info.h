@@ -26,6 +26,8 @@ struct ModuleInfoKey {
 
   // Less-than operator allowing this object to be used in std::map.
   bool operator<(const ModuleInfoKey& mi) const;
+  // Allows comparing keys in DCHECKs.
+  bool operator==(const ModuleInfoKey& mi) const;
 
   // Full path to the module on disk. Part of the key for a ModuleInfo.
   base::FilePath module_path;
