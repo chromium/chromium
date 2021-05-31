@@ -772,8 +772,8 @@
         assert(this.ui_.directoryTree),
         this.ui_.showConfirmationDialog.bind(this.ui_), this.progressCenter,
         assert(this.fileOperationManager_), assert(this.metadataModel_),
-        assert(this.thumbnailModel_), assert(this.directoryModel_),
-        assert(this.volumeManager_), assert(this.selectionHandler_));
+        assert(this.directoryModel_), assert(this.volumeManager_),
+        assert(this.selectionHandler_));
   }
 
   /**
