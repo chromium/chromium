@@ -83,7 +83,7 @@ class ASH_EXPORT PartialMagnificationController : public ui::EventHandler {
   // to pressing and holding the mouse.
   bool allow_mouse_following_ = false;
 
-  aura::Window* current_root_window_;
+  aura::Window* current_root_window_ = nullptr;
 
   std::unique_ptr<MagnifierGlass> magnifier_glass_;
 
