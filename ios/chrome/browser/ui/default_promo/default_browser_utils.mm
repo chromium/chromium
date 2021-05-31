@@ -217,7 +217,9 @@ bool IsInCTASwitchGroup() {
 }
 
 bool NonModalPromosEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultPromoNonModal);
+  // Default browser isn't enabled until iOS 14.0.1, regardless of flag state.
+  return base::ios::IsRunningOnOrLater(14, 0, 1) &&
+         base::FeatureList::IsEnabled(kDefaultPromoNonModal);
 }
 
 double NonModalPromosTimeout() {
