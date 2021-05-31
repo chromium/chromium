@@ -36,6 +36,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  adjust_inline_size_if_needed) {
     if (parent_space.IsInsideBalancedColumns())
       space_.EnsureRareData()->is_inside_balanced_columns = true;
+    if (parent_space.SideEffectsDisabled())
+      DisableSideEffects();
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -238,6 +240,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   void SetCacheSlot(NGCacheSlot slot) {
     space_.bitfields_.cache_slot = static_cast<unsigned>(slot);
   }
+
+  void DisableSideEffects() { space_.DisableSideEffects(); }
 
   void SetBlockStartAnnotationSpace(LayoutUnit space) {
     if (space)
@@ -476,6 +480,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     NGConstraintSpace copy = other;
     DCHECK(copy.rare_data_);
     copy.rare_data_->block_direction_fragmentation_type = kFragmentNone;
+    return copy;
+  }
+
+  static NGConstraintSpace CloneWithSideEffectsDisabled(
+      const NGConstraintSpace& other) {
+    NGConstraintSpace copy = other;
+    copy.DisableSideEffects();
     return copy;
   }
 

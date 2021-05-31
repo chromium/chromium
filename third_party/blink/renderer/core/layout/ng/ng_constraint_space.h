@@ -438,6 +438,14 @@ class CORE_EXPORT NGConstraintSpace final {
     return static_cast<NGCacheSlot>(bitfields_.cache_slot);
   }
 
+  // Returns true if this layout is for computing purposes, and that it should
+  // just return fragments without updating the |LayoutObject| tree, paint
+  // properties, and other global objects. This is used e.g., when computing
+  // MinMax after layout.
+  bool SideEffectsDisabled() const {
+    return HasRareData() && rare_data_->side_effects_disabled;
+  }
+
   // Some layout modes “stretch” their children to a fixed size (e.g. flex,
   // grid). These flags represented whether a layout needs to produce a
   // fragment that satisfies a fixed constraint in the inline and block
@@ -762,6 +770,7 @@ class CORE_EXPORT NGConstraintSpace final {
     explicit RareData(const NGBfcOffset bfc_offset)
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(kNone)),
+          side_effects_disabled(false),
           is_line_clamp_context(false),
           is_legacy_table_cell(false),
           is_restricted_block_size_table_cell(false),
@@ -779,6 +788,7 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
+          side_effects_disabled(other.side_effects_disabled),
           is_line_clamp_context(other.is_line_clamp_context),
           is_legacy_table_cell(other.is_legacy_table_cell),
           is_restricted_block_size_table_cell(
@@ -1125,6 +1135,8 @@ class CORE_EXPORT NGConstraintSpace final {
 
     unsigned data_union_type : 3;
 
+    unsigned side_effects_disabled : 1;
+
     unsigned is_line_clamp_context : 1;
 
     unsigned is_legacy_table_cell : 1;
@@ -1421,6 +1433,8 @@ class CORE_EXPORT NGConstraintSpace final {
 
     return rare_data_;
   }
+
+  void DisableSideEffects() { EnsureRareData()->side_effects_disabled = true; }
 
   LogicalSize available_size_;
 

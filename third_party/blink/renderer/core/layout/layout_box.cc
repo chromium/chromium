@@ -3281,6 +3281,8 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
 
 void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  // |layout_results_| is particulary critical when |SideEffectsDisabled|.
+  DCHECK(!result->GetConstraintSpaceForCaching().SideEffectsDisabled());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
 
@@ -3316,6 +3318,8 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
       NGFragmentItems::ClearAssociatedFragments(this);
     }
   }
+  // |layout_results_| is particulary critical when |SideEffectsDisabled|.
+  DCHECK(!result->GetConstraintSpaceForCaching().SideEffectsDisabled());
   layout_results_[index] = std::move(result);
   CheckDidAddFragment(*this, fragment);
 

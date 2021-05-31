@@ -685,6 +685,11 @@ void NGBlockNode::FinishLayout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     scoped_refptr<const NGLayoutResult> layout_result) const {
+  // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
+  // properties, and other global states.
+  if (constraint_space.SideEffectsDisabled())
+    return;
+
   // If we abort layout and don't clear the cached layout-result, we can end
   // up in a state where the layout-object tree doesn't match fragment tree
   // referenced by this layout-result.
@@ -798,8 +803,19 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
                                /* depends_on_block_constraints */ false);
     }
 
-    scoped_refptr<const NGLayoutResult> layout_result =
-        Layout(constraint_space);
+    scoped_refptr<const NGLayoutResult> layout_result;
+    if (GetLayoutBox()->NeedsLayout() ||
+        constraint_space.SideEffectsDisabled()) {
+      layout_result = Layout(constraint_space);
+    } else {
+      // If we're computing MinMax after layout, we need to set
+      // |SideEffectsDisabled| so that |Layout| does not update the
+      // |LayoutObject| tree and other global states.
+      NGConstraintSpace side_effects_disabled =
+          NGConstraintSpaceBuilder::CloneWithSideEffectsDisabled(
+              constraint_space);
+      layout_result = Layout(side_effects_disabled);
+    }
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
@@ -1707,19 +1723,23 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     CopyBaselinesFromLegacyLayout(constraint_space, &builder);
     layout_result = builder.ToBoxFragment();
 
-    box_->SetCachedLayoutResult(layout_result);
+    // When |SideEffectsDisabled|, it's not possible to disable side effects
+    // completely for legacy, but at least keep the fragment tree unaffected.
+    if (!constraint_space.SideEffectsDisabled()) {
+      box_->SetCachedLayoutResult(layout_result);
 
-    // If |SetCachedLayoutResult| did not update cached |LayoutResult|,
-    // |NeedsLayout()| flag should not be cleared.
-    if (needed_layout) {
-      if (layout_result != box_->GetCachedLayoutResult()) {
-        // TODO(kojii): If we failed to update CachedLayoutResult for other
-        // reasons, we'd like to review it.
-        NOTREACHED();
-        box_->SetNeedsLayout(layout_invalidation_reason::kUnknown);
+      // If |SetCachedLayoutResult| did not update cached |LayoutResult|,
+      // |NeedsLayout()| flag should not be cleared.
+      if (needed_layout) {
+        if (layout_result != box_->GetCachedLayoutResult()) {
+          // TODO(kojii): If we failed to update CachedLayoutResult for other
+          // reasons, we'd like to review it.
+          NOTREACHED();
+          box_->SetNeedsLayout(layout_invalidation_reason::kUnknown);
+        }
       }
     }
-  } else if (layout_result) {
+  } else if (layout_result && !constraint_space.SideEffectsDisabled()) {
     // OOF-positioned nodes have a two-tier cache, and their layout results
     // must always contain the correct percentage resolution size.
     // See |NGBlockNode::CachedLayoutResultForOutOfFlowPositioned|.
