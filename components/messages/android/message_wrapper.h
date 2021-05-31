@@ -37,6 +37,12 @@ class MessageWrapper {
   void SetTitle(const std::u16string& title);
   std::u16string GetDescription();
   void SetDescription(const std::u16string& description);
+
+  // SetDescriptionMaxLines allows limiting description view to the specified
+  // number of lines. The description will be ellipsized with TruncateAt.END
+  // option.
+  int GetDescriptionMaxLines();
+  void SetDescriptionMaxLines(int max_lines);
   std::u16string GetPrimaryButtonText();
   void SetPrimaryButtonText(const std::u16string& primary_button_text);
   std::u16string GetSecondaryButtonMenuText();

@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
+import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_MAX_LINES;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
@@ -42,6 +43,8 @@ public class MessageBannerViewBinder {
             view.setTitle(model.get(TITLE));
         } else if (propertyKey == DESCRIPTION) {
             view.setDescription(model.get(DESCRIPTION));
+        } else if (propertyKey == DESCRIPTION_MAX_LINES) {
+            view.setDescriptionMaxLines(model.get(DESCRIPTION_MAX_LINES));
         } else if (propertyKey == ICON) {
             view.setIcon(model.get(ICON));
         } else if (propertyKey == ICON_RESOURCE_ID) {

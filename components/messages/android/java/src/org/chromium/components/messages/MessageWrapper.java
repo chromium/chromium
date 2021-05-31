@@ -66,6 +66,16 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    int getDescriptionMaxLines() {
+        return mMessageProperties.get(MessageBannerProperties.DESCRIPTION_MAX_LINES);
+    }
+
+    @CalledByNative
+    void setDescriptionMaxLines(int maxLines) {
+        mMessageProperties.set(MessageBannerProperties.DESCRIPTION_MAX_LINES, maxLines);
+    }
+
+    @CalledByNative
     String getPrimaryButtonText() {
         return mMessageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT);
     }

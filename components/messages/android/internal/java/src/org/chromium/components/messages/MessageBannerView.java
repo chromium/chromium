@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -68,6 +69,11 @@ public class MessageBannerView extends BoundedLinearLayout {
     void setDescription(CharSequence description) {
         mDescription.setVisibility(VISIBLE);
         mDescription.setText(description);
+    }
+
+    void setDescriptionMaxLines(int maxLines) {
+        mDescription.setMaxLines(maxLines);
+        mDescription.setEllipsize(TextUtils.TruncateAt.END);
     }
 
     void setIcon(Drawable icon) {
