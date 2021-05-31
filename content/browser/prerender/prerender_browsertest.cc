@@ -2774,6 +2774,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
+  // TODO(https://crbug.com/1186893): PrerenderHost is not deleted when the
+  // page enters BackForwardCache, though it should be. While this functionality
+  // is not implemented, disable BackForwardCache for testing and wait for the
+  // old RenderFrameHost to be deleted after we navigate away from it.
+  DisableBackForwardCacheForTesting(
+      web_contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   const int host_id = AddSpeculationRules(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
