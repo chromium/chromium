@@ -109,6 +109,17 @@ void WebAppsPublisherHost::UnpauseApps(const std::string& app_id) {
   publisher_helper().UnpauseApps(app_id);
 }
 
+void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
+                                    apps::mojom::IconKeyPtr icon_key,
+                                    apps::mojom::IconType icon_type,
+                                    int32_t size_hint_in_dip,
+                                    bool allow_placeholder_icon,
+                                    LoadIconCallback callback) {
+  publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+                              size_hint_in_dip, allow_placeholder_icon,
+                              std::move(callback));
+}
+
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {

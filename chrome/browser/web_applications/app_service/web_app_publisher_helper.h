@@ -35,6 +35,8 @@ class WebAppPublisherHelper {
     virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
   };
 
+  using LoadIconCallback = base::OnceCallback<void(apps::mojom::IconValuePtr)>;
+
   WebAppPublisherHelper(Profile* profile,
                         apps::mojom::AppType app_type,
                         Delegate* delegate);
@@ -96,6 +98,13 @@ class WebAppPublisherHelper {
   bool IsPaused(const std::string& app_id);
 
   void MaybeRemovePausedApp(const std::string& app_id);
+
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                LoadIconCallback callback);
 
   Profile* profile() { return profile_; }
 

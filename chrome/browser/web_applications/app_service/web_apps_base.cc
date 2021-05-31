@@ -189,16 +189,9 @@ void WebAppsBase::LoadIcon(const std::string& app_id,
                            int32_t size_hint_in_dip,
                            bool allow_placeholder_icon,
                            LoadIconCallback callback) {
-  DCHECK(provider_);
-
-  if (icon_key) {
-    LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
-                       static_cast<IconEffects>(icon_key->icon_effects),
-                       std::move(callback));
-    return;
-  }
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+                              size_hint_in_dip, allow_placeholder_icon,
+                              std::move(callback));
 }
 
 void WebAppsBase::Launch(const std::string& app_id,

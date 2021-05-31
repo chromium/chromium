@@ -49,6 +49,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                              public MediaCaptureDevicesDispatcher::Observer,
                              public apps::AppWebContentsData::Client {
  public:
+  using LoadIconCallback = WebAppPublisherHelper::LoadIconCallback;
+
   explicit WebAppsPublisherHost(Profile* profile);
   WebAppsPublisherHost(const WebAppsPublisherHost&) = delete;
   WebAppsPublisherHost& operator=(const WebAppsPublisherHost&) = delete;
@@ -66,6 +68,12 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   // TODO(crbug.com/1194709): Add these to crosapi::mojom::AppController:
   void PauseApp(const std::string& app_id);
   void UnpauseApps(const std::string& app_id);
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                LoadIconCallback callback);
 
  private:
   void OnReady();

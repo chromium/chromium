@@ -352,6 +352,24 @@ void WebAppPublisherHelper::MaybeRemovePausedApp(const std::string& app_id) {
   paused_apps_.MaybeRemoveApp(app_id);
 }
 
+void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
+                                     apps::mojom::IconKeyPtr icon_key,
+                                     apps::mojom::IconType icon_type,
+                                     int32_t size_hint_in_dip,
+                                     bool allow_placeholder_icon,
+                                     LoadIconCallback callback) {
+  DCHECK(provider_);
+
+  if (icon_key) {
+    LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
+                       static_cast<IconEffects>(icon_key->icon_effects),
+                       std::move(callback));
+    return;
+  }
+  // On failure, we still run the callback, with the zero IconValue.
+  std::move(callback).Run(apps::mojom::IconValue::New());
+}
+
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
 }
