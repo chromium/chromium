@@ -6,6 +6,8 @@ package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -41,6 +43,24 @@ class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
                 || UserPrefs.get(Profile.getLastUsedRegularProfile())
                            .getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
-    // TODO(crbug.com/982018): Save and restore instance state when opening the feeds in normal
-    // Tabs.
+
+    @Nullable
+    @Override
+    protected String restoreInstanceState() {
+        return StartSurfaceUserData.getInstance().restoreFeedInstanceState();
+    }
+
+    @Override
+    protected void saveInstanceState() {
+        String state = mCoordinator.getSavedInstanceStateString();
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(state);
+    }
+
+    public void showFeedSurface() {
+        super.show();
+    }
+
+    public void hideFeedSurface() {
+        super.hide();
+    }
 }

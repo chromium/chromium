@@ -116,7 +116,7 @@ public class StartSurfaceMediatorUnitTest {
     @Mock
     private OmniboxStub mOmniboxStub;
     @Mock
-    private ExploreSurfaceCoordinator.FeedSurfaceCreator mFeedSurfaceCreator;
+    private ExploreSurfaceCoordinator.FeedSurfaceController mFeedSurfaceController;
     @Mock
     private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     @Mock
@@ -1010,7 +1010,8 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
+        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
+                     anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(mFeedSurfaceCoordinator);
         mediator.showOverview(false);
         mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
@@ -1021,14 +1022,17 @@ public class StartSurfaceMediatorUnitTest {
         mediator.hideOverview(true);
         mOverviewModeObserverCaptor.getValue().startedHiding();
         mOverviewModeObserverCaptor.getValue().finishedHiding();
+        verify(mFeedSurfaceController).hideFeedSurface();
         assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
 
         FeedSurfaceCoordinator feedSurfaceCoordinator = mock(FeedSurfaceCoordinator.class);
         assertNotEquals(mFeedSurfaceCoordinator, feedSurfaceCoordinator);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
+        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
+                     anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(feedSurfaceCoordinator);
         mediator.setOverviewState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
+        verify(mFeedSurfaceController).showFeedSurface();
         mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
         assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
@@ -1094,7 +1098,7 @@ public class StartSurfaceMediatorUnitTest {
         verify(mMainTabGridController).showOverview(eq(false));
 
         when(mMainTabGridController.overviewVisible()).thenReturn(true);
-        mediator.initWithNative(mOmniboxStub, mFeedSurfaceCreator, mPrefService);
+        mediator.initWithNative(mOmniboxStub, mFeedSurfaceController, mPrefService);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -1132,7 +1136,8 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean(), anyInt()))
+        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
+                     anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(mFeedSurfaceCoordinator);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
@@ -1154,7 +1159,7 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediatorWithoutInit(mode, excludeMVTiles, hadWarmStart);
         mediator.initWithNative(mOmniboxStub,
-                mode == SurfaceMode.SINGLE_PANE ? mFeedSurfaceCreator : null, mPrefService);
+                mode == SurfaceMode.SINGLE_PANE ? mFeedSurfaceController : null, mPrefService);
         return mediator;
     }
 

@@ -66,7 +66,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
 
     /**
      * Set the header blank for the placeholder.The header blank should be consistent with the
-     * sectionHeaderView of {@link ExploreSurfaceCoordinator.FeedSurfaceCreator#}
+     * sectionHeaderView of {@link ExploreSurfaceCoordinator.FeedSurfaceController#}
      */
     @SuppressLint("InflateParams")
     private void setHeader() {

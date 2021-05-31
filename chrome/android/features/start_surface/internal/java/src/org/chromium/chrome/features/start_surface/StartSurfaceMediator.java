@@ -116,7 +116,7 @@ class StartSurfaceMediator
     static final String FEED_VISIBILITY_CONSISTENCY =
             "Startup.Android.CachedFeedVisibilityConsistency";
     @Nullable
-    private ExploreSurfaceCoordinator.FeedSurfaceCreator mFeedSurfaceCreator;
+    private ExploreSurfaceCoordinator.FeedSurfaceController mFeedSurfaceController;
     @Nullable
     private TabSwitcher.Controller mSecondaryTasksSurfaceController;
     @Nullable
@@ -302,10 +302,10 @@ class StartSurfaceMediator
     }
 
     void initWithNative(@Nullable OmniboxStub omniboxStub,
-            @Nullable ExploreSurfaceCoordinator.FeedSurfaceCreator feedSurfaceCreator,
+            @Nullable ExploreSurfaceCoordinator.FeedSurfaceController feedSurfaceController,
             PrefService prefService) {
         mOmniboxStub = omniboxStub;
-        mFeedSurfaceCreator = feedSurfaceCreator;
+        mFeedSurfaceController = feedSurfaceController;
         if (mPropertyModel != null) {
             assert mOmniboxStub != null;
 
@@ -320,7 +320,7 @@ class StartSurfaceMediator
             if (mController.overviewVisible()) {
                 mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
                 if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                        && mFeedSurfaceCreator != null) {
+                        && mFeedSurfaceController != null) {
                     setExploreSurfaceVisibility(!mIsIncognito);
                 }
             }
@@ -449,7 +449,7 @@ class StartSurfaceMediator
     // setStartSurfaceStateInternal.
     private void setOverviewStateInternal() {
         if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            setExploreSurfaceVisibility(!mIsIncognito && mFeedSurfaceCreator != null);
+            setExploreSurfaceVisibility(!mIsIncognito && mFeedSurfaceController != null);
             boolean hasNormalTab;
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                     && !mTabModelSelector.isTabStateInitialized()) {
@@ -546,11 +546,13 @@ class StartSurfaceMediator
             if (mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)
                     && mPropertyModel.get(FEED_SURFACE_COORDINATOR) == null
                     && !mActivityStateChecker.isFinishingOrDestroyed()
-                    && mFeedSurfaceCreator != null) {
+                    && mFeedSurfaceController != null) {
                 mPropertyModel.set(FEED_SURFACE_COORDINATOR,
-                        mFeedSurfaceCreator.createFeedSurfaceCoordinator(
+                        mFeedSurfaceController.createFeedSurfaceCoordinator(
                                 ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder(),
                                 mLaunchOrigin));
+            } else {
+                showFeedSurfaceCoordinator();
             }
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -656,9 +658,9 @@ class StartSurfaceMediator
             if (mTabModelSelector.getCurrentTab() == null
                     || mTabModelSelector.getCurrentTab().getLaunchType()
                             != TabLaunchType.FROM_START_SURFACE) {
-                // TODO(https://crbug.com/1132852): Destroy FeedSurfaceCoordinator if users don't
-                // navigate back to Start after a while.
                 destroyFeedSurfaceCoordinator();
+            } else {
+                hideFeedSurfaceCoordinator();
             }
             if (mNormalTabModelObserver != null) {
                 if (mNormalTabModel != null) {
@@ -695,6 +697,14 @@ class StartSurfaceMediator
         mPropertyModel.set(FEED_SURFACE_COORDINATOR, null);
     }
 
+    private void hideFeedSurfaceCoordinator() {
+        if (mFeedSurfaceController != null) mFeedSurfaceController.hideFeedSurface();
+    }
+
+    private void showFeedSurfaceCoordinator() {
+        if (mFeedSurfaceController != null) mFeedSurfaceController.showFeedSurface();
+    }
+
     // TODO(crbug.com/982018): turn into onClickMoreTabs() and hide the OnClickListener signature
     // inside. Implements View.OnClickListener, which listens for the more tabs button.
     @Override
@@ -729,7 +739,7 @@ class StartSurfaceMediator
                 && mPropertyModel.get(FEED_SURFACE_COORDINATOR) == null
                 && !mActivityStateChecker.isFinishingOrDestroyed()) {
             mPropertyModel.set(FEED_SURFACE_COORDINATOR,
-                    mFeedSurfaceCreator.createFeedSurfaceCoordinator(
+                    mFeedSurfaceController.createFeedSurfaceCoordinator(
                             ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder(),
                             mLaunchOrigin));
         }

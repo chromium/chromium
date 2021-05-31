@@ -34,20 +34,21 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     private final Activity mActivity;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private final FeedSurfaceCreator mFeedSurfaceCreator;
+    private final FeedSurfaceController mFeedSurfaceController;
     private final Supplier<Tab> mParentTabSupplier;
     private final boolean mHasHeader;
     private final SnackbarManager mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final TabModelSelector mTabModelSelector;
+    private ExploreSurfaceFeedLifecycleManager mExploreSurfaceFeedLifecycleManager;
 
     // mExploreSurfaceNavigationDelegate is lightweight, we keep it across FeedSurfaceCoordinators
     // after creating it during the first show.
     private ExploreSurfaceNavigationDelegate mExploreSurfaceNavigationDelegate;
 
-    /** Interface to create {@link FeedSurfaceCoordinator} */
-    interface FeedSurfaceCreator {
+    /** Interface to control the {@link FeedSurfaceDelegate} */
+    interface FeedSurfaceController {
         /**
          * Creates the {@link FeedSurfaceCoordinator} for the specified mode.
          * @param isInNightMode Whether or not the feed surface is going to display in night mode.
@@ -56,6 +57,12 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
          */
         FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
                 boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin);
+
+        /** Shows the Feeds surface. */
+        void showFeedSurface();
+
+        /** Hides the Feeds surface. */
+        void hideFeedSurface();
     }
 
     /**
@@ -89,7 +96,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
 
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
-        mFeedSurfaceCreator = new FeedSurfaceCreator() {
+        mFeedSurfaceController = new FeedSurfaceController() {
             @Override
             public FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
                     boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin) {
@@ -97,22 +104,38 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                         isPlaceholderShown, bottomSheetController, scrollableContainerDelegate,
                         launchOrigin);
             }
+
+            @Override
+            public void showFeedSurface() {
+                if (mExploreSurfaceFeedLifecycleManager != null) {
+                    mExploreSurfaceFeedLifecycleManager.showFeedSurface();
+                }
+            }
+
+            @Override
+            public void hideFeedSurface() {
+                if (mExploreSurfaceFeedLifecycleManager != null) {
+                    mExploreSurfaceFeedLifecycleManager.hideFeedSurface();
+                }
+            }
         };
     }
 
     /**
-     * Gets the {@link FeedSurfaceCreator}.
-     * @return the {@link FeedSurfaceCreator}.
+     * Gets the {@link FeedSurfaceController}.
+     * @return the {@link FeedSurfaceController}.
      */
-    FeedSurfaceCreator getFeedSurfaceCreator() {
-        return mFeedSurfaceCreator;
+    FeedSurfaceController getFeedSurfaceController() {
+        return mFeedSurfaceController;
     }
 
     // Implements FeedSurfaceDelegate.
     @Override
     public FeedSurfaceLifecycleManager createStreamLifecycleManager(
             Activity activity, FeedSurfaceCoordinator coordinator) {
-        return new ExploreSurfaceFeedLifecycleManager(activity, mHasHeader, coordinator);
+        mExploreSurfaceFeedLifecycleManager =
+                new ExploreSurfaceFeedLifecycleManager(activity, mHasHeader, coordinator);
+        return mExploreSurfaceFeedLifecycleManager;
     }
 
     @Override
