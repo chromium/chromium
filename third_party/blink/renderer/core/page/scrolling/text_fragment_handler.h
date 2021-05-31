@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_HANDLER_H_
 
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
 class LocalFrame;
+class TextFragmentAnchor;
 
 // TextFragmentHandler is responsible for handling text fragment operations
 // on a LocalFrame. Generating text fragment selectors for a selection is

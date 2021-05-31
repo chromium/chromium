@@ -32,6 +32,9 @@ class TextFragmentHandlerTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+    feature_list_.InitAndEnableFeature(
+        shared_highlighting::kSharedHighlightingV2);
   }
 
   void RunAsyncMatchingTasks() {
@@ -98,12 +101,12 @@ class TextFragmentHandlerTest : public SimTest {
     FontFaceSetDocument::From(GetDocument())
         ->addForBinding(script_state, ahem, exception_state);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -147,9 +150,6 @@ TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
 
 TEST_F(TextFragmentHandlerTest,
        ExtractTextFragmentWithWithMultipleTextFragments) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -189,9 +189,6 @@ TEST_F(TextFragmentHandlerTest,
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",
@@ -228,9 +225,6 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,text",
@@ -268,9 +262,6 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=this,is&text=a-,test,page&text=with,some,-content&"
@@ -302,9 +293,6 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,page",
@@ -343,9 +331,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   // Android settings to correctly extract the rect when the page is loaded
   // zoomed in
   WebView().GetPage()->GetSettings().SetViewportEnabled(true);
@@ -395,9 +380,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -448,9 +430,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
 
 TEST_F(TextFragmentHandlerTest,
        ExtractFirstTextFragmentRectMultipleHighlightWithNoFoundText) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=fake&text=test%20page",
@@ -499,9 +478,6 @@ TEST_F(TextFragmentHandlerTest,
 }
 
 TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",

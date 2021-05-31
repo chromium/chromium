@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 
 using LinkGenerationError = shared_highlighting::LinkGenerationError;
@@ -186,7 +187,7 @@ constexpr int kMinWordCount_ = 3;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
-    : selection_frame_(main_frame) {
+    : frame_(main_frame) {
   // Scroll-to-text doesn't support iframes.
   DCHECK(main_frame->IsMainFrame());
 }
@@ -200,10 +201,101 @@ void TextFragmentSelectorGenerator::UpdateSelection(
   if (base::FeatureList::IsEnabled(
           shared_highlighting::kPreemptiveLinkToTextGeneration) &&
       shared_highlighting::ShouldOfferLinkToText(
-          selection_frame_->GetDocument()->Url())) {
+          frame_->GetDocument()->Url())) {
     Reset();
     GenerateSelector();
   }
+}
+
+void TextFragmentSelectorGenerator::RequestSelector(
+    RequestSelectorCallback callback) {
+  DCHECK(callback);
+  if (!base::FeatureList::IsEnabled(
+          shared_highlighting::kPreemptiveLinkToTextGeneration)) {
+    Reset();
+    pending_generate_selector_callback_ = std::move(callback);
+    GenerateSelector();
+  } else {
+    base::UmaHistogramEnumeration(
+        "SharedHighlights.LinkGenerated.StateAtRequest", state_);
+    pending_generate_selector_callback_ = std::move(callback);
+    DCHECK_NE(state_, kNotStarted);
+    if (state_ == kFailure || state_ == kSuccess) {
+      selector_requested_before_ready_ = false;
+      if (state_ == kFailure) {
+        NotifyClientSelectorReady(
+            TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
+      } else {
+        NotifyClientSelectorReady(*selector_);
+      }
+      return;
+    }
+    selector_requested_before_ready_ = true;
+  }
+}
+
+void TextFragmentSelectorGenerator::Reset() {
+  if (finder_)
+    finder_->Cancel();
+
+  generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
+  state_ = kNotStarted;
+  error_.reset();
+  step_ = kExact;
+  max_available_prefix_ = "";
+  max_available_suffix_ = "";
+  max_available_range_start_ = "";
+  max_available_range_end_ = "";
+  num_context_words_ = 0;
+  num_range_words_ = 0;
+  iteration_ = 0;
+  selector_ = nullptr;
+  selector_requested_before_ready_.reset();
+  pending_generate_selector_callback_.Reset();
+}
+
+void TextFragmentSelectorGenerator::ClearSelection() {
+  if (selection_range_) {
+    selection_range_->Dispose();
+    selection_range_ = nullptr;
+  }
+}
+
+void TextFragmentSelectorGenerator::Detach() {
+  Reset();
+  frame_ = nullptr;
+}
+
+void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
+  visitor->Trace(frame_);
+  visitor->Trace(selection_range_);
+  visitor->Trace(finder_);
+}
+
+void TextFragmentSelectorGenerator::DidFindMatch(
+    const EphemeralRangeInFlatTree& match,
+    const TextFragmentAnchorMetrics::Match match_metrics,
+    bool is_unique) {
+  if (is_unique && PlainText(match).StripWhiteSpace().length() ==
+                       PlainText(EphemeralRangeInFlatTree(selection_range_))
+                           .StripWhiteSpace()
+                           .length()) {
+    state_ = kSuccess;
+    ResolveSelectorState();
+  } else {
+    state_ = kNeedsNewCandidate;
+
+    // If already tried exact selector then should continue by adding context.
+    if (step_ == kExact)
+      step_ = kContext;
+    GenerateSelectorCandidate();
+  }
+}
+
+void TextFragmentSelectorGenerator::NoMatchFound() {
+  state_ = kFailure;
+  error_ = LinkGenerationError::kIncorrectSelector;
+  ResolveSelectorState();
 }
 
 void TextFragmentSelectorGenerator::AdjustSelection() {
@@ -287,44 +379,13 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   }
 }
 
-void TextFragmentSelectorGenerator::Cancel() {
-  Reset();
-}
-
-void TextFragmentSelectorGenerator::RequestSelector(
-    RequestSelectorCallback callback) {
-  DCHECK(callback);
-  if (!base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration)) {
-    Reset();
-    pending_generate_selector_callback_ = std::move(callback);
-    GenerateSelector();
-  } else {
-    base::UmaHistogramEnumeration(
-        "SharedHighlights.LinkGenerated.StateAtRequest", state_);
-    pending_generate_selector_callback_ = std::move(callback);
-    DCHECK_NE(state_, kNotStarted);
-    if (state_ == kFailure || state_ == kSuccess) {
-      selector_requested_before_ready_ = false;
-      if (state_ == kFailure) {
-        NotifyClientSelectorReady(
-            TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
-      } else {
-        NotifyClientSelectorReady(*selector_);
-      }
-      return;
-    }
-    selector_requested_before_ready_ = true;
-  }
-}
-
 void TextFragmentSelectorGenerator::GenerateSelector() {
   DCHECK(selection_range_);
 
   selection_range_->OwnerDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
 
-  // Shouldn't continue is selection is empty.
+  // Shouldn't continue if selection is empty.
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
@@ -380,73 +441,64 @@ void TextFragmentSelectorGenerator::RunTextFinder() {
   iteration_++;
   // |FindMatch| will call |DidFindMatch| indicating if the match was unique.
   finder_ = MakeGarbageCollected<TextFragmentFinder>(
-      *this, *selector_, selection_frame_->GetDocument(),
+      *this, *selector_, frame_->GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kAsynchronous);
   finder_->FindMatch();
 }
 
-void TextFragmentSelectorGenerator::DidFindMatch(
-    const EphemeralRangeInFlatTree& match,
-    const TextFragmentAnchorMetrics::Match match_metrics,
-    bool is_unique) {
-  if (is_unique && PlainText(match).StripWhiteSpace().length() ==
-                       PlainText(EphemeralRangeInFlatTree(selection_range_))
-                           .StripWhiteSpace()
-                           .length()) {
-    state_ = kSuccess;
-    ResolveSelectorState();
-  } else {
-    state_ = kNeedsNewCandidate;
+String TextFragmentSelectorGenerator::GetPreviousTextBlock(
+    const Position& prefix_end_position) {
+  Node* prefix_end = prefix_end_position.ComputeContainerNode();
+  unsigned prefix_end_offset =
+      prefix_end_position.ComputeOffsetInContainerNode();
 
-    // If already tried exact selector then should continue by adding context.
-    if (step_ == kExact)
-      step_ = kContext;
-    GenerateSelectorCandidate();
+  // If given position point to the first visible text in its containiner node,
+  // use the preceding visible node for the suffix.
+  if (IsFirstVisiblePosition(prefix_end, prefix_end_offset)) {
+    prefix_end = BackwardNonEmptyVisibleTextNode(
+        FlatTreeTraversal::Previous(*prefix_end));
+
+    if (!prefix_end)
+      return "";
+    prefix_end_offset = prefix_end->textContent().length();
   }
+
+  // The furthest node within same block without crossing block boundaries would
+  // be the suffix end.
+  Node* prefix_start = LastVisibleTextNodeWithinBlock(prefix_end);
+  if (!prefix_start)
+    return "";
+
+  auto range_start = Position(prefix_start, 0);
+  auto range_end = Position(prefix_end, prefix_end_offset);
+  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
 }
 
-void TextFragmentSelectorGenerator::NoMatchFound() {
-  state_ = kFailure;
-  error_ = LinkGenerationError::kIncorrectSelector;
-  ResolveSelectorState();
-}
+String TextFragmentSelectorGenerator::GetNextTextBlock(
+    const Position& suffix_start_position) {
+  Node* suffix_start = suffix_start_position.ComputeContainerNode();
+  unsigned suffix_start_offset =
+      suffix_start_position.ComputeOffsetInContainerNode();
 
-void TextFragmentSelectorGenerator::OnSelectorReady(
-    const TextFragmentSelector& selector) {
-  // Check that frame is not deattched and generator is still valid.
-  DCHECK(selection_frame_);
-
-  RecordAllMetrics(selector);
-  if (pending_generate_selector_callback_) {
-    NotifyClientSelectorReady(selector);
+  // If given position point to the last visible text in its containiner node,
+  // use the following visible node for the suffix.
+  if (IsLastVisiblePosition(suffix_start, suffix_start_offset)) {
+    suffix_start = FirstNonEmptyVisibleTextNode(
+        FlatTreeTraversal::NextSkippingChildren(*suffix_start));
+    suffix_start_offset = 0;
   }
-}
+  if (!suffix_start)
+    return "";
 
-void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
-    const TextFragmentSelector& selector) {
-  DCHECK(pending_generate_selector_callback_);
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration))
-    RecordPreemptiveGenerationMetrics(selector);
-  std::move(pending_generate_selector_callback_).Run(selector.ToString());
-}
+  // The furthest node within same block without crossing block boundaries would
+  // be the suffix end.
+  Node* suffix_end = FirstVisibleTextNodeWithinBlock(suffix_start);
+  if (!suffix_end)
+    return "";
 
-void TextFragmentSelectorGenerator::ClearSelection() {
-  if (selection_range_) {
-    selection_range_->Dispose();
-    selection_range_ = nullptr;
-  }
-}
-
-void TextFragmentSelectorGenerator::Detach() {
-  Reset();
-  selection_frame_ = nullptr;
-}
-
-void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
-  visitor->Trace(selection_frame_);
-  visitor->Trace(selection_range_);
-  visitor->Trace(finder_);
+  auto range_start = Position(suffix_start, suffix_start_offset);
+  auto range_end = Position(suffix_end, suffix_end->textContent().length());
+  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
 }
 
 void TextFragmentSelectorGenerator::GenerateExactSelector() {
@@ -588,89 +640,14 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   state_ = kTestCandidate;
 }
 
-String TextFragmentSelectorGenerator::GetPreviousTextBlock(
-    const Position& prefix_end_position) {
-  Node* prefix_end = prefix_end_position.ComputeContainerNode();
-  unsigned prefix_end_offset =
-      prefix_end_position.ComputeOffsetInContainerNode();
-
-  // If given position point to the first visible text in its containiner node,
-  // use the preceding visible node for the suffix.
-  if (IsFirstVisiblePosition(prefix_end, prefix_end_offset)) {
-    prefix_end = BackwardNonEmptyVisibleTextNode(
-        FlatTreeTraversal::Previous(*prefix_end));
-
-    if (!prefix_end)
-      return "";
-    prefix_end_offset = prefix_end->textContent().length();
-  }
-
-  // The furthest node within same block without crossing block boundaries would
-  // be the suffix end.
-  Node* prefix_start = LastVisibleTextNodeWithinBlock(prefix_end);
-  if (!prefix_start)
-    return "";
-
-  auto range_start = Position(prefix_start, 0);
-  auto range_end = Position(prefix_end, prefix_end_offset);
-  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
-}
-
-String TextFragmentSelectorGenerator::GetNextTextBlock(
-    const Position& suffix_start_position) {
-  Node* suffix_start = suffix_start_position.ComputeContainerNode();
-  unsigned suffix_start_offset =
-      suffix_start_position.ComputeOffsetInContainerNode();
-
-  // If given position point to the last visible text in its containiner node,
-  // use the following visible node for the suffix.
-  if (IsLastVisiblePosition(suffix_start, suffix_start_offset)) {
-    suffix_start = FirstNonEmptyVisibleTextNode(
-        FlatTreeTraversal::NextSkippingChildren(*suffix_start));
-    suffix_start_offset = 0;
-  }
-  if (!suffix_start)
-    return "";
-
-  // The furthest node within same block without crossing block boundaries would
-  // be the suffix end.
-  Node* suffix_end = FirstVisibleTextNodeWithinBlock(suffix_start);
-  if (!suffix_end)
-    return "";
-
-  auto range_start = Position(suffix_start, suffix_start_offset);
-  auto range_end = Position(suffix_end, suffix_end->textContent().length());
-  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
-}
-
-void TextFragmentSelectorGenerator::Reset() {
-  if (finder_)
-    finder_->Cancel();
-
-  generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
-  state_ = kNotStarted;
-  error_.reset();
-  step_ = kExact;
-  max_available_prefix_ = "";
-  max_available_suffix_ = "";
-  max_available_range_start_ = "";
-  max_available_range_end_ = "";
-  num_context_words_ = 0;
-  num_range_words_ = 0;
-  iteration_ = 0;
-  selector_ = nullptr;
-  selector_requested_before_ready_.reset();
-  pending_generate_selector_callback_.Reset();
-}
-
 void TextFragmentSelectorGenerator::RecordAllMetrics(
     const TextFragmentSelector& selector) {
   UMA_HISTOGRAM_BOOLEAN(
       "SharedHighlights.LinkGenerated",
       selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
 
-  ukm::UkmRecorder* recorder = selection_frame_->GetDocument()->UkmRecorder();
-  ukm::SourceId source_id = selection_frame_->GetDocument()->UkmSourceID();
+  ukm::UkmRecorder* recorder = frame_->GetDocument()->UkmRecorder();
+  ukm::SourceId source_id = frame_->GetDocument()->UkmSourceID();
 
   if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
     UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
@@ -723,6 +700,26 @@ void TextFragmentSelectorGenerator::RecordPreemptiveGenerationMetrics(
     base::UmaHistogramEnumeration(
         "SharedHighlights.LinkGenerated.Error.Requested", error);
   }
+}
+
+void TextFragmentSelectorGenerator::OnSelectorReady(
+    const TextFragmentSelector& selector) {
+  // Check that frame is not deattched and generator is still valid.
+  DCHECK(frame_);
+
+  RecordAllMetrics(selector);
+  if (pending_generate_selector_callback_) {
+    NotifyClientSelectorReady(selector);
+  }
+}
+
+void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
+    const TextFragmentSelector& selector) {
+  DCHECK(pending_generate_selector_callback_);
+  if (base::FeatureList::IsEnabled(
+          shared_highlighting::kPreemptiveLinkToTextGeneration))
+    RecordPreemptiveGenerationMetrics(selector);
+  std::move(pending_generate_selector_callback_).Run(selector.ToString());
 }
 
 }  // namespace blink

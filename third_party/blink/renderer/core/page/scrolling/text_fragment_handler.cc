@@ -34,7 +34,7 @@ TextFragmentHandler::GetTextFragmentSelectorGenerator() {
 }
 
 void TextFragmentHandler::Cancel() {
-  GetTextFragmentSelectorGenerator()->Cancel();
+  GetTextFragmentSelectorGenerator()->Reset();
 }
 
 void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {

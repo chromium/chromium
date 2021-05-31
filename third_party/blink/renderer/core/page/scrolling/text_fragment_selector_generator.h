@@ -10,52 +10,46 @@
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
-using RequestSelectorCallback = base::OnceCallback<void(const WTF::String&)>;
-
 class LocalFrame;
+class TextFragmentSelector;
 
-// TextFragmentSelectorGenerator is responsible for generating text fragment
-// selectors for the user selected text according to spec in
+// TextFragmentSelectorGenerator is used to generate a text directive selector
+// string, given a range of DOM in a document. The "selector string" is the
+// portion of a "scroll-to-text" URL that follows `#:~:text=`. For more
+// details, see:
 // https://github.com/WICG/scroll-to-text-fragment#proposed-solution.
-// Generated selectors would be later used to highlight the same
-// text if successfully parsed by |TextFragmentAnchor |. Generation will be
-// triggered when users request "link to text" for the selected text.
 //
-// TextFragmentSelectorGenerator generates candidate selectors and tries it
-// against the page content to ensure the correct and unique match. Repeats the
-// process adding context/range to the selector as necessary until the correct
-// match is uniquely identified or no new context/range can be added.
+// TextFragmentSelectorGenerator works by starting with a candidate selector
+// and repeatedly trying it against the page content to ensure the correct and
+// unique match. While we don't have a unique match, we repeatedly adding
+// context/range to the selector until the correct match is uniquely identified
+// or no new context/range can be added.
 class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
       public TextFragmentFinder::Client {
+  using RequestSelectorCallback = base::OnceCallback<void(const WTF::String&)>;
+
  public:
   explicit TextFragmentSelectorGenerator(LocalFrame* main_frame);
 
-  // Sets the frame and range of the current selection.
+  // Sets range for which a selector will be generated when RequestSelector()
+  // is called.
   void UpdateSelection(const EphemeralRangeInFlatTree& selection_range);
 
-  // Adjust the selection start/end to a valid position. That includes skipping
-  // non text start/end nodes and extending selection from start and end to
-  // contain full words.
-  void AdjustSelection();
-
-  // blink::mojom::blink::TextFragmentSelectorProducer interface
-  void Cancel();
-
-  // Requests selector for current selection.
+  // Requests selector for current selection range specified in
+  // UpdateSelection. Will be generated asynchronously and returned as a string
+  // in the callback. The returned string is the result of
+  // TextFragmentSelector::ToString(), i.e. the part that follows "#:~:text="
+  // in the URL.
   void RequestSelector(RequestSelectorCallback callback);
 
-  // TextFragmentFinder::Client interface
-  void DidFindMatch(const EphemeralRangeInFlatTree& match,
-                    const TextFragmentAnchorMetrics::Match match_metrics,
-                    bool is_unique) override;
-
-  void NoMatchFound() override;
+  // Resets generator state to initial values and cancels any existing async
+  // tasks.
+  void Reset();
 
   // Wrappers for tests.
   String GetPreviousTextBlockForTesting(const Position& position) {
@@ -68,14 +62,15 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     pending_generate_selector_callback_ = std::move(callback);
   }
 
-  // Releases members if necessary.
+  // Called when the frame is detached. Releases members if necessary.
   void ClearSelection();
 
+  // Called when the document is detached.
   void Detach();
 
   void Trace(Visitor*) const;
 
-  LocalFrame* GetFrame() { return selection_frame_; }
+  LocalFrame* GetFrame() { return frame_; }
 
  private:
   // Used for determining the next step of selector generation.
@@ -103,6 +98,17 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     kMaxValue = kSuccess
   };
 
+  // TextFragmentFinder::Client interface
+  void DidFindMatch(const EphemeralRangeInFlatTree& match,
+                    const TextFragmentAnchorMetrics::Match match_metrics,
+                    bool is_unique) override;
+  void NoMatchFound() override;
+
+  // Adjust the selection start/end to a valid position. That includes skipping
+  // non text start/end nodes and extending selection from start and end to
+  // contain full words.
+  void AdjustSelection();
+
   // Generates selector for current selection.
   void GenerateSelector();
 
@@ -123,18 +129,16 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void ExtendRangeSelector();
   void ExtendContext();
 
-  void Reset();
-
   void RecordAllMetrics(const TextFragmentSelector& selector);
   void RecordPreemptiveGenerationMetrics(const TextFragmentSelector& selector);
 
   // Called when selector generation is complete.
   void OnSelectorReady(const TextFragmentSelector& selector);
 
-  // Called to notify clients of the result of |GenerateSelector|.
+  // Called to notify clients of the result of |RequestSelector|.
   void NotifyClientSelectorReady(const TextFragmentSelector& selector);
 
-  Member<LocalFrame> selection_frame_;
+  Member<LocalFrame> frame_;
   Member<Range> selection_range_;
   std::unique_ptr<TextFragmentSelector> selector_;
 
