@@ -347,6 +347,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//ui/strings:ui_strings_grit",
     "//url",
   ]
 }

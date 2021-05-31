@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/ios/browser/features.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -23,8 +24,10 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::Omnibox;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
 
@@ -67,6 +70,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(signin::kSimplifySignOutIOS);
+  config.features_enabled.push_back(signin::kMobileIdentityConsistency);
   return config;
 }
 
@@ -222,8 +226,8 @@ id<GREYMatcher> NoBookmarksLabel() {
                            closeButton:YES];
 
   // Closes the settings.
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
   [SigninEarlGrey verifySignedOut];
 }
 
@@ -264,7 +268,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 // URL.
 // TODO(crbug.com/1166148) This test needs to be moved back into
 // accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
-- (void)testRemoveInterruptSignOutConfirmation {
+- (void)testInterruptDuringSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -280,7 +284,45 @@ id<GREYMatcher> NoBookmarksLabel() {
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   [ChromeEarlGrey simulateExternalAppURLOpening];
-  // Verifies we are still signed in.
+  // Verifies that the user is signed in and Settings have been dismissed.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::OmniboxContainingText("example.com")];
+}
+
+// Tests that opening and closing the sign-out confirmation dialog does
+// not affect the user's sign-in state.
+- (void)testDismissSignOutConfirmationTwice {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Close the dialog.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+
+  // Close the dialog.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Verify that the user is still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
