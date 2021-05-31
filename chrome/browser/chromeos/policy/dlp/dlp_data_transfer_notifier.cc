@@ -139,7 +139,9 @@ void DlpDataTransferNotifier::CloseWidget(views::Widget* widget,
 }
 
 void DlpDataTransferNotifier::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, widget_.get());
+  if (widget != widget_.get())
+    return;
+
   widget_->RemoveObserver(this);
   widget_.reset();
   widget_closing_timer_.Stop();
