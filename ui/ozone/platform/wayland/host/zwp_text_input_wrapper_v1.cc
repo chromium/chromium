@@ -199,8 +199,8 @@ void ZWPTextInputWrapperV1::OnDeleteSurroundingText(
   }
   base::UTF8ToUTF16AndAdjustOffsets(wti->text_for_surrounding_text_,
                                     &offsets_for_adjustment);
-  if (offsets_for_adjustment[0] != std::u16string::npos ||
-      offsets_for_adjustment[1] != std::u16string::npos) {
+  if (offsets_for_adjustment[0] == std::u16string::npos ||
+      offsets_for_adjustment[1] == std::u16string::npos) {
     LOG(DFATAL) << "The selection range for surrounding text is invalid.";
     return;
   }
