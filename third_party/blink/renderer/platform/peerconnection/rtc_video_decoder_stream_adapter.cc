@@ -31,6 +31,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_fallback_recorder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -72,38 +73,6 @@ constexpr int32_t kMaxPendingBuffers = 8;
 // software decoding.  It indicates that (a) reset never completed, (b) init
 // never completed, or (c) we're hopelessly behind.
 constexpr int32_t kAbsoluteMaxPendingBuffers = 32;
-
-// Map webrtc::SdpVideoFormat to a guess for media::VideoCodecProfile.
-media::VideoCodecProfile GuessVideoCodecProfile(
-    const webrtc::SdpVideoFormat& format) {
-  const webrtc::VideoCodecType video_codec_type =
-      webrtc::PayloadStringToCodecType(format.name);
-  switch (video_codec_type) {
-    case webrtc::kVideoCodecAV1:
-      return media::AV1PROFILE_PROFILE_MAIN;
-    case webrtc::kVideoCodecVP8:
-      return media::VP8PROFILE_ANY;
-    case webrtc::kVideoCodecVP9: {
-      const webrtc::VP9Profile vp9_profile =
-          webrtc::ParseSdpForVP9Profile(format.parameters)
-              .value_or(webrtc::VP9Profile::kProfile0);
-      switch (vp9_profile) {
-        case webrtc::VP9Profile::kProfile2:
-          return media::VP9PROFILE_PROFILE2;
-        case webrtc::VP9Profile::kProfile1:
-          return media::VP9PROFILE_PROFILE1;
-        case webrtc::VP9Profile::kProfile0:
-        default:
-          return media::VP9PROFILE_PROFILE0;
-      }
-      return media::VP9PROFILE_PROFILE0;
-    }
-    case webrtc::kVideoCodecH264:
-      return media::H264PROFILE_BASELINE;
-    default:
-      return media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  }
-}
 
 void RecordInitializationLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Media.RTCVideoDecoderInitializationLatencyMs",
@@ -242,7 +211,7 @@ RTCVideoDecoderStreamAdapter::Create(
   // TODO(sandersd): Predict size from level.
   media::VideoDecoderConfig config(
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name)),
-      GuessVideoCodecProfile(format),
+      WebRtcVideoFormatToMediaVideoCodecProfile(format),
       media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
       media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
       kDefaultSize, media::EmptyExtraData(),
@@ -341,9 +310,10 @@ void RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked() {
 
   UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoDecoderInitDecodeSuccess", !has_error_);
   if (!has_error_) {
-    UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderProfile",
-                              GuessVideoCodecProfile(format_),
-                              media::VIDEO_CODEC_PROFILE_MAX + 1);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Media.RTCVideoDecoderProfile",
+        WebRtcVideoFormatToMediaVideoCodecProfile(format_),
+        media::VIDEO_CODEC_PROFILE_MAX + 1);
   }
 }
 
@@ -354,23 +324,18 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  // Hardware VP9 decoders don't handle more than one spatial layer. Fall back
-  // to software decoding. See https://crbug.com/webrtc/9304.
+  // Fall back to software decoding if there's no support for VP9 spatial
+  // layers. See https://crbug.com/webrtc/9304.
+  // TODO(chromium:1187565): Update RTCVideoDecoderFactory::QueryCodecSupport()
+  // if RTCVideoDecoderStream is changed to handle SW decoding and not return
+  // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
   if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
-      input_image.SpatialIndex().value_or(0) > 0) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
-      DLOG(ERROR) << __func__ << " multiple spatial layers.";
-      RecordRTCVideoDecoderFallbackReason(
-          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
-#else
+      input_image.SpatialIndex().value_or(0) > 0 &&
+      !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
     DLOG(ERROR) << __func__ << " multiple spatial layers.";
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   if (missing_frames) {

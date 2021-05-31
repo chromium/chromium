@@ -4,7 +4,31 @@
 
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
+
 namespace blink {
+namespace {
+struct ScalabilityModeSpatialLayers {
+  const char* name;
+  int spatial_layers;
+};
+
+constexpr ScalabilityModeSpatialLayers kSvcSpatialLayers[] = {
+    {"L1T2", 1},           {"L1T3", 1},           {"L2T1", 2},
+    {"L2T2", 2},           {"L2T3", 2},           {"L2T1h", 2},
+    {"L2T2h", 2},          {"L2T3h", 2},          {"S2T1", 2},
+    {"S2T2", 2},           {"S2T3", 2},           {"S2T1h", 2},
+    {"S2T2h", 2},          {"S2T3h", 2},          {"L3T1", 3},
+    {"L3T2", 3},           {"L3T3", 3},           {"S3T1", 3},
+    {"S3T2", 3},           {"S3T3", 3},           {"S3T1h", 3},
+    {"S3T2h", 3},          {"S3T3h", 3},          {"L2T2_KEY", 3},
+    {"L2T2_KEY_SHIFT", 3}, {"L2T3_KEY", 3},       {"L2T3_KEY_SHIFT", 3},
+    {"L3T2_KEY", 3},       {"L3T2_KEY_SHIFT", 3}, {"L3T3_KEY", 3},
+};
+
+}  // namespace
 
 media::VideoRotation WebRtcToMediaVideoRotation(
     webrtc::VideoRotation rotation) {
@@ -33,6 +57,58 @@ media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
       return media::kCodecH264;
     default:
       return media::kUnknownVideoCodec;
+  }
+}
+
+media::VideoCodecProfile WebRtcVideoFormatToMediaVideoCodecProfile(
+    const webrtc::SdpVideoFormat& format) {
+  const webrtc::VideoCodecType video_codec_type =
+      webrtc::PayloadStringToCodecType(format.name);
+  switch (video_codec_type) {
+    case webrtc::kVideoCodecAV1:
+      return media::AV1PROFILE_PROFILE_MAIN;
+    case webrtc::kVideoCodecVP8:
+      return media::VP8PROFILE_ANY;
+    case webrtc::kVideoCodecVP9: {
+      const absl::optional<webrtc::VP9Profile> vp9_profile =
+          webrtc::ParseSdpForVP9Profile(format.parameters);
+      // The return value is absl::nullopt if the profile-id is specified
+      // but its value is invalid.
+      if (!vp9_profile) {
+        return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+      switch (*vp9_profile) {
+        case webrtc::VP9Profile::kProfile2:
+          return media::VP9PROFILE_PROFILE2;
+        case webrtc::VP9Profile::kProfile1:
+          return media::VP9PROFILE_PROFILE1;
+        case webrtc::VP9Profile::kProfile0:
+        default:
+          return media::VP9PROFILE_PROFILE0;
+      }
+    }
+    case webrtc::kVideoCodecH264: {
+      const absl::optional<webrtc::H264ProfileLevelId> h264_profile_level_id =
+          webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
+      // The return value is absl::nullopt if the profile-level-id is specified
+      // but its value is invalid.
+      if (!h264_profile_level_id) {
+        return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+      switch (h264_profile_level_id->profile) {
+        case webrtc::H264Profile::kProfileMain:
+          return media::H264PROFILE_MAIN;
+        case webrtc::H264Profile::kProfileConstrainedHigh:
+        case webrtc::H264Profile::kProfileHigh:
+          return media::H264PROFILE_HIGH;
+        case webrtc::H264Profile::kProfileConstrainedBaseline:
+        case webrtc::H264Profile::kProfileBaseline:
+        default:
+          return media::H264PROFILE_BASELINE;
+      }
+    }
+    default:
+      return media::VIDEO_CODEC_PROFILE_UNKNOWN;
   }
 }
 
@@ -183,6 +259,16 @@ media::VideoColorSpace WebRtcToMediaVideoColorSpace(
   }
 
   return media::VideoColorSpace(primaries, transfer, matrix, range);
+}
+
+absl::optional<int> WebRtcScalabilityModeSpatialLayers(
+    const std::string& scalability_mode) {
+  for (const auto& entry : kSvcSpatialLayers) {
+    if (entry.name == scalability_mode) {
+      return entry.spatial_layers;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace blink

@@ -39,6 +39,10 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
 
+  webrtc::VideoDecoderFactory::CodecSupport QueryCodecSupport(
+      const webrtc::SdpVideoFormat& format,
+      absl::optional<std::string> scalability_mode) const override;
+
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
   media::GpuVideoAcceleratorFactories* gpu_factories_;

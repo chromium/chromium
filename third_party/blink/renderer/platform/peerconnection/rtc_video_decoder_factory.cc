@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -18,6 +19,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_stream_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/media/base/h264_profile_level_id.h"
 #include "third_party/webrtc/media/base/media_constants.h"
 #include "third_party/webrtc/media/base/vp9_profile.h"
@@ -260,6 +262,77 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
 
   MapBaselineProfile(&supported_formats);
   return supported_formats;
+}
+
+webrtc::VideoDecoderFactory::CodecSupport
+RTCVideoDecoderFactory::QueryCodecSupport(
+    const webrtc::SdpVideoFormat& format,
+    absl::optional<std::string> scalability_mode) const {
+  media::VideoCodec codec =
+      WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
+  if (scalability_mode) {
+    absl::optional<int> spatial_layers =
+        WebRtcScalabilityModeSpatialLayers(*scalability_mode);
+
+    // Check that the scalability mode was correctly parsed and that the
+    // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
+    // doesn't support spatial layers).
+    if (!spatial_layers ||
+        (codec != media::kCodecVP8 && codec != media::kCodecVP9 &&
+         codec != media::kCodecAV1) ||
+        (codec == media::kCodecVP8 && *spatial_layers > 1)) {
+      // Ivalid scalability_mode, return unsupported.
+      return {false, false};
+    }
+    DCHECK(spatial_layers);
+    // Most HW decoders cannot handle spatial layers, so return false if the
+    // configuration contains spatial layers unless we explicitly know that the
+    // HW decoder can handle spatial layers.
+    if (codec == media::kCodecVP9 && *spatial_layers > 1 &&
+        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
+      return {false, false};
+    }
+  }
+
+  CheckAndWaitDecoderSupportStatusIfNeeded();
+
+  media::VideoCodecProfile codec_profile =
+      WebRtcVideoFormatToMediaVideoCodecProfile(format);
+  media::VideoDecoderConfig config(
+      codec, codec_profile, media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+      media::VideoColorSpace(), media::kNoTransformation, kDefaultSize,
+      gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
+      media::EncryptionScheme::kUnencrypted);
+
+  webrtc::VideoDecoderFactory::CodecSupport codec_support;
+  // Check gpu_factories for powerEfficient.
+  if (gpu_factories_) {
+    for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
+      if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
+          media::GpuVideoAcceleratorFactories::Supported::kTrue) {
+        codec_support.is_power_efficient = true;
+      }
+    }
+  }
+
+  // The codec must be supported if it's power efficient.
+  codec_support.is_supported = codec_support.is_power_efficient;
+
+  // RtcDecoderStreamAdapter supports all codecs with HW support and potentially
+  // a few codecs in SW.
+  if (!codec_support.is_supported &&
+      base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC)) {
+    media::SupportedVideoDecoderConfigs supported_decoder_factory_configs =
+        decoder_factory_->GetSupportedVideoDecoderConfigsForWebRTC();
+    for (auto& supported_config : supported_decoder_factory_configs) {
+      if (supported_config.Matches(config)) {
+        codec_support.is_supported = true;
+        break;
+      }
+    }
+  }
+
+  return codec_support;
 }
 
 RTCVideoDecoderFactory::~RTCVideoDecoderFactory() {

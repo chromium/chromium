@@ -12,6 +12,7 @@
 #include "third_party/webrtc/api/video/color_space.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/api/video/video_rotation.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace blink {
 
@@ -24,8 +25,15 @@ WebRtcToMediaVideoRotation(webrtc::VideoRotation rotation);
 media::VideoCodec PLATFORM_EXPORT
 WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec);
 
+// Map webrtc::SdpVideoFormat to the same or closest media::VideoCodecProfile.
+media::VideoCodecProfile PLATFORM_EXPORT
+WebRtcVideoFormatToMediaVideoCodecProfile(const webrtc::SdpVideoFormat& format);
+
 media::VideoColorSpace PLATFORM_EXPORT
 WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);
+
+absl::optional<int> PLATFORM_EXPORT
+WebRtcScalabilityModeSpatialLayers(const std::string& scalability_mode);
 
 }  // namespace blink
 

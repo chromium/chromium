@@ -98,36 +98,6 @@ DecoderCounter* GetDecoderCounter() {
   return s_counter.get();
 }
 
-// Map webrtc::SdpVideoFormat to a guess for media::VideoCodecProfile.
-media::VideoCodecProfile GuessVideoCodecProfile(
-    const webrtc::SdpVideoFormat& format) {
-  const webrtc::VideoCodecType video_codec_type =
-      webrtc::PayloadStringToCodecType(format.name);
-  switch (video_codec_type) {
-    case webrtc::kVideoCodecVP8:
-      return media::VP8PROFILE_ANY;
-    case webrtc::kVideoCodecVP9: {
-      const webrtc::VP9Profile vp9_profile =
-          webrtc::ParseSdpForVP9Profile(format.parameters)
-              .value_or(webrtc::VP9Profile::kProfile0);
-      switch (vp9_profile) {
-        case webrtc::VP9Profile::kProfile2:
-          return media::VP9PROFILE_PROFILE2;
-        case webrtc::VP9Profile::kProfile1:
-          return media::VP9PROFILE_PROFILE1;
-        case webrtc::VP9Profile::kProfile0:
-        default:
-          return media::VP9PROFILE_PROFILE0;
-      }
-      return media::VP9PROFILE_PROFILE0;
-    }
-    case webrtc::kVideoCodecH264:
-      return media::H264PROFILE_BASELINE;
-    default:
-      return media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  }
-}
-
 void FinishWait(base::WaitableEvent* waiter, bool* result_out, bool result) {
   DVLOG(3) << __func__ << "(" << result << ")";
   *result_out = result;
@@ -186,7 +156,7 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
   // TODO(sandersd): Predict size from level.
   media::VideoDecoderConfig config(
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name)),
-      GuessVideoCodecProfile(format),
+      WebRtcVideoFormatToMediaVideoCodecProfile(format),
       media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
       media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
       kDefaultSize, media::EmptyExtraData(),
@@ -283,9 +253,10 @@ int32_t RTCVideoDecoderAdapter::InitDecode(
 
   UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoDecoderInitDecodeSuccess", !has_error_);
   if (!has_error_) {
-    UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderProfile",
-                              GuessVideoCodecProfile(format_),
-                              media::VIDEO_CODEC_PROFILE_MAX + 1);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Media.RTCVideoDecoderProfile",
+        WebRtcVideoFormatToMediaVideoCodecProfile(format_),
+        media::VIDEO_CODEC_PROFILE_MAX + 1);
   }
   return has_error_ ? WEBRTC_VIDEO_CODEC_UNINITIALIZED : WEBRTC_VIDEO_CODEC_OK;
 }
@@ -324,21 +295,14 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     }
   }
 
-  // Hardware VP9 decoders don't handle more than one spatial layer. Fall back
-  // to software decoding. See https://crbug.com/webrtc/9304.
+  // Fall back to software decoding if there's no support for VP9 spatial
+  // layers. See https://crbug.com/webrtc/9304.
   if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
-      input_image.SpatialIndex().value_or(0) > 0) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
-      RecordRTCVideoDecoderFallbackReason(
-          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-    }
-#else
+      input_image.SpatialIndex().value_or(0) > 0 &&
+      !Vp9HwSupportForSpatialLayers()) {
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   if (missing_frames) {
@@ -690,6 +654,17 @@ void RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting() {
 // static
 void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
   GetDecoderCounter()->DecrementCount();
+}
+
+// static
+bool RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() {
+  // Most hardware VP9 decoders don't handle more than one spatial layer.
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+    return true;
+  }
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
 }
 
 }  // namespace blink
