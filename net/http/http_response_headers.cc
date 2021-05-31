@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -721,6 +722,9 @@ void HttpResponseHeaders::ParseStatusLine(
   raw_headers_.push_back(' ');
   raw_headers_.append(code, p);
   base::StringToInt(base::MakeStringPiece(code, p), &response_code_);
+
+  recordreplay::Assert("HttpResponseHeaders::ParseStatusLine #5 %s %d",
+                       base::MakeStringPiece(code, p).as_string().c_str(), response_code_);
 
   // Skip whitespace.
   while (p < line_end && *p == ' ')
