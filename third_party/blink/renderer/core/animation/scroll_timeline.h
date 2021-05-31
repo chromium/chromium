@@ -43,7 +43,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
                                 ExceptionState&);
 
   ScrollTimeline(Document*,
-                 Element*,
+                 absl::optional<Element*> scroll_source,
                  ScrollDirection,
                  HeapVector<Member<ScrollTimelineOffset>>,
                  absl::optional<double>);

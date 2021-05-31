@@ -90,13 +90,10 @@ ScrollOrientation ToPhysicalScrollOrientation(
   }
 }
 
-// Note that the resolution process may trigger document lifecycle to clean
-// style and layout.
 Node* ResolveScrollSource(Element* scroll_source) {
-  // When in quirks mode we need the style to be clean, so we don't use
-  // |ScrollingElementNoLayout|.
   if (scroll_source &&
-      scroll_source == scroll_source->GetDocument().scrollingElement()) {
+      scroll_source ==
+          scroll_source->GetDocument().ScrollingElementNoLayout()) {
     return &scroll_source->GetDocument();
   }
   return scroll_source;
@@ -106,9 +103,9 @@ Node* ResolveScrollSource(Element* scroll_source) {
 ScrollTimeline* ScrollTimeline::Create(Document& document,
                                        ScrollTimelineOptions* options,
                                        ExceptionState& exception_state) {
-  Element* scroll_source = options->hasScrollSource()
-                               ? options->scrollSource()
-                               : document.scrollingElement();
+  absl::optional<Element*> scroll_source =
+      options->hasScrollSource() ? absl::make_optional(options->scrollSource())
+                                 : absl::nullopt;
 
   ScrollDirection orientation;
   if (!StringToScrollDirection(options->orientation(), orientation)) {
@@ -143,18 +140,25 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     time_range = absl::make_optional(options->timeRange().GetAsDouble());
   }
 
+  // The scrollingElement depends on style/layout-tree in quirks mode. Update
+  // such that subsequent calls to ScrollingElementNoLayout returns up-to-date
+  // information.
+  if (document.InQuirksMode())
+    document.UpdateStyleAndLayoutTree();
+
   return MakeGarbageCollected<ScrollTimeline>(
       &document, scroll_source, orientation, scroll_offsets, time_range);
 }
 
 ScrollTimeline::ScrollTimeline(
     Document* document,
-    Element* scroll_source,
+    absl::optional<Element*> scroll_source,
     ScrollDirection orientation,
     HeapVector<Member<ScrollTimelineOffset>> scroll_offsets,
     absl::optional<double> time_range)
     : AnimationTimeline(document),
-      scroll_source_(scroll_source),
+      scroll_source_(
+          scroll_source.value_or(document->ScrollingElementNoLayout())),
       resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
       orientation_(orientation),
       scroll_offsets_(std::move(scroll_offsets)),

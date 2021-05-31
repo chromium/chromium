@@ -49,14 +49,15 @@ const cssvalue::CSSIdSelectorValue* GetIdSelectorValue(const CSSValue* value) {
   return nullptr;
 }
 
-Element* ComputeScrollSource(Document& document, const CSSValue* value) {
+absl::optional<Element*> ComputeScrollSource(Document& document,
+                                             const CSSValue* value) {
   if (const auto* id = GetIdSelectorValue(value))
     return document.getElementById(id->Id());
   if (IsNone(value))
     return nullptr;
   DCHECK(!value || IsAuto(value));
   // TODO(crbug.com/1189101): Respond when the scrolling element changes.
-  return document.ScrollingElementNoLayout();
+  return absl::nullopt;
 }
 
 Element* ComputeElementOffsetTarget(Document& document, const CSSValue* value) {
