@@ -56,7 +56,27 @@ class WebAppMover;
 // Similarly, in destruction, subsystems should not refer to each other.
 class WebAppProvider : public WebAppProviderBase {
  public:
+  // Deprecated: Use GetForWebApps or GetForSystemWebApps instead.
   static WebAppProvider* Get(Profile* profile);
+
+  // On Chrome OS: if Lacros Web App (WebAppsCrosapi) is enabled, returns
+  // WebAppProvider in Lacros and nullptr in Ash. Otherwise does the reverse
+  // (nullptr in Lacros, WebAppProvider in Ash). On other platforms, always
+  // returns a WebAppProvider.
+  static WebAppProvider* GetForWebApps(Profile* profile);
+
+  // On Chrome OS: returns the WebAppProvider that hosts System Web Apps in Ash;
+  // In Lacros, returns nullptr (unless EnableSystemWebAppInLacrosForTesting).
+  // On other platforms, always returns a WebAppProvider.
+  static WebAppProvider* GetForSystemWebApps(Profile* profile);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Enables System Web Apps WebAppProvider so we can test SWA features in
+  // Lacros, even we don't have actual SWAs in Lacros. After calling this,
+  // GetForSystemWebApps will return a valid WebAppProvider in Lacros.
+  static void EnableSystemWebAppsInLacrosForTesting();
+#endif
+
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
   using OsIntegrationManagerFactory =
@@ -149,7 +169,6 @@ class WebAppProvider : public WebAppProviderBase {
   bool skip_awaiting_extension_system_ = false;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app
