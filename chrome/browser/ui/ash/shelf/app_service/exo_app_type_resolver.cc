@@ -46,14 +46,14 @@ void ExoAppTypeResolver::PopulateProperties(
                                          false);
   }
 
-  int task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
-  if (task_id == arc::kNoTaskId)
+  auto task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
+  if (!task_id.has_value())
     return;
 
   out_properties_container.SetProperty(aura::client::kAppType,
                                        static_cast<int>(ash::AppType::ARC_APP));
-  out_properties_container.SetProperty(full_restore::kWindowIdKey, task_id);
-  int32_t restore_window_id = full_restore::GetArcRestoreWindowId(task_id);
+  out_properties_container.SetProperty(full_restore::kWindowIdKey, *task_id);
+  int32_t restore_window_id = full_restore::GetArcRestoreWindowId(*task_id);
   out_properties_container.SetProperty(full_restore::kRestoreWindowIdKey,
                                        restore_window_id);
 

@@ -248,10 +248,10 @@ void ArcAppPerformanceTracing::StartJankinessTracing() {
 }
 
 void ArcAppPerformanceTracing::HandleActiveAppRendered(base::Time timestamp) {
-  const int32_t task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK_GT(task_id, 0);
+  auto task_id = arc::GetWindowTaskId(arc_active_window_);
+  DCHECK(task_id);
 
-  const std::string& app_id = task_id_to_app_id_[task_id].first;
+  const std::string& app_id = task_id_to_app_id_[*task_id].first;
   const base::Time launch_request_time =
       ArcAppListPrefs::Get(context_)->PollLaunchRequestTime(app_id);
   if (!launch_request_time.is_null()) {
@@ -288,10 +288,10 @@ void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
   if (!arc_active_window_)
     return;
 
-  const int32_t task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK_GT(task_id, 0);
+  auto task_id = arc::GetWindowTaskId(arc_active_window_);
+  DCHECK(task_id);
 
-  const auto it = task_id_to_app_id_.find(task_id);
+  const auto it = task_id_to_app_id_.find(*task_id);
   if (it == task_id_to_app_id_.end())
     // It is normal that information might not be available at this time.
     return;
@@ -389,10 +389,10 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   if (!arc_active_window_)
     return;
 
-  const int task_id = arc::GetWindowTaskId(arc_active_window_);
-  DCHECK_GT(task_id, 0);
+  auto task_id = arc::GetWindowTaskId(arc_active_window_);
+  DCHECK(task_id);
 
-  const auto it = task_id_to_app_id_.find(task_id);
+  const auto it = task_id_to_app_id_.find(*task_id);
   if (it == task_id_to_app_id_.end()) {
     // It is normal that information might not be available at this time.
     return;

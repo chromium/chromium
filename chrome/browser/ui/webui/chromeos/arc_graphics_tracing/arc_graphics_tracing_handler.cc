@@ -379,7 +379,8 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   if (!gained_active)
     return;
 
-  active_task_id_ = arc::GetWindowTaskId(gained_active);
+  active_task_id_ =
+      arc::GetWindowTaskId(gained_active).value_or(arc::kNoTaskId);
   if (active_task_id_ <= 0)
     return;
 

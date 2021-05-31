@@ -79,7 +79,9 @@ bool ArcAppWindow::IsActive() const {
 }
 
 void ArcAppWindow::Close() {
-  arc::CloseTask(arc::GetWindowTaskId(GetNativeWindow()));
+  auto task_id = arc::GetWindowTaskId(GetNativeWindow());
+  if (task_id.has_value())
+    arc::CloseTask(*task_id);
 }
 
 void ArcAppWindow::OnAppImageUpdated(const std::string& app_id,

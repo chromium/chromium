@@ -85,8 +85,8 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
 
 void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
     aura::Window* window) {
-  const int task_id = arc::GetWindowTaskId(window);
-  if (task_id == arc::kNoTaskId || task_id == arc::kSystemWindowTaskId)
+  auto task_id = arc::GetWindowTaskId(window);
+  if (!task_id.has_value() || *task_id == arc::kSystemWindowTaskId)
     return;
 
   // Attach window to multi-user manager now to let it manage visibility state
@@ -102,8 +102,10 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
   // Replace the pointers to the window by nullptr to prevent from using it
   // before OnTaskDestroyed() is called to remove the entry from
   // |task_id_to_arc_app_window_info_|;
-  const int task_id = arc::GetWindowTaskId(window);
-  auto it = task_id_to_arc_app_window_info_.find(task_id);
+  auto task_id = arc::GetWindowTaskId(window);
+  if (!task_id.has_value())
+    return;
+  auto it = task_id_to_arc_app_window_info_.find(*task_id);
   if (it != task_id_to_arc_app_window_info_.end())
     it->second->set_window(nullptr);
 }
@@ -299,18 +301,18 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
 
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     aura::Window* window) {
-  const int task_id = arc::GetWindowTaskId(window);
-  if (task_id == arc::kNoTaskId)
+  auto task_id = arc::GetWindowTaskId(window);
+  if (!task_id.has_value())
     return;
 
   // System windows are also arc apps.
   window->SetProperty(aura::client::kAppType,
                       static_cast<int>(ash::AppType::ARC_APP));
 
-  if (task_id == arc::kSystemWindowTaskId)
+  if (*task_id == arc::kSystemWindowTaskId)
     return;
 
-  auto it = task_id_to_arc_app_window_info_.find(task_id);
+  auto it = task_id_to_arc_app_window_info_.find(*task_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;
 
@@ -327,7 +329,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   DCHECK(widget);
   info->set_window(window);
   const ash::ShelfID shelf_id = info->shelf_id();
-  AttachControllerToTask(task_id);
+  AttachControllerToTask(*task_id);
   app_service_controller_->AddWindowToShelf(window, shelf_id);
   AppWindowBase* app_window = app_service_controller_->GetAppWindow(window);
   if (app_window)

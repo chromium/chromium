@@ -292,8 +292,8 @@ void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(bool enabled) {
   aura::Window* window = GetFocusedArcWindow();
   if (!window)
     return;
-  int32_t task_id = arc::GetWindowTaskId(window);
-  if (task_id == kNoTaskId)
+
+  if (!arc::GetWindowTaskId(window).has_value())
     return;
 
   std::unique_ptr<aura::WindowTracker> window_tracker =
@@ -318,14 +318,14 @@ void ArcAccessibilityHelperBridge::OnSetNativeChromeVoxArcSupportProcessed(
     return;
 
   aura::Window* window = window_tracker->Pop();
-  int32_t task_id = arc::GetWindowTaskId(window);
-  DCHECK_NE(task_id, kNoTaskId);
+  auto task_id = arc::GetWindowTaskId(window);
+  DCHECK(task_id);
 
   if (enabled) {
-    talkback_enabled_task_ids_.erase(task_id);
+    talkback_enabled_task_ids_.erase(*task_id);
   } else {
-    trees_.erase(KeyForTaskId(task_id));
-    talkback_enabled_task_ids_.insert(task_id);
+    trees_.erase(KeyForTaskId(*task_id));
+    talkback_enabled_task_ids_.insert(*task_id);
   }
 
   UpdateWindowProperties(window);
@@ -339,10 +339,10 @@ bool ArcAccessibilityHelperBridge::RefreshTreeIfInActiveWindow(
     return false;
 
   auto task_id = arc::GetWindowTaskId(focused_shell_surface_window);
-  if (task_id == kNoTaskId)
+  if (!task_id.has_value())
     return false;
 
-  AXTreeSourceArc* tree_source = GetFromKey(KeyForTaskId(task_id));
+  AXTreeSourceArc* tree_source = GetFromKey(KeyForTaskId(*task_id));
   if (!tree_source || tree_source->ax_tree_id() != tree_id)
     return false;
 
@@ -354,7 +354,7 @@ bool ArcAccessibilityHelperBridge::RefreshTreeIfInActiveWindow(
         exo::GetShellClientAccessibilityId(focused_shell_surface_window)
             .value());
   } else {
-    window_key->set_task_id(task_id);
+    window_key->set_task_id(*task_id);
   }
 
   auto* instance =
@@ -776,14 +776,14 @@ void ArcAccessibilityHelperBridge::UpdateWindowProperties(
   if (!ash::IsArcWindow(window))
     return;
 
-  int32_t task_id = arc::GetWindowTaskId(window);
-  if (task_id == kNoTaskId)
+  auto task_id = arc::GetWindowTaskId(window);
+  if (!task_id.has_value())
     return;
 
   // Do a lookup for the tree source. A tree source may not exist because the
   // app isn't allowlisted Android side or no data has been received for the
   // app.
-  bool use_talkback = talkback_enabled_task_ids_.count(task_id) > 0;
+  bool use_talkback = talkback_enabled_task_ids_.count(*task_id) > 0;
 
   window->SetProperty(aura::client::kAccessibilityTouchExplorationPassThrough,
                       use_talkback);
@@ -795,7 +795,7 @@ void ArcAccessibilityHelperBridge::UpdateWindowProperties(
     SetChildAxTreeIDForWindow(window, ui::AXTreeIDUnknown());
   } else if (GetFilterTypeForProfile(profile_) ==
              arc::mojom::AccessibilityFilterType::ALL) {
-    TreeKey key = KeyForTaskId(task_id);
+    TreeKey key = KeyForTaskId(*task_id);
     AXTreeSourceArc* tree = GetFromKey(key);
     if (!tree)
       tree = CreateFromKey(std::move(key));
@@ -884,7 +884,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     auto task_id = arc::GetWindowTaskId(focused_window);
     if (event_data->task_id != kNoTaskId) {
       // Event data has task ID. Check task ID.
-      if (task_id != event_data->task_id)
+      if (!task_id.has_value() || *task_id != event_data->task_id)
         return;
     } else {
       // Event data does not have task ID. Get task ID from window ID instead.
@@ -895,7 +895,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
       }
     }
 
-    auto key = KeyForTaskId(task_id);
+    auto key = KeyForTaskId(*task_id);
     tree_source = GetFromKey(key);
 
     if (!tree_source) {
@@ -958,11 +958,11 @@ void ArcAccessibilityHelperBridge::UpdateWindowIdMapping(aura::Window* window) {
     return;
   }
 
-  const int32_t task_id = arc::GetWindowTaskId(window);
-  if (task_id == kNoTaskId)
+  auto task_id = arc::GetWindowTaskId(window);
+  if (!task_id.has_value())
     return;
 
-  window_id_to_task_id_[window_id.value()] = task_id;
+  window_id_to_task_id_[window_id.value()] = *task_id;
 
   // The window ID is new to us. Request the entire tree.
   arc::mojom::AccessibilityWindowKeyPtr window_key =

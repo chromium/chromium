@@ -943,13 +943,13 @@ void ProcessChromeEvents(const ArcTracingModel& common_model,
         LOG(ERROR) << "Failed to get app id from event: " << event->ToString();
         continue;
       }
-      int task_id = GetTaskIdFromWindowAppId(app_id);
-      if (task_id == kNoTaskId) {
+      auto task_id = GetTaskIdFromWindowAppId(app_id);
+      if (!task_id.has_value()) {
         LOG(ERROR) << "Failed to parse app id from event: "
                    << event->ToString();
         continue;
       }
-      (*buffer_id_to_task_id)[buffer_id] = task_id;
+      (*buffer_id_to_task_id)[buffer_id] = *task_id;
     }
     ArcTracingGraphicsModel::BufferEvents& graphics_events =
         (*buffer_to_events)[buffer_id];

@@ -505,6 +505,7 @@ source_set("unit_tests") {
     "//components/arc/enterprise",
     "//components/arc/media_session",
     "//components/arc/video_accelerator:common",
+    "//components/exo",
     "//components/exo:test_support",
     "//components/keyed_service/content",
     "//components/prefs:test_support",

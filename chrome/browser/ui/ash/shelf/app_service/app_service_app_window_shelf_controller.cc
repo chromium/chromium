@@ -291,7 +291,7 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
   // Note, for ARC apps, window may be recreated in some cases, so do not close
   // controller on window destroying. Controller will be closed onTaskDestroyed
   // event which is generated when actual task is destroyed.
-  if (arc_tracker_ && arc::GetWindowTaskId(window) != arc::kNoTaskId) {
+  if (arc_tracker_ && arc::GetWindowTaskId(window).has_value()) {
     arc_tracker_->HandleWindowDestroying(window);
     aura_window_to_app_window_.erase(window);
     return;
@@ -417,7 +417,7 @@ void AppServiceAppWindowShelfController::AddWindowToShelf(
 
   // TODO(jamescook): Clean up this block. The code is repetitive.
   AppWindowBase* app_window;
-  if (arc::GetWindowTaskId(window) != arc::kNoTaskId) {
+  if (arc::GetWindowTaskId(window).has_value()) {
     std::unique_ptr<ArcAppWindow> app_window_ptr =
         std::make_unique<ArcAppWindow>(
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
@@ -507,7 +507,7 @@ void AppServiceAppWindowShelfController::RegisterWindow(
 
   // For the ARC apps window, AttachControllerToWindow calls AddWindowToShelf,
   // so we don't need to call AddWindowToShelf again.
-  if (arc_tracker_ && arc::GetWindowTaskId(window) != arc::kNoTaskId) {
+  if (arc_tracker_ && arc::GetWindowTaskId(window).has_value()) {
     arc_tracker_->AttachControllerToWindow(window);
     return;
   }
@@ -645,8 +645,10 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     return ash::ShelfID(plugin_vm::kPluginVmShelfAppId);
 
   ash::ShelfID shelf_id;
-  if (arc_tracker_)
-    shelf_id = arc_tracker_->GetShelfId(arc::GetWindowTaskId(window));
+  if (arc_tracker_) {
+    shelf_id = arc_tracker_->GetShelfId(
+        arc::GetWindowTaskId(window).value_or(arc::kNoTaskId));
+  }
 
   if (!shelf_id.IsNull())
     return shelf_id;

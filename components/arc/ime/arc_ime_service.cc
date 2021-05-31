@@ -84,7 +84,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       // Specifically, a window of ARC++ Kiosk should have ash::AppType::ARC_APP
       // property. Please see implementation of IsArcAppWindow().
       if (window == active && IsArcKioskMode() &&
-          GetWindowTaskId(window) != kNoTaskId) {
+          GetWindowTaskId(window).has_value()) {
         return true;
       }
     }
