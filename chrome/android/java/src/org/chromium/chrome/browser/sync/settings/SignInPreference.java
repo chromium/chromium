@@ -15,7 +15,6 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -146,11 +145,7 @@ public class SignInPreference
 
     private void setupSigninDisabledByPolicy() {
         mState = State.SIGNIN_DISABLED_BY_POLICY;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            setTitle(R.string.sync_promo_turn_on_sync);
-        } else {
-            setTitle(R.string.sign_in_to_chrome);
-        }
+        setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
@@ -178,11 +173,7 @@ public class SignInPreference
 
     private void setupGenericPromo() {
         mState = State.GENERIC_PROMO;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            setTitle(R.string.sync_promo_turn_on_sync);
-        } else {
-            setTitle(R.string.sign_in_to_chrome);
-        }
+        setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.signin_pref_summary);
 
         setFragment(null);
