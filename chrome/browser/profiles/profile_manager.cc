@@ -522,6 +522,10 @@ ProfileManager::~ProfileManager() {
     // metrics for incorrect usage of ScopedProfileKeepAlive.
     for (const auto& path_and_profile_info : profiles_info_) {
       const ProfileInfo* profile_info = path_and_profile_info.second.get();
+
+      if (profile_info->profile && profile_info->profile->IsSystemProfile())
+        continue;
+
       for (const auto& origin_and_count : profile_info->keep_alives) {
         ProfileKeepAliveOrigin origin = origin_and_count.first;
         int count = origin_and_count.second;
