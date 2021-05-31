@@ -165,9 +165,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
-  SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-      signinCompletionInfoWithIdentity:self.unifiedConsentCoordinator
-                                           .selectedIdentity];
+  SigninCompletionInfo* completionInfo =
+      [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
 
   [self interruptWithAction:action
        signinCompletionInfo:completionInfo
@@ -271,13 +270,17 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                       advancedSettingsShown:self.unifiedConsentCoordinator
                                                 .settingsLinkWasTapped];
 
+  ChromeIdentity* identity =
+      (signinResult == SigninCoordinatorResultSuccess)
+          ? self.unifiedConsentCoordinator.selectedIdentity
+          : nil;
   SigninCompletionAction completionAction =
       self.unifiedConsentCoordinator.settingsLinkWasTapped
           ? SigninCompletionActionShowAdvancedSettingsSignin
           : SigninCompletionActionNone;
-  SigninCompletionInfo* completionInfo = [[SigninCompletionInfo alloc]
-            initWithIdentity:self.unifiedConsentCoordinator.selectedIdentity
-      signinCompletionAction:completionAction];
+  SigninCompletionInfo* completionInfo =
+      [[SigninCompletionInfo alloc] initWithIdentity:identity
+                              signinCompletionAction:completionAction];
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock completion = ^void() {
     [weakSelf viewControllerDismissedWithResult:signinResult

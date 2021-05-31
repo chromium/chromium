@@ -172,7 +172,13 @@ using signin_metrics::PromoAction;
 
 - (void)runCompletionCallbackWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                               completionInfo:completionInfo {
+                               completionInfo:
+                                   (SigninCompletionInfo*)completionInfo {
+  // |identity| is set, only and only if the sign-in is successful.
+  DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
+          completionInfo.identity) ||
+         ((signinResult != SigninCoordinatorResultSuccess) &&
+          !completionInfo.identity));
   // If |self.signinCompletion| is nil, this method has been probably called
   // twice.
   DCHECK(self.signinCompletion);

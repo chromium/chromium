@@ -226,7 +226,9 @@ using l10n_util::GetNSString;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  ChromeIdentity* identity = authService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity = (signinResult == SigninCoordinatorResultSuccess)
+                                 ? authService->GetAuthenticatedIdentity()
+                                 : nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult

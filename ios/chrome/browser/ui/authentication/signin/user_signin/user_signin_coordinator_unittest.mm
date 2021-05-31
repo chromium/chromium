@@ -169,6 +169,7 @@ TEST_F(UserSigninCoordinatorTest, StartAndInterruptCoordinator) {
         EXPECT_FALSE(completion_done);
         EXPECT_FALSE(interrupt_done);
         EXPECT_EQ(SigninCoordinatorResultInterrupted, signinResult);
+        EXPECT_EQ(nil, signinCompletionInfo.identity);
         completion_done = true;
       };
   [coordinator_ start];
