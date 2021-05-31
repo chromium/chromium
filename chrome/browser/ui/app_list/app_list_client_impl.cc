@@ -157,6 +157,8 @@ void AppListClientImpl::OpenSearchResult(
   if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
     RecordOpenedResultFromSearchBox(result_type);
 
+  MaybeRecordLauncherAction(launched_from);
+
   // OpenResult may cause |result| to be deleted.
   search_controller_->OpenResult(result, event_flags);
 }
@@ -235,6 +237,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
     search_controller_->Train(std::move(launch_data));
   }
 
+  MaybeRecordLauncherAction(ash::AppListLaunchedFrom::kLaunchedFromGrid);
   requested_model_updater->ActivateChromeItem(id, event_flags);
 }
 
@@ -589,4 +592,26 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
         "NonAppBrowserWindowsEitherClosedOrMinimized",
         result_type);
   }
+}
+
+void AppListClientImpl::MaybeRecordLauncherAction(
+    ash::AppListLaunchedFrom launched_from) {
+  DCHECK(launched_from == ash::AppListLaunchedFrom::kLaunchedFromGrid ||
+         launched_from ==
+             ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip ||
+         launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox);
+
+  // Return early if the current user is not new.
+  if (!user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    DCHECK(!state_for_new_user_);
+    return;
+  }
+
+  // The launcher action has been recorded so return early.
+  if (state_for_new_user_->action_recorded)
+    return;
+
+  state_for_new_user_->action_recorded = true;
+  base::UmaHistogramEnumeration("Apps.FirstLauncherActionByNewUsers",
+                                launched_from);
 }

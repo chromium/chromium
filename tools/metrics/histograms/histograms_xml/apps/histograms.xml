@@ -1597,6 +1597,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.FirstLauncherActionByNewUsers" enum="AppListLaunchedFrom"
+    expires_after="M99">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records which launcher action a new user takes for the first time within a
+    session. Launcher actions include the following: activating a launcher app
+    and opening a search result from either a launcher suggestion chip or the
+    search box. The metric is recorded when a launcher action performs on a new
+    user's session for the first time.
+  </summary>
+</histogram>
+
 <histogram name="Apps.HomeLauncherTransition.AnimationSmoothness" units="%"
     expires_after="never">
 <!-- expires-never: These metrics are required
