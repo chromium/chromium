@@ -24,6 +24,9 @@
 // If true, aligns the image with the first line of text.
 @property(nonatomic, assign) BOOL alignImageWithFirstLineOfText;
 
+// If true, sets imageView's content mode to UIViewContentModeLeft.
+@property(nonatomic, assign) BOOL leftAlignImage;
+
 // The title text to display.
 @property(nonatomic, copy) NSString* text;
 

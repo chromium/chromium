@@ -155,13 +155,14 @@
 }
 
 - (void)alignImageWithFirstLineOfText:(BOOL)alignImageWithFirstBaseline {
-  if (alignImageWithFirstBaseline) {
-    self.alignImageWithContentViewCenterYConstraint.active = NO;
-    self.alignImageWithContentViewFirstBaselineAnchorConstraint.active = YES;
-  } else {
-    self.alignImageWithContentViewFirstBaselineAnchorConstraint.active = NO;
-    self.alignImageWithContentViewCenterYConstraint.active = YES;
-  }
+  self.alignImageWithContentViewCenterYConstraint.active =
+      !alignImageWithFirstBaseline;
+  self.alignImageWithContentViewFirstBaselineAnchorConstraint.active =
+      alignImageWithFirstBaseline;
+}
+
+- (void)setImageViewContentMode:(UIViewContentMode)contentMode {
+  self.imageView.contentMode = contentMode;
 }
 
 #pragma mark - UITableViewCell
@@ -169,6 +170,7 @@
 - (void)prepareForReuse {
   [super prepareForReuse];
   [self alignImageWithFirstLineOfText:NO];
+  self.imageView.contentMode = UIViewContentModeCenter;
 }
 
 #pragma mark - UIAccessibility

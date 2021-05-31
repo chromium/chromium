@@ -23,6 +23,10 @@
 
 @property(nonatomic, strong) NSString* text;
 
+// Sets the font for the |text|. Default preferredFontForTextStyle is
+// |UIFontTextStyleBody|.
+@property(nonatomic, strong) UIFont* textFont;
+
 // If set to YES, |text| will be shown as "••••••" with fixed length.
 @property(nonatomic, assign) BOOL masked;
 
