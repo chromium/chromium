@@ -332,12 +332,13 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
   BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
-  if (self.shouldDisplaySignoutSection) {
+  BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
+  if (!hasSignOutItem && self.shouldDisplaySignoutSection) {
     DCHECK(self.signOutAndTurnOffSyncItem);
     [model addItem:self.signOutAndTurnOffSyncItem
         toSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
-  } else if ([model hasItem:self.signOutAndTurnOffSyncItem]) {
+  } else if (hasSignOutItem && !self.shouldDisplaySignoutSection) {
     [model removeItemWithType:SignOutItemType
         fromSectionWithIdentifier:SignOutSectionIdentifier];
     hasModelUpdate = YES;
@@ -650,80 +651,96 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       !self.syncSetupService->HasFinishedInitialSetup()) {
     return;
   }
-  BOOL needsSyncErrorItemsUpdate = [self updateSyncErrorItems];
-  if (notifyConsumer && needsSyncErrorItemsUpdate) {
-    // Need to reload all sections since the error will be inserted into the
-    // first section position.
-    NSIndexSet* indexSet = [NSIndexSet
-        indexSetWithIndexesInRange:NSMakeRange(0, self.consumer.tableViewModel
-                                                      .numberOfSections)];
-    [self.consumer reloadSections:indexSet];
+
+  // Checks if the sync setup service state has changed from the saved state in
+  // the table view model.
+  absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
+  if (![self needsSyncSetupServiceStateUpdate:type]) {
+    return;
+  }
+
+  TableViewModel* model = self.consumer.tableViewModel;
+  // There is no error in sync setup service, but there previously was an error.
+  if (!type.has_value()) {
+    NSInteger sectionIndex =
+        [model sectionForSectionIdentifier:SyncErrorsSectionIdentifier];
+    [model removeSectionWithIdentifier:SyncErrorsSectionIdentifier];
+    self.syncErrorItem = nil;
+
+    // Remove the sync error section from the table view model.
+    if (notifyConsumer) {
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+      [self.consumer deleteSections:indexSet];
+    }
+    return;
+  }
+
+  // There is an error in the sync setup service with no previous error.
+  BOOL hasPreviousError = self.syncErrorItem;
+
+  // Create the new sync error item.
+  DCHECK(type.has_value());
+  if (type.value() == SyncDisabledByAdministratorErrorItemType) {
+    self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
+  } else {
+    self.syncErrorItem = [self createSyncErrorItemWithItemType:type.value()];
+  }
+
+  if (!hasPreviousError) {
+    [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier atIndex:0];
+    [model addItem:self.syncErrorItem
+        toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+  }
+
+  if (notifyConsumer) {
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:0];
+    if (hasPreviousError) {
+      [self.consumer reloadSections:indexSet];
+    } else {
+      [self.consumer insertSections:indexSet];
+    }
   }
 }
 
-// Adds, removes and updates the sync error item in the model as needed. Returns
-// YES if the consumer should be notified.
-- (BOOL)updateSyncErrorItems {
-  TableViewModel* model = self.consumer.tableViewModel;
-  BOOL hasError = NO;
-  SyncSettingsItemType type;
-
+// Returns the sync error item type or absl::nullopt if the item
+// is not an error.
+- (absl::optional<SyncSettingsItemType>)syncErrorItemType {
   if (self.isSyncDisabledByAdministrator) {
-    type = SyncDisabledByAdministratorErrorItemType;
-    hasError = YES;
-  } else if (self.isAuthenticated && self.syncSetupService->IsSyncEnabled()) {
-    switch (self.syncSetupService->GetSyncServiceState()) {
-      case SyncSetupService::kSyncServiceUnrecoverableError:
-        type = RestartAuthenticationFlowErrorItemType;
-        hasError = YES;
-        break;
-      case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-        type = ReauthDialogAsSyncIsInAuthErrorItemType;
-        hasError = YES;
-        break;
-      case SyncSetupService::kSyncServiceNeedsPassphrase:
-        type = ShowPassphraseDialogErrorItemType;
-        hasError = YES;
-        break;
-      case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
-        type = SyncNeedsTrustedVaultKeyErrorItemType;
-        hasError = YES;
-        break;
-      case SyncSetupService::kSyncSettingsNotConfirmed:
-      case SyncSetupService::kNoSyncServiceError:
-      case SyncSetupService::kSyncServiceCouldNotConnect:
-      case SyncSetupService::kSyncServiceServiceUnavailable:
-        break;
-    }
+    return absl::make_optional<SyncSettingsItemType>(
+        SyncDisabledByAdministratorErrorItemType);
   }
+  switch (self.syncSetupService->GetSyncServiceState()) {
+    case SyncSetupService::kSyncServiceUnrecoverableError:
+      return absl::make_optional<SyncSettingsItemType>(
+          RestartAuthenticationFlowErrorItemType);
+    case SyncSetupService::kSyncServiceSignInNeedsUpdate:
+      return absl::make_optional<SyncSettingsItemType>(
+          ReauthDialogAsSyncIsInAuthErrorItemType);
+    case SyncSetupService::kSyncServiceNeedsPassphrase:
+      return absl::make_optional<SyncSettingsItemType>(
+          ShowPassphraseDialogErrorItemType);
+    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+      return absl::make_optional<SyncSettingsItemType>(
+          SyncNeedsTrustedVaultKeyErrorItemType);
+    case SyncSetupService::kSyncSettingsNotConfirmed:
+    case SyncSetupService::kNoSyncServiceError:
+    case SyncSetupService::kSyncServiceCouldNotConnect:
+    case SyncSetupService::kSyncServiceServiceUnavailable:
+      return absl::nullopt;
+  }
+  NOTREACHED();
+  return absl::nullopt;
+}
 
-  if ((!hasError && !self.syncErrorItem) ||
-      (hasError && self.syncErrorItem && type == self.syncErrorItem.type)) {
-    // Nothing to update.
-    return NO;
-  }
-
-  if (self.syncErrorItem) {
-    // Remove the previous sync error item, since it is either the wrong error
-    // (if hasError is YES), or there is no error anymore.
-    [model removeItemWithType:self.syncErrorItem.type
-        fromSectionWithIdentifier:SyncErrorsSectionIdentifier];
-    self.syncErrorItem = nil;
-    if (!hasError)
-      return YES;
-  }
-  // Add the sync error item and its section.
-  if (type == SyncDisabledByAdministratorErrorItemType) {
-    self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
-  } else {
-    self.syncErrorItem = [self createSyncErrorItemWithItemType:type];
-  }
-  [self.consumer.tableViewModel
-      insertSectionWithIdentifier:SyncErrorsSectionIdentifier
-                          atIndex:0];
-  [model addItem:self.syncErrorItem
-      toSectionWithIdentifier:SyncErrorsSectionIdentifier];
-  return YES;
+// Returns whether the sync setup service state has changed since the last
+// update.
+- (BOOL)needsSyncSetupServiceStateUpdate:
+    (absl::optional<SyncSettingsItemType>)type {
+  BOOL hasError = type.has_value();
+  return (hasError && !self.syncErrorItem) ||
+         (!hasError && self.syncErrorItem) ||
+         (hasError && self.syncErrorItem &&
+          type.value() != self.syncErrorItem.type);
 }
 
 // Returns an item to show to the user the sync cannot be turned on for an

@@ -20,20 +20,24 @@
 #import "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -301,6 +305,39 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        SyncErrorsSectionIdentifier];
   ASSERT_EQ(1UL, error_items.count);
+}
+
+// Tests that Sync errors display a single error message when loaded one after
+// the other.
+TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  SetupSyncServiceInitializedExpectations();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
+  EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
+      .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
+      .WillOnce(Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
+
+  // Loads the Sync page once in the disabled by enterprise policy error state.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+  // Loads the Sync page again in the needs encryption passphrase error state.
+  [mediator_ onSyncStateChanged];
+
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  NSArray* error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+  ASSERT_EQ(1UL, error_items.count);
+  SettingsImageDetailTextItem* error_item =
+      static_cast<SettingsImageDetailTextItem*>(error_items[0]);
+  ASSERT_NSEQ(
+      error_item.detailText,
+      l10n_util::GetNSString(
+          IDS_IOS_GOOGLE_SERVICES_SETTINGS_ENTER_PASSPHRASE_TO_START_SYNC));
 }
 
 // Tests that "Turn off Sync" item transition from disabled to enabled goes from
