@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/services/filesystem/directory_impl.h"
@@ -104,6 +105,12 @@ void ZipFileCreator::ReportDone(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   remote_zip_file_creator_.reset();
+
+  if (!success)
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
+
   if (callback_)
     std::move(callback_).Run(success);
 }
