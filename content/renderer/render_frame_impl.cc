@@ -1105,6 +1105,14 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
   return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
 }
 
+void PropagatePageZoomToNewlyAttachedFrame(blink::WebView* web_view,
+                                           float device_scale_factor) {
+  if (RenderThread::Get()->IsUseZoomForDSF())
+    web_view->SetZoomFactorForDeviceScaleFactor(device_scale_factor);
+  else
+    web_view->SetZoomLevel(web_view->ZoomLevel());
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -4598,8 +4606,8 @@ void RenderFrameImpl::UpdateStateForCommit(
     // And when UseZoomForDSF is disabled, in content_browsertests:
     //     IFrameZoomBrowserTest.SubframesDontZoomIndependently (and the whole
     //     suite).
-    render_view_->PropagatePageZoomToNewlyAttachedFrame(
-        RenderThread::Get()->IsUseZoomForDSF(),
+    PropagatePageZoomToNewlyAttachedFrame(
+        GetWebView(),
         GetLocalRootWebFrameWidget()->GetScreenInfo().device_scale_factor);
   }
 

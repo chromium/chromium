@@ -106,11 +106,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
     send_content_state_immediately_ = value;
   }
 
-  // Passes along the page zoom to the WebView to set it on a newly attached
-  // LocalFrame.
-  void PropagatePageZoomToNewlyAttachedFrame(bool use_zoom_for_dsf,
-                                             float device_scale_factor);
-
   // Starts a timer to send an UpdateState message on behalf of |frame|, if the
   // timer isn't already running. This allows multiple state changing events to
   // be coalesced into one update.

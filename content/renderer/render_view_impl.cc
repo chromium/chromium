@@ -417,15 +417,6 @@ void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
   render_frame->ScriptedPrint(frame_widget->HandlingInputEvent());
 }
 
-void RenderViewImpl::PropagatePageZoomToNewlyAttachedFrame(
-    bool use_zoom_for_dsf,
-    float device_scale_factor) {
-  if (use_zoom_for_dsf)
-    GetWebView()->SetZoomFactorForDeviceScaleFactor(device_scale_factor);
-  else
-    GetWebView()->SetZoomLevel(GetWebView()->ZoomLevel());
-}
-
 void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
   // Keep track of which frames have pending updates.
   frames_with_pending_state_.insert(frame->GetRoutingID());
