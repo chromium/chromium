@@ -432,6 +432,10 @@ const char kClientStorageAccessContextAuditingName[] =
 const char kClientStorageAccessContextAuditingDescription[] =
     "Record the first-party contexts in which client-side storage was accessed";
 
+const char kClipboardFilenamesName[] = "Clipboard filenames";
+const char kClipboardFilenamesDescription[] =
+    "Support reading files in clipboard DataTransfer";
+
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
     "navigation";

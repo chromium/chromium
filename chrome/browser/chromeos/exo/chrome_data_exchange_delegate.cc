@@ -53,7 +53,10 @@ constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
 
 // Mime types used in FilesApp to copy/paste files to clipboard.
+constexpr char16_t kFilesAppMimeTag[] = u"fs/tag";
+constexpr char16_t kFilesAppTagExo[] = u"exo";
 constexpr char16_t kFilesAppMimeSources[] = u"fs/sources";
+constexpr char kFilesAppSeparator[] = "\n";
 constexpr char16_t kFilesAppSeparator16[] = u"\n";
 
 storage::FileSystemContext* GetFileSystemContext() {
@@ -406,6 +409,26 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
   ShareAndTranslateHostToVM(
       target, std::move(list),
       base::BindOnce(&SendAfterShare, target, std::move(callback)));
+}
+
+base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  std::vector<std::string> filenames;
+  std::vector<FileInfo> file_info = TranslateVMToHost(
+      source, ui::URIListToFileInfos(std::string(data.begin(), data.end())));
+  for (const auto& info : file_info) {
+    if (info.url.is_valid())
+      filenames.push_back(info.url.ToGURL().spec());
+  }
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>(
+          {{kFilesAppMimeTag, kFilesAppTagExo},
+           {kFilesAppMimeSources, base::UTF8ToUTF16(base::JoinString(
+                                      filenames, kFilesAppSeparator))}}),
+      &pickle);
+  return pickle;
 }
 
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(

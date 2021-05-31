@@ -223,8 +223,11 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     available_types.push_back(kMimeTypeRTF);
   if (target_list.ContainsFormat(ClipboardFormatType::GetBitmapType()))
     available_types.push_back(kMimeTypePNG);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()))
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()) &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
     available_types.push_back(kMimeTypeURIList);
+  }
 
   return available_types;
 }

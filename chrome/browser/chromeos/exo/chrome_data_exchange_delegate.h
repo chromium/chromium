@@ -47,6 +47,9 @@ class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
   void SendPickle(ui::EndpointType target,
                   const base::Pickle& pickle,
                   SendDataCallback callback) override;
+  base::Pickle CreateClipboardFilenamesPickle(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const override;
   std::vector<ui::FileInfo> ParseFileSystemSources(
       const ui::DataTransferEndpoint* source,
       const base::Pickle& pickle) const override;

@@ -8,6 +8,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,6 +20,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/ui_base_features.h"
 
 namespace content {
 
@@ -33,6 +35,7 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
+    features_.InitWithFeatures({features::kClipboardFilenames}, {});
     ui::TestClipboard::CreateForCurrentThread();
     ContentBrowserTest::SetUp();
   }
@@ -94,6 +97,9 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
     shell()->web_contents()->Paste();
     EXPECT_EQ(base::JoinString(expected, ","), EvalJs(shell(), "p"));
   }
+
+ protected:
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, TextFile) {

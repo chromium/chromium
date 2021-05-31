@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -32,6 +33,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -450,7 +452,8 @@ bool ClipboardNonBacked::IsFormatAvailable(
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kWeb);
   // Only support filenames if chrome://flags#clipboard-filenames is enabled.
-  if (format == ClipboardFormatType::GetFilenamesType())
+  if (format == ClipboardFormatType::GetFilenamesType() &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames))
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kFilenames);
   const ClipboardData* data = clipboard_internal_->GetData();

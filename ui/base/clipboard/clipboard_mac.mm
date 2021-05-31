@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -31,6 +32,7 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
@@ -88,6 +90,12 @@ bool ClipboardMac::IsFormatAvailable(
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (format == ClipboardFormatType::GetFilenamesType() &&
+      !base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
+    return false;
+  }
 
   // https://crbug.com/1016740#c21
   base::scoped_nsobject<NSArray> types([[GetPasteboard() types] retain]);
@@ -485,8 +493,22 @@ SkBitmap ClipboardMac::ReadImageInternal(ClipboardBuffer buffer,
   // a blank image is better.
   base::scoped_nsobject<NSImage> image;
   @try {
-    if (pasteboard)
-      image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+    // TODO(crbug.com/1175483): remove first branch of this code when
+    // ClipboardFilenames feature flag is removed.
+    if ([[pasteboard types] containsObject:NSFilenamesPboardType]) {
+      // -[NSImage initWithPasteboard:] gets confused with copies of a single
+      // file from the Finder, so extract the path ourselves.
+      // http://crbug.com/553686
+      NSArray* paths = [pasteboard propertyListForType:NSFilenamesPboardType];
+      if ([paths count]) {
+        // If N number of files are selected from finder, choose the last one.
+        image.reset([[NSImage alloc]
+            initWithContentsOfURL:[NSURL fileURLWithPath:[paths lastObject]]]);
+      }
+    } else {
+      if (pasteboard)
+        image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+    }
   } @catch (id exception) {
   }
   if (!image)
