@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_store.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 
@@ -53,7 +53,8 @@ class ChromeStorageImpl : public ::i18n::addressinput::Storage,
   // Get requests that haven't yet been serviced.
   std::vector<std::unique_ptr<Request>> outstanding_requests_;
 
-  ScopedObserver<PrefStore, PrefStore::Observer> scoped_observer_{this};
+  base::ScopedObservation<PrefStore, PrefStore::Observer> scoped_observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeStorageImpl);
 };
