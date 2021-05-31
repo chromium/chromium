@@ -162,7 +162,6 @@ class UiControllerAndroid : public ControllerObserver {
   void OnDateTimeRangeEndTimeSlotCleared();
   void OnKeyValueChanged(const std::string& key, const ValueProto& value);
   void OnInputTextFocusChanged(bool is_text_focused);
-  bool IsContactComplete(autofill::AutofillProfile* contact);
   bool IsShippingAddressComplete(autofill::AutofillProfile* address);
   bool IsPaymentInstrumentComplete(autofill::CreditCard* card,
                                    autofill::AutofillProfile* address);

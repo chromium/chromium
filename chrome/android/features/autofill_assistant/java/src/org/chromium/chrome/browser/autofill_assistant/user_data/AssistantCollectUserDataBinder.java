@@ -15,10 +15,10 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -171,12 +171,9 @@ class AssistantCollectUserDataBinder
             view.mInfoSection.setListener(collectUserDataDelegate != null
                             ? collectUserDataDelegate::onTextLinkClicked
                             : null);
-            view.mContactDetailsSection.setListener(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::onContactInfoChanged
-                            : null);
-            view.mContactDetailsSection.setCompletenessDelegate(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::isContactComplete
-                            : null);
+            view.mContactDetailsSection.setListener(collectUserDataDelegate == null
+                            ? null
+                            : m -> collectUserDataDelegate.onContactInfoChanged(m.mOption));
             view.mPaymentMethodSection.setListener(collectUserDataDelegate != null
                             ? collectUserDataDelegate::onPaymentMethodChanged
                             : null);
@@ -503,7 +500,7 @@ class AssistantCollectUserDataBinder
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS) {
             if (shouldShowContactDetails(model)) {
-                AutofillContact contact =
+                ContactModel contact =
                         model.get(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS);
                 if (contact != null) {
                     view.mContactDetailsSection.addOrUpdateItem(

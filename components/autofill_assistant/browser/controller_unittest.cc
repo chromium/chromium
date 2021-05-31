@@ -16,6 +16,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/mock_client.h"
@@ -234,6 +236,13 @@ class ControllerTest : public content::RenderViewHostTestHarness {
 
   void SetNavigatingToNewDocument(bool value) {
     controller_->navigating_to_new_document_ = value;
+  }
+
+  RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
+    RequiredDataPiece required_data_piece;
+    required_data_piece.mutable_condition()->set_key(static_cast<int>(field));
+    required_data_piece.mutable_condition()->mutable_not_empty();
+    return required_data_piece;
   }
 
   // |task_environment_| must be the first field, to make sure that everything
@@ -2002,9 +2011,12 @@ TEST_F(ControllerTest, UserDataFormContactInfo) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
   auto user_data = std::make_unique<UserData>();
 
-  options->request_payer_name = true;
-  options->request_payer_email = true;
-  options->request_payer_phone = true;
+  options->required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options->required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+  options->required_contact_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
   options->contact_details_name = "selected_profile";
 
   testing::InSequence seq;
@@ -2099,9 +2111,12 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
   auto user_data = std::make_unique<UserData>();
 
-  options->request_payer_name = true;
-  options->request_payer_email = true;
-  options->request_payer_phone = true;
+  options->required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options->required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+  options->required_contact_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
   options->contact_details_name = "selected_profile";
 
   testing::InSequence sequence;

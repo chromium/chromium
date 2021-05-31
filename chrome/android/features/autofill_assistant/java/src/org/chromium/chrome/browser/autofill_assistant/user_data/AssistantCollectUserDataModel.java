@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,6 +47,49 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         public int mMaxNumberLines;
     }
 
+    /**
+     * Model wrapper for an {@code EditableOption} to contain errors.
+     *
+     * @param <T> The type of |EditableOption| that a concrete instance of this class is created
+     * for, such as |AutofillContact|, |AutofillPaymentMethod|, etc.
+     */
+    // TODO(b/180705720): Drop the "extends EditableOption" once AutofillAddress and
+    //  AutofillPaymentInstrument have been transferred. Then change
+    //  AssistantCollectUserDataSection to <T extends OptionModel>.
+    public static class OptionModel<T extends EditableOption> extends EditableOption {
+        public T mOption;
+        public List<String> mErrors;
+
+        public OptionModel(T option, List<String> errors) {
+            super(option.getIdentifier(), /* label= */ null, /* sublabel= */ null,
+                    /* tertiarylabel= */ null, /* icon= */ null);
+            this.mOption = option;
+            this.mErrors = errors;
+        }
+
+        public OptionModel(T option) {
+            this(option, new ArrayList<>());
+        }
+
+        @Override
+        public boolean isComplete() {
+            // Evaluate the option's completeness in terms of the editor's expectations. This does
+            // not take our own validation into account.
+            return this.mOption.isComplete();
+        }
+    }
+
+    /** Model wrapper for an {@code AutofillContact}. */
+    public static class ContactModel extends OptionModel<AutofillContact> {
+        public ContactModel(AutofillContact contact, List<String> errors) {
+            super(contact, errors);
+        }
+
+        public ContactModel(AutofillContact contact) {
+            super(contact);
+        }
+    }
+
     public static final WritableObjectPropertyKey<AssistantCollectUserDataDelegate> DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -64,7 +108,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
             SELECTED_PAYMENT_INSTRUMENT = new WritableObjectPropertyKey<>();
 
     /** The chosen contact details. */
-    public static final WritableObjectPropertyKey<AutofillContact> SELECTED_CONTACT_DETAILS =
+    public static final WritableObjectPropertyKey<ContactModel> SELECTED_CONTACT_DETAILS =
             new WritableObjectPropertyKey<>();
 
     /** The contact details section title. */
@@ -103,7 +147,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<List<AutofillAddress>>
             AVAILABLE_BILLING_ADDRESSES = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<AutofillContact>> AVAILABLE_CONTACTS =
+    public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_CONTACTS =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<AutofillAddress>>
@@ -338,8 +382,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setSelectedContactDetails(@Nullable AutofillContact contact) {
-        set(SELECTED_CONTACT_DETAILS, contact);
+    private void setSelectedContactDetails(@Nullable AutofillContact contact, String[] errors) {
+        set(SELECTED_CONTACT_DETAILS,
+                contact == null ? null : new ContactModel(contact, Arrays.asList(errors)));
     }
 
     @CalledByNative
@@ -541,14 +586,14 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static List<AutofillContact> createAutofillContactList() {
+    private static List<ContactModel> createAutofillContactList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
     private static void addAutofillContact(
-            List<AutofillContact> contacts, AutofillContact contact) {
-        contacts.add(contact);
+            List<ContactModel> contacts, AutofillContact contact, String[] errors) {
+        contacts.add(new ContactModel(contact, Arrays.asList(errors)));
     }
 
     @VisibleForTesting
@@ -571,7 +616,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setAvailableContacts(List<AutofillContact> contacts) {
+    private void setAvailableContacts(List<ContactModel> contacts) {
         set(AVAILABLE_CONTACTS, contacts);
     }
 

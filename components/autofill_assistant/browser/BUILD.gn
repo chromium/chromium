@@ -12,6 +12,7 @@ proto_library("proto") {
   sources = [
     "action_strategy.proto",
     "action_value.proto",
+    "cud_condition.proto",
     "dom_action.proto",
     "generic_ui.proto",
     "model.proto",
@@ -476,6 +477,7 @@ if (is_android) {
     sources = [
       "$proto_path/action_strategy.proto",
       "$proto_path/action_value.proto",
+      "$proto_path/cud_condition.proto",
       "$proto_path/dom_action.proto",
       "$proto_path/generic_ui.proto",
       "$proto_path/model.proto",

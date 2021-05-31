@@ -14,6 +14,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 
@@ -23,8 +24,7 @@ import java.util.List;
 /**
  * The contact details section of the Autofill Assistant payment request.
  */
-public class AssistantContactDetailsSection
-        extends AssistantCollectUserDataSection<AutofillContact> {
+public class AssistantContactDetailsSection extends AssistantCollectUserDataSection<ContactModel> {
     private ContactEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mSummaryOptions;
@@ -45,74 +45,81 @@ public class AssistantContactDetailsSection
             return;
         }
 
-        for (AutofillContact contact : getItems()) {
-            addAutocompleteInformationToEditor(contact);
+        for (ContactModel item : getItems()) {
+            addAutocompleteInformationToEditor(item.mOption);
         }
     }
 
     @Override
-    protected void createOrEditItem(@Nullable AutofillContact oldItem) {
+    protected void createOrEditItem(@Nullable ContactModel oldItem) {
         if (mEditor != null) {
-            mEditor.edit(oldItem, newItem -> {
-                assert (newItem != null && newItem.isComplete());
+            mEditor.edit(oldItem == null ? null : oldItem.mOption, contact -> {
+                assert (contact != null && contact.isComplete());
                 mIgnoreProfileChangeNotifications = true;
-                addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
+                addOrUpdateItem(new ContactModel(contact), /* select= */ true, /* notify= */ true);
                 mIgnoreProfileChangeNotifications = false;
             }, cancel -> {});
         }
     }
 
     @Override
-    protected void updateFullView(View fullView, AutofillContact contact) {
-        if (contact == null || mFullOptions == null) {
+    protected void updateFullView(View fullView, @Nullable ContactModel model) {
+        if (model == null || mFullOptions == null) {
             return;
         }
 
         TextView fullViewText = fullView.findViewById(R.id.contact_full);
-        String description = createContactDescription(mFullOptions, contact);
+        String description = createContactDescription(mFullOptions, model.mOption);
         fullViewText.setText(description);
         hideIfEmpty(fullViewText);
 
-        fullView.findViewById(R.id.incomplete_error)
-                .setVisibility(isComplete(contact) ? View.GONE : View.VISIBLE);
+        TextView errorView = fullView.findViewById(R.id.incomplete_error);
+        if (model.mErrors.isEmpty()) {
+            errorView.setText("");
+            errorView.setVisibility(View.GONE);
+        } else {
+            errorView.setText(TextUtils.join("\n", model.mErrors));
+            errorView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    protected void updateSummaryView(View summaryView, AutofillContact contact) {
-        if (contact == null || mSummaryOptions == null) {
+    protected void updateSummaryView(View summaryView, @Nullable ContactModel model) {
+        if (model == null || mSummaryOptions == null) {
             return;
         }
 
         TextView contactSummaryView = summaryView.findViewById(R.id.contact_summary);
-        String description = createContactDescription(mSummaryOptions, contact);
+        String description = createContactDescription(mSummaryOptions, model.mOption);
         contactSummaryView.setText(description);
         hideIfEmpty(contactSummaryView);
 
         summaryView.findViewById(R.id.incomplete_error)
-                .setVisibility(isComplete(contact) ? View.GONE : View.VISIBLE);
+                .setVisibility(model.mErrors.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     @Override
-    protected boolean canEditOption(AutofillContact contact) {
+    protected boolean canEditOption(ContactModel model) {
         return true;
     }
 
     @Override
-    protected @DrawableRes int getEditButtonDrawable(AutofillContact contact) {
+    protected @DrawableRes int getEditButtonDrawable(ContactModel model) {
         return R.drawable.ic_edit_24dp;
     }
 
     @Override
-    protected String getEditButtonContentDescription(AutofillContact contact) {
+    protected String getEditButtonContentDescription(ContactModel model) {
         return mContext.getString(R.string.payments_edit_contact_details_label);
     }
 
     @Override
-    protected boolean areEqual(
-            @Nullable AutofillContact optionA, @Nullable AutofillContact optionB) {
-        if (optionA == null || optionB == null) {
-            return optionA == optionB;
+    protected boolean areEqual(@Nullable ContactModel modelA, @Nullable ContactModel modelB) {
+        if (modelA == null || modelB == null) {
+            return modelA == modelB;
         }
+        AutofillContact optionA = modelA.mOption;
+        AutofillContact optionB = modelB.mOption;
         if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
             return true;
         }
@@ -129,7 +136,7 @@ public class AssistantContactDetailsSection
      * The Chrome profiles have changed externally. This will rebuild the UI with the new/changed
      * set of contacts derived from the profiles, while keeping the selected item if possible.
      */
-    void onContactsChanged(List<AutofillContact> contacts) {
+    void onContactsChanged(List<ContactModel> contacts) {
         if (mIgnoreProfileChangeNotifications) {
             return;
         }
@@ -159,9 +166,9 @@ public class AssistantContactDetailsSection
     }
 
     @Override
-    protected void addOrUpdateItem(AutofillContact contact, boolean select, boolean notify) {
-        super.addOrUpdateItem(contact, select, notify);
-        addAutocompleteInformationToEditor(contact);
+    protected void addOrUpdateItem(ContactModel model, boolean select, boolean notify) {
+        super.addOrUpdateItem(model, select, notify);
+        addAutocompleteInformationToEditor(model.mOption);
     }
 
     private void addAutocompleteInformationToEditor(AutofillContact contact) {

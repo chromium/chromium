@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
@@ -35,8 +36,18 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::SizeIs;
+
+RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
+  RequiredDataPiece required_data_piece;
+  required_data_piece.set_error_message(
+      base::NumberToString(static_cast<int>(field)));
+  required_data_piece.mutable_condition()->set_key(static_cast<int>(field));
+  required_data_piece.mutable_condition()->mutable_not_empty();
+  return required_data_piece;
+}
 
 TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
   auto profile_a = std::make_unique<autofill::AutofillProfile>();
@@ -63,11 +74,13 @@ TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
   profiles.emplace_back(std::move(profile_a));
 
   CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
   std::vector<int> profile_indices =
-      autofill_assistant::SortContactsByCompleteness(options, profiles);
+      user_data::SortContactsByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(2, 1, 0));
 }
@@ -79,14 +92,15 @@ TEST(UserDataUtilTest, SortsContactsByCompleteness) {
       "", "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "+44");
 
   auto profile_no_phone = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(
-      profile_no_phone.get(), "Berta", "", "West", "berta.west@gmail.com", "",
-      "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "");
+  autofill::test::SetProfileInfo(profile_no_phone.get(), "Berta", "", "West",
+                                 "berta.west@gmail.com", "",
+                                 "Baker Street 221b", "", "London", "",
+                                 "WC2N 5DU", "UK", /* phone_number= */ "");
 
   auto profile_incomplete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_incomplete.get(), "Adam", "", "West",
-                                 "adam.west@gmail.com", "", "", "", "", "", "",
-                                 "", "");
+                                 /* email= */ "", "", "", "", "", "", "", "",
+                                 /* phone_number= */ "");
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
@@ -95,13 +109,15 @@ TEST(UserDataUtilTest, SortsContactsByCompleteness) {
   profiles.emplace_back(std::move(profile_complete));
 
   CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
-  options.request_payer_phone = true;
-  options.request_shipping = true;
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+  options.required_contact_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
 
   std::vector<int> profile_indices =
-      autofill_assistant::SortContactsByCompleteness(options, profiles);
+      user_data::SortContactsByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(2, 1, 0));
 }
@@ -110,10 +126,11 @@ TEST(UserDataUtilTest, GetDefaultContactSelectionForEmptyProfiles) {
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(GetDefaultContactProfile(options, profiles), -1);
+  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), -1);
 }
 
-TEST(UserDataUtilTest, GetDefaultContactSelectionForCompleteProfiles) {
+TEST(UserDataUtilTest,
+     GetDefaultContactSelectionForCompleteProfilesAlphabetically) {
   auto profile_b = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_b.get(), "Berta", "", "West",
                                  "berta.west@gmail.com", "", "", "", "", "", "",
@@ -130,10 +147,12 @@ TEST(UserDataUtilTest, GetDefaultContactSelectionForCompleteProfiles) {
   profiles.emplace_back(std::move(profile_a));
 
   CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
-  EXPECT_THAT(GetDefaultContactProfile(options, profiles), 1);
+  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), 1);
 }
 
 TEST(UserDataUtilTest, GetDefaultSelectionForDefaultEmail) {
@@ -161,12 +180,15 @@ TEST(UserDataUtilTest, GetDefaultSelectionForDefaultEmail) {
   profiles.emplace_back(std::move(profile_complete_with_default_email));
 
   CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
-  options.request_payer_phone = true;
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+  options.required_contact_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
   options.default_email = "adam.west@gmail.com";
 
-  EXPECT_THAT(GetDefaultContactProfile(options, profiles), 2);
+  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), 2);
 }
 
 TEST(UserDataUtilTest, SortsCompleteAddressesAlphabetically) {
@@ -506,59 +528,97 @@ TEST(UserDataUtilTest, CompareContactDetailsMatchesForUnqueriedFields) {
 
 TEST(UserDataUtilTest, ContactCompletenessNotRequired) {
   CollectUserDataOptions not_required_options;
-  not_required_options.request_payer_name = false;
-  not_required_options.request_payer_email = false;
-  not_required_options.request_payer_phone = false;
-
-  EXPECT_TRUE(IsCompleteContact(nullptr, not_required_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(nullptr, not_required_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequireName) {
   autofill::AutofillProfile contact;
   CollectUserDataOptions require_name_options;
-  require_name_options.request_payer_name = true;
+  require_name_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST));
+  require_name_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_LAST));
 
-  EXPECT_FALSE(IsCompleteContact(nullptr, require_name_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(nullptr, require_name_options),
+      ElementsAre("3", "5"));
   autofill::test::SetProfileInfo(&contact, /* first_name= */ "",
                                  /* middle_name= */ "",
                                  /* last_name= */ "", "adam.west@gmail.com", "",
                                  "", "", "", "", "", "", "+41");
-  EXPECT_FALSE(IsCompleteContact(&contact, require_name_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_name_options),
+      ElementsAre("3", "5"));
+  autofill::test::SetProfileInfo(&contact, "John", /* middle_name= */ "",
+                                 /* last_name= */ "", "", "", "", "", "", "",
+                                 "", "", "");
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_name_options),
+      ElementsAre("5"));
   autofill::test::SetProfileInfo(&contact, "John", /* middle_name= */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  EXPECT_TRUE(IsCompleteContact(&contact, require_name_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_name_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequireEmail) {
   autofill::AutofillProfile contact;
   CollectUserDataOptions require_email_options;
-  require_email_options.request_payer_email = true;
+  require_email_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
-  EXPECT_FALSE(IsCompleteContact(nullptr, require_email_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(nullptr, require_email_options),
+      ElementsAre("9"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  /* email= */ "", "", "", "", "", "", "", "",
                                  "+41");
-  EXPECT_FALSE(IsCompleteContact(&contact, require_email_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_email_options),
+      ElementsAre("9"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  "john.doe@gmail.com", "", "", "", "", "", "",
                                  "", "+41");
-  EXPECT_TRUE(IsCompleteContact(&contact, require_email_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_email_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequirePhone) {
   autofill::AutofillProfile contact;
   CollectUserDataOptions require_phone_options;
-  require_phone_options.request_payer_phone = true;
+  require_phone_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(
+          autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+  require_phone_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::PHONE_HOME_NUMBER));
+  require_phone_options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(
+          autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE));
 
-  EXPECT_FALSE(IsCompleteContact(nullptr, require_phone_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(nullptr, require_phone_options),
+      ElementsAre("14", "10", "12"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  "john.doe@gmail.com", "", "", "", "", "", "",
                                  "",
                                  /* phone= */ "");
-  EXPECT_FALSE(IsCompleteContact(&contact, require_phone_options));
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_phone_options),
+      ElementsAre("14", "10", "12"));
   autofill::test::SetProfileInfo(&contact, "", "", "", "", "", "", "", "", "",
-                                 "", "", "+41");
-  EXPECT_TRUE(IsCompleteContact(&contact, require_phone_options));
+                                 "", "", "079 123 45 67");
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_phone_options),
+      ElementsAre("12"));
+  autofill::test::SetProfileInfo(&contact, "", "", "", "", "", "", "", "", "",
+                                 "", "", "+41 79 123 45 67");
+  EXPECT_THAT(
+      user_data::GetContactValidationErrors(&contact, require_phone_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteShippingAddressNotRequired) {

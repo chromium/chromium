@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUs
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantContactField;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateChoiceOptions;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateTime;
@@ -448,8 +449,9 @@ public class AutofillAssistantCollectUserDataUiTest {
                     mHelper.createDummyProfile("John Doe", "john@gmail.com"),
                     /* requestName= */ true, /* requestPhone= */ true, /* requestEmail= */ false);
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
-                    Collections.singletonList(contact));
-            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS, contact);
+                    Collections.singletonList(new ContactModel(contact)));
+            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
+                    new ContactModel(contact));
         });
 
         // Contact details section should now contain and have pre-selected the new contact.
@@ -653,8 +655,9 @@ public class AutofillAssistantCollectUserDataUiTest {
                     mTestRule.getActivity(), profile, /* requestName= */ true,
                     /* requestPhone= */ true, /* requestEmail= */ true);
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
-                    Collections.singletonList(contact));
-            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS, contact);
+                    Collections.singletonList(new ContactModel(contact)));
+            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
+                    new ContactModel(contact));
             AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
                     mTestRule.getActivity(), profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
@@ -737,7 +740,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                     mTestRule.getActivity(), profile, /* requestName= */ true,
                     /* requestPhone= */ true, /* requestEmail= */ true);
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
-                    Collections.singletonList(contact));
+                    Collections.singletonList(new ContactModel(contact)));
             AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
                     mTestRule.getActivity(), profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
@@ -817,11 +820,12 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.CONTACT_SUMMARY_DESCRIPTION_OPTIONS,
                     summaryOptions);
             model.set(AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS, fullOptions);
-            List<AutofillContact> contacts = new ArrayList<>();
-            contacts.add(contactFull);
-            contacts.add(contactWithoutEmail);
+            List<ContactModel> contacts = new ArrayList<>();
+            contacts.add(new ContactModel(contactFull));
+            contacts.add(new ContactModel(contactWithoutEmail));
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS, contacts);
-            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS, contactFull);
+            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
+                    new ContactModel(contactFull));
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
         });
 
@@ -833,7 +837,8 @@ public class AutofillAssistantCollectUserDataUiTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
-                                contactWithoutEmail));
+                                new ContactModel(contactWithoutEmail,
+                                        Collections.singletonList("Missing email"))));
 
         testContact("John Simpson\n555 123-4567", "John Simpson\n555 123-4567",
                 viewHolder.mContactSection.getCollapsedView(), viewHolder.mContactList.getItem(0),

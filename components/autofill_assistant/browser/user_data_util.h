@@ -18,9 +18,12 @@
 #include "components/autofill_assistant/browser/website_login_manager.h"
 
 namespace autofill_assistant {
+namespace user_data {
 
-std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
-    const autofill::AutofillProfile& profile);
+// Validate the completeness of a contact.
+std::vector<std::string> GetContactValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options);
 
 // Sorts the given autofill profiles based on completeness, and returns a
 // vector of profile indices in sorted order. Full profiles will be ordered
@@ -35,6 +38,11 @@ std::vector<int> SortContactsByCompleteness(
 int GetDefaultContactProfile(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+
+}  // namespace user_data
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile);
 
 // Sorts the given autofill profiles based on completeness, and returns a
 // vector of profile indices in sorted order. Full profiles will be ordered
@@ -71,9 +79,6 @@ bool CompareContactDetails(
     const CollectUserDataOptions& collect_user_data_options,
     const autofill::AutofillProfile* a,
     const autofill::AutofillProfile* b);
-
-bool IsCompleteContact(const autofill::AutofillProfile* profile,
-                       const CollectUserDataOptions& collect_user_data_options);
 
 bool IsCompleteShippingAddress(
     const autofill::AutofillProfile* profile,

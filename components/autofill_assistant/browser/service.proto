@@ -12,6 +12,7 @@ package autofill_assistant;
 
 import "action_strategy.proto";
 import "action_value.proto";
+import "cud_condition.proto";
 import "dom_action.proto";
 import "generic_ui.proto";
 import "model.proto";
@@ -2088,6 +2089,8 @@ message ContactDetailsProto {
   // If present, it will be used as the title to be displayed for the contact
   // details section instead of the default one.
   optional string contact_details_section_title = 9;
+  // Defines how to evaluate validity of this contact.
+  repeated RequiredDataPiece required_data_piece = 10;
 }
 
 message LoginDetailsProto {
@@ -2348,7 +2351,7 @@ message CollectUserDataProto {
   // address, the selected credit card should also be cleared!
   repeated string clear_previous_profile_selection = 30;
 
-  reserved 7, 26;
+  reserved 7, 26, 34 to 36;
 }
 
 // Stop Autofill Assistant.

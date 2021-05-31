@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
@@ -172,6 +173,9 @@ struct CollectUserDataOptions {
   CollectUserDataOptions();
   ~CollectUserDataOptions();
 
+  // TODO(b/180705720): Eventually remove |request_payer_name|,
+  // |request_payer_email| and |request_payer_phone|. They're still used to
+  // control the ContactEditor.
   bool request_payer_name = false;
   bool request_payer_email = false;
   bool request_payer_phone = false;
@@ -187,6 +191,8 @@ struct CollectUserDataOptions {
   bool require_billing_postal_code = false;
   std::string billing_postal_code_missing_text;
   std::string credit_card_expired_text;
+
+  std::vector<RequiredDataPiece> required_contact_data_pieces;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;

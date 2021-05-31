@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -691,6 +692,10 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
         contact_details.request_payer_name();
     collect_user_data_options_->request_payer_phone =
         contact_details.request_payer_phone();
+    collect_user_data_options_->required_contact_data_pieces =
+        std::vector<RequiredDataPiece>(
+            contact_details.required_data_piece().begin(),
+            contact_details.required_data_piece().end());
     // TODO(b/146405276): Remove legacy support for |summary_fields| and
     // |full_fields|.
     if (contact_details.summary_fields().empty()) {
@@ -967,8 +972,9 @@ bool CollectUserDataAction::CheckInitialAutofillDataComplete(
     if (request_contact) {
       auto completeContactIter = std::find_if(
           profiles.begin(), profiles.end(), [this](const auto& profile) {
-            return IsCompleteContact(profile,
-                                     *this->collect_user_data_options_.get());
+            return user_data::GetContactValidationErrors(
+                       profile, *this->collect_user_data_options_.get())
+                .empty();
           });
       if (completeContactIter == profiles.end()) {
         return false;
@@ -1023,7 +1029,8 @@ bool CollectUserDataAction::IsUserDataComplete(
       user_data.selected_address(options.billing_address_name);
   auto* shipping_address =
       user_data.selected_address(options.shipping_address_name);
-  return IsCompleteContact(selected_profile, options) &&
+  return user_data::GetContactValidationErrors(selected_profile, options)
+             .empty() &&
          IsCompleteShippingAddress(shipping_address, options) &&
          IsCompleteCreditCard(user_data.selected_card(), billing_address,
                               options) &&
@@ -1291,7 +1298,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
       (collect_user_data_options_->request_payer_name ||
        collect_user_data_options_->request_payer_phone ||
        collect_user_data_options_->request_payer_email)) {
-    int default_selection = GetDefaultContactProfile(
+    int default_selection = user_data::GetDefaultContactProfile(
         *collect_user_data_options_, user_data->available_profiles_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(

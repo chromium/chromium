@@ -15,6 +15,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -31,6 +32,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
@@ -60,12 +62,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.RequiredDataPiece;
 import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
@@ -78,6 +82,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -122,21 +127,31 @@ public class AutofillAssistantPersonalDataManagerTest {
     /**
      * Add a contact with Autofill Assistant UI and fill it into the form.
      */
-    @Test
-    @MediumTest
-    public void testCreateAndEnterProfile() throws Exception {
+    public void testCreateAndEnterContact(boolean pdmEnabled) throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> PersonalDataManager.setAutofillProfileEnabled(pdmEnabled));
+
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setCollectUserData(
-                                CollectUserDataProto.newBuilder()
-                                        .setContactDetails(ContactDetailsProto.newBuilder()
-                                                                   .setContactDetailsName("contact")
-                                                                   .setRequestPayerName(true)
-                                                                   .setRequestPayerEmail(true)
-                                                                   .setRequestPayerPhone(false))
-                                        .setRequestTermsAndConditions(false))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setContactDetails(
+                                                 ContactDetailsProto.newBuilder()
+                                                         .setContactDetailsName("contact")
+                                                         .setRequestPayerName(true)
+                                                         .setRequestPayerEmail(true)
+                                                         .setRequestPayerPhone(false)
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires first name", 3))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires last name", 5))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires email", 9)))
+                                         .setRequestTermsAndConditions(false))
+                         .build());
         list.add(
                 (ActionProto) ActionProto.newBuilder()
                         .setUseAddress(
@@ -192,20 +207,58 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(typeText("John Doe"));
+        onView(withContentDescription("Name*")).perform(typeText("John"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
         onView(withContentDescription("Email*")).perform(typeText("johndoe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
-        waitUntilViewMatchesCondition(withText("Continue"), isEnabled());
-        onView(withId(R.id.contact_summary))
-                .check(matches(allOf(withText("johndoe@google.com"), isDisplayed())));
-        onView(withText("Continue")).perform(click());
+        // First round: Missing name piece.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
+        onView(allOf(hasSibling(withId(R.id.contact_summary)), withId(R.id.incomplete_error)))
+                .check(matches(
+                        allOf(withText(mTestRule.getActivity().getString(
+                                      R.string.autofill_assistant_payment_information_missing)),
+                                isDisplayed())));
+        onView(withText("Contact info")).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.contact_full), isDisplayed());
+        onView(allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)))
+                .check(matches(allOf(
+                        anyOf(withText("Requires first name"), withText("Requires last name")),
+                        isDisplayed())));
+        onView(withContentDescription("Edit contact info")).perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Name*")).perform(typeText(" Doe"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
+                .perform(scrollTo(), click());
+        // Second round: Complete.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+        onView(withId(R.id.contact_full))
+                .check(matches(allOf(withText(containsString("John Doe")),
+                        withText(containsString("johndoe@google.com")), isDisplayed())));
+        onView(allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)))
+                .check(matches(not(isDisplayed())));
+        onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateAndEnterContactProfileWithPDMEnabled() throws Exception {
+        testCreateAndEnterContact(/* pdmEnabled= */ true);
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateAndEnterContactProfileWithPDMDisabled() throws Exception {
+        testCreateAndEnterContact(/* pdmEnabled= */ false);
     }
 
     /**
@@ -989,6 +1042,12 @@ public class AutofillAssistantPersonalDataManagerTest {
         assertThat(getElementValue(getWebContents(), "street"), is("123 Main St"));
         assertThat(getElementValue(getWebContents(), "zip"), is("1234"));
         assertThat(getElementValue(getWebContents(), "state"), is("California"));
+    }
+
+    private RequiredDataPiece.Builder buildRequiredDataPiece(String message, int key) {
+        return RequiredDataPiece.newBuilder().setErrorMessage(message).setCondition(
+                RequiredDataPiece.Condition.newBuilder().setKey(key).setNotEmpty(
+                        RequiredDataPiece.NotEmptyCondition.newBuilder()));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

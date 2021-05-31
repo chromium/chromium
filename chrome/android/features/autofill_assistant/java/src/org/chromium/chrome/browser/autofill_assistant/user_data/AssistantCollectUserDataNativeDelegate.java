@@ -170,18 +170,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public boolean isContactComplete(@Nullable AutofillContact contact) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            return AssistantCollectUserDataNativeDelegateJni.get().isContactComplete(
-                    mNativeAssistantCollectUserDataDelegate,
-                    AssistantCollectUserDataNativeDelegate.this,
-                    contact != null ? contact.getProfile() : null);
-        }
-
-        return false;
-    }
-
-    @Override
     public boolean isShippingAddressComplete(@Nullable AutofillAddress address) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             return AssistantCollectUserDataNativeDelegateJni.get().isShippingAddressComplete(
@@ -250,9 +238,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 AssistantCollectUserDataNativeDelegate caller, String key, AssistantValue value);
         void onInputTextFocusChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, boolean isFocused);
-        boolean isContactComplete(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.AutofillProfile address);
         boolean isShippingAddressComplete(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable PersonalDataManager.AutofillProfile address);

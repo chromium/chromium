@@ -7,10 +7,12 @@
 #include <numeric>
 #include "base/callback.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
@@ -21,6 +23,8 @@
 namespace autofill_assistant {
 namespace {
 
+constexpr char kDefaultLocale[] = "en-US";
+
 // TODO: Share this helper function with use_address_action.
 std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
   return autofill::data_util::JoinNameParts(
@@ -29,46 +33,10 @@ std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
       profile.GetRawInfo(autofill::NAME_LAST));
 }
 
-int CountCompleteContactFields(const CollectUserDataOptions& options,
-                               const autofill::AutofillProfile& profile) {
-  int completed_fields = 0;
-  if (options.request_payer_name && !GetProfileFullName(profile).empty()) {
-    ++completed_fields;
-  }
-  if (options.request_shipping &&
-      !profile.GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS).empty()) {
-    ++completed_fields;
-  }
-  if (options.request_payer_email &&
-      !profile.GetRawInfo(autofill::EMAIL_ADDRESS).empty()) {
-    ++completed_fields;
-  }
-  if (options.request_payer_phone &&
-      !profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER).empty()) {
-    ++completed_fields;
-  }
-  return completed_fields;
-}
-
-// Helper function that compares instances of AutofillProfile by completeness
-// in regards to the current options. Full profiles should be ordered before
-// empty ones and fall back to compare the profile's name in case of equality.
-bool CompletenessCompareContacts(const CollectUserDataOptions& options,
-                                 const autofill::AutofillProfile& a,
-                                 const autofill::AutofillProfile& b) {
-  int complete_fields_a = CountCompleteContactFields(options, a);
-  int complete_fields_b = CountCompleteContactFields(options, b);
-  if (complete_fields_a == complete_fields_b) {
-    return base::i18n::ToLower(GetProfileFullName(a))
-               .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
-  }
-  return complete_fields_a > complete_fields_b;
-}
-
 int GetAddressCompletenessRating(const CollectUserDataOptions& options,
                                  const autofill::AutofillProfile& profile) {
-  auto address_data =
-      autofill::i18n::CreateAddressDataFromAutofillProfile(profile, "en-US");
+  auto address_data = autofill::i18n::CreateAddressDataFromAutofillProfile(
+      profile, kDefaultLocale);
   std::multimap<i18n::addressinput::AddressField,
                 i18n::addressinput::AddressProblem>
       problems;
@@ -146,8 +114,8 @@ bool IsCompleteAddress(const autofill::AutofillProfile* profile,
   }
   // We use a hard coded locale here since we are only interested in whether
   // fields are empty or not.
-  auto address_data =
-      autofill::i18n::CreateAddressDataFromAutofillProfile(*profile, "en-US");
+  auto address_data = autofill::i18n::CreateAddressDataFromAutofillProfile(
+      *profile, kDefaultLocale);
   if (!autofill::addressinput::HasAllRequiredFields(*address_data)) {
     return false;
   }
@@ -179,8 +147,7 @@ ClientStatus ExtractProfileAndFormatAutofillValue(
   }
 
   auto mappings =
-      field_formatter::CreateAutofillMappings(*address,
-                                              /* locale= */ "en-US");
+      field_formatter::CreateAutofillMappings(*address, kDefaultLocale);
   ClientStatus format_status = field_formatter::FormatExpression(
       value_expression, mappings, quote_meta, out_value);
   if (!format_status.ok()) {
@@ -202,15 +169,79 @@ void OnGetStoredPassword(
   std::move(callback).Run(OkClientStatus(), password);
 }
 
-}  // namespace
+bool EvaluateCondition(const std::map<std::string, std::string>& data,
+                       const RequiredDataPiece::Condition& condition) {
+  auto it = data.find(base::NumberToString(condition.key()));
+  if (it == data.end()) {
+    return false;
+  }
+  auto value = it->second;
+  switch (condition.condition_case()) {
+    case RequiredDataPiece::Condition::kNotEmpty:
+      return !value.empty();
+    case RequiredDataPiece::Condition::kRegexp: {
+      re2::RE2::Options options;
+      options.set_case_sensitive(
+          condition.regexp().text_filter().case_sensitive());
+      re2::RE2 regexp(condition.regexp().text_filter().re2(), options);
+      return RE2::PartialMatch(value, regexp);
+    }
+    case RequiredDataPiece::Condition::CONDITION_NOT_SET:
+      return false;
+  }
+}
 
-std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
-    const autofill::AutofillProfile& profile) {
-  auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
-  // Temporary workaround so that fields like first/last name a properly
-  // populated.
-  unique_profile->FinalizeAfterImport();
-  return unique_profile;
+std::vector<std::string> GetValidationErrors(
+    const std::map<std::string, std::string> data,
+    const std::vector<RequiredDataPiece> required_data_pieces) {
+  std::vector<std::string> errors;
+
+  for (const auto& required_data_piece : required_data_pieces) {
+    if (!EvaluateCondition(data, required_data_piece.condition())) {
+      errors.push_back(required_data_piece.error_message());
+    }
+  }
+  return errors;
+}
+
+// Helper function that compares instances of AutofillProfile by completeness
+// in regards to the current options. Full profiles should be ordered before
+// empty ones and fall back to compare the profile's name in case of equality.
+bool CompletenessCompareContacts(const CollectUserDataOptions& options,
+                                 const autofill::AutofillProfile& a,
+                                 const autofill::AutofillProfile& b) {
+  int incomplete_fields_a =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
+          options.required_contact_data_pieces)
+          .size();
+  int incomplete_fields_b =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
+          options.required_contact_data_pieces)
+          .size();
+  if (incomplete_fields_a == incomplete_fields_b) {
+    return base::i18n::ToLower(GetProfileFullName(a))
+               .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+  }
+  return incomplete_fields_a <= incomplete_fields_b;
+}
+
+}  // namespace
+namespace user_data {
+
+std::vector<std::string> GetContactValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options) {
+  if (collect_user_data_options.required_contact_data_pieces.empty()) {
+    return std::vector<std::string>();
+  }
+
+  return GetValidationErrors(
+      profile
+          ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
+          : std::map<std::string, std::string>(),
+      collect_user_data_options.required_contact_data_pieces);
 }
 
 std::vector<int> SortContactsByCompleteness(
@@ -246,6 +277,17 @@ int GetDefaultContactProfile(
   return sorted_indices[0];
 }
 
+}  // namespace user_data
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile) {
+  auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
+  // Temporary workaround so that fields like first/last name a properly
+  // populated.
+  unique_profile->FinalizeAfterImport();
+  return unique_profile;
+}
+
 std::vector<int> SortAddressesByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
@@ -266,7 +308,7 @@ int GetDefaultAddressProfile(
     return -1;
   }
   auto sorted_indices =
-      SortContactsByCompleteness(collect_user_data_options, profiles);
+      SortAddressesByCompleteness(collect_user_data_options, profiles);
   return sorted_indices[0];
 }
 
@@ -327,36 +369,6 @@ bool CompareContactDetails(
     }
   }
 
-  return true;
-}
-
-bool IsCompleteContact(
-    const autofill::AutofillProfile* profile,
-    const CollectUserDataOptions& collect_user_data_options) {
-  if (!collect_user_data_options.request_payer_name &&
-      !collect_user_data_options.request_payer_email &&
-      !collect_user_data_options.request_payer_phone) {
-    return true;
-  }
-
-  if (!profile) {
-    return false;
-  }
-
-  if (collect_user_data_options.request_payer_name &&
-      !profile->HasInfo(autofill::NAME_FULL)) {
-    return false;
-  }
-
-  if (collect_user_data_options.request_payer_email &&
-      !profile->HasInfo(autofill::EMAIL_ADDRESS)) {
-    return false;
-  }
-
-  if (collect_user_data_options.request_payer_phone &&
-      !profile->HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER)) {
-    return false;
-  }
   return true;
 }
 

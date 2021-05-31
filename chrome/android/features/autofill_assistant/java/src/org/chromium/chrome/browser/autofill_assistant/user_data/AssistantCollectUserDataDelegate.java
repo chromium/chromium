@@ -55,12 +55,6 @@ public interface AssistantCollectUserDataDelegate {
     void onInputTextFocusChanged(boolean isFocused);
 
     /**
-     * Returns true if the contact is complete.
-     * TODO(b/154068342): Remove this method and send the error message from |Controller|.
-     */
-    boolean isContactComplete(@Nullable AutofillContact contact);
-
-    /**
      * Returns true if the shipping address is complete.
      * TODO(b/154068342): Remove this method and send the error message from |Controller|.
      */
