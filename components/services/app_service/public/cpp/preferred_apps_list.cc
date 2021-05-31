@@ -130,6 +130,9 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
   if (IsSupportedLink(intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, true);
+      for (auto& app : replaced_preference_map) {
+        obs.OnPreferredAppChanged(app.first, false);
+      }
     }
   }
   return replaced_app_preferences;
