@@ -87,13 +87,6 @@ EventSource* EventSource::Create(ExecutionContext* context,
                                  ? WebFeature::kEventSourceDocument
                                  : WebFeature::kEventSourceWorker);
 
-  if (url.IsEmpty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "Cannot open an EventSource to an empty URL.");
-    return nullptr;
-  }
-
   KURL full_url = context->CompleteURL(url);
   if (!full_url.IsValid()) {
     exception_state.ThrowDOMException(
