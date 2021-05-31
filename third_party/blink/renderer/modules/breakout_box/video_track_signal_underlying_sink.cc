@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal_type.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -25,6 +26,8 @@ VideoTrackSignalUnderlyingSink::VideoTrackSignalUnderlyingSink(
       MediaStreamVideoSource::GetVideoSource(track->Component()->Source());
   if (video_source)
     source_ = video_source->GetWeakPtr();
+
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableControlVideo);
 }
 
 ScriptPromise VideoTrackSignalUnderlyingSink::start(

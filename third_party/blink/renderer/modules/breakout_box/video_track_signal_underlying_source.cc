@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_generator.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -32,6 +33,7 @@ VideoTrackSignalUnderlyingSource::VideoTrackSignalUnderlyingSource(
       generator_(generator),
       max_queue_size_(std::max(1u, max_queue_size)) {
   DCHECK(generator_);
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableControlVideo);
 }
 
 ScriptPromise VideoTrackSignalUnderlyingSource::pull(

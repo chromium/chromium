@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -41,6 +42,7 @@ MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
       media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideo);
 }
 
 void MediaStreamVideoTrackUnderlyingSource::Trace(Visitor* visitor) const {
@@ -52,7 +54,6 @@ void MediaStreamVideoTrackUnderlyingSource::Trace(Visitor* visitor) const {
 std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   return std::make_unique<VideoFrameQueueTransferOptimizer>(
       this, GetRealmRunner(), MaxQueueSize(),
       CrossThreadBindOnce(
@@ -91,6 +92,7 @@ void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
                                WrapCrossThreadPersistent(source)),
       GetIOTaskRunner(),
       CrossThreadBindOnce(finalize_transfer, WrapCrossThreadPersistent(this)));
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideoWorker);
 }
 
 void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(

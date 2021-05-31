@@ -141,7 +141,9 @@ void MediaStreamTrackProcessor::CreateAudioSourceStream(
       MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSource>(
           script_state, input_track_->Component(), this, buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, audio_underlying_source_, /*high_water_mark=*/0);
+      script_state, audio_underlying_source_, /*high_water_mark=*/0,
+      AllowPerChunkTransferring(false),
+      audio_underlying_source_->GetTransferringOptimizer());
 }
 
 void MediaStreamTrackProcessor::CreateVideoControlStream(

@@ -5,10 +5,23 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
 #include "media/base/audio_buffer.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 
 namespace blink {
+
+namespace {
+class PlaceholderTransferringOptimizer
+    : public ReadableStreamTransferringOptimizer {
+  UnderlyingSourceBase* PerformInProcessOptimization(
+      ScriptState* script_state) override {
+    RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudioWorker);
+    return nullptr;
+  }
+};
+}  // namespace
 
 MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     ScriptState* script_state,
@@ -19,6 +32,7 @@ MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
       media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudio);
 }
 
 bool MediaStreamAudioTrackUnderlyingSource::StartFrameDelivery() {
@@ -74,6 +88,11 @@ void MediaStreamAudioTrackUnderlyingSource::OnSetFormat(
     const media::AudioParameters& params) {
   DCHECK(params.IsValid());
   audio_parameters_ = params;
+}
+
+std::unique_ptr<ReadableStreamTransferringOptimizer>
+MediaStreamAudioTrackUnderlyingSource::GetTransferringOptimizer() {
+  return std::make_unique<PlaceholderTransferringOptimizer>();
 }
 
 }  // namespace blink

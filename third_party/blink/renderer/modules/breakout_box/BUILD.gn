@@ -22,6 +22,8 @@ blink_modules_sources("breakout_box") {
     "media_stream_video_track_underlying_sink.h",
     "media_stream_video_track_underlying_source.cc",
     "media_stream_video_track_underlying_source.h",
+    "metrics.cc",
+    "metrics.h",
     "pushable_media_stream_audio_source.cc",
     "pushable_media_stream_audio_source.h",
     "pushable_media_stream_video_source.cc",

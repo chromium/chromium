@@ -9695,6 +9695,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
+<enum name="BreakoutBoxUsage">
+  <int value="0" label="ReadableVideo"/>
+  <int value="1" label="ReadableVideoWorker"/>
+  <int value="2" label="ReadableAudio"/>
+  <int value="3" label="ReadableAudioWorker"/>
+  <int value="4" label="WritableVideo"/>
+  <int value="5" label="WritableVideoWorker"/>
+  <int value="6" label="WritableAudio"/>
+  <int value="7" label="WritableAudioWorker"/>
+  <int value="8" label="ReadableControlVideo"/>
+  <int value="9" label="WritableControlVideo"/>
+</enum>
+
 <enum name="BrokenAlternateProtocolLocation">
   <int value="0" label="HTTP_STREAM_FACTORY_JOB"/>
   <int value="1" label="QUIC_STREAM_FACTORY"/>

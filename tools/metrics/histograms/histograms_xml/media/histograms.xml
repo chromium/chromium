@@ -1291,6 +1291,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
+    expires_after="2022-05-21">
+  <owner>guidou@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Usage of various BreakoutBox features. Recorded when a stream is created or
+    transferred in MediaStreamTrackProcessor or MediaStreamTrackGenerator.
+  </summary>
+</histogram>
+
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video" units="ms"
     expires_after="2021-10-04">
   <owner>chcunningham@chromium.org</owner>
