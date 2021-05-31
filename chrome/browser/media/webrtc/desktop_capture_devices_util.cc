@@ -55,6 +55,11 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
     return nullptr;
   }
 
+  if (!captured_config.expose_origin &&
+      captured_config.capture_handle.empty()) {
+    return nullptr;
+  }
+
   auto result = media::mojom::CaptureHandle::New();
   if (captured_config.expose_origin) {
     result->origin = captured->GetMainFrame()->GetLastCommittedOrigin();
