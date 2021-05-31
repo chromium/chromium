@@ -69,7 +69,7 @@ class FontMetrics {
   float FloatDescent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return descent_;
-    return FloatHeight() / 2;
+    return FloatHeight() - FloatAscent(baseline_type);
   }
 
   void SetDescent(float descent) {
@@ -77,9 +77,7 @@ class FontMetrics {
     descent_int_ = static_cast<int>(lroundf(descent));
   }
 
-  float FloatHeight(FontBaseline baseline_type = kAlphabeticBaseline) const {
-    return FloatAscent() + FloatDescent();
-  }
+  float FloatHeight() const { return ascent_ + descent_; }
 
   float FloatLineGap() const { return line_gap_; }
   void SetLineGap(float line_gap) { line_gap_ = line_gap; }
@@ -106,12 +104,10 @@ class FontMetrics {
   int Descent(FontBaseline baseline_type = kAlphabeticBaseline) const {
     if (baseline_type == kAlphabeticBaseline)
       return descent_int_;
-    return Height() / 2;
+    return Height() - Ascent(baseline_type);
   }
 
-  int Height(FontBaseline baseline_type = kAlphabeticBaseline) const {
-    return Ascent() + Descent();
-  }
+  int Height() const { return ascent_int_ + descent_int_; }
 
   int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
   int LineSpacing() const { return static_cast<int>(lroundf(line_spacing_)); }
@@ -137,10 +133,8 @@ class FontMetrics {
       FontBaseline baseline_type = kAlphabeticBaseline) const {
     // TODO(kojii): In future, we'd like to use LayoutUnit metrics to support
     // sub-CSS-pixel layout.
-    if (baseline_type == kAlphabeticBaseline)
-      return FontHeight(LayoutUnit(ascent_int_), LayoutUnit(descent_int_));
-    int height = ascent_int_ + descent_int_;
-    return FontHeight(LayoutUnit(height - height / 2), LayoutUnit(height / 2));
+    return FontHeight(LayoutUnit(Ascent(baseline_type)),
+                      LayoutUnit(Descent(baseline_type)));
   }
 
   bool HasIdenticalAscentDescentAndLineGap(const FontMetrics& other) const {
