@@ -798,6 +798,9 @@ experimental domain Audits
     properties
       InspectorIssueCode code
       InspectorIssueDetails details
+      # A unique id for this issue. May be omitted if no other entity (e.g.
+      # exception, CDP message, etc.) is referencing this issue.
+      optional string issueId
 
   # Returns the response body and size if it were re-encoded with the specified settings. Only
   # applies to images.

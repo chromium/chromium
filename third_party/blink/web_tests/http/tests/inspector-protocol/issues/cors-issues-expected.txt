@@ -1,5 +1,5 @@
 Test to make sure CORS issues are correctly reported.
-[
+Cors issues: [
     [0] : {
         code : CorsIssue
         details : {
@@ -16,6 +16,7 @@ Test to make sure CORS issues are correctly reported.
                 }
             }
         }
+        issueId : <string>
     }
     [1] : {
         code : CorsIssue
@@ -33,6 +34,7 @@ Test to make sure CORS issues are correctly reported.
                 }
             }
         }
+        issueId : <string>
     }
     [2] : {
         code : CorsIssue
@@ -50,6 +52,7 @@ Test to make sure CORS issues are correctly reported.
                 }
             }
         }
+        issueId : <string>
     }
     [3] : {
         code : CorsIssue
@@ -67,6 +70,7 @@ Test to make sure CORS issues are correctly reported.
                 }
             }
         }
+        issueId : <string>
     }
 ]
 

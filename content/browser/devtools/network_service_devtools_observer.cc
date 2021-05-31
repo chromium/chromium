@@ -207,6 +207,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   auto issue = protocol::Audits::InspectorIssue::Create()
                    .SetCode(protocol::Audits::InspectorIssueCodeEnum::CorsIssue)
                    .SetDetails(std::move(details))
+                   .SetIssueId(cors_error_status.issueId.ToString())
                    .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(
       ftn->current_frame_host(), issue.get());

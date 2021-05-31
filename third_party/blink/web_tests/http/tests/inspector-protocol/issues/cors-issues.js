@@ -30,6 +30,6 @@
       (a, b) =>
           a.details?.corsIssueDetails?.corsErrorStatus?.corsError.localeCompare(
               b.details?.corsIssueDetails?.corsErrorStatus?.corsError));
-  testRunner.log(issues);
+  testRunner.log(issues, 'Cors issues: ', ['requestId', 'issueId']);
   testRunner.completeTest();
 })

@@ -65,6 +65,7 @@ IPC_STRUCT_TRAITS_BEGIN(network::CorsErrorStatus)
   IPC_STRUCT_TRAITS_MEMBER(cors_error)
   IPC_STRUCT_TRAITS_MEMBER(failed_parameter)
   IPC_STRUCT_TRAITS_MEMBER(resource_address_space)
+  IPC_STRUCT_TRAITS_MEMBER(issueId)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(network::URLLoaderCompletionStatus)
