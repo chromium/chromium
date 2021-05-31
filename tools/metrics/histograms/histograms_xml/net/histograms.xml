@@ -1753,7 +1753,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Fetch.UploadStreamingProtocolAllowH1"
-    enum="HttpProtocolScheme" expires_after="2021-06-29">
+    enum="HttpProtocolScheme" expires_after="2021-10-19">
   <owner>yoichio@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
@@ -1764,7 +1764,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Fetch.UploadStreamingProtocolNotAllowH1"
-    enum="HttpProtocolScheme" expires_after="2021-06-29">
+    enum="HttpProtocolScheme" expires_after="2021-10-19">
   <owner>yoichio@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
