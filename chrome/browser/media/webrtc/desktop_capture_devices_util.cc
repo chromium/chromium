@@ -29,10 +29,8 @@ namespace {
 // capture_handle_manager.cc.
 media::mojom::CaptureHandlePtr CreateCaptureHandle(
     content::WebContents* capturer,
+    const url::Origin& capturer_origin,
     const content::DesktopMediaID& captured_id) {
-  const url::Origin& capturer_origin =
-      url::Origin::Create(capturer->GetLastCommittedURL());
-
   if (capturer_origin.opaque()) {
     return nullptr;
   }
@@ -87,6 +85,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 media::mojom::DisplayMediaInformationPtr
 DesktopMediaIDToDisplayMediaInformation(
     content::WebContents* capturer,
+    const url::Origin& capturer_origin,
     const content::DesktopMediaID& media_id) {
   media::mojom::DisplayCaptureSurfaceType display_surface =
       media::mojom::DisplayCaptureSurfaceType::MONITOR;
@@ -115,7 +114,7 @@ DesktopMediaIDToDisplayMediaInformation(
     case content::DesktopMediaID::TYPE_WEB_CONTENTS:
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
       cursor = media::mojom::CursorCaptureType::MOTION;
-      capture_handle = CreateCaptureHandle(capturer, media_id);
+      capture_handle = CreateCaptureHandle(capturer, capturer_origin, media_id);
       break;
     case content::DesktopMediaID::TYPE_NONE:
       break;
@@ -225,6 +224,7 @@ std::string DeviceNamePrefix(
 
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     content::WebContents* web_contents,
+    const url::Origin& capturer_origin,
     blink::MediaStreamDevices* devices,
     const content::DesktopMediaID& media_id,
     blink::mojom::MediaStreamType devices_video_type,
@@ -249,8 +249,8 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       DeviceNamePrefix(web_contents, devices_video_type, media_id) + device_id;
   auto device =
       blink::MediaStreamDevice(devices_video_type, device_id, device_name);
-  device.display_media_info =
-      DesktopMediaIDToDisplayMediaInformation(web_contents, media_id);
+  device.display_media_info = DesktopMediaIDToDisplayMediaInformation(
+      web_contents, capturer_origin, media_id);
   devices->push_back(device);
   if (capture_audio) {
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
