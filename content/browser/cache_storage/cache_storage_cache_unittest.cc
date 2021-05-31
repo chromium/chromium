@@ -1024,7 +1024,6 @@ class CacheStorageCacheTest : public testing::Test {
   std::string bad_message_reason_;
   bool callback_closed_ = false;
 
- private:
   const GURL kTestUrl{"http://example.com"};
 };
 
@@ -2774,6 +2773,13 @@ TEST_P(CacheStorageCacheTestP, PutFailWriteHeaders) {
             /*error_count*/ mock_quota_manager_->write_error_tracker()
                 .begin()
                 ->second);
+}
+
+TEST_F(CacheStorageCacheTest, OriginInUse) {
+  EXPECT_TRUE(quota_manager_proxy_->OriginInUse(url::Origin::Create(kTestUrl)));
+  cache_ = nullptr;
+  EXPECT_FALSE(
+      quota_manager_proxy_->OriginInUse(url::Origin::Create(kTestUrl)));
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageCacheTest,

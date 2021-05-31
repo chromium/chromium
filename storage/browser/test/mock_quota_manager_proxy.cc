@@ -89,6 +89,19 @@ void MockQuotaManagerProxy::NotifyStorageModified(
     callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
+void MockQuotaManagerProxy::NotifyOriginInUse(const url::Origin& origin) {
+  origins_in_use_.insert(origin);
+}
+
+void MockQuotaManagerProxy::NotifyOriginNoLongerInUse(
+    const url::Origin& origin) {
+  origins_in_use_.erase(origin);
+}
+
+bool MockQuotaManagerProxy::OriginInUse(const url::Origin& origin) const {
+  return origins_in_use_.contains(origin);
+}
+
 MockQuotaManagerProxy::~MockQuotaManagerProxy() {
   DCHECK(!registered_client_);
   DCHECK(!registered_legacy_client_);
