@@ -41,6 +41,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source);
 void AddNearbyShareData(content::WebUIDataSource* html_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Adds strings used by the <settings-secure-dns> element.
+void AddSecureDnsStrings(content::WebUIDataSource* html_source);
 }  // namespace settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_

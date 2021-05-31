@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -177,6 +178,15 @@ const std::vector<SearchConcept>& GetPrivacyGoogleChromeSearchConcepts() {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+bool IsSecureDnsAvailable() {
+  return
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FeatureList::IsEnabled(chromeos::features::kEnableDnsProxy) &&
+      base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH) &&
+#endif
+      ::features::kDnsOverHttpsShowUiParam.Get();
+}
+
 }  // namespace
 
 PrivacySection::PrivacySection(Profile* profile,
@@ -214,6 +224,9 @@ PrivacySection::~PrivacySection() = default;
 void PrivacySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::PeripheralDataAccessHandler>());
+
+  if (IsSecureDnsAvailable())
+    web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
 }
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -261,7 +274,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("pciguardUiEnabled",
                           chromeos::features::IsPciguardUiEnabled());
 
+  html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
+
   ::settings::AddPersonalizationOptionsStrings(html_source);
+  ::settings::AddSecureDnsStrings(html_source);
 }
 
 int PrivacySection::GetSectionNameMessageId() const {

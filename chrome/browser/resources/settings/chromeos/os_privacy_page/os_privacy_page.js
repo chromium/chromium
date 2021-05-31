@@ -184,6 +184,18 @@ Polymer({
       computed: 'computeShouldShowSubsections_(' +
           'isAccountManagementFlowsV2Enabled_, isGuestMode_)',
     },
+
+    /**
+     * Whether the secure DNS setting should be displayed.
+     * @private
+     */
+    showSecureDnsSetting_: {
+      type: Boolean,
+      readOnly: true,
+      value: function() {
+        return loadTimeData.getBoolean('showSecureDnsSetting');
+      },
+    },
   },
 
   /** @private {?PeripheralDataAccessBrowserProxy} */

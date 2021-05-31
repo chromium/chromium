@@ -83,6 +83,10 @@
         </div>
       </template>
     </template>
+    <template is="dom-if" if="[[showSecureDnsSetting_]]">
+      <div class="hr"></div>
+      <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
+    </template>
   </div>
 
   <template is="dom-if" if="[[shouldShowSubsections_]]" restamp>
