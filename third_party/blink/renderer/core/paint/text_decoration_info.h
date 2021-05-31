@@ -38,7 +38,6 @@ class CORE_EXPORT TextDecorationInfo {
 
  public:
   TextDecorationInfo(
-      const PhysicalOffset& box_origin,
       PhysicalOffset local_origin,
       LayoutUnit width,
       FontBaseline baseline_type,

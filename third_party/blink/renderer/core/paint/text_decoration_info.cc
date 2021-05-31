@@ -158,7 +158,6 @@ static int TextDecorationToLineDataIndex(TextDecoration line) {
 }  // anonymous namespace
 
 TextDecorationInfo::TextDecorationInfo(
-    const PhysicalOffset& box_origin,
     PhysicalOffset local_origin,
     LayoutUnit width,
     FontBaseline baseline_type,

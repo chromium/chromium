@@ -431,7 +431,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // Use a zero offset because all offsets
   // are applied to the ink overflow after it has been computed.
   PhysicalOffset offset;
-  TextDecorationInfo decoration_info(offset, offset, ink_overflow.Width(),
+  TextDecorationInfo decoration_info(offset, ink_overflow.Width(),
                                      style.GetFontBaseline(), style,
                                      absl::nullopt, nullptr);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,

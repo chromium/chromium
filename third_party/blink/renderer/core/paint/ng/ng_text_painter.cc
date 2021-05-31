@@ -37,9 +37,9 @@ absl::optional<TextDecorationInfo> DecorationsForLayer(
       text_item.IsEllipsis()) {
     return absl::nullopt;
   }
-  return TextDecorationInfo(decoration_rect.offset, decoration_rect.offset,
-                            decoration_rect.Width(), style.GetFontBaseline(),
-                            style, selection_text_decoration, nullptr);
+  return TextDecorationInfo(decoration_rect.offset, decoration_rect.Width(),
+                            style.GetFontBaseline(), style,
+                            selection_text_decoration, nullptr);
 }
 
 }  // namespace
