@@ -253,6 +253,7 @@ source_set("eg2_tests") {
     ":tab_usage_recorder_metrics",
     "//base/test:test_support",
     "//components/metrics/demographics",
+    "//components/signin/public/base",
     "//components/strings:components_strings_grit",
     "//components/ukm",
     "//ios/chrome/app/strings:ios_strings_grit",

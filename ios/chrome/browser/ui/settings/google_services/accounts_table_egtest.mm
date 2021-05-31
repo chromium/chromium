@@ -62,6 +62,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
   config.features_disabled.push_back(signin::kSimplifySignOutIOS);
   return config;
 }

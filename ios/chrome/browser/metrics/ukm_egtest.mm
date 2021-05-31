@@ -4,6 +4,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/macros.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
@@ -90,6 +91,12 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey clearSyncServerData];
 
   [super tearDown];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
+  return config;
 }
 
 #pragma mark - Helpers

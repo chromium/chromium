@@ -4914,7 +4914,8 @@
     "MobileIdentityConsistency": [
         {
             "platforms": [
-                "android"
+                "android",
+                "ios"
             ],
             "experiments": [
                 {

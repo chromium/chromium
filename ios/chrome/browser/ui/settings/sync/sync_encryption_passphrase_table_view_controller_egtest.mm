@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
@@ -33,6 +34,12 @@ using chrome_test_util::PrimarySignInButton;
 @end
 
 @implementation SyncEncryptionPassphraseTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
+  return config;
+}
 
 // Tests to open the sync passphrase view, and to close it.
 - (void)testShowSyncPassphraseAndDismiss {

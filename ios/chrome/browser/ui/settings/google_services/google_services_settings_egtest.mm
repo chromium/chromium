@@ -7,6 +7,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -50,6 +51,12 @@ using chrome_test_util::SyncSettingsConfirmButton;
 @end
 
 @implementation GoogleServicesSettingsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
+  return config;
+}
 
 // Opens the Google services settings view, and closes it.
 - (void)testOpenGoogleServicesSettings {
