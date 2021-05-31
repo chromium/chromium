@@ -378,6 +378,9 @@ extern const base::Feature kIncognitoBrandConsistencyForAndroid;
     defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoBrandConsistencyForDesktop;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kIncognitoClearBrowsingDataDialogForDesktop;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

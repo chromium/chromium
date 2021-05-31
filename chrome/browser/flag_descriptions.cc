@@ -1364,6 +1364,12 @@ const char kIncognitoBrandConsistencyForDesktopDescription[] =
     "When enabled, removes any theme or background customization done by the "
     "user on the Incognito UI.";
 
+const char kIncognitoClearBrowsingDataDialogForDesktopName[] =
+    "Enable clear browsing data dialog in Incognito.";
+const char kIncognitoClearBrowsingDataDialogForDesktopDescription[] =
+    "When enabled, clear browsing data option would be enabled in Incognito "
+    "which upon clicking would show a dialog to close all Incognito windows.";
+
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
     "Update history entry points in Incongito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =

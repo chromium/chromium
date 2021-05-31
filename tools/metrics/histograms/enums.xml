@@ -45776,6 +45776,8 @@ from previous Chrome versions.
   <int value="-1368913664" label="TabSearch:disabled"/>
   <int value="-1368734981" label="IPH_DesktopSnoozeFeature:enabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>
+  <int value="-1367447724"
+      label="IncognitoClearBrowsingDataDialogForDesktop:disabled"/>
   <int value="-1365795470"
       label="ServiceWorkerImportedScriptUpdateCheck:disabled"/>
   <int value="-1365503870" label="enable-simplified-fullscreen-ui"/>
@@ -49326,6 +49328,8 @@ from previous Chrome versions.
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
+  <int value="1702985369"
+      label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"

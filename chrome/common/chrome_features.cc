@@ -572,6 +572,12 @@ const base::Feature kIncognitoBrandConsistencyForAndroid{
 // on the Incognito UI.
 const base::Feature kIncognitoBrandConsistencyForDesktop{
     "IncognitoBrandConsistencyForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, clear browsing data option would be enabled in Incognito which
+// upon clicking would show a dialog to close all Incognito windows.
+const base::Feature kIncognitoClearBrowsingDataDialogForDesktop{
+    "IncognitoClearBrowsingDataDialogForDesktop",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // When enabled, removes any entry points to the history UI from Incognito mode.
