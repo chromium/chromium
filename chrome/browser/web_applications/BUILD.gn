@@ -37,6 +37,8 @@ source_set("web_applications") {
     "preinstalled_web_app_utils.h",
     "system_web_apps/system_web_app_background_task.cc",
     "system_web_apps/system_web_app_background_task.h",
+    "system_web_apps/system_web_app_delegate.cc",
+    "system_web_apps/system_web_app_delegate.h",
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
     "web_app.cc",

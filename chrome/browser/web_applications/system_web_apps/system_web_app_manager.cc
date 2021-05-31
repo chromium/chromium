@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -105,27 +106,31 @@ const char kFileHandlingOriginTrial[] = "FileHandling";
 // bailing out.
 const int kInstallFailureAttempts = 3;
 
-// Use #if defined to avoid compiler error on unused function.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// A convenience method to create OriginTrialsMap. Note, we only support simple
-// cases for chrome:// and chrome-untrusted:// URLs. We don't support complex
-// cases such as about:blank (which inherits origins from the embedding frame).
-url::Origin GetOrigin(const char* url) {
-  GURL gurl = GURL(url);
-  DCHECK(gurl.is_valid());
-
-  url::Origin origin = url::Origin::Create(gurl);
-  DCHECK(!origin.opaque());
-
-  return origin;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     Profile* profile) {
+  std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1051229): Currently unused, will be hooked up
+  // post-migration. We're making delegates for everything, and will then use
+  // them in place of SystemAppInfos.
+  info_vec.emplace_back(std::make_unique<CameraSystemAppDelegate>(profile));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OFFICIAL_BUILD)
+  bool install_experimental_apps = true;
+#else
+  bool install_experimental_apps = false;
+#endif
+
+  base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>> info_map;
+  for (auto& info : info_vec) {
+    if (info->IsAppEnabled(install_experimental_apps) ||
+        base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
+      info_map.emplace(info->GetType(), std::move(info));
+    }
+  }
+  // return info_map;
   base::flat_map<SystemAppType, SystemAppInfo> infos;
-// TODO(calamity): Split this into per-platform functions.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // SystemAppInfo's |name| field should be defined. These names are persisted
   // to logs and should not be renamed.

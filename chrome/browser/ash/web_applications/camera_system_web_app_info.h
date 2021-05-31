@@ -6,11 +6,26 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CAMERA_SYSTEM_WEB_APP_INFO_H_
 
 #include <memory>
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
 struct WebApplicationInfo;
+
+class CameraSystemAppDelegate : public web_app::SystemWebAppDelegate {
+ public:
+  explicit CameraSystemAppDelegate(Profile* profile);
+
+  // web_app::SystemWebAppDelegate overrides
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const override;
+  web_app::OriginTrialsMap GetEnabledOriginTrials() const override;
+  bool ShouldCaptureNavigations() const override;
+  gfx::Size GetMinimumWindowSize() const override;
+  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+};
 
 // Return a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp();

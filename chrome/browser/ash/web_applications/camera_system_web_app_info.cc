@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/camera_system_web_app_info.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -11,8 +12,11 @@
 #include "chromeos/components/camera_app_ui/resources/strings/grit/chromeos_camera_app_strings.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_camera_app_resources.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
@@ -48,4 +52,42 @@ gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
   return bounds;
+}
+
+CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::CAMERA,
+                                    "Camera",
+                                    GURL("chrome://camera-app/views/main.html"),
+                                    profile) {}
+
+std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForCameraSystemWebApp();
+}
+
+std::vector<web_app::AppId>
+CameraSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
+  if (!profile_->GetPrefs()->GetBoolean(
+          chromeos::prefs::kHasCameraAppMigratedToSWA)) {
+    return {extension_misc::kCameraAppId};
+  }
+  return {};
+}
+
+bool CameraSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+web_app::OriginTrialsMap CameraSystemAppDelegate::GetEnabledOriginTrials()
+    const {
+  return web_app::OriginTrialsMap({{web_app::GetOrigin("chrome://camera-app"),
+                                    {"FileHandling", "IdleDetection"}}});
+}
+
+gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
+  return {kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
+}
+
+gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+  return GetDefaultBoundsForCameraApp(browser);
 }
