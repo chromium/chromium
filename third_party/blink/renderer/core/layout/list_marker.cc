@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list_marker_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -126,7 +127,12 @@ void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
 
 LayoutObject* ListMarker::GetContentChild(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
-  return marker.SlowFirstChild();
+  LayoutObject* const first_child = marker.SlowFirstChild();
+  if (!first_child)
+    return nullptr;
+  if (IsA<LayoutNGTextCombine>(first_child))
+    return first_child->SlowFirstChild();
+  return first_child;
 }
 
 LayoutText& ListMarker::GetTextChild(const LayoutObject& marker) const {

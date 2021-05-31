@@ -398,8 +398,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     return true;
   }
 
-  // 'text-combine-upright' property is not supported yet.
-  if (style.HasTextCombine() && !style.IsHorizontalWritingMode()) {
+  if (!RuntimeEnabledFeatures::LayoutNGTextCombineEnabled() &&
+      style.HasTextCombine() && !style.IsHorizontalWritingMode()) {
     UseCounter::Count(document, WebFeature::kLegacyLayoutByTextCombine);
     return true;
   }

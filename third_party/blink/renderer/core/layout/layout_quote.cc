@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -287,7 +288,9 @@ void LayoutQuote::UpdateText() {
 
   LayoutTextFragment* fragment = FindFragmentChild();
   if (fragment) {
-    fragment->SetStyle(Style());
+    fragment->SetStyle(IsA<LayoutNGTextCombine>(fragment->Parent())
+                           ? fragment->Parent()->Style()
+                           : Style());
     fragment->SetContentString(text_.Impl());
   } else {
     LegacyLayout legacy =
@@ -301,13 +304,13 @@ void LayoutQuote::UpdateText() {
 
 LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
   NOT_DESTROYED();
-  // We walk from the end of the child list because, if we've had a first-letter
-  // LayoutObject inserted then the remaining text will be at the end.
-  while (LayoutObject* child = LastChild()) {
-    if (auto* fragment = DynamicTo<LayoutTextFragment>(child))
-      return fragment;
-  }
-
+  // TODO(yosin): Once we support ::first-letter for <q>, we should change
+  // this function. See http://crbug.com/1206577
+  auto* const last_child = LastChild();
+  if (auto* fragment = DynamicTo<LayoutTextFragment>(last_child))
+    return fragment;
+  if (auto* combine = DynamicTo<LayoutNGTextCombine>(last_child))
+    return DynamicTo<LayoutTextFragment>(combine->FirstChild());
   return nullptr;
 }
 

@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -230,6 +231,43 @@ void StyleAdjuster::AdjustStyleForEditing(ComputedStyle& style) {
     style.SetWhiteSpace(EWhiteSpace::kPre);
   else if (style.WhiteSpace() == EWhiteSpace::kPreLine)
     style.SetWhiteSpace(EWhiteSpace::kPreWrap);
+}
+
+void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
+  DCHECK_EQ(style.Display(), EDisplay::kInlineBlock);
+  // Set box sizes
+  const Font& font = style.GetFont();
+  DCHECK(font.GetFontDescription().IsVerticalAnyUpright());
+  const auto one_em = style.ComputedFontSizeAsFixed();
+  const auto line_height = style.GetFontHeight().LineHeight();
+  const auto size =
+      LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
+  style.SetContainIntrinsicSize(size);
+  style.SetHeight(size.Height());
+  style.SetLineHeight(size.Height());
+  style.SetMaxHeight(size.Height());
+  style.SetMaxWidth(size.Width());
+  style.SetMinHeight(size.Height());
+  style.SetMinWidth(size.Width());
+  style.SetWidth(size.Width());
+
+  // Set others
+  style.ResetTextCombine();
+  style.SetLetterSpacing(0.0f);
+  style.SetTextAlign(ETextAlign::kCenter);
+  style.SetTextDecoration(TextDecoration::kNone);
+  style.SetTextEmphasisMark(TextEmphasisMark::kNone);
+  style.SetVerticalAlign(EVerticalAlign ::kMiddle);
+  style.SetWordBreak(EWordBreak::kKeepAll);
+  style.SetWritingMode(WritingMode::kHorizontalTb);
+
+  style.ClearAppliedTextDecorations();
+  style.UpdateFontOrientation();
+
+  DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
+            FontOrientation::kHorizontal);
+
+  LayoutNGTextCombine::AssertStyleIsValid(style);
 }
 
 static void AdjustStyleForFirstLetter(ComputedStyle& style) {

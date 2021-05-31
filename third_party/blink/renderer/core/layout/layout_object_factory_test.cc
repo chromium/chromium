@@ -73,27 +73,46 @@ LayoutListItem LI id="sample"
 TEST_P(LayoutObjectFactoryTest, TextCombineInHorizontal) {
   InsertStyleElement(
       "div { writing-mode: horizontal-tb; }"
-      "tyc { text-combine-upright: all; }");
-  SetBodyInnerHTML("<div><tyc id=sample>ab</tyc></div>");
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
-  EXPECT_EQ(R"DUMP(
-LayoutInline TYC id="sample"
+
+  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+    EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
+  +--LayoutText #text "ab"
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
   +--LayoutTextCombine #text "ab"
 )DUMP",
-            ToSimpleLayoutTree(sample_layout_object));
+              ToSimpleLayoutTree(sample_layout_object));
+  }
 }
 
 TEST_P(LayoutObjectFactoryTest, TextCombineInVertical) {
   InsertStyleElement(
       "div { writing-mode: vertical-rl; }"
-      "tyc { text-combine-upright: all; }");
-  SetBodyInnerHTML("<div><tyc id=sample>ab</tyc></div>");
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
-  EXPECT_EQ(R"DUMP(
-LayoutInline TYC id="sample"
+
+  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+    EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text "ab"
+)DUMP",
+              ToSimpleLayoutTree(sample_layout_object));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutInline TCY id="sample"
   +--LayoutTextCombine #text "ab"
 )DUMP",
-            ToSimpleLayoutTree(sample_layout_object));
+              ToSimpleLayoutTree(sample_layout_object));
+  }
 }
 
 TEST_P(LayoutObjectFactoryTest, WordBreak) {

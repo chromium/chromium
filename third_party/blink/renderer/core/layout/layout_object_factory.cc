@@ -332,7 +332,16 @@ LayoutText* LayoutObjectFactory::CreateTextCombine(
     Node* node,
     scoped_refptr<StringImpl> str,
     LegacyLayout legacy) {
-  return new LayoutTextCombine(node, str);
+  bool force_legacy = false;
+  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+    force_legacy = legacy == LegacyLayout::kForce;
+    if (!force_legacy)
+      return new LayoutNGText(node, str);
+  }
+  LayoutText* const layout_text = new LayoutTextCombine(node, str);
+  if (force_legacy)
+    layout_text->SetForceLegacyLayout();
+  return layout_text;
 }
 
 LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(

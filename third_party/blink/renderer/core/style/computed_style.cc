@@ -246,6 +246,15 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return false;
 
+  // We use LayoutNGTextCombine only for vertical writing mode.
+  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled() &&
+      new_style->HasTextCombine() &&
+      old_style->IsHorizontalWritingMode() !=
+          new_style->IsHorizontalWritingMode()) {
+    DCHECK_EQ(old_style->HasTextCombine(), new_style->HasTextCombine());
+    return true;
+  }
+
   // LayoutNG needs an anonymous inline wrapper if ::first-line is applied.
   // Also see |LayoutBlockFlow::NeedsAnonymousInlineWrapper()|.
   if (new_style->HasPseudoElementStyle(kPseudoIdFirstLine) &&

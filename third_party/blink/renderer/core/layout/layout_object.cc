@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -470,6 +472,32 @@ void LayoutObject::AddChild(LayoutObject* new_child,
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
+  } else if (IsA<LayoutNGTextCombine>(*this)) {
+    DCHECK(LayoutNGTextCombine::ShouldBeParentOf(*new_child)) << new_child;
+    new_child->SetStyle(Style());
+    children->InsertChildNode(this, new_child, before_child);
+  } else if (LayoutNGTextCombine::ShouldBeParentOf(*new_child)) {
+    if (before_child) {
+      if (IsA<LayoutNGTextCombine>(before_child)) {
+        DCHECK(!DynamicTo<LayoutNGTextCombine>(before_child->PreviousSibling()))
+            << before_child->PreviousSibling();
+        before_child->AddChild(new_child, before_child->SlowFirstChild());
+      } else if (auto* const previous_sibling = DynamicTo<LayoutNGTextCombine>(
+                     before_child->PreviousSibling())) {
+        previous_sibling->AddChild(new_child);
+      } else {
+        children->InsertChildNode(
+            this,
+            LayoutNGTextCombine::CreateAnonymous(To<LayoutText>(new_child)),
+            before_child);
+      }
+    } else if (auto* const last_child =
+                   DynamicTo<LayoutNGTextCombine>(SlowLastChild())) {
+      last_child->AddChild(new_child);
+    } else {
+      children->AppendChildNode(this, LayoutNGTextCombine::CreateAnonymous(
+                                          To<LayoutText>(new_child)));
+    }
   } else {
     children->InsertChildNode(this, new_child, before_child);
   }
@@ -2940,6 +2968,11 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
     if (child->IsInFlowPositioned() && child_block_flow &&
         child_block_flow->IsAnonymousBlockContinuation())
       new_style->SetPosition(child->StyleRef().GetPosition());
+
+    if (IsA<LayoutNGTextCombine>(child)) {
+      // "text-combine-width-after-style-change.html" reaches here.
+      StyleAdjuster::AdjustStyleForTextCombine(*new_style);
+    }
 
     UpdateAnonymousChildStyle(child, *new_style);
 

@@ -41,6 +41,7 @@ class StyleAdjuster {
  public:
   CORE_EXPORT static void AdjustComputedStyle(StyleResolverState&, Element*);
   static void AdjustStyleForEditing(ComputedStyle&);
+  static void AdjustStyleForTextCombine(ComputedStyle&);
 
  private:
   static void AdjustOverflow(ComputedStyle& style, Element* element);
