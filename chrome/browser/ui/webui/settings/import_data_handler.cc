@@ -164,6 +164,9 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (select_file_dialog_)
+    return;
+
   DCHECK(args && args->empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
@@ -248,11 +251,17 @@ void ImportDataHandler::FileSelected(const base::FilePath& path,
                                      void* /*params*/) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  select_file_dialog_ = nullptr;
+
   importer::SourceProfile source_profile;
   source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
   source_profile.source_path = path;
 
   StartImport(source_profile, importer::FAVORITES);
+}
+
+void ImportDataHandler::FileSelectionCanceled(void* params) {
+  select_file_dialog_ = nullptr;
 }
 
 }  // namespace settings
