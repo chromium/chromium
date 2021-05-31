@@ -2553,7 +2553,7 @@ makeCrossOriginEmbedderPolicyValue(
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::None;
     case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::
-          CorsOrCredentialless;
+          Credentialless;
     case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::RequireCorp;
   }

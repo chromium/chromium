@@ -5968,7 +5968,7 @@ domain Network
   experimental type CrossOriginEmbedderPolicyValue extends string
     enum
       None
-      CorsOrCredentialless
+      Credentialless
       RequireCorp
 
   experimental type CrossOriginEmbedderPolicyStatus extends object
