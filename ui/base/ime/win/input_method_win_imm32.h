@@ -79,6 +79,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinImm32
 
   void ConfirmCompositionText();
 
+  // Gets the text input mode of the focused text input client. Returns
+  // ui::TEXT_INPUT_MODE_DEFAULT if there is no focused client.
+  TextInputMode GetTextInputMode() const;
+
   // Windows IMM32 wrapper.
   // (See "ui/base/ime/win/ime_input.h" for its details.)
   ui::IMM32Manager imm32_manager_;

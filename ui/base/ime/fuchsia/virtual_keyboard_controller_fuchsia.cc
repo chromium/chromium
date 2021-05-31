@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "ui/base/ime/text_input_client.h"
 
 namespace ui {
 namespace {
@@ -92,7 +93,12 @@ void VirtualKeyboardControllerFuchsia::OnVisibilityChange(bool is_visible) {
 // Returns the FIDL enum representation of the current InputMode.
 fuchsia::input::virtualkeyboard::TextType
 VirtualKeyboardControllerFuchsia::GetFocusedTextType() const {
-  switch (input_method_->GetTextInputMode()) {
+  TextInputClient* client = input_method_->GetTextInputClient();
+  // This function should only be called when there's focus, so there should
+  // always be a TextInputClient.
+  DCHECK(client);
+
+  switch (client->GetTextInputMode()) {
     case TEXT_INPUT_MODE_NUMERIC:
     case TEXT_INPUT_MODE_DECIMAL:
       return fuchsia::input::virtualkeyboard::TextType::NUMERIC;

@@ -792,6 +792,11 @@ int InputMethodChromeOS::GetTextInputFlags() const {
   return client ? client->GetTextInputFlags() : 0;
 }
 
+TextInputMode InputMethodChromeOS::GetTextInputMode() const {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
+}
+
 void InputMethodChromeOS::SendKeyEvent(KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);

@@ -323,6 +323,11 @@ void InputMethodWinImm32::ConfirmCompositionText() {
     imm32_manager_.CleanupComposition(composing_window_handle_);
 }
 
+TextInputMode InputMethodWinImm32::GetTextInputMode() const {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
+}
+
 void InputMethodWinImm32::UpdateIMEState() {
   // Use switch here in case we are going to add more text input types.
   // We disable input method in password field.

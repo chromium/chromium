@@ -157,6 +157,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // 0 if there is no focused client.
   int GetTextInputFlags() const;
 
+  // Gets the text input mode of the focused text input client. Returns
+  // ui::TEXT_INPUT_MODE_DEFAULT if there is no focused client.
+  TextInputMode GetTextInputMode() const;
+
   // Called from the engine when it completes processing.
   void ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled);
 
