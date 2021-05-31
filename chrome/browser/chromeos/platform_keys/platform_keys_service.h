@@ -109,7 +109,8 @@ class PlatformKeysServiceObserver : public base::CheckedObserver {
 // Functions of this class shouldn't be called directly from the context of
 // an extension. Instead use ExtensionPlatformKeysService which enforces
 // restrictions upon extensions.
-// All public methods of this class should be called on the UI thread.
+// All public methods of this class should be called on the UI thread and all of
+// the callbacks will be called with the result on the UI thread as well.
 // When the underlying key store is not available anymore, a PlatformKeysService
 // is shut down. Any function called after that will fail with an error.
 // For a Profile-specific PlatformKeysService, this will be when the Profile is
