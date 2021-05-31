@@ -276,7 +276,7 @@ class ClassLookupIndex:
 
   @staticmethod
   def _read_jar_namelist(abs_build_output_dir: pathlib.Path,
-                         abs_jar_path: pathlib.Path) -> list[str]:
+                         abs_jar_path: pathlib.Path) -> List[str]:
     """Returns list of jar members by name."""
 
     # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
