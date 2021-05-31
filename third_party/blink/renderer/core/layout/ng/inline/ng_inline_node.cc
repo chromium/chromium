@@ -738,11 +738,12 @@ class NGInlineNodeDataEditor final {
     DCHECK_LE(end_offset, item.end_offset_);
     const unsigned start_offset = item.start_offset_;
     // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
-    // For font having "fi", |usMaxContext = 2".
-    const unsigned max_context = 2;
+    // For font having "fi", usMaxContext = 2.
+    // For Emoji with ZWJ, usMaxContext = 10. (http://crbug.com/1213235)
+    const unsigned max_context = data_->text_content.Is8Bit() ? 2 : 10;
     const unsigned skip = max_context - 1;
     if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
-        end_offset - skip <= start_offset)
+        end_offset <= start_offset + skip)
       return start_offset;
     item.shape_result_->EnsurePositionData();
     // TODO(yosin): It is better to utilize OpenType |usMaxContext|.

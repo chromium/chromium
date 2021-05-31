@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 
+#include <numeric>
 #include <sstream>
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
@@ -14,7 +16,8 @@ namespace blink {
 
 class LayoutNGTextTest : public NGLayoutTest {
  protected:
-  std::string GetItemsAsString(const LayoutText& layout_text) {
+  std::string GetItemsAsString(const LayoutText& layout_text,
+                               int num_glyphs = 0) {
     if (layout_text.NeedsCollectInlines())
       return "LayoutText has NeedsCollectInlines";
     if (!layout_text.HasValidInlineItems())
@@ -33,13 +36,30 @@ class LayoutNGTextTest : public NGLayoutTest {
              << data.text_content.Substring(item.StartOffset(), item.Length())
                     .Utf8()
              << "'";
-      if (item.TextShapeResult()) {
-        stream << ", ShapeResult=" << item.TextShapeResult()->StartIndex()
-               << "+" << item.TextShapeResult()->NumCharacters();
+      if (const auto* shape_result = item.TextShapeResult()) {
+        stream << ", ShapeResult=" << shape_result->StartIndex() << "+"
+               << shape_result->NumCharacters();
+#if defined(OS_WIN)
+        if (shape_result->NumCharacters() != shape_result->NumGlyphs())
+          stream << " #glyphs=" << shape_result->NumGlyphs();
+#else
+        // Note: |num_glyphs| depends on installed font, we check only for
+        // Windows because most of failures are reported on Windows.
+        if (num_glyphs)
+          stream << " #glyphs=" << num_glyphs;
+#endif
       }
       stream << "}" << std::endl;
     }
     return stream.str();
+  }
+
+  unsigned CountNumberOfGlyphs(const LayoutText& layout_text) {
+    auto* const items = layout_text.GetNGInlineItems();
+    return std::accumulate(items->begin(), items->end(), 0u,
+                           [](unsigned sum, const NGInlineItem& item) {
+                             return sum + item.TextShapeResult()->NumGlyphs();
+                           });
   }
 };
 
@@ -48,10 +68,10 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetAppendBidi) {
   Text& text = To<Text>(*GetElementById("target")->firstChild());
   text.appendData(u"\u05D0\u05D1\u05BC\u05D2");
 
-  EXPECT_EQ(String(u"*{'\u05D0\u05D1\u05BC\u05D2\u05D0\u05D1\u05BC\u05D2', "
-                   u"ShapeResult=0+8}\n")
-                .Utf8(),
-            GetItemsAsString(*text.GetLayoutObject()));
+  EXPECT_EQ(
+      u8"*{'\u05D0\u05D1\u05BC\u05D2\u05D0\u05D1\u05BC\u05D2', "
+      u8"ShapeResult=0+8 #glyphs=6}\n",
+      GetItemsAsString(*text.GetLayoutObject(), 6));
 }
 
 TEST_F(LayoutNGTextTest, SetTextWithOffsetAppendControl) {
@@ -85,6 +105,40 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetAppend) {
       "*{'XYZxyz', ShapeResult=3+6}\n"
       "{'def', ShapeResult=9+3}\n",
       GetItemsAsString(*text.GetLayoutObject()));
+}
+
+// http://crbug.com/1213235
+TEST_F(LayoutNGTextTest, SetTextWithOffsetAppendEmojiWithZWJ) {
+  // Compose "Woman Shrugging"
+  //    U+1F937 Shrug (U+D83E U+0xDD37)
+  //    U+200D  ZWJ
+  //    U+2640  Female Sign
+  //    U+FE0F  Variation Selector-16
+  SetBodyInnerHTML(
+      u"<pre id=target>&#x1F937;</pre>"
+      "<p id=checker>&#x1F937;&#x200D;&#x2640;&#xFE0F</p>");
+
+  // Check whether we have "Woman Shrug glyph or not.
+  const auto& checker = *To<LayoutText>(
+      GetElementById("checker")->firstChild()->GetLayoutObject());
+  if (CountNumberOfGlyphs(checker) != 1)
+    return;
+
+  Text& text = To<Text>(*GetElementById("target")->firstChild());
+  UpdateAllLifecyclePhasesForTest();
+  text.appendData(u"\u200D");
+  EXPECT_EQ(u8"*{'\U0001F937\u200D', ShapeResult=0+3 #glyphs=2}\n",
+            GetItemsAsString(*text.GetLayoutObject(), 2));
+
+  UpdateAllLifecyclePhasesForTest();
+  text.appendData(u"\u2640");
+  EXPECT_EQ(u8"*{'\U0001F937\u200D\u2640', ShapeResult=0+4 #glyphs=1}\n",
+            GetItemsAsString(*text.GetLayoutObject(), 1));
+
+  UpdateAllLifecyclePhasesForTest();
+  text.appendData(u"\uFE0F");
+  EXPECT_EQ(u8"*{'\U0001F937\u200D\u2640\uFE0F', ShapeResult=0+5 #glyphs=1}\n",
+            GetItemsAsString(*text.GetLayoutObject(), 1));
 }
 
 TEST_F(LayoutNGTextTest, SetTextWithOffsetDelete) {
