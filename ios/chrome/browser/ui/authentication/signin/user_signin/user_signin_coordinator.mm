@@ -157,8 +157,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.viewController.delegate = self;
   self.viewController.useFirstRunSkipButton =
       self.signinIntent == UserSigninIntentFirstRun;
-  self.viewController.forceEqualVisualWeightDistribution =
-      [self shouldForceEqualWeightDistribution];
 
   // Start.
   [self presentUserSigninViewController];
@@ -323,26 +321,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 }
 
 #pragma mark - Private
-
-// Enables equal visual weight distribution across interactive properties.
-// TODO(crbug.com/1202731): Add a test for enabling the restriction once UI
-// decisions have been finalized.
-- (BOOL)shouldForceEqualWeightDistribution {
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  // If any account on the device is subject to minor mode restrictions then
-  // display the equal visual weight distribution UI.
-  for (ChromeIdentity* identity :
-       identityService->GetAllIdentities(prefService)) {
-    absl::optional<bool> hasMinorModeRestriction =
-        identityService->IsSubjectToMinorModeRestrictions(identity);
-    if (hasMinorModeRestriction && hasMinorModeRestriction.value()) {
-      return YES;
-    }
-  }
-  return NO;
-}
 
 // Cancels the sign-in flow if it is in progress, or dismiss the sign-in view
 // if the sign-in is not in progress.

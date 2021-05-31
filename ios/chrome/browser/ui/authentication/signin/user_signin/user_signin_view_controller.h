@@ -41,10 +41,6 @@
 
 @property(nonatomic, assign) BOOL useFirstRunSkipButton;
 
-// Forces the sign-in screen to treat all visual elements that require
-// user choice (e.g., buttons) with an equal visual weight distribution.
-@property(nonatomic, assign) BOOL forceEqualVisualWeightDistribution;
-
 // See |initWithEmbeddedViewController:|.
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
