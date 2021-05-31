@@ -8,8 +8,11 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -18,6 +21,7 @@ namespace {
 
 constexpr SkColor kNewProfileColor = SK_ColorRED;
 constexpr SkColor kSyncedProfileColor = SK_ColorBLUE;
+const char kTestingProfileName[] = "testing_profile";
 
 class FakeThemeService : public ThemeService {
  public:
@@ -61,18 +65,30 @@ class FakeThemeService : public ThemeService {
 
 class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
  public:
+  using Outcome = ProfileCustomizationBubbleSyncController::Outcome;
   ProfileCustomizationBubbleSyncControllerTest()
-      : fake_theme_service_(theme_helper_),
-        theme_syncable_service_(nullptr, &fake_theme_service_) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
+        fake_theme_service_(theme_helper_),
+        theme_syncable_service_(nullptr, &fake_theme_service_) {}
+
+  void SetUp() override {
     fake_theme_service_.SetThemeSyncableService(&theme_syncable_service_);
+
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    testing_profile_ =
+        testing_profile_manager_.CreateTestingProfile(kTestingProfileName);
+
+    testing_view_ = std::make_unique<views::View>();
   }
 
   void ApplyColorAndShowBubbleWhenNoValueSynced(
-      base::OnceCallback<void(bool)> show_bubble_callback) {
+      ProfileCustomizationBubbleSyncController::ShowBubbleCallback
+          show_bubble_callback) {
     ProfileCustomizationBubbleSyncController::
         ApplyColorAndShowBubbleWhenNoValueSyncedForTesting(
-            &test_sync_service_, &fake_theme_service_,
-            std::move(show_bubble_callback), kNewProfileColor);
+            testing_profile_, testing_view_.get(), &test_sync_service_,
+            &fake_theme_service_, std::move(show_bubble_callback),
+            kNewProfileColor);
   }
 
   void SetSyncedProfileColor() {
@@ -83,6 +99,12 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
     fake_theme_service_.DoSetTheme(nullptr, false);
   }
 
+  void DeleteTestingProfile() {
+    testing_profile_manager_.DeleteTestingProfile(kTestingProfileName);
+  }
+
+  void DeleteTestingView() { testing_view_.reset(); }
+
   void NotifyOnSyncStarted(bool waiting_for_extension_installation = false) {
     theme_syncable_service_.NotifyOnSyncStartedForTesting(
         waiting_for_extension_installation
@@ -92,10 +114,14 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   syncer::TestSyncService test_sync_service_;
   base::HistogramTester histogram_tester_;
 
  private:
+  Profile* testing_profile_ = nullptr;
+  TestingProfileManager testing_profile_manager_;
+  std::unique_ptr<views::View> testing_view_;
   FakeThemeService fake_theme_service_;
   ThemeSyncableService theme_syncable_service_;
   ThemeHelper theme_helper_;
@@ -103,8 +129,8 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldShowWhenSyncGetsDefaultTheme) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(true));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kShowBubble));
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   NotifyOnSyncStarted();
@@ -113,8 +139,8 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldShowWhenSyncDisabled) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(true));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kShowBubble));
 
   test_sync_service_.SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
@@ -124,8 +150,8 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncGetsCustomColor) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(false));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   SetSyncedProfileColor();
@@ -135,8 +161,8 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncGetsCustomTheme) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(false));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   SetSyncedProfileTheme();
@@ -146,8 +172,8 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncGetsCustomThemeToInstall) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(false));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   NotifyOnSyncStarted(/*waiting_for_extension_installation=*/true);
@@ -156,12 +182,32 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncHasCustomPasshrase) {
-  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(false));
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
 
   test_sync_service_.SetPassphraseRequired(true);
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   test_sync_service_.FireStateChanged();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
+}
+
+TEST_F(ProfileCustomizationBubbleSyncControllerTest,
+       ShouldNotShowWhenProfileGetsDeleted) {
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kAbort));
+
+  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  DeleteTestingProfile();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
+}
+
+TEST_F(ProfileCustomizationBubbleSyncControllerTest,
+       ShouldNotShowWhenViewGetsDeleted) {
+  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(Outcome::kAbort));
+
+  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  DeleteTestingView();
   histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
