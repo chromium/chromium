@@ -44,6 +44,7 @@ const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
 const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
+const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
 
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
@@ -174,6 +175,7 @@ void FullRestoreService::Init() {
 
   RestoreOption restore_pref = static_cast<RestoreOption>(
       prefs->GetInteger(kRestoreAppsAndPagesPrefName));
+  base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
   switch (restore_pref) {
     case RestoreOption::kAlways:
       Restore();
