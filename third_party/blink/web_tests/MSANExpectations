@@ -181,3 +181,7 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console
 
 # Sheriff 2021-04-22
 crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]
+
+# Sheriff 2021-05-31
+crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Pass Timeout ]
+crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html [ Pass Timeout ]
