@@ -14,19 +14,33 @@ JavascriptFrameworksUkmObserver::~JavascriptFrameworksUkmObserver() = default;
 void JavascriptFrameworksUkmObserver::OnLoadingBehaviorObserved(
     content::RenderFrameHost* rfh,
     int behavior_flag) {
-  RecordNextJS();
+  DetectNextJS();
 }
 
-void JavascriptFrameworksUkmObserver::RecordNextJS() {
-  if (nextjs_detected ||
-      (GetDelegate().GetMainFrameMetadata().behavior_flags &
-       blink::LoadingBehaviorFlag::kLoadingBehaviorNextJSFrameworkUsed) == 0) {
+void JavascriptFrameworksUkmObserver::DetectNextJS() {
+  if (nextjs_detected_) {
     return;
   }
+  nextjs_detected_ =
+      (GetDelegate().GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::kLoadingBehaviorNextJSFrameworkUsed) != 0;
+}
 
+void JavascriptFrameworksUkmObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming&) {
+  RecordJavascriptFrameworkPageLoad();
+}
+
+JavascriptFrameworksUkmObserver::ObservePolicy
+JavascriptFrameworksUkmObserver::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming&) {
+  RecordJavascriptFrameworkPageLoad();
+  return STOP_OBSERVING;
+}
+
+void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
   ukm::builders::JavascriptFrameworkPageLoad builder(
       GetDelegate().GetPageUkmSourceId());
-  builder.SetNextJSPageLoad(true);
-  nextjs_detected = true;
+  builder.SetNextJSPageLoad(nextjs_detected_);
   builder.Record(ukm::UkmRecorder::Get());
 }

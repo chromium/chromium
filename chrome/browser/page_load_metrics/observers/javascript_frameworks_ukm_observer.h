@@ -15,13 +15,23 @@ class JavascriptFrameworksUkmObserver
   JavascriptFrameworksUkmObserver();
   ~JavascriptFrameworksUkmObserver() override;
 
+  // page_load_metrics::PageLoadMetricsObserver
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flag) override;
+  void OnComplete(const page_load_metrics::mojom::PageLoadTiming&) override;
+  JavascriptFrameworksUkmObserver::ObservePolicy
+  FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming&) override;
 
  private:
-  bool nextjs_detected = false;
-  void RecordNextJS();
+  // Called every time an update to NextJS detection may occur.
+  void DetectNextJS();
 
+  // Called towards the end of the page lifecycle to report metrics on the
+  // frameworks detected.
+  void RecordJavascriptFrameworkPageLoad();
+
+  bool nextjs_detected_ = false;
   DISALLOW_COPY_AND_ASSIGN(JavascriptFrameworksUkmObserver);
 };
 

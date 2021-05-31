@@ -96,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
   ui_test_utils::NavigateToURL(browser(), url);
   waiter.Wait();
   CloseAllTabs();
-  ExpectMetricCountForUrl(url, "NextJSPageLoad", 0);
+  ExpectMetricCountForUrl(url, "NextJSPageLoad", 1);
+  ExpectMetricValueForUrl(url, "NextJSPageLoad", false);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
@@ -111,4 +112,5 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
   waiter.Wait();
   CloseAllTabs();
   ExpectMetricCountForUrl(url, "NextJSPageLoad", 1);
+  ExpectMetricValueForUrl(url, "NextJSPageLoad", true);
 }
