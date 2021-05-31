@@ -60,7 +60,7 @@ class SharingHubBubbleController
  private:
   friend class content::WebContentsUserData<SharingHubBubbleController>;
 
-#if defined(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ShowSharesheet();
   void OnSharesheetShown(sharesheet::SharesheetResult result);
 #endif

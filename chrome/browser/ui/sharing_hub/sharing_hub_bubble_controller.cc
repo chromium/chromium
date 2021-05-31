@@ -28,7 +28,7 @@ namespace sharing_hub {
 
 namespace {
 
-#if defined(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Result of the CrOS sharesheet, i.e. whether the user selects a share target
 // after opening the sharesheet.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -86,7 +86,7 @@ void SharingHubBubbleController::HideBubble() {
 }
 
 void SharingHubBubbleController::ShowBubble() {
-#if defined(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSharesheet();
 #else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
@@ -148,7 +148,7 @@ void SharingHubBubbleController::OnBubbleClosed() {
   sharing_hub_bubble_view_ = nullptr;
 }
 
-#if defined(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharingHubBubbleController::ShowSharesheet() {
   if (!base::FeatureList::IsEnabled(features::kSharesheet) ||
       !base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
