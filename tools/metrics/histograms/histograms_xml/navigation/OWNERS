@@ -5,3 +5,4 @@ per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_O
 altimin@chromium.org
 cthomp@chromium.org
 tbansal@chromium.org
+toyoshim@chromium.org
