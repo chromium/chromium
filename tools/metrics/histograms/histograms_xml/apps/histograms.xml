@@ -2264,6 +2264,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction"
+    units="ms" expires_after="M99">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between session activation and the first launcher action
+    on a new user session. Launcher actions include the following: activating a
+    launcher app and opening a search result from either a launcher suggestion
+    chip or the search box. This metric is recorded when a new user triggers the
+    launcher action for the first time.
+  </summary>
+</histogram>
+
+<histogram
     name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening"
     units="ms" expires_after="M99">
   <owner>andrewxu@chromium.org</owner>

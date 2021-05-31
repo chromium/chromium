@@ -267,12 +267,18 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
       "Apps.FirstLauncherActionByNewUsers",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
+      /*expected_bucket_count=*/1);
 
   // Verify that only the first app activation is recorded.
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
   histogram_tester.ExpectBucketCount(
       "Apps.FirstLauncherActionByNewUsers",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
       /*expected_bucket_count=*/1);
 }
 
@@ -372,6 +378,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   histogram_tester.ExpectBucketCount(
       "Apps.FirstLauncherActionByNewUsers",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromSearchBox),
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
       /*expected_bucket_count=*/1);
 
   // App list should be dismissed.
