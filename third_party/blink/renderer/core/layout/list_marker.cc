@@ -124,14 +124,26 @@ void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
   }
 }
 
+LayoutObject* ListMarker::GetContentChild(const LayoutObject& marker) const {
+  DCHECK_EQ(Get(&marker), this);
+  return marker.SlowFirstChild();
+}
+
+LayoutText& ListMarker::GetTextChild(const LayoutObject& marker) const {
+  auto& text = *To<LayoutText>(GetContentChild(marker));
+  // There should be a single text child
+  DCHECK(!text.NextSibling());
+  return text;
+}
+
 void ListMarker::UpdateMarkerText(LayoutObject& marker) {
   DCHECK_EQ(Get(&marker), this);
+  auto& text = GetTextChild(marker);
   DCHECK_EQ(marker_text_type_, kUnresolved);
-  LayoutText* const text = To<LayoutText>(marker.SlowFirstChild());
   StringBuilder marker_text_builder;
   marker_text_type_ =
       MarkerText(marker, &marker_text_builder, kWithPrefixSuffix);
-  text->SetTextIfNeeded(marker_text_builder.ToString().ReleaseImpl());
+  text.SetTextIfNeeded(marker_text_builder.ToString().ReleaseImpl());
   DCHECK_NE(marker_text_type_, kNotText);
   DCHECK_NE(marker_text_type_, kUnresolved);
 }
@@ -205,14 +217,7 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
     // RTL, reflecting speech order.
     return MarkerTextWithSuffix(marker);
   }
-
-  LayoutObject* child = marker.SlowFirstChild();
-
-  // There should be a single text child
-  DCHECK(child);
-  DCHECK(!child->NextSibling());
-
-  return To<LayoutText>(child)->PlainText();
+  return GetTextChild(marker).PlainText();
 }
 
 void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
@@ -223,8 +228,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   }
 
   // There should be at most one child.
-  LayoutObject* child = marker.SlowFirstChild();
-  DCHECK(!child || !child->NextSibling());
+  LayoutObject* child = GetContentChild(marker);
 
   const ComputedStyle& style = ListItem(marker)->StyleRef();
   if (IsMarkerImage(marker)) {
@@ -267,9 +271,10 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // |text_style| should be as same as style propagated in
   // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
   // full layout due by style difference. See http://crbug.com/980399
+  const auto& style_parent = child ? *child->Parent() : marker;
   scoped_refptr<ComputedStyle> text_style =
       marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          marker.StyleRef(), marker.StyleRef().Display());
+          style_parent.StyleRef(), marker.StyleRef().Display());
   if (IsA<LayoutText>(child))
     return child->SetStyle(text_style);
   if (child)
@@ -286,7 +291,7 @@ LayoutObject* ListMarker::SymbolMarkerLayoutText(
   DCHECK_EQ(Get(&marker), this);
   if (marker_text_type_ != kSymbolValue)
     return nullptr;
-  return marker.SlowFirstChild();
+  return GetContentChild(marker);
 }
 
 bool ListMarker::IsMarkerImage(const LayoutObject& marker) const {

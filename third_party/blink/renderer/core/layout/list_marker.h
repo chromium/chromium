@@ -97,6 +97,9 @@ class CORE_EXPORT ListMarker {
 
   int ListItemValue(const LayoutObject&) const;
 
+  LayoutText& GetTextChild(const LayoutObject& marker) const;
+  LayoutObject* GetContentChild(const LayoutObject& marker) const;
+
   unsigned marker_text_type_ : 3;  // MarkerTextType
 };
 
