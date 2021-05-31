@@ -455,7 +455,8 @@ void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
     const apps::AppUpdate& update,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {
-  RecordAppLaunchMetrics(profile, update, launch_source, container);
+  RecordAppLaunchMetrics(profile, update.AppType(), update.AppId(),
+                         launch_source, container);
 }
 
 void AppServiceProxyChromeOs::InitAppPlatformMetrics() {

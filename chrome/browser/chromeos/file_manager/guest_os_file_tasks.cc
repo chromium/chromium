@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
 #include "chrome/browser/ash/crostini/crostini_mime_types_service_factory.h"
@@ -283,6 +284,10 @@ void ExecuteGuestOsTask(
   switch (vm_type) {
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_TERMINA:
+      apps::RecordAppLaunchMetrics(
+          profile, apps::mojom::AppType::kCrostini, task.app_id,
+          apps::mojom::LaunchSource::kFromFileManager,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow);
       crostini::LaunchCrostiniApp(
           profile, task.app_id, display::kInvalidDisplayId, args,
           base::BindOnce(
@@ -304,6 +309,10 @@ void ExecuteGuestOsTask(
       return;
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_PLUGIN_VM:
+      apps::RecordAppLaunchMetrics(
+          profile, apps::mojom::AppType::kPluginVm, task.app_id,
+          apps::mojom::LaunchSource::kFromFileManager,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow);
       DCHECK(plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
       plugin_vm::LaunchPluginVmApp(
           profile, task.app_id, args,

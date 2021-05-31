@@ -67,6 +67,9 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
 apps::mojom::AppLaunchSource GetAppLaunchSource(
     apps::mojom::LaunchSource launch_source);
 
+apps::mojom::LaunchSource GetLaunchSource(
+    apps::mojom::AppLaunchSource app_launch_source);
+
 // Returns event flag for |container| and |disposition|. If |prefer_container|
 // is true, |disposition| will be ignored. Otherwise, |container| is ignored and
 // an event flag based on |disposition| will be returned.
