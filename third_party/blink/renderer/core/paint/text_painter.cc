@@ -44,12 +44,15 @@ void TextPainter::Paint(unsigned start_offset,
   }
 
   if (!emphasis_mark_.IsEmpty()) {
-    if (text_style.emphasis_mark_color != text_style.fill_color)
-      graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-
     if (combined_text_) {
-      PaintEmphasisMarkForCombinedText();
+      graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
+      PaintEmphasisMarkForCombinedText(text_style,
+                                       combined_text_->OriginalFont());
+      graphics_context_.ConcatCTM(
+          Rotation(text_frame_rect_, kCounterclockwise));
     } else {
+      if (text_style.emphasis_mark_color != text_style.fill_color)
+        graphics_context_.SetFillColor(text_style.emphasis_mark_color);
       PaintInternal<kPaintEmphasisMark>(start_offset, end_offset, length,
                                         node_id);
     }
@@ -251,26 +254,6 @@ void TextPainter::ClipDecorationsStripe(float upper,
       std::make_tuple(upper, upper + stripe_width), text_intercepts);
 
   DecorationsStripeIntercepts(upper, stripe_width, dilation, text_intercepts);
-}
-
-void TextPainter::PaintEmphasisMarkForCombinedText() {
-  const SimpleFontData* font_data = font_.PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return;
-
-  DCHECK(combined_text_);
-  TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
-  FloatPoint emphasis_mark_text_origin(
-      text_frame_rect_.X().ToFloat(), text_frame_rect_.Y().ToFloat() +
-                                          font_data->GetFontMetrics().Ascent() +
-                                          emphasis_mark_offset_);
-  TextRunPaintInfo text_run_paint_info(placeholder_text_run);
-  graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
-  graphics_context_.DrawEmphasisMarks(combined_text_->OriginalFont(),
-                                      text_run_paint_info, emphasis_mark_,
-                                      emphasis_mark_text_origin);
-  graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
 }  // namespace blink

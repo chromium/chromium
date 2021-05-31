@@ -32,8 +32,7 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                         text_origin,
                         text_frame_rect,
                         horizontal),
-        run_(run),
-        combined_text_(nullptr) {}
+        run_(run) {}
   ~TextPainter() = default;
 
   void SetCombinedText(LayoutTextCombine* combined_text) {
@@ -73,10 +72,8 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                      unsigned truncation_point,
                      DOMNodeId node_id);
 
-  void PaintEmphasisMarkForCombinedText();
-
   const TextRun& run_;
-  LayoutTextCombine* combined_text_;
+  LayoutTextCombine* combined_text_ = nullptr;
 };
 
 }  // namespace blink

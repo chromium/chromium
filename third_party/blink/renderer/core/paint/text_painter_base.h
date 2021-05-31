@@ -119,6 +119,16 @@ class CORE_EXPORT TextPainterBase {
                                        const Vector<AppliedTextDecoration>&,
                                        const TextPaintStyle&);
 
+  // Paints emphasis mark as for ideographic full stop character. Callers of
+  // this function should rotate canvas to paint emphasis mark at left/right
+  // side instead of top/bottom side.
+  // |emphasis_mark_font| is used for painting emphasis mark because |font_|
+  // may be compressed font (width variants).
+  // TODO(yosin): Once legacy inline layout gone, we should move this function
+  // to |NGTextCombinePainter|.
+  void PaintEmphasisMarkForCombinedText(const TextPaintStyle& text_style,
+                                        const Font& emphasis_mark_font);
+
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
   GraphicsContext& graphics_context_;

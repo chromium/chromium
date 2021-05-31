@@ -430,4 +430,30 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
   decoration_painter.Paint();
 }
 
+void TextPainterBase::PaintEmphasisMarkForCombinedText(
+    const TextPaintStyle& text_style,
+    const Font& emphasis_mark_font) {
+  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalAnyUpright());
+  DCHECK(emphasis_mark_);
+  const SimpleFontData* const font_data = font_.PrimaryFont();
+  DCHECK(font_data);
+  if (!font_data)
+    return;
+
+  if (text_style.emphasis_mark_color != text_style.fill_color) {
+    // See virtual/text-antialias/emphasis-combined-text.html
+    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
+  }
+
+  const auto font_ascent = font_data->GetFontMetrics().Ascent();
+  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
+  const FloatPoint emphasis_mark_text_origin(
+      text_frame_rect_.X().ToFloat(),
+      text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
+  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
+  graphics_context_.DrawEmphasisMarks(emphasis_mark_font, text_run_paint_info,
+                                      emphasis_mark_,
+                                      emphasis_mark_text_origin);
+}
+
 }  // namespace blink
