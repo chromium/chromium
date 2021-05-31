@@ -174,6 +174,8 @@
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
@@ -830,6 +832,10 @@ void PopulateChromeWebUIFrameBinders(
         chromeos::personalization_app::mojom::WallpaperProvider,
         chromeos::PersonalizationAppUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      launcher_internals::mojom::PageHandlerFactory,
+      chromeos::LauncherInternalsUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

@@ -109,6 +109,7 @@ extern const char kChromeUIInterstitialHost[];
 extern const char kChromeUIInterstitialURL[];
 extern const char kChromeUIInvalidationsHost[];
 extern const char kChromeUIKillHost[];
+extern const char kChromeUILauncherInternalsHost[];
 extern const char kChromeUILocalStateHost[];
 extern const char kChromeUIManagementHost[];
 extern const char kChromeUIManagementURL[];

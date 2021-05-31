@@ -117,6 +117,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [1365],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/launcher_internals/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [1366],
+  },
   "chrome/browser/resources/chromeos/login/oobe_resources.grd": {
     "META": {"sizes": {"includes": [50], "structures": [200]}},
     "includes": [1367],

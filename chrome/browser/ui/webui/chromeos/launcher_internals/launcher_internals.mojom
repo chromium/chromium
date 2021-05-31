@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module launcher_internals.mojom;
+
+// Interface for creating internals page handlers. Implemented by the WebUI
+// controller and used by chrome://launcher-internals.
+interface PageHandlerFactory {
+  // TODO(crbug.com/1211232): Add a CreatePageHandler method.
+};
+
