@@ -136,7 +136,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that password protection UI is not shown when saved password is reused
 // on safe site.
-- (void)testPasswordProtectionNotShownForAllowListedURL {
+// TODO(crbug.com/1213616) Test is flaky.
+- (void)DISABLED_testPasswordProtectionNotShownForAllowListedURL {
   // PhishGuard is only available on iOS 14.0 or above.
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     return;
