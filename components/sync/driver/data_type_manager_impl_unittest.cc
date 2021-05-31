@@ -1281,32 +1281,55 @@ TEST_F(SyncDataTypeManagerImplTest, ErrorBeforeStartup) {
   EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
 }
 
-// Test that sync configures properly if all types are ready.
+// Test that sync configures properly if all types are already downloaded.
 TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
-  // TODO(crbug.com/1170318): Mark PRIORITY_PREFERENCES and BOOKMARKS as already
-  // downloaded (and fix that the test passes even without that!).
   AddController(PRIORITY_PREFERENCES);
   AddController(BOOKMARKS);
+
+  // Mark both types as already downloaded.
+  sync_pb::ModelTypeState already_downloaded;
+  already_downloaded.set_initial_sync_done(true);
+  GetController(PRIORITY_PREFERENCES)
+      ->model()
+      ->SetModelTypeStateForActivationResponse(already_downloaded);
+  GetController(BOOKMARKS)->model()->SetModelTypeStateForActivationResponse(
+      already_downloaded);
 
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
 
   Configure(ModelTypeSet(PRIORITY_PREFERENCES, BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  // This started the configuration of control types, which aren't tracked by
+  // DataTypeManagerImpl, so always considered already downloaded.
+  ASSERT_EQ(1, configurer_.configure_call_count());
+  EXPECT_TRUE(last_configure_params().to_download.Empty());
 
   EXPECT_EQ(DataTypeController::RUNNING,
             GetController(PRIORITY_PREFERENCES)->state());
   EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
 
-  // Because Bookmarks are a ready type, it can start associating immediately
-  // after the high priority types finish downloading.
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // Finish downloading (configuring, really) control types.
+  FinishDownload(ModelTypeSet(), ModelTypeSet());
+  // This started the configuration of priority types, i.e.
+  // PRIORITY_PREFERENCES, which is already downloaded.
+  ASSERT_EQ(2, configurer_.configure_call_count());
+  EXPECT_TRUE(last_configure_params().to_download.Empty());
+
+  // Finish downloading (configuring, really) priority types.
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
+  // This started the configuration of regular types, i.e. BOOKMARKS, which is
+  // already downloaded.
+  ASSERT_EQ(3, configurer_.configure_call_count());
+  EXPECT_TRUE(last_configure_params().to_download.Empty());
+
   EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
 
-  // Finishing the low priority download ends the configuration.
+  // Finish downloading (configuring, really) regular types. This finishes the
+  // configuration.
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
+  ASSERT_EQ(3, configurer_.configure_call_count());  // Not increased.
 
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(2U, configurer_.activated_types().Size());
@@ -1316,8 +1339,8 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
 
-// Test that DataTypeManagerImpl delays configuration until all datatypes for
-// which ShouldLoadModelBeforeConfigure() returns true loaded their models.
+// Test that DataTypeManagerImpl delays configuration until all data types
+// loaded their models.
 TEST_F(SyncDataTypeManagerImplTest, DelayConfigureForUSSTypes) {
   AddController(BOOKMARKS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
