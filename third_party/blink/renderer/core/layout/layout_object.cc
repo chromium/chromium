@@ -2137,6 +2137,8 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
     case NGStyleVariant::kStandard:
       return StyleRef();
     case NGStyleVariant::kFirstLine:
+      if (IsInline() && IsAtomicInlineLevel())
+        return StyleRef();
       return FirstLineStyleRef();
     case NGStyleVariant::kEllipsis:
       // The ellipsis is styled according to the line style.
