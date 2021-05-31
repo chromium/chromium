@@ -409,14 +409,6 @@ WebView* RenderViewImpl::CreateView(
   return view->GetWebView();
 }
 
-void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
-  RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(frame);
-  blink::WebFrameWidget* frame_widget =
-      render_frame->GetLocalRootWebFrameWidget();
-
-  render_frame->ScriptedPrint(frame_widget->HandlingInputEvent());
-}
-
 void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
   // Keep track of which frames have pending updates.
   frames_with_pending_state_.insert(frame->GetRoutingID());

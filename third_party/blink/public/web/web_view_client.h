@@ -84,12 +84,6 @@ class WebViewClient {
   // the layers.
   virtual void InvalidateContainer() {}
 
-  // Called when script in the page calls window.print().  If frame is
-  // non-null, then it selects a particular frame, including its
-  // children, to print.  Otherwise, the main frame and its children
-  // should be printed.
-  virtual void PrintPage(WebLocalFrame*) {}
-
   virtual void OnPageFrozenChanged(bool frozen) {}
 
   // UI ------------------------------------------------------------------

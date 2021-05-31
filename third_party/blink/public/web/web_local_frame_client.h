@@ -758,6 +758,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   // than the document's URL because it will contain a data URL if a base URL
   // was used for its load or if an unreachable URL was used.
   virtual WebURL LastCommittedUrlForUKM() { return WebURL(); }
+
+  // Called when script in the frame (and it subframes) wishes to be printed via
+  // a window.print() call.
+  virtual void ScriptedPrint() {}
 };
 
 }  // namespace blink

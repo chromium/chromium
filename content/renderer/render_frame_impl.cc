@@ -1988,7 +1988,8 @@ void RenderFrameImpl::PepperSelectionChanged(
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-void RenderFrameImpl::ScriptedPrint(bool user_initiated) {
+void RenderFrameImpl::ScriptedPrint() {
+  bool user_initiated = GetLocalRootWebFrameWidget()->HandlingInputEvent();
   for (auto& observer : observers_)
     observer.ScriptedPrint(user_initiated);
 }

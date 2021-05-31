@@ -2604,24 +2604,24 @@ TEST_F(WebViewTest, FullscreenBackgroundColor) {
   EXPECT_EQ(SK_ColorYELLOW, web_view_impl->BackgroundColor());
 }
 
-class PrintWebViewClient : public frame_test_helpers::TestWebViewClient {
+class PrintWebFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
-  PrintWebViewClient() : print_called_(false) {}
+  PrintWebFrameClient() = default;
 
-  // WebViewClient methods
-  void PrintPage(WebLocalFrame*) override { print_called_ = true; }
+  // WebLocalFrameClient overrides:
+  void ScriptedPrint() override { print_called_ = true; }
 
   bool PrintCalled() const { return print_called_; }
 
  private:
-  bool print_called_;
+  bool print_called_ = false;
 };
 
 TEST_F(WebViewTest, PrintWithXHRInFlight) {
-  PrintWebViewClient client;
+  PrintWebFrameClient client;
   RegisterMockedHttpURLLoad("print_with_xhr_inflight.html");
   WebViewImpl* web_view_impl = web_view_helper_.InitializeAndLoad(
-      base_url_ + "print_with_xhr_inflight.html", nullptr, &client);
+      base_url_ + "print_with_xhr_inflight.html", &client, nullptr);
 
   ASSERT_TRUE(To<LocalFrame>(web_view_impl->GetPage()->MainFrame())
                   ->GetDocument()

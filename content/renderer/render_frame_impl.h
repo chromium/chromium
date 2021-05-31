@@ -322,8 +322,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-  void ScriptedPrint(bool user_initiated);
-
   // IPC::Sender
   bool Send(IPC::Message* msg) override;
 
@@ -634,6 +632,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
   blink::WebURL LastCommittedUrlForUKM() override;
+  void ScriptedPrint() override;
 
   // Binds to the MHTML file generation service in the browser.
   void BindMhtmlFileWriter(
