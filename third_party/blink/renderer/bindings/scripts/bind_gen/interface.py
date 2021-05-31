@@ -487,22 +487,23 @@ def bind_callback_local_vars(code_node, cg_context):
             S("v8_receiver",
               "v8::Local<v8::Object> ${v8_receiver} = ${info}.Holder();"))
 
-    def create_definition_of_v8_return_value(symbol_node):
-        # TODO(crbug.com/1186968): Write condition directly in cond=T()
-        condition = _format(
-            "!ToV8Traits<{}>::ToV8(${script_state}, ${return_value})"
-            ".ToLocal(&${v8_return_value})",
-            native_value_tag(cg_context.return_type))
-        return SymbolDefinitionNode(symbol_node, [
-            T("v8::Local<v8::Value> ${v8_return_value};"),
-            CxxUnlikelyIfNode(cond=T(condition), body=T("return;"))
-        ])
-
     # v8_return_value
-    if cg_context.return_type and not cg_context.return_type.unwrap().is_void:
-        local_vars.append(
-            S("v8_return_value",
-              definition_constructor=create_definition_of_v8_return_value))
+    def create_v8_return_value(symbol_node):
+        return SymbolDefinitionNode(
+            symbol_node,
+            [
+                T("v8::Local<v8::Value> ${v8_return_value};"),
+                CxxUnlikelyIfNode(  #
+                    cond=F(
+                        "!ToV8Traits<{}>::ToV8"
+                        "(${script_state}, ${return_value})"
+                        ".ToLocal(&${v8_return_value})",
+                        native_value_tag(cg_context.return_type)),
+                    body=T("return;")),
+            ])
+
+    local_vars.append(
+        S("v8_return_value", definition_constructor=create_v8_return_value))
 
     # throw_security_error
     template_vars["throw_security_error"] = T(
@@ -1690,8 +1691,6 @@ def make_v8_set_return_value(cg_context):
             "bindings::V8ReturnValue::PrimitiveType<{cxx_type}>());",
             cxx_type=cxx_type)
 
-    # TODO(yukishiino): Remove |return_type_body.is_enumeration| below once
-    # the migration from String to V8Enum type is done.
     if return_type_body.is_string or return_type_body.is_enumeration:
         args = ["${info}", "${return_value}", "${isolate}"]
         if return_type.is_nullable:
@@ -1713,16 +1712,7 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
-    if return_type.is_any:
-        return T("bindings::V8SetReturnValue(${info}, ${return_value});")
-
-    if return_type.is_object:
-        return T("bindings::V8SetReturnValue("
-                 "${info}, "
-                 "${return_value}, "
-                 "bindings::V8ReturnValue::kIDLObject);")
-
-    if return_type.is_dictionary:
+    if return_type.is_any or return_type_body.is_object:
         return T("bindings::V8SetReturnValue(${info}, ${return_value});")
 
     if return_type.is_promise:

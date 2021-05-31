@@ -7,7 +7,6 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -41,18 +40,15 @@ struct V8ReturnValue {
   enum NonNullable { kNonNullable };
   enum Nullable { kNullable };
 
-  // FrozenArray or not (the integrity level = frozen or not)
-  enum Frozen { kFrozen };
-
   // Main world or not
   enum MainWorld { kMainWorld };
+
+  // The return value can be a cross origin window.
+  enum MaybeCrossOriginWindow { kMaybeCrossOriginWindow };
 
   // Returns the exposed object of the given type.
   enum InterfaceObject { kInterfaceObject };
   enum NamespaceObject { kNamespaceObject };
-  enum IDLObject { kIDLObject };
-
-  enum MaybeCrossOriginWindow { kMaybeCrossOriginWindow };
 
   // Selects the appropriate creation context.
   static v8::Local<v8::Object> CreationContext(
@@ -81,21 +77,6 @@ struct V8ReturnValue {
 // V8 handle types
 template <typename CallbackInfo, typename S>
 void V8SetReturnValue(const CallbackInfo& info, const v8::Local<S> value) {
-  info.GetReturnValue().Set(value);
-}
-
-template <typename CallbackInfo, typename S>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const v8::Local<S> value,
-                      V8ReturnValue::Frozen) {
-  if (value->IsObject()) {
-    bool result =
-        value.template As<v8::Object>()
-            ->SetIntegrityLevel(info.GetIsolate()->GetCurrentContext(),
-                                v8::IntegrityLevel::kFrozen)
-            .ToChecked();
-    CHECK(result);
-  }
   info.GetReturnValue().Set(value);
 }
 
@@ -429,11 +410,24 @@ void V8SetReturnValue(const CallbackInfo& info,
 // EnumerationBase
 template <typename CallbackInfo, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,
-                      const bindings::EnumerationBase& enumeration,
+                      const bindings::EnumerationBase& value,
                       v8::Isolate* isolate,
                       ExtraArgs... extra_args) {
   V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), enumeration.AsString().Impl());
+      info.GetReturnValue(), value.AsString().Impl());
+}
+
+// Nullable types
+template <typename CallbackInfo, typename T, typename... ExtraArgs>
+void V8SetReturnValue(const CallbackInfo& info,
+                      absl::optional<T> value,
+                      ExtraArgs... extra_args) {
+  if (value.has_value()) {
+    V8SetReturnValue(info, value.value(),
+                     std::forward<ExtraArgs>(extra_args)...);
+  } else {
+    info.GetReturnValue().SetNull();
+  }
 }
 
 // Exposed objects
@@ -459,19 +453,6 @@ inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              V8ReturnValue::NamespaceObject) {
   info.GetReturnValue().Set(GetExposedNamespaceObject(
       info.GetIsolate(), info.Holder(), wrapper_type_info));
-}
-
-// Nullable types
-template <typename CallbackInfo, typename T, typename... ExtraArgs>
-void V8SetReturnValue(const CallbackInfo& info,
-                      absl::optional<T> value,
-                      ExtraArgs... extra_args) {
-  if (value.has_value()) {
-    V8SetReturnValue(info, value.value(),
-                     std::forward<ExtraArgs>(extra_args)...);
-  } else {
-    info.GetReturnValue().SetNull();
-  }
 }
 
 }  // namespace bindings

@@ -288,7 +288,7 @@ ScriptValue TrustedTypePolicyFactory::getTypeMapping(ScriptState* script_state,
   // {tagname: { ["attributes"|"properties"]: { attribute: type }}}
 
   if (!ns.IsEmpty())
-    return ScriptValue();
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   v8::HandleScope handle_scope(script_state->GetIsolate());
   v8::Local<v8::Object> top = v8::Object::New(script_state->GetIsolate());
