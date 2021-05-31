@@ -287,7 +287,7 @@ Polymer({
     // button is tabbed into, it should keep focus, so users can use tab and
     // spacebar/return to enter their PIN.
     if (!receivedEventFromKeyboard(event)) {
-      this.focusInput(selectionStart + 1, selectionStart + 1);
+      this.focusInputSynchronously(selectionStart + 1, selectionStart + 1);
     }
     event.stopImmediatePropagation();
   },

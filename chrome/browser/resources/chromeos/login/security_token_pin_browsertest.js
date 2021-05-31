@@ -256,6 +256,44 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     expectEquals(completedEventDetail, PIN);
   });
 
+  // Test that the asynchronously clicking the PIN keypad buttons still results
+  // in a correct PIN.
+  test('PIN async input via keypad', async function() {
+    const PIN = '123';
+
+    function enterPinAsync() {
+      return new Promise((resolve, reject) => {
+        // Click `PIN[0]`, then `PIN[1]`, then `PIN[2]`. Use specific delays
+        // that can catch ordering bugs in the tested code (in case it handles
+        // clicks in asynchronous tasks without proper sequencing).
+        setTimeout(() => {
+          pinKeyboard.$$('#digitButton' + PIN[1]).click();
+        }, 0);
+        pinKeyboard.$$('#digitButton' + PIN[0]).click();
+        setTimeout(() => {
+          pinKeyboard.$$('#digitButton' + PIN[2]).click();
+          resolve();
+        }, 0);
+      });
+    }
+
+    let completedEventDetail = null;
+    securityTokenPin.addEventListener('completed', (event) => {
+      completedEventDetail = event.detail;
+    });
+
+    // The user clicks the buttons of the on-screen keypad. The input field is
+    // updated accordingly.
+    await enterPinAsync();
+    expectEquals(pinInput.value, PIN);
+    expectEquals(inputField.value, PIN);
+
+    // The user submits the PIN. The completed event is fired, containing the
+    // PIN.
+    submitElement.click();
+    expectEquals(completedEventDetail, PIN);
+  });
+
   // Test that the error is displayed only when it's set in the request.
   test('error visibility', () => {
     function getErrorContainerVisibility() {
