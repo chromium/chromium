@@ -540,6 +540,14 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORDS_CHECK_DESCRIPTION" desc="Text explaining the benefits of checking the passwords, to be displayed under the Check Passwords button title.">
         Keep your passwords safe from data breaches and other security issues
       </message>
+      <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
+      <message translateable="false" name="IDS_ANDROID_TRUSTED_VAULT_OPT_IN_LABEL" desc="Title for the settings button to opt in to trusted vault encryption">
+        Trusted vault
+      </message>
+      <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
+      <message translateable="false" name="IDS_ANDROID_TRUSTED_VAULT_OPT_IN_SUB_LABEL" desc="Sub-label for the settings button to opt in to trusted vault encryption">
+        Opt in to trusted vault
+      </message>
       <message name="IDS_SECTION_SAVED_PASSWORDS_EXCEPTIONS" desc="Header for the list of websites for which user selected to never save passwords. [CHAR_LIMIT=32]">
         Never saved
       </message>

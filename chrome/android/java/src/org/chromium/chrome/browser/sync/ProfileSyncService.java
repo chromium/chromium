@@ -540,6 +540,12 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, keyRetrievalTrigger);
     }
 
+    /** @return Whether the user should be offered to opt in to trusted vault encryption. */
+    public boolean shouldOfferTrustedVaultOptIn() {
+        return ProfileSyncServiceJni.get().shouldOfferTrustedVaultOptIn(
+                mNativeProfileSyncServiceAndroid);
+    }
+
     /**
      * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
      */
@@ -677,5 +683,6 @@ public class ProfileSyncService {
         void getAllNodes(long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
         void recordKeyRetrievalTrigger(
                 long nativeProfileSyncServiceAndroid, int keyRetrievalTrigger);
+        boolean shouldOfferTrustedVaultOptIn(long nativeProfileSyncServiceAndroid);
     }
 }

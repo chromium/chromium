@@ -62,6 +62,9 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
 
 void RecordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA trigger);
 
+// Whether the user should be offered to opt in to trusted vault encryption.
+bool ShouldOfferTrustedVaultOptIn(const SyncService* service);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_UTILS_H_

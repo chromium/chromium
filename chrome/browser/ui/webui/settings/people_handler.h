@@ -132,7 +132,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
   // syncer::SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnStateChanged(syncer::SyncService* sync_service) override;
 
   // content::WebContentsObserver implementation
   void BeforeUnloadDialogCancelled() override;
@@ -207,10 +207,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   // for checking if we're navigating to the setup page and acquiring the
   // |sync_blocker_|.
   void InitializeSyncBlocker();
-
-  // Whether the entry in settings to opt in to trusted vault encryption
-  // should be visible.
-  bool ShouldOfferTrustedVaultOptIn() const;
 
   // Weak pointer.
   Profile* profile_;

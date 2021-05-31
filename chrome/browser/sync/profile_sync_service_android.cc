@@ -386,6 +386,10 @@ void ProfileSyncServiceAndroid::RecordKeyRetrievalTrigger(
       static_cast<syncer::KeyRetrievalTriggerForUMA>(trigger));
 }
 
+jboolean ProfileSyncServiceAndroid::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
+  return syncer::ShouldOfferTrustedVaultOptIn(sync_service_);
+}
+
 // Functionality only available for testing purposes.
 
 jlong ProfileSyncServiceAndroid::GetProfileSyncServiceForTest(JNIEnv* env) {

@@ -51,6 +51,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "content/public/browser/render_view_host.h"
@@ -744,8 +745,9 @@ void PeopleHandler::HandleSyncPrefsDispatch(const base::ListValue* args) {
 void PeopleHandler::HandleOfferTrustedVaultOptInDispatch(
     const base::ListValue* args) {
   AllowJavascript();
-  FireWebUIListener(kOfferTrustedVaultOptInChangedEvent,
-                    base::Value(ShouldOfferTrustedVaultOptIn()));
+  FireWebUIListener(
+      kOfferTrustedVaultOptInChangedEvent,
+      base::Value(syncer::ShouldOfferTrustedVaultOptIn(GetSyncService())));
 }
 
 void PeopleHandler::CloseSyncSetup() {
@@ -823,39 +825,6 @@ void PeopleHandler::InitializeSyncBlocker() {
   }
 }
 
-bool PeopleHandler::ShouldOfferTrustedVaultOptIn() const {
-  syncer::SyncService* sync_service = GetSyncService();
-  if (!sync_service) {
-    return false;
-  }
-
-  if (sync_service->GetTransportState() !=
-      syncer::SyncService::TransportState::ACTIVE) {
-    // Transport state must be active so SyncUserSettings::GetPassphraseType()
-    // changes once the opt-in completes, and the UI is notified.
-    return false;
-  }
-
-  switch (sync_service->GetUserSettings()->GetPassphraseType()) {
-    case syncer::PassphraseType::kImplicitPassphrase:
-    case syncer::PassphraseType::kFrozenImplicitPassphrase:
-    case syncer::PassphraseType::kCustomPassphrase:
-    case syncer::PassphraseType::kTrustedVaultPassphrase:
-      // Either trusted vault is already set or a transition from this
-      // passphrase type to trusted vault is disallowed.
-      return false;
-    case syncer::PassphraseType::kKeystorePassphrase:
-      if (sync_service->GetUserSettings()->IsPassphraseRequired()) {
-        // This should be extremely rare.
-        return false;
-      }
-      return base::FeatureList::IsEnabled(
-                 switches::kSyncSupportTrustedVaultPassphraseRecovery) &&
-             base::FeatureList::IsEnabled(
-                 switches::kSyncOfferTrustedVaultOptIn);
-  }
-}
-
 void PeopleHandler::FocusUI() {
   WebContents* web_contents = web_ui()->GetWebContents();
   web_contents->GetDelegate()->ActivateContents(web_contents);
@@ -883,7 +852,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
   }
 }
 
-void PeopleHandler::OnStateChanged(syncer::SyncService* sync) {
+void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   UpdateSyncStatus();
   // TODO(crbug.com/1106764): Re-evaluate marking sync as configuring here,
   // since this gets called whenever ProfileSyncService changes state. Inline
@@ -891,7 +860,7 @@ void PeopleHandler::OnStateChanged(syncer::SyncService* sync) {
   MaybeMarkSyncConfiguring();
   PushSyncPrefs();
   FireWebUIListener(kOfferTrustedVaultOptInChangedEvent,
-                    base::Value(ShouldOfferTrustedVaultOptIn()));
+                    base::Value(ShouldOfferTrustedVaultOptIn(sync_service)));
 }
 
 void PeopleHandler::BeforeUnloadDialogCancelled() {

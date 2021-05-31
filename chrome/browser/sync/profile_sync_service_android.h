@@ -103,6 +103,8 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
       JNIEnv* env,
       jint trigger);
 
+  jboolean ShouldOfferTrustedVaultOptIn(JNIEnv* env);
+
   // Functionality only available for testing purposes.
 
   jlong GetProfileSyncServiceForTest(JNIEnv* env);
