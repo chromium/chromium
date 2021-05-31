@@ -12,9 +12,14 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -58,9 +63,17 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
 
 }  // namespace
 
+WebAppPublisherHelper::Delegate::Delegate() = default;
+
+WebAppPublisherHelper::Delegate::~Delegate() = default;
+
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
-                                             apps::mojom::AppType app_type)
-    : profile_(profile), app_type_(app_type) {}
+                                             apps::mojom::AppType app_type,
+                                             Delegate* delegate)
+    : profile_(profile),
+      app_type_(app_type),
+      delegate_(delegate),
+      provider_(WebAppProvider::Get(profile)) {}
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
 
@@ -239,9 +252,9 @@ void WebAppPublisherHelper::UninstallWebApp(
                          kAvoidClosingConnections, base::DoNothing());
 }
 
-apps::IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app,
-                                                        bool paused,
-                                                        bool is_disabled) {
+IconEffects WebAppPublisherHelper::GetIconEffects(
+    const WebApp* web_app,
+    absl::optional<bool> is_disabled_opt) {
   IconEffects icon_effects = IconEffects::kRoundCorners;
   if (!web_app->is_locally_installed()) {
     icon_effects |= IconEffects::kBlocked;
@@ -257,6 +270,20 @@ apps::IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app,
   }
 #endif
 
+  if (IsPaused(web_app->app_id())) {
+    icon_effects |= IconEffects::kPaused;
+  }
+
+  bool is_disabled = false;
+  if (is_disabled_opt.has_value()) {
+    is_disabled = *is_disabled_opt;
+  } else if (web_app->chromeos_data().has_value()) {
+    is_disabled = web_app->chromeos_data()->is_disabled;
+  }
+  if (is_disabled) {
+    icon_effects |= IconEffects::kBlocked;
+  }
+
 // TODO(crbug.com/1214707): Implement badging for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
@@ -265,15 +292,72 @@ apps::IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app,
   }
 #endif
 
-  if (paused) {
-    icon_effects |= IconEffects::kPaused;
-  }
-
-  if (is_disabled) {
-    icon_effects |= IconEffects::kBlocked;
-  }
-
   return icon_effects;
+}
+
+apps::mojom::IconKeyPtr WebAppPublisherHelper::MakeIconKey(
+    const WebApp* web_app,
+    absl::optional<bool> is_disabled) {
+  return icon_key_factory_.MakeIconKey(
+      GetIconEffects(web_app, std::move(is_disabled)));
+}
+
+void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type();
+  app->app_id = app_id;
+  app->icon_key = MakeIconKey(web_app);
+  delegate_->PublishWebApp(std::move(app));
+}
+
+void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
+  if (paused_apps_.MaybeAddApp(app_id)) {
+    SetIconEffect(app_id);
+  }
+
+  constexpr bool kPaused = true;
+  delegate_->PublishWebApp(
+      paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused));
+
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (!browser->is_type_app()) {
+      continue;
+    }
+    if (GetAppIdFromApplicationName(browser->app_name()) == app_id) {
+      browser->tab_strip_model()->CloseAllTabs();
+    }
+  }
+}
+
+void WebAppPublisherHelper::UnpauseApps(const std::string& app_id) {
+  if (paused_apps_.MaybeRemoveApp(app_id)) {
+    SetIconEffect(app_id);
+  }
+
+  constexpr bool kPaused = false;
+  delegate_->PublishWebApp(
+      paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused));
+}
+
+bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
+  return paused_apps_.IsPaused(app_id);
+}
+
+void WebAppPublisherHelper::MaybeRemovePausedApp(const std::string& app_id) {
+  paused_apps_.MaybeRemoveApp(app_id);
+}
+
+WebAppRegistrar& WebAppPublisherHelper::registrar() const {
+  return *provider_->registrar().AsWebAppRegistrar();
+}
+
+const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
+  return registrar().GetAppById(app_id);
 }
 
 }  // namespace web_app

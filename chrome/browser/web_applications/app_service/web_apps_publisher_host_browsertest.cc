@@ -362,4 +362,51 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
       apps::mojom::OptionalBool::kFalse);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PauseUnpause) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  LaunchWebAppBrowserAndWait(app_id);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+
+  web_apps_publisher_host.PauseApp(app_id);
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_type,
+            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->icon_key->icon_effects,
+            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon |
+                IconEffects::kPaused);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
+            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
+            apps::mojom::OptionalBool::kTrue);
+
+  web_apps_publisher_host.UnpauseApps(app_id);
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 5U);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_type,
+            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->icon_key->icon_effects,
+            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
+            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
+            apps::mojom::OptionalBool::kFalse);
+}
+
 }  // namespace web_app

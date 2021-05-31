@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -44,6 +43,7 @@ class WebAppRegistrar;
 // This WebAppsPublisherHost observes AppRegistrar on Lacros, and calls
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
+                             public WebAppPublisherHelper::Delegate,
                              public AppRegistrarObserver,
                              public content_settings::Observer,
                              public MediaCaptureDevicesDispatcher::Observer,
@@ -63,6 +63,10 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
+  // TODO(crbug.com/1194709): Add these to crosapi::mojom::AppController:
+  void PauseApp(const std::string& app_id);
+  void UnpauseApps(const std::string& app_id);
+
  private:
   void OnReady();
 
@@ -71,6 +75,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+
+  // WebAppPublisherHelper::Delegate:
+  void PublishWebApp(apps::mojom::AppPtr app) override;
 
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
@@ -103,7 +110,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   const WebApp* GetWebApp(const AppId& app_id) const;
   apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness);
-  void Publish(apps::mojom::AppPtr app);
 
   void ModifyCapabilityAccess(const std::string& app_id,
                               absl::optional<bool> accessing_camera,
@@ -113,8 +119,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   WebAppProvider* const provider_;
   WebAppPublisherHelper publisher_helper_;
   crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 

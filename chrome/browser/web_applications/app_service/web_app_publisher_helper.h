@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 
+#include <string>
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/paused_apps.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -17,10 +20,24 @@ class Profile;
 namespace web_app {
 
 class WebApp;
+class WebAppProvider;
+class WebAppRegistrar;
 
 class WebAppPublisherHelper {
  public:
-  WebAppPublisherHelper(Profile* profile, apps::mojom::AppType app_type);
+  class Delegate {
+   public:
+    Delegate();
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    ~Delegate();
+
+    virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
+  };
+
+  WebAppPublisherHelper(Profile* profile,
+                        apps::mojom::AppType app_type,
+                        Delegate* delegate);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
   ~WebAppPublisherHelper();
@@ -64,20 +81,47 @@ class WebAppPublisherHelper {
                        bool clear_site_data,
                        bool report_abuse);
 
-  apps::IconEffects GetIconEffects(const WebApp* web_app,
-                                   bool paused,
-                                   bool is_disabled);
+  // If |is_disabled| is |absl::nullopt|, |web_app->chromos_data().is_disabled|
+  // is consulted instead.
+  apps::mojom::IconKeyPtr MakeIconKey(
+      const WebApp* web_app,
+      absl::optional<bool> is_disabled = absl::nullopt);
+
+  void SetIconEffect(const std::string& app_id);
+
+  void PauseApp(const std::string& app_id);
+
+  void UnpauseApps(const std::string& app_id);
+
+  bool IsPaused(const std::string& app_id);
+
+  void MaybeRemovePausedApp(const std::string& app_id);
 
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }
 
+  WebAppRegistrar& registrar() const;
+
  private:
+  apps::IconEffects GetIconEffects(const WebApp* web_app,
+                                   absl::optional<bool> is_disabled_opt);
+
+  const WebApp* GetWebApp(const AppId& app_id) const;
+
   Profile* const profile_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
+
+  Delegate* const delegate_;
+
+  WebAppProvider* const provider_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  apps::PausedApps paused_apps_;
 };
 
 }  // namespace web_app

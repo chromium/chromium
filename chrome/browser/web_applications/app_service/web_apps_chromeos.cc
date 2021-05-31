@@ -29,9 +29,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -184,32 +182,11 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
 }
 
 void WebAppsChromeOs::PauseApp(const std::string& app_id) {
-  if (paused_apps_.MaybeAddApp(app_id)) {
-    SetIconEffect(app_id);
-  }
-
-  constexpr bool kPaused = true;
-  Publish(paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused),
-          subscribers());
-
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (!browser->is_type_app()) {
-      continue;
-    }
-    if (GetAppIdFromApplicationName(browser->app_name()) == app_id) {
-      browser->tab_strip_model()->CloseAllTabs();
-    }
-  }
+  publisher_helper().PauseApp(app_id);
 }
 
 void WebAppsChromeOs::UnpauseApps(const std::string& app_id) {
-  if (paused_apps_.MaybeRemoveApp(app_id)) {
-    SetIconEffect(app_id);
-  }
-
-  constexpr bool kPaused = false;
-  Publish(paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused),
-          subscribers());
+  publisher_helper().UnpauseApps(app_id);
 }
 
 void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
@@ -377,7 +354,7 @@ void WebAppsChromeOs::OnWebAppWillBeUninstalled(const AppId& app_id) {
   }
 
   app_notifications_.RemoveNotificationsForApp(app_id);
-  paused_apps_.MaybeRemoveApp(app_id);
+  publisher_helper().MaybeRemovePausedApp(app_id);
 
   auto result = media_requests_.RemoveRequests(app_id);
   ModifyCapabilityAccess(subscribers(), app_id, result.camera,
@@ -402,9 +379,7 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const AppId& app_id,
                   : apps::mojom::Readiness::kReady;
   apps::mojom::AppPtr app =
       publisher_helper().ConvertWebApp(web_app, readiness);
-  app->icon_key =
-      icon_key_factory().MakeIconKey(publisher_helper().GetIconEffects(
-          web_app, paused_apps_.IsPaused(app_id), is_disabled));
+  app->icon_key = publisher_helper().MakeIconKey(web_app, is_disabled);
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
@@ -656,9 +631,8 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
     UpdateAppDisabledMode(app);
   }
 
-  bool paused = paused_apps_.IsPaused(web_app->app_id());
-  app->icon_key = icon_key_factory().MakeIconKey(
-      publisher_helper().GetIconEffects(web_app, paused, is_disabled));
+  bool paused = publisher_helper().IsPaused(web_app->app_id());
+  app->icon_key = publisher_helper().MakeIconKey(web_app);
 
   apps::mojom::OptionalBool has_notification =
       app_notifications_.HasNotification(web_app->app_id())
@@ -676,25 +650,9 @@ void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {
 
   for (auto& app_id : app_ids) {
     if (GetWebApp(app_id)) {
-      SetIconEffect(app_id);
+      publisher_helper().SetIconEffect(app_id);
     }
   }
-}
-
-void WebAppsChromeOs::SetIconEffect(const std::string& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = app_id;
-  DCHECK(web_app->chromeos_data().has_value());
-  app->icon_key = icon_key_factory().MakeIconKey(
-      publisher_helper().GetIconEffects(web_app, paused_apps_.IsPaused(app_id),
-                                        web_app->chromeos_data()->is_disabled));
-  Publish(std::move(app), subscribers());
 }
 
 content::WebContents* WebAppsChromeOs::LaunchAppWithParams(

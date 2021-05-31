@@ -47,8 +47,7 @@ apps::mojom::AppPtr WebApps::Convert(const WebApp* web_app,
   apps::mojom::AppPtr app =
       publisher_helper().ConvertWebApp(web_app, readiness);
 
-  app->icon_key = icon_key_factory().MakeIconKey(
-      publisher_helper().GetIconEffects(web_app, false, false));
+  app->icon_key = publisher_helper().MakeIconKey(web_app);
 
   app->has_badge = apps::mojom::OptionalBool::kFalse;
   app->paused = apps::mojom::OptionalBool::kFalse;

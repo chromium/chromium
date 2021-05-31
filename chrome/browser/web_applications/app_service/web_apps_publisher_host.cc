@@ -21,12 +21,14 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using apps::IconEffects;
+
 namespace web_app {
 
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::Get(profile)),
-      publisher_helper_(profile, apps::mojom::AppType::kWeb) {}
+      publisher_helper_(profile, apps::mojom::AppType::kWeb, this) {}
 
 WebAppsPublisherHost::~WebAppsPublisherHost() = default;
 
@@ -99,13 +101,21 @@ void WebAppsPublisherHost::Uninstall(
                                      report_abuse);
 }
 
+void WebAppsPublisherHost::PauseApp(const std::string& app_id) {
+  publisher_helper().PauseApp(app_id);
+}
+
+void WebAppsPublisherHost::UnpauseApps(const std::string& app_id) {
+  publisher_helper().UnpauseApps(app_id);
+}
+
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
   }
 
-  Publish(Convert(web_app, apps::mojom::Readiness::kReady));
+  PublishWebApp(Convert(web_app, apps::mojom::Readiness::kReady));
 }
 
 void WebAppsPublisherHost::OnWebAppManifestUpdated(const AppId& app_id,
@@ -115,7 +125,7 @@ void WebAppsPublisherHost::OnWebAppManifestUpdated(const AppId& app_id,
     return;
   }
 
-  Publish(Convert(web_app, apps::mojom::Readiness::kReady));
+  PublishWebApp(Convert(web_app, apps::mojom::Readiness::kReady));
 }
 
 void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
@@ -130,7 +140,7 @@ void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
   auto result = media_requests_.RemoveRequests(app_id);
   ModifyCapabilityAccess(app_id, result.camera, result.microphone);
 
-  Publish(publisher_helper().ConvertUninstalledWebApp(web_app));
+  PublishWebApp(publisher_helper().ConvertUninstalledWebApp(web_app));
 }
 
 void WebAppsPublisherHost::OnAppRegistrarDestroyed() {
@@ -148,9 +158,8 @@ void WebAppsPublisherHost::OnWebAppLocallyInstalledStateChanged(
   auto app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kWeb;
   app->app_id = app_id;
-  app->icon_key = icon_key_factory_.MakeIconKey(
-      publisher_helper().GetIconEffects(web_app, false, false));
-  Publish(std::move(app));
+  app->icon_key = publisher_helper().MakeIconKey(web_app);
+  PublishWebApp(std::move(app));
 }
 
 void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
@@ -161,7 +170,7 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
     return;
   }
 
-  Publish(publisher_helper().ConvertLaunchedWebApp(web_app));
+  PublishWebApp(publisher_helper().ConvertLaunchedWebApp(web_app));
 }
 
 void WebAppsPublisherHost::OnContentSettingChanged(
@@ -180,7 +189,7 @@ void WebAppsPublisherHost::OnContentSettingChanged(
       app->app_id = web_app.app_id();
       publisher_helper().PopulateWebAppPermissions(&web_app, &app->permissions);
 
-      Publish(std::move(app));
+      PublishWebApp(std::move(app));
     }
   }
 }
@@ -251,12 +260,11 @@ apps::mojom::AppPtr WebAppsPublisherHost::Convert(
   DCHECK(web_app->chromeos_data().has_value());
   apps::mojom::AppPtr app =
       publisher_helper().ConvertWebApp(web_app, readiness);
-  app->icon_key = icon_key_factory_.MakeIconKey(
-      publisher_helper().GetIconEffects(web_app, false, false));
+  app->icon_key = publisher_helper().MakeIconKey(web_app);
   return app;
 }
 
-void WebAppsPublisherHost::Publish(apps::mojom::AppPtr app) {
+void WebAppsPublisherHost::PublishWebApp(apps::mojom::AppPtr app) {
   if (!remote_publisher_) {
     return;
   }

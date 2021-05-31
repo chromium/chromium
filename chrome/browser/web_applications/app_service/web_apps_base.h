@@ -11,8 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -49,6 +47,7 @@ class WebAppRegistrar;
 
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsBase : public apps::PublisherBase,
+                    public WebAppPublisherHelper::Delegate,
                     public base::SupportsWeakPtr<WebAppsBase>,
                     public AppRegistrarObserver,
                     public content_settings::Observer {
@@ -71,6 +70,8 @@ class WebAppsBase : public apps::PublisherBase,
       const std::string& app_id,
       const base::Time& last_launch_time) override;
 
+  apps::IconEffects GetIconEffects(const WebApp* web_app);
+
   content::WebContents* LaunchAppWithIntentImpl(
       const std::string& app_id,
       int32_t event_flags,
@@ -88,18 +89,12 @@ class WebAppsBase : public apps::PublisherBase,
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
 
-  apps_util::IncrementingIconKeyFactory& icon_key_factory() {
-    return icon_key_factory_;
-  }
-
   // Can return nullptr in tests.
   const WebAppRegistrar* GetRegistrar() const;
 
   apps::mojom::AppType app_type() { return app_type_; }
 
-  web_app::WebAppPublisherHelper& publisher_helper() {
-    return publisher_helper_;
-  }
+  WebAppPublisherHelper& publisher_helper() { return publisher_helper_; }
 
  private:
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
@@ -131,6 +126,9 @@ class WebAppsBase : public apps::PublisherBase,
                      apps::mojom::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;
 
+  // WebAppPublisherHelper::Delegate overrides.
+  void PublishWebApp(apps::mojom::AppPtr app) override;
+
   // content_settings::Observer overrides.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -155,8 +153,6 @@ class WebAppsBase : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
