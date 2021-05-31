@@ -448,6 +448,13 @@ void Navigator::DidNavigate(
     rvh->SetContentsMimeType(params.contents_mime_type);
   }
 
+  // Navigations that activate an existing bfcached or prerendered document do
+  // not create a new document.
+  bool did_create_new_document =
+      !navigation_request->IsPageActivation() && !was_within_same_document;
+  render_frame_host->DidNavigate(params, navigation_request.get(),
+                                 did_create_new_document);
+
   int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
   base::TimeTicks start = base::TimeTicks::Now();
@@ -479,13 +486,6 @@ void Navigator::DidNavigate(
         site_instance);
   }
 
-  // Navigations that activate an existing bfcached or prerendered document do
-  // not create a new document.
-  bool did_create_new_document =
-      !navigation_request->IsServedFromBackForwardCache() &&
-      !navigation_request->IsPrerenderedPageActivation() &&
-      !was_within_same_document;
-
   // Store some information for recording WebPlatform security metrics. These
   // metrics depends on information present in the NavigationRequest. However
   // they must be recorded after the NavigationRequest has been destroyed and
@@ -494,9 +494,6 @@ void Navigator::DidNavigate(
   bool has_embedding_control = HasEmbeddingControl(navigation_request.get());
   bool is_error_page = navigation_request->IsErrorPage();
   const GURL original_request_url = navigation_request->GetOriginalRequestURL();
-
-  render_frame_host->DidNavigate(params, navigation_request.get(),
-                                 did_create_new_document);
 
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include

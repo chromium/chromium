@@ -5465,4 +5465,53 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
   crash_observer.Wait();
 }
 
+// The following test checks what happens if a WebContentsDelegate navigates
+// away in response to the NavigationStateChanged event. Previously
+// (https://crbug.com/1210234), this was triggering a crash when creating the
+// new NavigationRequest, because it was trying to access the current
+// RenderFrameHost's PolicyContainerHost, which had not been set up yet by
+// RenderFrameHostImpl::DidNavigate.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug1210234) {
+  class NavigationWebContentsDelegate : public WebContentsDelegate {
+   public:
+    NavigationWebContentsDelegate(const GURL& url_to_intercept,
+                                  const GURL& url_to_navigate_to)
+        : url_to_intercept_(url_to_intercept),
+          url_to_navigate_to_(url_to_navigate_to) {}
+    void NavigationStateChanged(WebContents* source,
+                                InvalidateTypes changed_flags) override {
+      if (!navigated_ && source->GetLastCommittedURL() == url_to_intercept_) {
+        navigated_ = true;
+        source->GetController().LoadURL(url_to_navigate_to_, Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        std::string());
+      }
+    }
+
+   private:
+    bool navigated_ = false;
+    GURL url_to_intercept_;
+    GURL url_to_navigate_to_;
+  };
+
+  GURL warmup_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL initial_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+  GURL redirection_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+
+  NavigationWebContentsDelegate delegate(initial_url, redirection_url);
+  web_contents()->SetDelegate(&delegate);
+
+  ASSERT_TRUE(NavigateToURL(shell(), warmup_url));
+
+  // Since we committed a navigation, the next cross-origin navigation will
+  // create a speculative RenderFrameHost.
+
+  // We use ASSERT_FALSE here since this will be redirected to "c.com".
+  ASSERT_FALSE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
+}
+
 }  // namespace content
