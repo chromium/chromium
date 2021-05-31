@@ -43,7 +43,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // |local_state| may not be nullptr. This is different from the legacy
   // accessors (user_manager::known_user::) which will return a default value if
   // local_state is not available.
-  KnownUser(PrefService* local_state);
+  explicit KnownUser(PrefService* local_state);
   ~KnownUser();
 
   KnownUser(const KnownUser& other) = delete;
