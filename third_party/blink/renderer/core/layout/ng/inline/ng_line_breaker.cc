@@ -646,32 +646,87 @@ void NGLineBreaker::ComputeLineLocation(NGLineInfo* line_info) const {
 }
 
 // Atomic inlines have break opportunities before and after, even when the
-// adjacent character is U+00A0 NO-BREAK SPACE character.
-bool NGLineBreaker::ShouldForceCanBreakAfter(
-    const NGInlineItemResult& item_result) const {
-  DCHECK(auto_wrap_);
-  DCHECK_EQ(item_result.item->Type(), NGInlineItem::kText);
-  const String& text = Text();
-  DCHECK_GE(text.length(), item_result.EndOffset());
-  if (text.length() <= item_result.EndOffset() ||
-      text[item_result.EndOffset()] != kObjectReplacementCharacter)
+// adjacent character is U+00A0 NO-BREAK SPACE character, except when sticky
+// images quirk is applied.
+bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
+  DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
+  if (!auto_wrap_ || item.EndOffset() == Text().length())
     return false;
+  // We can not break before sticky images quirk was applied.
+  if (item.IsImage())
+    return !sticky_images_quirk_;
+
+  if (item.IsRubyRun())
+    return break_iterator_.IsBreakable(item.EndOffset());
+
+  // TODO(yosin): Handle LayoutNGTextCombine
+  return true;
+}
+
+bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
+  DCHECK_NE(item.Type(), NGInlineItem::kAtomicInline);
+  DCHECK(auto_wrap_);
+  const bool can_break_after = break_iterator_.IsBreakable(item.EndOffset());
+  if (item.Type() != NGInlineItem::kText) {
+    DCHECK_EQ(item.Type(), NGInlineItem::kControl) << "We get the test case!";
+    // Example: <div>12345\t\t678</div>
+    //  NGInlineItem[0] kText "12345"
+    //  NGInlineItem[1] kControl "\t\t"
+    //  NGInlineItem[2] kText "678"
+    // See NGLineBreakerTest.OverflowTab
+    return can_break_after;
+  }
+  auto* const atomic_inline_item = TryGetAtomicInlineItemAfter(item);
+  if (!atomic_inline_item)
+    return can_break_after;
+
+  if (atomic_inline_item->IsRubyRun())
+    return can_break_after;
+
+  // We can not break before sticky images quirk was applied.
+  if (UNLIKELY(Text()[atomic_inline_item->StartOffset()] ==
+               kNoBreakSpaceCharacter)) {
+    // "One " <img> => We can break after "One ".
+    // "One" <img> => We can not break after "One".
+    // See "tables/mozilla/bugs/bug101674.html"
+    DCHECK(atomic_inline_item->IsImage() && sticky_images_quirk_);
+    return can_break_after;
+  }
+
+  // TODO(yosin): Handle LayoutNGTextCombine
+  // See "fast/writing-mode/text-combine-line-break.html".
+  return true;
+}
+
+bool NGLineBreaker::MayBeAtomicInline(wtf_size_t offset) const {
+  DCHECK_LT(offset, Text().length());
+  const auto char_code = Text()[offset];
+  if (char_code == kObjectReplacementCharacter)
+    return true;
+  return sticky_images_quirk_ && char_code == kNoBreakSpaceCharacter;
+}
+
+const NGInlineItem* NGLineBreaker::TryGetAtomicInlineItemAfter(
+    const NGInlineItem& item) const {
+  DCHECK(auto_wrap_);
+  const String& text = Text();
+  if (item.EndOffset() == text.length())
+    return nullptr;
+  if (!MayBeAtomicInline(item.EndOffset()))
+    return nullptr;
+
   // This kObjectReplacementCharacter can be any objects, such as a floating or
   // an OOF object. Check if it's really an atomic inline.
   const Vector<NGInlineItem>& items = Items();
-  for (const NGInlineItem* item = std::next(item_result.item);
-       item != items.end(); ++item) {
-    DCHECK_EQ(item->StartOffset(), item_result.EndOffset());
-    if (item->Type() == NGInlineItem::kAtomicInline) {
-      // Except when sticky images quirk was applied.
-      if (UNLIKELY(text[item->StartOffset()] == kNoBreakSpaceCharacter))
-        return false;
-      return !item->IsRubyRun();
-    }
-    if (item->EndOffset() > item_result.EndOffset())
-      break;
+  for (const NGInlineItem* next_item = std::next(&item);
+       next_item != items.end(); ++next_item) {
+    DCHECK_EQ(next_item->StartOffset(), item.EndOffset());
+    if (next_item->Type() == NGInlineItem::kAtomicInline)
+      return next_item;
+    if (next_item->EndOffset() > item.EndOffset())
+      return nullptr;
   }
-  return false;
+  return nullptr;
 }
 
 void NGLineBreaker::HandleText(const NGInlineItem& item,
@@ -1018,11 +1073,7 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
     }
   } else {
     DCHECK_EQ(item_result->EndOffset(), item.EndOffset());
-    item_result->can_break_after =
-        break_iterator_.IsBreakable(item_result->EndOffset());
-    if (!item_result->can_break_after && item.Type() == NGInlineItem::kText &&
-        ShouldForceCanBreakAfter(*item_result))
-      item_result->can_break_after = true;
+    item_result->can_break_after = CanBreakAfter(item);
     trailing_whitespace_ = WhitespaceState::kUnknown;
   }
 
@@ -1758,18 +1809,11 @@ void NGLineBreaker::HandleAtomicInline(
   }
 
   item_result->should_create_line_box = true;
-  // Atomic inlines have break opportunities before and after, even when the
-  // adjacent character is U+00A0 NO-BREAK SPACE character, except when sticky
-  // images quirk is applied.
-  item_result->can_break_after =
-      auto_wrap_ && !(sticky_images_quirk_ && item.IsImage());
+  item_result->can_break_after = CanBreakAfterAtomicInline(item);
 
   position_ += item_result->inline_size;
 
   if (item.IsRubyRun()) {
-    // Overrides can_break_after.
-    ComputeCanBreakAfter(item_result, auto_wrap_, break_iterator_);
-
     NGAnnotationOverhang overhang = GetOverhang(*item_result);
     if (overhang.end > LayoutUnit()) {
       item_result->pending_end_overhang = overhang.end;
@@ -2253,7 +2297,7 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
       // controls are trailable.
       DCHECK_NE(text[item_result.StartOffset()], kNewlineCharacter);
       DCHECK(item.Style());
-      EWhiteSpace white_space = item.Style()->WhiteSpace();
+      const EWhiteSpace white_space = item.Style()->WhiteSpace();
       if (ComputedStyle::AutoWrap(white_space) &&
           white_space != EWhiteSpace::kBreakSpaces)
         continue;
