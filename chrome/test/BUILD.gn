@@ -3477,6 +3477,7 @@ if (!is_android) {
         "//chromeos/components/media_app_ui:buildflags",
         "//chromeos/ui/frame:test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+        "//components/reporting/storage:test_support",
       ]
     } else {  # !is_chromeos_ash
       sources -= [

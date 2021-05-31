@@ -24,6 +24,7 @@
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,7 +37,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,6 +59,8 @@ const DlpContentRestrictionSet kScreenshotReported(
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
     DlpContentRestriction::kPrivacyScreen,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintAllowed(DlpContentRestriction::kPrint,
+                                             DlpRulesManager::Level::kAllow);
 const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
                                                 DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
@@ -104,21 +107,22 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
     return dlp_rules_manager;
   }
 
+  // Sets up mock rules manager.
   void SetupDlpRulesManager() {
     DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindRepeating(&DlpContentManagerBrowserTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
-  }
 
-  void SetupReporting() {
-    SetupDlpRulesManager();
     EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
         .WillRepeatedly(testing::Return(kSrcPattern));
     EXPECT_CALL(*mock_rules_manager_, IsRestricted(_, _))
         .WillRepeatedly(testing::Return(DlpRulesManager::Level::kAllow));
+  }
 
+  void SetupReporting() {
+    SetupDlpRulesManager();
     // Set up mock report queue.
     SetReportQueueForReportingManager(helper_.GetReportingManager(), events_);
   }
@@ -548,43 +552,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
               DlpRulesManager::Level::kBlock, 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
-  SetupReporting();
-  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  const std::string src_pattern = web_contents->GetLastCommittedURL().spec();
-
-  DlpContentManager* manager = helper_.GetContentManager();
-
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
-
-  // No event should be emitted when there is no restriction.
-  EXPECT_FALSE(manager->IsPrintingRestricted(web_contents));
-  CheckEvents(DlpRulesManager::Restriction::kPrinting,
-              DlpRulesManager::Level::kBlock, 0u);
-
-  // Set up printing restriction.
-  helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
-
-  // Check that IsPrintingRestricted emitted an event.
-  EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
-  CheckEvents(DlpRulesManager::Restriction::kPrinting,
-              DlpRulesManager::Level::kBlock, 1u);
-
-  // Start printing, check for notification about printing restriction, and
-  // another event emitted.
-  printing::StartPrint(web_contents,
-                       /*print_renderer=*/mojo::NullAssociatedRemote(),
-                       /*print_preview_disabled=*/false,
-                       /*print_only_selection=*/false);
-  EXPECT_TRUE(
-      display_service_tester.GetNotification(kPrintBlockedNotificationId));
-  CheckEvents(DlpRulesManager::Restriction::kPrinting,
-              DlpRulesManager::Level::kBlock, 2u);
-}
-
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
+  // Set up mock report queue and mock rules manager.
   SetupReporting();
   ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
   content::WebContents* web_contents =
@@ -606,8 +575,125 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
               DlpRulesManager::Level::kBlock, 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingReported) {
-  SetupReporting();
+class DlpContentManagerReportingBrowserTest
+    : public DlpContentManagerBrowserTest {
+ public:
+  // Sets up real report queue together with TestStorageModule
+  void SetupReportQueue() {
+    const std::string dm_token_ = "FAKE_DM_TOKEN";
+    const reporting::Destination destination_ =
+        reporting::Destination::UPLOAD_EVENTS;
+
+    storage_module_ =
+        base::MakeRefCounted<reporting::test::TestStorageModule>();
+
+    policy_check_callback_ =
+        base::BindRepeating(&testing::MockFunction<reporting::Status()>::Call,
+                            base::Unretained(&mocked_policy_check_));
+
+    ON_CALL(mocked_policy_check_, Call())
+        .WillByDefault(testing::Return(reporting::Status::StatusOK()));
+
+    reporting::StatusOr<std::unique_ptr<reporting::ReportQueueConfiguration>>
+        config_result = reporting::ReportQueueConfiguration::Create(
+            dm_token_, destination_, policy_check_callback_);
+
+    ASSERT_TRUE(config_result.ok());
+
+    reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
+        report_queue_result = reporting::ReportQueueImpl::Create(
+            std::move(config_result.ValueOrDie()), storage_module_);
+
+    ASSERT_TRUE(report_queue_result.ok());
+
+    helper_.GetReportingManager()->GetReportQueueSetter().Run(
+        std::move(report_queue_result.ValueOrDie()));
+  }
+
+  reporting::test::TestStorageModule* test_storage_module() const {
+    reporting::test::TestStorageModule* test_storage_module =
+        google::protobuf::down_cast<reporting::test::TestStorageModule*>(
+            storage_module_.get());
+    DCHECK(test_storage_module);
+    return test_storage_module;
+  }
+
+  void CheckRecord(DlpRulesManager::Restriction restriction,
+                   DlpRulesManager::Level level,
+                   reporting::Record record) {
+    DlpPolicyEvent event;
+    EXPECT_TRUE(event.ParseFromString(record.data()));
+    EXPECT_EQ(event.source().url(), kSrcPattern);
+    EXPECT_THAT(event, IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                           kSrcPattern, restriction, level)));
+  }
+
+  // Sets an action to execute when an event arrives to the report queue storage
+  // module.
+  void SetAddRecordCheck(DlpRulesManager::Restriction restriction,
+                         DlpRulesManager::Level level,
+                         int times) {
+    // TODO(jkopanski): Change to [=, this] when chrome code base is updated to
+    // C++20.
+    EXPECT_CALL(*test_storage_module(), AddRecord)
+        .Times(times)
+        .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
+            [=](reporting::Record record,
+                base::OnceCallback<void(reporting::Status)> callback) {
+              CheckRecord(restriction, level, std::move(record));
+              std::move(callback).Run(reporting::Status::StatusOK());
+            })));
+  }
+
+ protected:
+  scoped_refptr<reporting::StorageModuleInterface> storage_module_;
+  testing::NiceMock<testing::MockFunction<reporting::Status()>>
+      mocked_policy_check_;
+  reporting::ReportQueueConfiguration::PolicyCheckCallback
+      policy_check_callback_;
+};
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       PrintingRestricted) {
+  // Set up mock rules manager.
+  SetupDlpRulesManager();
+  // Set up real report queue.
+  SetupReportQueue();
+  // Sets an action to execute when an event arrives to a storage module.
+  SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
+                    DlpRulesManager::Level::kBlock, /*times=*/2);
+
+  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  // No event should be emitted when there is no restriction.
+  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+
+  // Set up printing restriction.
+  helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
+
+  // Check that IsPrintingRestricted emitted an event.
+  EXPECT_TRUE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+
+  printing::StartPrint(web_contents,
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+                       /*print_preview_disabled=*/false,
+                       /*print_only_selection=*/false);
+  // Check for notification about printing restriction.
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       PrintingReported) {
+  SetupDlpRulesManager();
+  SetupReportQueue();
+  SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
+                    DlpRulesManager::Level::kReport, /*times=*/2);
+
   ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -618,19 +704,20 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingReported) {
   helper_.ChangeConfidentiality(web_contents, kPrintReported);
 
   EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
-  CheckEvents(DlpRulesManager::Restriction::kPrinting,
-              DlpRulesManager::Level::kReport, 1u);
 
-  // Start printing and check that there is no notification when printing is not
-  // restricted.
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
                        /*print_preview_disabled=*/false,
                        /*print_only_selection=*/false);
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
-  CheckEvents(DlpRulesManager::Restriction::kPrinting,
-              DlpRulesManager::Level::kReport, 2u);
+
+  // TODO(crbug/1213872, jkopanski): A hack to make this test working on
+  // linux-chromeos-rel. For some reason, gtest calls RequestPrintPreview after
+  // the test fixture, which triggers a DLP reporting event. This happens only
+  // for linux-chromeos-rel build and in this PrintingReported test, does not
+  // occur in PrintingRestricted test.
+  helper_.ChangeConfidentiality(web_contents, kPrintAllowed);
 }
 
 class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
