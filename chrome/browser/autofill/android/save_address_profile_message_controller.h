@@ -41,12 +41,14 @@ class SaveAddressProfileMessageController {
                       AutofillClient::AddressProfileSavePromptCallback
                           save_address_profile_callback,
                       PrimaryActionCallback primary_action_callback);
-
+  bool IsMessageDisplayed();
   // Called in response to user clicking the primary button.
   void OnPrimaryAction();
   // Called whenever the message is dismissed (e.g. after timeout or because the
   // user already accepted or declined the message).
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
+
+  void DismissMessageForTest(messages::DismissReason reason);
 
  private:
   friend class SaveAddressProfileMessageControllerTest;

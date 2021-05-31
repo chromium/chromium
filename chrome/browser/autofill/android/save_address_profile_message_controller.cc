@@ -70,11 +70,8 @@ void SaveAddressProfileMessageController::DisplayMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS);
 }
 
-void SaveAddressProfileMessageController::DismissMessage() {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
-  }
+bool SaveAddressProfileMessageController::IsMessageDisplayed() {
+  return !!message_;
 }
 
 void SaveAddressProfileMessageController::OnPrimaryAction() {
@@ -111,6 +108,21 @@ void SaveAddressProfileMessageController::OnMessageDismissed(
   // Clean the state, message is no longer shown.
   message_.reset();
   web_contents_ = nullptr;
+}
+
+void SaveAddressProfileMessageController::DismissMessageForTest(
+    messages::DismissReason reason) {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), web_contents_, reason);
+  }
+}
+
+void SaveAddressProfileMessageController::DismissMessage() {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
+  }
 }
 
 void SaveAddressProfileMessageController::RunSaveAddressProfileCallback(

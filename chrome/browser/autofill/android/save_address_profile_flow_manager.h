@@ -28,14 +28,17 @@ class SaveAddressProfileFlowManager {
   ~SaveAddressProfileFlowManager();
 
   // Triggers a confirmation flow for saving the `profile` using the given
-  // `web_contents`. If another flow is in progress, it will be cancelled and
-  // replaced by the new one. The `original_profile` is nullptr for a new
-  // address or points to the existing profile which will be updated if the
-  // user accepts. The `callback` is triggered once the user makes a decision.
+  // `web_contents`. If another flow is in progress, the incoming offer will
+  // be auto-declined. The `original_profile` is nullptr for a new address or
+  // points to the existing profile which will be updated if the user accepts.
+  // The `callback` is triggered once the user makes a decision.
   void OfferSave(content::WebContents* web_contents,
                  const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
                  AutofillClient::AddressProfileSavePromptCallback callback);
+
+  SaveAddressProfileMessageController* GetMessageControllerForTest();
+  SaveAddressProfilePromptController* GetPromptControllerForTest();
 
  private:
   void ShowSaveAddressProfileMessage(
