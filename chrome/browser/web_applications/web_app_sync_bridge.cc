@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/types/pass_key.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -39,15 +38,6 @@
 #include "url/gurl.h"
 
 namespace web_app {
-
-bool AreAppsLocallyInstalledByDefault() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, sync always locally installs an app.
-  return true;
-#else
-  return false;
-#endif
-}
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
@@ -224,7 +214,7 @@ void WebAppSyncBridge::SetAppRunOnOsLoginMode(const AppId& app_id,
 }
 
 void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
-  if (!IsChromeOs())
+  if (!IsChromeOsDataMandatory())
     return;
 
   bool notify = false;
@@ -249,7 +239,7 @@ void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
 }
 
 void WebAppSyncBridge::UpdateAppsDisableMode() {
-  if (!IsChromeOs())
+  if (!IsChromeOsDataMandatory())
     return;
 
   registrar_->NotifyWebAppsDisabledModeChanged();
@@ -543,7 +533,7 @@ void WebAppSyncBridge::ApplySyncDataChange(
     ApplySyncDataToApp(specifics, web_app.get());
 
     // For a new app, automatically choose if we want to install it locally.
-    web_app->SetIsLocallyInstalled(AreAppsLocallyInstalledByDefault());
+    web_app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
 
     update_local_data->apps_to_create.push_back(std::move(web_app));
   }

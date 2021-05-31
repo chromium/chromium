@@ -469,14 +469,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   auto& chromeos_data_proto = local_data.chromeos_data();
 
-  if (IsChromeOs() && !local_data.has_chromeos_data()) {
+  if (IsChromeOsDataMandatory() && !local_data.has_chromeos_data()) {
     DLOG(ERROR) << "WebApp proto parse error: no chromeos_data field. The web "
                 << "app might have been installed when running on an OS other "
                 << "than Chrome OS.";
     return nullptr;
   }
 
-  if (!IsChromeOs() && local_data.has_chromeos_data()) {
+  if (!IsChromeOsDataMandatory() && local_data.has_chromeos_data()) {
     DLOG(ERROR) << "WebApp proto parse error: has chromeos_data field. The web "
                 << "app might have been installed when running on Chrome OS.";
     return nullptr;

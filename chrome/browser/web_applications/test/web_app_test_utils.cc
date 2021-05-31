@@ -344,7 +344,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       CreateRandomDownloadedShortcutsMenuIconsSizes(random));
   app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
-  if (IsChromeOs()) {
+  if (IsChromeOsDataMandatory()) {
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = random.next_bool();
     chromeos_data->show_in_search = random.next_bool();

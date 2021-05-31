@@ -61,9 +61,9 @@ namespace {
 
 constexpr char kExpectationsFilename[] = "TestExpectations";
 constexpr char kPlatformName[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "ChromeOS";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
     "Linux";
 #elif defined(OS_MAC)
     "Mac";

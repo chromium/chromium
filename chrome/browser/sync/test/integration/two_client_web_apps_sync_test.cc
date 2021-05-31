@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -133,11 +134,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
   bool is_locally_installed =
       GetRegistrar(GetProfile(1)).IsLocallyInstalled(app_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(is_locally_installed);
-#else
-  EXPECT_FALSE(is_locally_installed);
-#endif
+  EXPECT_EQ(is_locally_installed, AreAppsLocallyInstalledBySync());
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }

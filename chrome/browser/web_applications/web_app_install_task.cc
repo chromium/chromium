@@ -207,7 +207,7 @@ void UpdateFinalizerClientData(
     const absl::optional<InstallManager::InstallParams>& params,
     InstallFinalizer::FinalizeOptions* options) {
   if (params) {
-    if (IsChromeOs()) {
+    if (IsChromeOsDataMandatory()) {
       options->chromeos_data.emplace();
       options->chromeos_data->show_in_launcher =
           params->add_to_applications_menu;

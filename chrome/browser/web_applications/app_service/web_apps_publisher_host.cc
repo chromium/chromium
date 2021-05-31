@@ -273,6 +273,7 @@ const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
 apps::mojom::AppPtr WebAppsPublisherHost::Convert(
     const WebApp* web_app,
     apps::mojom::Readiness readiness) {
+  DCHECK(web_app->chromeos_data().has_value());
   apps::mojom::AppPtr app = publisher_helper_.ConvertWebApp(web_app, readiness);
   app->icon_key = icon_key_factory_.MakeIconKey(GetIconEffects(web_app));
   return app;

@@ -235,7 +235,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   proto->mutable_sources()->set_sync(true);
   proto->mutable_sources()->set_default_(false);
 
-  if (IsChromeOs()) {
+  if (IsChromeOsDataMandatory()) {
     proto->mutable_chromeos_data()->set_show_in_launcher(false);
     proto->mutable_chromeos_data()->set_show_in_search(false);
     proto->mutable_chromeos_data()->set_show_in_management(false);
@@ -258,7 +258,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_TRUE(app->IsSynced());
   EXPECT_FALSE(app->IsPreinstalledApp());
 
-  if (IsChromeOs()) {
+  if (IsChromeOsDataMandatory()) {
     EXPECT_FALSE(app->chromeos_data()->show_in_launcher);
     EXPECT_FALSE(app->chromeos_data()->show_in_search);
     EXPECT_FALSE(app->chromeos_data()->show_in_management);
@@ -284,7 +284,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   app->SetUserDisplayMode(user_display_mode);
   app->SetIsLocallyInstalled(false);
   // chromeos_data should always be set on ChromeOS.
-  if (IsChromeOs())
+  if (IsChromeOsDataMandatory())
     app->SetWebAppChromeOsData(absl::make_optional<WebAppChromeOsData>());
 
   EXPECT_FALSE(app->HasAnySources());
@@ -338,7 +338,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app_copy->is_locally_installed());
 
   auto& chromeos_data = app_copy->chromeos_data();
-  if (IsChromeOs()) {
+  if (IsChromeOsDataMandatory()) {
     EXPECT_TRUE(chromeos_data->show_in_launcher);
     EXPECT_TRUE(chromeos_data->show_in_search);
     EXPECT_TRUE(chromeos_data->show_in_management);

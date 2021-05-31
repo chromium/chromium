@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
@@ -435,7 +436,7 @@ TEST_F(WebAppSyncBridgeTest, MergeSyncData_LocalSetLessThanServerSet) {
   for (std::unique_ptr<WebApp>& expected_app_to_install :
        expected_apps_to_install) {
     expected_app_to_install->SetIsLocallyInstalled(
-        AreAppsLocallyInstalledByDefault());
+        AreAppsLocallyInstalledBySync());
     expected_app_to_install->SetIsInSyncInstall(true);
   }
 
@@ -527,7 +528,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
 
   for (std::unique_ptr<WebApp>& app_to_add :
        CreateAppsList("https://example.org/", 10)) {
-    app_to_add->SetIsLocallyInstalled(AreAppsLocallyInstalledByDefault());
+    app_to_add->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
     app_to_add->SetIsInSyncInstall(true);
 
     ConvertAppToEntityChange(*app_to_add, syncer::EntityChange::ACTION_ADD,
@@ -1053,7 +1054,7 @@ TEST_F(WebAppSyncBridgeTest,
 TEST_F(WebAppSyncBridgeTest, InstallAppsInSyncInstall) {
   AppsList apps_in_sync_install = CreateAppsList("https://example.com/", 10);
   for (std::unique_ptr<WebApp>& app : apps_in_sync_install) {
-    app->SetIsLocallyInstalled(AreAppsLocallyInstalledByDefault());
+    app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
     app->SetIsInSyncInstall(true);
   }
 

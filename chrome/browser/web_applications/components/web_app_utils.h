@@ -70,7 +70,10 @@ base::FilePath GetWebAppsTempDirectory(
 std::string GetProfileCategoryForLogging(Profile* profile);
 
 // Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
-bool IsChromeOs();
+bool IsChromeOsDataMandatory();
+
+// Returns true if sync should install web apps locally by default.
+bool AreAppsLocallyInstalledBySync();
 
 // Returns all file handlers associated with any apps at the origin of `url`, in
 // the `profile`. This is not limited to a particular app's scope because it's

@@ -34,8 +34,9 @@ WebApp::WebApp(const AppId& app_id)
     : app_id_(app_id),
       display_mode_(DisplayMode::kUndefined),
       user_display_mode_(DisplayMode::kUndefined),
-      chromeos_data_(IsChromeOs() ? absl::make_optional<WebAppChromeOsData>()
-                                  : absl::nullopt) {}
+      chromeos_data_(IsChromeOsDataMandatory()
+                         ? absl::make_optional<WebAppChromeOsData>()
+                         : absl::nullopt) {}
 
 WebApp::~WebApp() = default;
 

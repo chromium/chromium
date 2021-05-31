@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -46,6 +47,10 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -131,10 +136,30 @@ std::unique_ptr<WebAppInstallTask> CreateDummyTask() {
       /*registrar=*/nullptr);
 }
 
+// TODO(crbug.com/1194709): Retire SyncParam after Lacros ships.
+enum class SyncParam { kWithoutSync = 0, kWithSync = 1, kMaxValue = kWithSync };
+
 }  // namespace
 
-class WebAppInstallManagerTest : public WebAppTest {
+class WebAppInstallManagerTest
+    : public WebAppTest,
+      public ::testing::WithParamInterface<SyncParam> {
  public:
+  WebAppInstallManagerTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam() == SyncParam::kWithSync) {
+      // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
+      scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+    } else {
+      // Enable WebAppsCrosapi, so that Web Apps don't get synced in the Ash
+      // browser.
+      scoped_feature_list_.InitAndEnableFeature(features::kWebAppsCrosapi);
+    }
+#else
+    DCHECK(GetParam() == SyncParam::kWithSync);
+#endif
+  }
+
   void SetUp() override {
     WebAppTest::SetUp();
 
@@ -403,7 +428,19 @@ class WebAppInstallManagerTest : public WebAppTest {
     file_utils_ = nullptr;
   }
 
+  static std::string ParamInfoToString(
+      testing::TestParamInfo<WebAppInstallManagerTest::ParamType> info) {
+    switch (info.param) {
+      case SyncParam::kWithSync:
+        return "WithSync";
+      case SyncParam::kWithoutSync:
+        return "WithoutSync";
+    }
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
 
@@ -419,8 +456,12 @@ class WebAppInstallManagerTest : public WebAppTest {
   TestFileUtils* file_utils_ = nullptr;
 };
 
-TEST_F(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest,
        InstallWebAppsAfterSync_TwoConcurrentInstallsAreRunInOrder) {
+  if (GetParam() == SyncParam::kWithoutSync) {
+    return;
+  }
+
   url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
                                          WebAppUrlLoader::Result::kUrlLoaded});
 
@@ -568,8 +609,12 @@ TEST_F(WebAppInstallManagerTest,
   EXPECT_EQ(expected_event_order, event_order);
 }
 
-TEST_F(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest,
        InstallWebAppsAfterSync_InstallManagerDestroyed) {
+  if (GetParam() == SyncParam::kWithoutSync) {
+    return;
+  }
+
   const GURL start_url{"https://example.com/path"};
   const AppId app_id = GenerateAppIdFromURL(start_url);
 
@@ -627,15 +672,15 @@ TEST_F(WebAppInstallManagerTest,
   EXPECT_FALSE(callback_called);
 }
 
-TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
+TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
+  if (GetParam() == SyncParam::kWithoutSync) {
+    return;
+  }
+
   const std::string url_path{"https://example.com/path"};
   const GURL url{url_path};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool expect_locally_installed = true;
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  bool expect_locally_installed = false;
-#endif
+  bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
       CreateWebApp(url, Source::kSync,
@@ -704,14 +749,14 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
+TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
+  if (GetParam() == SyncParam::kWithoutSync) {
+    return;
+  }
+
   const GURL url{"https://example.com/path"};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool expect_locally_installed = true;
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  bool expect_locally_installed = false;
-#endif
+  bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
       CreateWebApp(url, Source::kSync,
@@ -787,7 +832,7 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
+TEST_P(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   std::unique_ptr<WebApp> app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -836,7 +881,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   EXPECT_EQ(expected_event_order, event_order);
 }
 
-TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
+TEST_P(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
   std::unique_ptr<WebApp> policy_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -872,7 +917,7 @@ TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
-TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallWebApp) {
+TEST_P(WebAppInstallManagerTest, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -908,7 +953,7 @@ TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallWebApp) {
   EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 }
 
-TEST_F(WebAppInstallManagerTest, InstallWebAppFromInfo) {
+TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   InitEmptyRegistrar();
 
   const GURL url("https://example.com/path");
@@ -934,7 +979,7 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   EXPECT_TRUE(ContainsOneIconOfEachSize(icon_bitmaps));
 }
 
-TEST_F(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
+TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   InitEmptyRegistrar();
 
   std::unique_ptr<WebAppInstallTask> task_a = CreateDummyTask();
@@ -976,8 +1021,12 @@ TEST_F(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   EXPECT_FALSE(task_c_started);
 }
 
-TEST_F(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest,
        InstallWebAppFromManifestWithFallback_OverwriteIsLocallyInstalled) {
+  if (GetParam() == SyncParam::kWithoutSync) {
+    return;
+  }
+
   const GURL start_url{"https://example.com/path"};
   const AppId app_id = GenerateAppIdFromURL(start_url);
 
@@ -1008,5 +1057,15 @@ TEST_F(WebAppInstallManagerTest,
   EXPECT_EQ(DisplayMode::kBrowser,
             registrar().GetAppEffectiveDisplayMode(app_id));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppInstallManagerTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                         ::testing::Values(SyncParam::kWithoutSync,
+                                           SyncParam::kWithSync),
+#else
+                         ::testing::Values(SyncParam::kWithSync),
+#endif
+                         WebAppInstallManagerTest::ParamInfoToString);
 
 }  // namespace web_app

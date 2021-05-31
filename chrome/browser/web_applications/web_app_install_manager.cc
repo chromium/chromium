@@ -28,26 +28,22 @@ namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr bool kLocallyInstallWebAppsOnSync = true;
-#else
-constexpr bool kLocallyInstallWebAppsOnSync = false;
-#endif
-
 InstallManager::InstallParams CreateSyncInstallParams(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url,
     const std::u16string& app_name,
     DisplayMode user_display_mode) {
+  const bool locally_install_we_apps_on_sync = AreAppsLocallyInstalledBySync();
+
   InstallManager::InstallParams params;
   params.override_manifest_id = manifest_id;
   params.user_display_mode = user_display_mode;
   params.fallback_start_url = start_url;
   params.fallback_app_name = app_name;
   // If app is not locally installed then no OS integration like OS shortcuts.
-  params.locally_installed = kLocallyInstallWebAppsOnSync;
-  params.add_to_applications_menu = kLocallyInstallWebAppsOnSync;
-  params.add_to_desktop = kLocallyInstallWebAppsOnSync;
+  params.locally_installed = locally_install_we_apps_on_sync;
+  params.add_to_applications_menu = locally_install_we_apps_on_sync;
+  params.add_to_desktop = locally_install_we_apps_on_sync;
   // Never add the app to the quick launch bar after sync.
   params.add_to_quick_launch_bar = false;
   return params;
@@ -207,6 +203,9 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     OnceInstallCallback callback) {
   DCHECK(started_);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(AreAppsLocallyInstalledBySync());
+#endif
 
   if (registrar()->IsInstalled(sync_app_id) ||
       // Note that we call the callback too early here: an enqueued task has not
@@ -378,7 +377,7 @@ void WebAppInstallManager::
 
   InstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = webapps::WebappInstallSource::SYNC;
-  finalize_options.locally_installed = kLocallyInstallWebAppsOnSync;
+  finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons,

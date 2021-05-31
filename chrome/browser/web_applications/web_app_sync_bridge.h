@@ -158,8 +158,6 @@ class WebAppSyncBridge : public AppRegistryController,
 
 };
 
-bool AreAppsLocallyInstalledByDefault();
-
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app);
 
 void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data, WebApp* app);

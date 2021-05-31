@@ -131,9 +131,22 @@ std::string GetProfileCategoryForLogging(Profile* profile) {
 #endif
 }
 
-bool IsChromeOs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsChromeOsDataMandatory() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
+#else
+  return false;
+#endif
+}
+
+bool AreAppsLocallyInstalledBySync() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Chrome OS, sync always locally installs an app.
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  // With Crosapi, Ash no longer participates in sync.
+  // On Chrome OS before Crosapi, sync always locally installs an app.
+  return !base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
 #else
   return false;
 #endif
