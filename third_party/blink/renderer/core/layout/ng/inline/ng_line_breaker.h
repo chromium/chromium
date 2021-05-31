@@ -107,6 +107,12 @@ class CORE_EXPORT NGLineBreaker {
 
   void ComputeLineLocation(NGLineInfo*) const;
 
+  // Returns true if CSS property "white-space" specified in |style| allows
+  // wrap. Note: For "text-combine-upright:all", this function returns false
+  // event if "white-space" means wrap, because combined text should be laid
+  // out in one line.
+  bool ShouldAutoWrap(const ComputedStyle& style) const;
+
   enum class LineBreakState {
     // The line breaking is complete.
     kDone,

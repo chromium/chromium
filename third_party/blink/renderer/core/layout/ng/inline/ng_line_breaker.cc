@@ -179,6 +179,11 @@ inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
     layout_object->ClearNeedsLayout();
 }
 
+inline bool NGLineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
+  //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
+  return !is_svg_text_ && style.AutoWrap();
+}
+
 LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
   LayoutUnit available_width = line_opportunity_.AvailableInlineSize();
   // Make sure it's at least the initial size, which is usually 0 but not so
@@ -676,7 +681,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
          (item.Type() == NGInlineItem::kControl &&
           Text()[item.StartOffset()] == kTabulationCharacter));
   DCHECK(&shape_result);
-  DCHECK_EQ(auto_wrap_, !is_svg_text_ && item.Style()->AutoWrap());
+  DCHECK_EQ(auto_wrap_, ShouldAutoWrap(*item.Style()));
 
   // If we're trailing, only trailing spaces can be included in this line.
   if (UNLIKELY(state_ == LineBreakState::kTrailing)) {
@@ -2437,7 +2442,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   if (&style == current_style_.get()) {
 #if DCHECK_IS_ON()
     // Check that cache fields are already setup correctly.
-    DCHECK_EQ(auto_wrap_, !is_svg_text_ && style.AutoWrap());
+    DCHECK_EQ(auto_wrap_, ShouldAutoWrap(style));
     if (auto_wrap_) {
       DCHECK_EQ(enable_soft_hyphen_, style.GetHyphens() != Hyphens::kNone);
       DCHECK_EQ(break_iterator_.Locale(), style.LocaleForLineBreakIterator());
@@ -2451,8 +2456,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   }
   current_style_ = &style;
 
-  //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
-  auto_wrap_ = !is_svg_text_ && style.AutoWrap();
+  auto_wrap_ = ShouldAutoWrap(style);
 
   if (auto_wrap_) {
     LineBreakType line_break_type;
