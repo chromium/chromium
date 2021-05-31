@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
@@ -144,9 +145,8 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // Call the user callback associated with reading the response.
   void DoResponseCallback(int rv);
 
-  void ScheduleBufferedReadCallback();
+  void MaybeScheduleBufferedReadCallback();
   void DoBufferedReadCallback();
-  bool ShouldWaitForMoreBufferedData() const;
 
   const base::WeakPtr<SpdySession> spdy_session_;
 
@@ -213,11 +213,8 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   scoped_refptr<IOBufferWithSize> request_body_buf_;
   int request_body_buf_size_;
 
-  // Is there a scheduled read callback pending.
-  bool buffered_read_callback_pending_;
-  // Has more data been received from the network during the wait for the
-  // scheduled read callback.
-  bool more_read_data_pending_;
+  // Timer to execute DoBufferedReadCallback() with a delay.
+  base::OneShotTimer buffered_read_timer_;
 
   bool was_alpn_negotiated_;
 
