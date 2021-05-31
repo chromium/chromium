@@ -106,12 +106,12 @@ class CORE_EXPORT TextPainterBase {
 
   GraphicsContext& graphics_context_;
   const Font& font_;
-  PhysicalOffset text_origin_;
-  PhysicalRect text_frame_rect_;
-  bool horizontal_;
+  const PhysicalOffset text_origin_;
+  const PhysicalRect text_frame_rect_;
   AtomicString emphasis_mark_;
-  int emphasis_mark_offset_;
-  int ellipsis_offset_;
+  int emphasis_mark_offset_ = 0;
+  int ellipsis_offset_ = 0;
+  const bool horizontal_;
 };
 
 inline AffineTransform TextPainterBase::Rotation(

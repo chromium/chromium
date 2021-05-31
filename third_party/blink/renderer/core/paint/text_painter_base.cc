@@ -42,9 +42,7 @@ TextPainterBase::TextPainterBase(GraphicsContext& context,
       font_(font),
       text_origin_(text_origin),
       text_frame_rect_(text_frame_rect),
-      horizontal_(horizontal),
-      emphasis_mark_offset_(0),
-      ellipsis_offset_(0) {}
+      horizontal_(horizontal) {}
 
 TextPainterBase::~TextPainterBase() = default;
 
