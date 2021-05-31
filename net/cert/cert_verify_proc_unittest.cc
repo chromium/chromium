@@ -1518,7 +1518,8 @@ TEST(CertVerifyProcTest, TestHasTooLongValidity) {
   }
 }
 
-TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
+// TODO(https://crbug.com/1214778): Disabled due to expired certificate.
+TEST_P(CertVerifyProcInternalTest, DISABLED_TestKnownRoot) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
       certs_dir, "daltonridgeapts.com-chain.pem", X509Certificate::FORMAT_AUTO);
