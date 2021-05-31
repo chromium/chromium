@@ -16,18 +16,53 @@
 
 namespace performance_manager {
 
+namespace {
+
+using PageState = PageNode::PageState;
+
+bool IsValidInitialPageState(PageState page_state) {
+  switch (page_state) {
+    case PageState::kActive:
+    case PageState::kPrerendering:
+      return true;
+
+    case PageState::kBackForwardCache:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool IsValidPageStateTransition(PageState old_state, PageState new_state) {
+  switch (old_state) {
+    case PageState::kActive:
+      return new_state == PageState::kBackForwardCache;
+
+    case PageState::kPrerendering:
+    case PageState::kBackForwardCache:
+      return new_state == PageState::kActive;
+  }
+  NOTREACHED();
+  return false;
+}
+
+}  // namespace
+
 PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
                            const std::string& browser_context_id,
                            const GURL& visible_url,
                            bool is_visible,
                            bool is_audible,
-                           base::TimeTicks visibility_change_time)
+                           base::TimeTicks visibility_change_time,
+                           PageState page_state)
     : contents_proxy_(contents_proxy),
       visibility_change_time_(visibility_change_time),
       main_frame_url_(visible_url),
       browser_context_id_(browser_context_id),
       is_visible_(is_visible),
-      is_audible_(is_audible) {
+      is_audible_(is_audible),
+      page_state_(page_state) {
+  DCHECK(IsValidInitialPageState(page_state));
   weak_this_ = weak_factory_.GetWeakPtr();
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -262,6 +297,11 @@ const absl::optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
   return freezing_vote_.value();
 }
 
+PageNode::PageState PageNodeImpl::page_state() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return page_state_.value();
+}
+
 void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(opener);
@@ -353,6 +393,12 @@ void PageNodeImpl::set_freezing_vote(
     absl::optional<freezing::FreezingVote> freezing_vote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   freezing_vote_.SetAndMaybeNotify(this, freezing_vote);
+}
+
+void PageNodeImpl::set_page_state(PageState page_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsValidPageStateTransition(page_state_.value(), page_state));
+  page_state_.SetAndMaybeNotify(this, page_state);
 }
 
 void PageNodeImpl::OnJoiningGraph() {
@@ -501,6 +547,11 @@ const absl::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return freezing_vote();
+}
+
+PageState PageNodeImpl::GetPageState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return page_state();
 }
 
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {

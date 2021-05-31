@@ -38,6 +38,19 @@ const char* PageNode::ToString(PageNode::LoadingState loading_state) {
   NOTREACHED();
 }
 
+// static
+const char* PageNode::ToString(PageNode::PageState page_state) {
+  switch (page_state) {
+    case PageState::kActive:
+      return "kActive";
+    case PageState::kPrerendering:
+      return "kPrerendering";
+    case PageState::kBackForwardCache:
+      return "kBackForwardCache";
+  }
+  NOTREACHED();
+}
+
 PageNode::PageNode() = default;
 PageNode::~PageNode() = default;
 

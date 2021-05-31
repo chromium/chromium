@@ -18,6 +18,7 @@
 #include "base/task_runner_util.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -104,7 +105,8 @@ class PerformanceManagerImpl : public PerformanceManager {
       const GURL& visible_url,
       bool is_visible,
       bool is_audible,
-      base::TimeTicks visibility_change_time);
+      base::TimeTicks visibility_change_time,
+      PageNode::PageState page_state);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       content::ProcessType process_type,
       RenderProcessHostProxy proxy);

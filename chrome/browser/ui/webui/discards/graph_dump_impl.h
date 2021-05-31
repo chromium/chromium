@@ -158,6 +158,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnFreezingVoteChanged(
       const performance_manager::PageNode* page_node,
       absl::optional<performance_manager::freezing::FreezingVote>) override {}
+  // Ignored.
+  void OnPageStateChanged(
+      const performance_manager::PageNode* page_node,
+      performance_manager::PageNode::PageState old_state) override {}
 
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(

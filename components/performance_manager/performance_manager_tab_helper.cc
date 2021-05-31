@@ -81,7 +81,9 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(),
       web_contents->GetVisibility() == content::Visibility::VISIBLE,
-      web_contents->IsCurrentlyAudible(), web_contents->GetLastActiveTime());
+      web_contents->IsCurrentlyAudible(), web_contents->GetLastActiveTime(),
+      // TODO(1211368): Support MPArch fully!
+      PageNode::PageState::kActive);
 
   // We have an early WebContents creation hook so should see it when there is
   // only a single frame, and it is not yet created. We sanity check that here.

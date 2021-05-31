@@ -47,7 +47,8 @@ class PageNodeImpl
                const GURL& visible_url,
                bool is_visible,
                bool is_audible,
-               base::TimeTicks visibility_change_time);
+               base::TimeTicks visibility_change_time,
+               PageState page_state);
   ~PageNodeImpl() override;
 
   // Returns the web contents associated with this page node. It is valid to
@@ -101,6 +102,7 @@ class PageNodeImpl
   const std::string& contents_mime_type() const;
   bool had_form_interaction() const;
   const absl::optional<freezing::FreezingVote>& freezing_vote() const;
+  PageState page_state() const;
 
   // Invoked to set/clear the opener of this page.
   void SetOpenerFrameNode(FrameNodeImpl* opener);
@@ -116,6 +118,7 @@ class PageNodeImpl
       uint64_t private_footprint_kb_estimate);
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
   void set_freezing_vote(absl::optional<freezing::FreezingVote> freezing_vote);
+  void set_page_state(PageState page_state);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
     SetLifecycleState(lifecycle_state);
@@ -189,6 +192,7 @@ class PageNodeImpl
   friend class PageNodeImplDescriber;
 
   // PageNode implementation.
+  PageState GetPageState() const override;
   const std::string& GetBrowserContextID() const override;
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
@@ -341,6 +345,12 @@ class PageNodeImpl
       absl::optional<freezing::FreezingVote>,
       &PageNodeObserver::OnFreezingVoteChanged>
       freezing_vote_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The state of this page.
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      PageState,
+      PageState,
+      &PageNodeObserver::OnPageStateChanged>
+      page_state_ GUARDED_BY_CONTEXT(sequence_checker_){PageState::kActive};
 
   // Storage for PageLoadTracker user data.
   std::unique_ptr<NodeAttachedData> page_load_tracker_data_

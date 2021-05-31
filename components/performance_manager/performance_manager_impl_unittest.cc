@@ -57,9 +57,9 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
                                                 RenderProcessHostProxy());
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(WebContentsProxy(), std::string(),
-                                             GURL(), false, false,
-                                             base::TimeTicks::Now());
+      PerformanceManagerImpl::CreatePageNode(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now(), PageNode::PageState::kActive);
   EXPECT_NE(nullptr, page_node.get());
 
   // Create a node of each type.
@@ -81,9 +81,9 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
       PerformanceManagerImpl::CreateProcessNode(content::PROCESS_TYPE_RENDERER,
                                                 RenderProcessHostProxy());
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(WebContentsProxy(), std::string(),
-                                             GURL(), false, false,
-                                             base::TimeTicks::Now());
+      PerformanceManagerImpl::CreatePageNode(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now(), PageNode::PageState::kActive);
 
   std::unique_ptr<FrameNodeImpl> parent1_frame =
       PerformanceManagerImpl::CreateFrameNode(
@@ -126,9 +126,9 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
 TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(WebContentsProxy(), std::string(),
-                                             GURL(), false, false,
-                                             base::TimeTicks::Now());
+      PerformanceManagerImpl::CreatePageNode(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now(), PageNode::PageState::kActive);
   base::RunLoop run_loop;
   base::OnceClosure quit_closure = run_loop.QuitClosure();
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -148,9 +148,9 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
 TEST_F(PerformanceManagerImplTest, CallOnGraphAndReplyWithResult) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(WebContentsProxy(), std::string(),
-                                             GURL(), false, false,
-                                             base::TimeTicks::Now());
+      PerformanceManagerImpl::CreatePageNode(
+          WebContentsProxy(), std::string(), GURL(), false, false,
+          base::TimeTicks::Now(), PageNode::PageState::kActive);
   base::RunLoop run_loop;
 
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
