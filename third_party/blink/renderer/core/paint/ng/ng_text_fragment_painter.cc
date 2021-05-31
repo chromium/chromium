@@ -294,10 +294,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     // Because we rotate the GraphicsContext to match the logical direction,
     // transpose the |box_rect| to match to it.
     box_rect.size = PhysicalSize(box_rect.Height(), box_rect.Width());
-    rotation.emplace(TextPainterBase::Rotation(
-        box_rect, writing_mode != WritingMode::kSidewaysLr
-                      ? TextPainterBase::kClockwise
-                      : TextPainterBase::kCounterclockwise));
+    rotation.emplace(TextPainterBase::Rotation(box_rect, writing_mode));
     context.ConcatCTM(*rotation);
   }
 

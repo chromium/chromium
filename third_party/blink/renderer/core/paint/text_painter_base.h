@@ -85,6 +85,7 @@ class CORE_EXPORT TextPainterBase {
   enum RotationDirection { kCounterclockwise, kClockwise };
   static AffineTransform Rotation(const PhysicalRect& box_rect,
                                   RotationDirection);
+  static AffineTransform Rotation(const PhysicalRect& box_rect, WritingMode);
 
  protected:
   static void AdjustTextStyleForClip(TextPaintStyle&);
@@ -136,6 +137,13 @@ inline AffineTransform TextPainterBase::Rotation(
                                box_rect.Y() - box_rect.X())
              : AffineTransform(0, -1, 1, 0, box_rect.X() - box_rect.Y(),
                                box_rect.X() + box_rect.Bottom());
+}
+
+inline AffineTransform TextPainterBase::Rotation(const PhysicalRect& box_rect,
+                                                 WritingMode writing_mode) {
+  return Rotation(box_rect, writing_mode != WritingMode::kSidewaysLr
+                                ? TextPainterBase::kClockwise
+                                : TextPainterBase::kCounterclockwise);
 }
 
 }  // namespace blink
