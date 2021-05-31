@@ -690,8 +690,7 @@ void CompositedLayerMapping::ComputeGraphicsLayerParentLocation(
   if (compositing_container &&
       compositing_container->NeedsCompositedScrolling()) {
     auto& layout_box = To<LayoutBox>(compositing_container->GetLayoutObject());
-    IntSize scroll_offset =
-        FlooredIntSize(layout_box.PixelSnappedScrolledContentOffset());
+    IntPoint scroll_offset = layout_box.PixelSnappedScrolledContentOffset();
     IntPoint scroll_origin =
         compositing_container->GetScrollableArea()->ScrollOrigin();
     scroll_origin.Move(-layout_box.OriginAdjustmentForScrollbars());

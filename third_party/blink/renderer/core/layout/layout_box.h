@@ -1813,7 +1813,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // where the content is displayed, rather than what the ideal offset is. For
   // most other cases ScrolledContentOffset is probably more appropriate. This
   // is the offset that's actually drawn to the screen.
-  LayoutSize PixelSnappedScrolledContentOffset() const;
+  IntPoint PixelSnappedScrolledContentOffset() const;
 
   // Maps from scrolling contents space to box space and apply overflow
   // clip if needed. Returns true if no clipping applied or the flattened quad

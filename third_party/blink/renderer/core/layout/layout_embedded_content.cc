@@ -417,8 +417,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
     // which is a float-type but frame_rect in a content view is an IntRect. We
     // may want to reevaluate the use of pixel snapping that since scroll
     // offsets/layout can be fractional.
-    frame_rect.Move(
-        FlooredIntSize(layout_view->PixelSnappedScrolledContentOffset()));
+    frame_rect.MoveBy(layout_view->PixelSnappedScrolledContentOffset());
   }
 
   embedded_content_view.SetFrameRect(frame_rect);
