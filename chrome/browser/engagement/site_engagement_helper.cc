@@ -165,7 +165,7 @@ void SiteEngagementService::Helper::MediaTracker::DidFinishNavigation(
     content::NavigationHandle* handle) {
   // Ignore subframe navigation to avoid clearing main frame active media
   // players when they navigate.
-  if (!handle->HasCommitted() || !handle->IsInMainFrame() ||
+  if (!handle->HasCommitted() || !handle->IsInPrimaryMainFrame() ||
       handle->IsSameDocument()) {
     return;
   }
@@ -213,7 +213,7 @@ void SiteEngagementService::Helper::RecordMediaPlaying(bool is_hidden) {
 void SiteEngagementService::Helper::DidFinishNavigation(
     content::NavigationHandle* handle) {
   // Ignore uncommitted, non main-frame, same page, or error page navigations.
-  if (!handle->HasCommitted() || !handle->IsInMainFrame() ||
+  if (!handle->HasCommitted() || !handle->IsInPrimaryMainFrame() ||
       handle->IsSameDocument() || handle->IsErrorPage()) {
     return;
   }

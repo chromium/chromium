@@ -156,6 +156,7 @@ class SiteEngagementService::Helper
   explicit Helper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<SiteEngagementService::Helper>;
   friend class SiteEngagementHelperTest;
+  friend class SiteEngagementHelperBrowserTest;
 
   // Ask the SiteEngagementService to record engagement via user input at the
   // current WebContents URL.

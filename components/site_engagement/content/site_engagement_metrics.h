@@ -36,6 +36,8 @@ class SiteEngagementMetrics {
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, LastShortcutLaunch);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementHelperTest,
                            MixedInputEngagementAccumulation);
+  FRIEND_TEST_ALL_PREFIXES(SiteEngagementHelperBrowserTest,
+                           SiteEngagementHelperInPrerendering);
   static const char kTotalEngagementHistogram[];
   static const char kTotalOriginsHistogram[];
   static const char kMeanEngagementHistogram[];
