@@ -155,8 +155,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range range = input_context->GetAutocorrectRange();
+  // Explaination of checks:
+  // 1) Check there is an autocorrect range
+  // 2) Check cursor is in range
+  // 3) Ensure there is no selection (selection UI clashes with autocorrect UI).
   if (!range.is_empty() && cursor_pos >= range.start() &&
-      cursor_pos <= range.end()) {
+      cursor_pos <= range.end() && cursor_pos == anchor_pos) {
     if (!window_visible_) {
       const std::u16string autocorrected_text =
           text.substr(range.start(), range.length());
