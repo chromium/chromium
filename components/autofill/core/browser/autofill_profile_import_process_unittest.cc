@@ -9,8 +9,10 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,10 +61,17 @@ TEST_F(AutofillProfileImportProcessTest, DistinctIds) {
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile.
 TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
+  TestAutofillClock test_clock;
+
   AutofillProfile observed_profile = test::StandardProfile();
 
   std::vector<AutofillProfile> existing_profiles = {};
   personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // Advance the test clock to make sure that the modification date of the new
+  // profile gets updated.
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time current_time = AutofillClock::Now();
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -77,8 +86,12 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   EXPECT_TRUE(import_data.ProfilesChanged());
   EXPECT_EQ(import_data.import_type(), AutofillProfileImportType::kNewProfile);
 
-  EXPECT_THAT(import_data.GetResultingProfiles(),
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(observed_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
 }
 
 // Tests the import process for the scenario, that the import of a new profile
@@ -232,9 +245,16 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile.
 TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
+  TestAutofillClock test_clock;
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  // Set a modification date and subsequently advance the test clock.
+  mergeable_profile.set_modification_date(AutofillClock::Now());
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
   personal_data_manager_.SetProfiles(&existing_profiles);
@@ -265,17 +285,27 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   AutofillProfile final_profile = test::StandardProfile();
   test::CopyGUID(mergeable_profile, &final_profile);
 
-  EXPECT_THAT(import_data.GetResultingProfiles(),
-              testing::UnorderedElementsAre(final_profile));
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles, testing::UnorderedElementsAre(final_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile for the scenario that the user introduced additional edits.
 TEST_F(AutofillProfileImportProcessTest,
        MergeWithExistingProfile_AcceptWithEdits) {
+  TestAutofillClock test_clock;
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  // Set a modification date and subsequently advance the test clock.
+  mergeable_profile.set_modification_date(AutofillClock::Now());
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time current_time = AutofillClock::Now();
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
   personal_data_manager_.SetProfiles(&existing_profiles);
@@ -302,8 +332,12 @@ TEST_F(AutofillProfileImportProcessTest,
   // This should result in a change of stored profiles.
   EXPECT_TRUE(import_data.ProfilesChanged());
 
-  EXPECT_THAT(import_data.GetResultingProfiles(),
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(edited_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -350,9 +384,18 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests the rejection of the merge of the observed profile with an already
 // existing one.
 TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
+  TestAutofillClock test_clock;
+
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  // Set a modification date and subsequently advance the test clock.
+  // Since the merge is not accepted, the `modification_date` should not be
+  // changed.
+  mergeable_profile.set_modification_date(AutofillClock::Now());
+  base::Time earlier_time = AutofillClock::Now();
+  test_clock.Advance(base::TimeDelta::FromDays(1));
 
   std::vector<AutofillProfile> existing_profiles = {mergeable_profile};
   personal_data_manager_.SetProfiles(&existing_profiles);
@@ -378,13 +421,19 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // changes.
   EXPECT_FALSE(import_data.ProfilesChanged());
 
-  EXPECT_THAT(import_data.GetResultingProfiles(),
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(mergeable_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), earlier_time);
 }
 
 // Tests the scenario in which the observed profile results in a silent update
 // of the only already existing profile.
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
+  TestAutofillClock test_clock;
+
   // Silent updates need structured names to be enabled.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -394,9 +443,14 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
+  // Set a modification date and subsequently advance the test clock.
+  updateable_profile.set_modification_date(AutofillClock::Now());
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time current_time = AutofillClock::Now();
+
   std::vector<AutofillProfile> existing_profiles = {updateable_profile};
   personal_data_manager_.SetProfiles(&existing_profiles);
-  //
+
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
@@ -420,8 +474,12 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   AutofillProfile updated_profile = test::StandardProfile();
   updated_profile.set_guid(updateable_profile.guid());
 
-  EXPECT_THAT(import_data.GetResultingProfiles(),
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
 }
 
 // Tests the scenario in which an observed profile can be merged with an

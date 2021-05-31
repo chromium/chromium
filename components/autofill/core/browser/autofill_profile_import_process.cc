@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
 
@@ -131,6 +132,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     }
     // If the profile changed but all settings-visible values are maintained,
     // the profile can be updated silently.
+    merged_profile.set_modification_date(AutofillClock::Now());
     updated_profiles_.emplace_back(merged_profile);
   }
 
@@ -164,6 +166,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
                          ? AutofillProfileImportType::kSilentUpdate
                          : AutofillProfileImportType::kDuplicateImport;
     }
+  }
+
+  if (import_candidate_.has_value()) {
+    import_candidate_->set_modification_date(AutofillClock::Now());
   }
 
   // At this point, all existing profiles are either unchanged, updated and/or
@@ -239,6 +245,7 @@ void ProfileImportProcess::SetUserDecision(
       }
 
       edited_profile->FinalizeAfterImport();
+      edited_profile->set_modification_date(AutofillClock::Now());
       // The `edited_profile` has to have the same `guid` as the original import
       // candidate.
       DCHECK_EQ(import_candidate_.value().guid(), edited_profile->guid());
