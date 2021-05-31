@@ -166,6 +166,10 @@ class DiceTurnSyncOnHelper
   void SyncStartupCompleted() override;
   void SyncStartupFailed() override;
 
+  // Fakes that sync enabled for testing, but does not create a sync service.
+  static void SetShowSyncEnabledUiForTesting(
+      bool show_sync_enabled_ui_for_testing);
+
  private:
   friend class base::DeleteHelper<DiceTurnSyncOnHelper>;
 
@@ -274,6 +278,7 @@ class DiceTurnSyncOnHelper
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
   base::CallbackListSubscription shutdown_subscription_;
+  bool enterprise_account_confirmed_ = false;
 
   base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelper);

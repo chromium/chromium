@@ -13,3 +13,6 @@ const base::Feature kDiceWebSigninInterceptionFeature{
 // Google-Accounts-RemoveLocalAccount.
 const base::Feature kProcessGaiaRemoveLocalAccountHeader{
     "ProcessGaiaRemoveLocalAccountHeader", base::FEATURE_ENABLED_BY_DEFAULT};
+
+extern const base::Feature kAccountPoliciesLoadedWithoutSync{
+    "kAccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -95,9 +95,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
                                       PolicyRegistrationCallback callback);
 
-  // Parent profile for this service.
-  Profile* profile_;
-
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);

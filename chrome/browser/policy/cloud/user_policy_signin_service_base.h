@@ -147,14 +147,20 @@ class UserPolicySigninServiceBase : public KeyedService,
   // out) and deletes any cached policy.
   virtual void ShutdownUserCloudPolicyManager();
 
+  bool CanApplyPoliciesForSignedInUser(bool check_for_refresh_token);
+
+  Profile* profile() { return profile_; }
   // Convenience helpers to get the associated UserCloudPolicyManager and
   // IdentityManager.
   UserCloudPolicyManager* policy_manager() { return policy_manager_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
   content::NotificationRegistrar* registrar() { return &registrar_; }
+  signin::ConsentLevel consent_level() const { return consent_level_; }
 
  private:
+  // Parent profile for this service.
+  Profile* profile_;
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
   UserCloudPolicyManager* policy_manager_;
@@ -166,6 +172,7 @@ class UserPolicySigninServiceBase : public KeyedService,
   DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
+  signin::ConsentLevel consent_level_;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicySigninServiceBase);

@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -57,6 +59,7 @@ namespace {
 
 const void* const kCurrentDiceTurnSyncOnHelperKey =
     &kCurrentDiceTurnSyncOnHelperKey;
+bool g_show_sync_enabled_ui_for_testing_ = false;
 
 // A helper class to watch profile lifetime.
 class DiceTurnSyncOnHelperShutdownNotifierFactory
@@ -315,6 +318,8 @@ void DiceTurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
 
 void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     SigninChoice choice) {
+  enterprise_account_confirmed_ =
+      choice == SIGNIN_CHOICE_CONTINUE || choice == SIGNIN_CHOICE_NEW_PROFILE;
   switch (choice) {
     case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(
@@ -380,11 +385,21 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
   dm_token_ = dm_token;
   client_id_ = client_id;
 
-  // Allow user to create a new profile before continuing with sign-in.
-  delegate_->ShowEnterpriseAccountConfirmation(
-      account_info_.email,
-      base::BindOnce(&DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation,
-                     weak_pointer_factory_.GetWeakPtr()));
+  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) ||
+      !profile_->GetPrefs()->GetBoolean(
+          prefs::kUserAcceptedAccountManagement)) {
+    // Allow user to create a new profile before continuing with sign-in.
+    delegate_->ShowEnterpriseAccountConfirmation(
+        account_info_.email,
+        base::BindOnce(&DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation,
+                       weak_pointer_factory_.GetWeakPtr()));
+    return;
+  }
+
+  DCHECK(
+      base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement));
+  LoadPolicyWithCachedCredentials();
 }
 
 void DiceTurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
@@ -485,6 +500,16 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   signin_metrics::LogSigninReason(signin_reason_);
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    if (!profile_->GetPrefs()->GetBoolean(
+            prefs::kUserAcceptedAccountManagement)) {
+      profile_->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
+                                       enterprise_account_confirmed_);
+    }
+    if (profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement))
+      signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
+  }
+
   syncer::SyncService* sync_service = GetSyncService();
   if (sync_service) {
     // Take a SyncSetupInProgressHandle, so that the UI code can use
@@ -543,8 +568,14 @@ void DiceTurnSyncOnHelper::SyncStartupFailed() {
   ShowSyncConfirmationUI();
 }
 
+// static
+void DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(
+    bool show_sync_enabled_ui_for_testing) {
+  g_show_sync_enabled_ui_for_testing_ = show_sync_enabled_ui_for_testing;
+}
+
 void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
-  if (GetSyncService()) {
+  if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     delegate_->ShowSyncConfirmation(
         base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
@@ -632,6 +663,10 @@ void DiceTurnSyncOnHelper::AttachToProfile() {
     // If the existing flow was using the same account, keep the account.
     if (current_helper->account_info_.account_id == account_info_.account_id)
       current_helper->signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
+    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+          ->ShutdownUserCloudPolicyManager();
+    }
     current_helper->AbortAndDelete();
   }
   DCHECK(!GetCurrentDiceTurnSyncOnHelper(profile_));
@@ -641,9 +676,15 @@ void DiceTurnSyncOnHelper::AttachToProfile() {
 }
 
 void DiceTurnSyncOnHelper::AbortAndDelete() {
-  policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-      ->ShutdownUserCloudPolicyManager();
+  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+        ->ShutdownUserCloudPolicyManager();
+  }
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
+    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+          ->ShutdownUserCloudPolicyManager();
+    }
     // Revoke the token, and the AccountReconcilor and/or the Gaia server will
     // take care of invalidating the cookies.
     auto* accounts_mutator = identity_manager_->GetAccountsMutator();

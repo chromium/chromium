@@ -1317,6 +1317,12 @@ const char kProfileUsingGAIAAvatar[] = "profile.using_gaia_avatar";
 // The supervised user ID.
 const char kSupervisedUserId[] = "profile.managed_user_id";
 
+// Boolean specifying if the user has accepted account management. This enables
+// the browser to fetch profile policies even if they have not consented to
+// sync.
+extern const char kUserAcceptedAccountManagement[] =
+    "profile.user_accepted_account_management";
+
 // Integer that specifies the number of times that we have shown the upgrade
 // tutorial card in the avatar menu bubble.
 const char kProfileAvatarTutorialShown[] =
