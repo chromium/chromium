@@ -108,7 +108,6 @@ class CORE_EXPORT TextPainterBase {
   PhysicalOffset text_origin_;
   PhysicalRect text_frame_rect_;
   bool horizontal_;
-  bool has_combined_text_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_;
   int ellipsis_offset_;

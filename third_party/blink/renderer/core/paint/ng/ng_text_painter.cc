@@ -140,9 +140,6 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
 
-  if (has_combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
-
   // text-underline-position may flip underline and overline.
   ResolvedUnderlinePosition underline_position =
       decoration_info->UnderlinePosition();
@@ -212,10 +209,6 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
     *has_line_through_decoration |=
         EnumHasFlags(lines, TextDecoration::kLineThrough);
   }
-
-  // Restore rotation as needed.
-  if (has_combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
 // Based on legacy TextPainter.
@@ -237,9 +230,6 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
-
-  if (has_combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
   const Vector<AppliedTextDecoration>& decorations =
       style.AppliedTextDecorations();
@@ -276,10 +266,6 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
       decoration_painter.Paint();
     }
   }
-
-  // Restore rotation as needed.
-  if (has_combined_text_)
-    context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
 template <NGTextPainter::PaintInternalStep step>

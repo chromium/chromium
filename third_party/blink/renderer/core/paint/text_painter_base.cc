@@ -43,7 +43,6 @@ TextPainterBase::TextPainterBase(GraphicsContext& context,
       text_origin_(text_origin),
       text_frame_rect_(text_frame_rect),
       horizontal_(horizontal),
-      has_combined_text_(false),
       emphasis_mark_offset_(0),
       ellipsis_offset_(0) {}
 

@@ -67,7 +67,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
 
-  if (has_combined_text_)
+  if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
   // text-underline-position may flip underline and overline.
@@ -139,7 +139,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
   }
 
   // Restore rotation as needed.
-  if (has_combined_text_)
+  if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
@@ -152,7 +152,7 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
 
-  if (has_combined_text_)
+  if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
   for (size_t applied_decoration_index = 0;
@@ -190,7 +190,7 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
   }
 
   // Restore rotation as needed.
-  if (has_combined_text_)
+  if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kCounterclockwise));
 }
 
