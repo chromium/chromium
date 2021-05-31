@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/audio/audio_device_description.h"
@@ -24,9 +25,14 @@
 
 namespace {
 
+// TODO(crbug.com/1208868): Eliminate code duplication with
+// capture_handle_manager.cc.
 media::mojom::CaptureHandlePtr CreateCaptureHandle(
-    const url::Origin& capturer_origin,
+    content::WebContents* capturer,
     const content::DesktopMediaID& captured_id) {
+  const url::Origin& capturer_origin =
+      url::Origin::Create(capturer->GetLastCommittedURL());
+
   if (capturer_origin.opaque()) {
     return nullptr;
   }
@@ -53,6 +59,15 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
                      return capturer_origin.IsSameOriginWith(permitted_origin);
                    })) {
     return nullptr;
+  }
+
+  // Observing CaptureHandle when either the capturing or the captured party
+  // is incognito is disallowed, except for self-capture.
+  if (capturer->GetMainFrame() != captured->GetMainFrame()) {
+    if (capturer->GetBrowserContext()->IsOffTheRecord() ||
+        captured->GetBrowserContext()->IsOffTheRecord()) {
+      return nullptr;
+    }
   }
 
   if (!captured_config.expose_origin &&
@@ -100,8 +115,7 @@ DesktopMediaIDToDisplayMediaInformation(
     case content::DesktopMediaID::TYPE_WEB_CONTENTS:
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
       cursor = media::mojom::CursorCaptureType::MOTION;
-      capture_handle = CreateCaptureHandle(
-          url::Origin::Create(capturer->GetLastCommittedURL()), media_id);
+      capture_handle = CreateCaptureHandle(capturer, media_id);
       break;
     case content::DesktopMediaID::TYPE_NONE:
       break;
