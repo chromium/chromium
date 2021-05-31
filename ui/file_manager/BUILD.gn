@@ -370,7 +370,6 @@ preprocess_if_expr("preprocess_generated") {
 
   deps = [
     "//ui/file_manager/audio_player/elements:web_components",
-    "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",
     "//ui/file_manager/file_manager/externs:modulize",
@@ -417,8 +416,6 @@ generate_grd("build_grd") {
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
     "file_manager/images/files/ui/menu_ng.svg",
-
-    "file_manager/main_modules.html",
   ]
 
   resource_path_rewrites = [

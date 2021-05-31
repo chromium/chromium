@@ -37,9 +37,8 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
-  EXPECT_EQ(
-      "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main_modules.html",
-      GetFileManagerMainPageUrl().spec());
+  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
+            GetFileManagerMainPageUrl().spec());
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
@@ -54,7 +53,7 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main_modules.html", url.path());
+  EXPECT_EQ("/main.html", url.path());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
@@ -102,7 +101,7 @@ TEST(FileManagerUrlUtilTest,
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main_modules.html", url.path());
+  EXPECT_EQ("/main.html", url.path());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);

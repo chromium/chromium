@@ -4,24 +4,6 @@
 
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-action("gen_main_html") {
-  inputs = [ "main.html" ]
-
-  script = "//ui/file_manager/base/gn/gen_main_html.py"
-
-  args = [
-    "--source",
-    rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
-    "--target",
-    rebase_path("$target_gen_dir/main_modules.html", root_build_dir),
-  ]
-
-  outputs = [
-    "$target_gen_dir/main_modules.html",
-    "$target_gen_dir/main_modules.html.stamp",
-  ]
-}
-
 # TODO: Remove this file copy when breadcrumb.js supports only JS modules.
 copy("fix_broken_images") {
   sources = [
@@ -42,6 +24,8 @@ generate_grd("build_static_grdp") {
   input_files_base_dir = rebase_path(".", "//")
 
   input_files = [
+    "main.html",
+
     # CSS:
     "foreground/css/combobutton.css",
     "foreground/css/common.css",

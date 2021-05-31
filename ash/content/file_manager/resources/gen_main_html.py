@@ -36,7 +36,7 @@ def GenerateSwaMainHtml(source, target):
       continue
     # Remove files app foreground/js <script> tags: SWA app must load
     # them after the SWA app has initialized needed resources.
-    elif line.find('<script src="foreground/js/') == -1:
+    elif line.find('src="foreground/js/main.') == -1:
       sys.stdout.write(line)
 
   # Create a BUILD time stamp for the target file.

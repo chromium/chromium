@@ -168,9 +168,8 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
   nextFileManagerWindowID = Math.max(nextFileManagerWindowID, id + 1);
   const appId = FILES_ID_PREFIX + id;
 
-  const htmlFile = 'main_modules.html';
-  const appWindow =
-      new AppWindowWrapper(htmlFile, appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
+  const appWindow = new AppWindowWrapper(
+      'main.html', appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
 
   await appWindow.launch(opt_appState || {}, false);
   if (!appWindow.rawAppWindow) {
