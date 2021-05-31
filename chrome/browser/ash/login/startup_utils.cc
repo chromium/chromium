@@ -19,12 +19,14 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -221,6 +223,14 @@ void StartupUtils::SetInitialLocale(const std::string& locale) {
     SaveStringPreferenceForced(::prefs::kInitialLocale, locale);
   else
     NOTREACHED();
+}
+
+// static
+bool StartupUtils::IsDeviceOwned() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  return !user_manager::UserManager::Get()->GetUsers().empty() ||
+         connector->IsEnterpriseManaged();
 }
 
 }  // namespace chromeos

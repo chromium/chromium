@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -666,6 +667,7 @@ void GaiaScreenHandler::RegisterMessages() {
               &GaiaScreenHandler::HandleSecurityTokenPinEntered);
   AddCallback("onFatalError", &GaiaScreenHandler::HandleOnFatalError);
   AddCallback("removeUserByEmail", &GaiaScreenHandler::HandleUserRemoved);
+  AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
 
   BaseScreenHandler::RegisterMessages();
 }
@@ -773,6 +775,11 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 
   DCHECK(!email.empty());
   DCHECK(!gaia_id.empty());
+
+  if (!using_saml) {
+    base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
+                                  login_request_variant_);
+  }
 
   // Execute delayed allowlist check that is based on user type.
   const user_manager::UserType user_type =
@@ -1006,6 +1013,11 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
   }
 }
 
+void GaiaScreenHandler::HandlePasswordEntered() {
+  base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests",
+                                login_request_variant_);
+}
+
 void GaiaScreenHandler::OnShowAddUser() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(populated_account_id_);
 }
@@ -1158,6 +1170,18 @@ void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   populated_account_id_ = account_id;
+
+  login_request_variant_ = GaiaLoginVariant::kUnknown;
+  if (account_id.is_valid()) {
+    login_request_variant_ = GaiaLoginVariant::kOnlineSignin;
+  } else {
+    if (StartupUtils::IsOobeCompleted() && StartupUtils::IsDeviceOwned()) {
+      login_request_variant_ = GaiaLoginVariant::kAddUser;
+    } else {
+      login_request_variant_ = GaiaLoginVariant::kOobe;
+    }
+  }
+
   if (gaia_silent_load_ && !populated_account_id_.is_valid()) {
     dns_cleared_ = true;
     cookies_cleared_ = true;

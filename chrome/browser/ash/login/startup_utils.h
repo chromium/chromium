@@ -68,6 +68,10 @@ class StartupUtils {
 
   // Registers OOBE preferences that are associated with a profile.
   static void RegisterOobeProfilePrefs(PrefRegistrySimple* registry);
+
+  // Returns whether the device is owned by a consumer or has been enterprise
+  // enrolled.
+  static bool IsDeviceOwned();
 };
 
 }  // namespace chromeos

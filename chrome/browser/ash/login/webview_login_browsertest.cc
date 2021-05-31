@@ -136,6 +136,10 @@ constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
                                       "signin-back-button"};
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
 
+// UMA names for better test reading.
+const char kLoginRequests[] = "OOBE.GaiaScreen.LoginRequests";
+const char kSuccessLoginRequests[] = "OOBE.GaiaScreen.SuccessLoginRequests";
+
 void InjectCookieDoneCallback(base::OnceClosure done_closure,
                               net::CookieAccessResult result) {
   ASSERT_TRUE(result.status.IsInclude());
@@ -528,6 +532,10 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, Basic) {
 
   histogram_tester_.ExpectUniqueSample("ChromeOS.SAML.APILogin", 0, 1);
   histogram_tester_.ExpectTotalCount("OOBE.GaiaLoginTime", 1);
+  histogram_tester_.ExpectUniqueSample(kLoginRequests,
+                                       GaiaView::GaiaLoginVariant::kOobe, 1);
+  histogram_tester_.ExpectUniqueSample(kSuccessLoginRequests,
+                                       GaiaView::GaiaLoginVariant::kOobe, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, BackButton) {
@@ -1763,6 +1771,40 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, PasswordMetrics) {
   test::WaitForPrimaryUserSessionStart();
   histogram_tester_.ExpectBucketCount("ChromeOS.Gaia.PasswordFlow", 0, 2);
   histogram_tester_.ExpectBucketCount("ChromeOS.Gaia.PasswordFlow", 1, 1);
+}
+
+class WebviewLoginEnrolledTest : public WebviewLoginTest {
+ public:
+  WebviewLoginEnrolledTest() = default;
+  ~WebviewLoginEnrolledTest() override = default;
+
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+// Verifies `OOBE.GaiaScreen.LoginRequests` and
+// `OOBE.GaiaScreen.SuccessLoginRequests` are correctly recorded.
+IN_PROC_BROWSER_TEST_F(WebviewLoginEnrolledTest, GaiaLoginVariantMetrics) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  // This should generate first "Started" event.
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  // This should generate second "Started" event. And also eventually
+  // "Completed" event.
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  test::WaitForPrimaryUserSessionStart();
+  histogram_tester_.ExpectUniqueSample(kLoginRequests,
+                                       GaiaView::GaiaLoginVariant::kAddUser, 1);
+  histogram_tester_.ExpectUniqueSample(kSuccessLoginRequests,
+                                       GaiaView::GaiaLoginVariant::kAddUser, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

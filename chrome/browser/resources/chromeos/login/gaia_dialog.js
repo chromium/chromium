@@ -232,6 +232,7 @@ Polymer({
         chrome.send(
             'metricsHandler:recordBooleanHistogram',
             [CHROMEOS_GAIA_PASSWORD_METRIC, false]);
+        chrome.send('passwordEntered');
       },
       'authCompleted': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.

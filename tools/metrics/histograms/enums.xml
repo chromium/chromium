@@ -35065,6 +35065,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Gaia cookie is restored, Infobar shown"/>
 </enum>
 
+<enum name="GaiaLoginVariant">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="OOBE"/>
+  <int value="2" label="Add User"/>
+  <int value="3" label="Online Signin"/>
+</enum>
+
 <enum name="GaiaPasswordChangedScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Resync user data"/>

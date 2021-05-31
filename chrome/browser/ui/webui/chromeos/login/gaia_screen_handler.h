@@ -53,6 +53,16 @@ class GaiaView {
     kReauth,
   };
 
+  enum class GaiaLoginVariant {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    kUnknown = 0,
+    kOobe = 1,
+    kAddUser = 2,
+    kOnlineSignin = 3,
+    kMaxValue = kOnlineSignin
+  };
+
   constexpr static StaticOobeScreenId kScreenId{"gaia-signin"};
 
   GaiaView() = default;
@@ -238,6 +248,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Called when the user is removed.
   void HandleUserRemoved(const std::string& email);
 
+  // Called when password is entered for authentication during login.
+  void HandlePasswordEntered();
+
   void OnShowAddUser();
 
   // Really handles the complete login message.
@@ -407,6 +420,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
 
   std::string signin_partition_name_;
+
+  GaiaLoginVariant login_request_variant_ = GaiaLoginVariant::kUnknown;
 
   // Handler for `samlChallengeMachineKey` request.
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
