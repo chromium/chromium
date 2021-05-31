@@ -18,13 +18,13 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/all_status.h"
 #include "components/sync/engine/debug_info_event_listener.h"
 #include "components/sync/engine/events/protocol_event_buffer.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 #include "components/sync/engine/sync_manager.h"
+#include "components/sync/engine/sync_status_tracker.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace syncer {
@@ -152,7 +152,7 @@ class SyncManagerImpl
 
   // A multi-purpose status watch object that aggregates stats from various
   // sync components. Initialized in Init().
-  std::unique_ptr<AllStatus> all_status_;
+  std::unique_ptr<SyncStatusTracker> sync_status_tracker_;
 
   // Set to true once Init has been called.
   bool initialized_;

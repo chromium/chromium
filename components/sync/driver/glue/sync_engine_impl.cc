@@ -632,7 +632,7 @@ void SyncEngineImpl::OnActiveDevicesChanged() {
   if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
     // End-to-end latency measurement relies on reflection, so if this is
     // enabled, don't filter out the local device.
-    local_cache_guid = cached_status_.sync_id;
+    local_cache_guid = cached_status_.cache_guid;
   }
   sync_task_runner_->PostTask(
       FROM_HERE,

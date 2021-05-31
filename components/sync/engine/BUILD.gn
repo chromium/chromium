@@ -4,8 +4,6 @@
 
 static_library("engine") {
   sources = [
-    "all_status.cc",
-    "all_status.h",
     "backoff_delay_provider.cc",
     "backoff_delay_provider.h",
     "bookmark_update_preprocessing.cc",
@@ -146,6 +144,8 @@ static_library("engine") {
     "sync_scheduler_impl.h",
     "sync_status.cc",
     "sync_status.h",
+    "sync_status_tracker.cc",
+    "sync_status_tracker.h",
     "sync_string_conversions.cc",
     "sync_string_conversions.h",
     "syncer.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_ALL_STATUS_H_
-#define COMPONENTS_SYNC_ENGINE_ALL_STATUS_H_
+#ifndef COMPONENTS_SYNC_ENGINE_SYNC_STATUS_TRACKER_H_
+#define COMPONENTS_SYNC_ENGINE_SYNC_STATUS_TRACKER_H_
 
 #include <map>
 #include <string>
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
@@ -25,18 +24,21 @@ struct SyncCycleEvent;
 // This class watches various sync engine components, updating its internal
 // state upon change and firing the callback injected on construction.
 //
-// Most of this data ends up on the chrome://sync-internals page.  But the page
-// is only 'pinged' to update itself at the end of a sync cycle.  A user could
+// Most of this data ends up on the chrome://sync-internals page. But the page
+// is only 'pinged' to update itself at the end of a sync cycle. A user could
 // refresh manually, but unless their timing is excellent it's unlikely that a
-// user will see any state in mid-sync cycle.  We have no plans to change this.
+// user will see any state in mid-sync cycle. We have no plans to change this.
 // However, we will continue to collect data and update state mid-sync-cycle in
 // case we need to debug slow or stuck sync cycles.
-// TODO(crbug.com/1211421): Rename to SyncStatusChangeTracker or similar.
-class AllStatus : public SyncEngineEventListener {
+class SyncStatusTracker : public SyncEngineEventListener {
  public:
-  explicit AllStatus(const base::RepeatingCallback<void(const SyncStatus&)>&
-                         status_changed_callback);
-  ~AllStatus() override;
+  explicit SyncStatusTracker(
+      const base::RepeatingCallback<void(const SyncStatus&)>&
+          status_changed_callback);
+  ~SyncStatusTracker() override;
+
+  SyncStatusTracker(const SyncStatusTracker&) = delete;
+  SyncStatusTracker& operator=(const SyncStatusTracker&) = delete;
 
   // SyncEngineEventListener implementation.
   void OnSyncCycleEvent(const SyncCycleEvent& event) override;
@@ -61,7 +63,7 @@ class AllStatus : public SyncEngineEventListener {
       const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
           trusted_vault_debug_info);
 
-  void SetSyncId(const std::string& sync_id);
+  void SetCacheGuid(const std::string& cache_guid);
   void SetInvalidatorClientId(const std::string& invalidator_client_id);
 
   void SetLocalBackendFolder(const std::string& folder);
@@ -79,10 +81,8 @@ class AllStatus : public SyncEngineEventListener {
       status_changed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AllStatus);
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_ALL_STATUS_H_
+#endif  // COMPONENTS_SYNC_ENGINE_SYNC_STATUS_TRACKER_H_

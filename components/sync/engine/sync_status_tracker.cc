@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/all_status.h"
+#include "components/sync/engine/sync_status_tracker.h"
 
 #include <algorithm>
 #include <utility>
@@ -13,20 +13,18 @@
 
 namespace syncer {
 
-AllStatus::AllStatus(const base::RepeatingCallback<void(const SyncStatus&)>&
-                         status_changed_callback)
+SyncStatusTracker::SyncStatusTracker(
+    const base::RepeatingCallback<void(const SyncStatus&)>&
+        status_changed_callback)
     : status_changed_callback_(status_changed_callback) {
   DCHECK(status_changed_callback_);
-  status_.notifications_enabled = false;
-  status_.cryptographer_can_encrypt = false;
-  status_.crypto_has_pending_keys = false;
 }
 
-AllStatus::~AllStatus() {
+SyncStatusTracker::~SyncStatusTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-SyncStatus AllStatus::CreateBlankStatus() const {
+SyncStatus SyncStatusTracker::CreateBlankStatus() const {
   // Status is initialized with the previous status value.  Variables
   // whose values accumulate (e.g. lifetime counters like updates_received)
   // are not to be cleared here.
@@ -38,7 +36,7 @@ SyncStatus AllStatus::CreateBlankStatus() const {
   return status;
 }
 
-SyncStatus AllStatus::CalcSyncing(const SyncCycleEvent& event) const {
+SyncStatus SyncStatusTracker::CalcSyncing(const SyncCycleEvent& event) const {
   SyncStatus status = CreateBlankStatus();
   const SyncCycleSnapshot& snapshot = event.snapshot;
   status.encryption_conflicts = snapshot.num_encryption_conflicts();
@@ -46,9 +44,6 @@ SyncStatus AllStatus::CalcSyncing(const SyncCycleEvent& event) const {
   status.server_conflicts = snapshot.num_server_conflicts();
   status.committed_count =
       snapshot.model_neutral_state().num_successful_commits;
-  status.num_entries_by_type = snapshot.num_entries_by_type();
-  status.num_to_delete_entries_by_type =
-      snapshot.num_to_delete_entries_by_type();
 
   switch (event.what_happened) {
     case SyncCycleEvent::SYNC_CYCLE_BEGIN:
@@ -76,13 +71,13 @@ SyncStatus AllStatus::CalcSyncing(const SyncCycleEvent& event) const {
   return status;
 }
 
-void AllStatus::OnSyncCycleEvent(const SyncCycleEvent& event) {
+void SyncStatusTracker::OnSyncCycleEvent(const SyncCycleEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_ = CalcSyncing(event);
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::OnActionableError(
+void SyncStatusTracker::OnActionableError(
     const SyncProtocolError& sync_protocol_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_ = CreateBlankStatus();
@@ -90,81 +85,82 @@ void AllStatus::OnActionableError(
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::OnRetryTimeChanged(base::Time retry_time) {
+void SyncStatusTracker::OnRetryTimeChanged(base::Time retry_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.retry_time = retry_time;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::OnThrottledTypesChanged(ModelTypeSet throttled_types) {
+void SyncStatusTracker::OnThrottledTypesChanged(ModelTypeSet throttled_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.throttled_types = throttled_types;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::OnBackedOffTypesChanged(ModelTypeSet backed_off_types) {
+void SyncStatusTracker::OnBackedOffTypesChanged(ModelTypeSet backed_off_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.backed_off_types = backed_off_types;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::OnMigrationRequested(ModelTypeSet) {
+void SyncStatusTracker::OnMigrationRequested(ModelTypeSet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AllStatus::OnProtocolEvent(const ProtocolEvent&) {
+void SyncStatusTracker::OnProtocolEvent(const ProtocolEvent&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AllStatus::SetNotificationsEnabled(bool notifications_enabled) {
+void SyncStatusTracker::SetNotificationsEnabled(bool notifications_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.notifications_enabled = notifications_enabled;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::IncrementNotificationsReceived() {
+void SyncStatusTracker::IncrementNotificationsReceived() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++status_.notifications_received;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetEncryptedTypes(ModelTypeSet types) {
+void SyncStatusTracker::SetEncryptedTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.encrypted_types = types;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetCryptographerCanEncrypt(bool can_encrypt) {
+void SyncStatusTracker::SetCryptographerCanEncrypt(bool can_encrypt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.cryptographer_can_encrypt = can_encrypt;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetCryptoHasPendingKeys(bool has_pending_keys) {
+void SyncStatusTracker::SetCryptoHasPendingKeys(bool has_pending_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.crypto_has_pending_keys = has_pending_keys;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetPassphraseType(PassphraseType type) {
+void SyncStatusTracker::SetPassphraseType(PassphraseType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.passphrase_type = type;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetHasKeystoreKey(bool has_keystore_key) {
+void SyncStatusTracker::SetHasKeystoreKey(bool has_keystore_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.has_keystore_key = has_keystore_key;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetKeystoreMigrationTime(const base::Time& migration_time) {
+void SyncStatusTracker::SetKeystoreMigrationTime(
+    const base::Time& migration_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.keystore_migration_time = migration_time;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetTrustedVaultDebugInfo(
+void SyncStatusTracker::SetTrustedVaultDebugInfo(
     const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
         trusted_vault_debug_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -172,20 +168,20 @@ void AllStatus::SetTrustedVaultDebugInfo(
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetSyncId(const std::string& sync_id) {
+void SyncStatusTracker::SetCacheGuid(const std::string& cache_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  status_.sync_id = sync_id;
+  status_.cache_guid = cache_guid;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetInvalidatorClientId(
+void SyncStatusTracker::SetInvalidatorClientId(
     const std::string& invalidator_client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.invalidator_client_id = invalidator_client_id;
   status_changed_callback_.Run(status_);
 }
 
-void AllStatus::SetLocalBackendFolder(const std::string& folder) {
+void SyncStatusTracker::SetLocalBackendFolder(const std::string& folder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.local_sync_folder = folder;
   status_changed_callback_.Run(status_);

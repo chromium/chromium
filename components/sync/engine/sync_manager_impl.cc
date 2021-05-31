@@ -150,15 +150,16 @@ void SyncManagerImpl::Init(InitArgs* args) {
   sync_encryption_handler_->AddObserver(&debug_info_event_listener_);
 
   // base::Unretained() is safe here because SyncManagerImpl outlives
-  // all_status_.
-  all_status_ = std::make_unique<AllStatus>(base::BindRepeating(
-      &SyncManagerImpl::NotifySyncStatusChanged, base::Unretained(this)));
-  all_status_->SetHasKeystoreKey(
+  // sync_status_tracker_.
+  sync_status_tracker_ =
+      std::make_unique<SyncStatusTracker>(base::BindRepeating(
+          &SyncManagerImpl::NotifySyncStatusChanged, base::Unretained(this)));
+  sync_status_tracker_->SetHasKeystoreKey(
       !sync_encryption_handler_->GetKeystoreKeysHandler()->NeedKeystoreKey());
 
   if (args->enable_local_sync_backend) {
     VLOG(1) << "Running against local sync backend.";
-    all_status_->SetLocalBackendFolder(
+    sync_status_tracker_->SetLocalBackendFolder(
         args->local_sync_backend_folder.AsUTF8Unsafe());
     connection_manager_ = std::make_unique<LoopbackConnectionManager>(
         args->local_sync_backend_folder);
@@ -170,16 +171,17 @@ void SyncManagerImpl::Init(InitArgs* args) {
   connection_manager_->AddListener(this);
 
   DVLOG(1) << "Setting sync client ID: " << args->cache_guid;
-  all_status_->SetSyncId(args->cache_guid);
+  sync_status_tracker_->SetCacheGuid(args->cache_guid);
   DVLOG(1) << "Setting invalidator client ID: " << args->invalidator_client_id;
-  all_status_->SetInvalidatorClientId(args->invalidator_client_id);
+  sync_status_tracker_->SetInvalidatorClientId(args->invalidator_client_id);
 
   model_type_registry_ = std::make_unique<ModelTypeRegistry>(
       this, args->cancelation_signal, sync_encryption_handler_);
 
   // Build a SyncCycleContext and store the worker in it.
   DVLOG(1) << "Sync is bringing up SyncCycleContext.";
-  std::vector<SyncEngineEventListener*> listeners = {this, all_status_.get()};
+  std::vector<SyncEngineEventListener*> listeners = {
+      this, sync_status_tracker_.get()};
   cycle_context_ = args->engine_components_factory->BuildContext(
       connection_manager_.get(), args->extensions_activity, listeners,
       &debug_info_event_listener_, model_type_registry_.get(),
@@ -224,29 +226,29 @@ void SyncManagerImpl::OnBootstrapTokenUpdated(
     const std::string& bootstrap_token,
     BootstrapTokenType type) {
   if (type == KEYSTORE_BOOTSTRAP_TOKEN)
-    all_status_->SetHasKeystoreKey(true);
+    sync_status_tracker_->SetHasKeystoreKey(true);
 }
 
 void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                               bool encrypt_everything) {
-  all_status_->SetEncryptedTypes(encrypted_types);
+  sync_status_tracker_->SetEncryptedTypes(encrypted_types);
 }
 
 void SyncManagerImpl::OnCryptographerStateChanged(Cryptographer* cryptographer,
                                                   bool has_pending_keys) {
-  all_status_->SetCryptographerCanEncrypt(cryptographer->CanEncrypt());
-  all_status_->SetCryptoHasPendingKeys(has_pending_keys);
-  all_status_->SetKeystoreMigrationTime(
+  sync_status_tracker_->SetCryptographerCanEncrypt(cryptographer->CanEncrypt());
+  sync_status_tracker_->SetCryptoHasPendingKeys(has_pending_keys);
+  sync_status_tracker_->SetKeystoreMigrationTime(
       sync_encryption_handler_->GetKeystoreMigrationTime());
-  all_status_->SetTrustedVaultDebugInfo(
+  sync_status_tracker_->SetTrustedVaultDebugInfo(
       sync_encryption_handler_->GetTrustedVaultDebugInfo());
 }
 
 void SyncManagerImpl::OnPassphraseTypeChanged(
     PassphraseType type,
     base::Time explicit_passphrase_time) {
-  all_status_->SetPassphraseType(type);
-  all_status_->SetKeystoreMigrationTime(
+  sync_status_tracker_->SetPassphraseType(type);
+  sync_status_tracker_->SetKeystoreMigrationTime(
       sync_encryption_handler_->GetKeystoreMigrationTime());
 }
 
@@ -425,7 +427,7 @@ void SyncManagerImpl::SetInvalidatorEnabled(bool invalidator_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "Invalidator enabled state is now: " << invalidator_enabled;
-  all_status_->SetNotificationsEnabled(invalidator_enabled);
+  sync_status_tracker_->SetNotificationsEnabled(invalidator_enabled);
   scheduler_->SetNotificationsEnabled(invalidator_enabled);
 }
 
@@ -434,7 +436,7 @@ void SyncManagerImpl::OnIncomingInvalidation(
     std::unique_ptr<InvalidationInterface> invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  all_status_->IncrementNotificationsReceived();
+  sync_status_tracker_->IncrementNotificationsReceived();
   scheduler_->ScheduleInvalidationNudge(type, std::move(invalidation));
 }
 
@@ -502,7 +504,7 @@ void SyncManagerImpl::OnCookieJarChanged(bool account_mismatch) {
 
 void SyncManagerImpl::UpdateInvalidationClientId(const std::string& client_id) {
   DVLOG(1) << "Setting invalidator client ID: " << client_id;
-  all_status_->SetInvalidatorClientId(client_id);
+  sync_status_tracker_->SetInvalidatorClientId(client_id);
   cycle_context_->set_invalidator_client_id(client_id);
 }
 

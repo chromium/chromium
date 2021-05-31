@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_ENGINE_SYNC_STATUS_H_
 
 #include <string>
-#include <vector>
 
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
@@ -30,50 +29,51 @@ struct SyncStatus {
 
   // TODO(akalin): Replace this with a NotificationsDisabledReason
   // variable.
-  bool notifications_enabled;  // True only if subscribed for notifications.
+  // True only if subscribed for notifications.
+  bool notifications_enabled = false;
 
   // Notifications counters updated by the actions in synapi.
-  int notifications_received;
+  int notifications_received = 0;
 
   SyncProtocolError sync_protocol_error;
 
   // Number of encryption conflicts counted during most recent sync cycle.
-  int encryption_conflicts;
+  int encryption_conflicts = 0;
 
   // Number of hierarchy conflicts counted during most recent sync cycle.
-  int hierarchy_conflicts;
+  int hierarchy_conflicts = 0;
 
   // Number of items the server refused to commit due to conflict during most
   // recent sync cycle.
-  int server_conflicts;
+  int server_conflicts = 0;
 
   // Number of items successfully committed during most recent sync cycle.
-  int committed_count;
+  int committed_count = 0;
 
   // Whether a sync cycle is going on right now.
-  bool syncing;
+  bool syncing = false;
 
   // Total updates received by the syncer since browser start.
-  int updates_received;
+  int updates_received = 0;
   // Total updates received that are echoes of our own changes.
-  int reflected_updates_received;
+  int reflected_updates_received = 0;
   // Of updates_received, how many were tombstones.
-  int tombstone_updates_received;
+  int tombstone_updates_received = 0;
 
   // Total successful commits.
-  int num_commits_total;
+  int num_commits_total = 0;
 
   // Total number of overwrites due to conflict resolver since browser start.
-  int num_local_overwrites_total;
-  int num_server_overwrites_total;
+  int num_local_overwrites_total = 0;
+  int num_server_overwrites_total = 0;
 
   // Encryption related.
   ModelTypeSet encrypted_types;
-  bool cryptographer_can_encrypt;
-  bool crypto_has_pending_keys;
-  bool has_keystore_key;
+  bool cryptographer_can_encrypt = false;
+  bool crypto_has_pending_keys = false;
+  bool has_keystore_key = false;
   base::Time keystore_migration_time;
-  PassphraseType passphrase_type;
+  PassphraseType passphrase_type = PassphraseType::kImplicitPassphrase;
   sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 
   // Per-datatype throttled status.
@@ -82,15 +82,10 @@ struct SyncStatus {
   // Per-datatype backed off status.
   ModelTypeSet backed_off_types;
 
-  // The unique identifer for the sync store.
-  std::string sync_id;
+  std::string cache_guid;
 
   // The unique identifier for the invalidation client.
   std::string invalidator_client_id;
-
-  // Counters grouped by model type
-  std::vector<int> num_entries_by_type;
-  std::vector<int> num_to_delete_entries_by_type;
 
   // Time of next retry if sync scheduler is throttled or in backoff.
   base::Time retry_time;

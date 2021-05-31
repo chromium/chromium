@@ -514,8 +514,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     server_url->Set(service->GetSyncServiceUrlForDebugging().spec());
 
   // Identity.
-  if (is_status_valid && !full_status.sync_id.empty())
-    sync_client_id->Set(full_status.sync_id);
+  if (is_status_valid && !full_status.cache_guid.empty())
+    sync_client_id->Set(full_status.cache_guid);
   if (is_status_valid && !full_status.invalidator_client_id.empty())
     invalidator_id->Set(full_status.invalidator_client_id);
   if (!is_local_sync_enabled_state) {
