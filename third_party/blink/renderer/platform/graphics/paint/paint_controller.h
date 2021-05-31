@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -263,6 +264,14 @@ class PLATFORM_EXPORT PaintController {
   // enough data to report.
   static void ReportUMACounts();
 
+  class DisableUMAReportScope : private base::AutoReset<bool> {
+    STACK_ALLOCATED();
+
+   public:
+    DisableUMAReportScope()
+        : base::AutoReset<bool>(&disable_uma_reporting_, true) {}
+  };
+
  private:
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
@@ -486,8 +495,6 @@ class PLATFORM_EXPORT PaintController {
   static size_t sum_num_subsequences_;
   static size_t sum_num_cached_subsequences_;
 
-  // For testing, to disable ReportUMACounts(), to prevent the above sums from
-  // being cleared.
   static bool disable_uma_reporting_;
 
   class PaintArtifactAsJSON;

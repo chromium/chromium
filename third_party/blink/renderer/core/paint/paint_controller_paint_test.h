@@ -113,11 +113,10 @@ class PaintControllerPaintTestBase : public RenderingTest {
   }
 
   class CachedItemAndSubsequenceCounter {
+    STACK_ALLOCATED();
+
    public:
-    CachedItemAndSubsequenceCounter()
-        : reset_uma_reporting_(&PaintController::disable_uma_reporting_, true) {
-      Reset();
-    }
+    CachedItemAndSubsequenceCounter() { Reset(); }
     void Reset() {
       old_num_cached_items_ = PaintController::sum_num_cached_items_;
       old_num_cached_subsequences_ =
@@ -132,7 +131,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
     }
 
    private:
-    base::AutoReset<bool> reset_uma_reporting_;
+    PaintController::DisableUMAReportScope disable_uma_report_;
     size_t old_num_cached_items_;
     size_t old_num_cached_subsequences_;
   };
