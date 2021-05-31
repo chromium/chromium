@@ -175,8 +175,11 @@ void SessionDataService::StartCleanupInternal(bool skip_session_cookies) {
 void SessionDataService::OnCleanupAtSessionEndFinished(
     base::TimeTicks time_started) {
   SetStatusPref(Status::kDeletionFinished);
-  base::UmaHistogramMediumTimes("Session.SessionData.CleanupTime",
-                                base::TimeTicks::Now() - time_started);
+  auto* policy = profile_->GetSpecialStoragePolicy();
+  if (policy && policy->HasSessionOnlyOrigins()) {
+    base::UmaHistogramMediumTimes("Session.SessionData.CleanupTime",
+                                  base::TimeTicks::Now() - time_started);
+  }
 }
 
 void SessionDataService::SetForceKeepSessionState() {
