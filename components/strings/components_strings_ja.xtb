@@ -728,6 +728,7 @@
 <translation id="3631244953324577188">生体認証システム</translation>
 <translation id="3633738897356909127">Chrome を更新するボタンです。Enter キーを押すと Chrome の設定で Chrome を更新します</translation>
 <translation id="3634530185120165534">トレイ 5</translation>
+<translation id="3637662659967048211">Google アカウントに保存</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">アプリケーション:</translation>
 <translation id="3650584904733503804">検証が正常に完了しました</translation>
@@ -1400,6 +1401,7 @@
 <translation id="6106989379647458772">ウェブページ（<ph name="PAGE" />）は一時的に利用できなくなっているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="6107012941649240045">発行先</translation>
 <translation id="610911394827799129">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
+<translation id="6113594885686374546">ジャーニーを再開するボタンです。Enter キーを押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
 <translation id="6120179357481664955">UPI ID を保存しますか？</translation>
 <translation id="6123290840358279103">仮想カードを表示</translation>
@@ -1475,6 +1477,7 @@
 <translation id="6423385022588644828">今後 Touch ID を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6425092077175753609">マテリアル</translation>
 <translation id="6427730057873428458">観音折り</translation>
+<translation id="6428146287756735566">ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="6428450836711225518">電話番号の確認</translation>
 <translation id="6433490469411711332">連絡先情報の編集</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
@@ -1526,6 +1529,7 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645291930348198241">Cookie とサイトデータへのアクセス</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{なし}=1{1 件のサイト（Google アカウントへのログイン状態は維持されます）}other{# 件のサイト（Google アカウントへのログイン状態は維持されます）}}</translation>
+<translation id="6647197322759179819">ジャーニーを再開</translation>
 <translation id="6648459603387803038">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
 <translation id="6648524591329069940">Serif フォント</translation>
 <translation id="6651270836885078973">管理者:</translation>
@@ -2178,6 +2182,7 @@
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">フレッシュ</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9128016270925453879">ポリシーが読み込まれました</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>

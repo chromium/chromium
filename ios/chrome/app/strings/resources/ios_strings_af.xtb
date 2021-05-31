@@ -492,6 +492,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6059830886158432458">Beheer jou stories en aktiwiteit hier</translation>
 <translation id="6066301408025741299">Tik om te kanselleer.</translation>
 <translation id="60829778314739003">Aanvaar en gaan voort</translation>
+<translation id="6084848228346514841">Kies oortjies</translation>
 <translation id="6108923351542677676">Opstelling is besig …</translation>
 <translation id="6119050551270742952">Huidige webbladsy is op incognito</translation>
 <translation id="6122191549521593678">Aanlyn</translation>
@@ -782,6 +783,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8840513115188359703">Jy sal nie uit jou Google-rekening afgemeld word nie.</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} oortjie}other{{count} oortjies}}</translation>
 <translation id="8870413625673593573">Onlangs toegemaak</translation>
 <translation id="8876882697946675716">Hou jou toestelle gesinkroniseer</translation>
 <translation id="8881801611828450202">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>

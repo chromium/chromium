@@ -55,7 +55,7 @@
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1058262162121953039">PUK kodea</translation>
-<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Idatzi PIN kode berria. PIN kodeak karaktere bat izan behar du gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}other{Idatzi PIN kode berria. PIN kodeak # karaktere izan behar ditu gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}}</translation>
+<translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Idatzi PIN berria. PINak karaktere bat izan behar du gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}other{Idatzi PIN berria. PINak # karaktere izan behar ditu gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}}</translation>
 <translation id="1059484610606223931">Hipertestua transferitzeko protokolo segurua (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> fitxa aurkitu dira "<ph name="SEARCH_TEXT" />" bilaketarako</translation>
 <translation id="1060292118287751956">Pantaila eguneratzeko maiztasuna zehazten du</translation>
@@ -259,7 +259,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1274997165432133392">Cookieak eta webguneko beste datuak</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="1276994519141842946">Ezin izan da desinstalatu <ph name="APP_NAME" /></translation>
-<translation id="1277020343994096713">Sortu beste PIN kode bat (ezin da izan une honetan darabilzuna)</translation>
+<translation id="1277020343994096713">Sortu beste PIN bat (ezin da izan une honetan darabilzuna)</translation>
 <translation id="127946606521051357">Inguruko gailu bat edukia partekatzen ari da</translation>
 <translation id="1280820357415527819">Sare mugikorren bila</translation>
 <translation id="1280965841156951489">Editatu fitxategiak</translation>
@@ -678,7 +678,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1714644264617423774">Gailua erosoago eta aiseago erabiltzeko, gaitu erabilerraztasun-eginbideak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">Mugimendu-sentsoreak</translation>
 <translation id="1718835860248848330">Azken ordukoak</translation>
-<translation id="1719312230114180055">Oharra: baliteke hatz-markak ez izatea pasahitz edo PIN kode konplexuak bezain segurua.</translation>
+<translation id="1719312230114180055">Oharra: baliteke hatz-markak ez izatea pasahitz edo PIN konplexuak bezain segurua.</translation>
 <translation id="1720318856472900922">TLS WWW zerbitzariaren autentifikazioa</translation>
 <translation id="1721312023322545264"><ph name="NAME" /> erabiltzailearen baimena behar duzu webgunean sartu ahal izateko</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> da <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />gailuaren kudeatzailea<ph name="END_LINK" /></translation>
@@ -3663,7 +3663,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="495164417696120157">{COUNT,plural, =1{fitxategi bat}other{# fitxategi}}</translation>
 <translation id="495170559598752135">Ekintzak</translation>
 <translation id="4953808748584563296">Abatar laranja lehenetsia</translation>
-<translation id="4955710816792587366">Aukeratu PIN kode bat</translation>
+<translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
 <translation id="496027654926814138">Baliteke <ph name="FILE_NAME" /> fitxategiak erasotzaileei informazio pertsonala lapurtzen uztea.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -4287,7 +4287,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5662513737565158057">Aldatu Linux-eko aplikazioen funtzionamendua.</translation>
 <translation id="5667546120811588575">Google Play konfiguratzen…</translation>
 <translation id="5668351004957198136">Ezin izan da egiaztatu</translation>
-<translation id="5669691691057771421">Idatzi PIN kode berria</translation>
+<translation id="5669691691057771421">Idatzi PIN berria</translation>
 <translation id="56702779821643359">Partekatu fitxategiak ingurukoekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">Irudiak blokeatuta daude</translation>
 <translation id="5671658447180261823">Kendu <ph name="SUGGESTION_NAME" /> iradokizuna</translation>
@@ -4558,7 +4558,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5972708806901999743">Joan hasierara</translation>
 <translation id="5972826969634861500">Abiarazi <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" arakatzaile hau arazten hasi da</translation>
-<translation id="5973605538625120605">Aldatu PIN kode bat</translation>
+<translation id="5973605538625120605">Aldatu PIN bat</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Ireki guztiak &amp;ezkutuko moduko leiho batean}=1{Ireki &amp;ezkutuko moduko leiho batean}other{Ireki guztiak ({COUNT}) &amp;ezkutuko moduko leiho batean}}</translation>
 <translation id="5975792506968920132">Bateriaren karga-ehunekoa</translation>
 <translation id="5976160379964388480">Gehiago</translation>
@@ -5677,7 +5677,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7210499381659830293">Luzapen bidezko inprimagailuak</translation>
 <translation id="7211769023302873228">Esleipena berresteko eta irteteko, sakatu "<ph name="CURRENTKEY" />" berriro.</translation>
 <translation id="7211783048245131419">Oraindik ez da esleitu erabilerraztasun-etengailurik</translation>
-<translation id="7212097698621322584">PIN kodea aldatzeko, idatzi unekoa lehendabizi. Ez badakizu PIN kodea zein den, segurtasun-giltza berrezarri beharko duzu, eta beste PIN kode bat sortu.</translation>
+<translation id="7212097698621322584">PIN kodea aldatzeko, idatzi unekoa lehendabizi. Ez badakizu PINa zein den, segurtasun-giltza berrezarri beharko duzu, eta beste PIN bat sortu.</translation>
 <translation id="7213903639823314449">Helbide-barran egiten diren bilaketetarako erabiltzen den bilatzailea</translation>
 <translation id="7216595297012131718">Zure hobespenen arabera ordenatuko dira hizkuntzak</translation>
 <translation id="7219473482981809164">Deskarga daitezkeen profil bat baino gehiago aurkitu ditugu. Aurrera egin baino lehen, hautatu deskargatu nahi dituzunak.</translation>
@@ -6078,7 +6078,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7650677314924139716">Oraingo datuen erabileraren ezarpena "Wifi bidez soilik" da</translation>
 <translation id="7650920359639954963">Ez dago gaituta: <ph name="REASON" /></translation>
 <translation id="765293928828334535">Webgune honetatik ezin da gehitu aplikaziorik, luzapenik edo erabiltzaileen scriptik</translation>
-<translation id="7652954539215530680">Sortu PIN kode bat</translation>
+<translation id="7652954539215530680">Sortu PIN bat</translation>
 <translation id="7654941827281939388">Kontua ordenagailuan erabiltzen ari da dagoeneko.</translation>
 <translation id="7655411746932645568">Webguneek serieko ataketara konektatzea eska dezakete</translation>
 <translation id="7658239707568436148">Utzi</translation>

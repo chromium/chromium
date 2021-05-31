@@ -733,6 +733,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3631244953324577188">Biometrics</translation>
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
+<translation id="3637662659967048211">Save to Google Account</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3650584904733503804">Validation successful</translation>
@@ -1410,6 +1411,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
 <translation id="610911394827799129">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="6113594885686374546">Resume journey button; press enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6120179357481664955">Remember your UPI ID?</translation>
 <translation id="6123290840358279103">View virtual card</translation>
@@ -1485,6 +1487,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6423385022588644828">Confirm your cards faster by using Touch ID from now on</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Gate fold</translation>
+<translation id="6428146287756735566">Resume journey to see relevant activity in your Chrome history</translation>
 <translation id="6428450836711225518">Verifying your phone number</translation>
 <translation id="6433490469411711332">Edit contact info</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> refused to connect.</translation>
@@ -1536,6 +1539,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645291930348198241">Access cookies and site data.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{None}=1{From 1 site (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
+<translation id="6647197322759179819">Resume journey</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6648524591329069940">Serif Font</translation>
 <translation id="6651270836885078973">Managed by:</translation>
@@ -2187,6 +2191,7 @@ Additional details:
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">Fresh</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="9119042192571987207">Uploaded</translation>
 <translation id="9128016270925453879">Policies is loaded</translation>
 <translation id="9128870381267983090">Connect to network</translation>
