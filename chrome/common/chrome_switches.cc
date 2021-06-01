@@ -96,15 +96,6 @@ const char kAutoOpenDevToolsForTabs[]       = "auto-open-devtools-for-tabs";
 const char kAutoSelectDesktopCaptureSource[] =
     "auto-select-desktop-capture-source";
 
-// This flag makes Chrome auto-select a tab with the provided title when
-// the media-picker should otherwise be displayed to the user. This switch
-// is very similar to kAutoSelectDesktopCaptureSource, but limits selection
-// to tabs. This solves the issue of kAutoSelectDesktopCaptureSource being
-// liable to accidentally capturing the Chromium window instead of the tab,
-// as both have the same title if the tab is focused.
-const char kAutoSelectTabCaptureSourceByTitle[] =
-    "auto-select-tab-capture-source-by-title";
-
 // How often (in seconds) to check for updates. Should only be used for testing
 // purposes.
 const char kCheckForUpdateIntervalSec[]     = "check-for-update-interval";
