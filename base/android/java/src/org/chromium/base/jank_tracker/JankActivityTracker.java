@@ -6,74 +6,40 @@ package org.chromium.base.jank_tracker;
 
 import android.app.Activity;
 import android.os.Build.VERSION_CODES;
-import android.os.Handler;
-import android.os.HandlerThread;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils.ThreadChecker;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.lifetime.DestroyChecker;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class takes an activity, listens and records FrameMetrics in a JankMetricMeasurement
- * instance. A new HandlerThread is started to listen to FrameMetric events.
- * In addition it starts/stops recording based on activity lifecycle.
+ * This class takes an Activity and attaches a FrameMetricsListener to it, in addition it controls
+ * periodic jank metric reporting and frame metric recording based on the Activity's lifecycle
+ * events.
  */
 @RequiresApi(api = VERSION_CODES.N)
 class JankActivityTracker implements ActivityStateListener {
-    private static final long METRIC_DELAY_MS = 30_000;
-
-    static JankActivityTracker create(Activity context) {
-        JankMetricMeasurement measurement = new JankMetricMeasurement();
-        JankFrameMetricsListener listener = new JankFrameMetricsListener(measurement);
-        return new JankActivityTracker(context, listener, measurement);
-    }
-
-    private final JankFrameMetricsListener mFrameMetricsListener;
-    private final JankMetricMeasurement mMeasurement;
-    private final AtomicBoolean mIsMetricReporterLooping = new AtomicBoolean(false);
+    private final FrameMetricsListener mFrameMetricsListener;
+    private final JankReportingScheduler mReportingScheduler;
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
-    private final Runnable mMetricReporter = new Runnable() {
-        @Override
-        public void run() {
-            if (LibraryLoader.getInstance().isInitialized()) {
-                JankMetricUMARecorder.recordJankMetricsToUMA(mMeasurement.getMetrics());
-            }
-            // TODO(salg@): Cache metrics in case native takes >30s to initialize.
-            mMeasurement.clear();
-
-            if (mIsMetricReporterLooping.get()) {
-                getOrCreateHandler().postDelayed(mMetricReporter, METRIC_DELAY_MS);
-            }
-        }
-    };
-
-    @Nullable
-    protected HandlerThread mHandlerThread;
-    @Nullable
-    private Handler mHandler;
     private WeakReference<Activity> mActivityReference;
 
-    JankActivityTracker(Activity context, JankFrameMetricsListener listener,
-            JankMetricMeasurement measurement) {
+    JankActivityTracker(Activity context, FrameMetricsListener listener,
+            JankReportingScheduler reportingScheduler) {
         mActivityReference = new WeakReference<>(context);
         mFrameMetricsListener = listener;
-        mMeasurement = measurement;
+        mReportingScheduler = reportingScheduler;
     }
 
     void initialize() {
-        mThreadChecker.assertOnValidThread();
-        mDestroyChecker.checkNotDestroyed();
+        assertValidState();
         Activity activity = mActivityReference.get();
         if (activity != null) {
             ApplicationStatus.registerStateListenerForActivity(this, activity);
@@ -81,13 +47,12 @@ class JankActivityTracker implements ActivityStateListener {
             int activityState = ApplicationStatus.getStateForActivity(activity);
             onActivityStateChange(activity, activityState);
             activity.getWindow().addOnFrameMetricsAvailableListener(
-                    mFrameMetricsListener, getOrCreateHandler());
+                    mFrameMetricsListener, mReportingScheduler.getOrCreateHandler());
         }
     }
 
     void destroy() {
         mThreadChecker.assertOnValidThread();
-        mDestroyChecker.destroy();
         ApplicationStatus.unregisterActivityStateListener(this);
         stopMetricRecording();
         stopReportingTimer();
@@ -95,51 +60,37 @@ class JankActivityTracker implements ActivityStateListener {
         if (activity != null) {
             activity.getWindow().removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
         }
-    }
-
-    protected Handler getOrCreateHandler() {
-        // TODO(salg): Sort out whether thread assertion should be happening here as well.
-        mDestroyChecker.checkNotDestroyed();
-        if (mHandler == null) {
-            mHandlerThread = new HandlerThread("Jank-Tracker");
-            mHandlerThread.start();
-            mHandler = new Handler(mHandlerThread.getLooper());
-        }
-        return mHandler;
+        mDestroyChecker.destroy();
     }
 
     private void startReportingTimer() {
-        // If mIsMetricReporterLooping was already true then there's no need to post another task.
-        if (mIsMetricReporterLooping.getAndSet(true)) {
-            return;
-        }
-        getOrCreateHandler().postDelayed(mMetricReporter, METRIC_DELAY_MS);
+        assertValidState();
+        mReportingScheduler.startReportingPeriodicMetrics();
     }
 
     private void stopReportingTimer() {
-        if (!mIsMetricReporterLooping.get()) {
-            return;
-        }
-        // Remove any existing mMetricReporter delayed tasks.
-        getOrCreateHandler().removeCallbacks(mMetricReporter);
-        // Disable mMetricReporter looping.
-        mIsMetricReporterLooping.set(false);
-        // Run mMetricReporter one last time immediately.
-        getOrCreateHandler().post(mMetricReporter);
+        assertValidState();
+        mReportingScheduler.stopReportingPeriodicMetrics();
     }
 
     private void startMetricRecording() {
+        assertValidState();
         mFrameMetricsListener.setIsListenerRecording(true);
     }
 
     private void stopMetricRecording() {
+        assertValidState();
         mFrameMetricsListener.setIsListenerRecording(false);
+    }
+
+    private void assertValidState() {
+        mThreadChecker.assertOnValidThread();
+        mDestroyChecker.checkNotDestroyed();
     }
 
     @Override
     public void onActivityStateChange(Activity activity, @ActivityState int newState) {
-        mThreadChecker.assertOnValidThread();
-        mDestroyChecker.checkNotDestroyed();
+        assertValidState();
         switch (newState) {
             case ActivityState.STARTED: // Intentional fallthrough.
             case ActivityState.RESUMED:

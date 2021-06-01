@@ -18,37 +18,42 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
- *  Tests for JankFrameMetricsListener.
+ *  Tests for FrameMetricsListener.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class JankFrameMetricsListenerTest {
+public class FrameMetricsListenerTest {
     @Test
     public void testMetricRecording_OffByDefault() {
-        JankMetricMeasurement measurement = new JankMetricMeasurement();
-        JankFrameMetricsListener metricsListener = new JankFrameMetricsListener(measurement);
+        FrameMetricsStore store = new FrameMetricsStore();
+        FrameMetricsListener metricsListener = new FrameMetricsListener(store);
         FrameMetrics frameMetrics = mock(FrameMetrics.class);
 
+        store.startTrackingScenario(JankScenario.PERIODIC_REPORTING);
         when(frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)).thenReturn(10_000_000L);
 
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
         // By default metrics shouldn't be logged.
-        Assert.assertEquals(0, measurement.getMetrics().getDurations().length);
+        Assert.assertEquals(
+                0, store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING).durationsNs.length);
         verifyZeroInteractions(frameMetrics);
     }
 
     @Test
     public void testMetricRecording_EnableRecording() {
-        JankMetricMeasurement measurement = new JankMetricMeasurement();
-        JankFrameMetricsListener metricsListener = new JankFrameMetricsListener(measurement);
+        FrameMetricsStore store = new FrameMetricsStore();
+
+        FrameMetricsListener metricsListener = new FrameMetricsListener(store);
         FrameMetrics frameMetrics = mock(FrameMetrics.class);
 
+        store.startTrackingScenario(JankScenario.PERIODIC_REPORTING);
         when(frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)).thenReturn(10_000_000L);
 
         metricsListener.setIsListenerRecording(true);
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
-        Assert.assertArrayEquals(new long[] {10_000_000L}, measurement.getMetrics().getDurations());
+        Assert.assertArrayEquals(new Long[] {10_000_000L},
+                store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING).durationsNs);
     }
 }

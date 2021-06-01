@@ -6,13 +6,13 @@ package org.chromium.base.jank_tracker;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.Window;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +20,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -32,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class JankActivityTrackerTest {
-    ShadowLooper mShadowLooper;
 
     @Mock
     private Activity mActivity;
@@ -41,15 +38,14 @@ public class JankActivityTrackerTest {
     private Window mWindow;
 
     @Mock
-    private JankFrameMetricsListener mJankFrameMetricsListener;
+    private FrameMetricsListener mFrameMetricsListener;
 
     @Mock
-    private JankMetricMeasurement mJankMetricMeasurement;
+    private JankReportingScheduler mJankReportingScheduler;
 
     JankActivityTracker createJankActivityTracker(Activity activity) {
-        JankActivityTracker tracker = new JankActivityTracker(
-                activity, mJankFrameMetricsListener, mJankMetricMeasurement);
-        mShadowLooper = Shadow.extract(tracker.getOrCreateHandler().getLooper());
+        JankActivityTracker tracker =
+                new JankActivityTracker(activity, mFrameMetricsListener, mJankReportingScheduler);
 
         return tracker;
     }
@@ -82,18 +78,12 @@ public class JankActivityTrackerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
 
-        // When an activity resumes we schedule a repeating task to report metrics on the tracker's
-        // handler thread.
-        mShadowLooper.runOneTask();
-
-        // The reporting task should clear the jank measurement.
-        verify(mJankMetricMeasurement).clear();
-
-        // The reporting task should be looping, so another task should be posted.
-        Assert.assertTrue(mShadowLooper.getScheduler().areAnyRunnable());
+        // When an activity resumes we start reporting periodic metrics.
+        verify(mJankReportingScheduler, atLeastOnce()).startReportingPeriodicMetrics();
+        verify(mJankReportingScheduler, never()).stopReportingPeriodicMetrics();
 
         // When an activity resumes we start recording metrics.
-        verify(mJankFrameMetricsListener, atLeastOnce()).setIsListenerRecording(true);
+        verify(mFrameMetricsListener, atLeastOnce()).setIsListenerRecording(true);
     }
 
     @Test
@@ -105,16 +95,15 @@ public class JankActivityTrackerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
 
-        mShadowLooper.runOneTask();
-
         // When an activity pauses the reporting task should still be looping.
-        Assert.assertTrue(mShadowLooper.getScheduler().areAnyRunnable());
+        verify(mJankReportingScheduler, atLeastOnce()).startReportingPeriodicMetrics();
+        verify(mJankReportingScheduler, never()).stopReportingPeriodicMetrics();
 
-        InOrder orderVerifier = Mockito.inOrder(mJankFrameMetricsListener);
+        InOrder orderVerifier = Mockito.inOrder(mFrameMetricsListener);
 
-        orderVerifier.verify(mJankFrameMetricsListener, atLeastOnce()).setIsListenerRecording(true);
+        orderVerifier.verify(mFrameMetricsListener, atLeastOnce()).setIsListenerRecording(true);
         // When an activity pauses we stop recording metrics.
-        orderVerifier.verify(mJankFrameMetricsListener).setIsListenerRecording(false);
+        orderVerifier.verify(mFrameMetricsListener).setIsListenerRecording(false);
     }
 
     @Test
@@ -127,10 +116,11 @@ public class JankActivityTrackerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
-        // When an activity stops we run the reporting task one last time and stop it.
-        mShadowLooper.runOneTask();
-
-        Assert.assertFalse(mShadowLooper.getScheduler().areAnyRunnable());
+        // When an activity stops we stop reporting periodic metrics.
+        InOrder schedulerOrderVerifier = Mockito.inOrder(mJankReportingScheduler);
+        schedulerOrderVerifier.verify(mJankReportingScheduler, atLeastOnce())
+                .startReportingPeriodicMetrics();
+        schedulerOrderVerifier.verify(mJankReportingScheduler).stopReportingPeriodicMetrics();
     }
 
     @Test
@@ -143,12 +133,10 @@ public class JankActivityTrackerTest {
         jankActivityTracker.initialize();
 
         // Verify that JankActivityTracker is running as expected for the Resumed state.
-        // Reporting task should be running and looping.
-        mShadowLooper.runOneTask();
-        verify(mJankMetricMeasurement).clear();
-        Assert.assertTrue(mShadowLooper.getScheduler().areAnyRunnable());
+        // Periodic metric reporting should be enabled.
+        verify(mJankReportingScheduler).startReportingPeriodicMetrics();
         // Metric recording should be enabled.
-        verify(mJankFrameMetricsListener).setIsListenerRecording(true);
+        verify(mFrameMetricsListener).setIsListenerRecording(true);
     }
 
     @Test
@@ -162,10 +150,8 @@ public class JankActivityTrackerTest {
 
         // Verify that JankActivityTracker is running as expected for the Resumed state.
         // Reporting task should be running and looping.
-        mShadowLooper.runOneTask();
-        verify(mJankMetricMeasurement).clear();
-        Assert.assertTrue(mShadowLooper.getScheduler().areAnyRunnable());
+        verify(mJankReportingScheduler).startReportingPeriodicMetrics();
         // Metric recording should be enabled.
-        verify(mJankFrameMetricsListener).setIsListenerRecording(true);
+        verify(mFrameMetricsListener).setIsListenerRecording(true);
     }
 }

@@ -14,24 +14,24 @@ import androidx.annotation.RequiresApi;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class receives FrameMetrics callbacks and records frame durations in a JankMetricMeasurement
- * instance. Recording can be toggled from any thread, but the actual recording occurs in the thread
- * specified when this is attached to a window with addOnFrameMetricsAvailableListener(). This class
- * only adds data to the provided JankMetricMeasurement instance, its owner must clear it to avoid
- * OOMs.
+ * This class receives  OnFrameMetricsAvailableListener.onFrameMetricsAvailable() callbacks and
+ * records frame durations in a FrameMetricsStore instance. Recording can be toggled from any
+ * thread, but the actual recording occurs in the thread specified when this is attached to a window
+ * with addOnFrameMetricsAvailableListener(). This class only adds data to the provided
+ * FrameMetricsStore instance, its owner must clear it to avoid OOMs.
  */
 @RequiresApi(api = VERSION_CODES.N)
-class JankFrameMetricsListener implements OnFrameMetricsAvailableListener {
-    private final JankMetricMeasurement mMeasurement;
+class FrameMetricsListener implements OnFrameMetricsAvailableListener {
+    private final FrameMetricsStore mFrameMetricsStore;
     private final AtomicBoolean mIsRecording;
 
-    JankFrameMetricsListener(JankMetricMeasurement measurement) {
-        mMeasurement = measurement;
+    FrameMetricsListener(FrameMetricsStore frameMetricsStore) {
+        mFrameMetricsStore = frameMetricsStore;
         mIsRecording = new AtomicBoolean(false);
     }
 
     /**
-     * Toggles recording into JankMetricMeasurement, can be invoked from any thread.
+     * Toggles recording into JankMetricsStore, can be invoked from any thread.
      * @param isRecording
      */
     public void setIsListenerRecording(boolean isRecording) {
@@ -50,7 +50,7 @@ class JankFrameMetricsListener implements OnFrameMetricsAvailableListener {
 
         long timestampNs = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP);
 
-        mMeasurement.addFrameMeasurement(
+        mFrameMetricsStore.addFrameMeasurement(
                 timestampNs, frameTotalDurationNs, dropCountSinceLastInvocation);
     }
 }

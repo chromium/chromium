@@ -37,6 +37,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".UnknownIntent"/>
 </variants>
 
+<variants name="JankMetricsScenarios">
+  <variant name="">
+    <obsolete>
+      Renamed to .Total
+    </obsolete>
+  </variant>
+  <variant name=".NewTabPage" summary="while NTP is open"/>
+  <variant name=".Omnibox" summary="while Omnibox is open"/>
+  <variant name=".OpenLinkInNewTab"
+      summary="while opening a link in a new tab using the long press menu"/>
+  <variant name=".Startup" summary="while Chrome is starting"/>
+  <variant name=".TabSwitcher" summary="while Tab switcher is open"/>
+  <variant name=".Total"
+      summary="while ChromeTabbedActivity is resumed. However, there's an
+               unusual implementation detail: Individual frame durations are
+               measured in Java, and passed over to C++ for recording once
+               every 30 seconds. Thus, frames that occur near program
+               termination might be dropped from the data"/>
+</variants>
+
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
     enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-15">
   <owner>bttk@chromium.org</owner>
@@ -1409,37 +1429,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.Jank.FrameDuration" units="ms"
+<histogram name="Android.Jank.FrameDuration{Scenario}" units="ms"
     expires_after="2021-09-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     Amount of time it takes to draw Android UI frames on ChromeTabbedActivity as
-    measured by Android's FrameMetrics API. Each frame's duration is recorded
-    individually while ChromeTabbedActivity is resumed. However, there's an
-    unusual implementation detail: Individual frame durations are measured in
-    Java, and passed over to C++ for recording once every 30 seconds. Thus,
-    frames that occur near program termination might be dropped from the data.
+    measured by Android's FrameMetrics API. Each frame's draw duration is stored
+    individually {Scenario}.
 
     The samples for this metric (Along with Android.Jank.JankBursts and
-    Android.Jank.MissedFrames) are manually passed from Java to C++ every 30
-    seconds to be recorded. This is done instead of recording in real time from
-    Java due to the large number of generated samples (potentially ~60 per
-    second). Recording them directly from Java would result in a JNI call for
-    each sample which could cause performance issues.
+    Android.Jank.MissedFrames) are manually passed from Java to C++ to be
+    recorded. This is done instead of recording in real time from Java due to
+    the large number of generated samples (potentially ~60 per second).
+    Recording them directly from Java would result in a JNI call for each sample
+    which could cause performance issues.
 
     FrameMetrics only reports frames with Android UI updates. An idle omnibox
     would report only 2 frames per second due to the cursor blink animation.
     Scrolling through a web page may record no frames if no Android UI (like the
     address bar) updates.
   </summary>
+  <token key="Scenario" variants="JankMetricsScenarios"/>
 </histogram>
 
-<histogram name="Android.Jank.JankBursts" units="ms" expires_after="2021-09-30">
+<histogram name="Android.Jank.JankBursts{Scenario}" units="ms"
+    expires_after="2021-09-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
-    Recorded every 30 seconds alongside Android.Jank.FrameDuration. Each sample
+    Recorded alongside Android.Jank.FrameDuration {Scenario}. Each sample
     represents a jank burst: the total frame duration of one or many janky
     frames drawn in quick succession. For example, the following sequence of
     frame durations: [2ms, 100ms, 100ms, 100ms, 2ms, 2ms, 2ms, 100ms, 2ms] would
@@ -1457,18 +1476,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     it indicates its jankyness is caused by a different event or animation. (see
     go/clank-zero-browser-jank for more details).
   </summary>
+  <token key="Scenario" variants="JankMetricsScenarios"/>
 </histogram>
 
-<histogram name="Android.Jank.MissedFrames" units="frames"
+<histogram name="Android.Jank.MissedFrames{Scenario}" units="frames"
     expires_after="2021-09-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
-    Number of frames that Android's FrameMetrics API failed to report on because
-    of high main thread activity. Android.Jank.FrameDuration and
-    Android.Jank.JankBursts are not recorded for these missed frames. This
-    metric is reported every 30 seconds along with Android.Jank.FrameDuration.
+    Number of frames that Android's FrameMetrics API skipped reporting on
+    because of high main thread activity. This metric is recorded at the same
+    time as Android.Jank.* histograms {Scenario}. Each sample is the number of
+    frames that we didn't receive timings for, so their draw duration is not
+    recorded in the respective Android.Jank.FrameDuration.* histogram, and (even
+    if its duration was greater than 16ms) it is not counted in any
+    Android.Jank.JankyBursts.* samples.
+
+    A high number of missed frames would mean that we are taking too long to
+    record frame metrics and that the other Android.Jank.* histograms may not be
+    accurate.
   </summary>
+  <token key="Scenario" variants="JankMetricsScenarios"/>
 </histogram>
 
 <histogram name="Android.KernelVersion" enum="AndroidKernelVersion"

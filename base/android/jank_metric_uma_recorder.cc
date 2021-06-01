@@ -8,9 +8,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/base_jni_headers/JankMetricUMARecorder_jni.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -22,36 +24,47 @@ namespace android {
 // testing.
 void JNI_JankMetricUMARecorder_RecordJankMetrics(
     JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& java_scenario_name,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
     const base::android::JavaParamRef<jlongArray>& java_jank_bursts_ns,
     jint java_missed_frames) {
-  RecordJankMetrics(env, java_durations_ns, java_jank_bursts_ns,
-                    java_missed_frames);
+  RecordJankMetrics(env, java_scenario_name, java_durations_ns,
+                    java_jank_bursts_ns, java_missed_frames);
 }
 
 void RecordJankMetrics(
     JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& java_scenario_name,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
     const base::android::JavaParamRef<jlongArray>& java_jank_bursts_ns,
     jint java_missed_frames) {
+  std::string scenario_name = ConvertJavaStringToUTF8(env, java_scenario_name);
   std::vector<int64_t> durations_ns;
   std::vector<int64_t> jank_bursts_ns;
 
   JavaLongArrayToInt64Vector(env, java_durations_ns, &durations_ns);
   JavaLongArrayToInt64Vector(env, java_jank_bursts_ns, &jank_bursts_ns);
 
+  std::string frame_duration_histogram_name =
+      base::StrCat({"Android.Jank.FrameDuration.", scenario_name});
+  std::string jank_burst_histogram_name =
+      base::StrCat({"Android.Jank.JankBursts.", scenario_name});
+  std::string missed_frames_histogram_name =
+      base::StrCat({"Android.Jank.MissedFrames.", scenario_name});
+
   for (const int64_t frame_duration_ns : durations_ns) {
-    UMA_HISTOGRAM_TIMES("Android.Jank.FrameDuration",
+    UMA_HISTOGRAM_TIMES(frame_duration_histogram_name,
                         base::TimeDelta::FromNanoseconds(frame_duration_ns));
   }
 
   for (const int64_t jank_burst_duration_ns : jank_bursts_ns) {
     UMA_HISTOGRAM_TIMES(
-        "Android.Jank.JankBursts",
+        jank_burst_histogram_name,
         base::TimeDelta::FromNanoseconds(jank_burst_duration_ns));
   }
 
-  base::UmaHistogramCounts1000("Android.Jank.MissedFrames", java_missed_frames);
+  base::UmaHistogramCounts1000(missed_frames_histogram_name,
+                               java_missed_frames);
 }
 
 }  // namespace android

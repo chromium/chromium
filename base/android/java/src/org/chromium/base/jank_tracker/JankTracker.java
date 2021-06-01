@@ -19,14 +19,26 @@ import androidx.annotation.RequiresApi;
 @RequiresApi(api = VERSION_CODES.N)
 public final class JankTracker {
     private final JankActivityTracker mActivityTracker;
+    private final JankReportingScheduler mReportingScheduler;
 
     /**
      * Creates a new JankTracker instance tracking UI rendering of an activity. Metric recording
      * starts when the activity starts, and it's paused when the activity stops.
      */
     public JankTracker(Activity activity) {
-        mActivityTracker = JankActivityTracker.create(activity);
+        FrameMetricsStore metricsStore = new FrameMetricsStore();
+        FrameMetricsListener metricsListener = new FrameMetricsListener(metricsStore);
+        mReportingScheduler = new JankReportingScheduler(metricsStore);
+        mActivityTracker = new JankActivityTracker(activity, metricsListener, mReportingScheduler);
         mActivityTracker.initialize();
+    }
+
+    public void startTrackingScenario(@JankScenario int scenario) {
+        mReportingScheduler.startTrackingScenario(scenario);
+    }
+
+    public void finishTrackingScenario(@JankScenario int scenario) {
+        mReportingScheduler.finishTrackingScenario(scenario);
     }
 
     /**

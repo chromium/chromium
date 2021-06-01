@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/metrics/histogram.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,9 +23,9 @@ namespace base {
 namespace android {
 namespace {
 
-jlongArray GenerateJavaLongArrayParamRef(JNIEnv* env,
-                                         const int64_t long_array[],
-                                         const size_t array_length) {
+jlongArray GenerateJavaLongArray(JNIEnv* env,
+                                 const int64_t long_array[],
+                                 const size_t array_length) {
   ScopedJavaLocalRef<jlongArray> java_long_array =
       ToJavaLongArray(env, long_array, array_length);
 
@@ -59,27 +60,34 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
 
   JNIEnv* env = AttachCurrentThread();
 
+  jstring java_scenario_name =
+      ConvertUTF8ToJavaString(env, "PeriodicReporting").Release();
   jlongArray java_durations =
-      GenerateJavaLongArrayParamRef(env, kDurations, kDurationsLen);
+      GenerateJavaLongArray(env, kDurations, kDurationsLen);
   jlongArray java_jank_bursts =
-      GenerateJavaLongArrayParamRef(env, kJankBursts, kJankBurstsLen);
+      GenerateJavaLongArray(env, kJankBursts, kJankBurstsLen);
 
   RecordJankMetrics(
       env,
+      /* java_scenario_name= */
+      base::android::JavaParamRef<jstring>(env, java_scenario_name),
       /* java_durations_ns= */
       base::android::JavaParamRef<jlongArray>(env, java_durations),
       /* java_jank_bursts_ns=*/
       base::android::JavaParamRef<jlongArray>(env, java_jank_bursts),
       /* java_missed_frames = */ 2);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("Android.Jank.FrameDuration"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Android.Jank.FrameDuration.PeriodicReporting"),
               ElementsAre(Bucket(1, 3), Bucket(2, 1), Bucket(10, 1),
                           Bucket(20, 1), Bucket(29, 1), Bucket(57, 1)));
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("Android.Jank.JankBursts"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Android.Jank.JankBursts.PeriodicReporting"),
               ElementsAre(Bucket(20, 1), Bucket(96, 1)));
 
-  histogram_tester.ExpectUniqueSample("Android.Jank.MissedFrames", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.Jank.MissedFrames.PeriodicReporting", 2, 1);
 }
 
 }  // namespace android

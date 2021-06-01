@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.jank_tracker.JankMetricMeasurement.JankMetric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
@@ -43,11 +42,11 @@ public class JankMetricUMARecorderTest {
         long[] jankBurstsNs = new long[] {30_000L};
         int missedFrames = 3;
 
-        JankMetric metric = new JankMetric(timestampsNs, durationsNs, jankBurstsNs, missedFrames);
+        JankMetrics metric = new JankMetrics(timestampsNs, durationsNs, jankBurstsNs, missedFrames);
 
-        JankMetricUMARecorder.recordJankMetricsToUMA(metric);
+        JankMetricUMARecorder.recordJankMetricsToUMA(metric, JankScenario.OMNIBOX);
 
         // Ensure that the relevant fields are sent down to native.
-        verify(mNativeMock).recordJankMetrics(durationsNs, jankBurstsNs, missedFrames);
+        verify(mNativeMock).recordJankMetrics("Omnibox", durationsNs, jankBurstsNs, missedFrames);
     }
 }

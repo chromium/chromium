@@ -6,10 +6,8 @@ package org.chromium.base.jank_tracker;
 
 import java.util.ArrayList;
 
-import javax.annotation.concurrent.GuardedBy;
-
 /**
- * This class records frame durations and timestamps. And it calculates a jank burst metric.
+ * This class calculates a jank burst metric.
  *
  * Jank bursts are periods with janky frames in a quick succession. A non-janky frame may be
  * included in this measurement if it's preceded and succeeded by janky frames, as long as the three
@@ -39,56 +37,7 @@ import javax.annotation.concurrent.GuardedBy;
  *  In this example the jank burst metric would report 3 values, which are the sum of the frame
  *  duration of all frames inside a jank burst, including the first and last frames.
  */
-class JankMetricMeasurement {
-    protected static class JankMetric {
-        private final long[] mTimestampsNs;
-        private final long[] mDurationsNs;
-        private final long[] mJankBurstsNs;
-        private final int mSkippedFrames;
-
-        public JankMetric(
-                long[] timestampsNs, long[] durationsNs, long[] jankBurstsNs, int skippedFrames) {
-            mTimestampsNs = timestampsNs;
-            mDurationsNs = durationsNs;
-            mJankBurstsNs = jankBurstsNs;
-            mSkippedFrames = skippedFrames;
-        }
-
-        public long[] getTimestamps() {
-            return mTimestampsNs;
-        }
-
-        public long[] getDurations() {
-            return mDurationsNs;
-        }
-
-        public long[] getJankBursts() {
-            return mJankBurstsNs;
-        }
-
-        public int getSkippedFrames() {
-            return mSkippedFrames;
-        }
-    }
-
-    // Guards access to the fields below.
-    private final Object mLock = new Object();
-
-    // Array of timestamps stored in nanoseconds, they represent the moment when each frame
-    // finished drawing, must always be the same size as mTotalDurationsNs.
-    @GuardedBy("mLock")
-    private final ArrayList<Long> mTimestampsNs;
-
-    // Array of total durations stored in nanoseconds, they represent how long each frame took to
-    // draw, must always be the same size as mTimestampsNs.
-    @GuardedBy("mLock")
-    private final ArrayList<Long> mTotalDurationsNs;
-
-    // Number of frames that FrameMetrics was unable to report on, due to excessive activity on its
-    // handler thread.
-    @GuardedBy("mLock")
-    private int mSkippedFrames;
-
+class JankMetricCalculator {
     private static final long NANOSECONDS_PER_MILLISECOND = 1_000_000;
 
     // Threshold in milliseconds to distinguish janky and non-janky frames. Any frames whose
@@ -100,24 +49,6 @@ class JankMetricMeasurement {
     // bursts when 2 janky frames are separated by an idle period.
     private static final long JANK_BURST_CONSECUTIVE_FRAME_THRESHOLD_NS =
             50 * NANOSECONDS_PER_MILLISECOND;
-
-    JankMetricMeasurement() {
-        mTimestampsNs = new ArrayList<>();
-        mTotalDurationsNs = new ArrayList<>();
-        mSkippedFrames = 0;
-    }
-
-    /**
-     *  Records a timestamp and total draw duration for a single frame, both values are in
-     * milliseconds.
-     */
-    void addFrameMeasurement(long timestampNs, long totalDurationNs, int skippedFrames) {
-        synchronized (mLock) {
-            mTimestampsNs.add(timestampNs);
-            mTotalDurationsNs.add(totalDurationNs);
-            mSkippedFrames += skippedFrames;
-        }
-    }
 
     /**
      *  Returns an array of all recorded jank bursts measured in nanoseconds (see class doc for
@@ -166,47 +97,26 @@ class JankMetricMeasurement {
             jankBurstDurationsNs.add(currentJankBurstDurationNs);
         }
 
-        return longArrayListToPrimitiveArray(jankBurstDurationsNs);
+        return longArrayToPrimitiveArray(
+                jankBurstDurationsNs.toArray(new Long[jankBurstDurationsNs.size()]));
     }
 
     /**
      *  Returns a new object with metrics for all frames recorded since started or clear() was
      * called.
      */
-    JankMetric getMetrics() {
+    static JankMetrics calculateJankMetrics(FrameMetrics frameMetrics) {
         long[] timestampsNs;
         long[] totalDurationsNs;
         int skippedFrames;
 
-        synchronized (mLock) {
-            timestampsNs = longArrayListToPrimitiveArray(mTimestampsNs);
-            totalDurationsNs = longArrayListToPrimitiveArray(mTotalDurationsNs);
-            skippedFrames = mSkippedFrames;
-        }
+        timestampsNs = longArrayToPrimitiveArray(frameMetrics.timestampsNs);
+        totalDurationsNs = longArrayToPrimitiveArray(frameMetrics.durationsNs);
+        skippedFrames = sumArray(frameMetrics.skippedFrames);
 
         long[] jankBursts = calculateJankBurstDurationsNs(timestampsNs, totalDurationsNs);
 
-        return new JankMetric(timestampsNs, totalDurationsNs, jankBursts, skippedFrames);
-    }
-
-    private static long[] longArrayListToPrimitiveArray(ArrayList<Long> longArrayList) {
-        long[] longArray = new long[longArrayList.size()];
-        for (int i = 0; i < longArrayList.size(); i++) {
-            longArray[i] = longArrayList.get(i).longValue();
-        }
-
-        return longArray;
-    }
-
-    /**
-     * Clears this measurement.
-     */
-    void clear() {
-        synchronized (mLock) {
-            mTimestampsNs.clear();
-            mTotalDurationsNs.clear();
-            mSkippedFrames = 0;
-        }
+        return new JankMetrics(timestampsNs, totalDurationsNs, jankBursts, skippedFrames);
     }
 
     /**
@@ -247,5 +157,23 @@ class JankMetricMeasurement {
         long timeBetweenFramesNs = secondFrameStartNs - firstFrameEndNs;
 
         return (timeBetweenFramesNs < JANK_BURST_CONSECUTIVE_FRAME_THRESHOLD_NS);
+    }
+
+    private static long[] longArrayToPrimitiveArray(Long[] longArray) {
+        long[] primitiveArray = new long[longArray.length];
+        for (int i = 0; i < longArray.length; i++) {
+            primitiveArray[i] = longArray[i].longValue();
+        }
+
+        return primitiveArray;
+    }
+
+    private static int sumArray(Integer[] input) {
+        int sum = 0;
+        for (Integer i : input) {
+            sum += i;
+        }
+
+        return sum;
     }
 }
