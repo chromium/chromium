@@ -83,8 +83,7 @@ void StringStatics::Init() {
       String(StringImpl::empty16_bit_);
 
   // FIXME: These should be allocated at compile time.
-  new (NotNullTag::kNotNull, (void*)&g_star_atom)
-      AtomicString(AddStaticASCIILiteral("*"));
+  new (NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
   new (NotNullTag::kNotNull, (void*)&g_xml_atom)
       AtomicString(AddStaticASCIILiteral("xml"));
   new (NotNullTag::kNotNull, (void*)&g_xmlns_atom)

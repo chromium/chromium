@@ -274,6 +274,7 @@ inline bool operator!=(const char* a, const AtomicString& b) {
 }
 
 // Define external global variables for the commonly used atomic strings.
+// These are only usable from the main thread.
 WTF_EXPORT extern const AtomicString& g_null_atom;
 WTF_EXPORT extern const AtomicString& g_empty_atom;
 WTF_EXPORT extern const AtomicString& g_star_atom;
