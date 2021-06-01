@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -574,6 +575,12 @@ void HistoryMenuBridge::SetVisibilityOfMenuItems() {
 }
 
 bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
+  if (!base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito)) {
+    return [item tag] != kIncognitoDisclaimerLabel &&
+           [item tag] != kIncognitoDisclaimerSeparator;
+  }
+
   int tag = [item tag];
   switch (tag) {
     // The common menu items for both profiles

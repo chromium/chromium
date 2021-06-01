@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -748,7 +749,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     _tabMenuBridge.reset();
   }
 
-  [self windowChangedToProfile:browser->profile()];
+  Profile* profile = browser->profile();
+  // If kUpdateHistoryEntryPointsInIncognito is not enabled, always pass
+  // original profile.
+  if (!base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito)) {
+    profile = profile->GetOriginalProfile();
+  }
+  [self windowChangedToProfile:profile];
 }
 
 - (void)windowDidResignMain:(NSNotification*)notify {
@@ -1771,6 +1779,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // its initial state.
   if (_historyMenuBridge)
     _historyMenuBridge->ResetMenu();
+
+  // Clear the profile pref registrar before tearing down.
+  if (_profilePrefRegistrar)
+    _profilePrefRegistrar->RemoveAll();
 
   // Rebuild the menus with the new profile. The bookmarks submenu is cached to
   // avoid slowdowns when switching between profiles with large numbers of
