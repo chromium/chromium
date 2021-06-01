@@ -20,6 +20,7 @@
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
 
 namespace base {
@@ -103,6 +104,8 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   media::AudioManager* const audio_manager_;
 
   mojo::ReceiverSet<media::mojom::AudioStreamFactory> receivers_;
+
+  ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
   LoopbackCoordinator coordinator_;

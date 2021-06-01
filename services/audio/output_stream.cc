@@ -38,6 +38,7 @@ OutputStream::OutputStream(
         observer,
     mojo::PendingRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
+    OutputStreamActivityMonitor* activity_monitor,
     const std::string& output_device_id,
     const media::AudioParameters& params,
     LoopbackCoordinator* coordinator,
@@ -54,7 +55,12 @@ OutputStream::OutputStream(
                    : base::DoNothing(),
               params,
               &foreign_socket_),
-      controller_(audio_manager, this, params, output_device_id, &reader_),
+      controller_(audio_manager,
+                  this,
+                  activity_monitor,
+                  params,
+                  output_device_id,
+                  &reader_),
       loopback_group_id_(loopback_group_id) {
   DCHECK(receiver_.is_bound());
   DCHECK(created_callback);

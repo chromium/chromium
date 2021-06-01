@@ -27,6 +27,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/user_input_monitor.h"
+#include "services/audio/concurrent_stream_metric_reporter.h"
 
 namespace audio {
 namespace {
@@ -130,12 +131,10 @@ float AveragePower(const media::AudioBus& buffer) {
 class InputController::AudioCallback
     : public media::AudioInputStream::AudioInputCallback {
  public:
-  AudioCallback(
-      InputController* controller)
+  explicit AudioCallback(InputController* controller)
       : task_runner_(base::ThreadTaskRunnerHandle::Get()),
         controller_(controller),
-        weak_controller_(controller->weak_ptr_factory_.GetWeakPtr()) {
-  }
+        weak_controller_(controller->weak_ptr_factory_.GetWeakPtr()) {}
   ~AudioCallback() override = default;
 
   // These should not be called when the stream is live.
@@ -206,16 +205,19 @@ class InputController::AudioCallback
 InputController::InputController(EventHandler* handler,
                                  SyncWriter* sync_writer,
                                  media::UserInputMonitor* user_input_monitor,
+                                 InputStreamActivityMonitor* activity_monitor,
                                  const media::AudioParameters& params,
                                  StreamType type)
     : handler_(handler),
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
-      user_input_monitor_(user_input_monitor) {
+      user_input_monitor_(user_input_monitor),
+      activity_monitor_(activity_monitor) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(handler_);
   DCHECK(sync_writer_);
+  DCHECK(activity_monitor_);
 }
 
 InputController::~InputController() {
@@ -231,11 +233,13 @@ std::unique_ptr<InputController> InputController::Create(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
     media::UserInputMonitor* user_input_monitor,
+    InputStreamActivityMonitor* activity_monitor,
     const media::AudioParameters& params,
     const std::string& device_id,
     bool enable_agc) {
   DCHECK(audio_manager);
   DCHECK(audio_manager->GetTaskRunner()->BelongsToCurrentThread());
+  DCHECK(activity_monitor);
   DCHECK(sync_writer);
   DCHECK(event_handler);
   DCHECK(params.IsValid());
@@ -245,9 +249,9 @@ std::unique_ptr<InputController> InputController::Create(
 
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
-  std::unique_ptr<InputController> controller(
-      new InputController(event_handler, sync_writer, user_input_monitor,
-                          params, ParamsToStreamType(params)));
+  std::unique_ptr<InputController> controller(new InputController(
+      event_handler, sync_writer, user_input_monitor, activity_monitor, params,
+      ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;
@@ -271,6 +275,7 @@ void InputController::Record() {
 
   audio_callback_ = std::make_unique<AudioCallback>(this);
   stream_->Start(audio_callback_.get());
+  activity_monitor_->OnInputStreamActive();
   return;
 }
 
@@ -289,6 +294,7 @@ void InputController::Close() {
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
     stream_->Stop();
+    activity_monitor_->OnInputStreamInactive();
 
     // Sometimes a stream (and accompanying audio track) is created and
     // immediately closed or discarded. In this case they are registered as

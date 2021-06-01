@@ -58,8 +58,9 @@ void StreamFactory::CreateInputStream(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_,
-      UserInputMonitor::Create(std::move(key_press_count_buffer)), device_id,
-      params, shared_memory_count, enable_agc));
+      UserInputMonitor::Create(std::move(key_press_count_buffer)),
+      &stream_count_metric_reporter_, device_id, params, shared_memory_count,
+      enable_agc));
 }
 
 void StreamFactory::AssociateInputAndOutputForAec(
@@ -108,7 +109,8 @@ void StreamFactory::CreateOutputStream(
   output_streams_.insert(std::make_unique<OutputStream>(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(observer), std::move(log),
-      audio_manager_, device_id_or_group_id, params, &coordinator_, group_id));
+      audio_manager_, &stream_count_metric_reporter_, device_id_or_group_id,
+      params, &coordinator_, group_id));
 }
 
 void StreamFactory::BindMuter(

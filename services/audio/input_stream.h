@@ -30,6 +30,7 @@ class AudioParameters;
 
 namespace audio {
 
+class InputStreamActivityMonitor;
 class InputSyncWriter;
 class UserInputMonitor;
 
@@ -51,6 +52,7 @@ class InputStream final : public media::mojom::AudioInputStream,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* manager,
       std::unique_ptr<UserInputMonitor> user_input_monitor,
+      InputStreamActivityMonitor* activity_monitor,
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,

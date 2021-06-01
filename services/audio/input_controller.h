@@ -33,6 +33,7 @@ class UserInputMonitor;
 }  // namespace media
 
 namespace audio {
+class InputStreamActivityMonitor;
 
 // Only do power monitoring for non-mobile platforms to save resources.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -135,6 +136,7 @@ class InputController final : public StreamMonitor {
       EventHandler* event_handler,
       SyncWriter* sync_writer,
       media::UserInputMonitor* user_input_monitor,
+      InputStreamActivityMonitor* activity_monitor,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool agc_is_enabled);
@@ -182,6 +184,7 @@ class InputController final : public StreamMonitor {
   InputController(EventHandler* handler,
                   SyncWriter* sync_writer,
                   media::UserInputMonitor* user_input_monitor,
+                  InputStreamActivityMonitor* activity_monitor,
                   const media::AudioParameters& params,
                   StreamType type);
 
@@ -251,6 +254,9 @@ class InputController final : public StreamMonitor {
   double max_volume_ = 0.0;
 
   media::UserInputMonitor* const user_input_monitor_;
+
+  // Notified when the stream starts/stops recording.
+  InputStreamActivityMonitor* const activity_monitor_;
 
 #if defined(AUDIO_POWER_MONITORING)
   // Whether the silence state and microphone levels should be checked and sent

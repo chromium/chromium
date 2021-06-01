@@ -58,6 +58,7 @@
 // it via construction to synchronously fulfill this read request.
 
 namespace audio {
+class OutputStreamActivityMonitor;
 
 class OutputController : public media::AudioOutputStream::AudioSourceCallback,
                          public LoopbackGroupMember,
@@ -116,6 +117,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // specific hardware device for audio output.
   OutputController(media::AudioManager* audio_manager,
                    EventHandler* handler,
+                   OutputStreamActivityMonitor* activity_monitor,
                    const media::AudioParameters& params,
                    const std::string& output_device_id,
                    SyncReader* sync_reader);
@@ -237,6 +239,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Notifies the EventHandler that an error has occurred.
   void ReportError();
 
+  // Helper method that starts the physical stream. Must only be called in state
+  // kCreated or kPaused.
+  void StartStream();
+
   // Helper method that stops the physical stream.
   void StopStream();
 
@@ -248,6 +254,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // Log the current average power level measured by power_monitor_.
   void LogAudioPowerLevel(const char* call_name);
+
+  // Returns whether the output stream is considered active to the
+  // |activity_monitor_|.
+  bool StreamIsActive();
 
   // Helper called by StartMuting() and StopMuting() to execute the stream
   // change.
@@ -261,6 +271,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // It is safe to use a raw pointer here since the OS will always outlive
   // the OC object.
   EventHandler* const handler_;
+
+  // Notified when the stream starts/stops playing audio without muting.
+  OutputStreamActivityMonitor* const activity_monitor_;
 
   // The task runner for the audio manager. All control methods should be called
   // via tasks run by this TaskRunner.

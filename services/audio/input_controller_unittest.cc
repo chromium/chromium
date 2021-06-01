@@ -20,15 +20,17 @@
 #include "media/base/user_input_monitor.h"
 #include "media/webrtc/webrtc_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::WaitableEvent;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Exactly;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NotNull;
-using base::WaitableEvent;
+using ::testing::StrictMock;
 
 namespace audio {
 
@@ -83,6 +85,14 @@ class MockUserInputMonitor : public media::UserInputMonitor {
   MOCK_METHOD0(DisableKeyPressMonitoring, void());
 };
 
+class MockInputStreamActivityMonitor : public InputStreamActivityMonitor {
+ public:
+  MockInputStreamActivityMonitor() = default;
+
+  MOCK_METHOD0(OnInputStreamActive, void());
+  MOCK_METHOD0(OnInputStreamInactive, void());
+};
+
 class MockAudioInputStream : public media::AudioInputStream {
  public:
   MockAudioInputStream() {}
@@ -126,7 +136,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   void CreateAudioController() {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
-        &user_input_monitor_, params_,
+        &user_input_monitor_, &mock_stream_activity_monitor_, params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
@@ -138,6 +148,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   MockInputControllerEventHandler event_handler_;
   MockSyncWriter sync_writer_;
   MockUserInputMonitor user_input_monitor_;
+  StrictMock<MockInputStreamActivityMonitor> mock_stream_activity_monitor_;
   media::AudioParameters params_;
   MockAudioInputStream stream_;
   base::test::ScopedFeatureList audio_processing_feature_;
@@ -166,6 +177,8 @@ TEST_F(InputControllerTest, CreateAndCloseWithoutRecording) {
 // that thread, and thus we must use SYSTEM_TIME.
 TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
   EXPECT_CALL(event_handler_, OnCreated(_));
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
@@ -193,8 +206,26 @@ TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(InputControllerTest, RecordTwice) {
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+
+  EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
+  controller_->Record();
+  controller_->Record();
+
+  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+}
+
 TEST_F(InputControllerTest, CloseTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
