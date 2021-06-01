@@ -261,7 +261,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // the same cc::Layer.
   struct PLATFORM_EXPORT PendingLayer {
     enum CompositingType {
-      kScrollHitTestLayer,
+      // This type is only for scroll hit test layers that have direct
+      // compositing reasons.
+      kCompositedScrollHitTestLayer,
       kPreCompositedLayer,
       kForeignLayer,
       kScrollbarLayer,
@@ -388,8 +390,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   // If the pending layer has scroll hit test data, return the associated
   // scroll translation node.
-  const TransformPaintPropertyNode* ScrollTranslationForLayer(
-      const PendingLayer&);
+  const TransformPaintPropertyNode* ScrollTranslationForScrollHitTestLayer(
+      const PendingLayer&) const;
 
   // Returns the cc::Layer if the pending layer contains a foreign layer or a
   // wrapper of a GraphicsLayer. If it's the latter and the graphics layer has
@@ -400,6 +402,11 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // layer, returning nullptr if the layer is not a scroll hit test layer.
   scoped_refptr<cc::Layer> ScrollHitTestLayerForPendingLayer(
       const PendingLayer&);
+
+  // Finds an existing scroll hit test layer for the pending layer, returning
+  // nullptr if none exists.
+  scoped_refptr<cc::Layer> ExistingScrollHitTestLayerForPendingLayer(
+      const PendingLayer&) const;
 
   // Finds an existing or creates a new scrollbar layer for the pending layer,
   // returning nullptr if the layer is not a scrollbar layer.

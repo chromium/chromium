@@ -4993,4 +4993,22 @@ TEST_P(PaintArtifactCompositorTest, PreCompositedLayerNonCompositedScrolling) {
             graphics_layer.CcLayer().scroll_tree_index());
 }
 
+TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
+  CompositorElementId scroll_element_id = ScrollElementId(2);
+  auto scroll = CreateScroll(ScrollPaintPropertyNode::Root(), ScrollState1(),
+                             kNotScrollingOnMain, scroll_element_id);
+  auto scroll_translation = CreateScrollTranslation(t0(), 7, 9, *scroll);
+
+  TestPaintArtifact test_artifact;
+  CreateScrollableChunk(test_artifact, *scroll_translation, c0(), e0());
+  auto artifact = test_artifact.Build();
+  Update(artifact);
+  scroll_translation->ClearChangedToRoot();
+
+  Vector<PreCompositedLayerInfo> pre_composited_layers = {
+      {PaintChunkSubset(artifact)}};
+  GetPaintArtifactCompositor().UpdateRepaintedLayers(pre_composited_layers);
+  // This test passes if no CHECK occurs.
+}
+
 }  // namespace blink
