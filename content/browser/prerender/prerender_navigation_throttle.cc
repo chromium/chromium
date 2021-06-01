@@ -73,12 +73,11 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
           : nullptr;
   if (initiator_render_frame_host_impl &&
       initiator_render_frame_host_impl->frame_tree()->is_prerendering()) {
-    prerender_host_registry->AbandonHostAsync(
+    prerender_host_registry->AbandonHost(
         frame_tree_node->frame_tree_node_id(),
         PrerenderHost::FinalStatus::kMainFrameNavigation);
     // TODO(https://crbug.com/1194414): Handle the case the prerendering page
-    // is reserved for activation, and AbandonHostAsync() could not do nothing
-    // here.
+    // is reserved for activation.
     return CANCEL;
   }
 
@@ -86,7 +85,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
-    prerender_host_registry->AbandonHostAsync(
+    prerender_host_registry->AbandonHost(
         frame_tree_node->frame_tree_node_id(),
         is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
                        : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
@@ -115,10 +114,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // prerendered page.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
   if (prerendering_origin != prerender_host->initiator_origin()) {
-    // Asynchronously abandon the prerender host so that the navigation request
-    // and the render frame tree indirectly owned by the prerender host can
-    // outlive the current callstack.
-    prerender_host_registry->AbandonHostAsync(
+    prerender_host_registry->AbandonHost(
         frame_tree_node->frame_tree_node_id(),
         is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
                        : PrerenderHost::FinalStatus::kCrossOriginNavigation);
@@ -142,9 +138,8 @@ PrerenderNavigationThrottle::WillProcessResponse() {
             ->delegate()
             ->GetPrerenderHostRegistry();
 
-    prerender_host_registry->AbandonHostAsync(
-        frame_tree_node->frame_tree_node_id(),
-        PrerenderHost::FinalStatus::kDownload);
+    prerender_host_registry->AbandonHost(frame_tree_node->frame_tree_node_id(),
+                                         PrerenderHost::FinalStatus::kDownload);
     return CANCEL;
   }
   return PROCEED;

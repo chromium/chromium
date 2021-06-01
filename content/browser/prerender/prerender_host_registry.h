@@ -32,7 +32,7 @@ class RenderFrameHostImpl;
 // for activators.
 //
 // - Triggers (e.g., PrerenderProcessor) can request to create a new prerender
-//   host by CreateAndStartHost() and cancel it by AbandonHost(Async)().
+//   host by CreateAndStartHost() and cancel it by AbandonHost().
 //   Triggers cannot cancel the host after it's reserved by an activator.
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
 //   activation start by ReserveHostToActivate() and activate it by
@@ -70,8 +70,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
                          RenderFrameHostImpl& initiator_render_frame_host);
 
-  // For triggers.
-  // Destroys the host registered for `frame_tree_node_id`.
+  // Destroys the host registered for `frame_tree_node_id`. The host is
+  // immediately removed from the map of reservable hosts but asynchronously
+  // destroyed so that prerendered pages can cancel themselves without concern
+  // for self destruction.
+  //
   // TODO(https://crbug.com/1169594): Distinguish two paths that cancel
   // prerendering. A prerender can be canceled due to the following reasons:
   // 1. Initiator was no longer interested. Since one prerender may have several
@@ -80,14 +83,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // 2. Prerendering page did something undesirable. The same behavior always
   // happens regardless of which caller calls it. So PrerenderHostRegistry
   // should destroy the PrerenderHost.
-  void AbandonHost(int frame_tree_node_id);
-
-  // For triggers.
-  // This is the same with AbandonHost but destroys the prerender host
-  // asynchronously so that the prerendered page itself can cancel prerendering
-  // without concern for self destruction.
-  void AbandonHostAsync(int frame_tree_node_id,
-                        PrerenderHost::FinalStatus final_status);
+  void AbandonHost(int frame_tree_node_id,
+                   PrerenderHost::FinalStatus final_status);
 
   // For activators.
   // Reserves the host to activate for a navigation for the given

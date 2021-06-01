@@ -3043,8 +3043,7 @@ void NavigationRequest::OnRequestFailedInternal(
     if (net_error_ == net::Error::ERR_BLOCKED_BY_CSP) {
       final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
     }
-    GetPrerenderHostRegistry().AbandonHostAsync(GetFrameTreeNodeId(),
-                                                final_status);
+    GetPrerenderHostRegistry().AbandonHost(GetFrameTreeNodeId(), final_status);
     return;
   }
 

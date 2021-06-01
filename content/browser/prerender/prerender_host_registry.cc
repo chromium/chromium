@@ -83,23 +83,19 @@ int PrerenderHostRegistry::CreateAndStartHost(
       std::move(prerender_host);
   if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
            ->StartPrerendering()) {
-    AbandonHost(frame_tree_node_id);
+    // TODO(nhiroki): Pass a more suitable cancellation reason like
+    // kStartFailed.
+    AbandonHost(frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
   return frame_tree_node_id;
 }
 
-void PrerenderHostRegistry::AbandonHost(int frame_tree_node_id) {
-  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHost",
-               "frame_tree_node_id", frame_tree_node_id);
-  AbandonHostInternal(frame_tree_node_id);
-}
-
-void PrerenderHostRegistry::AbandonHostAsync(
+void PrerenderHostRegistry::AbandonHost(
     int frame_tree_node_id,
     PrerenderHost::FinalStatus final_status) {
-  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHostAsync",
+  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHost",
                "frame_tree_node_id", frame_tree_node_id);
   // Remove the prerender host from the host maps so that it's not used for
   // activation during asynchronous deletion.

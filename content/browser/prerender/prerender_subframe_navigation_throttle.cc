@@ -66,7 +66,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
             ->delegate()
             ->GetPrerenderHostRegistry();
 
-    prerender_host_registry->AbandonHostAsync(
+    prerender_host_registry->AbandonHost(
         frame_tree_node->frame_tree()->root()->frame_tree_node_id(),
         PrerenderHost::FinalStatus::kDownload);
     return CANCEL;

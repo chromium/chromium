@@ -115,7 +115,10 @@ void PrerenderProcessor::CancelPrerendering() {
 
   if (!registry_)
     return;
-  registry_->AbandonHost(prerender_frame_tree_node_id_);
+  // TODO(https://crbug.com/1169594): Pass kCanceled or a more detailed
+  // cancellation reason instead of kDestroyed.
+  registry_->AbandonHost(prerender_frame_tree_node_id_,
+                         PrerenderHost::FinalStatus::kDestroyed);
 }
 
 }  // namespace content

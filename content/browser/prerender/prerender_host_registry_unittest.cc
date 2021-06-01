@@ -248,7 +248,8 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
       registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  registry->AbandonHost(prerender_frame_tree_node_id);
+  registry->AbandonHost(prerender_frame_tree_node_id,
+                        PrerenderHost::FinalStatus::kDestroyed);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

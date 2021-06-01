@@ -118,7 +118,8 @@ TEST_F(PrerenderHostTest, DontActivate) {
   // Start the prerendering navigation, but don't activate it.
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
-  registry->AbandonHost(prerender_frame_tree_node_id);
+  registry->AbandonHost(prerender_frame_tree_node_id,
+                        PrerenderHost::FinalStatus::kDestroyed);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }
 
