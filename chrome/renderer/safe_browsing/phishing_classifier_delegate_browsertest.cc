@@ -249,6 +249,26 @@ TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
+TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
+  ASSERT_FALSE(classifier_->is_ready());
+
+  flatbuffers::FlatBufferBuilder builder(1024);
+  flat::ClientSideModelBuilder csd_model_builder(builder);
+  builder.Finish(csd_model_builder.Finish());
+  std::string model_str(reinterpret_cast<char*>(builder.GetBufferPointer()),
+                        builder.GetSize());
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(model_str.length());
+  memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
+
+  delegate_->SetPhishingFlatBufferModel(mapped_region.region.Duplicate(),
+                                        base::File());
+  ASSERT_TRUE(classifier_->is_ready());
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
 TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   ASSERT_FALSE(classifier_->is_ready());
 

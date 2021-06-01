@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -119,6 +120,9 @@ class TestPhishingDetector : public mojom::PhishingDetector {
   }
 
   void SetPhishingModel(const std::string& model, base::File file) override {}
+
+  void SetPhishingFlatBufferModel(base::ReadOnlySharedMemoryRegion region,
+                                  base::File file) override {}
 
   void StartPhishingDetection(
       const GURL& url,

@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
@@ -80,10 +82,14 @@ base::CallbackListSubscription ClientSidePhishingModel::RegisterCallback(
 }
 
 bool ClientSidePhishingModel::IsEnabled() const {
-  return !model_str_.empty() || visual_tflite_model_.IsValid();
+  return (model_type_ == CSDModelType::kFlatbuffer &&
+          mapped_region_.IsValid()) ||
+         (model_type_ == CSDModelType::kProtobuf && !model_str_.empty()) ||
+         visual_tflite_model_.IsValid();
 }
 
 std::string ClientSidePhishingModel::GetModelStr() const {
+  DCHECK(model_type_ != CSDModelType::kFlatbuffer);
   return model_str_;
 }
 
@@ -93,6 +99,11 @@ const base::File& ClientSidePhishingModel::GetVisualTfLiteModel() const {
 
 CSDModelType ClientSidePhishingModel::GetModelType() const {
   return model_type_;
+}
+
+base::ReadOnlySharedMemoryRegion
+ClientSidePhishingModel::GetModelSharedMemoryRegion() const {
+  return mapped_region_.region.Duplicate();
 }
 
 void ClientSidePhishingModel::PopulateFromDynamicUpdate(
@@ -109,14 +120,21 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
       !model_str.empty()) {
     if (base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)) {
       flatbuffers::Verifier verifier(
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(model_str.data())),
+          reinterpret_cast<const uint8_t*>(model_str.data()),
           model_str.length());
       model_valid = flat::VerifyClientSideModelBuffer(verifier);
       if (model_valid) {
-        model_type_ = CSDModelType::kFlatbuffer;
-        model_version_field =
-            flat::GetClientSideModel(model_str.data())->version();
+        mapped_region_ =
+            base::ReadOnlySharedMemoryRegion::Create(model_str.length());
+        if (mapped_region_.IsValid()) {
+          model_type_ = CSDModelType::kFlatbuffer;
+          model_version_field =
+              flat::GetClientSideModel(model_str.data())->version();
+          memcpy(mapped_region_.mapping.memory(), model_str.data(),
+                 model_str.length());
+        } else {
+          model_valid = false;
+        }
       }
     } else {
       ClientSideModel model_proto;
@@ -124,6 +142,7 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
       if (model_valid) {
         model_type_ = CSDModelType::kProtobuf;
         model_version_field = model_proto.version();
+        model_str_ = model_str;
       }
     }
 
@@ -137,7 +156,6 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
       base::UmaHistogramExactLinear(
           "SBClientPhishing.ModelDynamicUpdateVersion", model_version_field,
           kMaxVersion + 1);
-      model_str_ = model_str;
     }
   }
 
@@ -168,6 +186,21 @@ void ClientSidePhishingModel::SetModelStrForTesting(
 void ClientSidePhishingModel::SetVisualTfLiteModelForTesting(base::File file) {
   AutoLock lock(lock_);
   visual_tflite_model_ = std::move(file);
+}
+
+void ClientSidePhishingModel::SetModelTypeForTesting(CSDModelType model_type) {
+  AutoLock lock(lock_);
+  model_type_ = model_type;
+}
+
+void ClientSidePhishingModel::ClearMappedRegionForTesting() {
+  AutoLock lock(lock_);
+  mapped_region_.mapping = base::WritableSharedMemoryMapping();
+  mapped_region_.region = base::ReadOnlySharedMemoryRegion();
+}
+
+void* ClientSidePhishingModel::GetFlatBufferMemoryAddressForTesting() {
+  return mapped_region_.mapping.memory();
 }
 
 void ClientSidePhishingModel::MaybeOverrideModel() {
@@ -206,18 +239,26 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
         return;
       }
       model_type_ = model_type;
+      model_str_ = model_data;
       break;
     }
     case CSDModelType::kFlatbuffer: {
       flatbuffers::Verifier verifier(
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(model_data.data())),
+          reinterpret_cast<const uint8_t*>(model_data.data()),
           model_data.length());
       if (!flat::VerifyClientSideModelBuffer(verifier)) {
         VLOG(2)
             << "Overriden model data is not a valid ClientSideModel flatbuffer";
         return;
       }
+      mapped_region_ =
+          base::ReadOnlySharedMemoryRegion::Create(model_data.length());
+      if (!mapped_region_.IsValid()) {
+        VLOG(2) << "Could not create shared memory region for flatbuffer";
+        return;
+      }
+      memcpy(mapped_region_.mapping.memory(), model_data.data(),
+             model_data.length());
       model_type_ = model_type;
       break;
     }
@@ -227,7 +268,6 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
   }
 
   VLOG(2) << "Model overriden successfully";
-  model_str_ = model_data;
 
   // Unretained is safe because this is a singleton.
   base::PostTask(FROM_HERE, {content::BrowserThread::UI},

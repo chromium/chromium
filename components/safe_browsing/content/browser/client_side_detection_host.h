@@ -160,6 +160,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // who are signed in and not in incognito mode.
   bool CanGetAccessToken();
 
+  // Set phishing model in PhishingDetector in renderers.
+  void SetPhishingModel();
+
   // Send the client report to CSD server.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
                    const std::string& access_token);

@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -41,6 +43,9 @@ enum ScorerCreationStatus {
   SCORER_FAIL_MODEL_PARSE_ERROR,
   SCORER_FAIL_MODEL_MISSING_FIELDS,
   SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL,
+  SCORER_FAIL_FLATBUFFER_INVALID_REGION,
+  SCORER_FAIL_FLATBUFFER_INVALID_MAPPING,
+  SCORER_FAIL_FLATBUFFER_FAILED_VERIFY,
   SCORER_STATUS_MAX  // Always add new values before this one.
 };
 
@@ -252,6 +257,42 @@ Scorer* Scorer::Create(const base::StringPiece& model_str,
   }
 
   RecordScorerCreationStatus(SCORER_SUCCESS);
+  return scorer.release();
+}
+
+/* static */
+Scorer* Scorer::Create(base::ReadOnlySharedMemoryRegion region,
+                       base::File visual_tflite_model) {
+  std::unique_ptr<Scorer> scorer(new Scorer());
+
+  if (!region.IsValid()) {
+    RecordScorerCreationStatus(SCORER_FAIL_FLATBUFFER_INVALID_REGION);
+    return nullptr;
+  }
+
+  base::ReadOnlySharedMemoryMapping mapping = region.Map();
+  if (!mapping.IsValid()) {
+    RecordScorerCreationStatus(SCORER_FAIL_FLATBUFFER_INVALID_MAPPING);
+    return nullptr;
+  }
+
+  flatbuffers::Verifier verifier(
+      reinterpret_cast<const uint8_t*>(mapping.memory()), mapping.size());
+  if (!flat::VerifyClientSideModelBuffer(verifier)) {
+    RecordScorerCreationStatus(SCORER_FAIL_FLATBUFFER_FAILED_VERIFY);
+    return nullptr;
+  }
+
+  // Only do this part if the visual model file exists
+  if (visual_tflite_model.IsValid() && !scorer->visual_tflite_model_.Initialize(
+                                           std::move(visual_tflite_model))) {
+    RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
+    return nullptr;
+  }
+
+  RecordScorerCreationStatus(SCORER_SUCCESS);
+  scorer->flatbuffer_model_ = flat::GetClientSideModel(mapping.memory());
+  scorer->flatbuffer_mapping_ = std::move(mapping);
   return scorer.release();
 }
 

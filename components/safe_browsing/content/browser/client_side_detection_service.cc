@@ -435,6 +435,15 @@ std::string ClientSideDetectionService::GetModelStr() {
   return ClientSidePhishingModel::GetInstance()->GetModelStr();
 }
 
+CSDModelType ClientSideDetectionService::GetModelType() {
+  return ClientSidePhishingModel::GetInstance()->GetModelType();
+}
+
+base::ReadOnlySharedMemoryRegion
+ClientSideDetectionService::GetModelSharedMemoryRegion() {
+  return ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion();
+}
+
 const base::File& ClientSideDetectionService::GetVisualTfLiteModel() {
   return ClientSidePhishingModel::GetInstance()->GetVisualTfLiteModel();
 }
