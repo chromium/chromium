@@ -482,20 +482,6 @@ StaticColorCheckParam kTestParams[] = {
          {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
      }},
 #endif
-    {"/images/resources/avif/blue-and-magenta-crop.avif",
-     8,
-     ColorType::kRgbA,
-     ImageDecoder::kLosslessFormat,
-     ImageDecoder::kAlphaNotPremultiplied,
-     ColorBehavior::Tag(),
-     ImageOrientationEnum::kOriginTopLeft,
-     1,
-     {
-         // The clean aperture's size is 180x100.
-         {gfx::Point(0, 0), SkColorSetARGB(255, 0, 0, 255)},      // blue
-         {gfx::Point(90, 50), SkColorSetARGB(255, 255, 0, 255)},  // magenta
-         {gfx::Point(179, 99), SkColorSetARGB(255, 0, 0, 255)},   // blue
-     }},
     {"/images/resources/avif/red-full-range-angle-1-420-8bpc.avif",
      8,
      ColorType::kRgb,
@@ -897,54 +883,6 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   EXPECT_TRUE(decoder->IsSizeAvailable());
 }
 
-// Verifies that an invalid 'clap' (clean aperture) image property is handled by
-// ignoring the 'clap' property and showing the full image.
-TEST(StaticAVIFTests, InvalidClapPropertyHandling) {
-  // The first image has a valid 'clap' property. The full image has size
-  // 320x280. The clean aperture has size 180x100, located at (40, 80) of the
-  // full image.
-  constexpr int kClapX = 40;
-  constexpr int kClapY = 80;
-  constexpr int kClapWidth = 180;
-  constexpr int kClapHeight = 100;
-  std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
-  decoder1->SetData(
-      ReadFile("/images/resources/avif/blue-and-magenta-crop.avif"), true);
-  ASSERT_TRUE(decoder1->IsSizeAvailable());
-  IntSize size1 = decoder1->Size();
-  ASSERT_EQ(size1.Width(), kClapWidth);
-  ASSERT_EQ(size1.Height(), kClapHeight);
-  ImageFrame* frame1 = decoder1->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame1);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame1->GetStatus());
-  EXPECT_FALSE(decoder1->Failed());
-  const SkBitmap& bitmap1 = frame1->Bitmap();
-
-  // The second image is the same as the first image except that the 'clap'
-  // property is invalid. In this case the full image is shown.
-  std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
-  decoder2->SetData(
-      ReadFile("/images/resources/avif/blue-and-magenta-crop-invalid.avif"),
-      true);
-  ASSERT_TRUE(decoder2->IsSizeAvailable());
-  IntSize size2 = decoder2->Size();
-  ASSERT_EQ(size2.Width(), 320);
-  ASSERT_EQ(size2.Height(), 280);
-  ImageFrame* frame2 = decoder2->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame2);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame2->GetStatus());
-  EXPECT_FALSE(decoder2->Failed());
-  const SkBitmap& bitmap2 = frame2->Bitmap();
-
-  // Compare pixel data.
-  for (int row = 0; row < kClapHeight; ++row) {
-    for (int col = 0; col < kClapWidth; ++col) {
-      EXPECT_EQ(bitmap1.getColor(/*x=*/col, /*y=*/row),
-                bitmap2.getColor(/*x=*/kClapX + col, /*y=*/kClapY + row));
-    }
-  }
-}
-
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
 
 INSTANTIATE_TEST_CASE_P(Parameterized,
@@ -1019,118 +957,6 @@ TEST_P(StaticAVIFColorTests, InspectImage) {
       EXPECT_EQ(SkColorGetR(frame_color), SkColorGetG(frame_color));
       EXPECT_EQ(SkColorGetR(frame_color), SkColorGetB(frame_color));
     }
-  }
-}
-
-struct AVIFClapPropertyParam {
-  uint32_t width;
-  uint32_t height;
-  avifPixelFormat yuv_format;
-  avifCleanApertureBox clap;
-
-  bool expected_result;
-  int expected_clap_width;
-  int expected_clap_height;
-  int expected_clap_leftmost;
-  int expected_clap_topmost;
-};
-
-AVIFClapPropertyParam kAVIFClapPropertyTestParams[] = {
-    //////////////////////////////////////////////////
-    // Negative tests:
-
-    // Zero or negative denominators.
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 0, 132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, -1, 132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 0, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, -1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 1, 0, 0, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 1, 0, -1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 1, 0, 1, 0, 0}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 1, 0, 1, 0, -1}, false},
-    // Zero or negative clean aperture width or height.
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {-96, 1, 132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {0, 1, 132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, -132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 0, 1, 0, 1, 0, 1}, false},
-    // Clean aperture width or height is not an integer.
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 5, 132, 1, 0, 1, 0, 1}, false},
-    {120, 160, AVIF_PIXEL_FORMAT_YUV420, {96, 1, 132, 5, 0, 1, 0, 1}, false},
-    // pcX = 103 + (722 - 1)/2 = 463.5
-    // pcY = -308 + (1024 - 1)/2 = 203.5
-    // leftmost = 463.5 - (385 - 1)/2 = 271.5 (not an integer)
-    // topmost = 203.5 - (330 - 1)/2 = 39
-    {722,
-     1024,
-     AVIF_PIXEL_FORMAT_YUV420,
-     {385, 1, 330, 1, 103, 1, -308, 1},
-     false},
-    // pcX = -308 + (1024 - 1)/2 = 203.5
-    // pcY = 103 + (722 - 1)/2 = 463.5
-    // leftmost = 203.5 - (330 - 1)/2 = 39
-    // topmost = 463.5 - (385 - 1)/2 = 271.5 (not an integer)
-    {1024,
-     722,
-     AVIF_PIXEL_FORMAT_YUV420,
-     {330, 1, 385, 1, -308, 1, 103, 1},
-     false},
-
-    //////////////////////////////////////////////////
-    // Positive tests:
-
-    // pcX = 0 + (120 - 1)/2 = 59.5
-    // pcY = 0 + (160 - 1)/2 = 79.5
-    // leftmost = 59.5 - (96 - 1)/2 = 12
-    // topmost = 79.5 - (132 - 1)/2 = 14
-    {120,
-     160,
-     AVIF_PIXEL_FORMAT_YUV420,
-     {96, 1, 132, 1, 0, 1, 0, 1},
-     true,
-     96,
-     132,
-     12,
-     14},
-    // pcX = -30 + (120 - 1)/2 = 29.5
-    // pcY = -40 + (160 - 1)/2 = 39.5
-    // leftmost = 29.5 - (60 - 1)/2 = 0
-    // topmost = 39.5 - (80 - 1)/2 = 0
-    {120,
-     160,
-     AVIF_PIXEL_FORMAT_YUV420,
-     {60, 1, 80, 1, -30, 1, -40, 1},
-     true,
-     60,
-     80,
-     0,
-     0},
-};
-
-using AVIFClapPropertyTest = ::testing::TestWithParam<AVIFClapPropertyParam>;
-
-INSTANTIATE_TEST_CASE_P(Parameterized,
-                        AVIFClapPropertyTest,
-                        ::testing::ValuesIn(kAVIFClapPropertyTestParams));
-
-TEST_P(AVIFClapPropertyTest, ValidateClapProperty) {
-  const AVIFClapPropertyParam& param = GetParam();
-  avifImage image;
-  image.width = param.width;
-  image.height = param.height;
-  image.yuvFormat = param.yuv_format;
-  image.clap = param.clap;
-  int clap_width = -1;
-  int clap_height = -1;
-  int clap_leftmost = -1;
-  int clap_topmost = -1;
-  EXPECT_EQ(AVIFImageDecoder::ValidateClapPropertyForTesting(
-                &image, clap_width, clap_height, clap_leftmost, clap_topmost),
-            param.expected_result);
-  if (param.expected_result) {
-    EXPECT_EQ(clap_width, param.expected_clap_width);
-    EXPECT_EQ(clap_height, param.expected_clap_height);
-    EXPECT_EQ(clap_leftmost, param.expected_clap_leftmost);
-    EXPECT_EQ(clap_topmost, param.expected_clap_topmost);
   }
 }
 
