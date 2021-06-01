@@ -7231,6 +7231,7 @@ if (!is_android) {
       "../browser/extensions/extension_crash_recovery_browsertest.cc",
       "../browser/extensions/extension_fullscreen_apitest.cc",
       "../browser/extensions/extension_function_test_utils.cc",
+      "../browser/extensions/extension_function_test_utils.h",
       "../browser/extensions/extension_keybinding_apitest.cc",
       "../browser/extensions/omnibox_focus_interactive_test.cc",
       "../browser/extensions/window_open_interactive_apitest.cc",
@@ -7333,23 +7334,51 @@ if (!is_android) {
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",
+      "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:unexpire_flags",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
+      "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common:version_header",
       "//chrome/renderer",
+      "//components/back_forward_cache",
+      "//components/blocked_content",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/common",
+      "//components/constrained_window",
+      "//components/content_settings/browser",
+      "//components/embedder_support",
       "//components/enterprise:test_support",
+      "//components/feature_engagement/public",
       "//components/feature_engagement/test:test_support",
+      "//components/flags_ui",
+      "//components/fullscreen_control",
+      "//components/infobars/content",
+      "//components/javascript_dialogs",
       "//components/keep_alive_registry",
+      "//components/live_caption",
+      "//components/media_message_center",
       "//components/media_router/browser:test_support",
+      "//components/metrics:content",
+      "//components/reading_list/core",
+      "//components/reading_list/features:flags",
+      "//components/renderer_context_menu",
       "//components/resources",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/shared_highlighting/core/common",
+      "//components/site_engagement/content",
+      "//components/soda:constants",
       "//components/sync",
       "//components/sync:test_support_model",
+      "//components/tab_groups",
       "//components/translate/content/browser:test_support",
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
       "//content/app/resources",
+      "//content/test:browsertest_support",
       "//content/test:test_support",
       "//crypto:platform",
       "//crypto:test_support",
@@ -7360,6 +7389,7 @@ if (!is_android) {
       "//net",
       "//net:net_resources",
       "//net:test_support",
+      "//ppapi/shared_impl:test_support",
       "//services/metrics/public/cpp:ukm_builders",
       "//skia",
       "//testing/gmock",
@@ -7370,7 +7400,12 @@ if (!is_android) {
       "//ui/base:base_interactive_ui_tests",
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/display:display_manager_test_api",
+      "//ui/display:test_support",
+      "//ui/display/manager",
       "//ui/events:events_interactive_ui_tests",
+      "//ui/events:gesture_detection",
+      "//ui/events:test_support",
       "//ui/web_dialogs:test_support",
     ]
 
@@ -7393,6 +7428,14 @@ if (!is_android) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
+    if (is_linux || is_chromeos) {
+      deps += [ "//ui/platform_window/common" ]
+    }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
     if (use_aura) {
       sources += [
         "../browser/ui/aura/accessibility/automation_manager_aura_browsertest.cc",
@@ -7400,6 +7443,7 @@ if (!is_android) {
       ]
       deps += [
         "//ui/aura:aura_interactive_ui_tests",
+        "//ui/aura:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
       ]
@@ -7510,6 +7554,7 @@ if (!is_android) {
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chromeos/dbus",
+        "//chromeos/login/auth",
         "//chromeos/ui/frame:test_support",
       ]
       sources += [
@@ -7527,10 +7572,16 @@ if (!is_android) {
       ]
     }
 
-    # These tests are not applicable on Chrome OS - Ash and Lacros.
     if (is_chromeos_ash || is_chromeos_lacros) {
+      # These tests are not applicable on Chrome OS - Ash and Lacros.
       sources -=
           [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
+
+      deps += [
+        "//chromeos/ui/base",
+        "//chromeos/ui/frame",
+        "//chromeos/ui/frame:test_support",
+      ]
     }
 
     if (is_chromeos_lacros) {
@@ -7604,6 +7655,12 @@ if (!is_android) {
       data_deps += [
         "//chrome",
         "//chrome:chrome_framework",
+      ]
+
+      deps += [
+        "//chrome/browser/apps/app_shim",
+        "//chrome/browser/web_applications/extensions",
+        "//components/spellcheck:buildflags",
       ]
     }
 

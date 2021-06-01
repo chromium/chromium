@@ -2636,6 +2636,7 @@ static_library("test_support") {
     "//chrome/test:browser_tests",
     "//chrome/test:browser_tests_runner",
     "//chrome/test:captured_sites_interactive_tests",
+    "//chrome/test:interactive_ui_tests",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test:test_support_unit",
