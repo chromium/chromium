@@ -236,7 +236,6 @@ public class ChromePaymentRequestService
         mPaymentUiService = mDelegate.createPaymentUiService(/*delegate=*/this,
                 /*params=*/paymentRequestService, mWebContents,
                 paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin);
-        mPaymentRequestService = paymentRequestService;
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onPaymentUiServiceCreated(
                     mPaymentUiService);
