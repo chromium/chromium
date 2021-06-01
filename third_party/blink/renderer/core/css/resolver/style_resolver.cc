@@ -1751,10 +1751,8 @@ void StyleResolver::PropagateStyleToViewport() {
     // <html> root element with no background steals background from its first
     // <body> child.
     // Also see LayoutBoxModelObject::BackgroundTransfersToView()
-    if (body_style && IsA<HTMLHtmlElement>(document_element) &&
-        !background_style->HasBackground()) {
+    if (body_style && !background_style->HasBackground())
       background_style = body_style;
-    }
 
     Color background_color = Color::kTransparent;
     FillLayer background_layers(EFillLayerType::kBackground, true);
