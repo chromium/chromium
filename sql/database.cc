@@ -17,9 +17,6 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
@@ -259,18 +256,6 @@ void Database::DisableMmapByDefault() {
   enable_mmap_by_default_ = false;
 }
 
-void Database::RecordEvent(Events event, size_t count) {
-  for (size_t i = 0; i < count; ++i) {
-    UMA_HISTOGRAM_ENUMERATION("Sqlite.Stats2", event, EVENT_MAX_VALUE);
-  }
-
-  if (stats_histogram_) {
-    for (size_t i = 0; i < count; ++i) {
-      stats_histogram_->Add(event);
-    }
-  }
-}
-
 bool Database::Open(const base::FilePath& path) {
   TRACE_EVENT1("sql", "Database::Open", "path", path.MaybeAsASCII());
   return OpenInternal(AsUTF8ForSQL(path), RETRY_ON_POISON);
@@ -332,10 +317,8 @@ void Database::CloseInternal(bool forced) {
     }
 
     int rc = sqlite3_close(db_);
-    if (rc != SQLITE_OK) {
-      base::UmaHistogramSparse("Sqlite.CloseFailure", rc);
+    if (rc != SQLITE_OK)
       DLOG(DCHECK) << "sqlite3_close failed: " << GetErrorMessage();
-    }
   }
   db_ = nullptr;
 }
@@ -663,29 +646,21 @@ size_t Database::GetAppropriateMmapSize() {
   // TODO(shess): Move all cases to the view implementation.
   int64_t mmap_ofs = 0;
   if (mmap_alt_status_) {
-    if (!GetMmapAltStatus(&mmap_ofs)) {
-      RecordOneEvent(EVENT_MMAP_STATUS_FAILURE_READ);
+    if (!GetMmapAltStatus(&mmap_ofs))
       return 0;
-    }
   } else {
     // If [meta] doesn't exist, yet, it's a new database, assume the best.
     // sql::MetaTable::Init() will preload kMmapSuccess.
-    if (!MetaTable::DoesTableExist(this)) {
-      RecordOneEvent(EVENT_MMAP_META_MISSING);
+    if (!MetaTable::DoesTableExist(this))
       return kMmapEverything;
-    }
 
-    if (!MetaTable::GetMmapStatus(this, &mmap_ofs)) {
-      RecordOneEvent(EVENT_MMAP_META_FAILURE_READ);
+    if (!MetaTable::GetMmapStatus(this, &mmap_ofs))
       return 0;
-    }
   }
 
   // Database read failed in the past, don't memory map.
-  if (mmap_ofs == MetaTable::kMmapFailure) {
-    RecordOneEvent(EVENT_MMAP_FAILED);
+  if (mmap_ofs == MetaTable::kMmapFailure)
     return 0;
-  }
 
   if (mmap_ofs != MetaTable::kMmapSuccess) {
     // Continue reading from previous offset.
@@ -700,10 +675,8 @@ size_t Database::GetAppropriateMmapSize() {
     // to limit checking to 20MB per run of Chromium.
     sqlite3_file* file = nullptr;
     sqlite3_int64 db_size = 0;
-    if (SQLITE_OK != GetSqlite3FileAndSize(db_, &file, &db_size)) {
-      RecordOneEvent(EVENT_MMAP_VFS_FAILURE);
+    if (SQLITE_OK != GetSqlite3FileAndSize(db_, &file, &db_size))
       return 0;
-    }
 
     // Read the data left, or |g_reads_allowed|, whichever is smaller.
     // |g_reads_allowed| limits the total amount of I/O to spend verifying data
@@ -751,19 +724,12 @@ size_t Database::GetAppropriateMmapSize() {
       }
 
       if (mmap_alt_status_) {
-        if (!SetMmapAltStatus(mmap_ofs)) {
-          RecordOneEvent(EVENT_MMAP_STATUS_FAILURE_UPDATE);
+        if (!SetMmapAltStatus(mmap_ofs))
           return 0;
-        }
       } else {
-        if (!MetaTable::SetMmapStatus(this, mmap_ofs)) {
-          RecordOneEvent(EVENT_MMAP_META_FAILURE_UPDATE);
+        if (!MetaTable::SetMmapStatus(this, mmap_ofs))
           return 0;
-        }
       }
-
-      if (mmap_ofs == MetaTable::kMmapFailure)
-        RecordOneEvent(EVENT_MMAP_FAILED_NEW);
     }
   }
 
@@ -862,7 +828,6 @@ bool Database::Raze() {
 
   const char* kMain = "main";
   int rc = BackupDatabase(null_db.db_, db_, kMain);
-  base::UmaHistogramSparse("Sqlite.RazeDatabase", rc);
 
   // The destination database was locked.
   if (rc == SQLITE_BUSY) {
@@ -885,13 +850,11 @@ bool Database::Raze() {
 
     rc = file->pMethods->xTruncate(file, 0);
     if (rc != SQLITE_OK) {
-      base::UmaHistogramSparse("Sqlite.RazeDatabaseTruncate", rc);
       DLOG(DCHECK) << "Failed to truncate file.";
       return false;
     }
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
-    base::UmaHistogramSparse("Sqlite.RazeDatabase2", rc);
 
     DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
   }
@@ -915,7 +878,6 @@ bool Database::Raze() {
     }
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
-    base::UmaHistogramSparse("Sqlite.RazeDatabase2", rc);
 
     DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
   }
@@ -1463,14 +1425,6 @@ bool Database::OpenInternal(const std::string& file_name,
 
   EnsureSqliteInitialized();
 
-  // Setup the stats histograms immediately rather than allocating lazily.
-  // Databases which won't exercise all of these probably shouldn't exist.
-  if (!histogram_tag_.empty()) {
-    stats_histogram_ = base::LinearHistogram::FactoryGet(
-        "Sqlite.Stats2." + histogram_tag_, 1, EVENT_MAX_VALUE,
-        EVENT_MAX_VALUE + 1, base::HistogramBase::kUmaTargetedHistogramFlag);
-  }
-
   // If |poisoned_| is set, it means an error handler called
   // RazeAndClose().  Until regular Close() is called, the caller
   // should be treating the database as open, but is_open() currently
@@ -1498,10 +1452,6 @@ bool Database::OpenInternal(const std::string& file_name,
     // Extended error codes cannot be enabled until a handle is
     // available, fetch manually.
     err = sqlite3_extended_errcode(db_);
-
-    // Histogram failures specific to initial open for debugging
-    // purposes.
-    base::UmaHistogramSparse("Sqlite.OpenFailure", err);
 
     OnSqliteError(err, nullptr, "-- sqlite3_open()");
     bool was_poisoned = poisoned_;
@@ -1540,7 +1490,6 @@ bool Database::OpenInternal(const std::string& file_name,
   // be razed.
   err = ExecuteAndReturnErrorCode("PRAGMA auto_vacuum");
   if (err != SQLITE_OK) {
-    base::UmaHistogramSparse("Sqlite.OpenProbeFailure", err);
     OnSqliteError(err, nullptr, "PRAGMA auto_vacuum");
 
     // Retry or bail out if the error handler poisoned the handle.
@@ -1679,28 +1628,10 @@ void Database::set_histogram_tag(const std::string& tag) {
   histogram_tag_ = tag;
 }
 
-void Database::AddTaggedHistogram(const std::string& name, int sample) const {
-  if (histogram_tag_.empty())
-    return;
-
-  // TODO(shess): The histogram macros create a bit of static storage
-  // for caching the histogram object.  This code shouldn't execute
-  // often enough for such caching to be crucial.  If it becomes an
-  // issue, the object could be cached alongside histogram_prefix_.
-  std::string full_histogram_name = name + "." + histogram_tag_;
-  base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
-      full_histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
-  if (histogram)
-    histogram->Add(sample);
-}
-
 int Database::OnSqliteError(int err,
                             sql::Statement* stmt,
                             const char* sql) const {
   TRACE_EVENT0("sql", "Database::OnSqliteError");
-
-  base::UmaHistogramSparse("Sqlite.Error", err);
-  AddTaggedHistogram("Sqlite.Error", err);
 
   // Always log the error.
   if (!sql && stmt)

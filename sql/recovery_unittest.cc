@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -902,7 +901,6 @@ TEST_F(SQLRecoveryTest, BeginRecoverDatabase) {
   EXPECT_EQ("1,2", ExecuteWithResults(&db_, kSelectTableIdSql, "|", ","));
 }
 
-// Test histograms recorded when the invalid database cannot be attached.
 TEST_F(SQLRecoveryTest, AttachFailure) {
   // Create a valid database, then write junk over the header.  This should lead
   // to SQLITE_NOTADB, which will cause ATTACH to fail.
@@ -910,11 +908,6 @@ TEST_F(SQLRecoveryTest, AttachFailure) {
   ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES ('This is a test')"));
   db_.Close();
   ASSERT_TRUE(OverwriteDatabaseHeader());
-
-  static const char kEventHistogramName[] = "Sqlite.RecoveryEvents";
-  const int kEventEnum = 5;  // RECOVERY_FAILED_ATTACH
-  static const char kErrorHistogramName[] = "Sqlite.RecoveryAttachError";
-  base::HistogramTester tester;
 
   {
     sql::test::ScopedErrorExpecter expecter;
@@ -925,14 +918,10 @@ TEST_F(SQLRecoveryTest, AttachFailure) {
 
     // Begin() should fail.
     std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_FALSE(recovery.get());
+    EXPECT_FALSE(recovery.get());
 
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
-
-  // Verify that the failure was in the right place with the expected code.
-  tester.ExpectBucketCount(kEventHistogramName, kEventEnum, 1);
-  tester.ExpectBucketCount(kErrorHistogramName, SQLITE_NOTADB, 1);
 }
 
 // Helper for SQLRecoveryTest.PageSize.  Creates a fresh db based on db_prefix,

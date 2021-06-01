@@ -33,7 +33,6 @@ struct sqlite3_stmt;
 
 namespace base {
 class FilePath;
-class HistogramBase;
 namespace trace_event {
 class ProcessMemoryDump;
 }  // namespace trace_event
@@ -164,65 +163,8 @@ class COMPONENT_EXPORT(SQL) Database {
   bool has_error_callback() const { return !error_callback_.is_null(); }
   void reset_error_callback() { error_callback_.Reset(); }
 
-  // Set this to enable additional per-database histogramming.  Must be called
-  // before Open().
+  // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);
-
-  // Record a sparse UMA histogram sample under
-  // |name|+"."+|histogram_tag_|.  If |histogram_tag_| is empty, no
-  // histogram is recorded.
-  void AddTaggedHistogram(const std::string& name, int sample) const;
-
-  // Track various API calls and results.  Values correspond to UMA
-  // histograms, do not modify, or add or delete other than directly
-  // before EVENT_MAX_VALUE.
-  enum Events {
-    // Number of statements run, either with sql::Statement or Execute*().
-    EVENT_STATEMENT_RUN_DEPRECATED = 0,
-
-    // Number of rows returned by statements run.
-    EVENT_STATEMENT_ROWS_DEPRECATED,
-
-    // Number of statements successfully run (all steps returned SQLITE_DONE or
-    // SQLITE_ROW).
-    EVENT_STATEMENT_SUCCESS_DEPRECATED,
-
-    // Number of statements run by Execute() or ExecuteAndReturnErrorCode().
-    EVENT_EXECUTE_DEPRECATED,
-
-    // Number of rows changed by autocommit statements.
-    EVENT_CHANGES_AUTOCOMMIT_DEPRECATED,
-
-    // Number of rows changed by statements in transactions.
-    EVENT_CHANGES_DEPRECATED,
-
-    // Count actual SQLite transaction statements (not including nesting).
-    EVENT_BEGIN_DEPRECATED,
-    EVENT_COMMIT_DEPRECATED,
-    EVENT_ROLLBACK_DEPRECATED,
-
-    // Track success and failure in GetAppropriateMmapSize().
-    // GetAppropriateMmapSize() should record at most one of these per run.  The
-    // case of mapping everything is not recorded.
-    EVENT_MMAP_META_MISSING,                    // No meta table present.
-    EVENT_MMAP_META_FAILURE_READ,               // Failed reading meta table.
-    EVENT_MMAP_META_FAILURE_UPDATE,             // Failed updating meta table.
-    EVENT_MMAP_VFS_FAILURE,                     // Failed to access VFS.
-    EVENT_MMAP_FAILED,                          // Failure from past run.
-    EVENT_MMAP_FAILED_NEW,                      // Read error in this run.
-    EVENT_MMAP_SUCCESS_NEW_DEPRECATED,          // Read to EOF in this run.
-    EVENT_MMAP_SUCCESS_PARTIAL_DEPRECATED,      // Read but did not reach EOF.
-    EVENT_MMAP_SUCCESS_NO_PROGRESS_DEPRECATED,  // Read quota exhausted.
-
-    EVENT_MMAP_STATUS_FAILURE_READ,    // Failure reading MmapStatus view.
-    EVENT_MMAP_STATUS_FAILURE_UPDATE,  // Failure updating MmapStatus view.
-
-    // Leave this at the end.
-    // TODO(shess): |EVENT_MAX| causes compile fail on Windows.
-    EVENT_MAX_VALUE,
-  };
-  void RecordEvent(Events event, size_t count);
-  void RecordOneEvent(Events event) { RecordEvent(event, 1); }
 
   // Run "PRAGMA integrity_check" and post each line of
   // results into |messages|.  Returns the success of running the
@@ -795,11 +737,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
   ErrorCallback error_callback_;
 
-  // Tag for auxiliary histograms.
+  // Developer-friendly database ID used in logging output and memory dumps.
   std::string histogram_tag_;
-
-  // Linear histogram for RecordEvent().
-  base::HistogramBase* stats_histogram_ = nullptr;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;

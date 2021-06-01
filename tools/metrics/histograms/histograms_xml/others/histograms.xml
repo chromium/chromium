@@ -15433,12 +15433,18 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sqlite.CloseFailure" enum="SqliteErrorCode"
     expires_after="M85">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Error which prevented database close.</summary>
 </histogram>
 
 <histogram name="Sqlite.DeprecationVersionResult"
     enum="SqliteVersionDeprecation" expires_after="M77">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     Annotations for which bits of sql::MetaTable::CheckDeprecated() fire.
@@ -15447,11 +15453,17 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sqlite.Error" enum="SqliteErrorCode"
     expires_after="2020-02-16">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>SQLite extended error codes.</summary>
 </histogram>
 
 <histogram name="Sqlite.MemoryKB.OneDay" units="KB" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     SQLite memory footprint from sqlite3_memory_used() recorded 1 day after
@@ -15460,6 +15472,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.MemoryKB.OneHour" units="KB" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     SQLite memory footprint from sqlite3_memory_used() recorded 1 hour after
@@ -15468,6 +15483,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.MemoryKB.OneWeek" units="KB" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     SQLite memory footprint from sqlite3_memory_used() recorded 1 week after
@@ -15476,6 +15494,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.MemoryKB.TenMinutes" units="KB" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     SQLite memory footprint from sqlite3_memory_used() recorded 10 minutes after
@@ -15484,6 +15505,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.Migration.History" units="ms" expires_after="M85">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     Time used to migrate History database schema to a new version.
@@ -15491,6 +15515,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.OpenFailure" enum="SqliteErrorCode" expires_after="M95">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>pwnall@chromium.org</owner>
   <owner>src/storage/OWNERS</owner>
   <summary>Error which prevented database open.</summary>
@@ -15498,24 +15525,36 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sqlite.OpenProbeFailure" enum="SqliteErrorCode"
     expires_after="M77">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Error from first read of the database.</summary>
 </histogram>
 
 <histogram name="Sqlite.RazeDatabase" enum="SqliteErrorCode"
     expires_after="M77">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Errors attempting to Raze() database.</summary>
 </histogram>
 
 <histogram name="Sqlite.RazeDatabase2" enum="SqliteErrorCode"
     expires_after="M77">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Errors on second attempt to Raze() database.</summary>
 </histogram>
 
 <histogram name="Sqlite.RazeDatabaseTruncate" enum="SqliteErrorCode"
     expires_after="M85">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Errors truncating database for Raze().</summary>
 </histogram>
@@ -15530,6 +15569,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sqlite.RecoveryEvents" enum="SqliteRecoveryEventEnum"
     expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>
     Records specific failure and success cases in sql::Recovery implementation,
@@ -15541,6 +15583,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Sqlite.RecoveryHandle" enum="SqliteErrorCode"
     expires_after="M85">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Error from sqlite3_backup_init() in sql::Recovery.</summary>
 </histogram>
@@ -15552,6 +15597,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.Stats2" enum="SqliteStats2Enum" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>pwnall@chromium.org</owner>
   <summary>
     SQLite failures encountered by //sql code. Intended to be viewed using
@@ -15562,6 +15610,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sqlite.Version" units="units" expires_after="M81">
+  <obsolete>
+    Removed in M92
+  </obsolete>
   <owner>costan@google.com</owner>
   <summary>Version of pre-existing database at startup.</summary>
 </histogram>
