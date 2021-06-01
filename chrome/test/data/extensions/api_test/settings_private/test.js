@@ -168,7 +168,8 @@ var availableTests = [
   },
 ];
 
-var testToRun = window.location.search.substring(1);
-chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
-}));
+chrome.test.getConfig(function(config) {
+  chrome.test.runTests(availableTests.filter(function(op) {
+    return op.name == config.customArg;
+  }));
+});
