@@ -2356,8 +2356,18 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (storing_in_bfcache) {
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
   }
-  if (freezing_page)
+
+  if (freezing_page) {
+    // Notify all local frames that we are about to freeze.
+    for (WebFrame* frame = MainFrame(); frame; frame = frame->TraverseNext()) {
+      if (frame->IsWebLocalFrame()) {
+        frame->ToWebLocalFrame()->Client()->WillFreezePage();
+      }
+    }
+
     SetPageFrozen(true);
+  }
+
   if (restoring_from_bfcache) {
     DCHECK(page_restore_params);
     // Update the history offset and length value, as pages that are kept in
@@ -3604,7 +3614,6 @@ LocalFrame* WebViewImpl::FocusedLocalFrameInWidget() const {
 
 void WebViewImpl::SetPageFrozen(bool frozen) {
   Scheduler()->SetPageFrozen(frozen);
-  web_view_client_->OnPageFrozenChanged(frozen);
 }
 
 WebFrameWidget* WebViewImpl::MainFrameWidget() {

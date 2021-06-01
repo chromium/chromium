@@ -53,17 +53,6 @@ typedef std::map<int32_t, RenderViewImpl*> RoutingIDViewMap;
 static base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
     LAZY_INSTANCE_INITIALIZER;
 
-// Time, in seconds, we delay before sending content state changes (such as form
-// state and scroll position) to the browser. We delay sending changes to avoid
-// spamming the browser.
-// To avoid having tab/session restore require sending a message to get the
-// current content state during tab closing we use a shorter timeout for the
-// foreground renderer. This means there is a small window of time from which
-// content state is modified and not sent to session restore, but this is
-// better than having to wake up all renderers during shutdown.
-const int kDelaySecondsForContentStateSyncHidden = 5;
-const int kDelaySecondsForContentStateSync = 1;
-
 // static
 WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
     WebNavigationPolicy policy) {
@@ -165,8 +154,6 @@ void RenderViewImpl::Initialize(
 
   GetContentClient()->renderer()->RenderViewCreated(this);
 
-  nav_state_sync_timer_.SetTaskRunner(task_runner);
-
 #if defined(OS_ANDROID)
   // TODO(sgurun): crbug.com/325351 Needed only for android webview's deprecated
   // HandleNavigation codepath.
@@ -249,17 +236,6 @@ void RenderViewImpl::Destroy() {
   webview_ = nullptr;
 
   delete this;
-}
-
-void RenderViewImpl::SendFrameStateUpdates() {
-  // Tell each frame with pending state to send its UpdateState message.
-  for (int render_frame_routing_id : frames_with_pending_state_) {
-    RenderFrameImpl* frame =
-        RenderFrameImpl::FromRoutingID(render_frame_routing_id);
-    if (frame)
-      frame->SendUpdateState();
-  }
-  frames_with_pending_state_.clear();
 }
 
 // blink::WebViewClient ------------------------------------------------------
@@ -407,42 +383,6 @@ WebView* RenderViewImpl::CreateView(
   }
 
   return view->GetWebView();
-}
-
-void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
-  // Keep track of which frames have pending updates.
-  frames_with_pending_state_.insert(frame->GetRoutingID());
-
-  int delay;
-  if (send_content_state_immediately_)
-    delay = 0;
-  else if (GetWebView()->GetVisibilityState() != PageVisibilityState::kVisible)
-    delay = kDelaySecondsForContentStateSyncHidden;
-  else
-    delay = kDelaySecondsForContentStateSync;
-
-  if (nav_state_sync_timer_.IsRunning()) {
-    // The timer is already running. If the delay of the timer maches the amount
-    // we want to delay by, then return. Otherwise stop the timer so that it
-    // gets started with the right delay.
-    if (nav_state_sync_timer_.GetCurrentDelay().InSeconds() == delay)
-      return;
-    nav_state_sync_timer_.Stop();
-  }
-
-  // Tell each frame with pending state to inform the browser.
-  nav_state_sync_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(delay),
-                              this, &RenderViewImpl::SendFrameStateUpdates);
-}
-
-void RenderViewImpl::OnPageFrozenChanged(bool frozen) {
-  if (frozen) {
-    // Make sure browser has the latest info before the page is frozen. If the
-    // page goes into the back-forward cache it could be evicted and some of the
-    // updates lost.
-    nav_state_sync_timer_.Stop();
-    SendFrameStateUpdates();
-  }
 }
 
 // RenderView implementation ---------------------------------------------------

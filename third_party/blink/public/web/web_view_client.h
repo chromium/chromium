@@ -84,8 +84,6 @@ class WebViewClient {
   // the layers.
   virtual void InvalidateContainer() {}
 
-  virtual void OnPageFrozenChanged(bool frozen) {}
-
   // UI ------------------------------------------------------------------
 
   // Called when the View has changed size as a result of an auto-resize.

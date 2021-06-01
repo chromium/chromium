@@ -424,7 +424,10 @@ class BLINK_EXPORT WebLocalFrameClient {
                                                bool is_history_api_navigation,
                                                bool is_client_redirect) {}
 
-  // Called when a RenderFrame's page lifecycle state gets updated.
+  // Called before a frame's page is frozen.
+  virtual void WillFreezePage() {}
+
+  // Called when a frame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
 
   // Called upon update to scroll position, document state, and other
