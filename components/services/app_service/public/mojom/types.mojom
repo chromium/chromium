@@ -72,6 +72,9 @@ struct App {
   // operations will be restricted.
   OptionalBool resize_locked;
 
+  // Whether the app's display mode is in the browser or otherwise.
+  WindowMode window_mode;
+
   // When adding new fields, also update the Merge method and other helpers in
   // components/services/app_service/public/cpp/app_update.*
 };
@@ -450,4 +453,13 @@ struct WindowInfo {
   int32 state = 0;
   int64 display_id = -1;
   Rect? bounds;
+};
+
+// The window mode that each app will open in.
+enum WindowMode {
+  kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
 };

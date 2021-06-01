@@ -634,6 +634,22 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
   bool paused = publisher_helper().IsPaused(web_app->app_id());
   app->icon_key = publisher_helper().MakeIconKey(web_app);
 
+  auto display_mode = GetRegistrar()->GetAppUserDisplayMode(web_app->app_id());
+  switch (display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+      app->window_mode = apps::mojom::WindowMode::kUnknown;
+      break;
+    case blink::mojom::DisplayMode::kBrowser:
+      app->window_mode = apps::mojom::WindowMode::kBrowser;
+      break;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      app->window_mode = apps::mojom::WindowMode::kWindow;
+      break;
+  }
+
   apps::mojom::OptionalBool has_notification =
       app_notifications_.HasNotification(web_app->app_id())
           ? apps::mojom::OptionalBool::kTrue

@@ -84,6 +84,9 @@ class AppUpdateTest : public testing::Test {
   apps::mojom::OptionalBool expect_resize_locked_;
   bool expect_resize_locked_changed_;
 
+  apps::mojom::WindowMode expect_window_mode_;
+  bool expect_window_mode_changed_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   static constexpr uint32_t kPermissionTypeLocation = 100;
@@ -122,6 +125,7 @@ class AppUpdateTest : public testing::Test {
     expect_paused_changed_ = false;
     expect_intent_filters_changed_ = false;
     expect_resize_locked_changed_ = false;
+    expect_window_mode_changed_ = false;
   }
 
   void CheckExpects(const apps::AppUpdate& u) {
@@ -195,6 +199,9 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());
     EXPECT_EQ(expect_resize_locked_changed_, u.ResizeLockedChanged());
 
+    EXPECT_EQ(expect_window_mode_, u.WindowMode());
+    EXPECT_EQ(expect_window_mode_changed_, u.WindowModeChanged());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -228,6 +235,7 @@ class AppUpdateTest : public testing::Test {
     expect_paused_ = apps::mojom::OptionalBool::kUnknown;
     expect_intent_filters_.clear();
     expect_resize_locked_ = apps::mojom::OptionalBool::kUnknown;
+    expect_window_mode_ = apps::mojom::WindowMode::kUnknown;
     ExpectNoChange();
     CheckExpects(u);
 
@@ -786,6 +794,28 @@ class AppUpdateTest : public testing::Test {
       delta->resize_locked = apps::mojom::OptionalBool::kTrue;
       expect_resize_locked_ = apps::mojom::OptionalBool::kTrue;
       expect_resize_locked_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // WindowMode tests.
+
+    if (state) {
+      state->window_mode = apps::mojom::WindowMode::kBrowser;
+      expect_window_mode_ = apps::mojom::WindowMode::kBrowser;
+      expect_window_mode_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->window_mode = apps::mojom::WindowMode::kWindow;
+      expect_window_mode_ = apps::mojom::WindowMode::kWindow;
+      expect_window_mode_changed_ = true;
       CheckExpects(u);
     }
 
