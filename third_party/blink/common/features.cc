@@ -847,9 +847,8 @@ const base::Feature kWebAppEnableProtocolHandlers{
 // manifests. Also controls whether the parsed field is used in browser. See
 // incubation spec:
 // https://wicg.github.io/manifest-incubations/#note_taking-member
-// TODO(crbug.com/1185678): Enable by default after M92 branches.
 const base::Feature kWebAppNoteTaking{"WebAppNoteTaking",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
