@@ -388,7 +388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ActivityTracker.Record.SetupTime" units="ms"
     expires_after="M77">
   <obsolete>
-    Setup time is &lt;=10ms for 90% with 0.1% taking &gt;500ms. Removed 2019/06.
+    Removed 2019/06.
   </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
@@ -400,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ActivityTracker.ThreadTrackers.Count" units="count"
     expires_after="M77">
   <obsolete>
-    Gaussian distribution around 22 with 0.1% being &gt;=100. Removed 2019/06.
+    Removed 2019/06.
   </obsolete>
   <owner>bcwhite@chromium.org</owner>
   <summary>
@@ -2449,9 +2449,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Removed January 2020, this was a debugging metric that was too expensive to
     keep in the code.
-
-    Results on beta were: 60% present and shown, 5% present and not shown, and
-    35% absent.
   </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -4988,8 +4985,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.MaskedCardComparisonNetworksMatch"
     enum="BooleanEqual" expires_after="2020-01-15">
   <obsolete>
-    Removed as of 12/2019. The comparison found that Chrome and Payments
-    correctly matched 99.9% of the time.
+    Removed as of 12/2019.
   </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -11964,8 +11960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Cryptohome.FreedGCacheDiskSpaceInMb" units="MB"
     expires_after="2018-05-01">
   <obsolete>
-    Removed 05/2018 in favor of Cryptohome.GCache.FreedDiskSpaceInMb. Reports
-    zero in 99% of hits.
+    Removed 05/2018 in favor of Cryptohome.GCache.FreedDiskSpaceInMb.
   </obsolete>
   <owner>oka@chromium.org</owner>
   <summary>
@@ -25946,8 +25941,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="GPU.DirectComposition.OverlaySupportFlags2"
     enum="OverlaySupportFlag" expires_after="2019-04-06">
   <obsolete>
-    Removed 04/2019. BGRA is never supported, NV12 always supports scaling, and
-    YUY2 supports scaling in 75% cases.
+    Removed 04/2019.
   </obsolete>
 <!-- Name completed by histogram_suffixes name="GPU.DirectComposition.OverlayFormat" -->
 
@@ -27366,8 +27360,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HttpCache.StaleEntry.FreshnessPeriodsSinceLastUsed"
     units="units" expires_after="M77">
   <obsolete>
-    Removed in M77. One day Android results: 25.00% 1033 50.00% 4945 75.00%
-    42023 95.00% Infinity
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -27380,8 +27373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HttpCache.StaleEntry.Updated.Age" units="seconds"
     expires_after="M77">
   <obsolete>
-    Removed in M77. One day percentiles on Android: 25.00% 16146 50.00% 101342
-    75.00% 372632 95.00% Infinity
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -27394,8 +27386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HttpCache.StaleEntry.Updated.AgeInFreshnessPeriods" units="%"
     expires_after="M77">
   <obsolete>
-    Removed in M77. One day percentiles on Android: 25.00% 246.3 50.00% 1353
-    75.00% 9142 95.00% 147572 99.00% Infinity
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -27408,8 +27399,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HttpCache.StaleEntry.Validated.Age" units="seconds"
     expires_after="M77">
   <obsolete>
-    Removed in M77. One day percentiles on Android: 25.00% 10791 50.00% 70285
-    75.00% 223571 95.00% Infinity
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -27422,8 +27412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HttpCache.StaleEntry.Validated.AgeInFreshnessPeriods"
     units="%" expires_after="M77">
   <obsolete>
-    Removed in M77. One day percentiles on Android: 25.00% 169.5 50.00% 476.3
-    75.00% 2451 95.00% 43218 99.00% 474791 99.50% Infinity
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -29282,8 +29271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="LibraryLoader.PrefetchDetailedStatus"
     enum="LibraryLoaderPrefetchDetailedStatus" expires_after="2020-04-12">
   <obsolete>
-    Removed 2019-10. The code has stabilized, the failure rate is 0.04% on
-    Stable.
+    Removed 2019-10.
   </obsolete>
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
@@ -32638,9 +32626,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="MemCache.WriteResult" enum="MemCacheWriteResult"
     expires_after="M77">
   <obsolete>
-    Removed in M77. One day results for Android were 99.99% success, .01%
-    Exceeded Cache Size, and an even smaller fraction Exceeded Single Entry
-    Size.
+    Removed in M77.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>The outcome of Entry::WriteData in the memory cache.</summary>
@@ -51760,8 +51746,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PageLoad.Clients.Ads.All.ParentExistsForSubFrame"
     enum="ParentFrameKnown" expires_after="2018-09-21">
   <obsolete>
-    Removed in September 2018. At deprecation, 98.12% of parent frames were
-    known.
+    Removed in September 2018.
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -63292,8 +63277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="RecurrenceRanker.LogFileOpenType" enum="FileOpenType"
     expires_after="2019-12-31">
   <obsolete>
-    Removed December 2019. Distribution between file open types is approximately
-    33% download, 26% launch, 26% open, 15% save as.
+    Removed December 2019.
   </obsolete>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -69482,8 +69466,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SBClientDownload.ExtractImageHeadersTime" units="ms"
     expires_after="M77">
   <obsolete>
-    Removed in M77. Extracting image headers was usually fast (84% were less
-    than 1ms), so this histogram was not providing useful data.
+    Removed in M77. Extracting image headers was usually fast so this histogram
+    was not providing useful data.
   </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -74745,9 +74729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Setup.Install.NumDeleteOldVersionsAttemptsBeforeAbort"
     units="Attempts" expires_after="M77">
   <obsolete>
-    Removed 06/2019. In 88% of cases, we aborted after the maximum number of
-    attemps was reached. The remaining 12% of cases occured when another process
-    tried to acquire the setup singleton.
+    Removed 06/2019.
   </obsolete>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -78087,9 +78069,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Stability.Android.PendingMinidumpsOnStartup" units="minidumps"
     expires_after="2017-05-16">
   <obsolete>
-    Removed in M60. Roughly 50% of Chrome startups that had *any* pending
-    minidumps had at least one pending minidump without any logcat output. About
-    5% had multiple minidumps without any logcat output.
+    Removed in M60.
   </obsolete>
   <owner>isherman@chromium.org</owner>
   <summary>
@@ -78624,7 +78604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="BooleanSuccess" expires_after="2015-12-10">
   <obsolete>
     Removed 12/2015. No longer tracked because values collected on stable show
-    that the function pretty much never fails (succeeds 99.9996% of the time).
+    that the function pretty much never fails.
   </obsolete>
   <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
@@ -83913,8 +83893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="TaskScheduler.NumCancelledDelayedTasks"
     units="tasks" expires_after="2019-03-20">
   <obsolete>
-    Removed as of 03/2019. The number of cancelled delayed tasks found by the
-    lazy approach is 0 more than 99% of the time.
+    Removed as of 03/2019.
   </obsolete>
   <owner>adityakeerthi@google.com</owner>
   <owner>fdoray@chromium.org</owner>
@@ -83988,8 +83967,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="TaskScheduler.PercentCancelledDelayedTasks"
     units="tasks" expires_after="2019-03-20">
   <obsolete>
-    Removed as of 03/2019. The number of cancelled delayed tasks found by the
-    lazy approach is 0 more than 99% of the time.
+    Removed as of 03/2019.
   </obsolete>
   <owner>adityakeerthi@google.com</owner>
   <owner>fdoray@chromium.org</owner>
@@ -85125,8 +85103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="UMA.FileMetricsProvider.EmbeddedProfile.DroppedFileAge"
     units="minutes" expires_after="2017-07-08">
   <obsolete>
-    Removed 07/2017. Was only for short-term analysis. About 95% of dropped
-    files were less than 1 day old.
+    Removed 07/2017.
   </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>bcwhite@chromium.org</owner>
