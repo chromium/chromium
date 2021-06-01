@@ -414,22 +414,25 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
 InstallServiceWorkItemImpl::ServiceConfig
 InstallServiceWorkItemImpl::MakeUpgradeServiceConfig(
     const ServiceConfig& original_config) {
-  ServiceConfig new_config = original_config;
+  ServiceConfig new_config(
+      kServiceType, kServiceStartType, kServiceErrorControl,
+      service_cmd_line_.GetCommandLineString(), kServiceDependencies,
+      GetCurrentServiceDisplayName());
 
-  if (original_config.type == kServiceType)
+  if (original_config.type == new_config.type)
     new_config.type = SERVICE_NO_CHANGE;
-  if (original_config.start_type == kServiceStartType)
+  if (original_config.start_type == new_config.start_type)
     new_config.start_type = SERVICE_NO_CHANGE;
-  if (original_config.error_control == kServiceErrorControl)
+  if (original_config.error_control == new_config.error_control)
     new_config.error_control = SERVICE_NO_CHANGE;
   if (!_wcsicmp(original_config.cmd_line.c_str(),
-                service_cmd_line_.GetCommandLineString().c_str())) {
+                new_config.cmd_line.c_str())) {
     new_config.cmd_line.clear();
   }
-  if (original_config.dependencies == MultiSzToVector(kServiceDependencies))
+  if (original_config.dependencies == new_config.dependencies)
     new_config.dependencies.clear();
   if (!_wcsicmp(original_config.display_name.c_str(),
-                GetCurrentServiceDisplayName().c_str())) {
+                new_config.display_name.c_str())) {
     new_config.display_name.clear();
   }
 

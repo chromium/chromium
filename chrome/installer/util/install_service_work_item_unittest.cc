@@ -204,6 +204,9 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
 
   EXPECT_TRUE(InstallServiceWorkItem::DeleteService(
       kServiceName, kProductRegPath, kClsids, kIids));
+
+  // Check to make sure that the item shows that the service is deleted.
+  EXPECT_TRUE(IsServiceGone(item.get()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
@@ -222,10 +225,25 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
       kClsids, kIids);
   EXPECT_TRUE(item_upgrade->Do());
 
+  // Check to make sure that no upgrade happened, and both the old and new items
+  // show that the service is correctly configured.
+  EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
+  EXPECT_TRUE(IsServiceCorrectlyConfigured(item_upgrade.get()));
+
   item_upgrade->Rollback();
+
+  // Check to make sure that no rollback happened, and both the old and new
+  // items show that the service is correctly configured.
+  EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
+  EXPECT_TRUE(IsServiceCorrectlyConfigured(item_upgrade.get()));
+
   EXPECT_TRUE(GetImpl(item_upgrade.get())->OpenService());
 
   EXPECT_TRUE(GetImpl(item_upgrade.get())->DeleteCurrentService());
+
+  // Check to make sure that both items show that the service is deleted.
+  EXPECT_TRUE(IsServiceGone(item.get()));
+  EXPECT_TRUE(IsServiceGone(item_upgrade.get()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLine) {
@@ -244,13 +262,26 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLine) {
       kClsids, kIids);
   EXPECT_TRUE(item_upgrade->Do());
 
+  // Check to make sure the upgrade happened, and the new item shows that the
+  // service is correctly configured, while the old item shows that the service
+  // is not correctly configured.
+  EXPECT_TRUE(IsServiceCorrectlyConfigured(item_upgrade.get()));
+  EXPECT_FALSE(IsServiceCorrectlyConfigured(item.get()));
+
   item_upgrade->Rollback();
   EXPECT_TRUE(GetImpl(item_upgrade.get())->OpenService());
 
+  // Check to make sure the rollback happened, and the old item shows that it is
+  // correctly configured, while the new item shows that the service is not
+  // correctly configured.
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
   EXPECT_FALSE(IsServiceCorrectlyConfigured(item_upgrade.get()));
 
   EXPECT_TRUE(GetImpl(item_upgrade.get())->DeleteCurrentService());
+
+  // Check to make sure that both items show that the service is deleted.
+  EXPECT_TRUE(IsServiceGone(item.get()));
+  EXPECT_TRUE(IsServiceGone(item_upgrade.get()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
