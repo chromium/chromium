@@ -89,8 +89,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   // Execute script to ensure the page has loaded correctly, executing similarly
   // to ExecJsInWebUI().
   EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
-                         "document.body.innerHTML.search('Conversion "
-                         "Measurement API Internals') >= 0;",
+                         "document.body.innerHTML.search('Attribution "
+                         "Reporting API Internals') >= 0;",
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
@@ -156,11 +156,11 @@ IN_PROC_BROWSER_TEST_F(
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
-    let table = document.getElementById("impression-table-body");
+    let table = document.getElementById("source-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText ===
-          "No active impressions.") {
+          "No active sources.") {
         document.title = $1;
       }
     });
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
-    let table = document.getElementById("impression-table-body");
+    let table = document.getElementById("source-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[0].innerText === $1 &&

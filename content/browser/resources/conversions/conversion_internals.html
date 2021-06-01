@@ -10,37 +10,37 @@
 
   <link rel="stylesheet" href="conversion_internals.css">
   <script type="module" src="conversion_internals.js"></script>
-  <title>Conversion Measurement API Internals</title>
+  <title>Attribution Reporting API Internals</title>
 </head>
 <body>
 
 <div id="page-heading">
-  Conversion Measurement API Internals
+  Attribution Reporting API Internals
 </div>
 <div id="info">
   <p>Learn more:
     <a href="https://web.dev/using-conversion-measurement/" target="_blank">
-      Conversion Measurement API
+      Attribution Reporting API
     </a>
-  <p>Conversion measurement is currently <span id="feature-status-content"></span>.
+  <p>Attribution reporting is currently <span id="feature-status-content"></span>.
 </div>
 <hr>
 <div id="page-content">
   <div>
     <button id="refresh">Refresh all page data</button>
-    <button id="clear-data">Clear all conversions data</button>
+    <button id="clear-data">Clear all attribution data</button>
   </div>
-  <h2> Active Impressions </h2>
+  <h2> Active Sources </h2>
   <div class="content">
     <div class="table-wrapper">
-      <table id="impression-table">
+      <table id="source-table">
         <thead>
           <tr class="header-row">
             <th>
-              Source Event Id
+              Source Event ID
             </th>
             <th>
-              Source origin
+              Source Origin
             </th>
             <th>
               Destination
@@ -62,12 +62,12 @@
             </th>
           </tr>
         </thead>
-        <tbody id="impression-table-body">
+        <tbody id="source-table-body">
         </tbody>
       </table>
     </div>
   </div>
-  <h2> Pending Conversion Reports </h2>
+  <h2> Pending Reports </h2>
   <div class="content">
     <div>
       <span id="debug-mode-content"></span>
@@ -77,7 +77,7 @@
         <thead>
           <tr class="header-row">
             <th>
-              Source Event Id
+              Source Event ID
             </th>
             <th>
               Trigger Data
@@ -86,7 +86,7 @@
               Destination
             </th>
             <th>
-              Report to
+              Report To
             </th>
             <th>
               Report Time
@@ -104,7 +104,7 @@
       <button id="send-reports">Send All Reports</button>
     </div>
   </div>
-  <h2> Sent Conversion Reports </h2>
+  <h2> Sent Reports </h2>
   <div class="content">
     <div class="table-wrapper">
       <table id="sent-report-table">
@@ -128,35 +128,35 @@
   </div>
 </div>
 
-<template id="impressionrow">
+<template id="source-row">
   <tr>
-    <td class="impression-data-cell"></td>
-    <td class="impression-origin-cell"></td>
-    <td class="conversion-destination-cell"></td>
-    <td class="reporting-origin-cell"></td>
-    <td class="impression-time-cell"></td>
+    <td class="source-event-id-cell"></td>
+    <td class="source-origin-cell"></td>
+    <td class="destination-cell"></td>
+    <td class="report-to-cell"></td>
+    <td class="source-registration-time-cell"></td>
     <td class="expiry-time-cell"></td>
     <td class="source-type-cell"></td>
     <td class="priority-cell"></td>
   </tr>
 </template>
 
-<template id="reportrow">
+<template id="report-row">
   <tr>
-    <td class="impression-data-cell"></td>
-    <td class="conversion-data-cell"></td>
-    <td class="conversion-origin-cell"></td>
-    <td class="reporting-origin-cell"></td>
+    <td class="source-event-id-cell"></td>
+    <td class="trigger-data-cell"></td>
+    <td class="destination-cell"></td>
+    <td class="report-to-cell"></td>
     <td class="report-time-cell"></td>
     <td class="source-type-cell"></td>
   </tr>
 </template>
 
-<template id="sentreportrow">
+<template id="sent-report-row">
   <tr>
-    <td class="report-url-data-cell"></td>
-    <td class="report-body-data-cell"></td>
-    <td class="http-response-code-data-cell"></td>
+    <td class="report-url-cell"></td>
+    <td class="report-body-cell"></td>
+    <td class="http-response-code-cell"></td>
   </tr>
 </template>
 </body>
