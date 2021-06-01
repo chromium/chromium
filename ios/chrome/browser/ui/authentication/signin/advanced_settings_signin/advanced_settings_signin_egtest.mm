@@ -24,6 +24,7 @@
 #endif
 
 using chrome_test_util::GoogleServicesSettingsView;
+using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SyncSettingsConfirmButton;
 using l10n_util::GetNSString;
@@ -64,6 +65,58 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   // Test the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a user that signs in and gives sync consent can sign
+// out through the "Sign out and Turn Off Sync" option in Sync settings.
+- (void)testSignInOpenSyncSettingsSignOutAndTurnOffSync {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+      performAction:grey_tap()];
+
+  // Test the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC))]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that a user account with a sync password displays a sync error
+// message after sign-in.
+- (void)testSigninOpenSyncSettingsWithPasswordError {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"hello"];
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+      performAction:grey_tap()];
+
+  // Test the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Test the sync error message is visible.
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SYNC_ERROR_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Verifies that advanced sign-in shows an alert dialog when being swiped to

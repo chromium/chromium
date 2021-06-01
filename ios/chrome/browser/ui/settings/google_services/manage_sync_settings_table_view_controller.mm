@@ -80,6 +80,24 @@
 
 #pragma mark - ManageSyncSettingsConsumer
 
+- (void)insertSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView insertSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)deleteSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView deleteSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
 - (void)reloadItem:(TableViewItem*)item {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.

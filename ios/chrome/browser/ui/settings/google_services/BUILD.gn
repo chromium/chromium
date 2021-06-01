@@ -181,12 +181,14 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync/driver",
     "//components/sync/driver:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
@@ -196,5 +198,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock:ocmock",
+    "//ui/base",
   ]
 }
