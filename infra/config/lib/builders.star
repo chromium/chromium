@@ -593,10 +593,8 @@ def builder(
 
     # TODO(crbug.com/1143122): remove this.
     experiments = experiments or {}
-    if os and os.category == os_category.MAC:
+    if os and os.category in (os_category.MAC, os_category.WINDOWS):
         experiments["chromium.chromium_tests.use_rbe_cas"] = 100
-    elif os and os.category == os_category.WINDOWS:
-        experiments["chromium.chromium_tests.use_rbe_cas"] = 50
     kwargs["experiments"] = experiments
 
     configure_kitchen = defaults.get_value("configure_kitchen", configure_kitchen)
