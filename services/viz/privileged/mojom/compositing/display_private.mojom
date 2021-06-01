@@ -22,7 +22,7 @@ interface DisplayPrivate {
 
   // Attempts to immediately swap a frame with the current size if possible,
   // then will no longer swap until Resize() is called with a non-empty size.
-  [EnableIf=is_win, Sync]
+  [EnableIf=is_win, Sync, NoInterrupt]
   DisableSwapUntilResize() => ();
 
   // Resizes the display.
