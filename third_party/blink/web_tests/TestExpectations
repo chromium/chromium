@@ -6934,9 +6934,6 @@ crbug.com/1213322 [ Mac ] external/wpt/css/css-values/minmax-percentage-serializ
 crbug.com/1213322 [ Mac ] external/wpt/html/browsers/the-window-object/named-access-on-the-window-object/window-named-properties.html [ Pass Failure ]
 crbug.com/1213322 [ Mac ] virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/minmax-percentage-serialize.html [ Pass Failure ]
 
-# Sheriff on 2021-05-27
-crbug.com/1213718 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/* [ Pass Failure ]
-
 # Do not retry slow tests that also timeouts
 crbug.com/1210687 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Pass Timeout ]
 crbug.com/1210687 [ Mac10.15 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
