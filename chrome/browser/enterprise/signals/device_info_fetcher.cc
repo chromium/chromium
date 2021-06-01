@@ -51,6 +51,7 @@ DeviceInfo::DeviceInfo(DeviceInfo&&) = default;
 DeviceInfoFetcher::DeviceInfoFetcher() = default;
 DeviceInfoFetcher::~DeviceInfoFetcher() = default;
 
+// static
 std::unique_ptr<DeviceInfoFetcher> DeviceInfoFetcher::CreateInstance() {
 // TODO(pastarmovj): Instead of the if-defs implement the CreateInstance
 // function in the platform specific classes.
@@ -63,6 +64,12 @@ std::unique_ptr<DeviceInfoFetcher> DeviceInfoFetcher::CreateInstance() {
 #else
   return std::make_unique<StubDeviceFetcher>();
 #endif
+}
+
+// static
+std::unique_ptr<DeviceInfoFetcher>
+DeviceInfoFetcher::CreateStubInstanceForTesting() {
+  return std::make_unique<StubDeviceFetcher>();
 }
 
 }  // namespace enterprise_signals
