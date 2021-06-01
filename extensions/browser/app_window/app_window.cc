@@ -446,11 +446,11 @@ void AppWindow::ExitPictureInPicture() {
 }
 
 bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 }
 
 bool AppWindow::OnMessageReceived(const IPC::Message& message,
