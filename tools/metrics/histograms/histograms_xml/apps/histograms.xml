@@ -1668,7 +1668,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1681,7 +1681,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Success"
-    units="BooleanSuccess" expires_after="2021-06-01">
+    units="BooleanSuccess" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1693,7 +1693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.ClearTextItemSize"
-    units="bytes" expires_after="2021-06-01">
+    units="bytes" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1704,7 +1704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.EncryptedItemSize"
-    units="bytes" expires_after="2021-06-01">
+    units="bytes" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1715,7 +1715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.LockScreen.DataItemStorage.FailedOperationDuration" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1735,7 +1735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.LockScreen.DataItemStorage.OperationResult"
-    enum="LockScreenDataItemOperationResult" expires_after="2021-06-01">
+    enum="LockScreenDataItemOperationResult" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1745,7 +1745,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.RegisteredItemsCount"
-    units="units" expires_after="2021-06-01">
+    units="units" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1756,7 +1756,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AppStatusOnNoteLaunch"
-    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2021-06-01">
+    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1768,7 +1768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime"
-    units="ms" expires_after="2021-06-01">
+    units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1780,7 +1780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
-    enum="LockScreenActionAvailability" expires_after="2021-06-01">
+    enum="LockScreenActionAvailability" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1790,7 +1790,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.FinalAppSessionState"
-    enum="LockScreenAppSessionState" expires_after="2021-06-01">
+    enum="LockScreenAppSessionState" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1800,7 +1800,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchDurationAtLaunchCancel"
-    units="ms" expires_after="2021-06-01">
+    units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1811,7 +1811,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestOrdinalNumber"
-    units="units" expires_after="2021-06-01">
+    units="units" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1823,7 +1823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestReason"
-    enum="NewLockScreenNoteRequestType" expires_after="2021-10-04">
+    enum="NewLockScreenNoteRequestType" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1832,7 +1832,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenAppUnloaded"
-    enum="LockScreenAppUnloadStatus" expires_after="2021-06-01">
+    enum="LockScreenAppUnloadStatus" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1846,7 +1846,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration"
-    units="ms" expires_after="2021-06-01">
+    units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1856,7 +1856,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.NoteTakingExitReason"
-    enum="LockScreenNoteTakingExitReason" expires_after="2021-10-04">
+    enum="LockScreenNoteTakingExitReason" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1866,7 +1866,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.ReloadCountOnAppTermination"
-    units="units" expires_after="2021-06-01">
+    units="units" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1878,7 +1878,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToLoadAppWindowContents"
-    units="ms" expires_after="2021-06-01">
+    units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1889,7 +1889,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToShowWindow" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1913,7 +1913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.DefaultLaunchResult"
-    enum="NoteTakingAppLaunchResult" expires_after="2021-06-01">
+    enum="NoteTakingAppLaunchResult" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -1923,7 +1923,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.PreferredLaunchResult"
-    enum="NoteTakingAppLaunchResult" expires_after="2021-06-01">
+    enum="NoteTakingAppLaunchResult" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
