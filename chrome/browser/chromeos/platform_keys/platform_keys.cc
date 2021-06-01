@@ -257,45 +257,56 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
     return output;
   }
 
-  // Currently, the only supported combinations are:
-  // 1- A certificate declaring rsaEncryption in the SubjectPublicKeyInfo used
-  // with the RSASSA-PKCS1-v1.5 algorithm.
-  // 2- A certificate declaring id-ecPublicKey in the SubjectPublicKeyInfo used
-  // with the ECDSA algorithm.
-  if (algorithm_name == kWebCryptoRsassaPkcs1v15) {
-    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
-      output.status = Status::kErrorAlgorithmNotPermittedByCertificate;
-      return output;
-    }
-
-    BuildWebCryptoRSAAlgorithmDictionary(key_info, &output.algorithm);
-    output.public_key =
-        std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
-                             key_info.public_key_spki_der.end());
-    output.status = Status::kSuccess;
+  if (GetKeyTypeForAlgorithm(algorithm_name) != key_info.key_type) {
+    output.status = Status::kErrorAlgorithmNotPermittedByCertificate;
     return output;
   }
 
-  if (algorithm_name == kWebCryptoEcdsa) {
-    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeECDSA) {
-      output.status = Status::kErrorAlgorithmNotPermittedByCertificate;
-      return output;
-    }
+  absl::optional<base::DictionaryValue> algorithm =
+      BuildWebCrypAlgorithmDictionary(key_info);
+  DCHECK(algorithm.has_value());
+  output.algorithm = std::move(algorithm.value());
 
-    BuildWebCryptoEcdsaAlgorithmDictionary(key_info, &output.algorithm);
-    output.public_key =
-        std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
-                             key_info.public_key_spki_der.end());
-    output.status = Status::kSuccess;
-    return output;
-  }
-
-  output.status = Status::kErrorAlgorithmNotPermittedByCertificate;
+  output.public_key = std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
+                                           key_info.public_key_spki_der.end());
+  output.status = Status::kSuccess;
   return output;
 }
 
 PublicKeyInfo::PublicKeyInfo() = default;
 PublicKeyInfo::~PublicKeyInfo() = default;
+
+net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
+    const std::string& algorithm_name) {
+  // Currently, the only supported combinations are:
+  // 1- A certificate declaring rsaEncryption in the SubjectPublicKeyInfo used
+  // with the RSASSA-PKCS1-v1.5 algorithm.
+  // 2- A certificate declaring id-ecPublicKey in the SubjectPublicKeyInfo used
+  // with the ECDSA algorithm.
+  if (algorithm_name == kWebCryptoRsassaPkcs1v15)
+    return net::X509Certificate::kPublicKeyTypeRSA;
+  if (algorithm_name == kWebCryptoEcdsa)
+    return net::X509Certificate::kPublicKeyTypeECDSA;
+  return net::X509Certificate::kPublicKeyTypeUnknown;
+}
+
+absl::optional<base::DictionaryValue> BuildWebCrypAlgorithmDictionary(
+    const PublicKeyInfo& key_info) {
+  switch (key_info.key_type) {
+    case net::X509Certificate::kPublicKeyTypeRSA: {
+      base::DictionaryValue result;
+      BuildWebCryptoRSAAlgorithmDictionary(key_info, &result);
+      return result;
+    }
+    case net::X509Certificate::kPublicKeyTypeECDSA: {
+      base::DictionaryValue result;
+      BuildWebCryptoEcdsaAlgorithmDictionary(key_info, &result);
+      return result;
+    }
+    default:
+      return absl::nullopt;
+  }
+}
 
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
                                           base::DictionaryValue* algorithm) {

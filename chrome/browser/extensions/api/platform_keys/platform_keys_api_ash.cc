@@ -264,20 +264,15 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    switch (key_info.key_type) {
-      case net::X509Certificate::kPublicKeyTypeRSA:
-        chromeos::platform_keys::BuildWebCryptoRSAAlgorithmDictionary(
-            key_info, &result_match.key_algorithm.additional_properties);
-        break;
-      case net::X509Certificate::kPublicKeyTypeECDSA:
-        chromeos::platform_keys::BuildWebCryptoEcdsaAlgorithmDictionary(
-            key_info, &result_match.key_algorithm.additional_properties);
-        break;
-      default:
-        LOG(ERROR) << "Skipping unsupported certificate with key type "
-                   << key_info.key_type;
-        continue;
+    absl::optional<base::DictionaryValue> algorithm =
+        BuildWebCrypAlgorithmDictionary(key_info);
+    if (!algorithm) {
+      LOG(ERROR) << "Skipping unsupported certificate with key type "
+                 << key_info.key_type;
+      continue;
     }
+    result_match.key_algorithm.additional_properties =
+        std::move(algorithm.value());
 
     result_matches.push_back(std::move(result_match));
   }
