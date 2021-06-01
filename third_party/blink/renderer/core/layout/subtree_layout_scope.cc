@@ -55,6 +55,7 @@ SubtreeLayoutScope::~SubtreeLayoutScope() {
     // these objects to be dirty.
     if (!DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
       layout_object->AssertLaidOut();
+    layout_object->AssertFragmentTree();
   }
 #endif
 }

@@ -3169,6 +3169,7 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   CheckDoesNotNeedLayout();
 #if DCHECK_IS_ON()
   frame_->GetDocument()->GetLayoutView()->AssertLaidOut();
+  frame_->GetDocument()->GetLayoutView()->AssertFragmentTree();
 #endif
 
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)

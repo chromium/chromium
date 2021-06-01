@@ -426,6 +426,31 @@ bool LayoutObject::RequiresAnonymousTableWrappers(
 
 #if DCHECK_IS_ON()
 
+void LayoutObject::AssertFragmentTree(bool display_locked) const {
+  NOT_DESTROYED();
+  for (const LayoutObject* layout_object = this; layout_object;) {
+    // If display-locked, fragments may not be removed from the tree even after
+    // the |LayoutObject| was destroyed, but still they should be consistent.
+    if (!display_locked && layout_object->ChildLayoutBlockedByDisplayLock()) {
+      layout_object->AssertFragmentTree(
+          /* display_locked */ true);
+      layout_object = layout_object->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+
+    // Check the direct children of the fragment. Grand-children and further
+    // descendants will be checked by descendant LayoutObjects.
+    if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
+      for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments()) {
+        DCHECK_EQ(box, fragment.OwnerLayoutBox());
+        fragment.AssertFragmentTreeChildren(
+            /* allow_destroyed */ display_locked);
+      }
+    }
+    layout_object = layout_object->NextInPreOrder(this);
+  }
+}
+
 void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   NOT_DESTROYED();
   if (!PaintInvalidationStateIsDirty() || ChildPrePaintBlockedByDisplayLock())

@@ -1638,6 +1638,41 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
     DCHECK(!has_list_markers);
   }
 }
+
+void NGPhysicalBoxFragment::AssertFragmentTreeSelf() const {
+  DCHECK(!IsInlineBox());
+  DCHECK(OwnerLayoutBox());
+  DCHECK_EQ(this, PostLayout());
+}
+
+void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
+    bool allow_destroyed) const {
+  if (const NGFragmentItems* items = Items()) {
+    for (NGInlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
+      const NGFragmentItem& item = *cursor.Current();
+      if (item.IsLayoutObjectDestroyedOrMoved()) {
+        DCHECK(allow_destroyed);
+        DCHECK(!item.BoxFragment() ||
+               item.BoxFragment()->IsLayoutObjectDestroyedOrMoved());
+        continue;
+      }
+      if (const auto* box = item.BoxFragment()) {
+        DCHECK(!box->IsLayoutObjectDestroyedOrMoved());
+        if (!box->IsInlineBox())
+          box->AssertFragmentTreeSelf();
+      }
+    }
+  }
+
+  for (const NGLink& child : Children()) {
+    if (child->IsLayoutObjectDestroyedOrMoved()) {
+      DCHECK(allow_destroyed);
+      continue;
+    }
+    if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.fragment))
+      box->AssertFragmentTreeSelf();
+  }
+}
 #endif
 
 }  // namespace blink
