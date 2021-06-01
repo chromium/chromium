@@ -33,6 +33,8 @@
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -324,6 +326,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
                 action:^{
                   [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
+                  [weakSelf signOutIfNotSyncing];
                 }
                  style:UIAlertActionStyleDestructive];
   return actionCoordinator;
@@ -334,7 +337,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
   // Google Account footer.
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(self.browserState);
-  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
     [model setFooter:[self footerForGoogleAccountSectionItem]
         forSectionWithIdentifier:SectionIdentifierGoogleAccount];
@@ -536,6 +539,22 @@ static NSDictionary* _imageNamesByItemTypes = @{
 }
 
 #pragma mark - Private Methods
+
+// Signs the user out of Chrome if the sign-in state is |ConsentLevel::kSignin|.
+- (void)signOutIfNotSyncing {
+  DCHECK(self.browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(self.browserState);
+  DCHECK(identityManager);
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(_browserState);
+    DCHECK(authenticationService);
+    authenticationService->SignOut(
+        signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+        /*force_clear_browsing_data=*/false, nil);
+  }
+}
 
 - (void)clearDataForDataTypes:(BrowsingDataRemoveMask)mask {
   DCHECK(mask != BrowsingDataRemoveMask::REMOVE_NOTHING);

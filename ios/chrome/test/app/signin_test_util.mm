@@ -119,4 +119,10 @@ void ResetSigninPromoPreferences() {
   prefs->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, false);
 }
 
+void RevokeSyncConsent() {
+  ChromeBrowserState* browser_state = GetOriginalBrowserState();
+  PrefService* prefs = browser_state->GetPrefs();
+  prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+}
+
 }  // namespace chrome_test_util
