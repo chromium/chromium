@@ -54,6 +54,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
+#include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
@@ -232,6 +233,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
         chromeos::machine_learning::mojom::MachineLearningService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MetricsReporting>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
@@ -261,7 +263,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 29,
+    crosapi::mojom::Crosapi::Version_ == 30,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

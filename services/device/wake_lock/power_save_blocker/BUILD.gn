@@ -12,6 +12,9 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
+    # Crosapi power API needs to directly use the Ash PowerBlocker .
+    "//chrome/browser/ash/crosapi",
+
     # //remoting runs in a separate process which is outside of the context of
     # the ServiceManager-based world. Instead of embedding a Service Manager
     # environment and Device Service in it, we allow the power save blocker to
@@ -36,13 +39,21 @@ source_set("power_save_blocker") {
     deps += [ ":jni_headers" ]
     public_deps += [ "//ui/android" ]
   } else if (is_chromeos_ash) {
-    sources += [ "power_save_blocker_chromeos.cc" ]
+    sources += [ "power_save_blocker_ash.cc" ]
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
     ]
   } else if ((is_linux || is_chromeos) && use_dbus) {
-    sources += [ "power_save_blocker_linux.cc" ]
+    if (is_chromeos_lacros) {
+      sources += [ "power_save_blocker_lacros.cc" ]
+      deps += [
+        "//chromeos/crosapi/mojom",
+        "//chromeos/lacros",
+      ]
+    } else {
+      sources += [ "power_save_blocker_linux.cc" ]
+    }
     deps += [
       "//dbus",
       "//ui/gfx",

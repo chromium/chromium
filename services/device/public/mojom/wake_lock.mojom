@@ -4,6 +4,7 @@
 
 module device.mojom;
 
+[Stable, Extensible]
 enum WakeLockType {
     // Prevent the application from being suspended. On some platforms, apps may
     // be suspended when they are not visible to the user. This type of block
@@ -24,6 +25,7 @@ enum WakeLockType {
     kPreventDisplaySleepAllowDimming = 2,
 };
 
+[Stable, Extensible]
 enum WakeLockReason {
     // Audio is being played.
     kAudioPlayback = 0,

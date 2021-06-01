@@ -31,6 +31,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
+#include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
@@ -238,6 +239,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::MessageCenter,
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
+  ConstructRemote<crosapi::mojom::Power, &crosapi::mojom::Crosapi::BindPower,
+                  Crosapi::MethodMinVersions::kBindPowerMinVersion>();
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
   ConstructRemote<crosapi::mojom::SelectFile,

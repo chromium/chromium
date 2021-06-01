@@ -34,6 +34,7 @@ class KeystoreServiceAsh;
 class LocalPrinterAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
+class PowerAsh;
 class PrefsAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
@@ -92,6 +93,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
   void BindMetricsReporting(
       mojo::PendingReceiver<mojom::MetricsReporting> receiver) override;
+  void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindScreenManager(
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
@@ -167,6 +169,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
+  std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
