@@ -748,7 +748,7 @@ message PolicyFetchResponse {
   // Please note that |new_public_key| is also included inside this data
   // field. Thus we have new public key signed with old version of private key
   // (if client indicated to us that it has old key version), and
-  // new public key data signed by master verification key (if client told
+  // new public key data signed by primary verification key (if client told
   // us that it has public verification key - see |verification_key_id| field
   // of |PolicyFetchRequest|). In most cases, both signatures will be provided.
   // However, client might not have old policy signing key - for example, when
@@ -1952,8 +1952,8 @@ message ChromeDesktopReportRequest {
   // TODO(crbug.com/1105938): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
-  // A list of flags indicates that the report only contains particular
-  // information. When list is empty or unset, the report should contains all
+  // A list of flags indicating that the report only contains particular
+  // information. When the list is empty or unset, the report should contain all
   // information.
   repeated PartialReportType partial_report_types = 10;
   // Public key that can be used for attesting the machine.
@@ -2414,6 +2414,8 @@ message DeviceInitialEnrollmentStateResponse {
     CHROME_ENTERPRISE = 1;
     // Education SKU.
     CHROME_EDUCATION = 2;
+    // Terminal SKU
+    CHROME_TERMINAL = 3;
   }
   // LINT.ThenChange(//depot/google3/google/chrome/licensepackaging/v1/service.proto)
 
