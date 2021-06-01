@@ -152,6 +152,10 @@ void DownloadUIModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<DownloadUIModel> DownloadUIModel::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool DownloadUIModel::HasSupportedImageMimeType() const {
   if (blink::IsSupportedImageMimeType(GetMimeType()))
     return true;
