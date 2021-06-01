@@ -7,28 +7,29 @@ const webGpuUtils = function() {
 
   const wgslShaders = {
     vertex: `
-[[builtin(vertex_index)]] var<in> VertexIndex : u32;
-[[builtin(position)]] var<out> Position : vec4<f32>;
-
-[[location(0)]] var<out> fragUV : vec2<f32>;
-
-const quadPos : array<vec4<f32>, 4> = array<vec4<f32>, 4>(
+let quadPos : array<vec4<f32>, 4> = array<vec4<f32>, 4>(
     vec4<f32>(-1.0,  1.0, 0.0, 1.0),
     vec4<f32>(-1.0, -1.0, 0.0, 1.0),
     vec4<f32>( 1.0,  1.0, 0.0, 1.0),
     vec4<f32>( 1.0, -1.0, 0.0, 1.0));
 
-const quadUV : array<vec2<f32>, 4> = array<vec2<f32>, 4>(
+let quadUV : array<vec2<f32>, 4> = array<vec2<f32>, 4>(
     vec2<f32>(0.0, 0.0),
     vec2<f32>(0.0, 1.0),
     vec2<f32>(1.0, 0.0),
     vec2<f32>(1.0, 1.0));
 
+struct VertexOutput {
+  [[builtin(position)]] Position : vec4<f32>;
+  [[location(0)]] fragUV : vec2<f32>;
+};
+
 [[stage(vertex)]]
-fn main() -> void {
-  Position = quadPos[VertexIndex];
-  fragUV = quadUV[VertexIndex];
-  return;
+fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
+  var output: VertexOutput;
+  output.Position = quadPos[VertexIndex];
+  output.fragUV = quadUV[VertexIndex];
+  return output;
 }
 `,
 
@@ -36,13 +37,9 @@ fn main() -> void {
 [[binding(0), group(0)]] var mySampler: sampler;
 [[binding(1), group(0)]] var myTexture: texture_2d<f32>;
 
-[[location(0)]] var<in> fragUV : vec2<f32>;
-[[location(0)]] var<out> outColor : vec4<f32>;
-
 [[stage(fragment)]]
-fn main() -> void {
-  outColor = textureSample(myTexture, mySampler, fragUV);
-  return;
+fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
+  return textureSample(myTexture, mySampler, fragUV);
 }
 `,
   };
