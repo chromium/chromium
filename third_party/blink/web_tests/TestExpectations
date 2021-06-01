@@ -6925,7 +6925,7 @@ crbug.com/1209223 virtual/plz-dedicated-worker/external/wpt/xhr/formdata/constru
 crbug.com/1209223 virtual/shared_array_buffer_on_desktop/external/wpt/xhr/formdata/constructor-formelement.html [ Failure ]
 crbug.com/1209223 [ Mac10.15 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Timeout ]
 crbug.com/1209223 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/newline-normalization.html [ Failure ]
-crbug.com/1209223 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure ]
+crbug.com/1167095 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure ]
 crbug.com/1209223 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure ]
 crbug.com/1209223 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Failure ]
 
