@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_shell_surface.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_view.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/exo/buffer.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
 #include "ui/views/window/caption_button_types.h"
@@ -141,9 +141,9 @@ void ArcGhostWindowShellSurface::SetShellAppId(
     ui::PropertyHandler* property_handler,
     const absl::optional<std::string>& id) {
   if (id)
-    property_handler->SetProperty(ash::kAppIDKey, *id);
+    property_handler->SetProperty(::full_restore::kAppIdKey, *id);
   else
-    property_handler->ClearProperty(ash::kAppIDKey);
+    property_handler->ClearProperty(::full_restore::kAppIdKey);
 }
 
 }  // namespace full_restore
