@@ -35,7 +35,8 @@ message DeviceInfoSpecifics {
   optional string sync_user_agent = 4;
 
   // The Chrome instance's version.  Updated (if necessary) on every startup.
-  optional string chrome_version = 5;
+  // DEPRECATED in M92. Still populated for backward compatibility.
+  optional string chrome_version = 5 [deprecated=true];
 
   // Last time when pre-sync data on the device was saved. The device can be
   // restored to state back to this time. In millisecond since UNIX epoch.
@@ -82,6 +83,12 @@ message DeviceInfoSpecifics {
   // Unique hardware identifier string which details the HW combination of
   // a ChromeOS device. This field will be empty on other OS devices.
   optional string full_hardware_class = 16;
+
+  // Version information to pin-point which client implementation this is.
+  oneof client_version_info {
+    ChromeVersionInfo chrome_version_info = 17;
+    GooglePlayServicesVersionInfo google_play_services_version_info = 18;
+  }
 }
 
 // Feature specific information about the device that is running a sync-enabled
@@ -186,4 +193,13 @@ message PhoneAsASecurityKeySpecificFields {
   // A P-256, X9.62-encoded public key for this device. Specific to the Chrome
   // instance.
   optional bytes peer_public_key_x962 = 5;
+}
+
+message ChromeVersionInfo {
+  // Version number as per https://www.chromium.org/developers/version-numbers.
+  optional string version_number = 1;
+}
+
+message GooglePlayServicesVersionInfo {
+  optional string apk_version_name = 1;
 }
