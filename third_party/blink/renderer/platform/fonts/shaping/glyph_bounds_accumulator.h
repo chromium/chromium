@@ -86,12 +86,12 @@ struct GlyphBoundsAccumulator {
     // Convert physical glyph_bounding_box to logical.
     bounds = bounds.TransposedRect();
 
-    // The glyph bounding box of a vertical run uses ideographic baseline.
-    // Adjust the box Y position because the bounding box of a ShapeResult uses
-    // alphabetic baseline.
+    // The glyph bounding box of a vertical run uses ideographic central
+    // baseline. Adjust the box Y position because the bounding box of a
+    // ShapeResult uses alphabetic baseline.
     // See diagrams of base lines at
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
-    int baseline_adjust = font_metrics.Ascent(kIdeographicBaseline) -
+    int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
                           font_metrics.Ascent(kAlphabeticBaseline);
     bounds.SetY(bounds.Y() + baseline_adjust);
   }

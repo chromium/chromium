@@ -323,7 +323,7 @@ static void WriteInlineBox(WTF::TextStream& ts,
      << " pos=(" << box.X() << "," << box.Y() << ")"
      << " size=(" << box.Width() << "," << box.Height() << ")"
      << " baseline=" << box.BaselinePosition(kAlphabeticBaseline) << "/"
-     << box.BaselinePosition(kIdeographicBaseline);
+     << box.BaselinePosition(kCentralBaseline);
 }
 
 static void WriteInlineTextBox(WTF::TextStream& ts,

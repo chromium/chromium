@@ -147,7 +147,7 @@ void InlineBox::DumpBox(StringBuilder& string_inlinebox) const {
       GetLineLayoutItem().DebugPointer(), X().ToFloat(), Y().ToFloat(),
       Width().ToFloat(), Height().ToFloat(),
       BaselinePosition(kAlphabeticBaseline).ToInt(),
-      BaselinePosition(kIdeographicBaseline).ToInt());
+      BaselinePosition(kCentralBaseline).ToInt());
 }
 #endif  // DCHECK_IS_ON()
 

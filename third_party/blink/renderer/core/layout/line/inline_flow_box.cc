@@ -556,7 +556,7 @@ FontBaseline InlineFlowBox::DominantBaseline() const {
                              .Style(IsFirstLineStyle())
                              ->GetFontDescription()
                              .IsVerticalAnyUpright())
-    return kIdeographicBaseline;
+    return kCentralBaseline;
   return kAlphabeticBaseline;
 }
 

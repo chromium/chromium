@@ -89,12 +89,11 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       CommitPendingRun();
       pending_font_data_ = font_data;
       pending_canvas_rotation_ = canvas_rotation;
+      const auto& metrics = font_data->GetFontMetrics();
       pending_vertical_baseline_x_offset_ =
           !IsCanvasRotationInVerticalUpright(canvas_rotation)
               ? 0
-              : font_data->GetFontMetrics().FloatAscent() -
-                    font_data->GetFontMetrics().FloatAscent(
-                        kIdeographicBaseline);
+              : metrics.FloatAscent() - metrics.FloatAscent(kCentralBaseline);
     }
 
     pending_glyphs_.push_back(glyph);

@@ -1692,9 +1692,10 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
   // https://www.w3.org/TR/css-inline-3/#dominant-baseline-property
 
   // Vertical flow (except 'text-orientation: sideways') uses ideographic
-  // baseline. https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
+  // central baseline.
+  // https://drafts.csswg.org/css-writing-modes-3/#text-baselines
   return !GetFontDescription().IsVerticalAnyUpright() ? kAlphabeticBaseline
-                                                      : kIdeographicBaseline;
+                                                      : kCentralBaseline;
 }
 
 FontHeight ComputedStyle::GetFontHeight(FontBaseline baseline) const {

@@ -33,7 +33,7 @@ enum FontBaseline {
   kAlphabeticBaseline,
 
   // https://drafts.csswg.org/css-inline/#central-baseline
-  kIdeographicBaseline,
+  kCentralBaseline,
 
   // https://drafts.csswg.org/css-inline/#text-under-baseline
   kTextUnderBaseline,

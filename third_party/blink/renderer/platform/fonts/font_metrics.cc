@@ -155,7 +155,7 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
     case kAlphabeticBaseline:
       NOTREACHED();
       return float_ascent_;
-    case kIdeographicBaseline:
+    case kCentralBaseline:
       return FloatHeight() / 2;
 
       // The following computations are based on 'dominant-baseline' support in
@@ -188,7 +188,7 @@ int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
     case kAlphabeticBaseline:
       NOTREACHED();
       return int_ascent_;
-    case kIdeographicBaseline:
+    case kCentralBaseline:
       return Height() - Height() / 2;
 
       // The following computations are based on 'dominant-baseline' support in
