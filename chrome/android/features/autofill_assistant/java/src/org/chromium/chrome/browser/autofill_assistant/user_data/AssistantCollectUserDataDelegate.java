@@ -55,12 +55,6 @@ public interface AssistantCollectUserDataDelegate {
     void onInputTextFocusChanged(boolean isFocused);
 
     /**
-     * Returns true if the shipping address is complete.
-     * TODO(b/154068342): Remove this method and send the error message from |Controller|.
-     */
-    boolean isShippingAddressComplete(@Nullable AutofillAddress address);
-
-    /**
      * Returns true if the payment instrument is complete.
      * TODO(b/154068342): Remove this method and send the error message from |Controller|.
      */

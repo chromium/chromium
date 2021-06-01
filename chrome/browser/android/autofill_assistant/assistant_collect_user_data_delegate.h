@@ -95,11 +95,6 @@ class AssistantCollectUserDataDelegate {
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jis_focused);
 
-  bool IsShippingAddressComplete(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& jaddress);
-
   bool IsPaymentInstrumentComplete(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

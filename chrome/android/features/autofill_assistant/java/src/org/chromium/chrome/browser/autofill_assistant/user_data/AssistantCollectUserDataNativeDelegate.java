@@ -170,18 +170,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public boolean isShippingAddressComplete(@Nullable AutofillAddress address) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            return AssistantCollectUserDataNativeDelegateJni.get().isShippingAddressComplete(
-                    mNativeAssistantCollectUserDataDelegate,
-                    AssistantCollectUserDataNativeDelegate.this,
-                    address != null ? address.getProfile() : null);
-        }
-
-        return false;
-    }
-
-    @Override
     public boolean isPaymentInstrumentComplete(
             @Nullable AutofillPaymentInstrument paymentInstrument) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
@@ -238,9 +226,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 AssistantCollectUserDataNativeDelegate caller, String key, AssistantValue value);
         void onInputTextFocusChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, boolean isFocused);
-        boolean isShippingAddressComplete(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.AutofillProfile address);
         boolean isPaymentInstrumentComplete(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable PersonalDataManager.CreditCard card,

@@ -3,6 +3,9 @@
   <message name="IDS_AUTOFILL_ASSISTANT_PAYMENT_INFO_CONFIRM" desc="Text on the payment request primary button to confirm payment information [CHAR_LIMIT=32]">
     Continue
   </message>
+  <message name="IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING" desc="Text label that is shown when a payment request entry (e.g., contact details or payment method) is incomplete.">
+    Information missing
+  </message>
   <message name="IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR" desc="Text label that is shown when autofill assistant cannot help anymore, because something went wrong.">
     Sorry, something went wrong.
   </message>

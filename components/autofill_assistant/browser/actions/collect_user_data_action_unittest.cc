@@ -1083,6 +1083,8 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_ShippingAddress) {
   CollectUserDataOptions options;
   options.request_shipping = true;
   options.shipping_address_name = "shipping_address";
+  options.required_shipping_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -1091,9 +1093,9 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_ShippingAddress) {
   user_model_.SetSelectedAutofillProfile(
       "shipping_address", std::make_unique<autofill::AutofillProfile>(profile),
       &user_data);
-  autofill::test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                                 "marion@me.xyz", "Fox", "123 Zoo St.",
-                                 "unit 5", "Hollywood", "CA",
+  autofill::test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison", "",
+                                 "Fox", "123 Zoo St.", "unit 5", "Hollywood",
+                                 "CA",
                                  /* zipcode = */ "", "US", "16505678910");
   user_model_.SetSelectedAutofillProfile(
       "shipping_address", std::make_unique<autofill::AutofillProfile>(profile),
@@ -1101,6 +1103,15 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_ShippingAddress) {
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
+  // Complete for Assistant but not for AddressEditor.
+  profile.SetRawInfo(autofill::EMAIL_ADDRESS, u"marion@me.xyz");
+  user_model_.SetSelectedAutofillProfile(
+      "shipping_address", std::make_unique<autofill::AutofillProfile>(profile),
+      &user_data);
+  EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
+                                                         options));
+
+  // Complete.
   profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, u"91601");
   user_model_.SetSelectedAutofillProfile(
       "shipping_address", std::make_unique<autofill::AutofillProfile>(profile),

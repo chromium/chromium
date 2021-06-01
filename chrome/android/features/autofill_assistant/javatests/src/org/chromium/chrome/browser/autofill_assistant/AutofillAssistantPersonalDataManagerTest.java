@@ -986,12 +986,15 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    public void testCreateAndEnterAddress() throws Exception {
+    public void testCreateAndEnterShippingAddress() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setCollectUserData(CollectUserDataProto.newBuilder()
-                                                     .setShippingAddressName("shipping")
-                                                     .setRequestTermsAndConditions(false))
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setShippingAddressName("shipping")
+                                         .addRequiredShippingAddressDataPiece(
+                                                 buildRequiredDataPiece("Requires valid state", 34))
+                                         .setRequestTermsAndConditions(false))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setUseAddress(
@@ -1026,17 +1029,39 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Street address*"))
                 .perform(scrollTo(), typeText("123 Main St"));
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
-        onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("Invalid"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
         onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
-        waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
+        // First round: Invalid state.
         waitUntilViewMatchesCondition(
-                allOf(withParent(withId(R.id.address_summary)), withId(R.id.full_name)),
+                withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
+        onView(allOf(withParent(withId(R.id.address_summary)), withId(R.id.incomplete_error)))
+                .check(matches(
+                        allOf(withText(mTestRule.getActivity().getString(
+                                      R.string.autofill_assistant_payment_information_missing)),
+                                isDisplayed())));
+        onView(withText("Shipping address")).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.address_full), isDisplayed());
+        onView(allOf(withParent(withId(R.id.address_full)), withId(R.id.incomplete_error)))
+                .check(matches(allOf(withText("Requires valid state"), isDisplayed())));
+        onView(withContentDescription("Edit address")).perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("State*"))
+                .perform(scrollTo(), clearText(), typeText("California"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
+                .perform(scrollTo(), click());
+        // Second round: Complete.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_full)), withId(R.id.full_name)),
                 allOf(withText("John Doe"), isCompletelyDisplayed()));
-        onView(withText("Continue")).perform(click());
+        onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "address_name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "street"), is("123 Main St"));

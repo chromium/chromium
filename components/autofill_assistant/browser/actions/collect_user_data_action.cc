@@ -762,11 +762,6 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
             collect_user_data.supported_basic_card_networks().end(),
             std::back_inserter(
                 collect_user_data_options_->supported_basic_card_networks));
-
-  collect_user_data_options_->shipping_address_name =
-      collect_user_data.shipping_address_name();
-  collect_user_data_options_->request_shipping =
-      !collect_user_data.shipping_address_name().empty();
   collect_user_data_options_->request_payment_method =
       collect_user_data.request_payment_method();
   collect_user_data_options_->require_billing_postal_code =
@@ -785,7 +780,6 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
     VLOG(1) << "Required payment method without address name";
     return false;
   }
-
   collect_user_data_options_->credit_card_expired_text =
       collect_user_data.credit_card_expired_text();
   // TODO(b/146195295): Remove fallback and enforce non-empty backend string.
@@ -794,6 +788,18 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
         l10n_util::GetStringUTF8(
             IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED);
   }
+
+  collect_user_data_options_->shipping_address_name =
+      collect_user_data.shipping_address_name();
+  collect_user_data_options_->request_shipping =
+      !collect_user_data.shipping_address_name().empty();
+  if (collect_user_data_options_->request_shipping) {
+    collect_user_data_options_->required_shipping_address_data_pieces =
+        std::vector<RequiredDataPiece>(
+            collect_user_data.required_shipping_address_data_piece().begin(),
+            collect_user_data.required_shipping_address_data_piece().end());
+  }
+
   collect_user_data_options_->request_login_choice =
       collect_user_data.has_login_details();
   collect_user_data_options_->login_section_title.assign(
@@ -984,8 +990,9 @@ bool CollectUserDataAction::CheckInitialAutofillDataComplete(
     if (collect_user_data_options_->request_shipping) {
       auto completeAddressIter = std::find_if(
           profiles.begin(), profiles.end(), [this](const auto* profile) {
-            return IsCompleteShippingAddress(
-                profile, *this->collect_user_data_options_.get());
+            return user_data::GetShippingAddressValidationErrors(
+                       profile, *this->collect_user_data_options_.get())
+                .empty();
           });
       if (completeAddressIter == profiles.end()) {
         return false;
@@ -1031,7 +1038,9 @@ bool CollectUserDataAction::IsUserDataComplete(
       user_data.selected_address(options.shipping_address_name);
   return user_data::GetContactValidationErrors(selected_profile, options)
              .empty() &&
-         IsCompleteShippingAddress(shipping_address, options) &&
+         user_data::GetShippingAddressValidationErrors(shipping_address,
+                                                       options)
+             .empty() &&
          IsCompleteCreditCard(user_data.selected_card(), billing_address,
                               options) &&
          IsValidLoginChoice(user_data.login_choice_identifier_, options) &&
@@ -1317,7 +1326,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   if (!user_data->has_selected_address(
           collect_user_data_options_->shipping_address_name) &&
       collect_user_data_options_->request_shipping) {
-    int default_selection = GetDefaultAddressProfile(
+    int default_selection = user_data::GetDefaultShippingAddressProfile(
         *collect_user_data_options_, user_data->available_profiles_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(

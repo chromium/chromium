@@ -39,24 +39,28 @@ int GetDefaultContactProfile(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
 
-}  // namespace user_data
-
-std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
-    const autofill::AutofillProfile& profile);
+std::vector<std::string> GetShippingAddressValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options);
 
 // Sorts the given autofill profiles based on completeness, and returns a
 // vector of profile indices in sorted order. Full profiles will be ordered
 // before empty ones, and for equally complete profiles, this falls back to
 // sorting based on the profile names.
-std::vector<int> SortAddressesByCompleteness(
+std::vector<int> SortShippingAddressesByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
 
 // Get the default selection for the current list of profiles. Returns -1 if no
 // default selection is possible.
-int GetDefaultAddressProfile(
+int GetDefaultShippingAddressProfile(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+
+}  // namespace user_data
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile);
 
 // Sorts the given payment instruments by completeness, and returns a vector
 // of payment instrument indices in sorted order. Full payment instruments will
@@ -79,10 +83,6 @@ bool CompareContactDetails(
     const CollectUserDataOptions& collect_user_data_options,
     const autofill::AutofillProfile* a,
     const autofill::AutofillProfile* b);
-
-bool IsCompleteShippingAddress(
-    const autofill::AutofillProfile* profile,
-    const CollectUserDataOptions& collect_user_data_options);
 
 bool IsCompleteCreditCard(
     const autofill::CreditCard* credit_card,

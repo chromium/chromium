@@ -193,6 +193,7 @@ struct CollectUserDataOptions {
   std::string credit_card_expired_text;
 
   std::vector<RequiredDataPiece> required_contact_data_pieces;
+  std::vector<RequiredDataPiece> required_shipping_address_data_pieces;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;

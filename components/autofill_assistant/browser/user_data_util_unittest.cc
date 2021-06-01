@@ -210,12 +210,12 @@ TEST(UserDataUtilTest, SortsCompleteAddressesAlphabetically) {
   CollectUserDataOptions options;
 
   std::vector<int> profile_indices =
-      autofill_assistant::SortAddressesByCompleteness(options, profiles);
+      user_data::SortShippingAddressesByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
 
-TEST(UserDataUtilTest, SortsAddressesByCompleteness) {
+TEST(UserDataUtilTest, SortsAddressesByEditorCompleteness) {
   // Adding email address and phone number to demonstrate that they are not
   // checked for completeness.
   auto profile_no_street = std::make_unique<autofill::AutofillProfile>();
@@ -226,7 +226,7 @@ TEST(UserDataUtilTest, SortsAddressesByCompleteness) {
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_complete.get(), "Berta", "", "West",
                                  "", "", "Brandschenkestrasse 110", "",
-                                 "Zurich", "", "8002", "UK", "");
+                                 "Zurich", "", "8002", "CH", "");
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
@@ -236,7 +236,33 @@ TEST(UserDataUtilTest, SortsAddressesByCompleteness) {
   CollectUserDataOptions options;
 
   std::vector<int> profile_indices =
-      autofill_assistant::SortAddressesByCompleteness(options, profiles);
+      user_data::SortShippingAddressesByCompleteness(options, profiles);
+  EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
+  EXPECT_THAT(profile_indices, ElementsAre(1, 0));
+}
+
+TEST(UserDataUtilTest, SortsAddressesByAssistantCompleteness) {
+  auto profile_no_email = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_no_email.get(), "Adam", "", "West", "",
+                                 "", "Brandschenkestrasse 110", "", "Zurich",
+                                 "", "8002", "CH", "");
+
+  auto profile_complete = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(
+      profile_complete.get(), "Berta", "", "West", "berta.west@gmail.com", "",
+      "Brandschenkestrasse 110", "", "Zurich", "", "8002", "CH", "");
+
+  // Specify profiles in reverse order to force sorting.
+  std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
+  profiles.emplace_back(std::move(profile_no_email));
+  profiles.emplace_back(std::move(profile_complete));
+
+  CollectUserDataOptions options;
+  options.required_shipping_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+
+  std::vector<int> profile_indices =
+      user_data::SortShippingAddressesByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
@@ -245,7 +271,8 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForEmptyProfiles) {
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(GetDefaultAddressProfile(options, profiles), -1);
+  EXPECT_THAT(user_data::GetDefaultShippingAddressProfile(options, profiles),
+              -1);
 }
 
 TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
@@ -270,7 +297,8 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
 
   CollectUserDataOptions options;
 
-  EXPECT_THAT(GetDefaultAddressProfile(options, profiles), 1);
+  EXPECT_THAT(user_data::GetDefaultShippingAddressProfile(options, profiles),
+              1);
 }
 
 TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
@@ -625,25 +653,74 @@ TEST(UserDataUtilTest, CompleteShippingAddressNotRequired) {
   CollectUserDataOptions not_required_options;
   not_required_options.request_shipping = false;
 
-  EXPECT_TRUE(IsCompleteShippingAddress(nullptr, not_required_options));
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  nullptr, not_required_options),
+              IsEmpty());
 }
 
-TEST(UserDataUtilTest, CompleteShippingAddressRequired) {
+TEST(UserDataUtilTest, CompleteShippingAddressForAssistant) {
   autofill::AutofillProfile address;
   CollectUserDataOptions require_shipping_options;
   require_shipping_options.request_shipping = true;
+  require_shipping_options.required_shipping_address_data_pieces.push_back(
+      MakeRequiredDataPiece(
+          autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS));
+  require_shipping_options.required_shipping_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
+  require_shipping_options.required_shipping_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
 
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  nullptr, require_shipping_options),
+              ElementsAre("77", "35", "36"));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  "john.doe@gmail.com", "", /* address1= */ "",
                                  /* address2= */ "", /* city= */ "",
                                  /* state=  */ "", /* zip_code=  */ "",
-                                 /* country= */ "", "+41");
-  EXPECT_FALSE(IsCompleteShippingAddress(&address, require_shipping_options));
+                                 /* country= */ "", /* phone= */ "");
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  &address, require_shipping_options),
+              ElementsAre("77", "35", "36"));
+  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
+                                 /* email= */ "", "", "Brandschenkestrasse 110",
+                                 "", "Zurich", "Zurich", /* zip_code= */ "",
+                                 "CH",
+                                 /* phone= */ "");
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  &address, require_shipping_options),
+              ElementsAre("35"));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich", "8002", "CH",
                                  /* phone= */ "");
-  EXPECT_TRUE(IsCompleteShippingAddress(&address, require_shipping_options));
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  &address, require_shipping_options),
+              IsEmpty());
+}
+
+TEST(UserDataUtilTest, CompleteShippingAddressForEditor) {
+  autofill::AutofillProfile address;
+  CollectUserDataOptions require_shipping_options;
+  require_shipping_options.request_shipping = true;
+
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  nullptr, require_shipping_options),
+              ElementsAre(_));
+  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
+                                 /* email= */ "", "", "Brandschenkestrasse 110",
+                                 "", "Zurich", "Zurich", /* zip_code= */ "",
+                                 "CH",
+                                 /* phone= */ "");
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  &address, require_shipping_options),
+              ElementsAre(_));
+  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
+                                 /* email= */ "", "", "Brandschenkestrasse 110",
+                                 "", "Zurich", "Zurich", "8002", "CH",
+                                 /* phone= */ "");
+  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
+                  &address, require_shipping_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteCreditCardNotRequired) {

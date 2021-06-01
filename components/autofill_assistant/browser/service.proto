@@ -2350,8 +2350,10 @@ message CollectUserDataProto {
   // contact_details.contact_details_name}. NOTE: when clearing the billing
   // address, the selected credit card should also be cleared!
   repeated string clear_previous_profile_selection = 30;
+  // Defines how to evaluate validitiy of an address or credit card.
+  repeated RequiredDataPiece required_shipping_address_data_piece = 34;
 
-  reserved 7, 26, 34 to 36;
+  reserved 7, 26, 35 to 36;
 }
 
 // Stop Autofill Assistant.

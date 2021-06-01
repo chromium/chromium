@@ -192,21 +192,6 @@ AssistantCollectUserDataDelegate::GetJavaObject() {
   return java_assistant_collect_user_data_delegate_;
 }
 
-bool AssistantCollectUserDataDelegate::IsShippingAddressComplete(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jaddress) {
-  if (!jaddress) {
-    return ui_controller_->IsShippingAddressComplete(nullptr);
-  }
-
-  autofill::AutofillProfile address;
-  autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-      jaddress, env, &address);
-
-  return ui_controller_->IsShippingAddressComplete(&address);
-}
-
 bool AssistantCollectUserDataDelegate::IsPaymentInstrumentComplete(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

@@ -16,15 +16,15 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 
 import java.util.List;
 
 /**
- * The payment method section of the Autofill Assistant payment request.
+ * The shipping address section of the Autofill Assistant payment request.
  */
-public class AssistantShippingAddressSection
-        extends AssistantCollectUserDataSection<AutofillAddress> {
+public class AssistantShippingAddressSection extends AssistantCollectUserDataSection<AddressModel> {
     private AddressEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
 
@@ -42,76 +42,84 @@ public class AssistantShippingAddressSection
     }
 
     @Override
-    protected void createOrEditItem(@Nullable AutofillAddress oldItem) {
+    protected void createOrEditItem(@Nullable AddressModel oldItem) {
         if (mEditor == null) {
             return;
         }
-        mEditor.edit(oldItem, newItem -> {
-            assert (newItem != null && newItem.isComplete());
+        mEditor.edit(oldItem == null ? null : oldItem.mOption, address -> {
+            assert (address != null && address.isComplete());
             mIgnoreProfileChangeNotifications = true;
-            addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
+            addOrUpdateItem(new AddressModel(address), /* select= */ true, /* notify= */ true);
             mIgnoreProfileChangeNotifications = false;
         }, cancel -> {});
     }
 
     @Override
-    protected void updateFullView(View fullView, AutofillAddress address) {
-        if (address == null) {
+    protected void updateFullView(View fullView, @Nullable AddressModel model) {
+        if (model == null) {
             return;
         }
         TextView fullNameView = fullView.findViewById(R.id.full_name);
-        fullNameView.setText(address.getProfile().getFullName());
+        fullNameView.setText(model.mOption.getProfile().getFullName());
         hideIfEmpty(fullNameView);
 
         TextView fullAddressView = fullView.findViewById(R.id.full_address);
-        fullAddressView.setText(
-                PersonalDataManager.getInstance()
-                        .getShippingAddressLabelWithCountryForPaymentRequest(address.getProfile()));
+        fullAddressView.setText(PersonalDataManager.getInstance()
+                                        .getShippingAddressLabelWithCountryForPaymentRequest(
+                                                model.mOption.getProfile()));
         hideIfEmpty(fullAddressView);
 
-        TextView methodIncompleteView = fullView.findViewById(R.id.incomplete_error);
-        methodIncompleteView.setVisibility(isComplete(address) ? View.GONE : View.VISIBLE);
+        TextView errorView = fullView.findViewById(R.id.incomplete_error);
+        if (model.mErrors.isEmpty()) {
+            errorView.setText("");
+            errorView.setVisibility(View.GONE);
+        } else {
+            errorView.setText(TextUtils.join("\n", model.mErrors));
+            errorView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    protected void updateSummaryView(View summaryView, AutofillAddress address) {
-        if (address == null) {
+    protected void updateSummaryView(View summaryView, @Nullable AddressModel model) {
+        if (model == null) {
             return;
         }
         TextView fullNameView = summaryView.findViewById(R.id.full_name);
-        fullNameView.setText(address.getProfile().getFullName());
+        fullNameView.setText(model.mOption.getProfile().getFullName());
         hideIfEmpty(fullNameView);
 
         TextView shortAddressView = summaryView.findViewById(R.id.short_address);
         shortAddressView.setText(PersonalDataManager.getInstance()
                                          .getShippingAddressLabelWithoutCountryForPaymentRequest(
-                                                 address.getProfile()));
+                                                 model.mOption.getProfile()));
         hideIfEmpty(shortAddressView);
 
-        TextView methodIncompleteView = summaryView.findViewById(R.id.incomplete_error);
-        methodIncompleteView.setVisibility(isComplete(address) ? View.GONE : View.VISIBLE);
+        TextView errorView = summaryView.findViewById(R.id.incomplete_error);
+        errorView.setVisibility(model.mErrors.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     @Override
-    protected boolean canEditOption(AutofillAddress address) {
+    protected boolean canEditOption(AddressModel model) {
         return true;
     }
 
     @Override
-    protected @DrawableRes int getEditButtonDrawable(AutofillAddress address) {
+    protected @DrawableRes int getEditButtonDrawable(AddressModel model) {
         return R.drawable.ic_edit_24dp;
     }
 
     @Override
-    protected String getEditButtonContentDescription(AutofillAddress address) {
+    protected String getEditButtonContentDescription(AddressModel model) {
         return mContext.getString(R.string.payments_edit_address);
     }
 
     @Override
-    protected boolean areEqual(AutofillAddress optionA, AutofillAddress optionB) {
-        if (optionA == null || optionB == null) {
-            return optionA == optionB;
+    protected boolean areEqual(AddressModel modelA, AddressModel modelB) {
+        if (modelA == null || modelB == null) {
+            return modelA == modelB;
         }
+        AutofillAddress optionA = modelA.mOption;
+        AutofillAddress optionB = modelB.mOption;
         if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
             return true;
         }
@@ -127,7 +135,7 @@ public class AssistantShippingAddressSection
      * The Chrome profiles have changed externally. This will rebuild the UI with the new/changed
      * set of addresses derived from the profiles, while keeping the selected item if possible.
      */
-    void onAddressesChanged(List<AutofillAddress> addresses) {
+    void onAddressesChanged(List<AddressModel> addresses) {
         if (mIgnoreProfileChangeNotifications) {
             return;
         }
@@ -147,13 +155,13 @@ public class AssistantShippingAddressSection
     }
 
     @Override
-    protected void addOrUpdateItem(AutofillAddress address, boolean select, boolean notify) {
-        super.addOrUpdateItem(address, select, notify);
+    protected void addOrUpdateItem(AddressModel model, boolean select, boolean notify) {
+        super.addOrUpdateItem(model, select, notify);
 
         // Update autocomplete information in the editor.
         if (mEditor == null) {
             return;
         }
-        mEditor.addPhoneNumberIfValid(address.getProfile().getPhoneNumber());
+        mEditor.addPhoneNumberIfValid(model.mOption.getProfile().getPhoneNumber());
     }
 }

@@ -90,6 +90,17 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         }
     }
 
+    /** Model wrapper for an {@code AutofillAddress}. */
+    public static class AddressModel extends OptionModel<AutofillAddress> {
+        public AddressModel(AutofillAddress address, List<String> errors) {
+            super(address, errors);
+        }
+
+        public AddressModel(AutofillAddress address) {
+            super(address);
+        }
+    }
+
     public static final WritableObjectPropertyKey<AssistantCollectUserDataDelegate> DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -100,7 +111,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
     /** The chosen shipping address. */
-    public static final WritableObjectPropertyKey<AutofillAddress> SELECTED_SHIPPING_ADDRESS =
+    public static final WritableObjectPropertyKey<AddressModel> SELECTED_SHIPPING_ADDRESS =
             new WritableObjectPropertyKey<>();
 
     /** The chosen payment method (including billing address). */
@@ -150,8 +161,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_CONTACTS =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<AutofillAddress>>
-            AVAILABLE_SHIPPING_ADDRESSES = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<List<AddressModel>> AVAILABLE_SHIPPING_ADDRESSES =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<AutofillPaymentInstrument>>
             AVAILABLE_PAYMENT_INSTRUMENTS = new WritableObjectPropertyKey<>();
@@ -388,8 +399,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setSelectedShippingAddress(@Nullable AutofillAddress shippingAddress) {
-        set(SELECTED_SHIPPING_ADDRESS, shippingAddress);
+    private void setSelectedShippingAddress(
+            @Nullable AutofillAddress shippingAddress, String[] errors) {
+        set(SELECTED_SHIPPING_ADDRESS,
+                shippingAddress == null ? null
+                                        : new AddressModel(shippingAddress, Arrays.asList(errors)));
     }
 
     @CalledByNative
@@ -621,14 +635,14 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static List<AutofillAddress> createAutofillAddressList() {
+    private static List<AddressModel> createShippingAddressList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
-    private static void addAutofillAddress(
-            List<AutofillAddress> addresses, AutofillAddress address) {
-        addresses.add(address);
+    private static void addShippingAddress(
+            List<AddressModel> addresses, AutofillAddress address, String[] errors) {
+        addresses.add(new AddressModel(address, Arrays.asList(errors)));
     }
 
     @VisibleForTesting
@@ -643,8 +657,19 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setAvailableShippingAddresses(List<AutofillAddress> addresses) {
+    private void setAvailableShippingAddresses(List<AddressModel> addresses) {
         set(AVAILABLE_SHIPPING_ADDRESSES, addresses);
+    }
+
+    @CalledByNative
+    private static List<AutofillAddress> createBillingAddressList() {
+        return new ArrayList<>();
+    }
+
+    @CalledByNative
+    private static void addBillingAddress(
+            List<AutofillAddress> addresses, AutofillAddress address) {
+        addresses.add(address);
     }
 
     @CalledByNative

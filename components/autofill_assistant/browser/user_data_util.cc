@@ -16,9 +16,11 @@
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
 namespace {
@@ -31,33 +33,6 @@ std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
       profile.GetRawInfo(autofill::NAME_FIRST),
       profile.GetRawInfo(autofill::NAME_MIDDLE),
       profile.GetRawInfo(autofill::NAME_LAST));
-}
-
-int GetAddressCompletenessRating(const CollectUserDataOptions& options,
-                                 const autofill::AutofillProfile& profile) {
-  auto address_data = autofill::i18n::CreateAddressDataFromAutofillProfile(
-      profile, kDefaultLocale);
-  std::multimap<i18n::addressinput::AddressField,
-                i18n::addressinput::AddressProblem>
-      problems;
-  autofill::addressinput::ValidateRequiredFields(
-      *address_data, /* filter= */ nullptr, &problems);
-  return -problems.size();
-}
-
-// Helper function that compares instances of AutofillProfile by completeness
-// in regards to the current options. Full profiles should be ordered before
-// empty ones and fall back to compare the profile's name in case of equality.
-bool CompletenessCompareAddresses(const CollectUserDataOptions& options,
-                                  const autofill::AutofillProfile& a,
-                                  const autofill::AutofillProfile& b) {
-  int complete_fields_a = GetAddressCompletenessRating(options, a);
-  int complete_fields_b = GetAddressCompletenessRating(options, b);
-  if (complete_fields_a == complete_fields_b) {
-    return base::i18n::ToLower(GetProfileFullName(a))
-               .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
-  }
-  return complete_fields_a > complete_fields_b;
 }
 
 int CountCompletePaymentInstrumentFields(const CollectUserDataOptions& options,
@@ -220,11 +195,56 @@ bool CompletenessCompareContacts(const CollectUserDataOptions& options,
           field_formatter::CreateAutofillMappings(b, kDefaultLocale),
           options.required_contact_data_pieces)
           .size();
-  if (incomplete_fields_a == incomplete_fields_b) {
-    return base::i18n::ToLower(GetProfileFullName(a))
-               .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+  if (incomplete_fields_a != incomplete_fields_b) {
+    return incomplete_fields_a <= incomplete_fields_b;
   }
-  return incomplete_fields_a <= incomplete_fields_b;
+
+  return base::i18n::ToLower(GetProfileFullName(a))
+             .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+}
+
+int GetAddressEditorCompletenessRating(
+    const autofill::AutofillProfile& profile) {
+  auto address_data = autofill::i18n::CreateAddressDataFromAutofillProfile(
+      profile, kDefaultLocale);
+  std::multimap<i18n::addressinput::AddressField,
+                i18n::addressinput::AddressProblem>
+      problems;
+  autofill::addressinput::ValidateRequiredFields(
+      *address_data, /* filter= */ nullptr, &problems);
+  return problems.size();
+}
+
+// Helper function that compares instances of AutofillProfile by completeness
+// in regards to the current options. Full profiles should be ordered before
+// empty ones and fall back to compare the profile's name in case of equality.
+bool CompletenessCompareShippingAddresses(const CollectUserDataOptions& options,
+                                          const autofill::AutofillProfile& a,
+                                          const autofill::AutofillProfile& b) {
+  // Compare by editor completeness first. This is done because the
+  // AddressEditor only allows storing addresses it considers complete.
+  int incomplete_fields_a = GetAddressEditorCompletenessRating(a);
+  int incomplete_fields_b = GetAddressEditorCompletenessRating(b);
+  if (incomplete_fields_a != incomplete_fields_b) {
+    return incomplete_fields_a <= incomplete_fields_b;
+  }
+
+  incomplete_fields_a =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
+          options.required_shipping_address_data_pieces)
+          .size();
+  incomplete_fields_b =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
+          options.required_shipping_address_data_pieces)
+          .size();
+  if (incomplete_fields_a != incomplete_fields_b) {
+    return incomplete_fields_a <= incomplete_fields_b;
+  }
+
+  return base::i18n::ToLower(GetProfileFullName(a))
+             .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
 }
 
 }  // namespace
@@ -277,6 +297,59 @@ int GetDefaultContactProfile(
   return sorted_indices[0];
 }
 
+std::vector<std::string> GetShippingAddressValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options) {
+  std::vector<std::string> errors;
+  if (!collect_user_data_options.request_shipping) {
+    return errors;
+  }
+
+  if (!collect_user_data_options.required_shipping_address_data_pieces
+           .empty()) {
+    errors = GetValidationErrors(
+        profile
+            ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
+            : std::map<std::string, std::string>(),
+        collect_user_data_options.required_shipping_address_data_pieces);
+  }
+
+  // Require address editor completeness if Assistant validation succeeds. If
+  // Assistant validation fails, the editor has to be opened and requires
+  // completeness to save the change, do not append the (potentially duplicate)
+  // error in this case.
+  if (errors.empty() && (profile == nullptr ||
+                         GetAddressEditorCompletenessRating(*profile) != 0)) {
+    errors.push_back(l10n_util::GetStringUTF8(
+        IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
+  }
+  return errors;
+}
+
+std::vector<int> SortShippingAddressesByCompleteness(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
+  std::vector<int> profile_indices(profiles.size());
+  std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
+  std::sort(profile_indices.begin(), profile_indices.end(),
+            [&collect_user_data_options, &profiles](int i, int j) {
+              return CompletenessCompareShippingAddresses(
+                  collect_user_data_options, *profiles[i], *profiles[j]);
+            });
+  return profile_indices;
+}
+
+int GetDefaultShippingAddressProfile(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
+  if (profiles.empty()) {
+    return -1;
+  }
+  auto sorted_indices =
+      SortShippingAddressesByCompleteness(collect_user_data_options, profiles);
+  return sorted_indices[0];
+}
+
 }  // namespace user_data
 
 std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
@@ -286,30 +359,6 @@ std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
   // populated.
   unique_profile->FinalizeAfterImport();
   return unique_profile;
-}
-
-std::vector<int> SortAddressesByCompleteness(
-    const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  std::vector<int> profile_indices(profiles.size());
-  std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
-  std::sort(profile_indices.begin(), profile_indices.end(),
-            [&collect_user_data_options, &profiles](int i, int j) {
-              return CompletenessCompareAddresses(collect_user_data_options,
-                                                  *profiles[i], *profiles[j]);
-            });
-  return profile_indices;
-}
-
-int GetDefaultAddressProfile(
-    const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  if (profiles.empty()) {
-    return -1;
-  }
-  auto sorted_indices =
-      SortAddressesByCompleteness(collect_user_data_options, profiles);
-  return sorted_indices[0];
 }
 
 std::vector<int> SortPaymentInstrumentsByCompleteness(
@@ -370,13 +419,6 @@ bool CompareContactDetails(
   }
 
   return true;
-}
-
-bool IsCompleteShippingAddress(
-    const autofill::AutofillProfile* profile,
-    const CollectUserDataOptions& collect_user_data_options) {
-  return !collect_user_data_options.request_shipping ||
-         IsCompleteAddress(profile, /* require_postal_code = */ false);
 }
 
 bool IsCompleteCreditCard(

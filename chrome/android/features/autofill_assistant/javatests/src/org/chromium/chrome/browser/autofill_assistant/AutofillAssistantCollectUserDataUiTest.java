@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUs
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantContactField;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateChoiceOptions;
@@ -661,8 +662,9 @@ public class AutofillAssistantCollectUserDataUiTest {
             AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
                     mTestRule.getActivity(), profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
-                    Collections.singletonList(address));
-            model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS, address);
+                    Collections.singletonList(new AddressModel(address)));
+            model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS,
+                    new AddressModel(address));
             AutofillPaymentInstrument paymentInstrument =
                     AssistantCollectUserDataModel.createAutofillPaymentInstrument(
                             mTestRule.getWebContents(), creditCard, profile);
@@ -744,7 +746,7 @@ public class AutofillAssistantCollectUserDataUiTest {
             AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
                     mTestRule.getActivity(), profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
-                    Collections.singletonList(address));
+                    Collections.singletonList(new AddressModel(address)));
             AutofillPaymentInstrument paymentInstrument =
                     AssistantCollectUserDataModel.createAutofillPaymentInstrument(
                             mTestRule.getWebContents(), creditCard, profile);

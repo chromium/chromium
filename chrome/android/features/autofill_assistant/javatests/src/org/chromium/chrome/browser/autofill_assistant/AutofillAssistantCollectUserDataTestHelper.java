@@ -180,11 +180,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
         public void onInputTextFocusChanged(boolean isFocused) {}
 
         @Override
-        public boolean isShippingAddressComplete(@Nullable AutofillAddress address) {
-            return address != null && address.isComplete();
-        }
-
-        @Override
         public boolean isPaymentInstrumentComplete(
                 @Nullable AutofillPaymentInstrument paymentInstrument) {
             return paymentInstrument != null && paymentInstrument.isComplete();

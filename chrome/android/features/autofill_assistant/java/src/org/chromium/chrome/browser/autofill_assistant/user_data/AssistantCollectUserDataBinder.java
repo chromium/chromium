@@ -15,10 +15,10 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -180,12 +180,9 @@ class AssistantCollectUserDataBinder
             view.mPaymentMethodSection.setCompletenessDelegate(collectUserDataDelegate != null
                             ? collectUserDataDelegate::isPaymentInstrumentComplete
                             : null);
-            view.mShippingAddressSection.setListener(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::onShippingAddressChanged
-                            : null);
-            view.mShippingAddressSection.setCompletenessDelegate(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::isShippingAddressComplete
-                            : null);
+            view.mShippingAddressSection.setListener(collectUserDataDelegate == null
+                            ? null
+                            : m -> collectUserDataDelegate.onShippingAddressChanged(m.mOption));
             view.mLoginSection.setListener(collectUserDataDelegate != null
                             ? collectUserDataDelegate::onLoginChoiceChanged
                             : null);
@@ -478,7 +475,7 @@ class AssistantCollectUserDataBinder
         // This prevents creating a loop.
         if (propertyKey == AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS)) {
-                AutofillAddress shippingAddress =
+                AddressModel shippingAddress =
                         model.get(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS);
                 if (shippingAddress != null) {
                     view.mShippingAddressSection.addOrUpdateItem(
