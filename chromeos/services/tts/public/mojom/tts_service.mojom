@@ -6,6 +6,12 @@ module chromeos.tts.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
 
+// Audio parameters used for PlaybackTtsStream.
+struct AudioParameters {
+  int32 sample_rate;
+  int32 buffer_size;
+};
+
 // The main interface to TTS engines on Chrome OS. TtsService lives in a
 // tts-sandboxed process.  TtsEngineExtensionObserver, the other end of this
 // interface, in the browser process, brokers a connection between TtsService
@@ -13,15 +19,19 @@ import "media/mojo/mojom/audio_stream_factory.mojom";
 interface TtsService {
   // Binds a GoogleTtsStream received by this service.
   // The remote lives in the Google tts component extension.
-  BindGoogleTtsStream(pending_receiver<GoogleTtsStream> receiver,
+  BindGoogleTtsStream(
+      pending_receiver<GoogleTtsStream> receiver,
       pending_remote<media.mojom.AudioStreamFactory> stream_factory);
 
   // Binds a PlaybackTtsStream received by this service.
   // The remote lives in the Ash Chrome browser process.
-  BindPlaybackTtsStream(pending_receiver<PlaybackTtsStream> receiver,
-      pending_remote<media.mojom.AudioStreamFactory> stream_factory) => (
-      int32 sample_rate,
-      int32 buffer_size);
+  // The caller can request specific |sample_rate| and |buffer_size|. The actual
+  // audio parameters for the output device are returned.
+  BindPlaybackTtsStream(
+      pending_receiver<PlaybackTtsStream> receiver,
+      pending_remote<media.mojom.AudioStreamFactory> stream_factory,
+      AudioParameters? desired_audio_parameters) => (
+          AudioParameters audio_parameters);
 };
 
 // Interface for the Google component TTS engine to control

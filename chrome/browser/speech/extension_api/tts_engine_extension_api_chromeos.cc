@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
+#include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -58,7 +59,8 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
   }
 
   std::unique_ptr<base::ListValue> args = BuildSpeakArgs(utterance, voice);
-  if (playback_tts_stream_) {
+  if (!RefreshAudioStreamOptionsForExtension(engine_id, profile) &&
+      playback_tts_stream_) {
     Play(event_router, std::move(args), engine_id, profile);
     return;
   }
@@ -66,15 +68,17 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
   TtsEngineExtensionObserverChromeOS::GetInstance(profile)
       ->BindPlaybackTtsStream(
           playback_tts_stream_.BindNewPipeAndPassReceiver(),
+          audio_parameters_.Clone(),
           base::BindOnce(
               [](extensions::EventRouter* event_router,
                  std::unique_ptr<base::ListValue> args,
                  const std::string& engine_id, Profile* profile,
-                 TtsExtensionEngineChromeOS* owner, int32_t sample_rate,
-                 int32_t buffer_size) {
+                 TtsExtensionEngineChromeOS* owner,
+                 chromeos::tts::mojom::AudioParametersPtr audio_parameters) {
                 // |owner| is always valid because TtsExtensionEngine is a
                 // singleton.
-                owner->UpdateAudioStreamOptions(sample_rate, buffer_size);
+                DCHECK(audio_parameters);
+                owner->UpdateAudioStreamOptions(std::move(audio_parameters));
                 owner->Play(event_router, std::move(args), engine_id, profile);
               },
               event_router, std::move(args), engine_id, profile, this));
@@ -165,10 +169,44 @@ void TtsExtensionEngineChromeOS::OnProfileWillBeDestroyed(Profile* profile) {
   current_utterance_profile_observer_.Reset();
 }
 
-void TtsExtensionEngineChromeOS::UpdateAudioStreamOptions(int sample_rate,
-                                                          int buffer_size) {
-  sample_rate_ = sample_rate;
-  buffer_size_ = buffer_size;
+void TtsExtensionEngineChromeOS::UpdateAudioStreamOptions(
+    chromeos::tts::mojom::AudioParametersPtr audio_parameters) {
+  audio_parameters_ = std::move(audio_parameters);
+}
+
+bool TtsExtensionEngineChromeOS::RefreshAudioStreamOptionsForExtension(
+    const std::string& engine_id,
+    Profile* profile) {
+  if (current_playback_engine_ == engine_id)
+    return false;
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  DCHECK(registry);
+  const extensions::Extension* extension =
+      registry->enabled_extensions().GetByID(engine_id);
+  if (!extension)
+    return false;
+
+  current_playback_engine_ = engine_id;
+  auto* info = extensions::TtsVoices::GetTtsEngineInfo(extension);
+  if (!info || !info->sample_rate || !info->buffer_size) {
+    bool had_params = !!audio_parameters_;
+    audio_parameters_.reset();
+    return had_params;
+  }
+
+  if (!audio_parameters_)
+    audio_parameters_ = chromeos::tts::mojom::AudioParameters::New();
+
+  if (audio_parameters_->sample_rate == *info->sample_rate &&
+      audio_parameters_->buffer_size == *info->buffer_size) {
+    return false;
+  }
+
+  audio_parameters_->sample_rate = *info->sample_rate;
+  audio_parameters_->buffer_size = *info->buffer_size;
+  return true;
 }
 
 void TtsExtensionEngineChromeOS::Play(extensions::EventRouter* event_router,
@@ -182,11 +220,12 @@ void TtsExtensionEngineChromeOS::Play(extensions::EventRouter* event_router,
     return;
 
   // Add audio stream options.
+  DCHECK(audio_parameters_);
   auto audio_stream_options = std::make_unique<base::DictionaryValue>();
   audio_stream_options->SetInteger(tts_extension_api_constants::kSampleRateKey,
-                                   sample_rate_);
+                                   audio_parameters_->sample_rate);
   audio_stream_options->SetInteger(tts_extension_api_constants::kBufferSizeKey,
-                                   buffer_size_);
+                                   audio_parameters_->buffer_size);
   args->Append(std::move(audio_stream_options));
 
   // Disconnect any previous receivers.

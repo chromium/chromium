@@ -598,6 +598,23 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, OnSpeakWithAudioStream) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/on_speak_with_audio_stream"))
       << message_;
 }
+
+IN_PROC_BROWSER_TEST_F(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  TtsEngineExtensionObserverChromeOS* engine_observer =
+      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+  mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
+      engine_observer->tts_service_for_testing();
+  chromeos::tts::TtsService tts_service(
+      tts_service_remote->BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(mock_platform_impl_, IsSpeaking()).Times(AnyNumber());
+  EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillRepeatedly(Return(true));
+
+  ASSERT_TRUE(RunExtensionTest(
+      "tts_engine/on_speak_with_audio_stream_using_audio_options"))
+      << message_;
+}
 #endif  // IS_CHROMEOS_ASH
 
 }  // namespace extensions

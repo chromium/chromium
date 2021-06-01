@@ -12,6 +12,13 @@ extern const char kLibchromettsPath[];
 
 // The location of read-write text-to-speech data.
 extern const char kTempDataDirectory[];
+
+// Default sample rate for audio playback.
+extern const int kDefaultSampleRate;
+
+// Default buffer size for audio playback.
+extern const int kDefaultBufferSize;
+
 }  // namespace tts
 }  // namespace chromeos
 

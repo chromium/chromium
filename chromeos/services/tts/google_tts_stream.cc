@@ -14,11 +14,6 @@
 namespace chromeos {
 namespace tts {
 
-namespace {
-constexpr int kDefaultSampleRate = 24000;
-constexpr int kDefaultBufferSize = 512;
-}  // namespace
-
 // Simple helper to bridge logging in the shared library to Chrome's logging.
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {

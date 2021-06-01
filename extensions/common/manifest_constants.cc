@@ -139,6 +139,8 @@ const char kThemeDisplayProperties[] = "properties";
 const char kThemeImages[] = "images";
 const char kThemeTints[] = "tints";
 const char kTtsEngine[] = "tts_engine";
+const char kTtsEngineSampleRate[] = "sample_rate";
+const char kTtsEngineBufferSize[] = "buffer_size";
 const char kTtsVoices[] = "voices";
 const char kTtsVoicesEventTypeEnd[] = "end";
 const char kTtsVoicesEventTypeError[] = "error";
@@ -584,6 +586,19 @@ const char kInvalidThemeTints[] =
     "Invalid value for theme images - tints must be decimal numbers.";
 const char kInvalidTts[] =
     "Invalid value for 'tts_engine'.";
+const char kInvalidTtsSampleRateFormat[] =
+    "Invalid format for tts_engine.sample_rate: expected integer.";
+const char kInvalidTtsSampleRateRange[] =
+    "Invalid tts_engine.sample_rate: out of range. Expected sample_rate >= %d "
+    "and sample_rate <= %d.";
+const char kInvalidTtsBufferSizeFormat[] =
+    "Invalid format for tts_engine.buffer_size: expected integer.";
+const char kInvalidTtsBufferSizeRange[] =
+    "Invalid tts_engine.buffer_size: out of range. Expected buffer_size >= %d "
+    "and buffer_size <= %d.";
+const char kInvalidTtsRequiresSampleRateAndBufferSize[] =
+    "Invalid tts_engine: requires both sample_rate and buffer_size if either "
+    "is specified.";
 const char kInvalidTtsVoices[] =
     "Invalid value for 'tts_engine.voices'.";
 const char kInvalidTtsVoicesEventTypes[] =

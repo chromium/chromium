@@ -104,14 +104,17 @@ class TtsServiceTest : public testing::Test {
     if (audio_stream_factory_.is_bound())
       audio_stream_factory_.reset();
 
-    auto callback =
-        base::BindOnce([](int32_t sample_rate, int32_t buffer_size) {
-          // Do nothing.
-        });
+    auto callback = base::BindOnce([](mojom::AudioParametersPtr) {
+      // Do nothing.
+    });
 
+    mojom::AudioParametersPtr desired_audio_parameters =
+        mojom::AudioParameters::New(20000 /* sample rate */,
+                                    128 /* buffer size */);
     remote_service_->BindPlaybackTtsStream(
         stream->BindNewPipeAndPassReceiver(),
-        audio_stream_factory_.BindNewPipeAndPassRemote(), std::move(callback));
+        audio_stream_factory_.BindNewPipeAndPassRemote(),
+        std::move(desired_audio_parameters), std::move(callback));
     remote_service_.FlushForTesting();
   }
 

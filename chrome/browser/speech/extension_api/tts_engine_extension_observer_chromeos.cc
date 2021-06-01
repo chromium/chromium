@@ -169,6 +169,7 @@ void TtsEngineExtensionObserverChromeOS::BindGoogleTtsStream(
 
 void TtsEngineExtensionObserverChromeOS::BindPlaybackTtsStream(
     mojo::PendingReceiver<chromeos::tts::mojom::PlaybackTtsStream> receiver,
+    chromeos::tts::mojom::AudioParametersPtr audio_parameters,
     chromeos::tts::mojom::TtsService::BindPlaybackTtsStreamCallback callback) {
   CreateTtsServiceIfNeeded();
 
@@ -179,7 +180,8 @@ void TtsEngineExtensionObserverChromeOS::BindPlaybackTtsStream(
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
   tts_service_->BindPlaybackTtsStream(
-      std::move(receiver), std::move(factory_remote), std::move(callback));
+      std::move(receiver), std::move(factory_remote),
+      std::move(audio_parameters), std::move(callback));
 }
 
 void TtsEngineExtensionObserverChromeOS::Shutdown() {

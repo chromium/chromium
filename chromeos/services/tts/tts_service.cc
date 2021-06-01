@@ -7,17 +7,12 @@
 #include <dlfcn.h>
 #include <sys/resource.h>
 
+#include "chromeos/services/tts/constants.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 
 namespace chromeos {
 namespace tts {
-
-// TODO: remove this once dynamic params are supported.
-namespace {
-constexpr int kDefaultSampleRate = 24000;
-constexpr int kDefaultBufferSize = 512;
-}  // namespace
 
 TtsService::TtsService(mojo::PendingReceiver<mojom::TtsService> receiver)
     : service_receiver_(this, std::move(receiver)) {
@@ -39,16 +34,34 @@ void TtsService::BindGoogleTtsStream(
 void TtsService::BindPlaybackTtsStream(
     mojo::PendingReceiver<mojom::PlaybackTtsStream> receiver,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> factory,
+    mojom::AudioParametersPtr desired_audio_parameters,
     BindPlaybackTtsStreamCallback callback) {
-  // TODO(accessibility): make it possible to change this dynamically by passing
-  // params from extension manifest.
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate,
-                                kDefaultBufferSize);
+  media::AudioParameters params;
 
+  if (desired_audio_parameters) {
+    params = media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::CHANNEL_LAYOUT_MONO, desired_audio_parameters->sample_rate,
+        desired_audio_parameters->buffer_size);
+
+    if (!params.IsValid()) {
+      // Returning early disconnects the remote.
+      return;
+    }
+  } else {
+    // The client did not specify parameters; use defaults.
+    params = media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, kDefaultBufferSize);
+  }
+  DCHECK(params.IsValid());
   playback_tts_stream_ = std::make_unique<PlaybackTtsStream>(
       this, std::move(receiver), std::move(factory), params);
-  std::move(callback).Run(kDefaultSampleRate, kDefaultBufferSize);
+
+  auto ret_params = mojom::AudioParameters::New();
+  ret_params->sample_rate = params.sample_rate();
+  ret_params->buffer_size = params.frames_per_buffer();
+  std::move(callback).Run(std::move(ret_params));
 }
 
 void TtsService::MaybeExit() {

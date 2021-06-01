@@ -37,6 +37,7 @@ class TtsEngineExtensionObserverChromeOS
       mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver);
   void BindPlaybackTtsStream(
       mojo::PendingReceiver<chromeos::tts::mojom::PlaybackTtsStream> receiver,
+      chromeos::tts::mojom::AudioParametersPtr audio_parameters,
       chromeos::tts::mojom::TtsService::BindPlaybackTtsStreamCallback callback);
 
   // Implementation of KeyedService.

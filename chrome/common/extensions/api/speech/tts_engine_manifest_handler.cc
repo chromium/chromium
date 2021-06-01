@@ -9,11 +9,13 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "media/base/limits.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -26,10 +28,10 @@ TtsVoice::TtsVoice() : remote(false) {}
 
 TtsVoice::TtsVoice(const TtsVoice& other) = default;
 
-TtsVoice::~TtsVoice() {}
+TtsVoice::~TtsVoice() = default;
 
-TtsVoices::TtsVoices() {}
-TtsVoices::~TtsVoices() {}
+TtsVoices::TtsVoices() = default;
+TtsVoices::~TtsVoices() = default;
 
 //  static
 bool TtsVoices::Parse(const base::ListValue* tts_voices,
@@ -116,14 +118,20 @@ bool TtsVoices::Parse(const base::ListValue* tts_voices,
 // static
 const std::vector<TtsVoice>* TtsVoices::GetTtsVoices(
     const Extension* extension) {
-  TtsVoices* info =
-      static_cast<TtsVoices*>(extension->GetManifestData(keys::kTtsVoices));
-  return info ? &info->voices : nullptr;
+  const TtsVoices* engine = TtsVoices::GetTtsEngineInfo(extension);
+  return engine ? &engine->voices : nullptr;
 }
 
-TtsEngineManifestHandler::TtsEngineManifestHandler() {}
+// static
+const TtsVoices* TtsVoices::GetTtsEngineInfo(const Extension* extension) {
+  TtsVoices* info =
+      static_cast<TtsVoices*>(extension->GetManifestData(keys::kTtsVoices));
+  return info;
+}
 
-TtsEngineManifestHandler::~TtsEngineManifestHandler() {}
+TtsEngineManifestHandler::TtsEngineManifestHandler() = default;
+
+TtsEngineManifestHandler::~TtsEngineManifestHandler() = default;
 
 bool TtsEngineManifestHandler::Parse(Extension* extension,
                                      std::u16string* error) {
@@ -145,6 +153,52 @@ bool TtsEngineManifestHandler::Parse(Extension* extension,
 
   if (!TtsVoices::Parse(tts_voices, info.get(), error, extension))
     return false;
+
+  const base::Value* tts_engine_sample_rate =
+      tts_dict->FindPath(keys::kTtsEngineSampleRate);
+  if (tts_engine_sample_rate) {
+    if (!tts_engine_sample_rate->GetIfInt()) {
+      *error = base::ASCIIToUTF16(errors::kInvalidTtsSampleRateFormat);
+      return false;
+    }
+
+    info->sample_rate = tts_engine_sample_rate->GetInt();
+    if (info->sample_rate < media::limits::kMinSampleRate ||
+        info->sample_rate > media::limits::kMaxSampleRate) {
+      *error = base::ASCIIToUTF16(base::StringPrintf(
+          errors::kInvalidTtsSampleRateRange, media::limits::kMinSampleRate,
+          media::limits::kMaxSampleRate));
+      return false;
+    }
+  }
+
+  const base::Value* tts_engine_buffer_size =
+      tts_dict->FindPath(keys::kTtsEngineBufferSize);
+  if (tts_engine_buffer_size) {
+    if (!tts_engine_buffer_size->GetIfInt()) {
+      *error = base::ASCIIToUTF16(errors::kInvalidTtsBufferSizeFormat);
+      return false;
+    }
+
+    // The limits of the buffer size should match those of those found in
+    // AudioParameters::IsValid (as should the sample rate limits above).
+    constexpr int kMinBufferSize = 1;
+    info->buffer_size = tts_engine_buffer_size->GetInt();
+    if (info->buffer_size < kMinBufferSize ||
+        info->buffer_size > media::limits::kMaxSamplesPerPacket) {
+      *error = base::ASCIIToUTF16(
+          base::StringPrintf(errors::kInvalidTtsBufferSizeRange, kMinBufferSize,
+                             media::limits::kMaxSamplesPerPacket));
+      return false;
+    }
+  }
+
+  if ((!tts_engine_sample_rate && tts_engine_buffer_size) ||
+      (tts_engine_sample_rate && !tts_engine_buffer_size)) {
+    *error =
+        base::ASCIIToUTF16(errors::kInvalidTtsRequiresSampleRateAndBufferSize);
+    return false;
+  }
 
   extension->SetManifestData(keys::kTtsVoices, std::move(info));
   return true;

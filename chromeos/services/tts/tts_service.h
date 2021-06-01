@@ -42,6 +42,7 @@ class TtsService : public mojom::TtsService {
   void BindPlaybackTtsStream(
       mojo::PendingReceiver<mojom::PlaybackTtsStream> receiver,
       mojo::PendingRemote<media::mojom::AudioStreamFactory> factory,
+      mojom::AudioParametersPtr desired_audio_parameters,
       BindPlaybackTtsStreamCallback callback) override;
 
  private:

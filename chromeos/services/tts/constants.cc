@@ -9,5 +9,8 @@ namespace tts {
 const char kLibchromettsPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/patts/libchrometts.so";
 const char kTempDataDirectory[] = "/tmp/tts";
+const int kDefaultSampleRate = 24000;
+const int kDefaultBufferSize = 512;
+
 }  // namespace tts
 }  // namespace chromeos
