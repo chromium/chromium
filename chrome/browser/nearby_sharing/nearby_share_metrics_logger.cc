@@ -6,29 +6,15 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_service.h"
 
 namespace {
 
 const size_t kBytesPerKilobyte = 1024;
 const uint64_t k5MbInBytes = 5242880;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
-enum class NearbyShareEnabledState {
-  kEnabledAndOnboarded = 0,
-  kEnabledAndNotOnboarded = 1,
-  kDisabledAndOnboarded = 2,
-  kDisabledAndNotOnboarded = 3,
-  kDisallowedByPolicy = 4,
-  kMaxValue = kDisallowedByPolicy
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
@@ -362,26 +348,8 @@ void RecordNearbySharePayloadAttachmentTypeMetric(
 
 }  // namespace
 
-void RecordNearbyShareEnabledMetric(const PrefService* pref_service) {
-  NearbyShareEnabledState state;
-
-  bool is_managed =
-      pref_service->IsManagedPreference(prefs::kNearbySharingEnabledPrefName);
-  bool is_enabled =
-      pref_service->GetBoolean(prefs::kNearbySharingEnabledPrefName);
-  bool is_onboarded =
-      pref_service->GetBoolean(prefs::kNearbySharingOnboardingCompletePrefName);
-
-  if (is_enabled) {
-    state = is_onboarded ? NearbyShareEnabledState::kEnabledAndOnboarded
-                         : NearbyShareEnabledState::kEnabledAndNotOnboarded;
-  } else if (is_managed) {
-    state = NearbyShareEnabledState::kDisallowedByPolicy;
-  } else {  // !is_enabled && !is_managed
-    state = is_onboarded ? NearbyShareEnabledState::kDisabledAndOnboarded
-                         : NearbyShareEnabledState::kDisabledAndNotOnboarded;
-  }
-
+void RecordNearbyShareEnabledMetric(
+    NearbyShareFeatureUsageMetrics::NearbyShareEnabledState state) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
 }
 
@@ -552,11 +520,25 @@ void RecordNearbyShareStartAdvertisingResultMetric(
 }
 
 void RecordNearbyShareTransferFinalStatusMetric(
+    NearbyShareFeatureUsageMetrics* feature_usage_metrics,
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status,
     bool is_known) {
   DCHECK(TransferMetadata::IsFinalStatus(status));
+
+  // Emit success/failure to Standard Feature Usage Logging if there was a
+  // definitive result.
+  switch (TransferMetadata::ToResult(status)) {
+    case TransferMetadata::Result::kSuccess:
+      feature_usage_metrics->RecordUsage(/*success=*/true);
+      break;
+    case TransferMetadata::Result::kFailure:
+      feature_usage_metrics->RecordUsage(/*success=*/false);
+      break;
+    case TransferMetadata::Result::kIndeterminate:
+      break;
+  }
 
   base::UmaHistogramBoolean("Nearby.Share.IsKnownContact", is_known);
 
