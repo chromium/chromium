@@ -170,15 +170,17 @@ void CanvasPerformanceMonitor::CurrentTaskDrawsToContext(
     // canvases per render task.
     measure_current_task_ = !(task_counter_++ % kSamplingProbabilityInv);
 
-    if (context->Host() && context->Host()->GetTopExecutionContext() &&
-        context->Host()
-            ->GetTopExecutionContext()
-            ->IsInRequestAnimationFrame()) {
-      call_type_ = CallType::kAnimation;
-    } else {
-      // TODO(crbug.com/1206028): Add support for CallType::kUserInput
-      call_type_ = CallType::kOther;
+    if (LIKELY(!measure_current_task_))
+      return;
+
+    call_type_ = CallType::kOther;
+    if (context->Host()) {
+      ExecutionContext* ec = context->Host()->GetTopExecutionContext();
+      if (ec && ec->IsInRequestAnimationFrame()) {
+        call_type_ = CallType::kAnimation;
+      }
     }
+    // TODO(crbug.com/1206028): Add support for CallType::kUserInput
   }
 
   if (LIKELY(!measure_current_task_))
