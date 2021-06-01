@@ -8,25 +8,41 @@
 #include <vector>
 
 #include "components/content_creation/notes/core/templates/template_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content_creation {
 
 // Contains the information required to be able to render a note.
 class NoteTemplate {
  public:
+  // Constructor for a basic NoteTemplate.
   explicit NoteTemplate(NoteTemplateIds id,
                         const std::string& localized_name,
-                        const Background& background,
+                        const Background& main_background,
+                        const TextStyle& text_style,
+                        const FooterStyle& footer_style);
+
+  // Constructor for a NoteTemplate with a content background.
+  explicit NoteTemplate(NoteTemplateIds id,
+                        const std::string& localized_name,
+                        const Background& main_background,
+                        const Background& content_background,
                         const TextStyle& text_style,
                         const FooterStyle& footer_style);
 
   NoteTemplate(const NoteTemplate& other);
 
+  ~NoteTemplate();
+
   NoteTemplateIds id() const { return id_; }
-  const std::string localized_name() const { return localized_name_; }
-  const Background main_background() const { return main_background_; }
-  const TextStyle text_style() const { return text_style_; }
-  const FooterStyle footer_style() const { return footer_style_; }
+  const std::string& localized_name() const { return localized_name_; }
+  const Background& main_background() const { return main_background_; }
+  const Background* content_background() const {
+    return content_background_.has_value() ? &content_background_.value()
+                                           : nullptr;
+  }
+  const TextStyle& text_style() const { return text_style_; }
+  const FooterStyle& footer_style() const { return footer_style_; }
 
  private:
   // The template's identifier.
@@ -37,6 +53,10 @@ class NoteTemplate {
 
   // Styling of the main background.
   Background main_background_;
+
+  // Styling of the content's background, drawn on top of the main background
+  // but behind the main text.
+  absl::optional<Background> content_background_;
 
   // Styling of the main text.
   TextStyle text_style_;

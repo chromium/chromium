@@ -100,6 +100,20 @@ NoteTemplate GetImpactfulTemplate() {
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
+NoteTemplate GetLovelyTemplate() {
+  return NoteTemplate(
+      /*id=*/NoteTemplateIds::kLovely,
+      l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_LOVELY),
+      /*main_background*/
+      Background(/*colors=*/{0xFFCEF9FF, 0xFFF1DFFF},
+                 LinearGradientDirection::kTopRightToBottomLeft),
+      /*content_background*/ Background(/*color=*/kWhiteColor),
+      TextStyle(kSourceSerifProFontName,
+                /*font_color=*/kBlackColor, k400Weight,
+                /*all_caps=*/false, TextAlignment::kCenter),
+      /*footer_style=*/CreateLightBackgroundFooterStyle());
+}
+
 NoteTemplate GetMonochromeTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kMonochrome,

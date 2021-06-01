@@ -66,10 +66,10 @@ public class NoteTemplateConversionBridge {
      */
     @CalledByNative
     private static NoteTemplate createTemplateAndMaybeAddToList(@Nullable List<NoteTemplate> list,
-            int id, String localizedName, Background mainBackground, TextStyle textStyle,
-            FooterStyle footerStyle) {
-        NoteTemplate template =
-                new NoteTemplate(id, localizedName, mainBackground, textStyle, footerStyle);
+            int id, String localizedName, Background mainBackground, Background contentBackground,
+            TextStyle textStyle, FooterStyle footerStyle) {
+        NoteTemplate template = new NoteTemplate(
+                id, localizedName, mainBackground, contentBackground, textStyle, footerStyle);
 
         if (list != null) {
             list.add(template);

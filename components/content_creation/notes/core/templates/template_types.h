@@ -54,7 +54,7 @@ class Background {
 
   ARGBColor color() const { return color_; }
 
-  const std::vector<ARGBColor>* colors() const { return &colors_; }
+  const std::vector<ARGBColor>& colors() const { return colors_; }
   LinearGradientDirection direction() const { return direction_; }
 
   bool is_linear_gradient() const { return is_linear_gradient_; }
@@ -81,7 +81,7 @@ class TextStyle {
                      bool all_caps,
                      TextAlignment alignment);
 
-  const std::string font_name() const { return font_name_; }
+  const std::string& font_name() const { return font_name_; }
   ARGBColor font_color() const { return font_color_; }
   uint16_t weight() const { return weight_; }
   bool all_caps() const { return all_caps_; }

@@ -27,7 +27,7 @@ Background::Background(const std::vector<ARGBColor>& colors,
 Background::Background(const Background& other) {
   if (other.is_linear_gradient()) {
     is_linear_gradient_ = true;
-    colors_ = *other.colors();
+    colors_ = other.colors();
     direction_ = other.direction();
   } else {
     is_linear_gradient_ = false;
