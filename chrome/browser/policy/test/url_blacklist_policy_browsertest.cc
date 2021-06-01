@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
   CheckURLIsBlocked(browser(), file_path2);
 
   // Replace the URLblacklist with disabling the file scheme.
-  blacklist.Remove(base::Value("file://*"), nullptr);
+  blacklist.EraseListValue(base::Value("file://*"));
   policies.Set(key::kURLBlacklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, blacklist.Clone(), nullptr);
   UpdateProviderPolicy(policies);
