@@ -129,6 +129,7 @@ export class DownloadListElement extends CustomElement {
     });
   }
 
+  /** @private */
   clear_() {
     while (this.listenerIds_.length) {
       this.apiProxy_.getCallbackRouter().removeListener(

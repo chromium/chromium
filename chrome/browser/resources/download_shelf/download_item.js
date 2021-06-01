@@ -51,8 +51,9 @@ export class DownloadItemElement extends CustomElement {
         .addEventListener('click', e => this.onOpenButtonClick_(e));
     this.$('#dropdown-button')
         .addEventListener('click', e => this.onDropdownButtonClick_(e));
-    this.$('#discard-button')
-        .addEventListener('click', e => this.onDiscardButtonClick_(e));
+    const discardButton = this.$('#discard-button');
+    discardButton.innerText = loadTimeData.getString('discardButtonText');
+    discardButton.addEventListener('click', e => this.onDiscardButtonClick_(e));
     this.$('#keep-button')
         .addEventListener('click', e => this.onKeepButtonClick_(e));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
@@ -73,8 +74,8 @@ export class DownloadItemElement extends CustomElement {
   }
 
   /**
-   * @private
    * @return {string}
+   * @private
    */
   get clampedWarningText_() {
     // Views uses ui/gfx/text_elider.cc to elide text given a maximum width.
