@@ -63,4 +63,14 @@ absl::optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
       source_.absolute_capture_time()->absolute_capture_timestamp);
 }
 
+absl::optional<int64_t> RTCRtpSource::SenderCaptureTimeOffset() const {
+  if (!source_.absolute_capture_time().has_value() ||
+      !source_.absolute_capture_time()
+           ->estimated_capture_clock_offset.has_value()) {
+    return absl::nullopt;
+  }
+  return webrtc::UQ32x32ToInt64Ms(
+      source_.absolute_capture_time()->estimated_capture_clock_offset.value());
+}
+
 }  // namespace blink

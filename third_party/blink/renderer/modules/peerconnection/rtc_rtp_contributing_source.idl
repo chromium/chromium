@@ -10,4 +10,6 @@ dictionary RTCRtpContributingSource {
     required unsigned long       rtpTimestamp;
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpcontributingsource-capturetimestamp
     [RuntimeEnabled=CaptureTimeInCsrc] DOMHighResTimeStamp captureTimestamp;
+    // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpcontributingsource-sendercapturetimeoffset
+    [RuntimeEnabled=CaptureTimeInCsrc] DOMHighResTimeStamp senderCaptureTimeOffset;
 };

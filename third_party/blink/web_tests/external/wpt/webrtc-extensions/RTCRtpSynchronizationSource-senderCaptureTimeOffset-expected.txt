@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS [audio] getSynchronizationSources() should not contain senderCaptureTimeOffset if absolute capture time RTP header extension is not offered
+PASS [audio] getSynchronizationSources() should not contain senderCaptureTimeOffset if absolute capture time RTP header extension is offered, but not answered
+FAIL [audio] getSynchronizationSources() should contain senderCaptureTimeOffset if absolute capture time RTP header extension is negotiated assert_true: expected true got false
+PASS [video] getSynchronizationSources() should not contain senderCaptureTimeOffset if absolute capture time RTP header extension is not offered
+PASS [video] getSynchronizationSources() should not contain senderCaptureTimeOffset if absolute capture time RTP header extension is offered, but not answered
+FAIL [video] getSynchronizationSources() should contain senderCaptureTimeOffset if absolute capture time RTP header extension is negotiated assert_true: expected true got false
+FAIL Audio and video RTCRtpSynchronizationSource.senderCaptureTimeOffset must be zero assert_equals: expected (number) 0 but got (undefined) undefined
+Harness: the test ran to completion.
+
