@@ -7,4 +7,4 @@ The highest version sql file should always reflect the current database
 schema.
 
 For more info, please see the migration steps located at the top of
-`content/browser/conversions/conversion_storage_sql_initializer.cc`.
+`content/browser/conversions/conversion_storage_sql_migrations.h`.
