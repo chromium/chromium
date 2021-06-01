@@ -5,6 +5,12 @@
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 
 namespace blink {
+namespace {
+template <size_t N>
+bool BitsetContains(const std::bitset<N>& lhs, const std::bitset<N>& rhs) {
+  return (lhs & rhs) == rhs;
+}
+}  // namespace
 
 using FeatureType = mojom::UseCounterFeatureType;
 
@@ -55,6 +61,14 @@ std::vector<UseCounterFeature> UseCounterFeatureTracker::GetRecordedFeatures()
 void UseCounterFeatureTracker::ResetForTesting(
     const UseCounterFeature& feature) {
   Set(feature, false);
+}
+
+bool UseCounterFeatureTracker::ContainsForTesting(
+    const UseCounterFeatureTracker& other) const {
+  return BitsetContains(web_features_, other.web_features_) &&
+         BitsetContains(css_properties_, other.css_properties_) &&
+         BitsetContains(animated_css_properties_,
+                        other.animated_css_properties_);
 }
 
 void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,

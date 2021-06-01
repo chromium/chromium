@@ -13,6 +13,7 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace page_load_metrics {
@@ -278,7 +279,7 @@ class PageLoadMetricsTestWaiter
   bool CpuTimeExpectationsSatisfied() const;
   bool LoadingBehaviorExpectationsSatisfied() const;
   bool ResourceUseExpectationsSatisfied() const;
-  bool WebFeaturesExpectationsSatisfied() const;
+  bool UseCounterExpectationsSatisfied() const;
   bool SubframeNavigationExpectationsSatisfied() const;
   bool SubframeDataExpectationsSatisfied() const;
   bool MainFrameIntersectionExpectationsSatisfied() const;
@@ -296,9 +297,7 @@ class PageLoadMetricsTestWaiter
 
     TimingFieldBitSet page_fields_;
     TimingFieldBitSet subframe_fields_;
-    std::bitset<static_cast<size_t>(
-        blink::mojom::WebFeature::kNumberOfFeatures)>
-        web_features_;
+    blink::UseCounterFeatureTracker feature_tracker_;
     int loading_behavior_flags_ = 0;
     bool subframe_navigation_ = false;
     bool subframe_data_ = false;

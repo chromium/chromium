@@ -24,6 +24,10 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
 
   void ResetForTesting(const UseCounterFeature&);
 
+  // Returns whether all recorded features in `other` are also recorded
+  // in `this`.
+  bool ContainsForTesting(const UseCounterFeatureTracker& other) const;
+
  private:
   void Set(const UseCounterFeature&, bool);
 
