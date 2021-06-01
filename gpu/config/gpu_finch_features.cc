@@ -62,8 +62,14 @@ const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
 
 // https://crbug.com/1176185 List of devices on which SurfaceControl should be
 // disabled.
-const base::FeatureParam<std::string> kAndroidSurfaceControlBlocklist{
-    &kAndroidSurfaceControl, "AndroidSurfaceControlBlocklist", "capri|caprip"};
+const base::FeatureParam<std::string> kAndroidSurfaceControlDeviceBlocklist{
+    &kAndroidSurfaceControl, "AndroidSurfaceControlDeviceBlocklist",
+    "capri|caprip"};
+
+// List of models on which SurfaceControl should be disabled.
+const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
+    &kAndroidSurfaceControl, "AndroidSurfaceControlModelBlocklist",
+    "SM-F7*|SM-F9*"};
 
 // Hardware Overlays for WebView.
 const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
@@ -291,7 +297,9 @@ bool IsAImageReaderEnabled() {
 bool IsAndroidSurfaceControlEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   if (IsDeviceBlocked(build_info->device(),
-                      kAndroidSurfaceControlBlocklist.Get())) {
+                      kAndroidSurfaceControlDeviceBlocklist.Get()) ||
+      IsDeviceBlocked(build_info->model(),
+                      kAndroidSurfaceControlModelBlocklist.Get())) {
     return false;
   }
 
