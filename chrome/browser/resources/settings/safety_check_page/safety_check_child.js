@@ -8,6 +8,7 @@
  * have in common. It is used by all safety check elements: parent, updates,
  * passwors, etc.
  */
+import 'chrome://resources/cr_elements/cr_actionable_row_style.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -67,6 +68,7 @@ Polymer({
       type: Boolean,
       value: false,
       reflectToAttribute: true,
+      observer: 'onRowClickableChanged_',
     },
 
     // Is the row directed to external link.
@@ -194,5 +196,11 @@ Polymer({
     return this.rowClickableIcon_ === 'cr:arrow-right' ?
         this.i18n('subpageArrowRoleDescription') :
         '';
+  },
+
+  /** @private */
+  onRowClickableChanged_() {
+    // For cr-actionable-row-style.
+    this.toggleAttribute('effectively-disabled_', !this.rowClickable);
   }
 });

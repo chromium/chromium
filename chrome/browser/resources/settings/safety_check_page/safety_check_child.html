@@ -1,6 +1,7 @@
-<style include="cr-shared-style settings-shared iron-flex">
-  :host([row-clickable]) .cr-row {
-    cursor: pointer;
+<style include="cr-shared-style settings-shared iron-flex cr-actionable-row-style">
+  :host {
+    border-top: var(--cr-separator-line);
+    padding: 0 var(--cr-section-padding);
   }
 
   :host([row-clickable]) #managedIcon {
@@ -34,36 +35,33 @@
     }
   }
 </style>
-<div class="cr-row">
-  <iron-icon id="statusIcon"
-      icon="[[getStatusIcon_(iconStatus)]]"
-      src="[[getStatusIconSrc_(iconStatus)]]"
-      class$="[[getStatusIconClass_(iconStatus)]]"
-      role="img"
-      aria-label="[[getStatusIconAriaLabel_(iconStatus)]]">
-  </iron-icon>
-  <div class="flex cr-padded-text">
-    <div id="label">[[label]]</div>
-    <div id="subLabel" class="secondary" no-search
-        inner-h-t-m-l="[[subLabel]]">
-    </div>
+<iron-icon id="statusIcon"
+    icon="[[getStatusIcon_(iconStatus)]]"
+    src="[[getStatusIconSrc_(iconStatus)]]"
+    class$="[[getStatusIconClass_(iconStatus)]]"
+    role="img"
+    aria-label="[[getStatusIconAriaLabel_(iconStatus)]]">
+</iron-icon>
+<div class="flex cr-padded-text">
+  <div id="label">[[label]]</div>
+  <div id="subLabel" class="secondary" no-search inner-h-t-m-l="[[subLabel]]">
   </div>
-  <template is="dom-if" if="[[showButton_(buttonLabel)]]" restamp>
-    <cr-button id="button" class$="[[buttonClass]]" on-click="onButtonClick_"
-        aria-label="[[buttonAriaLabel]]" no-search>
-      [[buttonLabel]]
-    </cr-button>
-  </template>
-  <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]">
-    <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
-    </iron-icon>
-  </template>
-  <template is="dom-if" if="[[rowClickable]]">
-    <cr-icon-button id="rowClickableIndicator"
-        iron-icon="[[rowClickableIcon_]]"
-        aria-describedby="subLabel"
-        aria-labelledby="label"
-        aria-roledescription$="[[getRoleDescription_(rowClickableIcon_)]]">
-    </cr-icon-button>
-  </template>
 </div>
+<template is="dom-if" if="[[showButton_(buttonLabel)]]" restamp>
+  <cr-button id="button" class$="[[buttonClass]]" on-click="onButtonClick_"
+      aria-label="[[buttonAriaLabel]]" no-search>
+    [[buttonLabel]]
+  </cr-button>
+</template>
+<template is="dom-if" if="[[showManagedIcon_(managedIcon)]]">
+  <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
+  </iron-icon>
+</template>
+<template is="dom-if" if="[[rowClickable]]">
+  <cr-icon-button id="rowClickableIndicator"
+      iron-icon="[[rowClickableIcon_]]"
+      aria-describedby="subLabel"
+      aria-labelledby="label"
+      aria-roledescription$="[[getRoleDescription_(rowClickableIcon_)]]">
+  </cr-icon-button>
+</template>
