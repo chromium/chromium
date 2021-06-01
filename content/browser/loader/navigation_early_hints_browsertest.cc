@@ -59,12 +59,19 @@ struct ResponseEntry {
 
 const char kPageWithHintedScriptPath[] = "/page_with_hinted_js.html";
 const char kPageWithHintedScriptBody[] = "<script src=\"/hinted.js\"></script>";
+
+const char kPageWithHintedCorsScriptPath[] = "/page_with_hinted_cors_js.html";
+const char kPageWithHintedCorsScriptBody[] =
+    "<script src=\"/hinted.js\" crossorigin></script>";
+
 const char kPageWithHintedModuleScriptPath[] =
     "/page_with_hinted_module_js.html";
 const char kPageWithHintedModuleScriptBody[] =
     "<script src=\"/hinted.js\" type=\"module\"></script>";
+
 const char kHintedScriptPath[] = "/hinted.js";
 const char kHintedScriptBody[] = "document.title = 'Done';";
+
 const char kHintedStylesheetPath[] = "/hinted.css";
 const char kHintedStylesheetBody[] = "/*empty*/";
 
@@ -123,6 +130,12 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
         base::StringPrintf("<%s>; rel=preload; as=script", kHintedScriptPath));
   }
 
+  HeaderField CreatePreloadLinkForCorsScript() {
+    return HeaderField(
+        "link", base::StringPrintf("<%s>; rel=preload; as=script; crossorigin",
+                                   kHintedScriptPath));
+  }
+
   HeaderField CreateModulePreloadLink() {
     return HeaderField("link", base::StringPrintf("<%s>; rel=modulepreload",
                                                   kHintedScriptPath));
@@ -160,6 +173,18 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
     ResponseEntry entry(kPageWithHintedScriptPath, status_code);
     entry.body = kPageWithHintedScriptBody;
     HeaderField link_header = CreatePreloadLinkForScript();
+    entry.AddEarlyHints({std::move(link_header)});
+
+    return entry;
+  }
+
+  ResponseEntry CreatePageEntryWithHintedCorsScript(
+      net::HttpStatusCode status_code) {
+    RegisterHintedScriptResource();
+
+    ResponseEntry entry(kPageWithHintedCorsScriptPath, status_code);
+    entry.body = kPageWithHintedCorsScriptBody;
+    HeaderField link_header = CreatePreloadLinkForCorsScript();
     entry.AddEarlyHints({std::move(link_header)});
 
     return entry;
@@ -218,6 +243,24 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
 
   EXPECT_TRUE(NavigateToURLAndWaitTitle(
       net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath),
+      "Done"));
+  PreloadedResources preloads = WaitForPreloadedResources();
+  EXPECT_EQ(preloads.size(), 1UL);
+
+  GURL preloaded_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
+  auto it = preloads.find(preloaded_url);
+  ASSERT_TRUE(it != preloads.end());
+  ASSERT_FALSE(it->second.was_canceled);
+  ASSERT_TRUE(it->second.error_code.has_value());
+  EXPECT_EQ(it->second.error_code.value(), net::OK);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, CorsAttribute) {
+  ResponseEntry entry = CreatePageEntryWithHintedCorsScript(net::HTTP_OK);
+  RegisterResponse(entry);
+
+  EXPECT_TRUE(NavigateToURLAndWaitTitle(
+      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedCorsScriptPath),
       "Done"));
   PreloadedResources preloads = WaitForPreloadedResources();
   EXPECT_EQ(preloads.size(), 1UL);
