@@ -79,7 +79,10 @@ declare_args() {
       ozone_platform = "x11"
       ozone_platform_drm = true
       ozone_platform_x11 = true
-    } else if (is_linux || is_chromeos_lacros) {
+    } else if (is_chromeos_lacros) {
+      ozone_platform = "wayland"
+      ozone_platform_wayland = true
+    } else if (is_linux) {
       ozone_platform = "x11"
       ozone_platform_wayland = true
       ozone_platform_x11 = true
