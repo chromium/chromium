@@ -120,8 +120,6 @@ public class AssistantTriggerScriptBridge {
     @CalledByNative
     private void hideTriggerScript() {
         mTriggerScript.hide();
-        mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
-                mKeyboardVisibilityListener);
     }
 
     @CalledByNative
