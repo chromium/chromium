@@ -1330,24 +1330,22 @@ video::-internal-media-controls-scrubbing-message {
 video::-internal-media-controls-text-track-list-kind-captions {
     -webkit-appearance: none;
       background-image: -internal-light-dark(-webkit-image-set(url(ic_closed_caption.svg) 1x), -webkit-image-set(url(ic_closed_caption_white.svg) 1x));
-    background-size: 32px;
+    background-size: 18px;
     background-repeat: no-repeat;
     background-position: center center;
-    height: 20px;
-    width: 20px;
-    margin-left: 10px;
+    height: 18px;
+    width: 18px;
     vertical-align: middle;
 }
 
 video::-internal-media-controls-text-track-list-kind-subtitles {
     -webkit-appearance: none;
       background-image: -internal-light-dark(-webkit-image-set(url(ic_subtitles.svg) 1x), -webkit-image-set(url(ic_subtitles_white.svg) 1x));
-    background-size: 32px;
+    background-size: 18px;
     background-repeat: no-repeat;
     background-position: center center;
-    height: 20px;
-    width: 20px;
-    margin-left: 10px;
+    height: 18px;
+    width: 18px;
     vertical-align: middle;
 }
 
