@@ -1387,7 +1387,7 @@ class CONTENT_EXPORT NavigationRequest
   const ReloadType reload_type_;
   const int nav_entry_id_;
   bool is_view_source_ = false;
-  int bindings_;
+  int bindings_ = FrameNavigationEntry::kInvalidBindings;
 
   scoped_refptr<SiteInstanceImpl> starting_site_instance_;
 
@@ -1439,7 +1439,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Identifies in which RenderProcessHost this navigation is expected to
   // commit.
-  int expected_render_process_host_id_;
+  int expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().
@@ -1644,12 +1644,12 @@ class CONTENT_EXPORT NavigationRequest
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
-  int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  const int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // Whether a navigation in a new window had the opener suppressed. False if
   // the navigation is not in a new window. Can only be true for renderer
   // initiated navigations which use `CreateBrowserInitiated()`.
-  bool was_opener_suppressed_ = false;
+  const bool was_opener_suppressed_ = false;
 
   // This tracks a connection between the current pending entry and this
   // request, such that the pending entry can be discarded if no requests are
@@ -1680,7 +1680,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Structure tracking the effects of the CrossOriginOpenerPolicy on this
   // navigation.
-  CrossOriginOpenerPolicyStatus coop_status_;
+  CrossOriginOpenerPolicyStatus coop_status_{this};
 
 #if DCHECK_IS_ON()
   bool is_safe_to_delete_ = true;
