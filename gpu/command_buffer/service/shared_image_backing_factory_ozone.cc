@@ -8,6 +8,7 @@
 #include <dawn_native/DawnNative.h>
 
 #include "base/logging.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
 #include "ui/gl/buildflags.h"
 
@@ -72,9 +73,32 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   return nullptr;
 }
 
-bool SharedImageBackingFactoryOzone::CanImportGpuMemoryBuffer(
-    gfx::GpuMemoryBufferType memory_buffer_type) {
-  NOTIMPLEMENTED_LOG_ONCE();
+bool SharedImageBackingFactoryOzone::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    bool* allow_legacy_mailbox) {
+  bool using_dawn = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  bool vulkan_usage = gr_context_type == GrContextType::kVulkan &&
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
+  bool using_interop_factory =
+      vulkan_usage || using_dawn || (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
+
+  if (using_interop_factory) {
+    // TODO(crbug.com/969114): Not all shared image factory implementations
+    // support concurrent read/write usage.
+    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+      LOG(ERROR) << "Unable to create SharedImage backing: Interoperability is "
+                    "not supported for concurrent read/write usage";
+      return false;
+    }
+
+    *allow_legacy_mailbox = false;
+    return true;
+  }
+
   return false;
 }
 

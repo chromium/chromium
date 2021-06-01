@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/viz/common/resources/resource_format.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -58,10 +59,13 @@ class SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage) = 0;
 
-  // Returns true if the specified GpuMemoryBufferType can be imported using
-  // this factory.
-  virtual bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) = 0;
+  // Returns true if the factory is supported
+  virtual bool IsSupported(uint32_t usage,
+                           viz::ResourceFormat format,
+                           bool thread_safe,
+                           gfx::GpuMemoryBufferType gmb_type,
+                           GrContextType gr_context_type,
+                           bool* allow_legacy_mailbox) = 0;
 };
 
 }  // namespace gpu

@@ -733,6 +733,48 @@ bool SharedImageBackingFactoryAHB::CanImportGpuMemoryBuffer(
   return memory_buffer_type == gfx::ANDROID_HARDWARE_BUFFER;
 }
 
+bool SharedImageBackingFactoryAHB::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    bool* allow_legacy_mailbox) {
+  bool using_interop_factory = (gr_context_type == GrContextType::kVulkan &&
+                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
+                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
+                               (usage & SHARED_IMAGE_USAGE_SCANOUT);
+
+  if (gmb_type != gfx::EMPTY_BUFFER) {
+    bool interop_factory_supports_gmb = CanImportGpuMemoryBuffer(gmb_type);
+
+    if (!interop_factory_supports_gmb) {
+      return false;
+    }
+
+    // If |interop_backing_factory_| supports supplied GMB type then use it
+    using_interop_factory |= interop_factory_supports_gmb;
+  }
+
+  if (using_interop_factory) {
+    // TODO(crbug.com/969114): Not all shared image factory implementations
+    // support concurrent read/write usage.
+    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+      LOG(ERROR) << "Unable to create SharedImage backing: Interoperability is "
+                    "not supported for concurrent read/write usage";
+      return false;
+    }
+
+    if (IsFormatSupported(format)) {
+      *allow_legacy_mailbox = false;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool SharedImageBackingFactoryAHB::IsFormatSupported(
     viz::ResourceFormat format) {
   DCHECK_GE(format, 0);

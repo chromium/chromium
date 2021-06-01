@@ -141,7 +141,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
  private:
   bool IsSharedBetweenThreads(uint32_t usage);
-  bool CanUseWrappedSkImage(uint32_t usage) const;
   SharedImageBackingFactory* GetFactoryByUsage(
       uint32_t usage,
       viz::ResourceFormat format,

@@ -92,10 +92,16 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
       SkAlphaType alpha_type,
       uint32_t usage) override;
 
+  bool IsSupported(uint32_t usage,
+                   viz::ResourceFormat format,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   bool* allow_legacy_mailbox) override;
+
   // Returns true if the specified GpuMemoryBufferType can be imported using
   // this factory.
-  bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
 
   Microsoft::WRL::ComPtr<ID3D11Device> GetDeviceForTesting() const {
     return d3d11_device_;

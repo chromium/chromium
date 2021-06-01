@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -477,6 +478,41 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
 bool WrappedSkImageFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return memory_buffer_type == gfx::SHARED_MEMORY_BUFFER;
+}
+
+bool WrappedSkImageFactory::CanUseWrappedSkImage(
+    uint32_t usage,
+    GrContextType gr_context_type) const {
+  constexpr auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_RASTER |
+                                        SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                                        SHARED_IMAGE_USAGE_DISPLAY;
+  if (gr_context_type != GrContextType::kGL) {
+    // For SkiaRenderer/Vulkan+Dawn use WrappedSkImage if the usage is only
+    // raster and/or display.
+    return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
+  } else {
+    // For d SkiaRenderer/GL only use WrappedSkImages for OOP-R because
+    // CopySubTexture() doesn't use Skia. https://crbug.com/984045
+    return usage == kWrappedSkImageUsage;
+  }
+}
+
+bool WrappedSkImageFactory::IsSupported(uint32_t usage,
+                                        viz::ResourceFormat format,
+                                        bool thread_safe,
+                                        gfx::GpuMemoryBufferType gmb_type,
+                                        GrContextType gr_context_type,
+                                        bool* allow_legacy_mailbox) {
+  if (!CanUseWrappedSkImage(usage, gr_context_type) || thread_safe) {
+    return false;
+  }
+
+  if (gmb_type == gfx::EMPTY_BUFFER || CanImportGpuMemoryBuffer(gmb_type)) {
+    *allow_legacy_mailbox = false;
+    return true;
+  }
+
+  return false;
 }
 
 std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(

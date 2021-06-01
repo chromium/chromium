@@ -179,9 +179,13 @@ class TestSharedImageBackingFactory : public gpu::SharedImageBackingFactory {
     NOTREACHED();
     return nullptr;
   }
-  bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) override {
-    return false;
+  bool IsSupported(uint32_t usage,
+                   ResourceFormat format,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   gpu::GrContextType gr_context_type_,
+                   bool* allow_legacy_mailbox) override {
+    return true;
   }
 };
 

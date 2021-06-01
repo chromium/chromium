@@ -60,8 +60,12 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
       SkAlphaType alpha_type,
       uint32_t usage) override;
 
-  bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  bool IsSupported(uint32_t usage,
+                   viz::ResourceFormat format,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   bool* allow_legacy_mailbox) override;
 
  private:
   SharedContextState* const shared_context_state_;

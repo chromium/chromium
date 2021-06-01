@@ -369,11 +369,34 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLTexture::MakeGLImage(
       std::move(handle), size, format, plane, client_id, surface_handle);
 }
 
-bool SharedImageBackingFactoryGLTexture::CanImportGpuMemoryBuffer(
-    gfx::GpuMemoryBufferType memory_buffer_type) {
-  // SharedImageFactory may call CanImportGpuMemoryBuffer() in all other
-  // SharedImageBackingFactory implementations except this one.
-  NOTREACHED();
+bool SharedImageBackingFactoryGLTexture::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    bool* allow_legacy_mailbox) {
+  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
+                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
+                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
+
+#if defined(OS_ANDROID)
+  // Scanout on Android requires explicit fence synchronization which is only
+  // supported by the interop factory.
+  needs_interop_factory |= usage & SHARED_IMAGE_USAGE_SCANOUT;
+#elif defined(OS_MAC)
+  // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
+  // image can be used with both OpenGL and Metal.
+  needs_interop_factory = false;
+#endif
+
+  if (needs_interop_factory) {
+    // return false if it needs interop factory
+    return false;
+  }
+
+  *allow_legacy_mailbox = gr_context_type == GrContextType::kGL && !thread_safe;
   return true;
 }
 

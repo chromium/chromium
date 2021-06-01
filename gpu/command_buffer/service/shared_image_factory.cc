@@ -461,25 +461,6 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
          (usage & SHARED_IMAGE_USAGE_DISPLAY);
 }
 
-bool SharedImageFactory::CanUseWrappedSkImage(uint32_t usage) const {
-  if (!wrapped_sk_image_factory_)
-    return false;
-
-  constexpr auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_RASTER |
-                                        SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-                                        SHARED_IMAGE_USAGE_DISPLAY;
-
-  if (gr_context_type_ != GrContextType::kGL) {
-    // For SkiaRenderer/Vulkan+Dawn use WrappedSkImage if the usage is only
-    // raster and/or display.
-    return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
-  } else {
-    // For d SkiaRenderer/GL only use WrappedSkImages for OOP-R because
-    // CopySubTexture() doesn't use Skia. https://crbug.com/984045
-    return usage == kWrappedSkImageUsage;
-  }
-}
-
 SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     uint32_t usage,
     viz::ResourceFormat format,
@@ -488,91 +469,53 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   if (backing_factory_for_testing_)
     return backing_factory_for_testing_;
 
-  bool using_dawn = usage & SHARED_IMAGE_USAGE_WEBGPU;
-  bool vulkan_usage = gr_context_type_ == GrContextType::kVulkan &&
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
-  bool gl_usage = usage & SHARED_IMAGE_USAGE_GLES2;
   bool share_between_threads = IsSharedBetweenThreads(usage);
-  bool share_between_gl_vulkan = gl_usage && vulkan_usage;
-  bool using_interop_factory = share_between_gl_vulkan || using_dawn ||
-                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
-                               (share_between_threads && vulkan_usage);
 
-#if defined(OS_ANDROID)
-  // Scanout on Android requires explicit fence synchronization which is only
-  // supported by the interop factory.
-  using_interop_factory |= usage & SHARED_IMAGE_USAGE_SCANOUT;
-#elif defined(OS_MAC)
-  // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
-  // image can be used with both OpenGL and Metal.
-  using_interop_factory = false;
-#endif
-
-  bool using_wrapped_sk_image = !using_interop_factory &&
-                                !share_between_threads &&
-                                CanUseWrappedSkImage(usage);
-  if (using_wrapped_sk_image) {
-    if (gmb_type == gfx::EMPTY_BUFFER ||
-        wrapped_sk_image_factory_->CanImportGpuMemoryBuffer(gmb_type)) {
-      *allow_legacy_mailbox = false;
-      return wrapped_sk_image_factory_.get();
-    }
+  if (wrapped_sk_image_factory_ &&
+      wrapped_sk_image_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox)) {
+    return wrapped_sk_image_factory_.get();
   }
 
-  using_interop_factory |= vulkan_usage;
-
-  if (gmb_type != gfx::EMPTY_BUFFER) {
-    bool interop_factory_supports_gmb =
-        interop_backing_factory_ &&
-        interop_backing_factory_->CanImportGpuMemoryBuffer(gmb_type);
-
-    if (using_interop_factory && !interop_backing_factory_) {
-      LOG(ERROR) << "Unable to screate SharedImage backing: no support for the "
-                    "requested GpuMemoryBufferType.";
-      return nullptr;
-    }
-
-    // If |interop_backing_factory_| supports supplied GMB type then use it
-    // instead of |gl_backing_factory_|.
-    using_interop_factory |= interop_factory_supports_gmb;
+  // check if GpuMemoryBufferType is empty. If empty prefer
+  // |gl_backing_factory_| first
+  if (gmb_type == gfx::EMPTY_BUFFER && gl_backing_factory_ &&
+      gl_backing_factory_->IsSupported(usage, format, share_between_threads,
+                                       gmb_type, gr_context_type_,
+                                       allow_legacy_mailbox)) {
+    return gl_backing_factory_.get();
   }
 
-  *allow_legacy_mailbox = !using_interop_factory &&
-                          gr_context_type_ == GrContextType::kGL &&
-                          !share_between_threads;
-
-  if (using_interop_factory) {
-    // TODO(crbug.com/969114): Not all shared image factory implementations
-    // support concurrent read/write usage.
-    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
-      LOG(ERROR) << "Unable to create SharedImage backing: Interoperability is "
-                    "not supported for concurrent read/write usage";
-      return nullptr;
-    }
-
-#if defined(OS_ANDROID)
-    // On android, we sometime choose VkImage based backing factory as an
-    // interop if the format is not supported by the AHB backing factory.
-    auto* ahb_backing_factory = static_cast<SharedImageBackingFactoryAHB*>(
-        interop_backing_factory_.get());
-    if (ahb_backing_factory && ahb_backing_factory->IsFormatSupported(format))
-      return ahb_backing_factory;
-    if (share_between_threads) {
-      LOG(FATAL) << "ExternalVkImageFactory currently do not support "
-                    "cross-thread usage.";
-    }
-    *allow_legacy_mailbox = false;
-    return external_vk_image_factory_.get();
-#else   // defined(OS_ANDROID)
-    LOG_IF(ERROR, !interop_backing_factory_)
-        << "Unable to create SharedImage backing: GL / Vulkan interoperability "
-           "is not supported on this platform";
-
+  if (interop_backing_factory_ &&
+      interop_backing_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox)) {
     return interop_backing_factory_.get();
-#endif  // !defined(OS_ANDROID)
   }
 
-  return gl_backing_factory_.get();
+#if defined(OS_ANDROID)
+  // On android, we sometime choose VkImage based backing factory as an
+  // interop if the format is not supported by the AHB backing factory.
+  if (external_vk_image_factory_ &&
+      external_vk_image_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox))
+    return external_vk_image_factory_.get();
+#endif  // !defined(OS_ANDROID)
+
+  if (gmb_type != gfx::EMPTY_BUFFER && gl_backing_factory_ &&
+      gl_backing_factory_->IsSupported(usage, format, share_between_threads,
+                                       gmb_type, gr_context_type_,
+                                       allow_legacy_mailbox)) {
+    return gl_backing_factory_.get();
+  }
+
+  LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
+             << usage << ", format: " << format
+             << ", share_between_threads: " << share_between_threads
+             << ", gmb_type: " << gmb_type;
+  return nullptr;
 }
 
 bool SharedImageFactory::RegisterBacking(
