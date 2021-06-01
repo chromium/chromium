@@ -4942,6 +4942,24 @@
             ]
         }
     ],
+    "MobileIdentityConsistencyVar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithConsecutiveActiveDismissal",
+                    "params": {
+                        "consecutive_active_dismissal_limit": "3"
+                    },
+                    "enable_features": [
+                        "MobileIdentityConsistencyVar"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
