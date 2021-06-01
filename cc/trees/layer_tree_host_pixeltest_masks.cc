@@ -308,7 +308,8 @@ TEST_P(LayerTreeHostMaskPixelTest_ScaledMaskWithEffect, Test) {
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostMaskPixelTestWithLayerList, MaskWithEffectDifferentSize) {
+TEST_P(LayerTreeHostMaskPixelTestWithLayerList,
+       DISABLED_MaskWithEffectDifferentSize) {
   mask_bounds_ = gfx::Size(25, 25);
   MaskContentLayerClient client(mask_bounds_);
   mask_layer_ = PictureLayer::Create(&client);
