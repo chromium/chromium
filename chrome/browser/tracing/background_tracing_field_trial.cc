@@ -77,22 +77,32 @@ void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
   if (upload_url.empty() ||
       !base::ReadFileToString(config_file, &config_text) ||
       config_text.empty()) {
+    LOG(ERROR) << "Failed to read background tracing config file "
+               << config_file.value();
     return;
   }
 
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(config_text);
-  if (!value) {
-    LOG(ERROR) << "Background tracing has incorrect config: " << config_text;
+  base::JSONReader::ValueWithError value_with_error =
+      base::JSONReader::ReadAndReturnValueWithError(
+          config_text, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.value) {
+    LOG(ERROR) << "Background tracing has incorrect config: "
+               << value_with_error.error_message;
     return;
   }
 
   const base::DictionaryValue* dict = nullptr;
-  if (!value->GetAsDictionary(&dict))
+  if (!value_with_error.value->GetAsDictionary(&dict)) {
+    LOG(ERROR) << "Background tracing config is not a dict";
     return;
+  }
 
   std::unique_ptr<content::BackgroundTracingConfig> config =
       content::BackgroundTracingConfig::FromDict(dict);
+  if (!config) {
+    LOG(ERROR) << "Background tracing config dict has invalid contents";
+    return;
+  }
   content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
       std::move(config),
       base::BindRepeating(&BackgroundTracingUploadCallback, upload_url),
