@@ -445,7 +445,7 @@ const char kToolbarContainerDescription[] =
     "managed by the toolbar container coordinator rather than BVC.";
 
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
-    "Update history entry points in Incongito.";
+    "Update history entry points in Incognito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
     "When enabled, the entry points to history UI from Incognito mode will be "
     "removed.";
