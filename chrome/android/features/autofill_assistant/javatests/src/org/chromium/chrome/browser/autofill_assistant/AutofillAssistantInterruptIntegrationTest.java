@@ -37,8 +37,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CallbackProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ComputeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto.OverlayBehavior;
@@ -56,7 +55,9 @@ import org.chromium.chrome.browser.autofill_assistant.proto.OnUserActionCalled;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScriptPreconditionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetUserActionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowGenericUiProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StringList;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chun
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueReferenceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -115,30 +117,30 @@ public class AutofillAssistantInterruptIntegrationTest {
     public void testInterruptClicksElementDuringPrompt() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         SelectorProto touch_area_one =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
                         .build();
         SelectorProto touch_area_four =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
                                 "#touch_area_four"))
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setConfigureUiState(ConfigureUiStateProto.newBuilder().setOverlayBehavior(
                                  OverlayBehavior.HIDDEN))
                          .build());
 
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setAllowInterrupt(true).addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Prompt"))))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -147,11 +149,23 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        interruptActionList.add((ActionProto) ActionProto.newBuilder()
-                                        .setClick(ClickProto.newBuilder()
-                                                          .setElementToClick(touch_area_one)
-                                                          .setClickType(ClickType.CLICK))
-                                        .build());
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setWaitForDom(
+                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                        ElementConditionProto.newBuilder()
+                                                .setMatch(touch_area_one)
+                                                .setClientId(clientId)))
+                        .build());
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                        .build());
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
 
         // The interrupt triggers when touch_area_one is present but touch_area_four is gone, so
         // that we can trigger it manually.
@@ -168,7 +182,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                         .build();
 
         AutofillAssistantTestScript interruptScript = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(INTERRUPT_SCRIPT_PATH)
                         .setPresentation(PresentationProto.newBuilder()
                                                  .setChip(ChipProto.newBuilder().setText("Done"))
@@ -200,25 +214,25 @@ public class AutofillAssistantInterruptIntegrationTest {
     public void testInterruptCicksElementDuringShowGenericUi() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         SelectorProto touch_area_one =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
                         .build();
         SelectorProto touch_area_four =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
                                 "#touch_area_four"))
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setConfigureUiState(ConfigureUiStateProto.newBuilder().setOverlayBehavior(
                                  OverlayBehavior.HIDDEN))
                          .build());
 
         List<InteractionProto> interactions = new ArrayList<>();
         interactions.add(
-                (InteractionProto) InteractionProto.newBuilder()
+                InteractionProto.newBuilder()
                         .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
                                 OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
                                         "chips")))
@@ -227,7 +241,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                                         ValueReferenceProto.newBuilder().setModelIdentifier(
                                                 "chips"))))
                         .build());
-        interactions.add((InteractionProto) InteractionProto.newBuilder()
+        interactions.add(InteractionProto.newBuilder()
                                  .addTriggerEvent(EventProto.newBuilder().setOnUserActionCalled(
                                          OnUserActionCalled.newBuilder().setUserActionIdentifier(
                                                  "done_chip")))
@@ -238,7 +252,7 @@ public class AutofillAssistantInterruptIntegrationTest {
 
         List<ModelProto.ModelValue> modelValues = new ArrayList<>();
         modelValues.add(
-                (ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
+                ModelProto.ModelValue.newBuilder()
                         .setIdentifier("chips")
                         .setValue(ValueProto.newBuilder().setUserActions(
                                 UserActionList.newBuilder().addValues(
@@ -250,7 +264,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                         .build());
 
         GenericUserInterfaceProto genericUserInterface =
-                (GenericUserInterfaceProto) GenericUserInterfaceProto.newBuilder()
+                GenericUserInterfaceProto.newBuilder()
                         .setRootView(
                                 ViewProto.newBuilder()
                                         .setTextView(TextViewProto.newBuilder().setText("Text"))
@@ -259,14 +273,14 @@ public class AutofillAssistantInterruptIntegrationTest {
                                 InteractionsProto.newBuilder().addAllInteractions(interactions))
                         .setModel(ModelProto.newBuilder().addAllValues(modelValues))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setShowGenericUi(ShowGenericUiProto.newBuilder()
                                                    .setAllowInterrupt(true)
                                                    .setGenericUserInterface(genericUserInterface))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -275,11 +289,23 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        interruptActionList.add((ActionProto) ActionProto.newBuilder()
-                                        .setClick(ClickProto.newBuilder()
-                                                          .setElementToClick(touch_area_one)
-                                                          .setClickType(ClickType.CLICK))
-                                        .build());
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setWaitForDom(
+                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                        ElementConditionProto.newBuilder()
+                                                .setMatch(touch_area_one)
+                                                .setClientId(clientId)))
+                        .build());
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                        .build());
+        interruptActionList.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
 
         // The interrupt triggers when touch_area_one is present but touch_area_four is gone, so
         // that we can trigger it manually.
@@ -296,7 +322,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                         .build();
 
         AutofillAssistantTestScript interruptScript = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(INTERRUPT_SCRIPT_PATH)
                         .setPresentation(PresentationProto.newBuilder()
                                                  .setChip(ChipProto.newBuilder().setText("Done"))

@@ -73,18 +73,10 @@ class ScriptExecutorTest : public testing::Test,
 
     test_util::MockFindAnyElement(mock_web_controller_);
 
-    // In this test, "tell" actions always succeed and "click" actions,
-    // always fail. The following makes a click action fail.
-    ON_CALL(mock_web_controller_, WaitForDocumentReadyState(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
-                                          base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_web_controller_, ScrollIntoView(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
-    ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
-        .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
-                                          base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_web_controller_, ClickOrTapElement(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(ClientStatus(UNEXPECTED_JS_ERROR)));
+    // In this test, "tell" actions always succeed and "highlight element"
+    // actions always fail.
+    ON_CALL(mock_web_controller_, HighlightElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR)));
   }
 
  protected:
@@ -227,8 +219,9 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
 
 TEST_F(ScriptExecutorTest, RunOneActionReportAndReturn) {
   ActionsResponseProto actions_response;
-  *actions_response.add_actions()->mutable_click()->mutable_element_to_click() =
-      ToSelectorProto("will fail");
+  *actions_response.add_actions()
+       ->mutable_highlight_element()
+       ->mutable_element() = ToSelectorProto("will fail");
 
   EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
@@ -773,8 +766,8 @@ TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
   initial_actions_response.add_actions()->mutable_tell()->set_message(
       "will pass");
   *initial_actions_response.add_actions()
-       ->mutable_click()
-       ->mutable_element_to_click() = ToSelectorProto("will fail");
+       ->mutable_highlight_element()
+       ->mutable_element() = ToSelectorProto("will fail");
   initial_actions_response.add_actions()->mutable_tell()->set_message(
       "never run");
 

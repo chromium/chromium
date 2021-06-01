@@ -734,7 +734,6 @@ message ActionProto {
   optional bytes server_payload = 4;
 
   oneof action_info {
-    ClickProto click = 5;
     SetFormFieldValueProto set_form_value = 6;
     SelectOptionProto select_option = 7;
     NavigateProto navigate = 9;
@@ -794,7 +793,7 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51, 71;
+  reserved 5, 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51, 71;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -1374,18 +1373,6 @@ message SelectorProto {
   }
 
   reserved 1 to 8;
-}
-
-// Contain all arguments to perform a click.
-message ClickProto {
-  optional SelectorProto element_to_click = 1;
-  optional ClickType click_type = 2;
-
-  // Configure whether click should check whether the element is the topmost
-  // element before clicking on it.
-  //
-  // If set to REQUIRE_STEP_SUCCESS, click might fail with ELEMENT_NOT_ON_TOP.
-  optional OptionalStep on_top = 3;
 }
 
 enum OptionalStep {

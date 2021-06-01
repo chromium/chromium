@@ -34,12 +34,10 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CheckElementIsOnTopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.JsClickProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
-import org.chromium.chrome.browser.autofill_assistant.proto.OptionalStep;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -53,6 +51,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter
 import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendTapEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
@@ -430,17 +429,26 @@ public class AutofillAssistantInputActionIntegrationTest {
     @MediumTest
     public void clickingOnElementToHide() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
 
         SelectorProto element_click =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#touch_area_one"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_click)
-                                           .setClickType(ClickType.CLICK))
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(element_click)
+                                                 .setClientId(clientId)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Click").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder()
@@ -448,15 +456,23 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  .setText("Continue"))))
                          .build());
         SelectorProto element_tap =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#touch_area_five"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_tap)
-                                           .setClickType(ClickType.TAP))
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(element_tap)
+                                                 .setClientId(clientId)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSendTapEvent(SendTapEventProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Tap").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder()
@@ -464,15 +480,23 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  .setText("Continue"))))
                          .build());
         SelectorProto element_js =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#touch_area_six"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_js)
-                                           .setClickType(ClickType.JAVASCRIPT))
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(element_js)
+                                                 .setClientId(clientId)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setJsClick(JsClickProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("JS").addChoices(
                                  Choice.newBuilder()))
                          .build());
@@ -507,22 +531,37 @@ public class AutofillAssistantInputActionIntegrationTest {
         checkElementExists(mTestRule.getWebContents(), "overlay");
         showOverlay();
 
-        // This script attempts to click 3 times on #button:
-        // 1. the first click action clicks without checking for overlays
-        // 2. the second click action checks, finds an overlay, but clicks anyway
-        // 3. the third click action finds an overlay and fails
+        // This script attempts to click 2 times on #button:
+        // 1. the first click chain clicks without checking for overlays
+        // 2. the second click chain finds an overlay and fails
         SelectorProto.Builder button = SelectorProto.newBuilder().addFilters(
                 Filter.newBuilder().setCssSelector("#button"));
-        ClickProto.Builder click = ClickProto.newBuilder().setElementToClick(button);
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
         ArrayList<ActionProto> actions = new ArrayList<>();
         actions.add(
-                ActionProto.newBuilder().setClick(click.setOnTop(OptionalStep.SKIP_STEP)).build());
+                ActionProto.newBuilder()
+                        .setWaitForDom(
+                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                        ElementConditionProto.newBuilder()
+                                                .setMatch(button)
+                                                .setClientId(clientId)))
+                        .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                        .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
         actions.add(ActionProto.newBuilder()
-                            .setClick(click.setOnTop(OptionalStep.REPORT_STEP_RESULT))
+                            .setCheckElementIsOnTop(
+                                    CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
                             .build());
-        actions.add(ActionProto.newBuilder()
-                            .setClick(click.setOnTop(OptionalStep.REQUIRE_STEP_SUCCESS))
-                            .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
 
         AutofillAssistantTestService testService = new AutofillAssistantTestService(
                 Collections.singletonList(new AutofillAssistantTestScript(TEST_SCRIPT, actions)));
@@ -530,12 +569,9 @@ public class AutofillAssistantInputActionIntegrationTest {
         testService.waitUntilGetNextActions(1);
 
         List<ProcessedActionProto> processed = testService.getProcessedActions();
-        assertThat(processed, hasSize(3));
+        assertThat(processed, hasSize(2));
         assertThat(processed.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        assertThat(processed.get(1).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        assertThat(processed.get(1).getStatusDetails().getOriginalStatus(),
-                is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
-        assertThat(processed.get(2).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+        assertThat(processed.get(1).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
     }
 
     @Test

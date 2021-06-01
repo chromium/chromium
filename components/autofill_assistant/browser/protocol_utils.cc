@@ -12,7 +12,6 @@
 #include "components/autofill_assistant/browser/actions/check_element_tag_action.h"
 #include "components/autofill_assistant/browser/actions/check_option_element_action.h"
 #include "components/autofill_assistant/browser/actions/clear_persistent_ui_action.h"
-#include "components/autofill_assistant/browser/actions/click_action.h"
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 #include "components/autofill_assistant/browser/actions/configure_bottom_sheet_action.h"
 #include "components/autofill_assistant/browser/actions/configure_ui_state_action.h"
@@ -173,8 +172,6 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
 std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                                                     const ActionProto& action) {
   switch (action.action_info_case()) {
-    case ActionProto::ActionInfoCase::kClick:
-      return std::make_unique<ClickAction>(delegate, action);
     case ActionProto::ActionInfoCase::kTell:
       return std::make_unique<TellAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowCast:

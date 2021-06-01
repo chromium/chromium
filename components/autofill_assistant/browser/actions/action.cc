@@ -84,9 +84,6 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 #else
   switch (action_case) {
-    case ActionProto::ActionInfoCase::kClick:
-      out << "Click";
-      break;
     case ActionProto::ActionInfoCase::kSetFormValue:
       out << "KeyboardInput";
       break;
