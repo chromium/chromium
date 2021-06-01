@@ -552,9 +552,7 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// Flaky: crbug.com/1195297
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
-                       DISABLED_ProceedOnWarn) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -626,13 +624,16 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
   run_loop.Run();
 
   ASSERT_TRUE(dlp_controller.ObserveWidget());
+
+  EXPECT_CALL(dlp_controller, OnWidgetClosing);
   helper.BlinkProceedPressed(dlp_controller.blink_data_dst_.value());
 
   EXPECT_EQ(kClipboardText1, EvalJs(GetActiveWebContents(), "p"));
+
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 }
 
-// Flaky: crbug.com/1195297
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, CancelWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -705,9 +706,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
 
   ASSERT_TRUE(dlp_controller.ObserveWidget());
   ASSERT_TRUE(dlp_controller.blink_data_dst_.has_value());
+
+  EXPECT_CALL(dlp_controller, OnWidgetClosing);
   helper.CancelWarningPressed(dlp_controller.blink_data_dst_.value());
 
   EXPECT_EQ("", EvalJs(GetActiveWebContents(), "p"));
+
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 }
 
 // crbug.com/1213143
