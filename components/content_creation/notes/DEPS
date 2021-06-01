@@ -1,5 +1,8 @@
 include_rules = [
   "+components/keyed_service/core",
+  "+components/signin/public/identity_manager",
   "+components/strings/grit",
+  "+google_apis",
+  "+services/network/public/cpp",
   "+ui/base",
 ]
