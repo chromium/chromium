@@ -64,13 +64,14 @@ int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
 // front, or appending "0"'s to the back.
 void MaintainContentLengthPrefsWindow(base::ListValue* list, size_t length) {
   // Remove data for old days from the front.
-  while (list->GetSize() > length)
-    list->Remove(0, nullptr);
+  base::Value::ListView list_view = list->GetList();
+  while (list_view.size() > length)
+    list->EraseListIter(list_view.begin());
   // Newly added lists are empty. Add entries to back to fill the window,
   // each initialized to zero.
-  while (list->GetSize() < length)
-    list->AppendString(base::NumberToString(0));
-  DCHECK_EQ(length, list->GetSize());
+  while (list_view.size() < length)
+    list->Append(base::NumberToString(0));
+  DCHECK_EQ(length, list_view.size());
 }
 
 // Increments an int64_t, stored as a string, in a ListPref at the specified
