@@ -389,6 +389,19 @@ GroupedUpdates GroupValidUpdates(UpdateResponseDataList updates) {
   return grouped_updates;
 }
 
+int GetNumUnsyncedEntities(const SyncedBookmarkTracker* tracker) {
+  DCHECK(tracker);
+
+  int num_unsynced_entities = 0;
+  for (const SyncedBookmarkTracker::Entity* entity :
+       tracker->GetAllEntities()) {
+    if (entity->IsUnsynced()) {
+      ++num_unsynced_entities;
+    }
+  }
+  return num_unsynced_entities;
+}
+
 }  // namespace
 
 BookmarkModelMerger::RemoteTreeNode::RemoteTreeNode() = default;
@@ -558,6 +571,10 @@ void BookmarkModelMerger::Merge() {
     // is used to disable reupload after initial merge.
     bookmark_tracker_->SetBookmarksFullTitleReuploaded();
   }
+
+  base::UmaHistogramCounts100000(
+      "Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion",
+      GetNumUnsyncedEntities(bookmark_tracker_));
 }
 
 // static
