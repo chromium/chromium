@@ -51,11 +51,6 @@ void SpellcheckServiceFactory::RegisterProfilePrefs(
   user_prefs->RegisterListPref(spellcheck::prefs::kSpellCheckDictionaries);
   user_prefs->RegisterListPref(
       spellcheck::prefs::kSpellCheckForcedDictionaries);
-  // Continue registering kSpellCheckBlacklistedDictionaries for
-  // preference migration.
-  // TODO(crbug/1161062): Remove after M91.
-  user_prefs->RegisterListPref(
-      spellcheck::prefs::kSpellCheckBlacklistedDictionaries);
   user_prefs->RegisterListPref(
       spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   // Continue registering kSpellCheckDictionary for preference migration.

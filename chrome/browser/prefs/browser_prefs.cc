@@ -578,6 +578,10 @@ const char kToolbarSize[] = "extensions.toolbarsize";
 #endif
 const char kSessionExitedCleanly[] = "profile.exited_cleanly";
 
+// Deprecated 05/2021
+const char kSpellCheckBlacklistedDictionaries[] =
+    "spellcheck.blacklisted_dictionaries";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -713,6 +717,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterInt64Pref(kFeatureUsageDailySampleFingerprint, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterListPref(kSpellCheckBlacklistedDictionaries);
 }
 
 }  // namespace
@@ -1436,6 +1442,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2021
   profile_prefs->ClearPref(kFeatureUsageDailySampleFingerprint);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 05/2021
+  profile_prefs->ClearPref(kSpellCheckBlacklistedDictionaries);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
