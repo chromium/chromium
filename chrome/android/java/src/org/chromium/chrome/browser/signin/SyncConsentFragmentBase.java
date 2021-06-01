@@ -405,16 +405,14 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
-        AccountInfoService.get()
-                .getAccountInfoByEmailAsync(mSelectedAccountName)
-                .then(accountInfo -> {
-                    assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
-                    mConsentTextTracker.recordConsent(accountInfo.getId(),
-                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
-                    if (isResumed()) {
-                        runStateMachineAndSignin(settingsClicked);
-                    }
-                });
+        AccountInfoService.get().getAccountInfoByEmail(mSelectedAccountName).then(accountInfo -> {
+            assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
+            mConsentTextTracker.recordConsent(accountInfo.getId(),
+                    ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
+            if (isResumed()) {
+                runStateMachineAndSignin(settingsClicked);
+            }
+        });
     }
 
     private void runStateMachineAndSignin(boolean settingsClicked) {

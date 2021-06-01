@@ -203,7 +203,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         Bitmap avatar = profileData.getAvatar();
         if (avatar == null) {
             // If the avatar is null, try to fetch the monogram from IdentityManager
-            mAccountInfoService.getAccountInfoByEmailAsync(email).then(accountInfo -> {
+            mAccountInfoService.getAccountInfoByEmail(email).then(accountInfo -> {
                 updateCacheAndNotifyObservers(email,
                         accountInfo != null ? accountInfo.getAccountImage() : null,
                         profileData.getFullName(), profileData.getGivenName());
@@ -233,7 +233,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private void populateCache() {
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
             for (Account account : accounts) {
-                mAccountInfoService.getAccountInfoByEmailAsync(account.name)
+                mAccountInfoService.getAccountInfoByEmail(account.name)
                         .then(this::onAccountInfoUpdated);
             }
         });

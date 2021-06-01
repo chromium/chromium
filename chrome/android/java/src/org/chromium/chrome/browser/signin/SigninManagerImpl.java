@@ -317,11 +317,7 @@ class SigninManagerImpl
     @Override
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
-        mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            final CoreAccountInfo accountInfo =
-                    mIdentityManager
-                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                    account.name);
+        AccountInfoService.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
             signinInternal(
                     SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
         });

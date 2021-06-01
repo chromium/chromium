@@ -78,9 +78,9 @@ public final class AccountInfoService implements IdentityManager.Observer {
     }
 
     /**
-     * Gets the corresponding {@link AccountInfo} of the given account email asynchronously.
+     * Gets the corresponding {@link AccountInfo} of the given account email.
      */
-    public Promise<AccountInfo> getAccountInfoByEmailAsync(String email) {
+    public Promise<AccountInfo> getAccountInfoByEmail(String email) {
         final Promise<AccountInfo> accountInfoPromise = new Promise<>();
         mAccountTrackerService.seedAccountsIfNeeded(() -> {
             accountInfoPromise.fulfill(
