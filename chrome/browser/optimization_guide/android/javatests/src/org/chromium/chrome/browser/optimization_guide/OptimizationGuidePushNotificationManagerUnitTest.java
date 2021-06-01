@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.SmallTest;
 
 import com.google.protobuf.ByteString;
@@ -11,14 +17,20 @@ import com.google.protobuf.ByteString;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.KeyRepresentation;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -34,6 +46,15 @@ import java.util.Map;
 // Batch this per class since the test is setting global feature state.
 @Batch(Batch.PER_CLASS)
 public class OptimizationGuidePushNotificationManagerUnitTest {
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    private Profile mProfile;
+
+    @Mock
+    OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+
     private static final String TEST_URL = "https://testurl.com/";
 
     private static final HintNotificationPayload NOTIFICATION_WITH_PAYLOAD =
@@ -60,8 +81,22 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Before
+    public void setUp() {
+        resetFeatureFlags();
+
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        when(mOptimizationGuideBridgeJniMock.init()).thenReturn(1L);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+    }
+
     @After
-    public void reset() {
+    public void tearDown() {
+        resetFeatureFlags();
+    }
+
+    public void resetFeatureFlags() {
         CachedFeatureFlags.resetFlagsForTesting();
         OptimizationGuidePushNotificationManager.clearCacheForAllTypes();
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(null);
@@ -98,6 +133,25 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                 OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testNativeCalled() {
+        setFeatureStatusForTest(true);
+        OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(true);
+
+        OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITHOUT_PAYLOAD);
+
+        HintNotificationPayload[] cached =
+                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
+                        OptimizationType.PERFORMANCE_HINTS);
+        Assert.assertNotNull(cached);
+        Assert.assertEquals(0, cached.length);
+
+        verify(mOptimizationGuideBridgeJniMock, times(1))
+                .onNewPushNotification(anyLong(), eq(NOTIFICATION_WITHOUT_PAYLOAD.toByteArray()));
     }
 
     @Test

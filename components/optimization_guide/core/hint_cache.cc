@@ -108,6 +108,32 @@ void HintCache::UpdateFetchedHints(
   }
 }
 
+void HintCache::RemoveHintsForURLs(const base::flat_set<GURL>& urls) {
+  for (const GURL& url : urls) {
+    auto it = url_keyed_hint_cache_.Get(url.spec());
+    if (it != url_keyed_hint_cache_.end()) {
+      url_keyed_hint_cache_.Erase(it);
+    }
+  }
+}
+
+void HintCache::RemoveHintsForHosts(base::OnceClosure on_success,
+                                    const base::flat_set<std::string>& hosts) {
+  for (const std::string& host : hosts) {
+    auto it = host_keyed_cache_.Get(host);
+    if (it != host_keyed_cache_.end()) {
+      host_keyed_cache_.Erase(it);
+    }
+  }
+
+  if (optimization_guide_store_) {
+    optimization_guide_store_->RemoveFetchedHintsByKey(std::move(on_success),
+                                                       hosts);
+    return;
+  }
+  std::move(on_success).Run();
+}
+
 void HintCache::PurgeExpiredFetchedHints() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -269,6 +295,7 @@ base::Time HintCache::GetFetchedHintsUpdateTime() const {
 void HintCache::OnStoreInitialized(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(optimization_guide_store_);
+
   std::move(callback).Run();
 }
 

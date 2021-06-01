@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,13 @@ public class OptimizationGuideBridgeFactory {
             new HashMap<>();
     private final List<HintsProto.OptimizationType> mOptimizationTypes;
     private ProfileManager.Observer mProfileManagerObserver;
+
+    /**
+     * Creates an instance of this class with no observed optimization types.
+     */
+    public OptimizationGuideBridgeFactory() {
+        this(new ArrayList<HintsProto.OptimizationType>());
+    }
 
     /**
      * @param optimizationTypes list of {@link HintsProto.OptimizationType} the {@link
@@ -56,7 +64,9 @@ public class OptimizationGuideBridgeFactory {
                 mProfileToOptimizationGuideBridgeMap.get(profile);
         if (optimizationGuideBridge == null) {
             optimizationGuideBridge = new OptimizationGuideBridge();
-            optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
+            if (mOptimizationTypes.size() > 0) {
+                optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
+            }
             mProfileToOptimizationGuideBridgeMap.put(profile, optimizationGuideBridge);
         }
         return optimizationGuideBridge;

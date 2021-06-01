@@ -61,6 +61,7 @@ static_library("core") {
     "prediction_model_fetcher.h",
     "prediction_model_file.cc",
     "prediction_model_file.h",
+    "push_notification_manager.h",
     "store_update_data.cc",
     "store_update_data.h",
     "tab_url_provider.h",

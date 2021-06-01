@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_BRIDGE_H_
 
 #include <jni.h>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/push_notification.pb.h"
 
 class OptimizationGuideKeyedService;
 
@@ -18,6 +21,13 @@ namespace android {
 // classes expose OptimizationGuideKeyedService to Java.
 class OptimizationGuideBridge {
  public:
+  static std::vector<proto::HintNotificationPayload> GetCachedNotifications(
+      proto::OptimizationType opt_type);
+  static bool DidOptimizationTypeOverflow(proto::OptimizationType opt_type);
+  static void ClearCacheForOptimizationType(proto::OptimizationType opt_type);
+  static void OnNotificationNotHandledByNative(
+      proto::HintNotificationPayload notification);
+
   explicit OptimizationGuideBridge(
       OptimizationGuideKeyedService* optimization_guide_keyed_service);
   OptimizationGuideBridge(const OptimizationGuideBridge&) = delete;
@@ -31,6 +41,9 @@ class OptimizationGuideBridge {
       const base::android::JavaParamRef<jobject>& java_gurl,
       jint optimization_type,
       const base::android::JavaParamRef<jobject>& java_callback);
+  void OnNewPushNotification(
+      JNIEnv* env,
+      const base::android::JavaRef<jbyteArray>& j_encoded_notification);
 
  private:
   OptimizationGuideKeyedService* optimization_guide_keyed_service_;

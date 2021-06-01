@@ -27,6 +27,7 @@ class NavigationHandle;
 
 namespace optimization_guide {
 namespace android {
+class AndroidPushNotificationManagerJavaTest;
 class OptimizationGuideBridge;
 }  // namespace android
 class OptimizationGuideStore;
@@ -109,6 +110,8 @@ class OptimizationGuideKeyedService
   friend class OptimizationGuideWebContentsObserver;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
+  friend class optimization_guide::android::
+      AndroidPushNotificationManagerJavaTest;
   friend class optimization_guide::android::OptimizationGuideBridge;
 
   // Initializes |this|.

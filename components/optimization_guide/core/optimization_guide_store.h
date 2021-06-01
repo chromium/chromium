@@ -261,6 +261,11 @@ class OptimizationGuideStore {
   // If |this| is not available, base::Time() is returned.
   base::Time GetHostModelFeaturesUpdateTime() const;
 
+  // Removes fetched hints whose keys are in |hint_keys| and runs |on_success|
+  // if successful, otherwise the callback is not run.
+  void RemoveFetchedHintsByKey(base::OnceClosure on_success,
+                               const base::flat_set<std::string>& hint_keys);
+
   // Clears all host model features from the database and resets the entry keys.
   void ClearHostModelFeaturesFromDatabase();
 
@@ -389,11 +394,19 @@ class OptimizationGuideStore {
   // entry keys contained within the database.
   void OnUpdateStore(base::OnceClosure callback, bool success);
 
+  // Callback that runs after |keys| have been removed from the store. If
+  // |success|, |on_success| is run. Note that |on_success| is not guaranteed to
+  // run and that the calling code must be able to handle the callback not
+  // coming back.
+  void OnFetchedEntriesRemoved(base::OnceClosure on_success,
+                               const EntryKeySet& keys,
+                               bool success);
+
   // Callback that runs after the hint entry keys are fully loaded. If there's
   // currently an in-flight component update, then the hint entry keys will be
   // loaded again after the component update completes, so the results are
-  // tossed; otherwise, |entry_keys| is moved into |entry_keys_|.
-  // Regardless of the outcome of loading the keys, the callback always runs.
+  // tossed; otherwise, |entry_keys| is moved into |entry_keys_|. Regardless of
+  // the outcome of loading the keys, the callback always runs.
   void OnLoadEntryKeys(std::unique_ptr<EntryKeySet> entry_keys,
                        base::OnceClosure callback,
                        bool success,

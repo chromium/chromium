@@ -29,6 +29,7 @@ import java.util.Set;
  */
 public class OptimizationGuidePushNotificationManager {
     private static Boolean sNativeIsInitialized;
+    private static OptimizationGuideBridgeFactory sBridgeFactory;
 
     // All logic here is static, so no instances of this class are needed.
     private OptimizationGuidePushNotificationManager() {}
@@ -54,12 +55,24 @@ public class OptimizationGuidePushNotificationManager {
         }
 
         if (nativeIsInitialized()) {
-            // TODO(crbug/1199123): Push the notification to native.
+            if (sBridgeFactory == null) {
+                sBridgeFactory = new OptimizationGuideBridgeFactory();
+            }
+            sBridgeFactory.create().onNewPushNotification(payload);
             return;
         }
 
         // Persist the notification until the next time native is awake.
-        persistNotificiationPayload(payload);
+        persistNotificationPayload(payload);
+    }
+
+    /**
+     * Called when the native code isn't able to handle a push notification that was previously
+     * sent. The given notification will be cached instead, until the next time that the cached
+     * notifications are requested.
+     */
+    public static void onPushNotificationNotHandledByNative(HintNotificationPayload payload) {
+        persistNotificationPayload(payload);
     }
 
     /**
@@ -144,7 +157,7 @@ public class OptimizationGuidePushNotificationManager {
         return cache != null && cache.equals(OVERFLOW_SENTINEL_SET);
     }
 
-    private static void persistNotificiationPayload(HintNotificationPayload payload) {
+    private static void persistNotificationPayload(HintNotificationPayload payload) {
         if (!payload.hasOptimizationType()) return;
         if (!payload.hasKeyRepresentation()) return;
         if (!payload.hasHintKey()) return;

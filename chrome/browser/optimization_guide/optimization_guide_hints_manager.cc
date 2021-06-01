@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -59,6 +60,10 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
+#endif
 
 namespace {
 
@@ -293,6 +298,15 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
   g_browser_process->network_quality_tracker()
       ->AddEffectiveConnectionTypeObserver(this);
 
+#if defined(OS_ANDROID)
+  if (optimization_guide::features::IsPushNotificationsEnabled()) {
+    push_notification_manager_ = std::make_unique<
+        optimization_guide::android::AndroidPushNotificationManager>(
+        pref_service_);
+    push_notification_manager_->SetDelegate(this);
+  }
+#endif
+
   hint_cache_->Initialize(
       optimization_guide::switches::
           ShouldPurgeOptimizationGuideStoreOnStartup(),
@@ -466,6 +480,10 @@ void OptimizationGuideHintsManager::ProcessOptimizationFilterSet(
 
 void OptimizationGuideHintsManager::OnHintCacheInitialized() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (push_notification_manager_) {
+    push_notification_manager_->OnDelegateReady();
+  }
 
   // Check if there is a valid hint proto given on the command line first. We
   // don't normally expect one, but if one is provided then use that and do not
@@ -1390,6 +1408,15 @@ OptimizationGuideHintsManager::hint_store() {
   return hint_cache_->hint_store();
 }
 
+optimization_guide::HintCache* OptimizationGuideHintsManager::hint_cache() {
+  return hint_cache_.get();
+}
+
+optimization_guide::PushNotificationManager*
+OptimizationGuideHintsManager::push_notification_manager() {
+  return push_notification_manager_.get();
+}
+
 bool OptimizationGuideHintsManager::HasAllInformationForDecisionAvailable(
     const GURL& navigation_url,
     optimization_guide::proto::OptimizationType optimization_type) {
@@ -1475,4 +1502,61 @@ void OptimizationGuideHintsManager::AddHintForTesting(
   }
   hint_cache_->AddHintForTesting(url, std::move(hint));
   PrepareToInvokeRegisteredCallbacks(url);
+}
+
+void OptimizationGuideHintsManager::RemoveFetchedEntriesByHintKeys(
+    base::OnceClosure on_success,
+    optimization_guide::proto::KeyRepresentation key_representation,
+    const base::flat_set<std::string>& hint_keys) {
+  // Make sure the key representation is something that we expect.
+  switch (key_representation) {
+    case optimization_guide::proto::KeyRepresentation::HOST:
+    case optimization_guide::proto::KeyRepresentation::FULL_URL:
+      break;
+    default:
+      NOTREACHED();
+      return;
+  }
+
+  if (key_representation == optimization_guide::proto::FULL_URL) {
+    base::flat_set<GURL> urls_to_remove;
+    base::flat_set<std::string> hosts_to_remove;
+    // It is possible that the hints may have upgraded from being HOST keyed to
+    // URL keyed on the server at any time. To protect against this, also remove
+    // the host of the GURL from storage.
+    // However, note that the opposite is not likely to happen since URL-keyed
+    // hints are not persisted to disk.
+    for (const std::string& url : hint_keys) {
+      GURL gurl(url);
+      if (!gurl.is_valid()) {
+        continue;
+      }
+      hosts_to_remove.insert(gurl.host());
+      urls_to_remove.insert(gurl);
+    }
+
+    // Also clear the HintFetcher's host pref.
+    for (const std::string& host : hosts_to_remove) {
+      optimization_guide::HintsFetcher::ClearSingleFetchedHost(pref_service_,
+                                                               host);
+    }
+
+    hint_cache_->RemoveHintsForURLs(urls_to_remove);
+    hint_cache_->RemoveHintsForHosts(std::move(on_success), hosts_to_remove);
+    return;
+  }
+
+  // Also clear the HintFetcher's host pref.
+  for (const std::string& host : hint_keys) {
+    optimization_guide::HintsFetcher::ClearSingleFetchedHost(pref_service_,
+                                                             host);
+  }
+
+  hint_cache_->RemoveHintsForHosts(std::move(on_success), hint_keys);
+}
+
+void OptimizationGuideHintsManager::PurgeFetchedEntries(
+    base::OnceClosure on_success) {
+  ClearFetchedHints();
+  std::move(on_success).Run();
 }

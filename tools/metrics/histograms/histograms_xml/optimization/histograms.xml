@@ -746,6 +746,56 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PushNotifications.CachedNotificationCount"
+    units="count" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    The number of cached push notifications that were pulled from the Android
+    cache after the native persistent store became fully initialized. Recorded
+    once per native startup in cases where the cache did not overflow.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PushNotifications.CachedNotificationsHandledSuccessfully"
+    enum="BooleanSuccess" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Whether the push notification cache was handled successfully and was able to
+    be cleared out. Recorded once per each attempt at handling one cache shard.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PushNotifications.DidOverflow"
+    enum="Boolean" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the Android push notification cache overflowed and caused
+    the whole store to be purged. Recorded once per native startup.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PushNotifications.GotPushNotification"
+    enum="Boolean" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>Records a true sample for every incoming push notification.</summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PushNotifications.PushNotificationHandledSuccessfully"
+    enum="BooleanSuccess" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Whether an incoming push notification was handled successfully. Recorded
+    once for every such notification.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.RemoteFetchingEnabled"
     units="BooleanEnabled" expires_after="2021-10-31">
   <owner>sophiechang@chromium.org</owner>

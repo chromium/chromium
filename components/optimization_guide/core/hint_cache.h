@@ -126,6 +126,17 @@ class HintCache {
   // the entry is empty. If a hint exists but is expired, it returns false.
   bool HasURLKeyedEntryForURL(const GURL& url);
 
+  // Removes any URL-keyed hints that are in |urls|.
+  void RemoveHintsForURLs(const base::flat_set<GURL>& urls);
+
+  // Removes any host-keyed hints that are in |hosts|. Note that this will also
+  // remove any persisted hints from |hint_store()|. |on_success| will be called
+  // when the operation completes successfully. If the operation does not
+  // complete successfully, the callback will not be run so calling code must
+  // not expect it be called in every circumstance.
+  void RemoveHintsForHosts(base::OnceClosure on_success,
+                           const base::flat_set<std::string>& hosts);
+
   // Verifies and processes |hints| and moves the ones it supports into
   // |update_data| and caches any valid URL keyed hints.
   //

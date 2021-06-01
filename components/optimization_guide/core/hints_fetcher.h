@@ -101,6 +101,16 @@ class HintsFetcher {
   // HintsFetcherHostsSuccessfullyFetched dictionary pref.
   static void ClearHostsSuccessfullyFetched(PrefService* pref_service);
 
+  // Clear the given host from the HintsFetcherHostsSuccessfullyFetched
+  // dictionary pref.
+  static void ClearSingleFetchedHost(PrefService* pref_service,
+                                     const std::string& host);
+
+  // Adds a fetched host at the given time. Used only for testing.
+  static void AddFetchedHostForTesting(PrefService* pref_service,
+                                       const std::string& host,
+                                       base::Time time);
+
   // Return whether the host was covered by a hints fetch and any returned hints
   // would not have expired.
   static bool WasHostCoveredByFetch(PrefService* pref_service,
