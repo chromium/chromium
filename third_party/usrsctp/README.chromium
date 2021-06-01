@@ -19,3 +19,6 @@ as well as updates and enhancements from the following Internet Drafts:
    draft-stewart-prsctp-00.txt
    draft-stewart-tsvwg-sctpipv6-00.txt
    draft-iyengar-sctp-cacc-00.txt
+
+Local modifications:
+* Cherry picked 0f8d58300b1fdcd943b4a9dd3fbd830825390d4d
