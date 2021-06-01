@@ -3183,6 +3183,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Blink.{Host}.{Heap}.{Context}" units="KB"
+    expires_after="2022-05-11">
+  <owner>junov@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
+  <summary>
+    Memory usage on the {Heap} heap in KB, sampled after the execution of script
+    tasks that render content to a {Host}, using a {Context} context.
+  </summary>
+  <token key="Host">
+    <variant name="Canvas"/>
+    <variant name="OffscreenCanvas"/>
+  </token>
+  <token key="Heap">
+    <variant name="BlinkGC"/>
+    <variant name="PartitionAlloc"/>
+  </token>
+  <token key="Context">
+    <variant name="2D"/>
+    <variant name="ImageBitmap"/>
+    <variant name="WebGL"/>
+    <variant name="WebGL2"/>
+    <variant name="WebGPU"/>
+  </token>
+</histogram>
+
 <histogram name="BlinkGC.CollectionRate" units="%" expires_after="M84">
   <owner>haraken@chromium.org</owner>
   <summary>
