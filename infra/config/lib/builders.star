@@ -91,7 +91,11 @@ os = struct(
     MAC_10_13 = os_enum("Mac-10.13", os_category.MAC),
     MAC_10_14 = os_enum("Mac-10.14", os_category.MAC),
     MAC_10_15 = os_enum("Mac-10.15", os_category.MAC),
-    MAC_11_0 = os_enum("Mac-11.0|Mac-10.16", os_category.MAC),
+    # Staged switch to Mac 11: we can gradually shift the matching capacity
+    # towards Mac 11 and the builder will continue to run on whatever is
+    # available
+    MAC_10_15_OR_11 = os_enum("Mac-10.15|Mac-11", os_category.MAC),
+    MAC_11 = os_enum("Mac-11|Mac-10.16", os_category.MAC),
     MAC_DEFAULT = os_enum("Mac-10.15", os_category.MAC),
     MAC_ANY = os_enum("Mac", os_category.MAC),
     WINDOWS_7 = os_enum("Windows-7", os_category.WINDOWS),
