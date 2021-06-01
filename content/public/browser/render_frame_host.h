@@ -20,7 +20,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
@@ -844,17 +843,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if this frame has fired DOMContentLoaded.
   virtual bool IsDOMContentLoaded() = 0;
 
-  // Update the ad frame state. The parameter |ad_frame_type| cannot be kNonAd,
-  // and once this has been called, it cannot be called again with a different
-  // |ad_frame_type|, since once a frame is determined to be an ad, it will stay
-  // tagged as an ad of the same type for its entire lifetime.
+  // Update whether the frame is considered an ad subframe by Ad Tagging.
   //
-  // Note: The ad frame type is currently maintained and updated *outside*
-  // content. This is used to ensure the render frame proxies are in sync (since
-  // they aren't exposed in the public API). Eventually, we might be able to
-  // simplify this somewhat (maybe //content would be responsible for
-  // maintaining the state, with some content client method used to update it).
-  virtual void UpdateAdFrameType(blink::mojom::AdFrameType ad_frame_type) = 0;
+  // Note: This ad status is currently maintained and updated *outside* content.
+  // This is used to ensure the render frame proxies are in sync (since they
+  // aren't exposed in the public API). Eventually, we might be able to simplify
+  // this somewhat (maybe //content would be responsible for maintaining the
+  // state, with some content client method used to update it).
+  virtual void UpdateIsAdSubframe(bool is_ad_subframe) = 0;
 
   // Perform security checks on Web Authentication requests. These can be
   // called by other |Authenticator| mojo interface implementations in the

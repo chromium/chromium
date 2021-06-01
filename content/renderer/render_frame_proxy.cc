@@ -259,7 +259,7 @@ void RenderFrameProxy::SetReplicatedState(
       state->insecure_request_policy);
   web_frame_->SetReplicatedInsecureNavigationsSet(
       state->insecure_navigations_set);
-  web_frame_->SetReplicatedAdFrameType(state->ad_frame_type);
+  web_frame_->SetReplicatedIsAdSubframe(state->is_ad_subframe);
   web_frame_->SetReplicatedPermissionsPolicyHeader(
       state->permissions_policy_header);
   if (state->has_active_user_gesture) {

@@ -11060,9 +11060,8 @@ bool RenderFrameHostImpl::IsDOMContentLoaded() {
   return dom_content_loaded_;
 }
 
-void RenderFrameHostImpl::UpdateAdFrameType(
-    blink::mojom::AdFrameType ad_frame_type) {
-  frame_tree_node_->SetAdFrameType(ad_frame_type);
+void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
+  frame_tree_node_->SetIsAdSubframe(is_ad_subframe);
 }
 
 blink::mojom::AuthenticatorStatus

@@ -33,12 +33,12 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink-forward.h"
@@ -230,10 +230,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // Whether the frame is considered to be an ad subframe by Ad Tagging. Returns
   // true for both root and child ad subframes.
-  bool IsAdSubframe() const;
-
-  // Whether the frame is considered to be a root ad subframe by Ad Tagging.
-  bool IsAdRoot() const;
+  virtual bool IsAdSubframe() const = 0;
 
   // Called to make a frame inert or non-inert. A frame is inert when there
   // is a modal dialog displayed within an ancestor frame, and this frame
@@ -435,19 +432,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   TouchAction inherited_effective_touch_action_ = TouchAction::kAuto;
 
   bool visible_to_hit_testing_ = true;
-
-  // Type of frame detected by heuristics checking if the frame was created
-  // for advertising purposes. It's per-frame (as opposed to per-document)
-  // because when an iframe is created on behalf of ad script that same frame is
-  // not typically reused for non-ad purposes.
-  //
-  // For LocalFrame, it might be (1) calculated directly in the renderer based
-  // on script in the stack in the case of an initial synchronous commit, or (2)
-  // replicated from the browser process, or (3) signaled from the browser
-  // process at ready-to-commit time. For RemoteFrame, it might be (1)
-  // replicated from the browser process or (2) signaled from the browser
-  // process at ready-to-commit time.
-  mojom::blink::AdFrameType ad_frame_type_;
 
  private:
   // Inserts the given frame as a child of this frame, so that it is the next

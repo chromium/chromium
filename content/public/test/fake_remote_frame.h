@@ -47,8 +47,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void SetReplicatedOrigin(
       const url::Origin& origin,
       bool is_potentially_trustworthy_unique_origin) override;
-  void SetReplicatedAdFrameType(
-      blink::mojom::AdFrameType ad_frame_type) override;
+  void SetReplicatedIsAdSubframe(bool is_ad_subframe) override;
   void SetReplicatedName(const std::string& name,
                          const std::string& unique_name) override;
   void DispatchLoadEventForFrameOwner() override;

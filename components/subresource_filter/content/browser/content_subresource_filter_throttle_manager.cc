@@ -36,7 +36,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace subresource_filter {
@@ -712,21 +711,15 @@ void ContentSubresourceFilterThrottleManager::SetIsAdSubframe(
   if (is_ad_subframe == base::Contains(ad_frames_, frame_tree_node_id))
     return;
 
-  blink::mojom::AdFrameType ad_frame_type = blink::mojom::AdFrameType::kNonAd;
   if (is_ad_subframe) {
     ad_frames_.insert(frame_tree_node_id);
-
-    bool parent_is_ad = base::Contains(
-        ad_frames_, render_frame_host->GetParent()->GetFrameTreeNodeId());
-    ad_frame_type = parent_is_ad ? blink::mojom::AdFrameType::kChildAd
-                                 : blink::mojom::AdFrameType::kRootAd;
   } else {
     ad_frames_.erase(frame_tree_node_id);
   }
 
-  // Replicate ad frame type to this frame's proxies, so that it can be looked
-  // up in any process involved in rendering the current page.
-  render_frame_host->UpdateAdFrameType(ad_frame_type);
+  // Replicate `is_ad_subframe` to this frame's proxies, so that it can be
+  // looked up in any process involved in rendering the current page.
+  render_frame_host->UpdateIsAdSubframe(is_ad_subframe);
 
   SubresourceFilterObserverManager::FromWebContents(web_contents())
       ->NotifyIsAdSubframeChanged(render_frame_host, is_ad_subframe);

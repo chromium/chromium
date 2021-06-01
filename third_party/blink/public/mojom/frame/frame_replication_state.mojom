@@ -5,7 +5,6 @@
 module blink.mojom;
 
 import "services/network/public/mojom/web_sandbox_flags.mojom";
-import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
@@ -103,8 +102,6 @@ struct FrameReplicationState {
   // long as a the frame has staying on the same eTLD+1.
   bool has_received_user_gesture_before_nav = false;
 
-  // Whether this frame is an ad frame. Once a frame becomes an ad, it stays as
-  // an ad throughout its lifetime, even if it later navigates to a non-ad
-  // document.
-  blink.mojom.AdFrameType ad_frame_type = blink.mojom.AdFrameType.kNonAd;
+  // Whether this frame is an ad frame.
+  bool is_ad_subframe = false;
 };

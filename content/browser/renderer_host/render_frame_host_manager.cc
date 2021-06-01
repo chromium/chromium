@@ -1269,11 +1269,10 @@ void RenderFrameHostManager::OnDidUpdateOrigin(
   }
 }
 
-void RenderFrameHostManager::OnDidSetAdFrameType(
-    blink::mojom::AdFrameType ad_frame_type) {
+void RenderFrameHostManager::OnDidSetIsAdSubframe(bool is_ad_subframe) {
   for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedAdFrameType(
-        ad_frame_type);
+    pair.second->GetAssociatedRemoteFrame()->SetReplicatedIsAdSubframe(
+        is_ad_subframe);
   }
 }
 

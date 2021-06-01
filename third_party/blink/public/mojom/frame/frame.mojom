@@ -21,7 +21,6 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "skia/public/mojom/skcolor.mojom";
-import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
@@ -996,9 +995,9 @@ interface RemoteFrame {
   SetReplicatedOrigin(url.mojom.Origin origin,
     bool is_potentially_trustworthy_unique_origin);
 
-  // Update the replicated ad frame type. Used when the frame is determined to
-  // be an ad frame.
-  SetReplicatedAdFrameType(blink.mojom.AdFrameType ad_frame_type);
+  // Update the replicated ad status. Used when the frame is tagged or untagged
+  // as an ad frame by Ad Tagging.
+  SetReplicatedIsAdSubframe(bool is_ad_subframe);
 
   // Sets the replicated name and unique name for the frame. Used when the
   // name of a frame changes.

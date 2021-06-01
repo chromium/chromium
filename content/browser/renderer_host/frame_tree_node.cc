@@ -135,7 +135,7 @@ FrameTreeNode::FrameTreeNode(
           false /* is a potentially trustworthy unique origin */,
           false /* has an active user gesture */,
           false /* has received a user gesture before nav */,
-          blink::mojom::AdFrameType::kNonAd)),
+          false /* is_ad_subframe */)),
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
@@ -781,12 +781,12 @@ void FrameTreeNode::PruneChildFrameNavigationEntries(
   }
 }
 
-void FrameTreeNode::SetAdFrameType(blink::mojom::AdFrameType ad_frame_type) {
-  if (ad_frame_type == replication_state_->ad_frame_type)
+void FrameTreeNode::SetIsAdSubframe(bool is_ad_subframe) {
+  if (is_ad_subframe == replication_state_->is_ad_subframe)
     return;
 
-  replication_state_->ad_frame_type = ad_frame_type;
-  render_manager()->OnDidSetAdFrameType(ad_frame_type);
+  replication_state_->is_ad_subframe = is_ad_subframe;
+  render_manager()->OnDidSetIsAdSubframe(is_ad_subframe);
 }
 
 void FrameTreeNode::SetInitialPopupURL(const GURL& initial_popup_url) {

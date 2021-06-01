@@ -34,8 +34,7 @@ void FakeRemoteFrame::SetReplicatedOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {}
 
-void FakeRemoteFrame::SetReplicatedAdFrameType(
-    blink::mojom::AdFrameType ad_frame_type) {}
+void FakeRemoteFrame::SetReplicatedIsAdSubframe(bool is_ad_subframe) {}
 
 void FakeRemoteFrame::SetReplicatedName(const std::string& name,
                                         const std::string& unique_name) {}

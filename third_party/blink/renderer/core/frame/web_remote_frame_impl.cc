@@ -360,10 +360,9 @@ void WebRemoteFrameImpl::SetReplicatedInsecureNavigationsSet(
   GetFrame()->SetInsecureNavigationsSet(set);
 }
 
-void WebRemoteFrameImpl::SetReplicatedAdFrameType(
-    mojom::blink::AdFrameType ad_frame_type) {
+void WebRemoteFrameImpl::SetReplicatedIsAdSubframe(bool is_ad_subframe) {
   DCHECK(GetFrame());
-  GetFrame()->SetReplicatedAdFrameType(ad_frame_type);
+  GetFrame()->SetReplicatedIsAdSubframe(is_ad_subframe);
 }
 
 void WebRemoteFrameImpl::DidStartLoading() {

@@ -7,7 +7,6 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
@@ -117,8 +116,7 @@ class WebRemoteFrame : public WebFrame {
   virtual void SetReplicatedInsecureNavigationsSet(
       const WebVector<unsigned>&) = 0;
 
-  virtual void SetReplicatedAdFrameType(
-      blink::mojom::AdFrameType ad_frame_type) = 0;
+  virtual void SetReplicatedIsAdSubframe(bool is_ad_subframe) = 0;
 
   virtual void DidStartLoading() = 0;
 

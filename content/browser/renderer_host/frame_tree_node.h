@@ -428,7 +428,7 @@ class CONTENT_EXPORT FrameTreeNode {
     return tree_scope_type_;
   }
 
-  void SetAdFrameType(blink::mojom::AdFrameType ad_frame_type);
+  void SetIsAdSubframe(bool is_ad_subframe);
 
   // The initial popup URL for new window opened using:
   // `window.open(initial_popup_url)`.

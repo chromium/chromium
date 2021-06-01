@@ -278,8 +278,13 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       non_ad_iframe->ToWebLocalFrame());
 
+  blink::FrameAdEvidence ad_evidence(/*parent_is_ad=*/false);
+  ad_evidence.set_created_by_ad_script(
+      mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+
   auto* local_adframe = To<LocalFrame>(WebFrame::ToCoreFrame(*ad_iframe));
-  local_adframe->SetIsAdSubframe(blink::mojom::AdFrameType::kRootAd);
+  local_adframe->SetAdEvidence(ad_evidence);
   auto* local_non_adframe =
       To<LocalFrame>(WebFrame::ToCoreFrame(*non_ad_iframe));
 

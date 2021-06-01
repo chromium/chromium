@@ -3824,10 +3824,12 @@ void Internals::setIsAdSubframe(HTMLIFrameElement* iframe,
   }
   LocalFrame* parent_frame = iframe->GetDocument().GetFrame();
   LocalFrame* child_frame = To<LocalFrame>(iframe->ContentFrame());
-  bool parent_is_ad = parent_frame && parent_frame->IsAdSubframe();
-  child_frame->SetIsAdSubframe(parent_is_ad
-                                   ? blink::mojom::AdFrameType::kChildAd
-                                   : blink::mojom::AdFrameType::kRootAd);
+  blink::FrameAdEvidence ad_evidence(parent_frame &&
+                                     parent_frame->IsAdSubframe());
+  ad_evidence.set_created_by_ad_script(
+      mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+  child_frame->SetAdEvidence(ad_evidence);
 }
 
 ReadableStream* Internals::createReadableStream(
