@@ -83,14 +83,6 @@ void TestDataExchangeDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
       .Run(base::RefCountedString::TakeString(&result));
 }
 
-base::Pickle TestDataExchangeDelegate::CreateClipboardFilenamesPickle(
-    ui::EndpointType source,
-    const std::vector<uint8_t>& data) const {
-  base::Pickle result;
-  result.WriteData(reinterpret_cast<const char*>(data.data()), data.size());
-  return result;
-}
-
 std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(
     const ui::DataTransferEndpoint* source,
     const base::Pickle& pickle) const {

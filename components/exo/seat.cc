@@ -11,7 +11,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,7 +31,6 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -238,18 +236,9 @@ void Seat::OnFilenamesRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  if (base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
-    std::vector<ui::FileInfo> filenames =
-        data_exchange_delegate_->GetFilenames(source, data);
-    writer->WriteFilenames(ui::FileInfosToURIList(filenames));
-  } else {
-    // There is no need for CreateClipboardFilenamesPickle() once
-    // chrome://flags#clipboard-filenames is permanently enabled.
-    base::Pickle pickle =
-        data_exchange_delegate_->CreateClipboardFilenamesPickle(source, data);
-    writer->WritePickledData(pickle,
-                             ui::ClipboardFormatType::GetWebCustomDataType());
-  }
+  std::vector<ui::FileInfo> filenames =
+      data_exchange_delegate_->GetFilenames(source, data);
+  writer->WriteFilenames(ui::FileInfosToURIList(filenames));
   std::move(callback).Run();
 }
 
