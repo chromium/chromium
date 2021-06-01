@@ -189,8 +189,10 @@ TEST_F(ManagedBookmarkServiceTest, LoadInitial) {
 TEST_F(ManagedBookmarkServiceTest, SwapNodes) {
   // Swap the Google bookmark with the Folder.
   std::unique_ptr<base::ListValue> updated(CreateTestTree());
-  std::unique_ptr<base::Value> removed;
-  ASSERT_TRUE(updated->Remove(0, &removed));
+  base::Value::ListView updated_listview = updated->GetList();
+  ASSERT_FALSE(updated_listview.empty());
+  base::Value removed = std::move(updated_listview[0]);
+  ASSERT_TRUE(updated->EraseListIter(updated_listview.begin()));
   updated->Append(std::move(removed));
 
   // These two nodes should just be swapped.
@@ -209,7 +211,7 @@ TEST_F(ManagedBookmarkServiceTest, SwapNodes) {
 TEST_F(ManagedBookmarkServiceTest, RemoveNode) {
   // Remove the Folder.
   std::unique_ptr<base::ListValue> updated(CreateTestTree());
-  ASSERT_TRUE(updated->Remove(1, NULL));
+  ASSERT_TRUE(updated->EraseListIter(updated->GetList().begin() + 1));
 
   const BookmarkNode* parent = managed_->managed_node();
   EXPECT_CALL(observer_, BookmarkNodeRemoved(model_, parent, 1, _, _));
