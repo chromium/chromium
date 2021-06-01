@@ -6585,7 +6585,7 @@ crbug.com/1203963 [ Mac10.14 ] external/wpt/xhr/idlharness.any.sharedworker.html
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.html [ Pass Failure Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.worker.html [ Pass Failure Timeout ]
 crbug.com/1204086 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html [ Pass Failure ]
-crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass Failure ]
+crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-04-30
 crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Pass Failure ]
@@ -7000,3 +7000,13 @@ crbug.com/1213322 [ Mac ] virtual/css-calc-infinity-and-nan/external/wpt/css/css
 
 # Sheriff on 2021-05-27
 crbug.com/1213718 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/* [ Pass Failure ]
+
+# Do not retry slow tests that also timeouts
+crbug.com/1210687 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Pass Timeout ]
+crbug.com/1210687 [ Mac10.15 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
+crbug.com/1210687 [ Mac10.15 ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
+crbug.com/1210687 [ Mac10.15 ] storage/websql/sql-error-codes.html [ Pass Timeout ]
+crbug.com/1210687 [ Mac10.15 ] external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html [ Pass Timeout ]
+crbug.com/1210687 [ Win ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-dispatch.js [ Pass Timeout ]
+crbug.com/1210687 [ Win ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
+crbug.com/1210687 [ Win ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
