@@ -89,7 +89,8 @@ TEST_F(ArcContainerClientAdapterTest,
       },
       client_adapter(), &parent_observer));
 
-  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped();
+  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+      login_manager::ArcContainerStopReason::USER_REQUEST);
 
   EXPECT_TRUE(parent_observer.stopped_called());
   EXPECT_FALSE(child_observer.stopped_called());

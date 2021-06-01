@@ -149,7 +149,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void QueryAdbSideload(QueryAdbSideloadCallback callback) override;
 
   // Notifies observers as if ArcInstanceStopped signal is received.
-  void NotifyArcInstanceStopped();
+  void NotifyArcInstanceStopped(login_manager::ArcContainerStopReason reason);
 
   // Returns true if flags for |cryptohome_id| have been set. If the return
   // value is |true|, |*out_flags_for_user| is filled with the flags passed to

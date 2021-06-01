@@ -657,7 +657,8 @@ void FakeSessionManagerClient::UpgradeArcContainer(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       login_manager::ArcContainerStopReason::UPGRADE_FAILURE));
   }
 }
 
@@ -675,7 +676,8 @@ void FakeSessionManagerClient::StopArcInstance(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     login_manager::ArcContainerStopReason::USER_REQUEST));
 
   container_running_ = false;
 }
@@ -709,9 +711,10 @@ void FakeSessionManagerClient::QueryAdbSideload(
                                 adb_sideload_enabled_));
 }
 
-void FakeSessionManagerClient::NotifyArcInstanceStopped() {
+void FakeSessionManagerClient::NotifyArcInstanceStopped(
+    login_manager::ArcContainerStopReason reason) {
   for (auto& observer : observers_)
-    observer.ArcInstanceStopped();
+    observer.ArcInstanceStopped(reason);
 }
 
 bool FakeSessionManagerClient::GetFlagsForUser(

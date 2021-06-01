@@ -194,7 +194,8 @@ class ArcContainerClientAdapter
   }
 
   // chromeos::SessionManagerClient::Observer overrides:
-  void ArcInstanceStopped() override {
+  void ArcInstanceStopped(
+      login_manager::ArcContainerStopReason reason) override {
     for (auto& observer : observer_list_)
       observer.ArcInstanceStopped();
   }

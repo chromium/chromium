@@ -967,8 +967,16 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   void ArcInstanceStoppedReceived(dbus::Signal* signal) {
-    for (auto& observer : observers_)
-      observer.ArcInstanceStopped();
+    dbus::MessageReader reader(signal);
+    uint32_t reason = 0;
+    if (!reader.PopUint32(&reason)) {
+      LOG(ERROR) << "Invalid signal: " << signal->ToString();
+      return;
+    }
+    for (auto& observer : observers_) {
+      observer.ArcInstanceStopped(
+          static_cast<login_manager::ArcContainerStopReason>(reason));
+    }
   }
 
   // Called when the object is connected to the signal.
