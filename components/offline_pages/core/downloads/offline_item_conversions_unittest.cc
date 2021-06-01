@@ -43,7 +43,7 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
       OfflineItemConversions::CreateOfflineItem(offline_page_item, true);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestUrl, offline_item.url);
   EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
   EXPECT_EQ(title, offline_item.title);
   EXPECT_EQ(file_path, offline_item.file_path);
@@ -96,7 +96,7 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
       OfflineItemConversions::CreateOfflineItem(save_page_request);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestUrl, offline_item.url);
   EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
   EXPECT_EQ(kTestUrl.host(), offline_item.title);
   EXPECT_EQ(base::FilePath(), offline_item.file_path);

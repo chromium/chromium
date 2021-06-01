@@ -189,7 +189,7 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
   EXPECT_EQ(file_path, offline_item.file_path);
   EXPECT_EQ(mime_type, offline_item.mime_type);
 
-  EXPECT_EQ(GURL(kTestUrl), offline_item.page_url);
+  EXPECT_EQ(GURL(kTestUrl), offline_item.url);
   EXPECT_EQ(GURL(kTestOriginalUrl), offline_item.original_url);
   EXPECT_FALSE(offline_item.is_off_the_record);
   EXPECT_EQ("", offline_item.attribution);

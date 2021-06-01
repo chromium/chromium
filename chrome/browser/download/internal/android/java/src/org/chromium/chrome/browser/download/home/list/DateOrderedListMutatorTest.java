@@ -1192,7 +1192,7 @@ public class DateOrderedListMutatorTest {
         item.isSuggested = true;
         item.creationTimeMs = calendar.getTimeInMillis();
         item.filter = filter;
-        item.pageUrl = "http://example.com/xyz";
+        item.url = "http://example.com/xyz";
         return item;
     }
 

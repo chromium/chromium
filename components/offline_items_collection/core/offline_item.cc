@@ -112,8 +112,7 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          last_accessed_time == offline_item.last_accessed_time &&
          is_openable == offline_item.is_openable &&
          file_path == offline_item.file_path &&
-         mime_type == offline_item.mime_type &&
-         page_url == offline_item.page_url &&
+         mime_type == offline_item.mime_type && url == offline_item.url &&
          original_url == offline_item.original_url &&
          is_off_the_record == offline_item.is_off_the_record &&
          otr_profile_id == offline_item.otr_profile_id &&

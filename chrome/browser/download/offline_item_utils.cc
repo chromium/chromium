@@ -122,7 +122,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   }
 #endif
 
-  item.page_url = download_item->GetTabUrl();
+  item.url = download_item->GetURL();
   item.original_url = download_item->GetOriginalUrl();
   item.is_off_the_record = off_the_record;
 

@@ -210,7 +210,7 @@ bool OfflineItemModel::GetFileExternallyRemoved() const {
 }
 
 GURL OfflineItemModel::GetURL() const {
-  return offline_item_ ? offline_item_->page_url : GURL();
+  return offline_item_ ? offline_item_->url : GURL();
 }
 
 bool OfflineItemModel::ShouldRemoveFromShelfWhenComplete() const {

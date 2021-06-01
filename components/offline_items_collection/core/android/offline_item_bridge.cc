@@ -38,7 +38,7 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       item.completion_time.ToJavaTime(), item.last_accessed_time.ToJavaTime(),
       item.is_openable, ConvertUTF8ToJavaString(env, item.file_path.value()),
       ConvertUTF8ToJavaString(env, item.mime_type),
-      ConvertUTF8ToJavaString(env, item.page_url.spec()),
+      ConvertUTF8ToJavaString(env, item.url.spec()),
       ConvertUTF8ToJavaString(env, item.original_url.spec()),
       item.is_off_the_record, ConvertUTF8ToJavaString(env, item.otr_profile_id),
       static_cast<jint>(item.state), static_cast<jint>(item.fail_state),

@@ -295,7 +295,7 @@ public final class DownloadInfo {
                 .setLastAccessTime(item.lastAccessedTimeMs)
                 .setIsOpenable(item.isOpenable)
                 .setMimeType(item.mimeType)
-                .setUrl(item.pageUrl)
+                .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
                 .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
                 .setState(state)

@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 
   // Change-detector tests for values we might want to provide or change.
   EXPECT_TRUE(offline_item.description.empty());
-  EXPECT_TRUE(offline_item.page_url.is_empty());
+  EXPECT_TRUE(offline_item.url.is_empty());
   EXPECT_FALSE(offline_item.is_off_the_record);
 }
 

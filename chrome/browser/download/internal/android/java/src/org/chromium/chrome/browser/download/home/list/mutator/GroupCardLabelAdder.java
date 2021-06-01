@@ -102,7 +102,7 @@ public class GroupCardLabelAdder implements ListConsumer {
         }
 
         Pair<Date, String> dateAndDomain = getDateAndDomainForItem(candidateCardItems.get(0));
-        String url = ((ListItem.OfflineItemListItem) candidateCardItems.get(0)).item.pageUrl;
+        String url = ((ListItem.OfflineItemListItem) candidateCardItems.get(0)).item.url;
         mCardPaginator.initializeEntry(dateAndDomain);
 
         // Add the card header, and the divider above it.

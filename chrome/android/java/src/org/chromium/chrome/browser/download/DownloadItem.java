@@ -164,7 +164,7 @@ public class DownloadItem {
         offlineItem.totalSizeBytes = downloadInfo.getBytesTotalSize();
         offlineItem.receivedBytes = downloadInfo.getBytesReceived();
         offlineItem.isResumable = downloadInfo.isResumable();
-        offlineItem.pageUrl = downloadInfo.getUrl();
+        offlineItem.url = downloadInfo.getUrl();
         offlineItem.originalUrl = downloadInfo.getOriginalUrl();
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
         offlineItem.otrProfileId = OTRProfileID.serialize(downloadInfo.getOTRProfileId());
