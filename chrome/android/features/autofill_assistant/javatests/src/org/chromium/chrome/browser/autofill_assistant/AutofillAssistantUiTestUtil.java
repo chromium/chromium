@@ -707,6 +707,23 @@ class AutofillAssistantUiTestUtil {
     }
 
     /**
+     * Scroll the element into view.
+     */
+    public static void scrollIntoView(WebContents webContents, String... elementIds)
+            throws Exception {
+        if (!checkElementExists(webContents, elementIds)) {
+            throw new IllegalArgumentException(Arrays.toString(elementIds) + " does not exist");
+        }
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(webContents,
+                "(function() {" + getElementSelectorString(elementIds) + ".scrollIntoView();"
+                        + "return true;"
+                        + "})()");
+        javascriptHelper.waitUntilHasValue();
+    }
+
+    /**
      * Converts a view into a bitmap.
      */
     public static Bitmap getBitmapFromView(View view) {
