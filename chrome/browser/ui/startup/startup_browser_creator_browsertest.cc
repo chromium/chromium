@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -40,7 +41,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -55,10 +58,12 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -1417,6 +1422,197 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   EXPECT_EQ("/title2.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
 }
 
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
+ protected:
+  StartupBrowserWithRealWebAppTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {}
+
+  web_app::WebAppProvider& provider() {
+    return *web_app::WebAppProvider::Get(profile());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
+                       PRE_PRE_LastUsedProfilesWithRealWebApp) {
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  // Simulate a browser restart by creating the profiles in the PRE_PRE part.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a profile.
+  base::FilePath dest_path = profile_manager->user_data_dir();
+
+  Profile* profile1 = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile1 = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+    ASSERT_TRUE(profile1);
+  }
+  DisableWelcomePages({profile1});
+
+  // Open some urls with the browsers, and close them.
+  SessionServiceFactory::GetForProfileForSessionRestore(profile1);
+  Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, profile1, true});
+  chrome::NewTab(browser1);
+  ui_test_utils::NavigateToURL(browser1,
+                               embedded_test_server()->GetURL("/title1.html"));
+  browser1->window()->Show();
+  browser1->window()->Maximize();
+
+  // Set startup preferences to restore last session.
+  SessionStartupPref pref1(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile1, pref1);
+  profile1->GetPrefs()->CommitPendingWrite();
+
+  SessionStartupPref::SetStartupPref(browser()->profile(), pref1);
+  browser()->profile()->GetPrefs()->CommitPendingWrite();
+
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(profile1));
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+}
+
+web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->open_as_window = true;
+  web_app_info->title = u"A Web App";
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
+                       PRE_LastUsedProfilesWithRealWebApp) {
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = profile_manager->user_data_dir();
+  Profile* profile1 = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile1 = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+    ASSERT_TRUE(profile1);
+  }
+
+  auto example_url = GURL("http://www.example.com");
+  web_app::AppId new_app_id = InstallPWA(profile1, example_url);
+  Browser* app = web_app::LaunchWebAppBrowserAndWait(profile1, new_app_id);
+  ASSERT_TRUE(app);
+
+  // destroy session services so we don't record this closure.
+  // This simulates a user choosing ... -> Exit Chromium.
+  for (auto* profile : profile_manager->GetLoadedProfiles()) {
+    // Don't construct SessionServices for every type just to
+    // shut them down. If they were never created, just skip.
+    if (SessionServiceFactory::GetForProfileIfExisting(profile))
+      SessionServiceFactory::ShutdownForProfile(profile);
+
+    if (AppSessionServiceFactory::GetForProfileIfExisting(profile))
+      AppSessionServiceFactory::ShutdownForProfile(profile);
+  }
+
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(2u, chrome::GetBrowserCount(profile1));
+
+  // On ozone-linux, for some reason, these profile 1 windows come back in
+  // the next test. To reliably ensure they don't, but don't destroy the
+  // session restore state, close them while the session services are shutdown.
+
+  Browser* close_this = FindOneOtherBrowserForProfile(profile1, app);
+  CloseBrowserSynchronously(close_this);
+  CloseBrowserSynchronously(app);
+}
+
+#if defined(OS_MAC)
+#define MAYBE_LastUsedProfilesWithRealWebApp \
+  DISABLED_LastUsedProfilesWithRealWebApp
+#else
+#define MAYBE_LastUsedProfilesWithRealWebApp LastUsedProfilesWithRealWebApp
+#endif
+// TODO(stahon@microsoft.com) App restores are disabled on mac.
+// see http://crbug.com/1194201
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
+                       MAYBE_LastUsedProfilesWithRealWebApp) {
+  // Make StartupBrowserCreator::WasRestarted() return true.
+  StartupBrowserCreator::was_restarted_read_ = false;
+  PrefService* pref_service = g_browser_process->local_state();
+  pref_service->SetBoolean(prefs::kWasRestarted, true);
+
+  ASSERT_TRUE(StartupBrowserCreator::WasRestarted());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  base::FilePath dest_path = profile_manager->user_data_dir();
+
+  Profile* profile1 = nullptr;
+  Profile* default_profile = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile1 = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+    ASSERT_TRUE(profile1);
+  }
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    default_profile = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("Default")));
+    ASSERT_TRUE(profile1);
+  }
+
+  // At this point, nothing is open except the basic browser.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Trigger the restore via StartupBrowserCreator.
+  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
+                                   chrome::startup::IS_NOT_FIRST_RUN);
+  // Fake |process_startup| true.
+  EXPECT_TRUE(launch.Launch(profile1, std::vector<GURL>(),
+                            /* process_startup */ true, nullptr));
+
+  // We should get two windows from profile1.
+  ASSERT_EQ(3u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(default_profile));
+  ASSERT_EQ(2u, chrome::GetBrowserCount(profile1));
+
+  while (SessionRestore::IsRestoring(profile1)) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Since there's one app being restored, ensure the provider is ready.
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProviderFactory::GetForProfile(profile1);
+  ASSERT_TRUE(provider->on_registry_ready().is_signaled());
+
+  // The last open sessions should be restored.
+  EXPECT_TRUE(profile1->restored_last_session());
+
+  Browser* new_browser = nullptr;
+
+  // 2x profile1, 1x default profile here.
+  ASSERT_EQ(3u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetBrowserCount(profile1));
+  ASSERT_EQ(1u, chrome::GetBrowserCount(default_profile));
+  new_browser = FindOneOtherBrowserForProfile(profile1, nullptr);
+  if (new_browser->type() != Browser::Type::TYPE_NORMAL) {
+    new_browser = FindOneOtherBrowserForProfile(profile1, new_browser);
+  }
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->type(), Browser::Type::TYPE_NORMAL);
+
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  EXPECT_EQ("/title1.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+
+  // Now get the app, it should just be the other browser from this profile.
+  new_browser = FindOneOtherBrowserForProfile(profile1, new_browser);
+  ASSERT_EQ(new_browser->type(), Browser::Type::TYPE_APP);
+}
+#endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) || defined(OS_MAC) || \

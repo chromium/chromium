@@ -59,6 +59,8 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/url_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -159,8 +161,8 @@ class SessionRestoreImpl : public BrowserListObserver {
 
   Browser* Restore() {
     SessionServiceBase* service =
-        SessionServiceFactory::GetForProfile(profile_);
-    DCHECK(service);
+        SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+    CHECK(service);
     service->GetLastSession(base::BindOnce(&SessionRestoreImpl::OnGotSession,
                                            weak_factory_.GetWeakPtr(),
                                            /* for_apps */ false));
@@ -168,11 +170,22 @@ class SessionRestoreImpl : public BrowserListObserver {
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
     if (restore_apps_) {
       SessionServiceBase* app_service =
-          AppSessionServiceFactory::GetForProfile(profile_);
-      DCHECK(app_service);
+          AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
+      CHECK(app_service);
       app_service->GetLastSession(base::BindOnce(
           &SessionRestoreImpl::OnGotSession, weak_factory_.GetWeakPtr(),
           /* for_apps */ true));
+
+      // Ensure the registry is ready so that when we reopen apps they work
+      // properly. If we don't wait, it's possible that apps are restored in
+      // an incoherent state.
+      web_app::WebAppProvider* provider =
+          web_app::WebAppProviderFactory::GetForProfile(profile_);
+      DCHECK(provider);
+
+      provider->on_registry_ready().Post(
+          FROM_HERE, base::BindOnce(&SessionRestoreImpl::WebAppRegistryReady,
+                                    weak_factory_.GetWeakPtr()));
     }
 #endif
 
@@ -393,39 +406,56 @@ class SessionRestoreImpl : public BrowserListObserver {
       got_browser_windows_ = true;
     }
 
-    // Keep track of whether we're ready to start processing windows.
-    // There's two ways we are ready to process:
-    // 1. we aren't restoring apps, and have browser_windows.
-    // 2. we are restoring apps, and we have both browser and app windows.
-    bool got_all_sessions =
-        !restore_apps_ || (got_app_windows_ && got_browser_windows_);
+    // Don't let app restores set the active_window_id, or else it will
+    // always bring the app to the forefront.
+    if (!for_apps)
+      active_window_id_ = active_window_id;
 
-    if (got_all_sessions)
-      SortWindowsByWindowId();
+    ProcessSessionWindowsIfReady();
+  }
 
-    if (synchronous_) {
-      // Don't let app restores set the active_window_id, or else it will
-      // always bring the app to the forefront.
-      if (!for_apps)
-        active_window_id_ = active_window_id;
+  void WebAppRegistryReady() {
+    DCHECK_EQ(web_app_registry_ready_, false);
+    DCHECK(restore_apps_);
+    web_app_registry_ready_ = true;
 
-      CHECK(!quit_closure_for_sync_restore_.is_null());
+    ProcessSessionWindowsIfReady();
+  }
 
-      if (got_all_sessions) {
-        // now we know we have all the windows we need merge them into windows_
-        // for processing.
-        std::move(quit_closure_for_sync_restore_).Run();
-      }
-
-      return;
-    }
+  // This is called by callback handlers and may trigger session restore if
+  // all the required conditions have been met. It also handles the differences
+  // between async/sync restores.
+  void ProcessSessionWindowsIfReady() {
+    bool got_all_sessions = IsReadyToProcessSessionWindows();
 
     // For async restores, we need to early exit here if we aren't ready to
     // start restoring windows.
     if (!got_all_sessions)
       return;
 
-    ProcessSessionWindowsAndNotify(&windows_, active_window_id);
+    SortWindowsByWindowId();
+
+    if (synchronous_) {
+      CHECK(!quit_closure_for_sync_restore_.is_null());
+      // now we know we have all the windows we need merge them into windows_
+      // for processing.
+      std::move(quit_closure_for_sync_restore_).Run();
+      return;
+    }
+
+    ProcessSessionWindowsAndNotify(&windows_, active_window_id_);
+  }
+
+  // This helper, based on the restore_apps_ state tells us if we're ready to
+  // begin restoring windows. There's two ways we are ready to process:
+  // 1. we aren't restoring apps, and have browser_windows.
+  // 2. we are restoring apps, we have both browser and app windows and
+  //   WebAppRegistryReady() has been called.
+  bool IsReadyToProcessSessionWindows() const {
+    if (!restore_apps_)
+      return got_browser_windows_;
+    return (got_app_windows_ && got_browser_windows_ &&
+            web_app_registry_ready_);
   }
 
   Browser* ProcessSessionWindowsAndNotify(
@@ -840,6 +870,11 @@ class SessionRestoreImpl : public BrowserListObserver {
   // If true, restores apps.
   const bool restore_apps_;
 
+  // App restores depend on web_app::WebAppProvider on_registry_ready(). This
+  // bool will track that and hold up restores until that's ready too if apps
+  // are being restored.
+  bool web_app_registry_ready_ = false;
+
   // During app restores, we make two GetLastSession calls to
   // [App]SessionService, we need to wait till they both return before
   // processing the windows together in one pass.
@@ -929,10 +964,8 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
 
 // TODO(stahon@microsoft.com) http://crbug.com/1194201 covers this
 // being disabled on mac. MacOS will not restore apps on crash restore.
-// On linux, apps can be restored without the proper app frame,
-// disabling restorations on linux for now. http://crbug.com/1199109
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#if !defined(OS_MAC) && !defined(OS_LINUX)
+#if !defined(OS_MAC)
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
 #endif

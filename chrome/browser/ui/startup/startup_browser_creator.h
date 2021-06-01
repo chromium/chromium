@@ -138,6 +138,8 @@ class StartupBrowserCreator {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            OpenAppShortcutWindowPref);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppUrlShortcut);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserWithRealWebAppTest,
+                           LastUsedProfilesWithRealWebApp);
   FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
                            CommandLineTab);
   FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
