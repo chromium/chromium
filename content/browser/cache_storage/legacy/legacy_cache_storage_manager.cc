@@ -245,6 +245,11 @@ scoped_refptr<LegacyCacheStorageManager> LegacyCacheStorageManager::Create(
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
+  DCHECK(cache_task_runner);
+  DCHECK(scheduler_task_runner);
+  DCHECK(quota_manager_proxy);
+  DCHECK(blob_storage_context);
+
   base::FilePath root_path = path;
   if (!path.empty()) {
     root_path = path.Append(storage::kServiceWorkerDirectory)
@@ -527,7 +532,12 @@ LegacyCacheStorageManager::LegacyCacheStorageManager(
       cache_task_runner_(std::move(cache_task_runner)),
       scheduler_task_runner_(std::move(scheduler_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
-      blob_storage_context_(std::move(blob_storage_context)) {}
+      blob_storage_context_(std::move(blob_storage_context)) {
+  DCHECK(cache_task_runner_);
+  DCHECK(scheduler_task_runner_);
+  DCHECK(quota_manager_proxy_);
+  DCHECK(blob_storage_context_);
+}
 
 // static
 base::FilePath LegacyCacheStorageManager::ConstructOriginPath(

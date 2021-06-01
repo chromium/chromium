@@ -147,10 +147,10 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   base::FilePath root_path_;
-  scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
 
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   // The map owns the CacheStorages and the CacheStorages are only accessed on
   // |cache_task_runner_|.
@@ -158,7 +158,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
 
   mojo::RemoteSet<storage::mojom::CacheStorageObserver> observers_;
 
-  scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
+  const scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

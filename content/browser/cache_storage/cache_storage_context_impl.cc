@@ -60,6 +60,7 @@ void CacheStorageContextImpl::Init(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(quota_manager_proxy);
 
   receivers_.Add(this, std::move(control));
   is_incognito_ = user_data_directory.empty();
@@ -75,9 +76,6 @@ void CacheStorageContextImpl::Init(
       base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy,
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)));
-
-  if (!quota_manager_proxy)
-    return;
 
   mojo::PendingRemote<storage::mojom::QuotaClient> cache_storage_client;
   mojo::MakeSelfOwnedReceiver(
