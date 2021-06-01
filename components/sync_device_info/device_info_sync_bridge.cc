@@ -123,6 +123,23 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   return to;
 }
 
+std::string GetVersionNumberFromSpecifics(
+    const DeviceInfoSpecifics& specifics) {
+  // The new field takes precedence, if populated.
+  if (specifics.has_chrome_version_info()) {
+    return specifics.chrome_version_info().version_number();
+  }
+
+  // Fall back to the legacy proto field.
+  return specifics.chrome_version();
+}
+
+// Returns true if |speifics| represents a client that is
+// chromium-based and hence exposed in DeviceInfoTracker.
+bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
+  return specifics.has_chrome_version_info() || specifics.has_chrome_version();
+}
+
 // Converts DeviceInfoSpecifics into a freshly allocated DeviceInfo.
 std::unique_ptr<DeviceInfo> SpecificsToModel(
     const DeviceInfoSpecifics& specifics) {
@@ -139,7 +156,7 @@ std::unique_ptr<DeviceInfo> SpecificsToModel(
 
   return std::make_unique<DeviceInfo>(
       specifics.cache_guid(), specifics.client_name(),
-      specifics.chrome_version(), specifics.sync_user_agent(),
+      GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
       specifics.device_type(), specifics.signin_scoped_device_id(),
       specifics.manufacturer(), specifics.model(),
       specifics.full_hardware_class(),
@@ -180,6 +197,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_cache_guid(info.guid());
   specifics->set_client_name(info.client_name());
   specifics->set_chrome_version(info.chrome_version());
+  specifics->mutable_chrome_version_info()->set_version_number(
+      info.chrome_version());
   specifics->set_sync_user_agent(info.sync_user_agent());
   specifics->set_device_type(info.device_type());
   specifics->set_signin_scoped_device_id(info.signin_scoped_device_id());
@@ -482,6 +501,9 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
   if (iter == all_data_.end()) {
     return nullptr;
   }
+  if (!IsChromeClient(*iter->second)) {
+    return nullptr;
+  }
   return SpecificsToModel(*iter->second);
 }
 
@@ -489,7 +511,9 @@ std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   std::vector<std::unique_ptr<DeviceInfo>> list;
   for (auto iter = all_data_.begin(); iter != all_data_.end(); ++iter) {
-    list.push_back(SpecificsToModel(*iter->second));
+    if (IsChromeClient(*iter->second)) {
+      list.push_back(SpecificsToModel(*iter->second));
+    }
   }
   return list;
 }
@@ -765,6 +789,10 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
       relevant_events;
 
   for (const auto& pair : all_data_) {
+    if (!IsChromeClient(*pair.second)) {
+      continue;
+    }
+
     if (DeviceInfoUtil::IsActive(GetLastUpdateTime(*pair.second), now)) {
       base::Time begin = change_processor()->GetEntityCreationTime(pair.first);
       base::Time end =
