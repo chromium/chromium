@@ -133,14 +133,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     public void destroy() {
         mFullscreenManager.removeObserver(mFullScreenObserver);
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
-        if (mLayoutStateProvider != null) {
-            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
-        }
-        if (mModalDialogManager != null) {
-            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
-        }
+        setLayoutStateProvider(null);
+        setModalDialogManager(null);
         mActivityTabProvider = null;
-        mLayoutStateProvider = null;
         mQueueController = null;
         mContainerCoordinator = null;
         if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
@@ -149,7 +144,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         }
         mBrowserControlsManager = null;
         mFullscreenManager = null;
-        mModalDialogManager = null;
     }
 
     @Override
@@ -198,6 +192,12 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         }
         mLayoutStateProvider = layoutStateProvider;
         if (layoutStateProvider == null) return;
+        // TODO(crbug.com/1199059): The crash is possible when #setLayoutStateProvider() is called
+        // after #destroy() was called. This sequence of calls is unexpected. Below check throws an
+        // exception to help identify the caller.
+        if (mQueueController == null) {
+            throw new IllegalStateException("setLayoutStateProvider() is called after destroy()");
+        }
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
