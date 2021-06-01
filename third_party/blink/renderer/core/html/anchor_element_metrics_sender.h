@@ -91,6 +91,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();
 
+  // Creates an AnchorElementEnteredViewportPtr for the given element and
+  // enqueue it so that it gets reported after the next layout.
+  void EnqueueEnteredViewport(const HTMLAnchorElement& element);
+
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
 

@@ -147,18 +147,21 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
     //  The anchor is visible.
     HTMLAnchorElement* anchor_element =
         static_cast<HTMLAnchorElement*>(element);
-    auto msg = mojom::blink::AnchorElementEnteredViewport::New();
-    msg->anchor_id = AnchorElementId(*anchor_element);
-    base::TimeDelta time_entered_viewport =
-        base::TimeTicks::Now() - GetRootDocument(*anchor_element)
-                                     ->Loader()
-                                     ->GetTiming()
-                                     .NavigationStart();
-    msg->navigation_start_to_entered_viewport_ms =
-        static_cast<uint64_t>(time_entered_viewport.InMilliseconds());
-    entered_viewport_messages_.push_back(std::move(msg));
+    EnqueueEnteredViewport(*anchor_element);
     intersection_observer_->unobserve(element);
   }
+}
+
+void AnchorElementMetricsSender::EnqueueEnteredViewport(
+    const HTMLAnchorElement& element) {
+  auto msg = mojom::blink::AnchorElementEnteredViewport::New();
+  msg->anchor_id = AnchorElementId(element);
+  base::TimeDelta time_entered_viewport =
+      base::TimeTicks::Now() -
+      GetRootDocument(element)->Loader()->GetTiming().NavigationStart();
+  msg->navigation_start_to_entered_viewport_ms =
+      static_cast<uint64_t>(time_entered_viewport.InMilliseconds());
+  entered_viewport_messages_.push_back(std::move(msg));
 }
 
 void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
@@ -192,16 +195,26 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
         anchor_element.GetLayoutObject()->AbsoluteBoundingBoxRect().IsEmpty()) {
       continue;
     }
+    mojom::blink::AnchorElementMetricsPtr anchor_element_metrics =
+        CreateAnchorElementMetrics(anchor_element);
+
     int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
         blink::features::kNavigationPredictor, "random_anchor_sampling_period",
         100);
     int random = base::RandInt(1, sampling_period);
     if (random == 1) {
       // This anchor element is sampled in.
-      intersection_observer_->observe(&anchor_element);
+      if (anchor_element_metrics->ratio_visible_area >=
+          INTERSECTION_RATIO_THRESHOLD) {
+        // The element is already visible.
+        EnqueueEnteredViewport(anchor_element);
+      } else {
+        // Observe the element until it becomes visible.
+        intersection_observer_->observe(&anchor_element);
+      }
     }
 
-    metrics.push_back(CreateAnchorElementMetrics(anchor_element));
+    metrics.push_back(std::move(anchor_element_metrics));
   }
   // Remove all anchors, including the ones that did not qualify. This means
   // that elements that are inserted in the DOM but have an empty bounding box
