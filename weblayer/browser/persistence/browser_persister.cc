@@ -111,7 +111,7 @@ void BrowserPersister::OnErrorWritingSessionCommands() {
 
 void BrowserPersister::OnTabAdded(Tab* tab) {
   auto* tab_impl = static_cast<TabImpl*>(tab);
-  data_observer_.Add(tab_impl);
+  data_observations_.AddObservation(tab_impl);
   content::WebContents* web_contents = tab_impl->web_contents();
   auto* tab_helper = sessions::SessionTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
@@ -137,7 +137,7 @@ void BrowserPersister::OnTabAdded(Tab* tab) {
 
 void BrowserPersister::OnTabRemoved(Tab* tab, bool active_tab_changed) {
   auto* tab_impl = static_cast<TabImpl*>(tab);
-  data_observer_.Remove(tab_impl);
+  data_observations_.RemoveObservation(tab_impl);
   // Allow the associated sessionStorage to get deleted; it won't be needed
   // in the session restore.
   content::WebContents* web_contents = tab_impl->web_contents();

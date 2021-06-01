@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
@@ -38,7 +38,7 @@ namespace {
 class NewTabWaiter : public BrowserObserver {
  public:
   NewTabWaiter(Browser* browser, const GURL& url) : url_(url) {
-    observer_.Add(browser);
+    observation_.Observe(browser);
   }
 
   void OnTabAdded(Tab* tab) override {
@@ -57,7 +57,7 @@ class NewTabWaiter : public BrowserObserver {
   GURL url_;
   std::unique_ptr<TestNavigationObserver> navigation_observer_;
   base::RunLoop run_loop_;
-  ScopedObserver<Browser, BrowserObserver> observer_{this};
+  base::ScopedObservation<Browser, BrowserObserver> observation_{this};
 };
 #endif
 

@@ -15,7 +15,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -137,11 +137,11 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
 
   std::vector<uint8_t> crypto_key_;
 
-  ScopedObserver<TabImpl,
-                 TabImpl::DataObserver,
-                 &TabImpl::AddDataObserver,
-                 &TabImpl::RemoveDataObserver>
-      data_observer_{this};
+  base::ScopedMultiSourceObservation<TabImpl,
+                                     TabImpl::DataObserver,
+                                     &TabImpl::AddDataObserver,
+                                     &TabImpl::RemoveDataObserver>
+      data_observations_{this};
 
   // True while asynchronously reading the state to restore.
   bool is_restore_in_progress_ = true;
