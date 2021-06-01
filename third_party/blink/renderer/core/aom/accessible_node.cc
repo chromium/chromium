@@ -938,6 +938,7 @@ void AccessibleNode::appendChild(AccessibleNode* child,
                                       "Reparenting is not supported yet.");
     return;
   }
+  child->document_ = GetAncestorDocument();
   child->parent_ = this;
 
   if (!GetExecutionContext()->GetSecurityOrigin()->CanAccess(
@@ -1034,6 +1035,16 @@ ExecutionContext* AccessibleNode::GetExecutionContext() const {
 
   if (parent_)
     return parent_->GetExecutionContext();
+
+  return nullptr;
+}
+
+Document* AccessibleNode::GetAncestorDocument() {
+  if (element_)
+    return &(element_->GetDocument());
+
+  if (parent_)
+    return parent_->GetAncestorDocument();
 
   return nullptr;
 }

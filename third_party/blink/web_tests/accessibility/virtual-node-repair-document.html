@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!--
+  Validate that removing an accessible node from document and adding
+  it back does not cause any exception.
+-->
+<script>
+test(function() {
+    var childAccessibleNode = new AccessibleNode();
+    childAccessibleNode.role = "button";
+    document.body.accessibleNode.appendChild(childAccessibleNode);
+
+    var axBody = accessibilityController.rootElement
+      .childAtIndex(0).childAtIndex(0);
+    var axChild = axBody.childAtIndex(0);
+    assert_equals(axChild.role, "AXRole: AXButton");
+
+    // Detach childAccessibleNode from document will also remove the
+    // accessible node's internal reference to document.
+    document.body.accessibleNode.removeChild(childAccessibleNode);
+
+    // Validate that adding childAccessibleNode back to document also
+    // restores its internal reference to document, otherwise
+    // exception will occur.
+    document.body.accessibleNode.appendChild(childAccessibleNode);
+    axChild = axBody.childAtIndex(0);
+    assert_equals(axChild.role, "AXRole: AXButton");
+
+});
+</script>
+
+</body>
+</html>

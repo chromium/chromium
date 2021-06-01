@@ -351,6 +351,7 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
 
   // Called when an accessible node is removed from document.
   void DetachedFromDocument();
+  Document* GetAncestorDocument();
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

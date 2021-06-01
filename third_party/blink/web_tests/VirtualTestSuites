@@ -1049,7 +1049,8 @@
               "accessibility/virtual-node-parent-removal.html",
               "accessibility/virtual-node-build-parent.html",
               "accessibility/virtual-node-build-parent-multiple.html",
-              "accessibility/virtual-node-removed-from-document.html"],
+              "accessibility/virtual-node-removed-from-document.html",
+              "accessibility/virtual-node-repair-document.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
