@@ -5,15 +5,12 @@
 #ifndef NET_BASE_TEST_DATA_STREAM_H_
 #define NET_BASE_TEST_DATA_STREAM_H_
 
-#include <string.h>  // for memcpy().
-#include "net/base/net_export.h"
-
 // This is a class for generating an infinite stream of data which can be
 // verified independently to be the correct stream of data.
 
 namespace net {
 
-class NET_EXPORT TestDataStream {
+class TestDataStream {
  public:
   TestDataStream();
 
