@@ -16,6 +16,7 @@
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/resources/grit/webui_generated_resources.h"
+#include "ui/resources/grit/webui_generated_resources_map.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -43,6 +44,11 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     // trusted and untrusted context.
     source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
 
+    // Add WebUI resources like polymer and iron-list so that it is accessible
+    // inside untrusted iframe.
+    source->AddResourcePaths(base::make_span(kWebuiGeneratedResources,
+                                             kWebuiGeneratedResourcesSize));
+
     source->AddFrameAncestor(GURL(kChromeUIPersonalizationAppURL));
 
     // Allow images only from this url.
@@ -53,6 +59,10 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc, "script-src 'self';");
 
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::StyleSrc,
+        "style-src 'self' 'unsafe-inline';");
+
 #if !DCHECK_IS_ON()
     // When DCHECKs are off and a user goes to an invalid url serve a default
     // page to avoid crashing. We crash when DCHECKs are on to make it clearer
@@ -60,6 +70,10 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     source->SetDefaultResource(
         IDR_CHROMEOS_PERSONALIZATION_APP_UNTRUSTED_COLLECTIONS_HTML);
 #endif  // !DCHECK_IS_ON()
+
+    // TODO(crbug/1169829) set up trusted types properly to allow Polymer to
+    // write html.
+    source->DisableTrustedTypesCSP();
 
     auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
     content::WebUIDataSource::Add(browser_context, source.release());

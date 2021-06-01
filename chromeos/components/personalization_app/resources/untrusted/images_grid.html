@@ -1,0 +1,10 @@
+<style include="untrusted-style">
+</style>
+<iron-list grid items="[[images_]]">
+  <template>
+    <div class="photo-container">
+      <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
+        on-click="onImageClicked_">
+    </div>
+  </template>
+</iron-list>

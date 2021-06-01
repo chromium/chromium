@@ -61,6 +61,9 @@ js_library("personalization_store") {
 }
 
 js_library("styles") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("wallpaper_collections_element") {

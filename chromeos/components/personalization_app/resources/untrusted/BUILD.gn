@@ -4,36 +4,78 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_library("collections") {
+js_library("collections_grid") {
   deps = [
+    ":styles",
     "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
+    "../common:iframe_api",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
-js_library("images") {
+js_library("images_grid") {
   deps = [
+    ":styles",
     "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
+    "../common:iframe_api",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("styles") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome-untrusted://personalization/polymer/v3_0/=../../third_party/polymer/v3_0/components-chromium/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",
+                  ]
   deps = [
-    ":collections",
-    ":images",
+    ":collections_grid",
+    ":images_grid",
+    ":styles",
   ]
 }
 
+html_to_js("web_components") {
+  js_files = [
+    "collections_grid.js",
+    "images_grid.js",
+  ]
+}
+
+copy("copy_static") {
+  sources = [
+    "collections.html",
+    "images.html",
+    "styles.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 preprocess_if_expr("preprocess") {
-  in_folder = ".."
+  deps = [
+    ":copy_static",
+    ":web_components",
+  ]
+  in_folder = "$target_gen_dir/.."
   out_folder = "$target_gen_dir/processed"
   out_manifest = "$target_gen_dir/manifest.json"
   in_files = [
     "untrusted/collections.html",
+    "untrusted/collections_grid.js",
     "untrusted/images.html",
-    "untrusted/images.js",
-    "untrusted/collections.js",
+    "untrusted/images_grid.js",
+    "untrusted/styles.js",
   ]
 }

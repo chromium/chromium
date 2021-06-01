@@ -9,7 +9,6 @@
  * wallpaper collection id to avoid refetching data unnecessarily.
  */
 
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {assert} from '/assert.m.js';

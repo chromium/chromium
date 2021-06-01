@@ -5,5 +5,6 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+ui/resources/grit/webui_generated_resources.h",
+  "+ui/resources/grit/webui_generated_resources_map.h",
   "+ui/webui",
 ]
