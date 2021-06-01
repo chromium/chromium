@@ -201,7 +201,6 @@ Document* AccessibleNode::GetDocument() const {
   if (element_)
     return &element_->GetDocument();
 
-  NOTREACHED();
   return nullptr;
 }
 
@@ -1141,7 +1140,10 @@ void AccessibleNode::NotifyAttributeChanged(
 }
 
 AXObjectCache* AccessibleNode::GetAXObjectCache() {
-  return GetDocument()->ExistingAXObjectCache();
+  if (Document* document = GetDocument())
+    return document->ExistingAXObjectCache();
+
+  return nullptr;
 }
 
 void AccessibleNode::Trace(Visitor* visitor) const {
