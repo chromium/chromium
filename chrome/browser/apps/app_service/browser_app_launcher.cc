@@ -41,21 +41,23 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     AppLaunchParams params_for_restore(
         params.app_id, params.container, params.disposition, params.source,
         params.display_id, params.launch_files, params.intent);
+    std::string app_id = params.app_id;
+    apps::mojom::AppLaunchSource source = params.source;
+    apps::mojom::LaunchContainer container = params.container;
     int restore_id = params.restore_id;
 
     auto* web_contents =
         web_app_launch_manager_.OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
-      RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb,
-                             params.app_id, GetLaunchSource(params.source),
-                             params.container);
+      RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, app_id,
+                             GetLaunchSource(source), container);
       return web_contents;
     }
 
-    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, params.app_id,
+    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, app_id,
                            apps::mojom::LaunchSource::kFromFullRestore,
-                           params.container);
+                           container);
 
     int session_id = GetSessionIdForRestoreFromWebContents(web_contents);
     if (!SessionID::IsValidValue(session_id)) {
