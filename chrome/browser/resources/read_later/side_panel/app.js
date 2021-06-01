@@ -7,6 +7,7 @@
 // directory, with read_later being moved into a subdirectory within side_panel.
 
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './bookmarks_list.js';
 import '../app.js'; /* <read-later-app> */
