@@ -91,6 +91,13 @@ Polymer({
       },
     },
 
+    /** @private */
+    isShowingVpn_: {
+      type: Boolean,
+      computed: 'computeIsShowingVpn_(deviceState)',
+      reflectToAttribute: true,
+    },
+
     /**
      * Whether the browser/ChromeOS is managed by their organization
      * through enterprise policies.
@@ -992,6 +999,18 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsShowingVpn_() {
+    if (!this.deviceState) {
+      return false;
+    }
+    return this.matchesType_(
+        OncMojo.getNetworkTypeString(mojom.NetworkType.kVPN), this.deviceState);
+  },
+
+  /**
    * Tells when VPN preferences section should be displayed. It is
    * displayed when the preferences are applicable to the current device.
    * @return {boolean}
@@ -1004,7 +1023,7 @@ Polymer({
     // For now the section only contain always-on VPN settings. It should not be
     // displayed on managed devices while the legacy always-on VPN based on ARC
     // is not replaced/extended by the new implementation.
-    return !this.isManaged_ && this.matchesType_('VPN', this.deviceState);
+    return !this.isManaged_ && this.isShowingVpn_;
   },
 
   /**

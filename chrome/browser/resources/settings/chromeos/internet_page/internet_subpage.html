@@ -32,8 +32,11 @@
   <template>
     <style include="cr-shared-style os-settings-icons settings-shared iron-flex">
       #networkListDiv {
-        margin-top: var(--cr-section-vertical-margin);
         min-height: var(--settings-row-min-height);
+      }
+
+      :host(:not([is-showing-vpn_])) #networkListDiv {
+        margin-top: var(--cr-section-vertical-margin);
       }
 
       #cellularNetworkList {
@@ -146,7 +149,7 @@
     <template is="dom-if" if="[[deviceIsEnabled_(deviceState)]]">
       <div id="networkListDiv" class="layout vertical flex">
         <!-- VPN only header for built-in VPNs. -->
-        <template is="dom-if" if="[[matchesType_('VPN', deviceState)]]">
+        <template is="dom-if" if="[[isShowingVpn_]]">
           <div class="vpn-header layout horizontal center">
             <div class="flex settings-box-text">$i18n{networkVpnBuiltin}</div>
             <template is="dom-if" if="[[!vpnIsEnabled_]]">
@@ -219,7 +222,7 @@
                 "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
         </settings-localized-link>
 
-        <template is="dom-if" if="[[matchesType_('VPN', deviceState)]]">
+        <template is="dom-if" if="[[isShowingVpn_]]">
           <!-- Third party VPNs. -->
           <template is="dom-repeat"
               items="[[getVpnProviders_(vpnProviders, thirdPartyVpns_)]]">
@@ -245,7 +248,7 @@
       </div>
 
       <template is="dom-if"
-          if="[[shouldShowVpnPreferences_(isManaged_, deviceState)]]">
+          if="[[shouldShowVpnPreferences_(isManaged_, isShowingVpn_)]]">
         <div class="settings-box first">
           <h2>$i18n{networkVpnPreferences}</h2>
         </div>
