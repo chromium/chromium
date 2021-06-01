@@ -19,6 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -193,22 +195,31 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
                                    apps::mojom::MenuType menu_type,
                                    int64_t display_id,
                                    GetMenuModelCallback callback) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    std::move(callback).Run(apps::mojom::MenuItems::New());
-    return;
-  }
+  bool is_system_web_app = false;
+  bool can_use_uninstall = true;
+  apps::mojom::WindowMode display_mode;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_system_web_app, &can_use_uninstall,
+                          &display_mode](const apps::AppUpdate& update) {
+        if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+          is_system_web_app = true;
+        }
+        if (update.InstallSource() == apps::mojom::InstallSource::kSystem ||
+            update.InstallSource() == apps::mojom::InstallSource::kPolicy) {
+          can_use_uninstall = false;
+        }
+        display_mode = update.WindowMode();
+      });
 
-  const bool is_system_web_app = web_app->IsSystemApp();
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
   if (!is_system_web_app) {
-    apps::CreateOpenNewSubmenu(
-        menu_type,
-        web_app->user_display_mode() == DisplayMode::kStandalone
-            ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
-            : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
-        &menu_items);
+    apps::CreateOpenNewSubmenu(menu_type,
+                               display_mode == apps::mojom::WindowMode::kWindow
+                                   ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
+                                   : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
+                               &menu_items);
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
@@ -217,7 +228,7 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
-  if (provider()->install_finalizer().CanUserUninstallWebApp(app_id)) {
+  if (can_use_uninstall) {
     apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
                          &menu_items);
   }
@@ -225,6 +236,21 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
   if (!is_system_web_app) {
     apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
                          &menu_items);
+  }
+
+  GetMenuModelFromWebAppProvider(app_id, menu_type, std::move(menu_items),
+                                 std::move(callback));
+}
+
+void WebAppsChromeOs::GetMenuModelFromWebAppProvider(
+    const std::string& app_id,
+    apps::mojom::MenuType menu_type,
+    apps::mojom::MenuItemsPtr menu_items,
+    GetMenuModelCallback callback) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    std::move(callback).Run(apps::mojom::MenuItems::New());
+    return;
   }
 
   // Read shortcuts menu item icons from disk, if any.
