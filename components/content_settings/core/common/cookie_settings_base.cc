@@ -71,6 +71,13 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
 bool CookieSettingsBase::IsCookieAccessAllowed(
     const GURL& url,
     const GURL& first_party_url) const {
+  // TODO(https://crbug.com/1203706): remove this after migrating all callers.
+  return IsFullCookieAccessAllowed(url, first_party_url);
+}
+
+bool CookieSettingsBase::IsFullCookieAccessAllowed(
+    const GURL& url,
+    const GURL& first_party_url) const {
 #if !defined(OS_IOS)
   // IOS uses this method with an empty |first_party_url| but we don't have
   // content settings on IOS, so it does not matter.
@@ -80,6 +87,14 @@ bool CookieSettingsBase::IsCookieAccessAllowed(
 }
 
 bool CookieSettingsBase::IsCookieAccessAllowed(
+    const GURL& url,
+    const GURL& site_for_cookies,
+    const absl::optional<url::Origin>& top_frame_origin) const {
+  // TODO(https://crbug.com/1203706): remove after migrating all callers.
+  return IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin);
+}
+
+bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const GURL& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) const {

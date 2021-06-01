@@ -493,5 +493,37 @@ TEST_F(CookieSettingsTest,
   }
 }
 
+TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+
+  // Enabled for third-party requests.
+  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
+      GURL(kURL), GURL(), url::Origin::Create(GURL(kOtherURL))));
+
+  // Enabled for requests with a null site_for_cookies, even if the
+  // top_frame_origin matches.
+  EXPECT_TRUE(settings.IsPrivacyModeEnabled(GURL(kURL), GURL(),
+                                            url::Origin::Create(GURL(kURL))));
+
+  // Disabled for first-party requests, if no other rule applies.
+  EXPECT_FALSE(settings.IsPrivacyModeEnabled(GURL(kURL), GURL(kURL),
+                                             url::Origin::Create(GURL(kURL))));
+
+  // Enabled if there's a site-specific rule that blocks access, regardless of
+  // the kind of request.
+  settings.set_content_settings(
+      {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
+  // Third-party requests:
+  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
+      GURL(kURL), GURL(), url::Origin::Create(GURL(kOtherURL))));
+  // Requests with a null site_for_cookies, but matching top_frame_origin.
+  EXPECT_TRUE(settings.IsPrivacyModeEnabled(GURL(kURL), GURL(),
+                                            url::Origin::Create(GURL(kURL))));
+  // First-party requests.
+  EXPECT_TRUE(settings.IsPrivacyModeEnabled(GURL(kURL), GURL(kURL),
+                                            url::Origin::Create(GURL(kURL))));
+}
+
 }  // namespace
 }  // namespace network

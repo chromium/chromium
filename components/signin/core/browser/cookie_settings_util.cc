@@ -15,8 +15,8 @@ bool SettingsAllowSigninCookies(
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
   return cookie_settings &&
-         cookie_settings->IsCookieAccessAllowed(gaia_url, gaia_url) &&
-         cookie_settings->IsCookieAccessAllowed(google_url, google_url);
+         cookie_settings->IsFullCookieAccessAllowed(gaia_url, gaia_url) &&
+         cookie_settings->IsFullCookieAccessAllowed(google_url, google_url);
 }
 
 bool SettingsDeleteSigninCookiesOnExit(

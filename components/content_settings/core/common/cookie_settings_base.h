@@ -87,14 +87,20 @@ class CookieSettingsBase {
   // DEPRECATED: Replace with IsCookieAccessAllowed(GURL, GURL, Origin).
   bool IsCookieAccessAllowed(const GURL& url,
                              const GURL& first_party_url) const;
+  bool IsFullCookieAccessAllowed(const GURL& url,
+                                 const GURL& first_party_url) const;
 
-  // Similar to IsCookieAccessAllowed(GURL, GURL) but provides a mechanism
+  // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
   // to specify a separate |site_for_cookies|, which is used to determine
   // whether a request is in a third_party context and |top_frame_origin|, which
   // is used to check if there are any content_settings exceptions.
   // |top_frame_origin| should at least be specified when |site_for_cookies| is
   // non-empty.
   bool IsCookieAccessAllowed(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const;
+  bool IsFullCookieAccessAllowed(
       const GURL& url,
       const GURL& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) const;

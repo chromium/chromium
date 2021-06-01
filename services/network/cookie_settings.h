@@ -78,6 +78,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& site_for_cookies) const override;
 
+  // Returns true if the resource identified by (`url`, `site_for_cookies`,
+  // `top_frame_origin`) is not allowed to access cookies in this context, and
+  // "privacy mode" should be enabled for the URL request in question.
+  bool IsPrivacyModeEnabled(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const;
+
  private:
   // Returns whether third-party cookie blocking should be bypassed (i.e. always
   // allow the cookie regardless of cookie content settings and third-party

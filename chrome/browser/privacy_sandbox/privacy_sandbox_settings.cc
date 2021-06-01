@@ -370,8 +370,8 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsCookieAccessAllowed(auction_party, GURL(),
-                                                 top_frame_origin);
+  return cookie_settings_->IsFullCookieAccessAllowed(auction_party, GURL(),
+                                                     top_frame_origin);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
@@ -385,8 +385,8 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
-    if (cookie_settings_->IsCookieAccessAllowed(party, GURL(),
-                                                top_frame_origin)) {
+    if (cookie_settings_->IsFullCookieAccessAllowed(party, GURL(),
+                                                    top_frame_origin)) {
       allowed_parties.push_back(party);
     }
   }
@@ -473,8 +473,8 @@ bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
   if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
     // Simply respect cookie settings if the UI is not available. An empty site
     // for cookies is provided so the context is always as a third party.
-    return cookie_settings_->IsCookieAccessAllowed(url, GURL(),
-                                                   top_frame_origin);
+    return cookie_settings_->IsFullCookieAccessAllowed(url, GURL(),
+                                                       top_frame_origin);
   }
 
   if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))

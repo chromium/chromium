@@ -100,6 +100,14 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
           url.SchemeIs(first_party_url.scheme_piece()));
 }
 
+bool CookieSettings::IsPrivacyModeEnabled(
+    const GURL& url,
+    const GURL& site_for_cookies,
+    const absl::optional<url::Origin>& top_frame_origin) const {
+  // TODO(https://crbug.com/1203706): rewrite this to check proper conditions.
+  return !IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin);
+}
+
 ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& url,
     const GURL& first_party_url,
