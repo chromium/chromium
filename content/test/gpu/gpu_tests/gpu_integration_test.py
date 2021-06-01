@@ -132,11 +132,15 @@ class GpuIntegrationTest(
       if os_name == 'android' or os_name == 'chromeos':
         browser_args.remove(cba.DISABLE_GPU)
 
-    # Reduce number of video buffers when running tests on Fuchsia to
-    # workaround crbug.com/1203580
-    # TODO(https://crbug.com/1203580): Remove this once the bug is resolved.
     if cls._finder_options.browser_type == 'web-engine-shell':
+      # Reduce number of video buffers when running tests on Fuchsia to
+      # workaround crbug.com/1203580
+      # TODO(https://crbug.com/1203580): Remove this once the bug is resolved.
       browser_args.append('--double-buffer-compositing')
+
+      # Increase GPU watchdog timeout to 60 seconds to avoid flake when
+      # running in emulator on bots.
+      browser_args.append('--gpu-watchdog-timeout-seconds=60')
 
     return browser_args
 
