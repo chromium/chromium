@@ -64,6 +64,7 @@ modules_dictionary_idl_files = [
   "gpu_extent_3d_dict.idl",
   "gpu_fragment_state.idl",
   "gpu_image_copy_buffer.idl",
+  "gpu_image_copy_external_image.idl",
   "gpu_image_copy_image_bitmap.idl",
   "gpu_image_copy_texture.idl",
   "gpu_image_data_layout.idl",

@@ -18,6 +18,7 @@ class ExceptionState;
 class GPUBuffer;
 class GPUCommandBuffer;
 class GPUImageCopyImageBitmap;
+class GPUImageCopyExternalImage;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
 class ScriptPromiseResolver;
@@ -65,6 +66,10 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                     GPUImageDataLayout* data_layout,
                     const V8GPUExtent3D* write_size,
                     ExceptionState& exception_state);
+  void copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
+                                  GPUImageCopyTexture* destination,
+                                  const V8GPUExtent3D* copySize,
+                                  ExceptionState& exception_state);
   void copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
                                 GPUImageCopyTexture* destination,
                                 const V8GPUExtent3D* copy_size,

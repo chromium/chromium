@@ -111,7 +111,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
       device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
-      dawn_desc.format);
+      dawn_desc.format, static_cast<WGPUTextureUsage>(dawn_desc.usage));
   texture->setLabel(webgpu_desc->label());
   return texture;
 }
@@ -205,7 +205,7 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
 
   DCHECK(mailbox_texture->GetTexture() != nullptr);
 
-  return MakeGarbageCollected<GPUTexture>(device, format,
+  return MakeGarbageCollected<GPUTexture>(device, format, usage,
                                           std::move(mailbox_texture));
 }
 
@@ -300,20 +300,25 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
           std::move(recyclable_canvas_resource));
   DCHECK(mailbox_texture->GetTexture());
 
-  return MakeGarbageCollected<GPUTexture>(device, format,
+  return MakeGarbageCollected<GPUTexture>(device, format, usage,
                                           std::move(mailbox_texture));
 }
 
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTexture texture,
-                       WGPUTextureFormat format)
-    : DawnObject<WGPUTexture>(device, texture), format_(format) {}
+                       WGPUTextureFormat format,
+                       WGPUTextureUsage usage)
+    : DawnObject<WGPUTexture>(device, texture),
+      format_(format),
+      usage_(usage) {}
 
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTextureFormat format,
+                       WGPUTextureUsage usage,
                        scoped_refptr<WebGPUMailboxTexture> mailbox_texture)
     : DawnObject<WGPUTexture>(device, mailbox_texture->GetTexture()),
       format_(format),
+      usage_(usage),
       mailbox_texture_(std::move(mailbox_texture)) {}
 
 GPUTextureView* GPUTexture::createView(

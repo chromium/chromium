@@ -381,6 +381,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_fragment_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.cc",
