@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 static_library("server") {
   sources = [
     "notes_server_base.cc",
@@ -9,9 +11,14 @@ static_library("server") {
   ]
 
   deps = [
+    ":proto",
     "//base",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//services/network/public/cpp",
   ]
+}
+
+proto_library("proto") {
+  sources = [ "note.proto" ]
 }
