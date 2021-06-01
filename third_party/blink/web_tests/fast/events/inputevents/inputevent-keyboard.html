@@ -83,6 +83,20 @@ test(function() {
     testKeyDownInputType('ArrowLeft', [], NO_INPUT_EVENT_FIRED);
     testKeyDownInputType('ArrowLeft', ['shiftKey'], NO_INPUT_EVENT_FIRED);
     testKeyDownInputType('Home', [], NO_INPUT_EVENT_FIRED);
+
+    // Clipboard
+    editable.innerHTML = 'abc';
+    selection.collapse(editable, 0);
+    selection.extend(editable, 1);
+    testKeyDownInputType('Delete', ['shiftKey'], 'deleteByCut');
+    testKeyDownInputType('Insert', ['shiftKey'], 'insertFromPaste');
+    if (!isMacOS) {
+      testKeyDownInputType('v', ['ctrlKey', 'shiftKey'], 'insertFromPaste');
+      selection.collapse(editable, 0);
+      selection.extend(editable, 1);
+      testKeyDownInputType('x', ['ctrlKey'], 'deleteByCut');
+      testKeyDownInputType('v', ['ctrlKey'], 'insertFromPaste');
+    }
 }, 'Testing beforeinput inputType');
 </script>
 </body>

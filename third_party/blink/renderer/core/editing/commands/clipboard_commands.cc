@@ -500,9 +500,23 @@ bool ClipboardCommands::ExecutePasteAndMatchStyle(LocalFrame& frame,
   // before we obtain the selection.
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  if (source == EditorCommandSource::kMenuOrKeyBinding &&
-      !frame.Selection().SelectionHasFocus())
-    return false;
+  if (source == EditorCommandSource::kMenuOrKeyBinding) {
+    if (!frame.Selection().SelectionHasFocus())
+      return false;
+
+    DataTransfer* data_transfer = DataTransfer::Create(
+        DataTransfer::kCopyAndPaste, DataTransferAccessPolicy::kReadable,
+        DataObject::CreateFromClipboard(frame.GetSystemClipboard(),
+                                        PasteMode::kPlainTextOnly));
+    if (DispatchBeforeInputDataTransfer(
+            FindEventTargetForClipboardEvent(frame, source),
+            InputEvent::InputType::kInsertFromPaste,
+            data_transfer) != DispatchEventResult::kNotCanceled)
+      return true;
+    // 'beforeinput' event handler may destroy target frame.
+    if (frame.GetDocument()->GetFrame() != frame)
+      return true;
+  }
 
   PasteAsPlainTextFromClipboard(frame, source);
   return true;
