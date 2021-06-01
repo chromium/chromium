@@ -293,7 +293,7 @@ export class ActionManager {
       case SAConstants.ActionResponse.CLOSE_MENU:
         ActionManager.exitAllMenus();
         return;
-      case SAConstants.ActionResponse.EXIT_MENU:
+      case SAConstants.ActionResponse.EXIT_SUBMENU:
         ActionManager.exitCurrentMenu();
         return;
       case SAConstants.ActionResponse.REMAIN_OPEN:

@@ -111,7 +111,7 @@ export class EditableTextNode extends BasicNode {
         return SAConstants.ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
       case SwitchAccessMenuAction.END_TEXT_SELECTION:
         TextNavigationManager.saveSelectEnd();
-        return SAConstants.ActionResponse.EXIT_MENU;
+        return SAConstants.ActionResponse.EXIT_SUBMENU;
 
       case SwitchAccessMenuAction.JUMP_TO_BEGINNING_OF_TEXT:
         TextNavigationManager.jumpToBeginning();
