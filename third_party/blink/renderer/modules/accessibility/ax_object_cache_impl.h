@@ -223,8 +223,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // exist or can be repaired all the way to the root.
   bool IsStillInTree(AXObject*);
 
-  AXObject* FirstAccessibleObjectFromNode(const Node*);
-
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 

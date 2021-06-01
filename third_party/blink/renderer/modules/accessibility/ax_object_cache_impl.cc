@@ -2986,27 +2986,6 @@ const Element* AXObjectCacheImpl::RootAXEditableElement(const Node* node) {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::FirstAccessibleObjectFromNode(const Node* node) {
-  if (!node)
-    return nullptr;
-
-  AXObject* accessible_object = GetOrCreate(node->GetLayoutObject());
-  while (accessible_object &&
-         !accessible_object->AccessibilityIsIncludedInTree()) {
-    node = NodeTraversal::Next(*node);
-
-    while (node && !node->GetLayoutObject())
-      node = NodeTraversal::NextSkippingChildren(*node);
-
-    if (!node)
-      return nullptr;
-
-    accessible_object = GetOrCreate(node->GetLayoutObject());
-  }
-
-  return accessible_object;
-}
-
 bool AXObjectCacheImpl::NodeIsTextControl(const Node* node) {
   if (!node)
     return false;

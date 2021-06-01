@@ -128,26 +128,40 @@ namespace {
 
 // It is not easily possible to find out if an element is the target of an
 // in-page link.
-// As a workaround, we consider the following to be in-page link targets:
+// As a workaround, we consider the following to be potential targets:
 // - <a name>
-// - An element with an id that is not SVG, a <label> or <optgroup>.
-//   <label> does not make much sense as an in-page link target.
-//   Exposing <optgroup> is redundant, as thr group is already exposed via a
-//   child in its shadow DOM, which contains the accessible name.
+// - <foo id> -- an element with an id that is not SVG, a <label> or <optgroup>.
+//     <label> does not make much sense as an in-page link target.
+//     Exposing <optgroup> is redundant, as the group is already exposed via a
+//     child in its shadow DOM, which contains the accessible name.
+//   #document -- this is always a potential link target via <a name="#">.
 //   This is a compromise that does not include too many elements, and
 //   has minimal impact on tests.
-bool IsInPageLinkTarget(blink::Element& element) {
-  // We exclude elements that are in the shadow DOM.
-  if (element.ContainingShadowRoot() || element.IsSVGElement())
+bool IsPotentialInPageLinkTarget(blink::Node& node) {
+  auto* element = blink::DynamicTo<blink::Element>(&node);
+  if (!element) {
+    // The document itself is a potential link target, e.g. via <a name="#">.
+    return blink::IsA<blink::Document>(node);
+  }
+
+  // We exclude elements that are in the shadow DOM. They cannot be linked by a
+  // document fragment from the main page:as they have their own id namespace.
+  if (element->ContainingShadowRoot())
     return false;
 
-  if (auto* anchor = blink::DynamicTo<blink::HTMLAnchorElement>(&element)) {
+  // SVG elements are unlikely link targets, and we want to avoid creating
+  // a lot of noise in the AX tree or breaking tests unnecessarily.
+  if (element->IsSVGElement())
+    return false;
+
+  // <a name>
+  if (auto* anchor = blink::DynamicTo<blink::HTMLAnchorElement>(element)) {
     if (anchor->HasName())
       return true;
   }
 
-  if (element.HasID() && !element.ContainingShadowRoot() &&
-      !blink::IsA<blink::HTMLLabelElement>(element) &&
+  // <foo id> not in an <optgroup> or <label>.
+  if (element->HasID() && !blink::IsA<blink::HTMLLabelElement>(element) &&
       !blink::IsA<blink::HTMLOptGroupElement>(element)) {
     return true;
   }
@@ -522,7 +536,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   }
 
   // Process potential in-page link targets
-  if (IsInPageLinkTarget(*element))
+  if (IsPotentialInPageLinkTarget(*element))
     return kIncludeObject;
 
   // <span> tags are inline tags and not meant to convey information if they
@@ -1792,16 +1806,21 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   String fragment = link_url.FragmentIdentifier();
   TreeScope& tree_scope = anchor->GetTreeScope();
   Node* target = tree_scope.FindAnchor(fragment);
-  if (!target)
+  AXObject* ax_target = AXObjectCache().GetOrCreate(target);
+  if (!ax_target || !IsPotentialInPageLinkTarget(*ax_target->GetNode()))
     return AXObject::InPageLinkTarget();
-  // If the target is not in the accessibility tree, get the first unignored
-  // sibling.
-  // TODO(accessibility) Ensure all in-page targets are unignored so that
-  // this extra logic becomes unnecessary. We should be able to simply call
-  // GetOrCreate(target) and DCHECK() that it's unignored.
-  // See IsInPageLinkTarget(), which includes almost all elements with an id,
-  // except for a few which affected tests.
-  return AXObjectCache().FirstAccessibleObjectFromNode(target);
+
+#if DCHECK_IS_ON()
+  // Link targets always have an element, unless it is the document itself,
+  // e.g. via <a href="#">.
+  DCHECK(ax_target->IsWebArea() || ax_target->GetElement())
+      << "The link target is expected to be a document or an element: "
+      << ax_target->ToString(true, true) << "\n* URL fragment = " << fragment;
+  DCHECK(!ax_target->AccessibilityIsIgnored())
+      << "The link target cannot be ignored: "
+      << ax_target->ToString(true, true) << "\n* URL fragment = " << fragment;
+#endif
+  return ax_target;
 }
 
 AccessibilityOrientation AXNodeObject::Orientation() const {
