@@ -5,9 +5,10 @@
 import 'chrome://diagnostics/network_list.js';
 
 import {NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
-import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
+import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -21,9 +22,22 @@ export function networkListTestSuite() {
   /** @type {?FakeNetworkHealthProvider} */
   let provider = null;
 
+  /** @type {!FakeSystemRoutineController} */
+  let routineController;
+
   suiteSetup(() => {
     provider = new FakeNetworkHealthProvider();
     setNetworkHealthProviderForTesting(provider);
+
+    // Setup a fake routine controller.
+    routineController = new FakeSystemRoutineController();
+    routineController.setDelayTimeInMillisecondsForTesting(-1);
+
+    // Enable all routines by default.
+    routineController.setFakeSupportedRoutines(
+        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+
+    setSystemRoutineControllerForTesting(routineController);
   });
 
   teardown(() => {

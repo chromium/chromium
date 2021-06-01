@@ -213,6 +213,17 @@ export const fakeRoutineResults = new Map([
   [RoutineType.kCpuFloatingPoint, StandardRoutineResult.kTestFailed],
   [RoutineType.kCpuPrime, StandardRoutineResult.kExecutionError],
   [RoutineType.kMemory, StandardRoutineResult.kTestPassed],
+  [RoutineType.kCaptivePortal, StandardRoutineResult.kTestPassed],
+  [RoutineType.kDnsLatency, StandardRoutineResult.kTestPassed],
+  [RoutineType.kDnsResolution, StandardRoutineResult.kTestPassed],
+  [RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed],
+  [RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed],
+  [RoutineType.kHasSecureWiFiConnection, StandardRoutineResult.kTestPassed],
+  [RoutineType.kHttpFirewall, StandardRoutineResult.kTestPassed],
+  [RoutineType.kHttpsFirewall, StandardRoutineResult.kTestPassed],
+  [RoutineType.kHttpsLatency, StandardRoutineResult.kTestPassed],
+  [RoutineType.kLanConnectivity, StandardRoutineResult.kTestPassed],
+  [RoutineType.kSignalStrength, StandardRoutineResult.kTestPassed],
 ]);
 
 /** @type {!Map<!RoutineType, !PowerRoutineResult>} */

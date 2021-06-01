@@ -93,7 +93,7 @@
       <cr-button id="runTestsButton"
           hidden$="[[isRunTestsButtonHidden_(isTestRunning,
               executionStatus_)]]"
-          on-click="onRunTestsClicked_"
+          on-click="runTests_"
           disabled="[[isRunTestsButtonDisabled_(isTestRunning,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]

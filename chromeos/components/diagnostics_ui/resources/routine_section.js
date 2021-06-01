@@ -176,6 +176,12 @@ Polymer({
       value: '',
       computed: 'getInitialButtonText_(runTestsButtonText)',
     },
+
+    /** @type {boolean} */
+    runTestsAutomatically: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers: [
@@ -200,7 +206,7 @@ Polymer({
   },
 
   /** @private */
-  onRunTestsClicked_() {
+  runTests_() {
     this.isTestRunning = true;
     this.hasTestFailure_ = false;
 
@@ -487,13 +493,21 @@ Polymer({
   },
 
   /**
-   * Stop any running tests and reset to initial routine state
-   * when the active navigation page changes.
+   * If the page is active, check if we should run the routines
+   * automatically, otherwise stop any running tests and reset to
+   * the initial routine state.
    * @private
    */
   onActivePageChanged_() {
-    this.stopTests_();
-    this.resetRoutineState_();
+    if (!this.isActive) {
+      this.stopTests_();
+      this.resetRoutineState_();
+      return;
+    }
+
+    if (this.runTestsAutomatically && !this.isTestRunning) {
+      this.runTests_();
+    }
   },
 
   /** @override */
