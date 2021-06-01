@@ -36,12 +36,82 @@
 
       window.getSelection().selectAllChildren(div);
       eventSender.keyDown(testcase['key'], [testcase['modifier']]);
-      // There should be no <b> (or <i> or <u>) tag that wraps around the text node.
-      assert_equals(div.childNodes[0].nodeType, Node.TEXT_NODE);
-      assert_equals(got_before_input_event, true);
+      assert_equals(div.childNodes[0].nodeType, Node.TEXT_NODE, "DOM shouldn't be modified, i.e. no extra <b>, <i> or <u>");
+      assert_equals(got_before_input_event, true, "The beforeinput event should be fired.");
 
       document.body.removeChild(div);
-    }, "EditContext should disable DOM mutation from " + testcase['command'] + " keyboard shortcuts");
+    }, "EditContext should disable DOM mutation from " + testcase['modifier'] + " + " + testcase['key']);
+  });
+
+  if (onMacPlatform) {
+    formatCommands = [{'modifier': 'shiftKey', 'key': 'Delete', 'command': 'deleteByCut'}];
+  } else {
+    formatCommands = [{'modifier': 'shiftKey', 'key': 'Delete', 'command': 'deleteByCut'},
+                      {'modifier': 'ctrlKey', 'key': 'x', 'command': 'deleteByCut'}];
+  }
+
+  formatCommands.forEach( testcase => {
+    test(function () {
+      let editContext = new EditContext();
+      assert_not_equals(editContext, null);
+      let div = document.createElement("div");
+      document.body.appendChild(div);
+      let myText = "abc";
+      div.innerHTML = myText;
+      div.editContext = editContext;
+      div.focus();
+
+      let got_before_input_event = false;
+      div.addEventListener("beforeinput", (e) => {
+        if (e.inputType === testcase['command']) {
+          got_before_input_event = true;
+        }
+      });
+      window.getSelection().selectAllChildren(div);
+      eventSender.keyDown(testcase['key'], [testcase['modifier']]);
+      assert_equals(div.innerText, myText, "DOM shouldn't be modified");
+      assert_equals(got_before_input_event, true, "The beforeinput event should be fired.");
+
+      document.body.removeChild(div);
+    }, "EditContext should disable DOM mutation from " + testcase['modifier'] + " + " + testcase['key']);
+  });
+
+  if (onMacPlatform) {
+    formatCommands = [{'modifier': 'shiftKey', 'key': 'Insert', 'command': 'insertFromPaste'}];
+  } else {
+    formatCommands = [{'modifier': 'shiftKey', 'key': 'Insert', 'command': 'insertFromPaste'},
+                      {'modifier': 'ctrlKey', 'key': 'v', 'command': 'insertFromPaste'}];
+  }
+
+  formatCommands.forEach( testcase => {
+    test(function () {
+      let editContext = new EditContext();
+      assert_not_equals(editContext, null);
+      let div = document.createElement("div");
+      document.body.appendChild(div);
+      let myText = "abc";
+      div.innerHTML = myText;
+      div.editContext = editContext;
+      div.focus();
+
+      let got_before_input_event = false;
+      div.addEventListener("beforeinput", (e) => {
+        if (e.inputType === testcase['command']) {
+          got_before_input_event = true;
+          assert_equals(e.dataTransfer.getData("text"), myText, "The beforeinput event should contain clipboard data");
+        }
+      });
+      window.getSelection().selectAllChildren(div);
+      // copy 'abc'.
+      eventSender.keyDown('c', ['ctrlKey']);
+      window.getSelection().collapse(div);
+      // paste 'abc' at the begining.
+      eventSender.keyDown(testcase['key'], [testcase['modifier']]);
+      assert_equals(div.innerText, myText, "DOM shouldn't be modified");
+      assert_equals(got_before_input_event, true, "The beforeinput event should be fired.");
+
+      document.body.removeChild(div);
+    }, "EditContext should disable DOM mutation from " + testcase['modifier'] + " + " + testcase['key']);
   });
 </script>
 </body>

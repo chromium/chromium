@@ -332,7 +332,12 @@ bool ClipboardCommands::ExecuteCut(LocalFrame& frame,
     // 'beforeinput' event handler may destroy target frame.
     if (frame.GetDocument()->GetFrame() != frame)
       return true;
+
+    // No DOM mutation if EditContext is active.
+    if (frame.GetInputMethodController().GetActiveEditContext())
+      return true;
   }
+
   frame.GetEditor().DeleteSelectionWithSmartDelete(
       ConvertSmartReplaceOptionToDeleteMode(GetSmartReplaceOption(frame)),
       InputEvent::InputType::kDeleteByCut);
@@ -452,6 +457,10 @@ void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
       return;
     // 'beforeinput' event handler may destroy target frame.
     if (frame.GetDocument()->GetFrame() != frame)
+      return;
+
+    // No DOM mutation if EditContext is active.
+    if (frame.GetInputMethodController().GetActiveEditContext())
       return;
   }
 

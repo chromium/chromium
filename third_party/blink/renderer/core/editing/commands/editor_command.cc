@@ -1963,9 +1963,7 @@ bool EditorCommand::Execute(const String& parameter,
         case EditingCommandType::kInsertBacktab:
         case EditingCommandType::kInsertNewline:
         case EditingCommandType::kInsertLineBreak:
-        case EditingCommandType::kPaste:
         case EditingCommandType::kPasteAndMatchStyle:
-        case EditingCommandType::kCut:
           // 1) BeforeInput event only, ex ctrl+B or <enter>.
           return true;
         case EditingCommandType::kDeleteBackward:
