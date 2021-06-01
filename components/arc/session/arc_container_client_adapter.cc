@@ -196,8 +196,11 @@ class ArcContainerClientAdapter
   // chromeos::SessionManagerClient::Observer overrides:
   void ArcInstanceStopped(
       login_manager::ArcContainerStopReason reason) override {
+    const bool is_system_shutdown =
+        reason ==
+        login_manager::ArcContainerStopReason::SESSION_MANAGER_SHUTDOWN;
     for (auto& observer : observer_list_)
-      observer.ArcInstanceStopped();
+      observer.ArcInstanceStopped(is_system_shutdown);
   }
 
  private:

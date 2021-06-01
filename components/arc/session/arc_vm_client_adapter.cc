@@ -498,7 +498,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
     VLOG(1) << "OnVmStopped: ARCVM cid=" << cid;
     current_cid_ = kInvalidCid;
-    OnArcInstanceStopped();
+    const bool is_system_shutdown =
+        signal.reason() == vm_tools::concierge::SERVICE_SHUTDOWN;
+    OnArcInstanceStopped(is_system_shutdown);
   }
 
   // ArcClientAdapter overrides:
@@ -605,7 +607,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(1) << "vm_concierge stopped";
     // At this point, all crosvm processes are gone. Notify the observer of the
     // event.
-    OnArcInstanceStopped();
+    // NOTE: In a normal system shutdown OnVmStopped() is called before this.
+    // When vm_concierge crashes, this is called without OnVmStopped().
+    OnArcInstanceStopped(false /* is_system_shutdown */);
   }
 
   void ConciergeServiceStarted() override {}
@@ -956,7 +960,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     std::move(callback).Run(true);
   }
 
-  void OnArcInstanceStopped() {
+  void OnArcInstanceStopped(bool is_system_shutdown) {
     VLOG(1) << "ARCVM stopped.";
 
     // If this method is called before even mini VM is started (e.g. very early
@@ -967,7 +971,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     should_notify_observers_ = false;
 
     for (auto& observer : observer_list_)
-      observer.ArcInstanceStopped();
+      observer.ArcInstanceStopped(is_system_shutdown);
   }
 
   void OnStopVmReply(
@@ -981,7 +985,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // is if the reply is empty, which means Concierge isn't running and ARCVM
     // isn't either.
     LOG(ERROR) << "Failed to stop ARCVM: empty reply.";
-    OnArcInstanceStopped();
+    OnArcInstanceStopped(false /* is_system_shutdown */);
   }
 
   void OnTrimVmMemory(

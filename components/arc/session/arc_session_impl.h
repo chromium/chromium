@@ -255,7 +255,7 @@ class ArcSessionImpl
   void StopArcInstance(bool on_shutdown, bool should_backup_log);
 
   // ArcClientAdapter::Observer:
-  void ArcInstanceStopped() override;
+  void ArcInstanceStopped(bool is_system_shutdown) override;
 
   // Completes the termination procedure. Note that calling this may end up with
   // deleting |this| because the function calls observers' OnSessionStopped().
