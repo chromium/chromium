@@ -912,14 +912,41 @@ void EventRouter::OnFileSystemMountFailed() {
   OnFileManagerPrefsChanged();
 }
 
-void EventRouter::PopulateCrostiniUnshareEvent(
+// Send crostini share, unshare event.
+void EventRouter::SendCrostiniEvent(
+    file_manager_private::CrostiniEventType event_type,
+    const std::string& vm_name,
+    const base::FilePath& path) {
+  std::string mount_name;
+  std::string file_system_name;
+  std::string full_path;
+  if (!util::ExtractMountNameFileSystemNameFullPath(
+          path, &mount_name, &file_system_name, &full_path))
+    return;
+
+  for (const auto& extension_id : GetEventListenerExtensionIds(
+           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
+    file_manager_private::CrostiniEvent event;
+    PopulateCrostiniEvent(event, event_type, vm_name, extension_id, mount_name,
+                          file_system_name, full_path);
+    DispatchEventToExtension(
+        profile_, extension_id,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+        file_manager_private::OnCrostiniChanged::kEventName,
+        file_manager_private::OnCrostiniChanged::Create(event));
+  }
+}
+
+// static
+void EventRouter::PopulateCrostiniEvent(
     file_manager_private::CrostiniEvent& event,
+    file_manager_private::CrostiniEventType event_type,
     const std::string& vm_name,
     const std::string& extension_id,
     const std::string& mount_name,
     const std::string& file_system_name,
     const std::string& full_path) {
-  event.event_type = file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE;
+  event.event_type = event_type;
   event.vm_name = vm_name;
   file_manager_private::CrostiniEvent::EntriesType entry;
   entry.additional_properties.SetString(
@@ -933,26 +960,19 @@ void EventRouter::PopulateCrostiniUnshareEvent(
   event.entries.emplace_back(std::move(entry));
 }
 
+void EventRouter::OnShare(const std::string& vm_name,
+                          const base::FilePath& path,
+                          bool persist) {
+  if (persist) {
+    SendCrostiniEvent(file_manager_private::CROSTINI_EVENT_TYPE_SHARE, vm_name,
+                      path);
+  }
+}
+
 void EventRouter::OnUnshare(const std::string& vm_name,
                             const base::FilePath& path) {
-  std::string mount_name;
-  std::string file_system_name;
-  std::string full_path;
-  if (!util::ExtractMountNameFileSystemNameFullPath(
-          path, &mount_name, &file_system_name, &full_path))
-    return;
-
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
-    file_manager_private::CrostiniEvent event;
-    PopulateCrostiniUnshareEvent(event, vm_name, extension_id, mount_name,
-                                 file_system_name, full_path);
-    DispatchEventToExtension(
-        profile_, extension_id,
-        extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-        file_manager_private::OnCrostiniChanged::kEventName,
-        file_manager_private::OnCrostiniChanged::Create(event));
-  }
+  SendCrostiniEvent(file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE, vm_name,
+                    path);
 }
 
 void EventRouter::OnTabletModeStarted() {

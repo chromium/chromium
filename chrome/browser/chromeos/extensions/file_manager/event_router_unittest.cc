@@ -8,11 +8,11 @@
 
 namespace file_manager {
 
-TEST(EventRouterTest, PopulateCrostiniUnshareEvent) {
+TEST(EventRouterTest, PopulateCrostiniEvent) {
   extensions::api::file_manager_private::CrostiniEvent event;
-  EventRouter::PopulateCrostiniUnshareEvent(event, "vmname", "extensionid",
-                                            "mountname", "filesystemname",
-                                            "/full/path");
+  EventRouter::PopulateCrostiniEvent(
+      event, extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE,
+      "vmname", "extensionid", "mountname", "filesystemname", "/full/path");
 
   EXPECT_EQ(event.event_type,
             extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE);

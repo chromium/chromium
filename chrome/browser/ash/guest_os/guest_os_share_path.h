@@ -55,6 +55,9 @@ class GuestOsSharePath : public KeyedService,
                                    const std::string& failure_reason)>;
   class Observer {
    public:
+    virtual void OnShare(const std::string& vm_name,
+                         const base::FilePath& path,
+                         bool persist) = 0;
     virtual void OnUnshare(const std::string& vm_name,
                            const base::FilePath& path) = 0;
   };

@@ -2358,10 +2358,8 @@ CommandHandler.COMMANDS_['share-with-linux'] = new class extends FilesCommand {
                   chrome.runtime.lastError.message);
             }
           });
-      // Register the share and show the 'Manage Linux sharing' toast
-      // immediately, since the container may take 10s or more to start.
-      fileManager.crostini.registerSharedPath(
-          constants.DEFAULT_CROSTINI_VM, dir);
+      // Show the 'Manage Linux sharing' toast immediately, since the container
+      // may take 10s or more to start.
       fileManager.ui.toast.show(str('FOLDER_SHARED_WITH_CROSTINI'), {
         text: str('MANAGE_TOAST_BUTTON_LABEL'),
         callback: () => {

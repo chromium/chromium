@@ -159,6 +159,9 @@ class EventRouter
   void OnFileSystemMountFailed() override;
 
   // guest_os::GuestOsSharePath::Observer overrides.
+  void OnShare(const std::string& vm_name,
+               const base::FilePath& path,
+               bool persist) override;
   void OnUnshare(const std::string& vm_name,
                  const base::FilePath& path) override;
 
@@ -177,7 +180,7 @@ class EventRouter
   base::WeakPtr<EventRouter> GetWeakPtr();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniUnshareEvent);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
 
   // Starts observing file system change events.
   void ObserveEvents();
@@ -211,9 +214,16 @@ class EventRouter
       chromeos::MountError error,
       const Volume& volume);
 
-  // Populate the path unshared event.
-  static void PopulateCrostiniUnshareEvent(
+  // Send crostini path shared or unshared event.
+  void SendCrostiniEvent(
+      extensions::api::file_manager_private::CrostiniEventType event_type,
+      const std::string& vm_name,
+      const base::FilePath& path);
+
+  // Populate the crostini path shared or unshared event.
+  static void PopulateCrostiniEvent(
       extensions::api::file_manager_private::CrostiniEvent& event,
+      extensions::api::file_manager_private::CrostiniEventType event_type,
       const std::string& vm_name,
       const std::string& extension_id,
       const std::string& mount_name,

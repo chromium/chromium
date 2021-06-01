@@ -351,6 +351,9 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     RegisterPersistedPath(vm_name, path);
   }
   RegisterSharedPath(vm_name, path);
+  for (Observer& observer : observers_) {
+    observer.OnShare(vm_name, path, persist);
+  }
 
   request.mutable_shared_path()->set_path(relative_path.value());
   request.mutable_shared_path()->set_writable(true);
