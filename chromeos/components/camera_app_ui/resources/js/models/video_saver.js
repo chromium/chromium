@@ -78,6 +78,15 @@ export class VideoSaver {
   }
 
   /**
+   * Cancels and drops all the written video data.
+   * @return {!Promise}
+   */
+  async cancel() {
+    await this.processor_.cancel();
+    return this.file_.delete();
+  }
+
+  /**
    * Finishes the write of video data parts and returns result video file.
    * @return {!Promise<!FileAccessEntry>} Result video file.
    */

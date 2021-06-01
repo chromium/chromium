@@ -252,6 +252,7 @@ class Mp4VideoProcessor {
     this.inputDevice_ = new InputDevice();
     this.outputDevice_ = new OutputDevice(output);
     this.jobQueue_ = new AsyncJobQueue();
+    this.quitCallback_ = null;
 
     const args = [
       // Make the procssing pipeline start earlier by shorten the initial
@@ -312,6 +313,7 @@ class Mp4VideoProcessor {
         assert(stdin.fd === 0);
         assert(stdout.fd === 1);
         assert(stderr.fd === 2);
+        this.quitCallback_ = fs.quit;
       },
     };
 
@@ -360,6 +362,22 @@ class Mp4VideoProcessor {
 
     // Flush and close the output writer.
     await this.output_.close();
+  }
+
+  /**
+   * Cancels all the remaining tasks and quits the processor.
+   * @return {!Promise} Resolved when the processor quits.
+   */
+  async cancel() {
+    await this.jobQueue_.clear();
+    await this.output_.close();
+
+    // We quit the processor directly instead of calling close() to avoid mp4
+    // video processor crashing and entering an unrecoverable state when trying
+    // to encode video file without receiving any data chunk.
+    if (this.quitCallback_ !== null) {
+      this.quitCallback_();
+    }
   }
 
   /**

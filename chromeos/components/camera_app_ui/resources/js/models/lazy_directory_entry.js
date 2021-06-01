@@ -115,6 +115,16 @@ class LazyDirectoryEntry {
   }
 
   /**
+   * @override
+   */
+  async removeEntry(name) {
+    if (this.directory_ === null) {
+      return null;
+    }
+    return this.directory_.removeEntry(name);
+  }
+
+  /**
    * Gets the directory which this entry points to. Create it if it does not
    * exist.
    * @return {!Promise<!DirectoryAccessEntry>}

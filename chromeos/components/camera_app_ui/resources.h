@@ -46,6 +46,7 @@ const struct {
     {"error_msg_take_photo_failed", IDS_ERROR_MSG_TAKE_PHOTO_FAILED},
     {"error_msg_take_portrait_bokeh_photo_failed",
      IDS_ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED},
+    {"error_msg_video_too_short", IDS_ERROR_MSG_VIDEO_TOO_SHORT},
     {"expert_custom_video_parameters", IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS},
     {"expert_mode_button", IDS_EXPERT_MODE_BUTTON},
     {"expert_preview_metadata", IDS_EXPERT_PREVIEW_METADATA},

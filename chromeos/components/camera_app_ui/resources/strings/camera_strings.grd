@@ -466,6 +466,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Error message shown on camera app window when the app is paused." name="IDS_ERROR_MSG_CAMERA_PAUSED">
         Paused
       </message>
+      <message desc="Error message shown when users capture a video which is too short." name="IDS_ERROR_MSG_VIDEO_TOO_SHORT">
+        The video is not saved since it is too short.
+      </message>
     </messages>
   </release>
 </grit>

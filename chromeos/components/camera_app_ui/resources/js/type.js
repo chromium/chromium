@@ -322,3 +322,17 @@ export class EmptyThumbnailError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+/**
+ * Throws when the recording is ended with no chunk returned.
+ */
+export class NoChunkError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'No chunk is received during recording session') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}

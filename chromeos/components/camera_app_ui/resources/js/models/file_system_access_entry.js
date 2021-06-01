@@ -36,8 +36,9 @@ export class FileSystemAccessEntry {
 export class FileAccessEntry extends FileSystemAccessEntry {
   /**
    * @param {!FileSystemFileHandle} handle
+   * @param {?DirectoryAccessEntryImpl} parent
    */
-  constructor(handle) {
+  constructor(handle, parent = null) {
     super(handle);
 
     /**
@@ -45,6 +46,12 @@ export class FileAccessEntry extends FileSystemAccessEntry {
      * @private
      */
     this.handle_ = handle;
+
+    /**
+     * @type {?DirectoryAccessEntryImpl}
+     * @private
+     */
+    this.parent_ = parent;
   }
 
   /**
@@ -91,6 +98,19 @@ export class FileAccessEntry extends FileSystemAccessEntry {
   async getLastModificationTime() {
     const file = await this.file();
     return file.lastModified;
+  }
+
+  /**
+   * Deletes the file.
+   * @return {!Promise}
+   * @throws {!Error} Thrown when trying to delete file with no parent
+   *     directory.
+   */
+  async delete() {
+    if (this.parent_ === null) {
+      throw new Error('Failed to delete file due to no parent directory');
+    }
+    return this.parent_.removeEntry(this.name);
   }
 }
 
@@ -158,6 +178,13 @@ export class DirectoryAccessEntry {
    *     directory.
    */
   async getDirectory({name, createIfNotExist}) {}
+
+  /**
+   * Removes file by given |name| from the directory.
+   * @param {string} name The name of the file.
+   * @return {!Promise}
+   */
+  async removeEntry(name) {}
 }
 
 /**
@@ -167,8 +194,9 @@ export class DirectoryAccessEntry {
 export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
   /**
    * @param {!FileSystemDirectoryHandle} handle
+   * @param {?DirectoryAccessEntryImpl} parent
    */
-  constructor(handle) {
+  constructor(handle, parent = null) {
     super(handle);
 
     /**
@@ -176,6 +204,12 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
      * @private
      */
     this.handle_ = handle;
+
+    /**
+     * @type {?DirectoryAccessEntryImpl}
+     * @private
+     */
+    this.parent_ = parent;
   }
 
   /**
@@ -206,7 +240,7 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
    */
   async getFile(name) {
     const handle = await this.handle_.getFileHandle(name, {create: false});
-    return new FileAccessEntry(handle);
+    return new FileAccessEntry(handle, this);
   }
 
   /**
@@ -242,7 +276,7 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
       }
       const handle =
           await this.handle_.getFileHandle(uniqueName, {create: true});
-      return new FileAccessEntry(handle);
+      return new FileAccessEntry(handle, this);
     });
   }
 
@@ -255,13 +289,20 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
           name, {create: createIfNotExist});
       assert(handle !== null);
       return new DirectoryAccessEntryImpl(
-          /** @type {!FileSystemDirectoryHandle} */ (handle));
+          /** @type {!FileSystemDirectoryHandle} */ (handle), this);
     } catch (error) {
       if (!createIfNotExist && error.name === 'NotFoundError') {
         return null;
       }
       throw error;
     }
+  }
+
+  /**
+   * @override
+   */
+  async removeEntry(name) {
+    return this.handle_.removeEntry(name);
   }
 
   /**
@@ -274,9 +315,9 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
     const results = [];
     for await (const handle of this.handle_.values()) {
       if (isDirectory && handle.kind === 'directory') {
-        results.push(new DirectoryAccessEntryImpl(handle));
+        results.push(new DirectoryAccessEntryImpl(handle, this));
       } else if (!isDirectory && handle.kind === 'file') {
-        results.push(new FileAccessEntry(handle));
+        results.push(new FileAccessEntry(handle, this));
       }
     }
     return results;
