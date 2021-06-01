@@ -158,8 +158,11 @@ void DownloadShelfUI::DoShowDownload(
 
 std::vector<DownloadUIModel*> DownloadShelfUI::GetDownloads() {
   std::vector<DownloadUIModel*> downloads;
-  for (const auto& download_entry : items_)
-    downloads.push_back(download_entry.second.get());
+  for (const auto& download_entry : items_) {
+    DownloadUIModel* download_model = download_entry.second.get();
+    if (download_model->ShouldShowInShelf())
+      downloads.push_back(download_model);
+  }
 
   return downloads;
 }
@@ -187,6 +190,12 @@ void DownloadShelfUI::OnDownloadUpdated(DownloadItem* download) {
   if (page_handler_) {
     DownloadUIModel* download_model = FindDownloadById(download->GetId());
     DCHECK(download_model);
+
+    if (!download_model->ShouldShowInShelf()) {
+      page_handler_->OnDownloadErased(download->GetId());
+      return;
+    }
+
     page_handler_->OnDownloadUpdated(download_model);
   }
 

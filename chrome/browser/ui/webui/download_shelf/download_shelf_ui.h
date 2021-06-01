@@ -57,7 +57,9 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   void OpenDownload(uint32_t download_id);
 
+  // Get the downloads that should be shown on the shelf.
   std::vector<DownloadUIModel*> GetDownloads();
+
   base::TimeTicks GetShowDownloadTime(uint32_t download_id);
 
   void RemoveDownload(uint32_t download_id);

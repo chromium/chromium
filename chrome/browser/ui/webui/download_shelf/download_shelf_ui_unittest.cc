@@ -119,6 +119,7 @@ TEST_F(DownloadShelfUITest, DownloadLifecycle) {
   EXPECT_CALL(*download_item, GetId()).Times(AtLeast(1));
   DownloadUIModel::DownloadUIModelPtr download_model =
       DownloadItemModel::Wrap(download_item.get());
+  DownloadUIModel* download_model_ptr = download_model.get();
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
   download_shelf_ui()->DoShowDownload(std::move(download_model),
                                       base::TimeTicks::Now());
@@ -132,7 +133,13 @@ TEST_F(DownloadShelfUITest, DownloadLifecycle) {
   mock_timer_->Fire();
   download_item->NotifyObserversDownloadUpdated();
 
-  // Assert handler onDownloadRemoved called on item removal notification.
+  // Assert handler onDownloadErased called when setting download to not show
+  // on shelf.
+  EXPECT_CALL(*handler_, OnDownloadErased(_)).Times(1);
+  download_model_ptr->SetShouldShowInShelf(false);
+  download_item->NotifyObserversDownloadUpdated();
+
+  // Assert handler onDownloadErased called on item removal notification.
   EXPECT_CALL(*handler_, OnDownloadErased(_)).Times(1);
   download_item->NotifyObserversDownloadRemoved();
 
