@@ -134,7 +134,7 @@ void NotifierStateTracker::SetNotifierEnabled(
     if (!base::Contains(update->GetList(), id))
       update->Append(std::move(id));
   } else {
-    update->Remove(id, nullptr);
+    update->EraseListValue(id);
   }
 }
 
