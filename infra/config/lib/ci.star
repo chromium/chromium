@@ -433,7 +433,7 @@ def fyi_ios_builder(
         name,
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
-        os = builders.os.MAC_10_15,
+        os = builders.os.MAC_10_15_OR_11,
         xcode = builders.xcode.x12d4e,
         **kwargs):
     return fyi_builder(
@@ -634,13 +634,14 @@ def mac_ios_builder(
         name,
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.MAC_10_15_OR_11,
         xcode = builders.xcode.x12d4e,
         **kwargs):
     return mac_builder(
         name = name,
         goma_backend = goma_backend,
         executable = executable,
-        os = builders.os.MAC_10_15,
+        os = os,
         xcode = xcode,
         **kwargs
     )
