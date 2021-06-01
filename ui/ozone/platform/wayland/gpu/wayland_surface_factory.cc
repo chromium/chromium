@@ -186,10 +186,7 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
   scoped_refptr<GbmPixmapWayland> pixmap =
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (widget != gfx::kNullAcceleratedWidget)
-    pixmap->SetAcceleratedWiget(widget);
-
-  if (!pixmap->InitializeBuffer(size, format, usage, framebuffer_size))
+  if (!pixmap->InitializeBuffer(widget, size, format, usage, framebuffer_size))
     return nullptr;
   return pixmap;
 #else

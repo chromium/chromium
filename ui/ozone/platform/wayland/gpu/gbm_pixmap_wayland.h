@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -27,16 +28,15 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   // |visible_area_size| represents a 'visible size', i.e., a buffer
   // of size |size| may actually contain visible data only in the
   // subregion of size |visible_area_size|. If |visible_area_size| is
-  // not provided, |size| is used.
+  // not provided, |size| is used. If |widget| is provided, browser
+  // side wl_buffer is also created. Otherwise, this pixmap
+  // behaves as a staging pixmap and mustn't be scheduled as an overlay.
   bool InitializeBuffer(
+      gfx::AcceleratedWidget widget,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> visible_area_size = absl::nullopt);
-
-  // The widget that this pixmap backs can be assigned later. Can be assigned
-  // only once.
-  void SetAcceleratedWiget(gfx::AcceleratedWidget widget);
 
   // gfx::NativePixmap overrides:
   bool AreDmaBufFdsValid() const override;
