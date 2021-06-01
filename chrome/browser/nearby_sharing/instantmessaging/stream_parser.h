@@ -11,18 +11,6 @@
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace google {
-namespace protobuf {
-namespace io {
-class CodedInputStream;
-}  // namespace io
-}  // namespace protobuf
-}  // namespace google
-
-namespace net {
-class GrowableIOBuffer;
-}  // namespace net
-
 namespace chrome_browser_nearby_sharing_instantmessaging {
 class StreamBody;
 }  // namespace chrome_browser_nearby_sharing_instantmessaging
@@ -36,22 +24,19 @@ class StreamParser {
       base::OnceClosure fastpath_ready);
   ~StreamParser();
 
-  // Appends the stream data (which should be the partial or full serialized
-  // StreamBody).
   void Append(base::StringPiece data);
 
  private:
-  void DelegateMessage(const std::string& message);
-  void ParseStreamIfAvailable();
-
-  // Only supports reading single field type and assumes the StreamBody messages
-  // field is the only one we will ever see.
-  bool ParseNextMessagesFieldFromStream(
-      google::protobuf::io::CodedInputStream* input_stream);
+  absl::optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
+  GetNextMessage();
+  void DelegateMessage(
+      const chrome_browser_nearby_sharing_instantmessaging::StreamBody&
+          stream_body);
 
   base::RepeatingCallback<void(const std::string& message)> listener_;
   base::OnceClosure fastpath_ready_callback_;
-  scoped_refptr<net::GrowableIOBuffer> unparsed_data_buffer_;
+  std::string data_;
+  int parsing_counter_for_metrics_ = 0;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_STREAM_PARSER_H_

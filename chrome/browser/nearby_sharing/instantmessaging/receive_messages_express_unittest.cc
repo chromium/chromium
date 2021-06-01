@@ -121,7 +121,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
   }
 
   std::string GetFastPathOnlyResponse() {
-    return BuildResponseProto({"message"}, /*include_fast_path_ready=*/true)
+    return BuildResponseProto({}, /*include_fast_path_ready=*/true)
         .SerializeAsString();
   }
 
@@ -249,6 +249,7 @@ TEST_F(ReceiveMessagesExpressTest, SuccessfulPartialResponse) {
 
 TEST_F(ReceiveMessagesExpressTest, StopPreventsPendingTransfer) {
   base::RunLoop run_loop;
+
   StartReceivingMessages(&run_loop, /*token_success=*/true);
 
   // Calls OnDataReceived() in ReceiveMessagesExpress.
