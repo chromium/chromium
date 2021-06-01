@@ -1692,8 +1692,14 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that the Play/Pause button is displayed appropriately in the
 // Picture-in-Picture window.
+// TODO(crbug.com/1213355): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PlayPauseButtonVisibility DISABLED_PlayPauseButtonVisibility
+#else
+#define MAYBE_PlayPauseButtonVisibility PlayPauseButtonVisibility
+#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       PlayPauseButtonVisibility) {
+                       MAYBE_PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -1859,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 // window when Media Session actions "play" and "pause" are handled by the
 // website even if video is a media stream.
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PlayPauseButtonVisibility) {
+                       MAYBE_PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
