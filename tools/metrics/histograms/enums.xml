@@ -67111,9 +67111,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ReceiverAppTypeSet">
-  <int value="0" label="Other"/>
-  <int value="1" label="Web"/>
-  <int value="2" label="Android Tv and Web"/>
+  <int value="0" label="Web"/>
+  <int value="1" label="Android Tv and Web"/>
 </enum>
 
 <enum name="RecentTabsAction">

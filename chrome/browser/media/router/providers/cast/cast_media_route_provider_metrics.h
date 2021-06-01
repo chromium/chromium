@@ -31,7 +31,7 @@ static constexpr char kHistogramCastAppType[] =
 // contains all possible combinations of ReceiverAppType.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep it in sync with
-// MediaRouterRequestReceiverAppType in tools/metrics/histograms/enums.xml.
+// ReceiverAppTypeSet in tools/metrics/histograms/enums.xml.
 enum class ReceiverAppTypeSet {
   // Web-based Cast receiver apps. This is supported by all Cast media source
   // by default.
