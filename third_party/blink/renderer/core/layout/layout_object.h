@@ -618,13 +618,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   inline bool ShouldApplyInlineSizeContainment() const {
     NOT_DESTROYED();
-    return (StyleRef().ContainsInlineSize() || StyleRef().ContainsSize()) &&
-           IsEligibleForSizeContainment();
+    return StyleRef().ContainsInlineSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyBlockSizeContainment() const {
     NOT_DESTROYED();
-    return (StyleRef().ContainsBlockSize() || StyleRef().ContainsSize()) &&
-           IsEligibleForSizeContainment();
+    return StyleRef().ContainsBlockSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();

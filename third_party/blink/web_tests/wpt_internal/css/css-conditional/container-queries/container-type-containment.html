@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  /* Note: background colors have no impact on the test result. They are
+           present to make it easier to visually verify that the test
+           does the right thing. */
+  .square {
+    width: 50px;
+    height: 50px;
+    background: tomato;
+  }
+  .half {
+    width: 25px;
+    height: 50px;
+    background: red;
+  }
+  div > div:nth-of-type(1) { background: skyblue; }
+  div > div:nth-of-type(2) { background: hotpink; }
+</style>
+
+<div id=test1 class=square>
+  <div id=float1 class=half style="float:left"></div>
+  <div id=child1 class=half style="container-type:inline-size"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child1.offsetLeft, test1.offsetLeft + float1.offsetWidth);
+  }, 'container-type:inline-size turns on layout containment');
+</script>
+
+<hr>
+
+<div id=test2 class=square>
+  <div id=float2 class=half style="float:left"></div>
+  <div id=child2 class=half style="container-type:block-size"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child2.offsetLeft, test2.offsetLeft + float2.offsetWidth);
+  }, 'container-type:block-size turns on layout containment');
+</script>
+
+<hr>
+
+<div id=test3 class=square>
+  <div id=ref3 style="float:left">A</div>
+  <div id=child3 style="float:left; container-type:inline-size">A</div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child3.offsetWidth, 0);
+    assert_equals(child3.offsetHeight, ref3.offsetHeight);
+  }, 'container-type:inline-size turns on inline-size containment');
+</script>
+
+<hr>
+
+<div id=test4 class=square>
+  <div id=ref4>A</div>
+  <div id=child4 style="container-type:block-size">A</div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child4.offsetHeight, 0);
+    assert_equals(child4.offsetWidth, ref4.offsetWidth);
+  }, 'container-type:block-size turns on block-size containment');
+</script>
+
+<hr>
+
+<div id=test5 class=square>
+  <div id=child5 style="float:left; container-type:inline-size block-size">A</div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child5.offsetHeight, 0);
+    assert_equals(child5.offsetWidth, 0);
+  }, 'container-type:inline-size block-size turns on full size containment');
+</script>
+
+<hr>
+
+<style>
+  #ref6::before, #child6::before {
+    content: counter(foo);
+  }
+</style>
+<div id=test6 class=square style="counter-set: foo 5">
+  <div id=ref6 style="float:left"></div>
+  <section style="container-type:inline-size">
+    <span style="counter-increment: foo 1000;"></span>
+  </section>
+  <section style="container-type:block-size">
+    <span style="counter-increment: foo 1000;"></span>
+  </section>
+  <div id=child6 style="float:left"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(child6.offsetWidth, ref6.offsetWidth);
+  }, 'container-type:inline/block-size turns on style containment');
+</script>
