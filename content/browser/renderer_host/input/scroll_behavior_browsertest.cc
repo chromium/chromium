@@ -302,8 +302,10 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by a touch scroll.
+// Currently only pre-Scroll-Unification main-thread input-handling gets this
+// right (crbug.com/1116647#c5).
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OverflowScrollInterruptedByTouchScroll) {
+                       DISABLED_OverflowScrollInterruptedByTouchScroll) {
   // TODO(crbug.com/1116647): compositing scroll should be able to cancel a
   // running programmatic scroll.
   if (!disable_threaded_scrolling_)
