@@ -212,7 +212,6 @@ source_set("wayland") {
     "//ui/events/devices",
     "//ui/events/keycodes:xkb",
     "//ui/events/ozone",
-    "//ui/events/ozone/evdev",
     "//ui/events/ozone/layout",
     "//ui/events/platform",
     "//ui/gfx",
