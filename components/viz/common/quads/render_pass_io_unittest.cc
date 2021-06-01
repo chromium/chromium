@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/values.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -19,6 +20,7 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/test/paths.h"
+#include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gl {
@@ -27,11 +29,6 @@ struct HDRMetadata;
 
 namespace viz {
 namespace {
-
-constexpr SurfaceId kSurfaceId1(FrameSinkId(1, 1),
-                                LocalSurfaceId(1, 1, base::UnguessableToken()));
-constexpr SurfaceId kSurfaceId2(FrameSinkId(2, 2),
-                                LocalSurfaceId(2, 2, base::UnguessableToken()));
 
 TEST(RenderPassIOTest, Default) {
   auto render_pass0 = CompositorRenderPass::Create();
@@ -192,6 +189,8 @@ TEST(RenderPassIOTest, QuadList) {
       DrawQuad::Material::kSurfaceContent,
       DrawQuad::Material::kSurfaceContent,
   };
+  TestSurfaceIdAllocator kSurfaceId1(FrameSinkId(1, 1));
+  TestSurfaceIdAllocator kSurfaceId2(FrameSinkId(2, 2));
   auto render_pass0 = CompositorRenderPass::Create();
   {
     // Add to shared_quad_state_list.
@@ -361,6 +360,29 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   }
 
   EXPECT_EQ(dict0, dict1);
+}
+
+TEST(RenderPassIOTest, CompositorFrameData) {
+  // Validate recorded multi-surface compositor frame data from
+  // https://www.youtube.com/
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(base::PathService::Get(Paths::DIR_TEST_DATA, &test_data_dir));
+  base::FilePath json_path =
+      test_data_dir.Append(FILE_PATH_LITERAL("render_pass_data"))
+          .Append(FILE_PATH_LITERAL("multi_surface_test"))
+          .Append(FILE_PATH_LITERAL("youtube"))
+          .Append(FILE_PATH_LITERAL("0358.json"));
+  ASSERT_TRUE(base::PathExists(json_path));
+  std::string json_text;
+  ASSERT_TRUE(base::ReadFileToString(json_path, &json_text));
+
+  absl::optional<base::Value> list0 = base::JSONReader::Read(json_text);
+  EXPECT_TRUE(list0.has_value());
+  std::vector<FrameData> frame_data_list;
+  EXPECT_TRUE(FrameDataFromList(list0.value(), &frame_data_list));
+  base::Value list1 = FrameDataToList(frame_data_list);
+
+  EXPECT_EQ(list0, list1);
 }
 
 }  // namespace

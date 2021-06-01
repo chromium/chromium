@@ -13,8 +13,11 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/util/values/values_util.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
+#include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -882,23 +885,31 @@ base::Value SurfaceIdToDict(const SurfaceId& id) {
   dict.SetIntKey("sink_id", id.frame_sink_id().sink_id());
   dict.SetIntKey("parent_seq", id.local_surface_id().parent_sequence_number());
   dict.SetIntKey("child_seq", id.local_surface_id().child_sequence_number());
+  dict.SetKey("embed_token", util::UnguessableTokenToValue(
+                                 id.local_surface_id().embed_token()));
 
-  // |embed_token_| doesn't need to be saved as long as a consistent token is
-  // used when deserializing.
   return dict;
 }
 
 absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
+  if (!dict.is_dict()) {
+    return absl::nullopt;
+  }
   absl::optional<int> client_id = dict.FindIntKey("client_id");
   absl::optional<int> sink_id = dict.FindIntKey("sink_id");
   absl::optional<int> parent_seq = dict.FindIntKey("parent_seq");
   absl::optional<int> child_seq = dict.FindIntKey("child_seq");
-  if (!client_id || !sink_id || !parent_seq || !child_seq)
+  const base::Value* embed_token_value = dict.FindKey("embed_token");
+  if (!client_id || !sink_id || !parent_seq || !child_seq || !embed_token_value)
     return absl::nullopt;
 
-  base::UnguessableToken token = base::UnguessableToken::Deserialize(1, 1);
+  auto token = util::ValueToUnguessableToken(*embed_token_value);
+  if (!token) {
+    return absl::nullopt;
+  }
+
   return SurfaceId(FrameSinkId(*client_id, *sink_id),
-                   LocalSurfaceId(*parent_seq, *child_seq, token));
+                   LocalSurfaceId(*parent_seq, *child_seq, *token));
 }
 
 base::Value SurfaceRangeToDict(const SurfaceRange& range) {
@@ -910,6 +921,9 @@ base::Value SurfaceRangeToDict(const SurfaceRange& range) {
 }
 
 absl::optional<SurfaceRange> SurfaceRangeFromDict(const base::Value& dict) {
+  if (!dict.is_dict()) {
+    return absl::nullopt;
+  }
   const base::Value* start_dict = dict.FindDictKey("start");
   const base::Value* end_dict = dict.FindDictKey("end");
   if (!end_dict)
@@ -2076,6 +2090,7 @@ bool CompositorRenderPassListFromDict(
     CompositorRenderPassList* render_pass_list) {
   DCHECK(render_pass_list);
   DCHECK(render_pass_list->empty());
+
   if (!dict.is_dict())
     return false;
   const base::Value* list = dict.FindListKey("render_pass_list");
@@ -2090,6 +2105,138 @@ bool CompositorRenderPassListFromDict(
     }
   }
   return true;
+}
+
+base::Value CompositorFrameToDict(const CompositorFrame& compositor_frame) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  auto render_pass_list_dict =
+      CompositorRenderPassListToDict(compositor_frame.render_pass_list);
+  dict.SetKey("render_pass_list", std::move(render_pass_list_dict));
+
+  base::Value referenced_surfaces(base::Value::Type::LIST);
+  for (auto& surface_range : compositor_frame.metadata.referenced_surfaces) {
+    referenced_surfaces.Append(SurfaceRangeToDict(surface_range));
+  }
+  base::Value metadataDict(base::Value::Type::DICTIONARY);
+  metadataDict.SetKey("referenced_surfaces", std::move(referenced_surfaces));
+  dict.SetKey("metadata", std::move(metadataDict));
+
+  return dict;
+}
+
+bool CompositorFrameFromDict(const base::Value& dict,
+                             CompositorFrame* compositor_frame) {
+  DCHECK(compositor_frame);
+  if (!dict.is_dict()) {
+    return false;
+  }
+
+  const base::Value* render_pass_list_dict =
+      dict.FindDictKey("render_pass_list");
+  if (!render_pass_list_dict) {
+    return false;
+  }
+  if (!CompositorRenderPassListFromDict(*render_pass_list_dict,
+                                        &compositor_frame->render_pass_list)) {
+    return false;
+  }
+
+  const base::Value* metadata = dict.FindDictKey("metadata");
+  if (!metadata || !metadata->is_dict()) {
+    return false;
+  }
+  const base::Value* referenced_surfaces =
+      metadata->FindListKey("referenced_surfaces");
+  if (!referenced_surfaces || !referenced_surfaces->is_list()) {
+    return false;
+  }
+  for (auto& referenced_surface_dict : referenced_surfaces->GetList()) {
+    auto referenced_surface = SurfaceRangeFromDict(referenced_surface_dict);
+    if (!referenced_surface) {
+      return false;
+    }
+    compositor_frame->metadata.referenced_surfaces.push_back(
+        *referenced_surface);
+  }
+
+  return true;
+}
+
+base::Value FrameDataToList(const std::vector<FrameData>& frame_data_list) {
+  base::Value list(base::Value::Type::LIST);
+
+  for (auto& frame_data : frame_data_list) {
+    base::Value frame_dict(base::Value::Type::DICTIONARY);
+
+    frame_dict.SetKey("surface_id", SurfaceIdToDict(frame_data.surface_id));
+    // This cast will be safe because we
+    // should never have more than |INT_MAX|
+    // frames in recorded data.
+    frame_dict.SetIntKey("frame_index",
+                         static_cast<int>(frame_data.frame_index));
+    frame_dict.SetKey("compositor_frame",
+                      CompositorFrameToDict(frame_data.compositor_frame));
+
+    list.Append(std::move(frame_dict));
+  }
+  return list;
+}
+
+bool FrameDataFromList(const base::Value& list,
+                       std::vector<FrameData>* frame_data_list) {
+  DCHECK(frame_data_list);
+  DCHECK(frame_data_list->empty());
+
+  if (!list.is_list()) {
+    return false;
+  }
+  for (const auto& frame_data_dict : list.GetList()) {
+    FrameData frame_data;
+    auto* surface_id_dict = frame_data_dict.FindDictKey("surface_id");
+    if (!surface_id_dict) {
+      return false;
+    }
+    absl::optional<SurfaceId> surface_id = SurfaceIdFromDict(*surface_id_dict);
+    if (!surface_id) {
+      return false;
+    }
+    frame_data.surface_id = *surface_id;
+
+    absl::optional<int> frame_index = frame_data_dict.FindIntKey("frame_index");
+    if (!frame_index) {
+      return false;
+    }
+    frame_data.frame_index = *frame_index;
+
+    const base::Value* compositor_frame_dict =
+        frame_data_dict.FindDictKey("compositor_frame");
+    if (!compositor_frame_dict) {
+      return false;
+    }
+    if (!CompositorFrameFromDict(*compositor_frame_dict,
+                                 &frame_data.compositor_frame)) {
+      return false;
+    }
+
+    frame_data_list->push_back(std::move(frame_data));
+  }
+
+  return true;
+}
+
+FrameData::FrameData() = default;
+FrameData::FrameData(FrameData&& other) = default;
+FrameData& FrameData::operator=(FrameData&& other) = default;
+
+FrameData::FrameData(const SurfaceId& surface_id,
+                     const uint64_t frame_index,
+                     const CompositorFrame& compositor_frame)
+    : surface_id(surface_id), frame_index(frame_index) {
+  this->compositor_frame.metadata = compositor_frame.metadata.Clone();
+  this->compositor_frame.resource_list = compositor_frame.resource_list;
+  for (const auto& render_pass : compositor_frame.render_pass_list) {
+    this->compositor_frame.render_pass_list.push_back(render_pass->DeepCopy());
+  }
 }
 
 }  // namespace viz

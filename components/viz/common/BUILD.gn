@@ -296,6 +296,7 @@ viz_component("common") {
 
   deps = [
     "//base",
+    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
 
     # TODO(staraz): cc/base was added because SharedQuadState includes
