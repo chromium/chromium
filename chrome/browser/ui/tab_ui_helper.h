@@ -51,6 +51,9 @@ class TabUIHelper : public content::WebContentsObserver,
   void set_created_by_session_restore(bool created_by_session_restore) {
     created_by_session_restore_ = created_by_session_restore;
   }
+  bool is_created_by_session_restore_for_testing() {
+    return created_by_session_restore_;
+  }
 
  private:
   friend class content::WebContentsUserData<TabUIHelper>;

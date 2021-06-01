@@ -93,7 +93,8 @@ void TabUIHelper::NotifyInitialNavigationDelayed(bool is_navigation_delayed) {
 
 void TabUIHelper::DidStopLoading() {
   // Reset the properties after the initial navigation finishes loading, so that
-  // latter navigations are not affected.
+  // latter navigations are not affected. Note that the prerendered page won't
+  // reset the properties because DidStopLoading is not called for prerendering.
   is_navigation_delayed_ = false;
   created_by_session_restore_ = false;
   tab_ui_data_.reset();
