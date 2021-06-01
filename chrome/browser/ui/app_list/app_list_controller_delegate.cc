@@ -18,9 +18,6 @@
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
@@ -59,14 +56,13 @@ AppListControllerDelegate::~AppListControllerDelegate() {}
 
 void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                                   const std::string& app_id) {
-  DCHECK_NE(apps::AppServiceProxyFactory::GetForProfile(profile)
-                ->AppRegistryCache()
-                .GetAppType(app_id),
-            apps::mojom::AppType::kUnknown);
+  auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile)
+                      ->AppRegistryCache()
+                      .GetAppType(app_id);
+  DCHECK_NE(app_type, apps::mojom::AppType::kUnknown);
 
-  web_app::AppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile)->registrar();
-  if (registrar.IsInstalled(app_id)) {
+  if (app_type == apps::mojom::AppType::kWeb ||
+      app_type == apps::mojom::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(
         profile, app_id,
         AppManagementEntryPoint::kAppListContextMenuAppInfoWebApp);
