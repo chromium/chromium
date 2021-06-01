@@ -5341,6 +5341,8 @@ interface MediaSession
     getter playbackState
     method constructor
     method setActionHandler
+    method setCameraActive
+    method setMicrophoneActive
     method setPositionState
     setter metadata
     setter playbackState
