@@ -220,6 +220,7 @@ void SharesheetBubbleView::ShowBubble(
           body_view->AddChildView(std::make_unique<views::Separator>());
     }
 
+    const size_t targets_size = targets.size();
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
     scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
@@ -232,7 +233,7 @@ void SharesheetBubbleView::ShowBubble(
           footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
               base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
                                   base::Unretained(this))));
-    } else if (targets.size() <= kMaxTargetsPerRow * kMaxRowsForDefaultView) {
+    } else if (targets_size <= kMaxTargetsPerRow * kMaxRowsForDefaultView) {
       // When we have between 1 and 8 targets inclusive. Update |footer_layout|
       // padding.
       footer_layout->set_inside_border_insets(
