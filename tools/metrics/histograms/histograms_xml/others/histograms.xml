@@ -8759,6 +8759,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.ScrollAnchor.TimeToFindAnchor" units="microseconds"
     expires_after="M82">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <owner>ymalik@chromium.org</owner>
   <summary>
     The time it took to find a suitable anchor element.
