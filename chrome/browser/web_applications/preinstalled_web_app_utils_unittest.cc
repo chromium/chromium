@@ -522,4 +522,38 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
   EXPECT_TRUE(oem_set->oem_installed);
 }
 
+TEST_F(PreinstalledWebAppUtilsTest,
+       DisableIfTouchscreenWithStylusNotSupported) {
+  absl::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "disable_if_touchscreen_with_stylus_not_supported": "some string",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(non_bool.has_value());
+
+  absl::optional<ExternalInstallOptions> default_setting = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(
+      default_setting->disable_if_touchscreen_with_stylus_not_supported);
+
+  absl::optional<ExternalInstallOptions> touchscreen_set = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "disable_if_touchscreen_with_stylus_not_supported": true,
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_TRUE(
+      touchscreen_set->disable_if_touchscreen_with_stylus_not_supported);
+}
+
 }  // namespace web_app

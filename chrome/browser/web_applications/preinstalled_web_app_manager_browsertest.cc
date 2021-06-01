@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +34,8 @@
 #include "net/ssl/ssl_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touchscreen_device.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/app_list_test_api.h"
@@ -76,6 +79,7 @@ class PreinstalledWebAppManagerBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   PreinstalledWebAppManagerBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kRecordWebAppDebugInfo);
     PreinstalledWebAppManager::SkipStartupForTesting();
   }
 
@@ -124,6 +128,11 @@ class PreinstalledWebAppManagerBrowserTest
 
   const AppRegistrar& registrar() {
     return WebAppProvider::Get(browser()->profile())->registrar();
+  }
+
+  const PreinstalledWebAppManager& manager() {
+    return WebAppProvider::Get(browser()->profile())
+        ->preinstalled_web_app_manager();
   }
 
   void SyncEmptyConfigs() {
@@ -200,6 +209,7 @@ class PreinstalledWebAppManagerBrowserTest
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   ScopedOsHooksSuppress os_hooks_suppress_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -775,6 +785,73 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 
   AppId app_id = GenerateAppIdFromURL(GetAppUrl());
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
+}
+
+namespace {
+ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
+                                        bool stylus_support) {
+  ui::TouchscreenDevice touch_device = ui::TouchscreenDevice();
+  touch_device.type = type;
+  touch_device.has_stylus = stylus_support;
+  return touch_device;
+}
+}  // namespace
+
+// Note that SetTouchscreenDevices() does not update the device list
+// if the number of displays don't change.
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       DisableIfTouchscreenWithStylusNotSupported) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "disable_if_touchscreen_with_stylus_not_supported": true,
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec()}, nullptr);
+  AppId app_id = GenerateAppIdFromURL(GetAppUrl());
+  const auto& disabled_configs = manager().debug_info()->disabled_configs;
+  constexpr char kErrorMessage[] =
+      " disabled because the device does not have a built-in touchscreen with "
+      "stylus support.";
+
+  // Test Case: No touchscreen installed on device.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(disabled_configs.size(), 1u);
+  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+
+  // Test Case: Built-in touchscreen without stylus support installed on device.
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
+      ui::InputDeviceType::INPUT_DEVICE_INTERNAL, /* stylus_support =*/false)});
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(disabled_configs.size(), 2u);
+  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+
+  // Test Case: Connected external touchscreen with stylus support connected to
+  // device.
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                         /* stylus_support =*/false),
+       CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_USB,
+                         /* stylus_support =*/true)});
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(disabled_configs.size(), 3u);
+  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+
+  // Test Case: Create a built-in touchscreen device with stylus support and add
+  // it to the device.
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(disabled_configs.size(), 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,

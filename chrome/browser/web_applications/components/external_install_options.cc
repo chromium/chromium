@@ -76,7 +76,8 @@ bool ExternalInstallOptions::operator==(
         options.only_use_app_info_factory,
         options.app_info_factory,
         options.system_app_type,
-        options.oem_installed
+        options.oem_installed,
+        options.disable_if_touchscreen_with_stylus_not_supported
         // clang-format on
     );
   };
@@ -166,7 +167,9 @@ std::ostream& operator<<(std::ostream& out,
          << (install_options.system_app_type.has_value()
                  ? static_cast<int32_t>(install_options.system_app_type.value())
                  : -1)
-         << "\n oem_installed: " << install_options.oem_installed;
+         << "\n oem_installed: " << install_options.oem_installed
+         << "\n disable_if_touchscreen_with_stylus_not_supported: "
+         << install_options.disable_if_touchscreen_with_stylus_not_supported;
 }
 
 InstallManager::InstallParams ConvertExternalInstallOptionsToParams(

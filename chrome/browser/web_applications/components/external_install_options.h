@@ -179,6 +179,10 @@ struct ExternalInstallOptions {
   // Whether the app was installed by an OEM and should be placed in a special
   // OEM folder in the app launcher. Only used on Chrome OS.
   bool oem_installed = false;
+
+  // Whether this should be installed on devices without a touch screen with
+  // stylus support.
+  bool disable_if_touchscreen_with_stylus_not_supported = false;
 };
 
 std::ostream& operator<<(std::ostream& out,

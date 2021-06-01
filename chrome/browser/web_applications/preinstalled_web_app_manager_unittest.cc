@@ -271,6 +271,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
     install_options.add_to_desktop = true;
     install_options.add_to_quick_launch_bar = true;
     install_options.require_manifest = true;
+    install_options.disable_if_touchscreen_with_stylus_not_supported = false;
     test_install_options_list.push_back(std::move(install_options));
   }
   {
@@ -284,6 +285,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
     install_options.add_to_desktop = false;
     install_options.add_to_quick_launch_bar = false;
     install_options.require_manifest = true;
+    install_options.disable_if_touchscreen_with_stylus_not_supported = false;
     install_options.uninstall_and_replace.push_back("migrationsourceappid");
     test_install_options_list.push_back(std::move(install_options));
   }

@@ -164,6 +164,11 @@ constexpr char kForceReinstallForMilestone[] = "force_reinstall_for_milestone";
 // the device OEM.
 constexpr char kOemInstalled[] = "oem_installed";
 
+// Contains boolean indicating weather the app should only be install on devices
+// with a built-in touchscreen with stylus support.
+constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
+    "disable_if_touchscreen_with_stylus_not_supported";
+
 }  // namespace
 
 OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
@@ -400,6 +405,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
           {file.AsUTF8Unsafe(), " had an invalid ", kOemInstalled});
     }
     options.oem_installed = value->GetBool();
+  }
+
+  // disable_if_touchscreen_with_stylus_not_supported
+  value = app_config.FindKey(kDisableIfTouchScreenWithStylusNotSupported);
+  if (value) {
+    if (!value->is_bool()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
+                           kDisableIfTouchScreenWithStylusNotSupported});
+    }
+    options.disable_if_touchscreen_with_stylus_not_supported = value->GetBool();
   }
 
   return options;
