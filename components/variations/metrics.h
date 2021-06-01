@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_METRICS_H_
 #define COMPONENTS_VARIATIONS_METRICS_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 
 namespace variations {
@@ -89,19 +90,21 @@ enum class VerifySignatureResult {
 
 #if defined(OS_ANDROID)
 // Records the result of importing a seed during Android first run.
+COMPONENT_EXPORT(VARIATIONS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result);
 #endif  // OS_ANDROID
 
 // Records the result of attempting to load the latest variations seed on
 // startup.
-void RecordLoadSeedResult(LoadSeedResult state);
+COMPONENT_EXPORT(VARIATIONS) void RecordLoadSeedResult(LoadSeedResult state);
 
 // Records the result of attempting to load the safe variations seed on startup.
+COMPONENT_EXPORT(VARIATIONS)
 void RecordLoadSafeSeedResult(LoadSeedResult state);
 
 // Records the result of attempting to store a variations seed received from the
 // server.
-void RecordStoreSeedResult(StoreSeedResult result);
+COMPONENT_EXPORT(VARIATIONS) void RecordStoreSeedResult(StoreSeedResult result);
 
 }  // namespace variations
 

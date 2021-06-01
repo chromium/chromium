@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_CLIENT_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_CLIENT_H_
 
+#include "base/component_export.h"
 #include "components/variations/variations.mojom.h"
 
 namespace variations {
@@ -12,7 +13,7 @@ namespace variations {
 // Used by VariationsURLLoaderThrottle to insulate the content layer from
 // concepts like user sign in which don't belong there. There is an instance per
 // profile, so there can be multiple clients at a time when in multi user mode.
-class VariationsClient {
+class COMPONENT_EXPORT(VARIATIONS) VariationsClient {
  public:
   virtual ~VariationsClient() = default;
 

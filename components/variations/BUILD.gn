@@ -35,7 +35,7 @@ component("variations_features") {
   deps = [ "//base" ]
 }
 
-static_library("variations") {
+component("variations") {
   sources = [
     "active_field_trials.cc",
     "active_field_trials.h",
@@ -88,6 +88,9 @@ static_library("variations") {
     "variations_url_constants.cc",
     "variations_url_constants.h",
   ]
+
+  # Needed for exporting functions (because the target type is a component).
+  defines = [ "IS_VARIATIONS_IMPL" ]
 
   if (is_android || is_ios) {
     sources += [
@@ -190,7 +193,6 @@ source_set("unit_tests") {
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
     "variations_associated_data_unittest.cc",
-    "variations_crash_keys_unittest.cc",
     "variations_ids_provider_unittest.cc",
     "variations_murmur_hash_unittest.cc",
     "variations_request_scheduler_unittest.cc",
@@ -205,6 +207,14 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [ "variations_crash_keys_chromeos_unittest.cc" ]
+  }
+
+  # This test uses crash_reporter::GetCrashKeyValue(), which in a component
+  # build returns the crash keys in the unit-test, not the "variations"
+  # target. The test verifies the keys in the "variations" target, not the
+  # test. As such, it fails in component builds.
+  if (!is_component_build) {
+    sources += [ "variations_crash_keys_unittest.cc" ]
   }
 
   deps = [

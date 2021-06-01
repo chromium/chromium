@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
@@ -16,7 +17,7 @@ class Study;
 
 // Wrapper over Study with extra information computed during pre-processing,
 // such as whether the study is expired and its total probability.
-class ProcessedStudy {
+class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
  public:
   // The default group used when a study doesn't specify one. This is needed
   // because the field trial api requires a default group name.

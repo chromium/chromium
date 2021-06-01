@@ -33,6 +33,7 @@ static_library("browser") {
   ]
   deps = [
     "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/zoom",

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_local.h"
@@ -19,7 +20,8 @@ namespace variations {
 // processes. Specifically, when a field trial is activated in the browser, it
 // also activates it in the child process and when a field trial is activated in
 // the child process, it notifies the browser process to activate it.
-class ChildProcessFieldTrialSyncer : public base::FieldTrialList::Observer {
+class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
+    : public base::FieldTrialList::Observer {
  public:
   using FieldTrialActivatedCallback =
       base::RepeatingCallback<void(const std::string& trial_name)>;

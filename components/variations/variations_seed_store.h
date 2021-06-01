@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -27,7 +28,7 @@ class VariationsSeed;
 
 // VariationsSeedStore is a helper class for reading and writing the variations
 // seed from Local State.
-class VariationsSeedStore {
+class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
   // Standard constructor. Enables signature verification.
   explicit VariationsSeedStore(PrefService* local_state);
