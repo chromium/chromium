@@ -210,9 +210,6 @@ class AppBrowserController : public TabStripModelObserver,
 
   void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
 
-  // TODO(crbug.com/937121) Remove this after persisting state.
-  bool window_controls_overlay_enabled_ = false;
-
  protected:
   explicit AppBrowserController(Browser* browser,
                                 absl::optional<web_app::AppId> app_id);

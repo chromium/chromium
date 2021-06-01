@@ -386,6 +386,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_file_handler_permission_blocked(
       web_app.file_handler_permission_blocked());
+
+  local_data->set_window_controls_overlay_enabled(
+      web_app.window_controls_overlay_enabled());
   return local_data;
 }
 
@@ -788,6 +791,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_file_handler_permission_blocked())
     web_app->SetFileHandlerPermissionBlocked(
         local_data.file_handler_permission_blocked());
+
+  if (local_data.has_window_controls_overlay_enabled()) {
+    web_app->SetWindowControlsOverlayEnabled(
+        local_data.window_controls_overlay_enabled());
+  }
   return web_app;
 }
 

@@ -301,6 +301,10 @@ void WebApp::SetFileHandlerPermissionBlocked(bool permission_blocked) {
   file_handler_permission_blocked_ = permission_blocked;
 }
 
+void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
+  window_controls_overlay_enabled_ = enabled;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -490,6 +494,9 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "system_web_app:" << std::endl
       << Indent(app.client_data_.system_web_app_data) << std::endl;
 
+  out << "window_controls_overlay_enabled:" << std::endl
+      << Indent(app.window_controls_overlay_enabled_) << std::endl;
+
   return out;
 }
 
@@ -551,7 +558,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_url_,
         app.manifest_id_,
         app.client_data_.system_web_app_data,
-        app.file_handler_permission_blocked_
+        app.file_handler_permission_blocked_,
+        app.window_controls_overlay_enabled_
         // clang-format on
     );
   };

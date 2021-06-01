@@ -153,6 +153,8 @@ class AppRegistrar {
   virtual std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
       const AppId& app_id) const = 0;
 
+  virtual bool GetWindowControlsOverlayEnabled(const AppId& app_id) const = 0;
+
   virtual std::vector<AppId> GetAppIds() const = 0;
 
   // Safe downcast.

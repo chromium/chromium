@@ -915,4 +915,20 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModes) {
             registrar().GetAppRunOnOsLoginMode(app_id));
 }
 
+TEST_F(WebAppRegistrarTest, WindowControlsOverlay) {
+  controller().Init();
+
+  auto web_app = CreateWebApp("https://example.com/path");
+  const AppId app_id = web_app->app_id();
+  RegisterApp(std::move(web_app));
+
+  EXPECT_EQ(false, registrar().GetWindowControlsOverlayEnabled(app_id));
+
+  sync_bridge().SetAppWindowControlsOverlayEnabled(app_id, true);
+  EXPECT_EQ(true, registrar().GetWindowControlsOverlayEnabled(app_id));
+
+  sync_bridge().SetAppWindowControlsOverlayEnabled(app_id, false);
+  EXPECT_EQ(false, registrar().GetWindowControlsOverlayEnabled(app_id));
+}
+
 }  // namespace web_app

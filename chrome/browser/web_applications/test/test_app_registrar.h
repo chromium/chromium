@@ -93,6 +93,7 @@ class TestAppRegistrar : public AppRegistrar {
   std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
       const AppId& app_id) const override;
   RunOnOsLoginMode GetAppRunOnOsLoginMode(const AppId& app_id) const override;
+  bool GetWindowControlsOverlayEnabled(const AppId& app_id) const override;
   std::vector<AppId> GetAppIds() const override;
   WebAppRegistrar* AsWebAppRegistrar() override;
   const WebAppRegistrar* AsWebAppRegistrar() const override;

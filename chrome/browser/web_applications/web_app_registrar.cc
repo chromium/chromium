@@ -267,6 +267,12 @@ RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
   return web_app ? web_app->run_on_os_login_mode() : RunOnOsLoginMode::kNotRun;
 }
 
+bool WebAppRegistrar::GetWindowControlsOverlayEnabled(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->window_controls_overlay_enabled() : false;
+}
+
 WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() {
   return this;
 }

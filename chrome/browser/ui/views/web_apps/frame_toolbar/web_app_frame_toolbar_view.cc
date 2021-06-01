@@ -152,6 +152,10 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
 void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
     gfx::Rect available_rect) {
   DCHECK(!left_container_);
+  // The center_container_ might have been laid out by the frame view such that
+  // it interferes with hit testing in the ToolbarButtonContainer. Ensure that
+  // its bounds are cleared when laying out WCO.
+  center_container_->SetBounds(0, 0, 0, 0);
 
   const int width = std::min(available_rect.width(),
                              right_container_->GetPreferredSize().width());
@@ -255,7 +259,6 @@ bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
 
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
-    center_container_->SetBounds(0, 0, 0, 0);
     SetBackground(views::CreateSolidBackground(
         paint_as_active_ ? active_background_color_
                          : inactive_background_color_));

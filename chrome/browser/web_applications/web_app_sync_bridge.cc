@@ -212,6 +212,13 @@ void WebAppSyncBridge::SetAppRunOnOsLoginMode(const AppId& app_id,
   if (web_app)
     web_app->SetRunOnOsLoginMode(mode);
 }
+void WebAppSyncBridge::SetAppWindowControlsOverlayEnabled(const AppId& app_id,
+                                                          bool enabled) {
+  ScopedRegistryUpdate update(this);
+  WebApp* web_app = update->UpdateApp(app_id);
+  if (web_app)
+    web_app->SetWindowControlsOverlayEnabled(enabled);
+}
 
 void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
   if (!IsChromeOsDataMandatory())

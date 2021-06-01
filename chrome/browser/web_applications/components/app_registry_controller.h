@@ -69,6 +69,9 @@ class AppRegistryController {
   virtual void SetAppRunOnOsLoginMode(const AppId& app_id,
                                       RunOnOsLoginMode mode) = 0;
 
+  virtual void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
+                                                  bool enabled) = 0;
+
   // Safe downcast:
   virtual WebAppSyncBridge* AsWebAppSyncBridge() = 0;
 

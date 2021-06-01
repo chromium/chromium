@@ -327,9 +327,7 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
 
-void AppBrowserController::ToggleWindowControlsOverlayEnabled() {
-  window_controls_overlay_enabled_ = !window_controls_overlay_enabled_;
-}
+void AppBrowserController::ToggleWindowControlsOverlayEnabled() {}
 
 bool AppBrowserController::HasReloadButton() const {
   if (!system_app_type_)

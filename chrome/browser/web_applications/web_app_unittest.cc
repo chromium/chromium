@@ -194,6 +194,8 @@ chromeos_data:
   nullopt
 system_web_app:
   nullopt
+window_controls_overlay_enabled:
+  0
 )") << "Copypastable expectation: \n"
     << debug_string;
 }
@@ -348,6 +350,8 @@ chromeos_data:
   nullopt
 system_web_app:
   nullopt
+window_controls_overlay_enabled:
+  0
 )") << "Copypastable expectation: \n"
     << debug_string;
 }

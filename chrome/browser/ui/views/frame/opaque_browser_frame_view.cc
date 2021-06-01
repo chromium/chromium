@@ -128,7 +128,7 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
   // the toggle button functionality is implemented for OpaqueBrowserFrameView.
   web_app::AppBrowserController* controller =
       browser_view->browser()->app_controller();
-  if (controller) {
+  if (controller && controller->AppUsesWindowControlsOverlay()) {
     controller->ToggleWindowControlsOverlayEnabled();
     layout_->set_window_controls_overlay_enabled(
         browser_view->IsWindowControlsOverlayEnabled());

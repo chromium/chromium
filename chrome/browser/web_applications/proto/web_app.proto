@@ -206,4 +206,6 @@ message WebAppProto {
   // |downloaded_icon_sizes_purpose_any|,
   // |downloaded_icon_sizes_purpose_maskable|.
   repeated int32 downloaded_icon_sizes_purpose_monochrome = 33;
+
+  optional bool window_controls_overlay_enabled = 34;
 }

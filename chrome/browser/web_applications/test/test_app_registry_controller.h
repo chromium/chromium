@@ -30,6 +30,8 @@ class TestAppRegistryController : public AppRegistryController {
   void SetAppInstallTime(const AppId& app_id, const base::Time& time) override;
   void SetAppRunOnOsLoginMode(const AppId& app_id,
                               RunOnOsLoginMode mode) override;
+  void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
+                                          bool enabled) override;
 
   WebAppSyncBridge* AsWebAppSyncBridge() override;
 };

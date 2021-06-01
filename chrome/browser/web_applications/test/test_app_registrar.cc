@@ -229,6 +229,12 @@ RunOnOsLoginMode TestAppRegistrar::GetAppRunOnOsLoginMode(
   return RunOnOsLoginMode::kNotRun;
 }
 
+bool TestAppRegistrar::GetWindowControlsOverlayEnabled(
+    const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 std::vector<AppId> TestAppRegistrar::GetAppIds() const {
   std::vector<AppId> result;
   for (const std::pair<const AppId, AppInfo>& it : installed_apps_) {
