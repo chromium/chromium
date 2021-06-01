@@ -131,7 +131,8 @@
         </template>
         <cr-button id="done"
             on-click="onRenameDialogDoneTap_"
-            disabled="[[isRenameInProgress_]]"
+            disabled="[[isDoneButtonDisabled_(isRenameInProgress_,
+                esimProfileName_)]]"
             aria-label$="[[getDoneBtnA11yLabel_(esimProfileName_)]]"
             aria-describedby="warningMessage"
             class="action-button">
