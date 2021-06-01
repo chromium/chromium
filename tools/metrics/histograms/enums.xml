@@ -64027,6 +64027,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="kPlugin"/>
   <int value="13" label="kRendererProcessCrashed"/>
   <int value="14" label="kRendererProcessKilled"/>
+  <int value="15" label="kDownload"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

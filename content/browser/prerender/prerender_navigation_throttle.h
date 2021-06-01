@@ -27,6 +27,7 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   const char* GetNameForLogging() override;
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
 
  private:
   explicit PrerenderNavigationThrottle(NavigationHandle* navigation_handle);

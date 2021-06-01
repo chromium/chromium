@@ -129,4 +129,25 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   return PROCEED;
 }
 
+NavigationThrottle::ThrottleCheckResult
+PrerenderNavigationThrottle::WillProcessResponse() {
+  // Disallow downloads during prerendering and cancel the prerender.
+  if (navigation_handle()->IsDownload()) {
+    auto* navigation_request = NavigationRequest::From(navigation_handle());
+    FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+    DCHECK(frame_tree_node->frame_tree()->is_prerendering());
+
+    PrerenderHostRegistry* prerender_host_registry =
+        frame_tree_node->current_frame_host()
+            ->delegate()
+            ->GetPrerenderHostRegistry();
+
+    prerender_host_registry->AbandonHostAsync(
+        frame_tree_node->frame_tree_node_id(),
+        PrerenderHost::FinalStatus::kDownload);
+    return CANCEL;
+  }
+  return PROCEED;
+}
+
 }  // namespace content

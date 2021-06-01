@@ -29,6 +29,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
   const char* GetNameForLogging() override;
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
 
   // PrerenderHost::Observer
   void OnActivated() override;

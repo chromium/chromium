@@ -4388,6 +4388,15 @@ void RenderFrameHostImpl::UpdateManifestURL(
 
 void RenderFrameHostImpl::DownloadURL(
     blink::mojom::DownloadURLParamsPtr blink_parameters) {
+  // TODO(crbug.com/1205359): We should defer the download until the
+  // prerendering page is activated, and it will comply with the prerendering
+  // spec.
+  if (blink::features::IsPrerender2Enabled() &&
+      frame_tree()->is_prerendering()) {
+    CancelPrerendering(PrerenderHost::FinalStatus::kDownload);
+    return;
+  }
+
   if (!VerifyDownloadUrlParams(GetSiteInstance(), *blink_parameters))
     return;
 

@@ -1767,7 +1767,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ClipboardByExecCommandFail) {
                           EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-#if !defined(OS_ANDROID) || BUILDFLAG(ENABLE_PLUGINS)
 void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
                                       const GURL prerendering_url,
                                       test::PrerenderTestHelper* helper) {
@@ -1780,7 +1779,6 @@ void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
   EXPECT_EQ(helper->GetHostForUrl(prerendering_url),
             RenderFrameHost::kNoFrameTreeNodeId);
 }
-#endif  // !defined(OS_ANDROID) || BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Tests that we will cancel the prerendering if the prerendering page attempts
@@ -1860,6 +1858,55 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
       PrerenderCancelledInterface::kNotificationService, 1);
 }
 #endif  // defined(OS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInMainFrame) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // TODO(crbug.com/1215073): Make a WPT for the content-disposition WPT test.
+  const GURL download_url =
+      GetUrl("/set-header?Content-Disposition: attachment");
+
+  LoadAndWaitForPrerenderDestroyed(web_contents(), download_url,
+                                   prerender_helper());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDownload, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  auto* prerender_host = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(AddTestUtilJS(prerender_host));
+
+  // TODO(crbug.com/1215073): Make a WPT for the content-disposition WPT test.
+  const GURL download_url =
+      GetUrl("/set-header?Content-Disposition: attachment");
+  ExecuteScriptAsync(prerender_host,
+                     JsReplace("add_iframe_async($1)", download_url));
+
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDownload, 1);
+}
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
