@@ -36,6 +36,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "save_address_profile_infobar_banner_interaction_handler_unittest.mm",
     "save_address_profile_infobar_modal_interaction_handler_unittest.mm",
     "save_address_profile_infobar_modal_overlay_request_callback_installer_unittest.mm",
   ]

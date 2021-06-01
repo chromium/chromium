@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
+namespace autofill {
+class AutofillSaveUpdateAddressProfileDelegateIOS;
+}
+
 // Helper object that updates the model layer for interaction events with the
 // SaveAddressProfile infobar banner UI.
 class SaveAddressProfileInfobarBannerInteractionHandler
@@ -18,8 +22,13 @@ class SaveAddressProfileInfobarBannerInteractionHandler
   ~SaveAddressProfileInfobarBannerInteractionHandler() override;
 
   // InfobarBannerInteractionHandler:
-  void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) override {}
-  void BannerDismissedByUser(InfoBarIOS* infobar) override {}
+  void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
+  void BannerDismissedByUser(InfoBarIOS* infobar) override;
+
+ private:
+  // Returns the SaveAddressProfile delegate from |infobar|.
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfobarDelegate(
+      InfoBarIOS* infobar);
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_AUTOFILL_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_BANNER_INTERACTION_HANDLER_H_

@@ -27,6 +27,21 @@ class EditedProfileSaveAction
   NSDictionary* profile_data_;
 };
 
+// Response info used to create dispatched OverlayResponses once the user
+// cancels the modal.
+class CancelViewAction : public OverlayResponseInfo<CancelViewAction> {
+ public:
+  ~CancelViewAction() override;
+
+  BOOL edit_view_is_dismissed() const { return edit_view_is_dismissed_; }
+
+ private:
+  OVERLAY_USER_DATA_SETUP(CancelViewAction);
+  CancelViewAction(BOOL edit_view_is_dismissed);
+
+  BOOL edit_view_is_dismissed_;
+};
+
 }  // namespace save_address_profile_infobar_modal_responses
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_RESPONSES_H_
