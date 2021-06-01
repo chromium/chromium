@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/generic_sensor/sensor_permission_context.h"
+#include "components/permissions/contexts/sensor_permission_context.h"
 
-#include "base/feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
-#include "services/device/public/cpp/device_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
+
+namespace permissions {
 
 SensorPermissionContext::SensorPermissionContext(
     content::BrowserContext* browser_context)
@@ -45,3 +45,5 @@ bool SensorPermissionContext::IsRestrictedToSecureOrigins() const {
   // origins and this is enforced by the renderer.
   return false;
 }
+
+}  // namespace permissions

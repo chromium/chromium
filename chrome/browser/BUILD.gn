@@ -536,8 +536,6 @@ static_library("browser") {
     "gcm/gcm_profile_service_factory.h",
     "gcm/instance_id/instance_id_profile_service_factory.cc",
     "gcm/instance_id/instance_id_profile_service_factory.h",
-    "generic_sensor/sensor_permission_context.cc",
-    "generic_sensor/sensor_permission_context.h",
     "geolocation/geolocation_permission_context_delegate.cc",
     "geolocation/geolocation_permission_context_delegate.h",
     "geolocation/geolocation_permission_context_extensions.cc",

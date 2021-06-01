@@ -1248,7 +1248,6 @@ crbug.com/1050754 external/wpt/native-io/write_capacity_allocation_async.tentati
 crbug.com/1050754 external/wpt/native-io/write_capacity_allocation_async.tentative.https.any.worker.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/native-io/write_getLength_async_basic.tentative.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/navigation-timing/test_performance_attributes.sub.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/orientation-event/device-orientation-events-unavailable-on-insecure-origins.html [ Failure ]
 crbug.com/1050754 external/wpt/orientation-sensor/AbsoluteOrientationSensor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/paint-timing/fcp-only/fcp-gradient.html [ Pass ]
