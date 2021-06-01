@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -35,11 +36,29 @@ class DocumentLoaderTest : public testing::Test {
   void SetUp() override {
     web_view_helper_.Initialize();
     url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("http://example.com/foo.html"),
+        test::CoreTestDataPath("foo.html"));
+    url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://example.com/foo.html"),
         test::CoreTestDataPath("foo.html"));
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://example.com:8000/foo.html"),
         test::CoreTestDataPath("foo.html"));
+    url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
+        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        WebURLLoaderMockFactory::GetSingletonInstance(),
+        network::mojom::IPAddressSpace::kPrivate);
+    url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
+        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        WebURLLoaderMockFactory::GetSingletonInstance(),
+        network::mojom::IPAddressSpace::kPrivate);
+    url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
+        test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
+        WebURLLoaderMockFactory::GetSingletonInstance(),
+        network::mojom::IPAddressSpace::kLocal);
   }
 
   void TearDown() override {
@@ -452,6 +471,87 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
   EXPECT_FALSE(local_frame->Loader()
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
+}
+
+TEST_F(DocumentLoaderTest, PublicSecureNotCounted) {
+  // Checking to make sure secure pages served in the public address space
+  // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  EXPECT_FALSE(document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
+}
+
+TEST_F(DocumentLoaderTest, PublicNonSecureNotCounted) {
+  // Checking to make sure non-secure pages served in the public address space
+  // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("http://example.com/foo.html");
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  EXPECT_FALSE(document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
+}
+
+TEST_F(DocumentLoaderTest, PrivateSecureNotCounted) {
+  // Checking to make sure secure pages served in the private address space
+  // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://192.168.1.1/foo.html");
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  EXPECT_FALSE(document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
+}
+
+TEST_F(DocumentLoaderTest, PrivateNonSecureIsCounted) {
+  // Checking to make sure non-secure pages served in the private address space
+  // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("http://192.168.1.1/foo.html");
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  EXPECT_TRUE(document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
+}
+
+TEST_F(DocumentLoaderTest, LocalNonSecureIsCounted) {
+  // Checking to make sure non-secure pages served in the local address space
+  // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("http://somethinglocal/foo.html");
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  EXPECT_TRUE(document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
+}
+
+TEST_F(DocumentLoaderSimTest, PrivateNonSecureChildFrameNotCounted) {
+  // Checking to make sure non-secure iframes served in the private address
+  // space are not counted for
+  // WebFeature::kMainFrameNonSecurePrivateAddressSpace
+  SimRequest main_resource("http://example.com", "text/html");
+  SimRequest iframe_resource("http://192.168.1.1/foo.html", "text/html");
+  LoadURL("http://example.com");
+
+  main_resource.Write(R"(
+    <iframe id='frame1'></iframe>
+    <script>
+      const iframe = document.getElementById('frame1');
+      iframe.src = 'http://192.168.1.1/foo.html'; // navigation triggered
+    </script>
+  )");
+
+  main_resource.Finish();
+  iframe_resource.Finish();
+
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* child_document = child_frame->GetFrame()->GetDocument();
+
+  EXPECT_FALSE(child_document->IsUseCounted(
+      WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
 }  // namespace blink

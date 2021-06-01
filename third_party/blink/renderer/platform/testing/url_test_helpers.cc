@@ -64,7 +64,8 @@ WebURL RegisterMockedURLLoadFromBase(const WebString& base_url,
 void RegisterMockedURLLoad(const WebURL& full_url,
                            const WebString& file_path,
                            const WebString& mime_type,
-                           WebURLLoaderMockFactory* mock_factory) {
+                           WebURLLoaderMockFactory* mock_factory,
+                           network::mojom::IPAddressSpace address_space) {
   network::mojom::LoadTimingInfoPtr timing =
       network::mojom::LoadTimingInfo::New();
 
@@ -73,6 +74,7 @@ void RegisterMockedURLLoad(const WebURL& full_url,
   response.SetHttpHeaderField(http_names::kContentType, mime_type);
   response.SetHttpStatusCode(200);
   response.SetLoadTiming(*timing);
+  response.SetAddressSpace(address_space);
 
   mock_factory->RegisterURL(full_url, response, file_path);
 }

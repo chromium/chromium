@@ -2163,6 +2163,23 @@ void DocumentLoader::CommitNavigation() {
   LocalDOMWindow* previous_window = frame_->DomWindow();
   InitializeWindow(owner_document);
 
+  // Record if we have navigated to a non-secure page served from a IP address
+  // in the private address space.
+  //
+  // Use response_.AddressSpace() instead of frame_->DomWindow()->AddressSpace()
+  // since the latter isn't populated in unit tests.
+  //
+  // TODO(crbug.com/1171214): move RecordAddressSpaceFeature() call from
+  // StartLoadingInternal to here.
+  if (frame_->IsMainFrame()) {
+    auto address_space = response_.AddressSpace();
+    if ((address_space == network::mojom::blink::IPAddressSpace::kPrivate ||
+         address_space == network::mojom::blink::IPAddressSpace::kLocal) &&
+        !frame_->DomWindow()->IsSecureContext()) {
+      CountUse(WebFeature::kMainFrameNonSecurePrivateAddressSpace);
+    }
+  }
+
   SecurityContextInit security_init(frame_->DomWindow());
 
   // The document constructed by XSLTProcessor and ScriptController should
