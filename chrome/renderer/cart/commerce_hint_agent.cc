@@ -59,6 +59,12 @@ std::string eTLDPlusOne(const GURL& url) {
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+bool IsCartHeuristicsImprovementEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      ntp_features::kNtpChromeCartModule,
+      ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, false);
+}
+
 enum class CommerceEvent {
   kAddToCartByForm,
   kAddToCartByURL,
@@ -414,6 +420,19 @@ std::string CanonicalURL(const GURL& url) {
                           "");
 }
 
+const WebString& GetProductExtractionScript() {
+  static base::NoDestructor<WebString> script([] {
+    std::string script_string =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_CART_PRODUCT_EXTRACTION_JS);
+    if (IsCartHeuristicsImprovementEnabled()) {
+      script_string = "var isImprovementEnabled = true;\n" + script_string;
+    }
+    return WebString::FromUTF8(std::move(script_string));
+  }());
+  return *script;
+}
+
 }  // namespace
 
 CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
@@ -481,14 +500,9 @@ std::string CommerceHintAgent::ExtractButtonText(
 void CommerceHintAgent::ExtractProducts() {
   // TODO(crbug/1164236): Implement rate control.
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
-
-  std::string script =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_CART_PRODUCT_EXTRACTION_JS);
-
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   blink::WebScriptSource source =
-      blink::WebScriptSource(WebString::FromUTF8(script));
+      blink::WebScriptSource(GetProductExtractionScript());
 
   JavaScriptRequest* request =
       new JavaScriptRequest(weak_factory_.GetWeakPtr());
