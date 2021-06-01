@@ -104,6 +104,7 @@ extern const base::Feature kOmniboxSpareRenderer;
 extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 extern const base::Feature kProbabilisticCryptidRenderer;
+extern const base::Feature kQuickActionSearchWidgetAndroid;
 extern const base::Feature kReachedCodeProfiler;
 extern const base::Feature kReengagementNotification;
 extern const base::Feature kReaderModeInCCT;

@@ -1176,6 +1176,9 @@ extern const char kPwaUpdateDialogForNameAndIconDescription[];
 extern const char kQuicName[];
 extern const char kQuicDescription[];
 
+extern const char kQuickActionSearchWidgetAndroidName[];
+extern const char kQuickActionSearchWidgetAndroidDescription[];
+
 extern const char kQuietNotificationPromptsName[];
 extern const char kQuietNotificationPromptsDescription[];
 

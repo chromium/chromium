@@ -213,6 +213,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPageAnnotationsService,
     &kProbabilisticCryptidRenderer,
     &kPwaUpdateDialogForNameAndIcon,
+    &kQuickActionSearchWidgetAndroid,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
     &kReengagementNotification,
@@ -602,6 +603,9 @@ const base::Feature kProbabilisticCryptidRenderer{
 
 const base::Feature kPwaUpdateDialogForNameAndIcon{
     "PwaUpdateDialogForNameAndIcon", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kQuickActionSearchWidgetAndroid{
+    "QuickActionSearchWidgetAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
