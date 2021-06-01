@@ -30,6 +30,8 @@
 namespace chromeos {
 namespace full_restore {
 
+bool g_restore_for_testing = true;
+
 const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
 const char kRestoreNotificationId[] = "restore_notification";
 const char kSetRestorePrefNotificationId[] = "set_restore_pref_notification";
@@ -64,6 +66,9 @@ FullRestoreService::FullRestoreService(Profile* profile)
 FullRestoreService::~FullRestoreService() = default;
 
 void FullRestoreService::LaunchBrowserWhenReady() {
+  if (!g_restore_for_testing)
+    return;
+
   app_launch_handler_->LaunchBrowserWhenReady();
 }
 
@@ -124,11 +129,12 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
 }
 
 void FullRestoreService::RestoreForTesting() {
-  // If there is no browser launch info, the browser won't be launched. So call
-  // SetForceLaunchBrowserForTesting to launch the browser for testing.
-  app_launch_handler_->SetForceLaunchBrowserForTesting();
+  if (!g_restore_for_testing)
+    return;
 
-  Restore();
+  // If there is no browser launch info, the browser won't be launched. So call
+  // ForceLaunchBrowserForTesting to launch the browser for testing.
+  app_launch_handler_->ForceLaunchBrowserForTesting();
 }
 
 void FullRestoreService::Init() {
@@ -274,6 +280,14 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
         user->GetAccountId(), CanPerformRestore(profile_->GetPrefs()));
   }
+}
+
+ScopedRestoreForTesting::ScopedRestoreForTesting() {
+  g_restore_for_testing = false;
+}
+
+ScopedRestoreForTesting::~ScopedRestoreForTesting() {
+  g_restore_for_testing = true;
 }
 
 }  // namespace full_restore

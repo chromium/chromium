@@ -50,8 +50,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // true to allow the restoration.
   void SetShouldRestore();
 
-  // Set force_launch_browser_ to launch browser for testing.
-  void SetForceLaunchBrowserForTesting();
+  // Force launch browser for testing.
+  void ForceLaunchBrowserForTesting();
 
  private:
   friend class AppLaunchHandlerArcAppBrowserTest;
@@ -86,11 +86,18 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   bool should_launch_browser_ = false;
 
-  bool force_launch_browser_ = false;
-
   std::unique_ptr<::full_restore::RestoreData> restore_data_;
 
   base::WeakPtrFactory<AppLaunchHandler> weak_ptr_factory_{this};
+};
+
+class ScopedLaunchBrowserForTesting {
+ public:
+  ScopedLaunchBrowserForTesting();
+  ScopedLaunchBrowserForTesting(const ScopedLaunchBrowserForTesting&) = delete;
+  ScopedLaunchBrowserForTesting& operator=(
+      const ScopedLaunchBrowserForTesting&) = delete;
+  ~ScopedLaunchBrowserForTesting();
 };
 
 }  // namespace full_restore

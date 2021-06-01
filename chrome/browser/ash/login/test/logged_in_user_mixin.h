@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -123,6 +124,9 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_;
 
   InProcessBrowserTest* test_base_;
+
+  full_restore::ScopedLaunchBrowserForTesting
+      scoped_launch_browser_for_testing_;
 };
 
 }  // namespace chromeos

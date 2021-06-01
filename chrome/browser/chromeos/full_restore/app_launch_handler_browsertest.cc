@@ -85,7 +85,8 @@ namespace full_restore {
 namespace {
 
 constexpr char kAppId[] = "mldnpnnoiloahfhddhobgjeophloidmo";
-constexpr int32_t kId = 100;
+constexpr int32_t kWindowId1 = 100;
+constexpr int32_t kWindowId2 = 200;
 
 constexpr char kTestAppName[] = "Test ARC App";
 constexpr char kTestAppName2[] = "Test ARC App 2";
@@ -149,7 +150,7 @@ void CreateAndSaveWindowInfo(int desk_id,
   // SaveWindowInfo to work.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kWindowIdKey, kId);
+  window->SetProperty(::full_restore::kWindowIdKey, kWindowId1);
 
   ::full_restore::WindowInfo window_info;
   window_info.window = window.get();
@@ -273,6 +274,7 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+    scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
   }
   ~AppLaunchHandlerBrowserTest() override = default;
 
@@ -290,8 +292,10 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
   bool FindWebAppWindow() {
     for (auto* browser : *BrowserList::GetInstance()) {
       aura::Window* window = browser->window()->GetNativeWindow();
-      if (window->GetProperty(::full_restore::kRestoreWindowIdKey) == kId)
+      if (window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
+          kWindowId2) {
         return true;
+      }
     }
     return false;
   }
@@ -311,16 +315,19 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
         restore_window_id);
   }
 
+  void ResetRestoreForTesting() { scoped_restore_for_testing_.reset(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::ScopedAnimationDurationScaleMode faster_animations_;
+  std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotLaunchBrowser) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
 
   WaitForAppLaunchInfoSaved();
 
@@ -341,7 +348,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndAddApp) {
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -363,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -386,11 +395,12 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotRestore) {
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -417,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
 
   WaitForAppLaunchInfoSaved();
 
@@ -443,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -473,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
 
   WaitForAppLaunchInfoSaved();
 
@@ -501,11 +512,12 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -534,11 +546,12 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::full_restore::AppLaunchInfo>(
-          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -569,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
 
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kId));
+                                extension_misc::kChromeAppId, kWindowId1));
 
   CreateAndSaveWindowInfo(kDeskId, kRestoreBounds, kCurrentBounds,
                           kWindowStateType);
@@ -586,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   // TODO(sammiequon): Check the values from the actual browser window.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kRestoreWindowIdKey, kId);
+  window->SetProperty(::full_restore::kRestoreWindowIdKey, kWindowId1);
   auto stored_window_info = ::full_restore::GetWindowInfo(window.get());
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
   EXPECT_EQ(kRestoreBounds, *stored_window_info->restore_bounds);
@@ -594,7 +607,14 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
+class AppLaunchHandlerChromeAppBrowserTest
+    : public AppLaunchHandlerBrowserTest {
+ public:
+  AppLaunchHandlerChromeAppBrowserTest() { ResetRestoreForTesting(); }
+  ~AppLaunchHandlerChromeAppBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest, RestoreChromeApp) {
   // Have 4 desks total.
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
@@ -656,7 +676,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
   RemoveInactiveDesks();
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreMinimizedChromeApp) {
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
+                       RestoreMinimizedChromeApp) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
   // Create the restore data.
@@ -685,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreMinimizedChromeApp) {
   EXPECT_TRUE(app_window->GetBaseWindow()->IsMinimized());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
                        RestoreMultipleChromeAppWindows) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
@@ -753,7 +774,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
 // Tests that fullscreened windows will not be restored as fullscreen, which is
 // not supported for full restore. Regression test for
 // https://crbug.com/1203010.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, ImmersiveFullscreenApp) {
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
+                       ImmersiveFullscreenApp) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
   // Create the restore data.

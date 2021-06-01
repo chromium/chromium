@@ -2202,8 +2202,15 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   VLOG(1) << "Launching browser...";
   TRACE_EVENT0("login", "LaunchBrowser");
 
-  if (should_launch_browser_ && !IsFullRestoreEnabled(profile))
-    LaunchBrowser(profile);
+  if (should_launch_browser_) {
+    if (!IsFullRestoreEnabled(profile)) {
+      LaunchBrowser(profile);
+      MaybeLaunchSettings(profile);
+    } else {
+      full_restore::FullRestoreService::GetForProfile(profile)
+          ->LaunchBrowserWhenReady();
+    }
+  }
 
   if (HatsNotificationController::ShouldShowSurveyToProfile(
           profile, kHatsGeneralSurvey)) {
@@ -2237,15 +2244,6 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   CheckEolInfo(profile);
 
   ShowNotificationsIfNeeded(profile);
-
-  if (should_launch_browser_) {
-    if (IsFullRestoreEnabled(profile)) {
-      full_restore::FullRestoreService::GetForProfile(profile)
-          ->LaunchBrowserWhenReady();
-    } else {
-      MaybeLaunchSettings(profile);
-    }
-  }
 
   StartAccountManagerMigration(profile);
 }

@@ -38,6 +38,8 @@ namespace full_restore {
 
 namespace {
 
+bool g_launch_browser_for_testing = false;
+
 constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
 constexpr char kArcGhostWindowLaunchHistogramPrefix[] =
     "Apps.ArcGhostWindowLaunch";
@@ -108,6 +110,11 @@ void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppLaunchHandler::LaunchBrowserWhenReady() {
+  if (g_launch_browser_for_testing) {
+    ForceLaunchBrowserForTesting();
+    return;
+  }
+
   // If the restore data has been loaded, and the user has chosen to restore,
   // launch the browser.
   if (should_restore_ && restore_data_) {
@@ -126,8 +133,9 @@ void AppLaunchHandler::SetShouldRestore() {
   MaybePostRestore();
 }
 
-void AppLaunchHandler::SetForceLaunchBrowserForTesting() {
-  force_launch_browser_ = true;
+void AppLaunchHandler::ForceLaunchBrowserForTesting() {
+  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
 
 void AppLaunchHandler::OnGetRestoreData(
@@ -195,10 +203,8 @@ void AppLaunchHandler::LaunchBrowser() {
   // If the browser is not launched before reboot, don't launch browser during
   // the startup phase.
   const auto& launch_list = restore_data_->app_id_to_launch_list();
-  if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end() &&
-      !force_launch_browser_) {
+  if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
     return;
-  }
 
   RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
@@ -349,6 +355,14 @@ void AppLaunchHandler::RecordRestoredAppLaunch(
 void AppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogramPrefix,
                             is_arc_ghost_window);
+}
+
+ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {
+  g_launch_browser_for_testing = true;
+}
+
+ScopedLaunchBrowserForTesting::~ScopedLaunchBrowserForTesting() {
+  g_launch_browser_for_testing = false;
 }
 
 }  // namespace full_restore

@@ -114,6 +114,14 @@ class FullRestoreService : public KeyedService,
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };
 
+class ScopedRestoreForTesting {
+ public:
+  ScopedRestoreForTesting();
+  ScopedRestoreForTesting(const ScopedRestoreForTesting&) = delete;
+  ScopedRestoreForTesting& operator=(const ScopedRestoreForTesting&) = delete;
+  ~ScopedRestoreForTesting();
+};
+
 }  // namespace full_restore
 }  // namespace chromeos
 
