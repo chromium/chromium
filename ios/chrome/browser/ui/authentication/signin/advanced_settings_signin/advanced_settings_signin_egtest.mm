@@ -83,9 +83,13 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC))]
+
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_accessibilityLabel(l10n_util::GetNSString(
+                      IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC))]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kManageSyncTableViewAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   [[EarlGrey
