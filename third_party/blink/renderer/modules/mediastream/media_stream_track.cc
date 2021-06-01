@@ -816,10 +816,12 @@ void MediaStreamTrack::SourceChangedCaptureHandle(
   }
 
   CaptureHandle* capture_handle = CaptureHandle::Create();
-  if (!capture_handle_ptr->origin.opaque()) {
-    capture_handle->setOrigin(capture_handle_ptr->origin.Serialize().c_str());
+  if (capture_handle_ptr) {
+    if (!capture_handle_ptr->origin.opaque()) {
+      capture_handle->setOrigin(capture_handle_ptr->origin.Serialize().c_str());
+    }
+    capture_handle->setHandle(capture_handle_ptr->capture_handle.c_str());
   }
-  capture_handle->setHandle(capture_handle_ptr->capture_handle.c_str());
 
   CaptureHandleChangeEventInit* init = CaptureHandleChangeEventInit::Create();
   init->setCaptureHandle(capture_handle);

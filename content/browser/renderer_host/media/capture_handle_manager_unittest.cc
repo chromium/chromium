@@ -29,6 +29,14 @@ GlobalFrameRoutingId GetGlobalFrameRoutingId(
   return GetGlobalFrameRoutingId(web_contents->GetMainFrame());
 }
 
+MATCHER(IsNullCaptureHandle, "") {
+  static_assert(
+      std::is_same<decltype(arg), const media::mojom::CaptureHandlePtr&>::value,
+      "Matcher applied to incorrect type.");
+
+  return !arg;
+}
+
 MATCHER_P2(IsCaptureHandle, expected_origin, expected_handle, "") {
   if (!arg) {
     return false;
@@ -225,8 +233,8 @@ TEST_F(CaptureHandleManagerTest, CaptureHandleResetByNavigation) {
                                GetGlobalFrameRoutingId(capturer),
                                callback_helper.AsCallback());
 
-  EXPECT_CALL(callback_helper, Method(kLabel, captured_device.type,
-                                      IsCaptureHandle(url::Origin(), u"")))
+  EXPECT_CALL(callback_helper,
+              Method(kLabel, captured_device.type, IsNullCaptureHandle()))
       .Times(1);
   captured->NavigateAndCommit(kGurl2);
 }

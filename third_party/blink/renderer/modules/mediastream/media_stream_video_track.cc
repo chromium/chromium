@@ -709,6 +709,8 @@ void MediaStreamVideoTrack::GetSettings(
       }
       settings.capture_handle->handle =
           WebString::FromUTF16(info->capture_handle->capture_handle);
+    } else {
+      settings.capture_handle = absl::nullopt;
     }
   }
 }
