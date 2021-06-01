@@ -173,6 +173,10 @@ enum class StatusCode : StatusCodeType {
   // Android only. Used as a signal to fallback MediaPlayerRenderer, and thus
   // not exactly an 'error' per say.
   kPipelineErrorDemuxerErrorDetectedHLS = 0x00000916,
+  // Used when hardware context is reset (e.g. OS sleep/resume), where we should
+  // recreate the Renderer instead of fail the playback. See
+  // https://crbug.com/1208618
+  kPipelineErrorHardwareContextReset = 0x00000917,
 
   // Frame operation errors: 0x0A
   kUnsupportedFrameFormatError = 0x00000A01,

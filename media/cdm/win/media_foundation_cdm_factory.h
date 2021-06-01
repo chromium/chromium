@@ -50,14 +50,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
-  HRESULT GetCdmFactory(
-      const std::string& key_system,
-      Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
-  HRESULT CreateCdmInternal(
-      const std::string& key_system,
-      const CdmConfig& cdm_config,
-      const base::UnguessableToken& cdm_origin_id,
-      Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
   void OnCdmOriginIdObtained(
       const std::string& key_system,
       const CdmConfig& cdm_config,
@@ -67,6 +59,24 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb,
       const base::UnguessableToken& cdm_origin_id);
+
+  HRESULT GetCdmFactory(
+      const std::string& key_system,
+      Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
+
+  HRESULT CreateMfCdmInternal(
+      const std::string& key_system,
+      const CdmConfig& cdm_config,
+      const base::UnguessableToken& cdm_origin_id,
+      Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
+
+  // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
+  // so we can bind it to a repeating callback using weak pointer.
+  void CreateMfCdm(const std::string& key_system,
+                   const CdmConfig& cdm_config,
+                   const base::UnguessableToken& cdm_origin_id,
+                   HRESULT& hresult,
+                   Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
   std::unique_ptr<CdmAuxiliaryHelper> helper_;
   base::FilePath user_data_dir_;

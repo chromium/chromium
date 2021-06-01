@@ -204,23 +204,6 @@ bool SanitizeResponse(const std::string& key_system,
   return true;
 }
 
-// If we need to close the session while destroying this object, we need a
-// dummy promise that won't call back into this object (or try to pass
-// something back to blink).
-class IgnoreResponsePromise : public SimpleCdmPromise {
- public:
-  IgnoreResponsePromise() = default;
-  ~IgnoreResponsePromise() override = default;
-
-  // SimpleCdmPromise implementation.
-  void resolve() final { MarkPromiseSettled(); }
-  void reject(CdmPromise::Exception exception_code,
-              uint32_t system_code,
-              const std::string& error_message) final {
-    MarkPromiseSettled();
-  }
-};
-
 }  // namespace
 
 WebContentDecryptionModuleSessionImpl::WebContentDecryptionModuleSessionImpl(
@@ -251,7 +234,7 @@ WebContentDecryptionModuleSessionImpl::
     // session will be gone.
     if (!is_closed_ && !has_close_been_called_) {
       adapter_->CloseSession(session_id_,
-                             std::make_unique<IgnoreResponsePromise>());
+                             std::make_unique<DoNothingCdmPromise<>>());
     }
   }
 }

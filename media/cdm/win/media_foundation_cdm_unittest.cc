@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
+#include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,7 +51,8 @@ class MediaFoundationCdmTest : public testing::Test {
       : mf_cdm_(MakeComPtr<MockMFCdm>()),
         mf_cdm_session_(MakeComPtr<MockMFCdmSession>()),
         cdm_(base::MakeRefCounted<MediaFoundationCdm>(
-            mf_cdm_,
+            base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
+                                base::Unretained(this)),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -61,6 +63,24 @@ class MediaFoundationCdmTest : public testing::Test {
                                 base::Unretained(&cdm_client_)))) {}
 
   ~MediaFoundationCdmTest() override = default;
+
+  void CreateMFCdm(HRESULT& hresult,
+                   Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
+    if (can_initialize_) {
+      hresult = S_OK;
+      mf_cdm = mf_cdm_;
+    } else {
+      hresult = E_FAIL;
+      mf_cdm.Reset();
+    }
+  }
+
+  void Initialize() { ASSERT_SUCCESS(cdm_->Initialize()); }
+
+  void InitializeAndExpectFailure() {
+    can_initialize_ = false;
+    ASSERT_FAILED(cdm_->Initialize());
+  }
 
   void SetGenerateRequestExpectations(
       ComPtr<MockMFCdmSession> mf_cdm_session,
@@ -115,6 +135,10 @@ class MediaFoundationCdmTest : public testing::Test {
     EXPECT_EQ(session_id_, kSessionId);
   }
 
+  void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> mf_cdm_proxy) {
+    mf_cdm_proxy_ = std::move(mf_cdm_proxy);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -122,11 +146,15 @@ class MediaFoundationCdmTest : public testing::Test {
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;
-  scoped_refptr<ContentDecryptionModule> cdm_;
+  scoped_refptr<MediaFoundationCdm> cdm_;
+  bool can_initialize_ = true;
   std::string session_id_;
+  scoped_refptr<MediaFoundationCdmProxy> mf_cdm_proxy_;
 };
 
 TEST_F(MediaFoundationCdmTest, SetServerCertificate) {
+  Initialize();
+
   std::vector<uint8_t> certificate = StringToVector("certificate");
   COM_EXPECT_CALL(mf_cdm_,
                   SetServerCertificate(certificate.data(), certificate.size()))
@@ -137,6 +165,8 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificate) {
 }
 
 TEST_F(MediaFoundationCdmTest, SetServerCertificate_Failure) {
+  Initialize();
+
   std::vector<uint8_t> certificate = StringToVector("certificate");
   COM_EXPECT_CALL(mf_cdm_,
                   SetServerCertificate(certificate.data(), certificate.size()))
@@ -147,11 +177,14 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificate_Failure) {
 }
 
 TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 }
 
 // Tests the case where two sessions are being created in parallel.
 TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest_Parallel) {
+  Initialize();
+
   std::vector<uint8_t> init_data = StringToVector("init_data");
   const char kSessionId1[] = "session_id_1";
   const char kSessionId2[] = "session_id_2";
@@ -189,13 +222,28 @@ TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest_Parallel) {
   EXPECT_EQ(session_id_2, kSessionId2);
 }
 
+TEST_F(MediaFoundationCdmTest, InitializeFailure) {
+  InitializeAndExpectFailure();
+
+  std::vector<uint8_t> init_data = StringToVector("init_data");
+  cdm_->CreateSessionAndGenerateRequest(
+      CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
+      std::make_unique<MockCdmSessionPromise>(/*expect_success=*/false,
+                                              &session_id_));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(session_id_.empty());
+}
+
 TEST_F(MediaFoundationCdmTest,
        CreateSessionAndGenerateRequest_CreateSessionFailure) {
-  std::vector<uint8_t> init_data = StringToVector("init_data");
+  Initialize();
+
   COM_EXPECT_CALL(mf_cdm_,
                   CreateSession(MF_MEDIAKEYSESSION_TYPE_TEMPORARY, _, _))
       .WillOnce(Return(E_FAIL));
 
+  std::vector<uint8_t> init_data = StringToVector("init_data");
   cdm_->CreateSessionAndGenerateRequest(
       CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
       std::make_unique<MockCdmSessionPromise>(/*expect_success=*/false,
@@ -207,13 +255,14 @@ TEST_F(MediaFoundationCdmTest,
 
 TEST_F(MediaFoundationCdmTest,
        CreateSessionAndGenerateRequest_GenerateRequestFailure) {
-  std::vector<uint8_t> init_data = StringToVector("init_data");
+  Initialize();
 
   COM_EXPECT_CALL(mf_cdm_,
                   CreateSession(MF_MEDIAKEYSESSION_TYPE_TEMPORARY, _, _))
       .WillOnce(DoAll(SaveComPtr<1>(&mf_cdm_session_callbacks_),
                       SetComPointee<2>(mf_cdm_session_.Get()), Return(S_OK)));
 
+  std::vector<uint8_t> init_data = StringToVector("init_data");
   COM_EXPECT_CALL(mf_cdm_session_,
                   GenerateRequest(StrEq(L"webm"), NotNull(), init_data.size()))
       .WillOnce(Return(E_FAIL));
@@ -230,7 +279,7 @@ TEST_F(MediaFoundationCdmTest,
 // Duplicate session IDs cause session creation failure.
 TEST_F(MediaFoundationCdmTest,
        CreateSessionAndGenerateRequest_DuplicateSessionId) {
-  std::vector<uint8_t> init_data = StringToVector("init_data");
+  Initialize();
 
   auto mf_cdm_session_1 = MakeComPtr<MockMFCdmSession>();
   auto mf_cdm_session_2 = MakeComPtr<MockMFCdmSession>();
@@ -253,6 +302,7 @@ TEST_F(MediaFoundationCdmTest,
                                  /*expect_message=*/false);
   std::string session_id_1;
   std::string session_id_2;
+  std::vector<uint8_t> init_data = StringToVector("init_data");
   cdm_->CreateSessionAndGenerateRequest(
       CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
       std::make_unique<MockCdmSessionPromise>(/*expect_success=*/true,
@@ -269,6 +319,8 @@ TEST_F(MediaFoundationCdmTest,
 
 // LoadSession() is not implemented.
 TEST_F(MediaFoundationCdmTest, LoadSession) {
+  Initialize();
+
   cdm_->LoadSession(CdmSessionType::kPersistentLicense, kSessionId,
                     std::make_unique<MockCdmSessionPromise>(
                         /*expect_success=*/false, &session_id_));
@@ -278,6 +330,7 @@ TEST_F(MediaFoundationCdmTest, LoadSession) {
 }
 
 TEST_F(MediaFoundationCdmTest, UpdateSession) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   std::vector<uint8_t> response = StringToVector("response");
@@ -297,6 +350,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSession) {
 }
 
 TEST_F(MediaFoundationCdmTest, UpdateSession_InvalidSessionId) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   std::vector<uint8_t> response = StringToVector("response");
@@ -307,6 +361,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSession_InvalidSessionId) {
 }
 
 TEST_F(MediaFoundationCdmTest, UpdateSession_Failure) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   std::vector<uint8_t> response = StringToVector("response");
@@ -320,6 +375,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSession_Failure) {
 }
 
 TEST_F(MediaFoundationCdmTest, CloseSession) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
@@ -331,6 +387,7 @@ TEST_F(MediaFoundationCdmTest, CloseSession) {
 }
 
 TEST_F(MediaFoundationCdmTest, CloseSession_Failure) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(E_FAIL));
@@ -341,6 +398,7 @@ TEST_F(MediaFoundationCdmTest, CloseSession_Failure) {
 }
 
 TEST_F(MediaFoundationCdmTest, RemoveSession) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   COM_EXPECT_CALL(mf_cdm_session_, Remove()).WillOnce(Return(S_OK));
@@ -354,12 +412,56 @@ TEST_F(MediaFoundationCdmTest, RemoveSession) {
 }
 
 TEST_F(MediaFoundationCdmTest, RemoveSession_Failure) {
+  Initialize();
   CreateSessionAndGenerateRequest();
 
   COM_EXPECT_CALL(mf_cdm_session_, Remove()).WillOnce(Return(E_FAIL));
 
   cdm_->RemoveSession(
       session_id_, std::make_unique<MockCdmPromise>(/*expect_success=*/false));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
+  Initialize();
+  CreateSessionAndGenerateRequest();
+
+  CdmContext* cdm_context = cdm_->GetCdmContext();
+  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
+      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(mf_cdm_proxy_);
+
+  COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
+  EXPECT_CALL(cdm_client_, OnSessionClosed(kSessionId));
+  mf_cdm_proxy_->OnHardwareContextReset();
+
+  // Create a new session and expect success.
+  CreateSessionAndGenerateRequest();
+}
+
+TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
+  Initialize();
+  CreateSessionAndGenerateRequest();
+
+  CdmContext* cdm_context = cdm_->GetCdmContext();
+  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
+      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(mf_cdm_proxy_);
+
+  // Make the next `Initialize()` fail.
+  can_initialize_ = false;
+
+  COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
+  EXPECT_CALL(cdm_client_, OnSessionClosed(kSessionId));
+  mf_cdm_proxy_->OnHardwareContextReset();
+
+  std::vector<uint8_t> init_data = StringToVector("init_data");
+  cdm_->CreateSessionAndGenerateRequest(
+      CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
+      std::make_unique<MockCdmSessionPromise>(/*expect_success=*/false,
+                                              &session_id_));
   task_environment_.RunUntilIdle();
 }
 

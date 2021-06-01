@@ -169,6 +169,25 @@ template <>
 MEDIA_EXPORT CdmPromise::ResolveParameterType CdmPromiseTemplate<
     CdmKeyInformation::KeyStatus>::GetResolveParameterType() const;
 
+// A dummy CdmPromise that does nothing. Used for APIs requiring a CdmPromise
+// while the result will be ignored.
+template <typename... T>
+class MEDIA_EXPORT DoNothingCdmPromise : public CdmPromiseTemplate<T...> {
+ public:
+  DoNothingCdmPromise() = default;
+  DoNothingCdmPromise(const DoNothingCdmPromise&) = delete;
+  DoNothingCdmPromise& operator=(const DoNothingCdmPromise&) = delete;
+  ~DoNothingCdmPromise() override = default;
+
+  // CdmPromiseTemplate.
+  void resolve() final { CdmPromiseTemplate<T...>::MarkPromiseSettled(); }
+  void reject(CdmPromise::Exception exception_code,
+              uint32_t system_code,
+              const std::string& error_message) final {
+    CdmPromiseTemplate<T...>::MarkPromiseSettled();
+  }
+};
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_CDM_PROMISE_H_

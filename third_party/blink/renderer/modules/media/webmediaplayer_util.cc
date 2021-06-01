@@ -106,6 +106,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     case media::PIPELINE_ERROR_DECODE:
     case media::PIPELINE_ERROR_ABORT:
     case media::PIPELINE_ERROR_INVALID_STATE:
+    case media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
     case media::CHUNK_DEMUXER_ERROR_APPEND_FAILED:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR:
     case media::AUDIO_RENDERER_ERROR:

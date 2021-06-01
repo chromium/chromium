@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "media/base/cdm_context.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
@@ -30,14 +31,25 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   // checks need to be made to determine the usability and the capabilities.
   static bool IsAvailable();
 
+  // Callback to create an IMFContentDecryptionModule. If failed,
+  // IMFContentDecryptionModule must be null.
+  using CreateMFCdmCB = base::RepeatingCallback<
+      void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
+
+  // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
+  // before calling any other methods.
   MediaFoundationCdm(
-      Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm,
+      const CreateMFCdmCB& create_mf_cdm_cb,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
   MediaFoundationCdm(const MediaFoundationCdm&) = delete;
   MediaFoundationCdm& operator=(const MediaFoundationCdm&) = delete;
+
+  // Initializes `this` and returns whether the initialization succeeds. Must
+  // be called before any other methods.
+  HRESULT Initialize();
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -76,13 +88,19 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   MediaFoundationCdmSession* GetSession(const std::string& session_id);
 
-  Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm_;
+  // Closes all outstanding sessions.
+  void OnHardwareContextReset();
+
+  // Callback to create `mf_cdm_`.
+  CreateMFCdmCB create_mf_cdm_cb_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;
   SessionClosedCB session_closed_cb_;
   SessionKeysChangeCB session_keys_change_cb_;
   SessionExpirationUpdateCB session_expiration_update_cb_;
+
+  Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm_;
 
   // Used to generate unique tokens for identifying pending sessions before
   // session ID is available.
@@ -95,6 +113,9 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   std::map<std::string, std::unique_ptr<MediaFoundationCdmSession>> sessions_;
 
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
+
+  // This must be the last member.
+  base::WeakPtrFactory<MediaFoundationCdm> weak_factory_{this};
 };
 
 }  // namespace media

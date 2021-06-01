@@ -1331,7 +1331,7 @@ bool PipelineImpl::IsRunning() const {
 }
 
 bool PipelineImpl::IsSuspended() const {
-  DVLOG(2) << __func__;
+  DVLOG(2) << __func__ << "(" << is_suspended_ << ")";
   DCHECK(thread_checker_.CalledOnValidThread());
   return is_suspended_;
 }

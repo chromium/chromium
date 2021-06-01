@@ -1837,7 +1837,15 @@ void WebMediaPlayerImpl::OnError(PipelineStatus status) {
   // We found hls in a data:// URL, fail immediately.
   if (found_hls)
     status = PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-#endif
+#elif defined(OS_WIN)
+  // Hardware context reset is not an error. Restart to recover.
+  // TODO(crbug.com/1208618): Find a way to break the potential infinite loop of
+  // restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
+  if (status == PipelineStatus::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
+    ScheduleRestart();
+    return;
+  }
+#endif  // defined(OS_ANDROID)
 
   MaybeSetContainerNameForMetrics();
   simple_watch_timer_.Stop();

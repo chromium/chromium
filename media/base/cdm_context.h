@@ -56,7 +56,7 @@ class MEDIA_EXPORT CdmContext {
 
     // A hardware reset happened. Some hardware context, e.g. hardware decoder
     // context may be lost.
-    kHardwareContextLost,
+    kHardwareContextReset,
   };
 
   // Callback to notify the occurrence of an Event.

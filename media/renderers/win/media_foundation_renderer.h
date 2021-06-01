@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -141,6 +142,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   bool waiting_for_mf_cdm_ = false;
   CdmContext* cdm_context_ = nullptr;
+  scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
+
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>
       content_protection_manager_;
 

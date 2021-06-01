@@ -62,9 +62,16 @@ std::string MediaEngineEventToString(MF_MEDIA_ENGINE_EVENT event) {
 
 #undef ENUM_TO_STRING
 
-PipelineStatus MediaEngineStatusToPipelineStatus(
-    MF_MEDIA_ENGINE_ERR media_engine_status) {
-  switch (media_engine_status) {
+PipelineStatus MediaEngineErrorToPipelineStatus(
+    MF_MEDIA_ENGINE_ERR media_engine_error,
+    HRESULT hr) {
+  // HRESULT 0x8004CD12 is DRM_E_TEE_INVALID_HWDRM_STATE, which can happen
+  // during OS sleep/resume, or moving video to different graphics adapters.
+  // This is not an error, so special case it here.
+  if (hr == static_cast<HRESULT>(0x8004CD12))
+    return PipelineStatus::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+
+  switch (media_engine_error) {
     case MF_MEDIA_ENGINE_ERR_NOERROR:
       return PipelineStatus::PIPELINE_OK;
     case MF_MEDIA_ENGINE_ERR_ABORTED:
@@ -123,9 +130,9 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
       // |param1| - A member of the MF_MEDIA_ENGINE_ERR enumeration.
       // |param2| - An HRESULT error code, or zero.
       MF_MEDIA_ENGINE_ERR error = static_cast<MF_MEDIA_ENGINE_ERR>(param1);
-      LOG(ERROR) << __func__ << ": error=" << error
-                 << ", hr=" << PrintHr(param2);
-      error_cb_.Run(MediaEngineStatusToPipelineStatus(error));
+      HRESULT hr = param2;
+      LOG(ERROR) << __func__ << ": error=" << error << ", hr=" << PrintHr(hr);
+      error_cb_.Run(MediaEngineErrorToPipelineStatus(error, hr));
       break;
     }
     case MF_MEDIA_ENGINE_EVENT_ENDED:

@@ -339,9 +339,10 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   }
 
   waiting_for_mf_cdm_ = false;
+  cdm_proxy_ = std::move(cdm_proxy);
+  content_protection_manager_->SetCdmProxy(cdm_proxy_);
+  mf_source_->SetCdmProxy(cdm_proxy_);
 
-  content_protection_manager_->SetCdmProxy(cdm_proxy);
-  mf_source_->SetCdmProxy(cdm_proxy);
   HRESULT hr = SetSourceOnMediaEngine();
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set source on media engine: " << PrintHr(hr);
@@ -561,6 +562,9 @@ base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
 void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && cdm_proxy_)
+    cdm_proxy_->OnHardwareContextReset();
 
   renderer_client_->OnError(status);
   StopSendingStatistics();

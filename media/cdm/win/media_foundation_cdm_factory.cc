@@ -203,17 +203,22 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
     return;
   }
 
-  ComPtr<IMFContentDecryptionModule> mf_cdm;
-  if (FAILED(
-          CreateCdmInternal(key_system, cdm_config, cdm_origin_id, mf_cdm))) {
-    std::move(cdm_created_cb).Run(nullptr, "Failed to create CDM");
+  auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
+      base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
+                          weak_factory_.GetWeakPtr(), key_system, cdm_config,
+                          cdm_origin_id),
+      session_message_cb, session_closed_cb, session_keys_change_cb,
+      session_expiration_update_cb);
+
+  // `cdm_created_cb` should always be run asynchronously.
+  auto bound_cdm_created_cb = BindToCurrentLoop(std::move(cdm_created_cb));
+
+  if (FAILED(cdm->Initialize())) {
+    std::move(bound_cdm_created_cb).Run(nullptr, "Failed to create CDM");
     return;
   }
 
-  auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
-      std::move(mf_cdm), session_message_cb, session_closed_cb,
-      session_keys_change_cb, session_expiration_update_cb);
-  std::move(cdm_created_cb).Run(cdm, "");
+  std::move(bound_cdm_created_cb).Run(cdm, "");
 }
 
 HRESULT MediaFoundationCdmFactory::GetCdmFactory(
@@ -236,7 +241,7 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   return S_OK;
 }
 
-HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
+HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
     const std::string& key_system,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
@@ -281,6 +286,15 @@ HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
 
   mf_cdm.Swap(cdm);
   return S_OK;
+}
+
+void MediaFoundationCdmFactory::CreateMfCdm(
+    const std::string& key_system,
+    const CdmConfig& cdm_config,
+    const base::UnguessableToken& cdm_origin_id,
+    HRESULT& hresult,
+    Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
+  hresult = CreateMfCdmInternal(key_system, cdm_config, cdm_origin_id, mf_cdm);
 }
 
 }  // namespace media

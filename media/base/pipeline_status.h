@@ -58,8 +58,13 @@ enum PipelineStatus {
   // not exactly an 'error' per say.
   DEMUXER_ERROR_DETECTED_HLS = 22,
 
+  // Used when hardware context is reset (e.g. OS sleep/resume), where we should
+  // recreate the Renderer instead of failing the playback. See
+  // https://crbug.com/1208618
+  PIPELINE_ERROR_HARDWARE_CONTEXT_RESET = 23,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = DEMUXER_ERROR_DETECTED_HLS,
+  PIPELINE_STATUS_MAX = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET,
 };
 
 MEDIA_EXPORT absl::optional<PipelineStatus> StatusCodeToPipelineStatus(

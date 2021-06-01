@@ -55,6 +55,11 @@ class MediaFoundationCdmProxy
   virtual HRESULT ProcessContentEnabler(IUnknown* request,
                                         IMFAsyncResult* result) = 0;
 
+  // Notify the CDM on DRM_E_TEE_INVALID_HWDRM_STATE (0x8004cd12), which happens
+  // in cases like OS Sleep. In this case, the CDM should close all sessions
+  // because they are in bad state.
+  virtual void OnHardwareContextReset() = 0;
+
  protected:
   friend base::RefCountedThreadSafe<MediaFoundationCdmProxy>;
   virtual ~MediaFoundationCdmProxy() = default;
