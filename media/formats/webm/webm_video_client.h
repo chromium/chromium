@@ -16,6 +16,7 @@
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_colour_parser.h"
 #include "media/formats/webm/webm_parser.h"
+#include "media/formats/webm/webm_projection_parser.h"
 
 namespace media {
 class VideoDecoderConfig;
@@ -43,6 +44,7 @@ class MEDIA_EXPORT WebMVideoClient : public WebMParserClient {
 
  private:
   friend class WebMVideoClientTest;
+  friend class WebMProjectionParserTest;
 
   // WebMParserClient implementation.
   WebMParserClient* OnListStart(int id) override;
@@ -62,9 +64,13 @@ class MEDIA_EXPORT WebMVideoClient : public WebMParserClient {
   int64_t display_height_;
   int64_t display_unit_;
   int64_t alpha_mode_;
+  int64_t stereo_mode_;
 
   WebMColourParser colour_parser_;
   bool colour_parsed_ = false;
+
+  WebMProjectionParser projection_parser_;
+  bool projection_parsed_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebMVideoClient);
 };

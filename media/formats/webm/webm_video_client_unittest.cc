@@ -13,6 +13,14 @@ namespace media {
 
 namespace {
 const gfx::Size kCodedSize(321, 243);
+
+MATCHER(UnexpectedStereoMode, "") {
+  return CONTAINS_STRING(arg, "Unexpected value for StereoMode: 0x");
+}
+
+MATCHER(UnexpectedMultipleValues, "") {
+  return CONTAINS_STRING(arg, "Multiple values for id");
+}
 }
 
 static const struct CodecTestParams {
@@ -46,6 +54,10 @@ class WebMVideoClientTest : public testing::TestWithParam<CodecTestParams> {
   }
 
   void OnListEnd(int id) { webm_video_client_.OnListEnd(id); }
+
+  bool OnUInt(int id, int64_t val) {
+    return webm_video_client_.OnUInt(id, val);
+  }
 
   testing::StrictMock<MockMediaLog> media_log_;
   WebMVideoClient webm_video_client_;
@@ -147,6 +159,17 @@ TEST_P(WebMVideoClientTest, InitializeConfigVP9Profiles) {
       << "Config (" << config.AsHumanReadableString()
       << ") does not match expected ("
       << expected_config.AsHumanReadableString() << ")";
+}
+
+TEST_F(WebMVideoClientTest, InvalidStereoMode) {
+  EXPECT_MEDIA_LOG(UnexpectedStereoMode());
+  OnUInt(kWebMIdStereoMode, 15);
+}
+
+TEST_F(WebMVideoClientTest, MultipleStereoMode) {
+  OnUInt(kWebMIdStereoMode, 1);
+  EXPECT_MEDIA_LOG(UnexpectedMultipleValues());
+  OnUInt(kWebMIdStereoMode, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

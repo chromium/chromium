@@ -28,9 +28,20 @@ media::VideoCodecProfile GetVP9CodecProfile(const std::vector<uint8_t>& data,
       static_cast<size_t>(VP9PROFILE_PROFILE0) + data[2]);
 }
 
+// Values for "StereoMode" are spec'd here:
+// https://www.matroska.org/technical/elements.html#StereoMode
+bool IsValidStereoMode(int64_t stereo_mode_code) {
+  const int64_t stereo_mode_min = 0;  // mono
+  // both eyes laced in one Block (right eye is first)
+  const int64_t stereo_mode_max = 14;
+  return stereo_mode_code >= stereo_mode_min &&
+         stereo_mode_code <= stereo_mode_max;
+}
+
 }  // namespace
 
-WebMVideoClient::WebMVideoClient(MediaLog* media_log) : media_log_(media_log) {
+WebMVideoClient::WebMVideoClient(MediaLog* media_log)
+    : media_log_(media_log), projection_parser_(media_log) {
   Reset();
 }
 
@@ -48,6 +59,8 @@ void WebMVideoClient::Reset() {
   display_unit_ = -1;
   alpha_mode_ = -1;
   colour_parsed_ = false;
+  stereo_mode_ = -1;
+  projection_parsed_ = false;
 }
 
 bool WebMVideoClient::InitializeConfig(
@@ -137,6 +150,7 @@ bool WebMVideoClient::InitializeConfig(
                          : VideoDecoderConfig::AlphaMode::kIsOpaque,
                      color_space, kNoTransformation, coded_size, visible_rect,
                      natural_size, codec_private, encryption_scheme);
+
   return config->IsValidConfig();
 }
 
@@ -146,12 +160,27 @@ WebMParserClient* WebMVideoClient::OnListStart(int id) {
     return &colour_parser_;
   }
 
+  if (id == kWebMIdProjection) {
+    if (projection_parsed_ == true) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Unexpected multiple Projection elements.";
+      return NULL;
+    }
+    return &projection_parser_;
+  }
+
   return this;
 }
 
 bool WebMVideoClient::OnListEnd(int id) {
-  if (id == kWebMIdColour)
+  if (id == kWebMIdColour) {
     colour_parsed_ = true;
+  } else if (id == kWebMIdProjection) {
+    if (!projection_parser_.Validate()) {
+      return false;
+    }
+    projection_parsed_ = true;
+  }
   return true;
 }
 
@@ -189,6 +218,9 @@ bool WebMVideoClient::OnUInt(int id, int64_t val) {
     case kWebMIdAlphaMode:
       dst = &alpha_mode_;
       break;
+    case kWebMIdStereoMode:
+      dst = &stereo_mode_;
+      break;
     default:
       return true;
   }
@@ -197,6 +229,12 @@ bool WebMVideoClient::OnUInt(int id, int64_t val) {
     MEDIA_LOG(ERROR, media_log_) << "Multiple values for id " << std::hex << id
                                  << " specified (" << *dst << " and " << val
                                  << ")";
+    return false;
+  }
+
+  if (id == kWebMIdStereoMode && !IsValidStereoMode(val)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Unexpected value for StereoMode: 0x" << std::hex << val;
     return false;
   }
 

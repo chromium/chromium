@@ -191,6 +191,7 @@ static const ElementIdInfo kVideoIds[] = {
     {UINT, kWebMIdDisplayHeight},   {UINT, kWebMIdDisplayUnit},
     {UINT, kWebMIdAspectRatioType}, {SKIP_BINARY, kWebMIdColorSpace},
     {SKIP_FLOAT, kWebMIdFrameRate}, {LIST, kWebMIdColour},
+    {LIST, kWebMIdProjection},
 };
 
 static const ElementIdInfo kColourIds[] = {
@@ -221,6 +222,12 @@ static const ElementIdInfo kMasteringMetadataIds[] = {
     {FLOAT, kWebMIdWhitePointChromaticityY},
     {FLOAT, kWebMIdLuminanceMax},
     {FLOAT, kWebMIdLuminanceMin},
+};
+
+static const ElementIdInfo kProjectionIds[]{
+    {UINT, kWebMIdProjectionType},      {SKIP_BINARY, kWebMIdProjectionPrivate},
+    {FLOAT, kWebMIdProjectionPoseYaw},  {FLOAT, kWebMIdProjectionPosePitch},
+    {FLOAT, kWebMIdProjectionPoseRoll},
 };
 
 static const ElementIdInfo kAudioIds[] = {
@@ -426,6 +433,7 @@ static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdSimpleTag, 3, kSimpleTagIds),
     LIST_ELEMENT_INFO(kWebMIdColour, 4, kColourIds),
     LIST_ELEMENT_INFO(kWebMIdMasteringMetadata, 5, kMasteringMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
 };
 
 // Parses an element header id or size field. These fields are variable length

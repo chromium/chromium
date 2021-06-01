@@ -217,4 +217,17 @@ TEST_F(WebMStreamParserTest, ColourElementWithUnspecifiedRange) {
   EXPECT_EQ(video_config.color_space_info(), expected_color_space);
 }
 
+TEST_F(WebMStreamParserTest, ParseVideoWithSphericalMetadata) {
+  EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimatedAny())
+      .Times(testing::AnyNumber());
+  StreamParser::InitParameters params(kInfiniteDuration);
+  params.detected_audio_track_count = 0;
+  params.detected_video_track_count = 1;
+  params.detected_text_track_count = 0;
+  ParseWebMFile("bear-spherical-metadata.webm", params);
+  EXPECT_EQ(media_tracks_->tracks().size(), 1u);
+
+  const auto& video_track = media_tracks_->tracks()[0];
+  EXPECT_EQ(video_track->type(), MediaTrack::Video);
+}
 }  // namespace media
