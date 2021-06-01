@@ -23,6 +23,7 @@ void AttestationFlowTypeDecider::CheckType(
     ServerProxy* server_proxy,
     AttestationFlowStatusReporter* reporter,
     AttestationFlowTypeCheckCallback callback) {
+  CHECK(server_proxy);
   server_proxy->CheckIfAnyProxyPresent(base::BindOnce(
       &AttestationFlowTypeDecider::OnCheckProxyPresence,
       weak_factory_.GetWeakPtr(), reporter, std::move(callback)));

@@ -37,6 +37,7 @@ AttestationFlowAdaptive::AttestationFlowAdaptive(
     std::unique_ptr<AttestationFlowFactory> factory)
     : AttestationFlow(/*server_proxy=*/nullptr),
       server_proxy_(std::move(server_proxy)),
+      raw_server_proxy_(server_proxy_.get()),
       attestation_flow_type_decider_(std::move(type_decider)),
       attestation_flow_factory_(std::move(factory)) {}
 
@@ -63,7 +64,7 @@ void AttestationFlowAdaptive::GetCertificate(
   // Start the flow with checking if platform-side integrated attestation is an
   // valid option.
   attestation_flow_type_decider_->CheckType(
-      server_proxy_.get(), raw_status_reporter,
+      raw_server_proxy_, raw_status_reporter,
       base::BindOnce(&AttestationFlowAdaptive::OnCheckAttestationFlowType,
                      weak_factory_.GetWeakPtr(), std::move(params),
                      std::move(status_reporter), std::move(callback)));
