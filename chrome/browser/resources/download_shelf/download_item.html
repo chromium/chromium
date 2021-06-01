@@ -3,7 +3,7 @@
   --button-hover-color: rgba(var(--google-grey-900-rgb), .1);
   --button-icon-stroke-color: var(--google-grey-refresh-700);
   --pi: 3.14159265358979;
-  --spinner-color-rgb: var(--google-grey-900-rgb);
+  --spinner-color-rgb: var(--google-blue-600-rgb);
   --text-width: 140px;
   --warn-text-width: 241px;
   --warn-keep-text-width: 318px;
@@ -81,9 +81,22 @@
   stroke-width: var(--stroke-width);
 }
 
+/* Animate opacity from 1 -> 0 -> 1 -> 0 -> 1 -> 0. */
+.download-complete-animation {
+  animation-duration: 1s;
+  animation-iteration-count: 2.5;
+  animation-name: spinner-flash;
+}
+
+@keyframes spinner-flash {
+  0% {opacity: 1;}
+  50% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
 /* Display progress spinner only when state=DownloadState.kInProgress. */
-.download-item:not([data-state='2']) .progress-circle,
-.download-item:not([data-state='2']) .progress-spinner {
+.download-item:not([data-state='2']) .progress-indicator:not(.download-complete-animation) .progress-circle,
+.download-item:not([data-state='2']) .progress-indicator:not(.download-complete-animation) .progress-spinner {
   display: none;
 }
 
@@ -208,9 +221,6 @@
 [data-display-mode^='warn'] #file-icon,
 [data-display-mode^='warn'] #filename,
 [data-display-mode^='warn'] #status-text,
-[data-display-mode^='warn'] .progress-indicator {
-  display: none;
-}
 
 [data-display-mode='warn-keep'] #keep-button {
   display: block;
