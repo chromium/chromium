@@ -129,10 +129,6 @@ class FontMetrics {
     return LayoutUnit::FromFloatRound(line_spacing_);
   }
 
-  FontHeight GetFloatFontHeight(FontBaseline baseline_type) const {
-    return FontHeight(FixedAscent(baseline_type), FixedDescent(baseline_type));
-  }
-
   FontHeight GetFontHeight(
       FontBaseline baseline_type = kAlphabeticBaseline) const {
     // TODO(kojii): In future, we'd like to use LayoutUnit metrics to support
