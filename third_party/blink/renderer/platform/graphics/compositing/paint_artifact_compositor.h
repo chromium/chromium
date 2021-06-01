@@ -337,6 +337,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                                     cc::LayerSelection& layer_selection,
                                     PropertyTreeManager* = nullptr);
 
+  // Updates the cc::Layer associated with a |pending_layer| following a paint.
+  // This includes both raster invalidation and updating the cc::Layer
+  // properties (bounds, background_color, etc).
   void UpdateRepaintedLayer(PendingLayer& pending_layer,
                             cc::LayerSelection& layer_selection);
 

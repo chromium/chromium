@@ -313,6 +313,7 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
 }
 
 namespace {
+
 cc::Layer* ForeignLayer(const PaintChunk& chunk,
                         const PaintArtifact& artifact) {
   if (chunk.size() != 1)
@@ -1526,6 +1527,7 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
 }
 
 namespace {
+
 // This class iterates forward over the PaintChunks in a vector of
 // |PreCompositedLayerInfo|s.
 class PreCompositedLayerPaintChunkFinder {
@@ -1570,6 +1572,7 @@ class PreCompositedLayerPaintChunkFinder {
   Vector<PreCompositedLayerInfo>::iterator pre_composited_layer_it_;
   PaintChunkSubset::Iterator subset_iterator_;
 };
+
 }  // namespace
 
 void PaintArtifactCompositor::UpdateRepaintedLayers(
@@ -1614,13 +1617,12 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
       }
     } else {
       // These are CompositeAfterPaint (or CompositeSVG) layers and we need to
-      // both update the cc::Layer properties and issue raster invalidations
-      // (both handled in |UpdateRepaintedLayer|). To update, we need the
-      // previous PaintChunks (from the PendingLayer) and the matching repainted
-      // PaintChunks (from |pre_composited_layers|). Because repaint-only
-      // updates cannot add, remove, or re-order PaintChunks, we use
-      // |repainted_chunk_finder| to search forward in |pre_composited_layers|
-      // for the matching paint chunk which ensures this is O(chunks).
+      // both copy the repainted paint chunks and update the cc::Layer. To do
+      // this, we need the previous PaintChunks (from the PendingLayer) and the
+      // matching repainted PaintChunks (from |pre_composited_layers|). Because
+      // repaint-only updates cannot add, remove, or re-order PaintChunks,
+      // |repainted_chunk_finder| searches forward in |pre_composited_layers|
+      // for the matching paint chunk, ensuring this function is O(chunks).
       const PaintChunk& first = *pending_layer_it->chunks.begin();
       bool did_advance = repainted_chunk_finder.AdvanceToMatching(first);
 
@@ -1629,11 +1631,21 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
       // instead of a repaint update.
       CHECK(did_advance);
 
-      // Because chunks were not added, removed, or re-ordered, we can simply
-      // swap in the repainted PaintArtifact and the chunk indices will still be
-      // valid.
-      pending_layer_it->chunks.SetPaintArtifact(
-          &repainted_chunk_finder.current_artifact());
+      // Essentially replace the paint chunks of the pending layer with the
+      // repainted chunks in |repainted_artifact|. The pending layer's paint
+      // chunks (a |PaintChunkSubset|) actually store indices to |PaintChunk|s
+      // in a |PaintArtifact|. In repaint updates, chunks are not added,
+      // removed, or re-ordered, so we can simply swap in a repainted
+      // |PaintArtifact| instead of copying |PaintChunk|s individually.
+      const PaintArtifact& previous_artifact =
+          pending_layer_it->chunks.GetPaintArtifact();
+      const PaintArtifact& repainted_artifact =
+          repainted_chunk_finder.current_artifact();
+      DCHECK_EQ(previous_artifact.PaintChunks().size(),
+                repainted_artifact.PaintChunks().size());
+      pending_layer_it->chunks.SetPaintArtifact(&repainted_artifact);
+
+      // Update the cc::Layer associated with the pending layer.
       UpdateRepaintedLayer(*pending_layer_it, layer_selection);
     }
   }
