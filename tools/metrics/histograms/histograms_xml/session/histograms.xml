@@ -193,10 +193,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The amount of active browsing time that was spent not being opted in to sync
-    but while having a refresh token for a user's account.
+    The amount of active browsing time that was spent with sync disabled while
+    having a valid refresh token for the primary account. This corresponds to
+    the case when the user did not opt in to sync, or sync is disabled due to
+    another reason, e.g. enterprise policy. Note that auth errors are not
+    counted here, but rather in
+    Session.TotalDuration.OptedInToSyncWithoutAccount.
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -209,15 +214,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
 
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
   </summary>
 </histogram>
 
@@ -230,10 +236,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The amount of active browsing time that was spent not being opted in to sync
-    and not having a refresh token for a user's account.
+    The amount of active browsing time that was spent with sync disabled and
+    signed out of Chrome (no primary account or invalid token for the primary
+    account).
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -246,15 +254,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
 
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
   </summary>
 </histogram>
 
@@ -267,10 +276,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The total session duration (see Session.TotalDuration) that was spent being
-    opted in to sync while having a valid refresh token for the account.
+    The total session duration (see Session.TotalDuration) that was spent with
+    sync enabled and signed in to Chrome (valid token for the primary account).
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -283,15 +293,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
 
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
   </summary>
 </histogram>
 
@@ -304,13 +315,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The total session duration (see Session.TotalDuration) that was spent being
-    opted in to sync without a having a valid refresh token for the account.
+    The total session duration (see Session.TotalDuration) that was being spent
+    with sync inactive due to an invalid refresh token for the primary account
+    (a.k.a. sync in an auth error state). Note that in this state, the user has
+    already opted in to sync previously. This corresponds to the so-called
+    &quot;Sync paused&quot; state.
 
-    This can for example be the case if the user signed out of the web, changed
-    their password, or otherwise invalidated their signin.
+    This can for example be the case when a user, that previously opted in to
+    sync, signed out of the web on desktop, changed their password, or otherwise
+    invalidated their signin.
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -323,15 +339,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
 
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
   </summary>
 </histogram>
 
@@ -359,9 +376,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
-    The total session duration (see Session.TotalDuration) that was spent with
-    an account signed into the content area.
+    The total session duration (see Session.TotalDuration) that was spent with a
+    Google account signed into the content area.
 
     The difference between the With(out)Account measurements and the
     Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
@@ -378,12 +396,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
+
+    This histogram is of special interest to the chrome-signin-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
@@ -396,9 +417,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The total session duration (see Session.TotalDuration) that was spent
-    without an account signed into the content area.
+    without a Google account signed into the content area.
 
     The difference between the With(out)Account measurements and the
     Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
@@ -415,12 +437,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
 
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
+
+    This histogram is of special interest to the chrome-signin-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
