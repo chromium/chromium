@@ -55,11 +55,10 @@ TEST_F(ChromeContentRendererClientSearchBoxTest, RewriteThumbnailURL) {
   ChromeContentRendererClient* client =
       static_cast<ChromeContentRendererClient*>(content_renderer_client_.get());
 
-  // Create a thumbnail URL containing the correct render view ID and an
+  // Create a thumbnail URL containing the correct render frame ID and an
   // arbitrary instant restricted ID.
-  GURL thumbnail_url(base::StringPrintf(
-      "chrome-search:/thumb/%i/1",
-      render_frame->GetRenderView()->GetRoutingID()));
+  GURL thumbnail_url(base::StringPrintf("chrome-search:/thumb/%i/1",
+                                        render_frame->GetRoutingID()));
 
   GURL result;
   // Make sure the SearchBox rewrites a thumbnail request from the main frame.
