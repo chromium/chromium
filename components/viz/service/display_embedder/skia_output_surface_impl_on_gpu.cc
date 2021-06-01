@@ -1374,6 +1374,23 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     return true;
   }
 
+#if defined(OS_ANDROID)
+  if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
+    if (base::FeatureList::IsEnabled(
+            features::kWebViewVulkanIntermediateBuffer)) {
+      output_device_ =
+          std::make_unique<SkiaOutputDeviceVulkanSecondaryCBOffscreen>(
+              context_state_, shared_gpu_deps_->memory_tracker(),
+              GetDidSwapBuffersCompleteCallback());
+    } else {
+      output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
+          vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
+          GetDidSwapBuffersCompleteCallback());
+    }
+    return true;
+  }
+#endif
+
 #if defined(USE_OZONE)
   bool needs_background_image =
       features::IsUsingOzonePlatform() && ui::OzonePlatform::GetInstance()
@@ -1416,23 +1433,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   }
 #endif  // !defined(OS_WIN)
   (void)needs_background_image;
-
-#if defined(OS_ANDROID)
-  if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewVulkanIntermediateBuffer)) {
-      output_device_ =
-          std::make_unique<SkiaOutputDeviceVulkanSecondaryCBOffscreen>(
-              context_state_, shared_gpu_deps_->memory_tracker(),
-              GetDidSwapBuffersCompleteCallback());
-    } else {
-      output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
-          vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
-          GetDidSwapBuffersCompleteCallback());
-    }
-    return true;
-  }
-#endif
 
   std::unique_ptr<SkiaOutputDeviceVulkan> output_device;
   if (!gpu_preferences_.disable_vulkan_surface) {
