@@ -88,6 +88,7 @@ include_rules = [
   "+components/shared_highlighting",
   "+components/signin/core/browser",
   "+components/signin/public",
+  "+components/signin/public/base",
   "+components/signin/ios/browser",
   "+components/ssl_errors",
   "+components/suggestions",
