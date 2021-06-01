@@ -6,7 +6,6 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_REQUEST_SCHEDULER_H_
 
 #include "base/bind.h"
-#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -17,7 +16,7 @@ class PrefService;
 namespace variations {
 
 // A helper class that makes VariationsService requests at the correct times.
-class COMPONENT_EXPORT(VARIATIONS) VariationsRequestScheduler {
+class VariationsRequestScheduler {
  public:
   virtual ~VariationsRequestScheduler();
 

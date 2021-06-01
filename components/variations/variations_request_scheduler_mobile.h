@@ -6,7 +6,6 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_REQUEST_SCHEDULER_MOBILE_H_
 
 #include "base/bind.h"
-#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
@@ -18,13 +17,12 @@ namespace variations {
 
 // A specialized VariationsRequestScheduler that manages request cycles for
 // VariationsService on mobile platforms.
-class COMPONENT_EXPORT(VARIATIONS) VariationsRequestSchedulerMobile
-    : public VariationsRequestScheduler {
+class VariationsRequestSchedulerMobile : public VariationsRequestScheduler {
  public:
   // |task} is the closure to call when the scheduler deems ready. |local_state|
   // is the PrefService that contains the time of the last fetch.
-  VariationsRequestSchedulerMobile(const base::RepeatingClosure& task,
-                                   PrefService* local_state);
+  explicit VariationsRequestSchedulerMobile(const base::RepeatingClosure& task,
+                                            PrefService* local_state);
   ~VariationsRequestSchedulerMobile() override;
 
   // Base class overrides.

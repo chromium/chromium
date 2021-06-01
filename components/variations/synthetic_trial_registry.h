@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
@@ -25,11 +24,10 @@ class FieldTrialsProviderTest;
 class SyntheticTrialRegistryTest;
 
 namespace internal {
-COMPONENT_EXPORT(VARIATIONS)
 extern const base::Feature kExternalExperimentAllowlist;
 }  // namespace internal
 
-class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
+class SyntheticTrialRegistry {
  public:
   // Constructor that specifies whether the SyntheticTrialRegistry should use
   // an allowlist for external experiments. Some embedders such as WebLayer

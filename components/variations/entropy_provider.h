@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 
@@ -24,8 +23,7 @@ namespace variations {
 // It works by taking the first 64 bits of the SHA1 hash of the entropy source
 // concatenated with the trial name, or randomization seed and using that for
 // the final entropy value.
-class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
-    : public base::FieldTrial::EntropyProvider {
+class SHA1EntropyProvider : public base::FieldTrial::EntropyProvider {
  public:
   // Creates a SHA1EntropyProvider with the given |entropy_source|, which
   // should contain a large amount of entropy - for example, a textual
@@ -49,7 +47,7 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
 // the actual low entropy source's hash would fall in the sorted list of all
 // those hashes, and uses that as the final value. For more info, see:
 // https://docs.google.com/document/d/1cPF5PruriWNP2Z5gSkq4MBTm0wSZqLyIJkUO9ekibeo
-class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
+class NormalizedMurmurHashEntropyProvider
     : public base::FieldTrial::EntropyProvider {
  public:
   NormalizedMurmurHashEntropyProvider(uint16_t low_entropy_source,

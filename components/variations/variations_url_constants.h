@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_URL_CONSTANTS_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_URL_CONSTANTS_H_
 
-#include "base/component_export.h"
-
 namespace variations {
 
-COMPONENT_EXPORT(VARIATIONS) extern const char kDefaultServerUrl[];
+extern const char kDefaultServerUrl[];
 
-COMPONENT_EXPORT(VARIATIONS) extern const char kDefaultInsecureServerUrl[];
+extern const char kDefaultInsecureServerUrl[];
 
 }  // namespace variations
 

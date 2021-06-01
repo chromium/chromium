@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/active_field_trials.h"
@@ -23,8 +22,7 @@ namespace variations {
 // This is a helper class which can observe the creation of SyntheticTrialGroups
 // and later provide a list of active group IDs to be included in the crash
 // reports. This class is a thread-safe singleton.
-class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialsActiveGroupIdProvider
-    : public SyntheticTrialObserver {
+class SyntheticTrialsActiveGroupIdProvider : public SyntheticTrialObserver {
  public:
   static SyntheticTrialsActiveGroupIdProvider* GetInstance();
 

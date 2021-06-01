@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_VARIATIONS_PLATFORM_FIELD_TRIALS_H_
 #define COMPONENTS_VARIATIONS_PLATFORM_FIELD_TRIALS_H_
 
-#include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
 
 // Infrastructure for setting up platform specific field trials. Chrome and
 // WebView make use through their corresponding subclasses.
-class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
+class PlatformFieldTrials {
  public:
   PlatformFieldTrials() = default;
   virtual ~PlatformFieldTrials() = default;

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
@@ -24,15 +23,12 @@ class VariationsSeed;
 
 // VariationsSeedSimulator simulates the result of creating a set of studies
 // and detecting which studies would result in group changes.
-class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
+class VariationsSeedSimulator {
  public:
   // The result of variations seed simulation, counting the number of experiment
   // group changes of each type that are expected to occur on a restart with the
   // seed.
-  struct COMPONENT_EXPORT(VARIATIONS) Result {
-    Result();
-    ~Result();
-
+  struct Result {
     // The number of expected group changes that do not fall into any special
     // category. This is a lower bound due to session randomized studies.
     int normal_group_change_count;
@@ -44,6 +40,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
     // The number of expected group changes that fall in the category of killed
     // experiments that should trigger the "critical" restart mechanism.
     int kill_critical_group_change_count;
+
+    Result();
+    ~Result();
   };
 
   // Creates the simulator with the given default and low entropy providers. The

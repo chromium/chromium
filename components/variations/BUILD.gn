@@ -35,7 +35,7 @@ component("variations_features") {
   deps = [ "//base" ]
 }
 
-component("variations") {
+static_library("variations") {
   sources = [
     "active_field_trials.cc",
     "active_field_trials.h",
@@ -88,9 +88,6 @@ component("variations") {
     "variations_url_constants.cc",
     "variations_url_constants.h",
   ]
-
-  # Needed for exporting functions (because the target type is a component).
-  defines = [ "IS_VARIATIONS_IMPL" ]
 
   if (is_android || is_ios) {
     sources += [

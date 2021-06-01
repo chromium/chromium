@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -32,7 +31,7 @@ enum class RestrictionPolicy {
 using IsEnterpriseFunction = base::OnceCallback<bool()>;
 
 // A container for all of the client state which is used for filtering studies.
-struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
+struct ClientFilterableState {
   static Study::Platform GetCurrentPlatform();
 
   // base::Version used in {min,max}_os_version filtering.
