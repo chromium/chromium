@@ -264,14 +264,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mDelegate.getAccountGaiaId(accountEmail);
     }
 
-    /**
-     * Checks whether Google Play services is available.
-     */
-    @Override
-    public boolean isGooglePlayServicesAvailable() {
-        return mDelegate.isGooglePlayServicesAvailable();
-    }
-
     private void updateCanOfferExtendedSyncPromos(List<Account> accounts) {
         new AsyncTask<Void>() {
             @Override

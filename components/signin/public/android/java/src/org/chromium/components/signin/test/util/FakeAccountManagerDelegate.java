@@ -61,11 +61,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public boolean isGooglePlayServicesAvailable() {
-        return true;
-    }
-
-    @Override
     public void attachAccountsChangeObserver(AccountsChangeObserver observer) {
         mObserver = observer;
     }

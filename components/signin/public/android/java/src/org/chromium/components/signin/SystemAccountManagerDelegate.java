@@ -226,8 +226,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
-    @Override
-    public boolean isGooglePlayServicesAvailable() {
+    protected boolean isGooglePlayServicesAvailable() {
         return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
     }
 

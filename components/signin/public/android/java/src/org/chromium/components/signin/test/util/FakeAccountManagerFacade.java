@@ -138,11 +138,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         return "gaia-id-" + accountEmail.replace("@", "_at_");
     }
 
-    @Override
-    public boolean isGooglePlayServicesAvailable() {
-        return true;
-    }
-
     /**
      * Adds an account to the fake AccountManagerFacade.
      */

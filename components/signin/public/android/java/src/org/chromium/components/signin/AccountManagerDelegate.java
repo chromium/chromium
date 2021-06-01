@@ -119,9 +119,4 @@ public interface AccountManagerDelegate {
     @WorkerThread
     @Nullable
     String getAccountGaiaId(String accountEmail);
-
-    /**
-     * Checks whether Google Play services is available.
-     */
-    boolean isGooglePlayServicesAvailable();
 }
