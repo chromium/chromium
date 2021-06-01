@@ -40,10 +40,10 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebApkIconNameUpdateDialogTest {
-    // A callback that fires when an action is taken in the dialog.
+    // A callback that fires when an action is taken in a dialog.
     public final CallbackHelper mOnActionCallback = new CallbackHelper();
 
-    private boolean mLastSeenActionWasAccept;
+    private Integer mLastDismissalCause;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -100,33 +100,44 @@ public class WebApkIconNameUpdateDialogTest {
         return bitmap;
     }
 
-    private View getUpdateDialogCustomView() {
+    private View getDialogCustomView() {
         return mActivityTestRule.getActivity()
                 .getModalDialogManager()
                 .getCurrentDialogForTest()
                 .get(ModalDialogProperties.CUSTOM_VIEW);
     }
 
+    private String getDialogTitle() {
+        return mActivityTestRule.getActivity()
+                .getModalDialogManager()
+                .getCurrentDialogForTest()
+                .get(ModalDialogProperties.TITLE)
+                .toString();
+    }
+
     private Bitmap getUpdateDialogBitmap(int resId) {
-        ImageView imageView = getUpdateDialogCustomView().findViewById(resId);
+        ImageView imageView = getDialogCustomView().findViewById(resId);
         if (imageView.getVisibility() != View.VISIBLE) return null;
         return ((BitmapDrawable) imageView.getDrawable()).getBitmap();
     }
 
     private String getUpdateDialogAppNameLabel(int resId) {
-        TextView textView = getUpdateDialogCustomView().findViewById(resId);
+        TextView textView = getDialogCustomView().findViewById(resId);
         if (textView.getVisibility() != View.VISIBLE) return null;
 
         return textView.getText().toString();
     }
 
-    private void onResult(Integer dialogDismissalCause) {
-        mLastSeenActionWasAccept =
-                dialogDismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+    private void onUpdateDialogResult(Integer dialogDismissalCause) {
+        mLastDismissalCause = dialogDismissalCause;
         mOnActionCallback.notifyCalled();
     }
 
-    public void verifyValues(Boolean expectAccept, DialogParams dialogParams) throws Exception {
+    private void onAbuseDialogResult() {
+        mOnActionCallback.notifyCalled();
+    }
+
+    public void verifyValues(boolean clickAccept, DialogParams dialogParams) throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             int callCount = mOnActionCallback.getCallCount();
             ModalDialogManager modalDialogManager =
@@ -138,7 +149,7 @@ public class WebApkIconNameUpdateDialogTest {
                     dialogParams.nameChanged, dialogParams.shortNameBefore,
                     dialogParams.shortNameAfter, dialogParams.nameBefore, dialogParams.nameAfter,
                     dialogParams.bitmapBefore, dialogParams.bitmapAfter, false, false,
-                    this::onResult);
+                    this::onUpdateDialogResult);
 
             Assert.assertEquals(
                     dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
@@ -163,13 +174,38 @@ public class WebApkIconNameUpdateDialogTest {
                             : null,
                     getUpdateDialogBitmap(R.id.app_icon_new));
 
-            modalDialogManager.getCurrentPresenterForTest().dismissCurrentDialog(expectAccept
+            modalDialogManager.getCurrentPresenterForTest().dismissCurrentDialog(clickAccept
                             ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                             : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
             Assert.assertEquals(callCount + 1, mOnActionCallback.getCallCount());
         });
 
-        Assert.assertEquals(expectAccept, mLastSeenActionWasAccept);
+        Assert.assertEquals(clickAccept ? (Integer) DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                        : (Integer) DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
+                mLastDismissalCause);
+    }
+
+    public void verifyReportAbuseValues(
+            boolean clickAccept, String shortAppName, String expectedTitle) throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            int callCount = mOnActionCallback.getCallCount();
+            ModalDialogManager modalDialogManager =
+                    mActivityTestRule.getActivity().getModalDialogManager();
+
+            WebApkUpdateReportAbuseDialog dialog = new WebApkUpdateReportAbuseDialog(
+                    modalDialogManager, shortAppName, this::onAbuseDialogResult);
+            dialog.show();
+
+            Assert.assertEquals(expectedTitle, getDialogTitle());
+
+            modalDialogManager.getCurrentPresenterForTest().dismissCurrentDialog(clickAccept
+                            ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                            : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            // Pressing Cancel on the Abuse dialog does not activate the dismiss-parent callback
+            // (because the parent dialog is not supposed to dismiss).
+            Assert.assertEquals(
+                    callCount + (clickAccept ? 1 : 0), mOnActionCallback.getCallCount());
+        });
     }
 
     @Test
@@ -184,18 +220,18 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.iconChanged = true;
         dialogParams.bitmapBefore = blue;
         dialogParams.bitmapAfter = red;
-        // Short name is force-shown when icon changes.
+        // When only the icon changes, the short name is shown (as unchanged) to provide context.
         dialogParams.expectShortNameShownAnyway = true;
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only short name changing.
         dialogParams = DialogParams.createDefault();
         dialogParams.shortNameChanged = true;
         dialogParams.shortNameBefore = "short1";
         dialogParams.shortNameAfter = "short2";
-        // Icons always show, even if unchanged.
+        // When only the short name changes, the icon is shown (as unchanged) to provide context.
         dialogParams.expectIconShownAnyway = true;
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only long name changing.
         dialogParams = DialogParams.createDefault();
@@ -204,7 +240,7 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameAfter = "name2";
         // Icons always show, even if unchanged.
         dialogParams.expectIconShownAnyway = true;
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only short name and icon changing.
         dialogParams = DialogParams.createDefault();
@@ -214,7 +250,7 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.shortNameChanged = true;
         dialogParams.shortNameBefore = "short1";
         dialogParams.shortNameAfter = "short2";
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only name and icon changing.
         dialogParams = DialogParams.createDefault();
@@ -224,7 +260,7 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameChanged = true;
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test all values changing.
         dialogParams = DialogParams.createDefault();
@@ -237,7 +273,7 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameChanged = true;
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
-        verifyValues(/* expectAccept= */ true, dialogParams);
+        verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test all values changing, but dialog gets canceled.
         dialogParams = DialogParams.createDefault();
@@ -250,6 +286,17 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameChanged = true;
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
-        verifyValues(/* expectAccept= */ false, dialogParams);
+        verifyValues(/* clickAccept= */ false, dialogParams);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testReportAbuse() throws Throwable {
+        // Make sure the dialog shows the right values.
+        verifyReportAbuseValues(/* clickAccept= */ true, "short", "Uninstall 'short'?");
+
+        // Make sure Canceling the dialog does the right thing.
+        verifyReportAbuseValues(/* clickAccept= */ false, "short", "Uninstall 'short'?");
     }
 }

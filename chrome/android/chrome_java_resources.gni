@@ -852,6 +852,7 @@ chrome_java_resources = [
   "java/res/layout/url_action_container.xml",
   "java/res/layout/url_bar.xml",
   "java/res/layout/webapk_icon_name_update_dialog.xml",
+  "java/res/layout/webapk_update_report_abuse_custom_view.xml",
   "java/res/menu/bookmark_action_bar_menu.xml",
   "java/res/menu/custom_tabs_menu.xml",
   "java/res/menu/history_manager_menu.xml",

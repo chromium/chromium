@@ -794,6 +794,20 @@
         New icon
       </message>
 
+      <!-- WebApk name/icon report abuse dialog -->
+      <message name="IDS_WEBAPK_REPORT_ABUSE_DIALOG_TITLE" desc="The title at the top of the report abuse dialog.">
+        Uninstall '<ph name="APP_NAME">%1$s<ex>Google App</ex></ph>'?
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CHECKBOX" desc="The label for the box you check when you want to report an app for abuse.">
+        Report abuse
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CONFIRM" desc="The text within the confirmation button of the report abuse dialog.">
+        Uninstall
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CANCEL" desc="The text within the cancelation button of the report abuse dialog.">
+        Cancel
+      </message>
+
       <!-- Messages -->
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
         Option available near top of the screen

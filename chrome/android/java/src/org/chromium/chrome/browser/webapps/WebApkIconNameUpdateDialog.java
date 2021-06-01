@@ -29,6 +29,12 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     // The modal dialog manager to use.
     private ModalDialogManager mModalDialogManager;
 
+    // The property model for the dialog.
+    private PropertyModel mDialogModel;
+
+    // The short name of the app before update.
+    private String mOldAppShortName;
+
     // The callback to run when the user has made a decision.
     private Callback<Integer> mDialogResultCallback;
 
@@ -46,8 +52,8 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
      * @param newAppName The proposed name for the updated app.
      * @param oldIcon The icon of the currently installed app.
      * @param newIcon The proposed new icon for the updated app.
-     * @param oldIconAdaptive Wheter the current icon is adaptive.
-     * @param newIconAdaptive Wheter the updated icon is adaptive.
+     * @param oldIconAdaptive Whether the current icon is adaptive.
+     * @param newIconAdaptive Whether the updated icon is adaptive.
      * @param callback The callback to use to communicate the results.
      */
     public void show(ModalDialogManager manager, boolean iconChanging, boolean shortNameChanging,
@@ -56,6 +62,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
             boolean oldIconAdaptive, boolean newIconAdaptive, Callback<Integer> callback) {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
+        mOldAppShortName = oldAppShortName;
         mDialogResultCallback = callback;
 
         int titleId = 0;
@@ -88,22 +95,21 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
             dialogCustomView.configureShortNames(oldAppShortName, newAppShortName);
         }
 
-        PropertyModel dialogModel =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources, titleId)
-                        .with(ModalDialogProperties.MESSAGE, resources, explanationId)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                R.string.webapk_update_button_update)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                R.string.webapk_update_button_close)
-                        .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
-                        .build();
+        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                               .with(ModalDialogProperties.CONTROLLER, this)
+                               .with(ModalDialogProperties.TITLE, resources, titleId)
+                               .with(ModalDialogProperties.MESSAGE, resources, explanationId)
+                               .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
+                               .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                       R.string.webapk_update_button_update)
+                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                       R.string.webapk_update_button_close)
+                               .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
+                               .build();
 
         mModalDialogManager = manager;
-        mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     @Override
@@ -114,8 +120,9 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                         model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
-                mModalDialogManager.dismissDialog(
-                        model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                WebApkUpdateReportAbuseDialog reportAbuseDialog = new WebApkUpdateReportAbuseDialog(
+                        mModalDialogManager, mOldAppShortName, this::onUninstall);
+                reportAbuseDialog.show();
                 break;
             default:
                 Log.i(TAG, "Unexpected button pressed in dialog: " + buttonType);
@@ -125,6 +132,13 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mDialogResultCallback.onResult(dismissalCause);
-        mModalDialogManager = null;
+    }
+
+    /**
+     * Dismisses us. Called when the child dialog on top of this dialog requests dismissal, because
+     * the user has confirmed the uninstall of the app.
+     */
+    private void onUninstall() {
+        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 }
