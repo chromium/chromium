@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -41,7 +42,26 @@ using WebFeature = mojom::WebFeature;
 
 class UseCounterImplTest : public testing::Test {
  public:
-  UseCounterImplTest() : dummy_(std::make_unique<DummyPageHolder>()) {
+  class DummyLocalFrameClient : public EmptyLocalFrameClient {
+   public:
+    DummyLocalFrameClient() = default;
+    const std::vector<UseCounterFeature>& observed_features() const {
+      return observed_features_;
+    }
+
+   private:
+    void DidObserveNewFeatureUsage(const UseCounterFeature& feature) override {
+      observed_features_.push_back(feature);
+    }
+    std::vector<UseCounterFeature> observed_features_;
+  };
+
+  UseCounterImplTest()
+      : dummy_(std::make_unique<DummyPageHolder>(
+            /* initial_view_size= */ IntSize(),
+            /* chrome_client= */ nullptr,
+            /* local_frame_client= */
+            MakeGarbageCollected<DummyLocalFrameClient>())) {
     Page::InsertOrdinaryPageForTesting(&dummy_->GetPage());
   }
 
@@ -66,6 +86,43 @@ class UseCounterImplTest : public testing::Test {
     document.View()->UpdateAllLifecyclePhasesForTest();
   }
 };
+
+class UseCounterImplBrowserReportTest
+    : public UseCounterImplTest,
+      public ::testing::WithParamInterface</* URL */ const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UseCounterImplBrowserReportTest,
+                         ::testing::Values("chrome-extension://dummysite/",
+                                           "file://dummyfile",
+                                           "data:;base64,",
+                                           "ftp://ftp.dummy/dummy.txt",
+                                           "http://foo.com",
+                                           "https://bar.com"));
+
+// UseCounter should not send events to browser when handling page with
+// Non HTTP Family URLs, as these events will be discarded on the browser side
+// in |MetricsWebContentsObserver::DoesTimingUpdateHaveError|.
+TEST_P(UseCounterImplBrowserReportTest, ReportOnlyHTTPFamily) {
+  KURL url = url_test_helpers::ToKURL(GetParam());
+  SetURL(url);
+  UseCounterImpl use_counter;
+  use_counter.DidCommitLoad(GetFrame());
+
+  // Count every feature types in UseCounterFeatureType.
+  use_counter.Count(mojom::WebFeature::kFetch, GetFrame());
+  use_counter.Count(CSSPropertyID::kHeight,
+                    UseCounterImpl::CSSPropertyType::kDefault, GetFrame());
+  use_counter.Count(CSSPropertyID::kHeight,
+                    UseCounterImpl::CSSPropertyType::kAnimation, GetFrame());
+
+  auto* dummy_client =
+      static_cast<UseCounterImplBrowserReportTest::DummyLocalFrameClient*>(
+          GetFrame()->Client());
+
+  EXPECT_EQ(!dummy_client->observed_features().empty(),
+            url.ProtocolIsInHTTPFamily());
+}
 
 TEST_F(UseCounterImplTest, RecordingExtensions) {
   const std::string histogram = kExtensionFeaturesHistogramName;

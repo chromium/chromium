@@ -2898,10 +2898,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     UseCounterPageLoadMetricsObserver.
   </summary>
   <details>
-    Note that features used inside of SVG images are tracked separately in the
-    Blink.UseCounter.SVGImage.Features histogram. Features used inside of
-    extension pages are tracked separately in the
-    Blink.UseCounter.Extensions.Features histogram.
+    Note that this histogram only counts page with HTTP/HTTPS URL scheme.
+    Feature used in pages with other URL schemes might be counted in other
+    histograms: &quot;extension://&quot; : Blink.UseCounter.Extensions.Features
+    &quot;file://&quot; : Blink.UseCounter.File.Features
   </details>
 </histogram>
 

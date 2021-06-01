@@ -104,10 +104,16 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (url.ProtocolIs("chrome-extension"))
+  if (url.ProtocolIs("chrome-extension")) {
     context_ = kExtensionContext;
-  if (url.ProtocolIs("file"))
+  } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
+  } else if (url.ProtocolIsInHTTPFamily()) {
+    context_ = kDefaultContext;
+  } else {
+    // UseCounter is disabled for all other URL schemes.
+    context_ = kDisabledContext;
+  }
 
   DCHECK_EQ(kPreCommit, commit_state_);
   commit_state_ = kCommited;
@@ -123,7 +129,6 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
       TraceMeasurement(feature);
   }
 
-  // TODO(crbug.com/1196402): move extension histogram to the browser side.
   if (context_ == kExtensionContext || context_ == kFileContext) {
     CountFeature(WebFeature::kPageVisits);
   }
@@ -213,8 +218,6 @@ void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
   observers_.RemoveAll(to_be_removed);
 }
 
-// TODO(crbug.com/1196402): Remove this method after all histograms are
-// counted on browser side.
 void UseCounterImpl::CountFeature(WebFeature feature) const {
   switch (context_) {
     case kDefaultContext:
@@ -246,26 +249,24 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
     return false;
   auto* client = frame->Client();
 
-  switch (feature.type()) {
-    case mojom::blink::UseCounterFeatureType::kWebFeature: {
-      WebFeature web_feature = static_cast<WebFeature>(feature.value());
-      if (context_ != kDefaultContext)
-        CountFeature(web_feature);
-      NotifyFeatureCounted(web_feature);
-      break;
-    }
-    case mojom::blink::UseCounterFeatureType::kAnimatedCssProperty:
-    case mojom::blink::UseCounterFeatureType::kCssProperty:
-      if (context_ == kExtensionContext)
-        return false;
-      break;
-    case mojom::blink::UseCounterFeatureType::
-        kPermissionsPolicyViolationEnforce:
-      break;
+  if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature)
+    NotifyFeatureCounted(static_cast<WebFeature>(feature.value()));
+
+  // Report to browser about observed event only when URL is HTTP/HTTPS,
+  // as other URL schemes are filtered out in
+  // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
+  if (context_ == kDefaultContext) {
+    client->DidObserveNewFeatureUsage(feature);
+    return true;
   }
 
-  client->DidObserveNewFeatureUsage(feature);
-  return true;
+  // WebFeatures in non-default contexts are counted on renderer side.
+  if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature) {
+    CountFeature(static_cast<WebFeature>(feature.value()));
+    return true;
+  }
+
+  return false;
 }
 
 // Note that HTTPArchive tooling looks specifically for this event - see
