@@ -1086,18 +1086,20 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 int column = cursor.getColumnIndex(filePathColumn[0]);
                 if (column != -1) {
                     String mimeType = cursor.getString(column);
-                    if (mimeType.startsWith("image/")) {
-                        mediaType = mediaPickerWasUsed
-                                ? FileSelectedAction.MEDIA_PICKER_IMAGE_BY_MIME_TYPE
-                                : FileSelectedAction.EXTERNAL_PICKER_IMAGE_BY_MIME_TYPE;
-                    } else if (mimeType.startsWith("video/")) {
-                        mediaType = mediaPickerWasUsed
-                                ? FileSelectedAction.MEDIA_PICKER_VIDEO_BY_MIME_TYPE
-                                : FileSelectedAction.EXTERNAL_PICKER_VIDEO_BY_MIME_TYPE;
-                    } else {
-                        mediaType = mediaPickerWasUsed
-                                ? FileSelectedAction.MEDIA_PICKER_OTHER_BY_MIME_TYPE
-                                : FileSelectedAction.EXTERNAL_PICKER_OTHER_BY_MIME_TYPE;
+                    if (mimeType != null) {
+                        if (mimeType.startsWith("image/")) {
+                            mediaType = mediaPickerWasUsed
+                                    ? FileSelectedAction.MEDIA_PICKER_IMAGE_BY_MIME_TYPE
+                                    : FileSelectedAction.EXTERNAL_PICKER_IMAGE_BY_MIME_TYPE;
+                        } else if (mimeType.startsWith("video/")) {
+                            mediaType = mediaPickerWasUsed
+                                    ? FileSelectedAction.MEDIA_PICKER_VIDEO_BY_MIME_TYPE
+                                    : FileSelectedAction.EXTERNAL_PICKER_VIDEO_BY_MIME_TYPE;
+                        } else {
+                            mediaType = mediaPickerWasUsed
+                                    ? FileSelectedAction.MEDIA_PICKER_OTHER_BY_MIME_TYPE
+                                    : FileSelectedAction.EXTERNAL_PICKER_OTHER_BY_MIME_TYPE;
+                        }
                     }
                 }
             }
