@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -48,6 +49,7 @@ import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
 
@@ -97,6 +99,10 @@ public class PasswordSettings
     private static final int ORDER_SAVED_PASSWORDS = 6;
     private static final int ORDER_EXCEPTIONS = 7;
     private static final int ORDER_SAVED_PASSWORDS_NO_TEXT = 8;
+
+    // This request code is not actually consumed today in onActivityResult() but is defined here to
+    // avoid bugs in the future if the request code is reused.
+    private static final int REQUEST_CODE_TRUSTED_VAULT_OPT_IN = 1;
 
     private boolean mNoPasswords;
     private boolean mNoPasswordExceptions;
@@ -564,7 +570,11 @@ public class PasswordSettings
         mTrustedVaultOptIn.setIcon(android.R.drawable.ic_lock_lock);
         mTrustedVaultOptIn.setSummary(R.string.android_trusted_vault_opt_in_sub_label);
         mTrustedVaultOptIn.setOnPreferenceClickListener(preference -> {
-            // TODO(crbug.com/1202088): Implement reaction to click.
+            assert ProfileSyncService.get() != null;
+            CoreAccountInfo accountInfo = ProfileSyncService.get().getAuthenticatedAccountInfo();
+            assert accountInfo != null;
+            SyncSettingsUtils.openTrustedVaultOptInDialog(
+                    this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);
             // Return true to notify the click was handled.
             return true;
         });

@@ -451,6 +451,20 @@ public class SyncSettingsUtils {
     }
 
     /**
+     * Displays a UI that allows the user to opt in into the trusted vault passphrase type.
+     *
+     * @param fragment Fragment to use when starting the dialog.
+     * @param accountInfo Account representing the user.
+     * @param requestCode Arbitrary request code that upon completion will be passed back via
+     *         Fragment.onActivityResult().
+     */
+    public static void openTrustedVaultOptInDialog(
+            Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
+        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+                TrustedVaultClient.get().createOptInIntent(accountInfo));
+    }
+
+    /**
      * Shows a toast indicating that sync is disabled for the account by the system administrator.
      *
      * @param context The context where the toast will be shown.

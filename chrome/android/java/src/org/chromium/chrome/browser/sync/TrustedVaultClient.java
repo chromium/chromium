@@ -82,6 +82,18 @@ public class TrustedVaultClient {
                 CoreAccountInfo accountInfo) {
             return Promise.rejected();
         }
+
+        /**
+         * Gets a PendingIntent that can be used to display a UI that allows the user to opt into
+         * trusted vault encryption.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise for a PendingIntent object.
+         */
+        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
+        default Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
     }
 
     /**
@@ -163,6 +175,16 @@ public class TrustedVaultClient {
      */
     public Promise<PendingIntent> createRecoverabilityDegradedIntent(CoreAccountInfo accountInfo) {
         return mBackend.createRecoverabilityDegradedIntent(accountInfo);
+    }
+
+    /**
+     * Creates an intent that launches an activity that triggers the opt in flow for trusted vault.
+     *
+     * @param accountInfo Account representing the user.
+     * @return a promise with the intent for opening the opt-in activity.
+     */
+    public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+        return mBackend.createOptInIntent(accountInfo);
     }
 
     /**
