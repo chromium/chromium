@@ -185,14 +185,6 @@ base::File OpenV8File(const char* file_name,
   return file;
 }
 
-enum LoadV8FileResult {
-  V8_LOAD_SUCCESS = 0,
-  V8_LOAD_FAILED_OPEN,
-  V8_LOAD_FAILED_MAP,
-  V8_LOAD_FAILED_VERIFY,  // Deprecated.
-  V8_LOAD_MAX_VALUE
-};
-
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 template <int LENGTH>
@@ -210,7 +202,6 @@ void SetV8FlagsFormatted(const char* format, ...) {
     return;
   }
   v8::V8::SetFlagsFromString(buffer, length - 1);
-  ;
 }
 
 }  // namespace
@@ -379,8 +370,7 @@ void V8Initializer::LoadV8SnapshotFromFile(
     return;
 
   if (!snapshot_file.IsValid()) {
-    UMA_HISTOGRAM_ENUMERATION("V8.Initializer.LoadV8Snapshot.Result",
-                              V8_LOAD_FAILED_OPEN, V8_LOAD_MAX_VALUE);
+    LOG(FATAL) << "Error loading V8 startup snapshot file";
     return;
   }
 
@@ -390,11 +380,10 @@ void V8Initializer::LoadV8SnapshotFromFile(
     region = *snapshot_file_region;
   }
 
-  LoadV8FileResult result = V8_LOAD_SUCCESS;
-  if (!MapV8File(std::move(snapshot_file), region, &g_mapped_snapshot))
-    result = V8_LOAD_FAILED_MAP;
-  UMA_HISTOGRAM_ENUMERATION("V8.Initializer.LoadV8Snapshot.Result", result,
-                            V8_LOAD_MAX_VALUE);
+  if (!MapV8File(std::move(snapshot_file), region, &g_mapped_snapshot)) {
+    LOG(FATAL) << "Error mapping V8 startup snapshot file";
+    return;
+  }
 }
 
 #if defined(OS_ANDROID)
