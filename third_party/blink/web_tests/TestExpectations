@@ -4082,7 +4082,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textEffect3.svg [ Fa
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textFeatures.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textLayout2.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textProperties.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/verticalTextOnPath.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-text.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-text-and-shape.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-text-and-stroke.svg [ Failure ]

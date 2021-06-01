@@ -641,9 +641,6 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
           // 'right', then reverse path.
           // ==> We don't support 'side' attribute yet.
 
-          // 5.1.2.3. Let length be the length of path.
-          const float length = path_mapper->length();
-
           // 5.1.2.4. Let offset be the value of the ‘textPath’ element's
           // ‘startOffset’ attribute, adjusted due to any ‘pathLength’
           // attribute on the referenced element.
@@ -664,6 +661,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
                   scaling_factor +
               offset;
 
+          // 5.1.2.3. Let length be the length of path.
           // 5.1.2.9. If path is a closed subpath depending on the values of
           // text-anchor and direction of the element the character at index is
           // in:
@@ -676,32 +674,9 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
           //   -> (start, rtl) or (end, ltr)
           //      If mid−offset < −length or mid−offset > 0, set the "hidden"
           //      flag of result[index] to true.
-          const ComputedStyle& style =
-              items[result_[index].item_index]->Style();
-          const bool is_ltr = style.IsLeftToRightDirection();
-          const float mid_offset = mid - offset;
-          switch (style.TextAnchor()) {
-            default:
-              NOTREACHED();
-              FALLTHROUGH;
-            case ETextAnchor::kStart:
-              if (is_ltr) {
-                info.hidden = mid_offset < 0 || mid_offset > length;
-              } else {
-                info.hidden = mid_offset < -length || mid_offset > 0;
-              }
-              break;
-            case ETextAnchor::kEnd:
-              if (is_ltr) {
-                info.hidden = mid_offset < -length || mid_offset > 0;
-              } else {
-                info.hidden = mid_offset < 0 || mid_offset > length;
-              }
-              break;
-            case ETextAnchor::kMiddle:
-              info.hidden = mid_offset < -length / 2 || mid_offset > length / 2;
-              break;
-          }
+          //
+          // ==> Major browsers don't support the special handling for closed
+          //     paths.
 
           // 5.1.2.10. If the hidden flag is false:
           if (!info.hidden) {
