@@ -38,7 +38,7 @@ void BidirectionalStream::Init(ExceptionState& exception_state) {
   if (exception_state.HadException())
     return;
 
-  incoming_stream_->Init();
+  incoming_stream_->Init(exception_state);
 }
 
 void BidirectionalStream::OnIncomingStreamClosed(bool fin_received) {

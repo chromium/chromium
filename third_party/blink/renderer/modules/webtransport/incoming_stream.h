@@ -46,8 +46,11 @@ class MODULES_EXPORT IncomingStream final
                  mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
-  // Init() must be called before the stream is used.
-  void Init();
+  // Init() or InitWithExistingReadableStream() must be called before the stream
+  // is used.
+  void Init(ExceptionState&);
+
+  void InitWithExistingReadableStream(ReadableStream*, ExceptionState&);
 
   // Methods from the IncomingStream IDL:
   // https://wicg.github.io/web-transport/#incoming-stream

@@ -40,7 +40,7 @@ void ReceiveStream::ContextDestroyed() {
 void ReceiveStream::Trace(Visitor* visitor) const {
   visitor->Trace(incoming_stream_);
   visitor->Trace(web_transport_);
-  ScriptWrappable::Trace(visitor);
+  ReadableStream::Trace(visitor);
   WebTransportStream::Trace(visitor);
 }
 

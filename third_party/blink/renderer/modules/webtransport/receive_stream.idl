@@ -6,11 +6,10 @@
 
 [ Exposed=(Window,Worker),
   RuntimeEnabled=WebTransport ]
-interface ReceiveStream {
-  // IncomingStream interface. In the standard this is a mixin, but we can't use
-  // a mixin in the implementation because BidirectionalStream would end up
-  // inheriting from two mixins, causing diamond inheritance.
-  readonly attribute ReadableStream readable;
+interface ReceiveStream : ReadableStream {
+  // Deprecated attributes for backwards-compatibility.
+  // TODO(ricea): Remove these when the origin trial ends.
+  readonly attribute ReceiveStream readable;
   readonly attribute Promise<StreamAbortInfo> readingAborted;
   void abortReading(optional StreamAbortInfo abortInfo = {});
 };

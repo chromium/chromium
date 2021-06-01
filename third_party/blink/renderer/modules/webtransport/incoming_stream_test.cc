@@ -54,7 +54,7 @@ class IncomingStreamTest : public ::testing::Test {
     auto* script_state = scope.GetScriptState();
     auto* incoming_stream = MakeGarbageCollected<IncomingStream>(
         script_state, mock_on_abort_.Get(), std::move(data_pipe_consumer_));
-    incoming_stream->Init();
+    incoming_stream->Init(ASSERT_NO_EXCEPTION);
     return incoming_stream;
   }
 

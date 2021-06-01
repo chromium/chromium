@@ -116,6 +116,16 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   ~ReadableStream() override;
 
+  // See CreateWithCountQueueingStrategy() comment above for how to use
+  // `allow_per_chunk_transferring`.
+  void InitWithCountQueueingStrategy(
+      ScriptState*,
+      UnderlyingSourceBase*,
+      size_t high_water_mark,
+      AllowPerChunkTransferring allow_per_chunk_transferring,
+      std::unique_ptr<ReadableStreamTransferringOptimizer>,
+      ExceptionState&);
+
   // https://streams.spec.whatwg.org/#rs-constructor
   bool locked() const;
 

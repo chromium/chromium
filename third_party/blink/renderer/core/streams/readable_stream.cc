@@ -1114,30 +1114,42 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
-
-  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
-
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "ReadableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
-  v8::Local<v8::Value> underlying_source_v8 =
-      ToV8(underlying_source, script_state);
-
   auto* stream = MakeGarbageCollected<ReadableStream>();
-  stream->InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
-                       strategy, true, exception_state);
-
+  stream->InitWithCountQueueingStrategy(
+      script_state, underlying_source, high_water_mark,
+      allow_per_chunk_transferring, std::move(optimizer), exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
     DLOG(WARNING)
         << "Ignoring an exception in CreateWithCountQueuingStrategy().";
   }
-
-  stream->allow_per_chunk_transferring_ = allow_per_chunk_transferring;
-  stream->transferring_optimizer_ = std::move(optimizer);
   return stream;
+}
+
+void ReadableStream::InitWithCountQueueingStrategy(
+    ScriptState* script_state,
+    UnderlyingSourceBase* underlying_source,
+    size_t high_water_mark,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
+    std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
+    ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+
+  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
+
+  v8::Local<v8::Value> underlying_source_v8 =
+      ToV8(underlying_source, script_state);
+
+  InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
+               strategy, true, exception_state);
+
+  allow_per_chunk_transferring_ = allow_per_chunk_transferring;
+  transferring_optimizer_ = std::move(optimizer);
 }
 
 ReadableStream* ReadableStream::Create(ScriptState* script_state,

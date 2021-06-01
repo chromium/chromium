@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -75,9 +76,15 @@ IncomingStream::IncomingStream(ScriptState* script_state,
 
 IncomingStream::~IncomingStream() = default;
 
-void IncomingStream::Init() {
+void IncomingStream::Init(ExceptionState& exception_state) {
   DVLOG(1) << "IncomingStream::Init() this=" << this;
+  auto* stream = MakeGarbageCollected<ReadableStream>();
+  InitWithExistingReadableStream(stream, exception_state);
+}
 
+void IncomingStream::InitWithExistingReadableStream(
+    ReadableStream* stream,
+    ExceptionState& exception_state) {
   read_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                       WTF::BindRepeating(&IncomingStream::OnHandleReady,
@@ -94,9 +101,12 @@ void IncomingStream::Init() {
   reading_aborted_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   reading_aborted_ = reading_aborted_resolver_->Promise();
-  readable_ = ReadableStream::CreateWithCountQueueingStrategy(
+  stream->InitWithCountQueueingStrategy(
       script_state_,
-      MakeGarbageCollected<UnderlyingSource>(script_state_, this), 1);
+      MakeGarbageCollected<UnderlyingSource>(script_state_, this), 1,
+      AllowPerChunkTransferring(false),
+      /*optimizer=*/nullptr, exception_state);
+  readable_ = stream;
 }
 
 void IncomingStream::OnIncomingStreamClosed(bool fin_received) {

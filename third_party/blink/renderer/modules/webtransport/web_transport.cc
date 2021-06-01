@@ -307,7 +307,19 @@ class WebTransport::ReceiveStreamVendor final
     ScriptState::Scope scope(script_state_);
     auto* receive_stream = MakeGarbageCollected<ReceiveStream>(
         script_state_, web_transport_, stream_id, std::move(readable));
-    receive_stream->Init();
+    auto* isolate = script_state_->GetIsolate();
+    ExceptionState exception_state(
+        isolate, ExceptionState::kConstructionContext, "ReceiveStream");
+    v8::MicrotasksScope microtasks_scope(
+        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+    receive_stream->Init(exception_state);
+
+    if (exception_state.HadException()) {
+      // Abandon the stream.
+      exception_state.ClearException();
+      return;
+    }
+
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
     web_transport_->stream_map_.insert(stream_id, receive_stream);

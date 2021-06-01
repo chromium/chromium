@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 69 tests; 45 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 69 tests; 47 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "SyntaxError: Failed to construct 'WebTransport': The URL's scheme must be 'https'. 'quic-transport' is not allowed."
 PASS idl_test validation
 PASS WebTransport includes UnidirectionalStreamsTransport: member names are unique
@@ -53,10 +53,10 @@ PASS SendStream interface: existence and properties of interface prototype objec
 PASS SendStream interface: existence and properties of interface prototype object's @@unscopables property
 PASS SendStream interface: attribute writingAborted
 PASS SendStream interface: operation abortWriting(optional StreamAbortInfo)
-FAIL ReceiveStream interface: existence and properties of interface object assert_equals: prototype of ReceiveStream is not ReadableStream expected function "function ReadableStream() { [native code] }" but got function "function () { [native code] }"
+PASS ReceiveStream interface: existence and properties of interface object
 PASS ReceiveStream interface object length
 PASS ReceiveStream interface object name
-FAIL ReceiveStream interface: existence and properties of interface prototype object assert_equals: prototype of ReceiveStream.prototype is not ReadableStream.prototype expected object "[object ReadableStream]" but got object "[object Object]"
+PASS ReceiveStream interface: existence and properties of interface prototype object
 PASS ReceiveStream interface: existence and properties of interface prototype object's "constructor" property
 PASS ReceiveStream interface: existence and properties of interface prototype object's @@unscopables property
 PASS ReceiveStream interface: attribute readingAborted

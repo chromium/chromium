@@ -1320,7 +1320,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method read
 [Worker]     method releaseLock
-[Worker] interface ReceiveStream
+[Worker] interface ReceiveStream : ReadableStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter readable
 [Worker]     getter readingAborted
