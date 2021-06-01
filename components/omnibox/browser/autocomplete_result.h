@@ -244,6 +244,9 @@ class AutocompleteResult {
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteResultTest,
+      GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions);
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
