@@ -79,6 +79,8 @@ class ChromeCleanerRunnerSimpleTest
 
     if (reset_shortcuts_enabled_)
       scoped_feature_list_.InitAndEnableFeature(kResetShortcutsFeature);
+    else
+      scoped_feature_list_.InitAndDisableFeature(kResetShortcutsFeature);
 
     SetChromeCleanerRunnerTestDelegateForTesting(this);
   }
