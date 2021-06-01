@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_global_rule_set.h"
@@ -373,6 +374,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void EnvironmentVariableChanged();
 
+  // Called when the set of @scroll-timeline rules changes. E.g. if a new
+  // @scroll-timeline rule was inserted.
+  //
+  // Not to be confused with ScrollTimelineInvalidated, which is called when
+  // elements *referenced* by @scroll-timeline rules change.
+  void ScrollTimelinesChanged();
+
   bool NeedsWhitespaceReattachment() const {
     return !whitespace_reattach_set_.IsEmpty();
   }
@@ -396,7 +404,18 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
-  StyleRuleScrollTimeline* FindScrollTimelineRule(const AtomicString& name);
+
+  void UpdateTimelines();
+
+  CSSScrollTimeline* FindScrollTimeline(const AtomicString& name);
+
+  // Called when information a @scroll-timeline depends on changes, e.g.
+  // when we have source:selector(#foo), and the element referenced by
+  // #foo changes.
+  //
+  // Not to be confused with ScrollTimelinesChanged, which is called when
+  // @scroll-timeline rules themselves change.
+  void ScrollTimelineInvalidated(CSSScrollTimeline&);
 
   CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
@@ -612,6 +631,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
   bool counter_styles_need_update_{false};
+  bool timelines_need_update_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with
@@ -667,7 +687,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<CounterStyleMap> user_counter_style_map_;
 
   HeapHashMap<AtomicString, Member<StyleRuleScrollTimeline>>
-      scroll_timeline_map_;
+      scroll_timeline_rule_map_;
+  HeapHashMap<AtomicString, Member<CSSScrollTimeline>> scroll_timeline_map_;
 
   scoped_refptr<DocumentStyleEnvironmentVariables> environment_variables_;
 

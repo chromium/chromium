@@ -32,6 +32,12 @@ class CSSScrollTimelineTest : public PageTestBase,
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();
   }
+
+  void SimulateFrame() {
+    auto new_time = GetAnimationClock().CurrentTime() +
+                    base::TimeDelta::FromMilliseconds(100);
+    GetPage().Animator().ServiceScriptedAnimations(new_time);
+  }
 };
 
 TEST_F(CSSScrollTimelineTest, IdObserverElementRemoval) {
@@ -64,11 +70,13 @@ TEST_F(CSSScrollTimelineTest, IdObserverElementRemoval) {
   ASSERT_TRUE(element2);
 
   element1->remove();
+  SimulateFrame();
   UpdateAllLifecyclePhasesForTest();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_TRUE(HasObservers("scroller"));
 
   element2->remove();
+  SimulateFrame();
   UpdateAllLifecyclePhasesForTest();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(HasObservers("scroller"));
@@ -282,20 +290,26 @@ namespace {
 
 class AnimationTriggeringDelegate : public ResizeObserver::Delegate {
  public:
-  explicit AnimationTriggeringDelegate(Element* element) : element_(element) {}
+  explicit AnimationTriggeringDelegate(Element* style_element)
+      : style_element_(style_element) {}
 
   void OnResize(
       const HeapVector<Member<ResizeObserverEntry>>& entries) override {
-    element_->setAttribute(blink::html_names::kClassAttr, "animate");
+    style_element_->setTextContent(R"CSS(
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        time-range: 10s;
+      }
+    )CSS");
   }
 
   void Trace(Visitor* visitor) const override {
     ResizeObserver::Delegate::Trace(visitor);
-    visitor->Trace(element_);
+    visitor->Trace(style_element_);
   }
 
  private:
-  Member<Element> element_;
+  Member<Element> style_element_;
 };
 
 }  // namespace
@@ -307,10 +321,6 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
         from { width: 100px; }
         to { width: 100px; }
       }
-      @scroll-timeline timeline {
-        source: selector(#scroller);
-        time-range: 10s;
-      }
       #scroller {
         height: 100px;
         overflow: scroll;
@@ -320,8 +330,6 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
       }
       #element {
         width: 1px;
-      }
-      #element.animate {
         animation: anim 10s timeline;
       }
     </style>
@@ -338,12 +346,16 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   scroller->setAttribute(blink::html_names::kIdAttr, "scroller");
   scroller->AppendChild(MakeGarbageCollected<HTMLDivElement>(GetDocument()));
 
+  Element* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
+                                                          CreateElementFlags());
+
   Element* main = GetDocument().getElementById("main");
   ASSERT_TRUE(main);
+  main->AppendChild(style);
   main->AppendChild(element);
   main->AppendChild(scroller);
 
-  auto* delegate = MakeGarbageCollected<AnimationTriggeringDelegate>(element);
+  auto* delegate = MakeGarbageCollected<AnimationTriggeringDelegate>(style);
   ResizeObserver* observer =
       ResizeObserver::Create(GetDocument().domWindow(), delegate);
   observer->observe(element);

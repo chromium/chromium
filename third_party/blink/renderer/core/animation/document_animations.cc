@@ -181,21 +181,10 @@ void DocumentAnimations::ValidateTimelines() {
   unvalidated_timelines_.clear();
 }
 
-void DocumentAnimations::CacheCSSScrollTimeline(CSSScrollTimeline& timeline) {
-  // We cache the least seen CSSScrollTimeline for a given name.
-  cached_css_timelines_.Set(timeline.Name(), &timeline);
-}
-
-CSSScrollTimeline* DocumentAnimations::FindCachedCSSScrollTimeline(
-    const AtomicString& name) {
-  return To<CSSScrollTimeline>(cached_css_timelines_.at(name));
-}
-
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
   visitor->Trace(unvalidated_timelines_);
-  visitor->Trace(cached_css_timelines_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

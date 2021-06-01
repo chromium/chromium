@@ -406,6 +406,14 @@ class CORE_EXPORT Document : public ContainerNode,
   Element* scrollingElement();
   // When calling from C++ code, use this method. scrollingElement() is
   // just for the web IDL implementation.
+  //
+  // Style/layout-tree needs to be updated before calling this function,
+  // otherwise the returned element might be outdated. However, accessing
+  // information based on the layout of the previous frame is occasionally
+  // the correct behavior [1], hence it's not invalid to call this function
+  // while style/layout dirty.
+  //
+  // [1] https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
   Element* ScrollingElementNoLayout();
 
   String readyState() const;

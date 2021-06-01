@@ -540,6 +540,7 @@ void StyleEngine::UpdateActiveStyle() {
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();
+  UpdateTimelines();
 }
 
 const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
@@ -1751,6 +1752,17 @@ void StyleEngine::EnvironmentVariableChanged() {
     resolver_->InvalidateMatchedPropertiesCache();
 }
 
+void StyleEngine::ScrollTimelinesChanged() {
+  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+      style_change_reason::kScrollTimeline));
+  // We currently rely on marking at least one element for recalc in order
+  // to clean the timelines_need_update_ flag. (Otherwise the timelines
+  // will just remain dirty). Hence, if we in the future remove the call
+  // to mark elements for recalc, we would need to call
+  // ScheduleLayoutTreeUpdateIfNeeded to ensure that we reach UpdateTimelines.
+  timelines_need_update_ = true;
+}
+
 void StyleEngine::MarkForWhitespaceReattachment() {
   DCHECK(GetDocument().InStyleRecalc());
   for (auto element : whitespace_reattach_set_) {
@@ -1842,7 +1854,8 @@ void StyleEngine::ClearPropertyRules() {
 }
 
 void StyleEngine::ClearScrollTimelineRules() {
-  scroll_timeline_map_.clear();
+  scroll_timeline_rule_map_.clear();
+  ScrollTimelinesChanged();
 }
 
 void StyleEngine::AddPropertyRulesFromSheets(
@@ -1913,9 +1926,8 @@ void StyleEngine::AddScrollTimelineRules(const RuleSet& rule_set) {
   if (scroll_timeline_rules.IsEmpty())
     return;
   for (const auto& rule : scroll_timeline_rules)
-    scroll_timeline_map_.Set(AtomicString(rule->GetName()), rule);
-  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
-      style_change_reason::kScrollTimeline));
+    scroll_timeline_rule_map_.Set(rule->GetName(), rule);
+  ScrollTimelinesChanged();
 }
 
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
@@ -1930,9 +1942,51 @@ StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
   return it->value.Get();
 }
 
-StyleRuleScrollTimeline* StyleEngine::FindScrollTimelineRule(
-    const AtomicString& name) {
+void StyleEngine::UpdateTimelines() {
+  if (!timelines_need_update_)
+    return;
+  timelines_need_update_ = false;
+
+  HeapHashMap<AtomicString, Member<CSSScrollTimeline>> timelines;
+
+  for (const auto& it : scroll_timeline_rule_map_) {
+    const AtomicString& name = it.key;
+
+    CSSScrollTimeline::Options options(GetDocument(), *it.value);
+    // TODO(crbug.com/1097041): Support 'auto'.
+    if (!options.IsValid())
+      continue;
+
+    // Check if we can re-use existing timeline.
+    CSSScrollTimeline* existing_timeline = FindScrollTimeline(name);
+    if (existing_timeline && existing_timeline->Matches(options)) {
+      timelines.Set(name, existing_timeline);
+      continue;
+    }
+
+    // Create a new timeline.
+    auto* timeline = MakeGarbageCollected<CSSScrollTimeline>(
+        &GetDocument(), std::move(options));
+    // It is not allowed for a style update to create timelines that
+    // needs timing updates (i.e.
+    // AnimationTimeline::NeedsAnimationTimingUpdate() must return false).
+    // Servicing animations after creation preserves this invariant by ensuring
+    // the last-update time of the timeline is equal to the current time.
+    timeline->ServiceAnimations(kTimingUpdateOnDemand);
+    timelines.Set(name, timeline);
+  }
+
+  std::swap(scroll_timeline_map_, timelines);
+}
+
+CSSScrollTimeline* StyleEngine::FindScrollTimeline(const AtomicString& name) {
+  DCHECK(!timelines_need_update_);
   return scroll_timeline_map_.at(name);
+}
+
+void StyleEngine::ScrollTimelineInvalidated(CSSScrollTimeline& timeline) {
+  timelines_need_update_ = true;
+  timeline.InvalidateEffectTargetStyle();
 }
 
 DocumentStyleEnvironmentVariables& StyleEngine::EnsureEnvironmentVariables() {
@@ -2466,6 +2520,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(custom_element_default_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(user_counter_style_map_);
+  visitor->Trace(scroll_timeline_rule_map_);
   visitor->Trace(scroll_timeline_map_);
   visitor->Trace(inspector_style_sheet_);
   visitor->Trace(document_style_sheet_collection_);

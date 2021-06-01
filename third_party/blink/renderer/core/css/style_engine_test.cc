@@ -116,6 +116,13 @@ class StyleEngineTest : public testing::Test {
     return ListMarker::Get(marker)->TextAlternative(*marker);
   }
 
+  StyleRuleScrollTimeline* FindScrollTimelineRule(AtomicString name) {
+    CSSScrollTimeline* timeline = GetStyleEngine().FindScrollTimeline(name);
+    if (!timeline)
+      return nullptr;
+    return timeline->GetRule();
+  }
+
  private:
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
@@ -3119,12 +3126,12 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // @scroll-timeline in the user origin:
   InjectSheet("user1", WebDocument::kUserOrigin, R"CSS(
     @scroll-timeline timeline1 {
+      time-range: 10s;
       source: selector(#scroller1);
     }
   )CSS");
   UpdateAllLifecyclePhases();
-  StyleRuleScrollTimeline* rule1 =
-      GetStyleEngine().FindScrollTimelineRule("timeline1");
+  StyleRuleScrollTimeline* rule1 = FindScrollTimelineRule("timeline1");
   ASSERT_TRUE(rule1);
   ASSERT_TRUE(rule1->GetSource());
   EXPECT_EQ("selector(#scroller1)", rule1->GetSource()->CssText());
@@ -3132,12 +3139,12 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // @scroll-timeline in the author origin (should win over user origin)
   InjectSheet("author", WebDocument::kAuthorOrigin, R"CSS(
     @scroll-timeline timeline1 {
+      time-range: 10s;
       source: selector(#scroller2);
     }
   )CSS");
   UpdateAllLifecyclePhases();
-  StyleRuleScrollTimeline* rule2 =
-      GetStyleEngine().FindScrollTimelineRule("timeline1");
+  StyleRuleScrollTimeline* rule2 = FindScrollTimelineRule("timeline1");
   ASSERT_TRUE(rule2);
   ASSERT_TRUE(rule2->GetSource());
   EXPECT_EQ("selector(#scroller2)", rule2->GetSource()->CssText());
@@ -3145,12 +3152,12 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // An additional @scroll-timeline in the user origin:
   InjectSheet("user2", WebDocument::kUserOrigin, R"CSS(
     @scroll-timeline timeline2 {
+      time-range: 10s;
       source: selector(#scroller3);
     }
   )CSS");
   UpdateAllLifecyclePhases();
-  StyleRuleScrollTimeline* rule3 =
-      GetStyleEngine().FindScrollTimelineRule("timeline2");
+  StyleRuleScrollTimeline* rule3 = FindScrollTimelineRule("timeline2");
   ASSERT_TRUE(rule3);
   ASSERT_TRUE(rule3->GetSource());
   EXPECT_EQ("selector(#scroller3)", rule3->GetSource()->CssText());

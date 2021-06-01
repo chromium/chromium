@@ -38,7 +38,6 @@
 namespace blink {
 
 class AnimationTimeline;
-class CSSScrollTimeline;
 class Document;
 class PaintArtifactCompositor;
 
@@ -89,9 +88,6 @@ class CORE_EXPORT DocumentAnimations final
   // https://github.com/w3c/csswg-drafts/issues/5261
   void ValidateTimelines();
 
-  void CacheCSSScrollTimeline(CSSScrollTimeline&);
-  CSSScrollTimeline* FindCachedCSSScrollTimeline(const AtomicString&);
-
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
     return timelines_;
@@ -115,14 +111,6 @@ class CORE_EXPORT DocumentAnimations final
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
   HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;
-
-  // We cache CSSScrollTimelines by name, such that multiple animations using
-  // the same timeline can use the same CSSScrollTimeline instance.
-  //
-  // Note that timelines present in |cached_css_timelines_| are also present
-  // in |timelines_|.
-  HeapHashMap<AtomicString, WeakMember<AnimationTimeline>>
-      cached_css_timelines_;
 };
 
 }  // namespace blink

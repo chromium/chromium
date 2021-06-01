@@ -42,6 +42,8 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
 
   const AtomicString& Name() const;
 
+  StyleRuleScrollTimeline* GetRule() const { return rule_; }
+
   bool Matches(const Options&) const;
 
   // AnimationTimeline implementation.

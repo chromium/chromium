@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -158,18 +159,21 @@ class ElementReferenceObserver : public IdTargetObserver {
                            const AtomicString& id,
                            CSSScrollTimeline* timeline)
       : IdTargetObserver(document->GetIdTargetObserverRegistry(), id),
+        document_(document),
         timeline_(timeline) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_);
+    visitor->Trace(document_);
     IdTargetObserver::Trace(visitor);
   }
 
  private:
   void IdTargetChanged() override {
     if (timeline_)
-      timeline_->InvalidateEffectTargetStyle();
+      document_->GetStyleEngine().ScrollTimelineInvalidated(*timeline_);
   }
+  Member<Document> document_;
   WeakMember<CSSScrollTimeline> timeline_;
 };
 
