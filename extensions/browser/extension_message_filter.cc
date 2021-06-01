@@ -71,30 +71,30 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
 }
 
 // Returns true if `source_endpoint` can be legitimately claimed/used by
-// `process`.  Otherwise reports a bad IPC message for `filter` and returns
-// false (expecting the caller to not take any action based on the rejected,
-// untrustworthy `source_endpoint`).
-bool IsValidMessagingSource(ExtensionMessageFilter* filter,
-                            RenderProcessHost& process,
+// `process`.  Otherwise reports a bad IPC message and returns false (expecting
+// the caller to not take any action based on the rejected, untrustworthy
+// `source_endpoint`).
+bool IsValidMessagingSource(RenderProcessHost& process,
                             const MessagingEndpoint& source_endpoint) {
   switch (source_endpoint.type) {
     case MessagingEndpoint::Type::kNativeApp:
       // Requests for channels initiated by native applications don't originate
       // from renderer processes.
       bad_message::ReceivedBadMessage(
-          filter, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
+          &process, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
       return false;
 
     case MessagingEndpoint::Type::kExtension:
       if (!source_endpoint.extension_id.has_value()) {
         bad_message::ReceivedBadMessage(
-            filter, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+            &process, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
         return false;
       }
       if (!CanRendererHostExtensionOrigin(
               process.GetID(), source_endpoint.extension_id.value())) {
         bad_message::ReceivedBadMessage(
-            filter, bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+            &process,
+            bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
         return false;
       }
       return true;
@@ -108,11 +108,10 @@ bool IsValidMessagingSource(ExtensionMessageFilter* filter,
 }
 
 // Returns true if `source_context` can be legitimately claimed/used by
-// `render_process_id`.  Otherwise reports a bad IPC message for `filter` and
-// returns false (expecting the caller to not take any action based on the
-// rejected, untrustworthy `source_context`).
-bool IsValidSourceContext(ExtensionMessageFilter* filter,
-                          int render_process_id,
+// `render_process_id`.  Otherwise reports a bad IPC message and returns false
+// (expecting the caller to not take any action based on the rejected,
+// untrustworthy `source_context`).
+bool IsValidSourceContext(RenderProcessHost& process,
                           const PortContext& source_context) {
   if (source_context.is_for_service_worker()) {
     const PortContext::WorkerContext& worker_context =
@@ -123,16 +122,60 @@ bool IsValidSourceContext(ExtensionMessageFilter* filter,
     // exists using ProcessManager::HasServiceWorker) might incorrectly return
     // false=invalid-IPC for IPCs from workers that were recently torn down /
     // made inactive.
-    if (!CanRendererHostExtensionOrigin(render_process_id,
+    if (!CanRendererHostExtensionOrigin(process.GetID(),
                                         worker_context.extension_id)) {
       bad_message::ReceivedBadMessage(
-          filter, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
+          &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
       return false;
     }
   }
 
   return true;
 }
+
+base::debug::CrashKeyString* GetTargetIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::target_id", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetSourceOriginCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::source_origin",
+      base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetSourceUrlCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::source_url", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+class ScopedExternalConnectionInfoCrashKeys {
+ public:
+  explicit ScopedExternalConnectionInfoCrashKeys(
+      const ExtensionMsg_ExternalConnectionInfo& info)
+      : target_id_(GetTargetIdCrashKey(), info.target_id),
+        source_endpoint_(info.source_endpoint),
+        source_origin_(GetSourceOriginCrashKey(),
+                       base::OptionalOrNullptr(info.source_origin)),
+        source_url_(GetSourceUrlCrashKey(),
+                    info.source_url.possibly_invalid_spec()) {}
+
+  ~ScopedExternalConnectionInfoCrashKeys() = default;
+
+  ScopedExternalConnectionInfoCrashKeys(
+      const ScopedExternalConnectionInfoCrashKeys&) = delete;
+  ScopedExternalConnectionInfoCrashKeys& operator=(
+      const ScopedExternalConnectionInfoCrashKeys&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString target_id_;
+  extensions::debug::ScopedMessagingEndpointCrashKeys source_endpoint_;
+  url::debug::ScopedOriginCrashKey source_origin_;
+  base::debug::ScopedCrashKeyString source_url_;
+};
 
 }  // namespace
 
@@ -309,8 +352,9 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
   if (!process)
     return;
 
-  if (!IsValidMessagingSource(this, *process, info.source_endpoint) ||
-      !IsValidSourceContext(this, render_process_id_, source_context)) {
+  ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
+  if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+      !IsValidSourceContext(*process, source_context)) {
     return;
   }
 
