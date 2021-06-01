@@ -544,58 +544,36 @@ DataTypeManagerImpl::PrepareConfigureParams(
   const ModelTypeSet inactive_types =
       GetDataTypesInState(CONFIGURE_INACTIVE, config_state_map);
 
-  const ModelTypeSet enabled_types = active_types;
   ModelTypeSet disabled_types = GetDataTypesInState(DISABLED, config_state_map);
   disabled_types.PutAll(fatal_types);
   disabled_types.PutAll(crypto_types);
   disabled_types.PutAll(unready_types);
 
-  DCHECK(Intersection(enabled_types, disabled_types).Empty());
+  DCHECK(Intersection(active_types, disabled_types).Empty());
 
-  // The sync engine's enabled types will be updated by adding |enabled_types|
-  // to the list then removing |disabled_types|. Any types which are not in
-  // either of those sets will remain untouched. Types which were not in
-  // |downloaded_types_| previously are not fully downloaded, so we must ask the
-  // engine to download them. Any newly supported datatypes won't have been in
-  // |downloaded_types_|, so they will also be downloaded if they are enabled.
-  ModelTypeSet types_to_download = Difference(enabled_types, downloaded_types_);
-  downloaded_types_.PutAll(enabled_types);
-  downloaded_types_.RemoveAll(disabled_types);
-
+  ModelTypeSet types_to_download = Difference(active_types, downloaded_types_);
+  // Proxy and commit-only types never require downloading.
   types_to_download.RemoveAll(ProxyTypes());
   types_to_download.RemoveAll(CommitOnlyTypes());
-  if (!types_to_download.Empty())
-    types_to_download.Put(NIGORI);
+  if (!types_to_download.Empty()) {
+    types_to_download.PutAll(ControlTypes());
+  }
 
+  // Already (optimistically) update the |downloaded_types_|, so that the next
+  // time we get here, it has the correct value.
+  downloaded_types_.PutAll(active_types);
+  // Assume that disabled types are not downloaded anymore - if they get
+  // re-enabled, we'll want to re-download them as well.
+  downloaded_types_.RemoveAll(disabled_types);
   force_redownload_types_.RemoveAll(types_to_download);
-
-  // TODO(sync): crbug.com/137550.
-  // It's dangerous to configure types that have progress markers. Types with
-  // progress markers can trigger a MIGRATION_DONE response. We are not
-  // prepared to handle a migration during a configure, so we must ensure that
-  // all our types_to_download actually contain no data before we sync them.
-  //
-  // One common way to end up in this situation used to be types which
-  // downloaded some or all of their data but have not applied it yet. We avoid
-  // problems with those types by purging the data of any such partially synced
-  // types soon after we load the Directory.
-  //
-  // Another possible scenario is that we have newly supported or newly enabled
-  // data types being downloaded here but the nigori type, which is always
-  // included in any GetUpdates request, requires migration. The server has
-  // code to detect this scenario based on the configure reason, the fact that
-  // the nigori type is the only requested type which requires migration, and
-  // that the requested types list includes at least one non-nigori type. It
-  // will not send a MIGRATION_DONE response in that case. We still need to be
-  // careful to not send progress markers for non-nigori types, though. If a
-  // non-nigori type in the request requires migration, a MIGRATION_DONE
-  // response will be sent.
 
   ModelTypeSet types_to_purge;
   // If we're using transport-only mode, don't clear any old data. The reason is
   // that if a user temporarily disables Sync, we don't want to wipe (and later
   // redownload) all their data, just because Sync restarted in transport-only
   // mode.
+  // TODO(crbug.com/1142771): "Purging" logic is only implemented for NIGORI -
+  // verify whether it is actually needed at all.
   if (last_requested_context_.sync_mode == SyncMode::kFull) {
     types_to_purge = Difference(ModelTypeSet::All(), downloaded_types_);
     types_to_purge.RemoveAll(inactive_types);
@@ -612,7 +590,6 @@ DataTypeManagerImpl::PrepareConfigureParams(
 
   ModelTypeConfigurer::ConfigureParams params;
   params.reason = last_requested_context_.reason;
-  params.enabled_types = enabled_types;
   params.to_download = types_to_download;
   params.to_purge = types_to_purge;
   params.ready_task =
@@ -696,16 +673,6 @@ void DataTypeManagerImpl::Stop(ShutdownReason reason) {
     ConfigureResult result(ABORTED, last_requested_types_);
     NotifyDone(result);
   }
-}
-
-void DataTypeManagerImpl::Abort(ConfigureStatus status) {
-  DCHECK_EQ(CONFIGURING, state_);
-
-  StopImpl(STOP_SYNC);
-
-  DCHECK_NE(OK, status);
-  ConfigureResult result(status, last_requested_types_);
-  NotifyDone(result);
 }
 
 void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {

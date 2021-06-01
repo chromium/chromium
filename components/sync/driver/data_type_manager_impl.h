@@ -111,9 +111,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams(
       const AssociationTypesInfo& association_types_info);
 
-  // Abort configuration and stop all data types due to configuration errors.
-  void Abort(ConfigureStatus status);
-
   // Divide |types| into sets by their priorities and return the sets from
   // high priority to low priority.
   base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types);
@@ -194,9 +191,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // A set of types that should be redownloaded even if initial sync is
   // completed for them.
-  // TODO(crbug.com/967677): Once all datatypes are in USS, we should redesign
-  // this class and for example compute |downloaded_types_|'s initial value
-  // only after all datatypes have loaded for the first time.
   ModelTypeSet force_redownload_types_;
 
   // Whether an attempt to reconfigure was made while we were busy configuring.

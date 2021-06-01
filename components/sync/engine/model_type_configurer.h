@@ -28,16 +28,11 @@ class ModelTypeConfigurer {
     ConfigureParams& operator=(ConfigureParams&& other);
 
     ConfigureReason reason;
-    ModelTypeSet enabled_types;
     ModelTypeSet to_download;
     ModelTypeSet to_purge;
-    // Run when configuration is done with the set of all types that failed
-    // configuration (if its argument isn't empty, an error was encountered).
-    // TODO(akalin): Use a Delegate class with OnConfigureSuccess,
-    // OnConfigureFailure, and OnConfigureRetry instead of a pair of callbacks.
-    // The awkward part is handling when SyncEngine calls ConfigureDataTypes on
-    // itself to configure Nigori.
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task;
+
+    base::OnceCallback<void(ModelTypeSet succeeded, ModelTypeSet failed)>
+        ready_task;
 
     // Whether full sync (or sync the feature) is enabled;
     bool is_sync_feature_enabled;

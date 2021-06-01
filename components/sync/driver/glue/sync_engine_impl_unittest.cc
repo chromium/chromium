@@ -260,8 +260,8 @@ class SyncEngineImplTest : public testing::Test {
   ModelTypeSet ConfigureDataTypesWithUnready(ModelTypeSet unready_types) {
     ModelTypeConfigurer::ConfigureParams params;
     params.reason = CONFIGURE_REASON_RECONFIGURATION;
-    params.enabled_types = Difference(enabled_types_, unready_types);
-    params.to_download = Difference(params.enabled_types, engine_types_);
+    ModelTypeSet enabled_types = Difference(enabled_types_, unready_types);
+    params.to_download = Difference(enabled_types, engine_types_);
     if (!params.to_download.Empty()) {
       params.to_download.Put(NIGORI);
     }
@@ -269,8 +269,7 @@ class SyncEngineImplTest : public testing::Test {
     params.ready_task = base::BindOnce(&SyncEngineImplTest::DownloadReady,
                                        base::Unretained(this));
 
-    ModelTypeSet ready_types =
-        Difference(params.enabled_types, params.to_download);
+    ModelTypeSet ready_types = Difference(enabled_types, params.to_download);
     backend_->ConfigureDataTypes(std::move(params));
     PumpSyncThread();
 

@@ -94,7 +94,7 @@ void FakeSyncEngine::Shutdown(ShutdownReason reason) {
 
 void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
   std::move(params.ready_task)
-      .Run(/*succeeded_configuration_types=*/params.enabled_types,
+      .Run(/*succeeded_configuration_types=*/params.to_download,
            /*failed_configuration_types=*/ModelTypeSet());
 }
 
