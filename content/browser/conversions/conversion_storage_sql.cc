@@ -57,6 +57,8 @@ const base::FilePath::CharType kDatabasePath[] =
 //
 // Version 5 - 2021/04/30 - https://crrev.com/c/2860056
 //
+// Version 5 drops the conversions.attribution_credit column.
+//
 // Version 6 - 2021/05/06 - https://crrev.com/c/2878235
 //
 // Version 6 adds the impression.priority column.
