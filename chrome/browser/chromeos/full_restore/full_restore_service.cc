@@ -24,7 +24,6 @@
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -158,9 +157,10 @@ void FullRestoreService::Init() {
     return;
   }
 
-  // If it is the first time to run Chrome OS, we don't have restore data, so we
-  // don't need to consider restoration.
-  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+  // If either OS pref setting nor Chrome pref setting exist, that means we
+  // don't have restore data, so we don't need to consider restoration, and call
+  // NewUserRestorePrefHandler to set OS pref setting.
+  if (!HasRestorePref(prefs) && !HasSessionStartupPref(prefs)) {
     new_user_pref_handler_ =
         std::make_unique<NewUserRestorePrefHandler>(profile_);
     return;
