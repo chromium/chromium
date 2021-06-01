@@ -175,9 +175,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   // Deletes TraceWriter safely on behalf of a ThreadLocalEventSink.
   void ReturnTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
 
-  bool privacy_filtering_enabled() const { return privacy_filtering_enabled_; }
-
   bool IsEnabled();
+  bool IsPrivacyFilteringEnabled();
 
   // Records trace event for a histogram sample. When histogram_samples category
   // is enabled, it is registered with base::StatisticsRecorder to monitor the
@@ -243,7 +242,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   uint32_t IncrementSessionIdOrClearStartupFlagWhileLocked();
   void SetStartupTracingFlagsWhileLocked();
   bool IsStartupTracingActive() const;
-  bool IsPrivacyFilteringEnabled();  // Takes the |lock_|.
 
   bool disable_interning_ = false;
   base::OnceClosure stop_complete_callback_;

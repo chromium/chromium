@@ -174,7 +174,7 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
 
   // Make sure that the startup session uses privacy filtering mode if it's
   // enabled for the browser's session.
-  if (TraceEventDataSource::GetInstance()->privacy_filtering_enabled())
+  if (TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled())
     cmd_line->AppendSwitch(switches::kTraceStartupEnablePrivacyFiltering);
 
   cmd_line->AppendSwitchASCII(switches::kTraceStartup,
