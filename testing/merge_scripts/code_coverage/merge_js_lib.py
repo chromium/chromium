@@ -194,7 +194,7 @@ def _merge_segments(segments_a, segments_b):
   return segments
 
 
-def _get_coverage_paths(input_dir):
+def _get_paths_with_suffix(input_dir, suffix):
   """Gets all JSON files in the input directory.
 
   Args:
@@ -208,7 +208,7 @@ def _get_coverage_paths(input_dir):
   for dir_path, _sub_dirs, file_names in os.walk(input_dir):
     paths.extend([
       os.path.join(dir_path, fn) for fn in file_names
-      if fn.endswith('.cov.json')
+      if fn.endswith(suffix)
     ])
   return paths
 
@@ -221,7 +221,7 @@ def merge_coverage_files(coverage_dir, output_path):
     output_path  (str): Path to the location to output merged coverage.
   """
   coverage_by_path = {}
-  json_files = _get_coverage_paths(coverage_dir)
+  json_files = _get_paths_with_suffix(coverage_dir, '.cov.json')
 
   if not json_files:
     logging.info('No JavaScript coverage files found in %s', coverage_dir)
