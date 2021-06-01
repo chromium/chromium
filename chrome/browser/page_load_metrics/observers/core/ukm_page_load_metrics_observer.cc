@@ -1002,22 +1002,12 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
         .SetLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000ms(
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
-                    .session_windows_gap5000ms_maxMax_average_cls))
-        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindowByInputs_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data
-                    .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+                    .session_windows_gap5000ms_maxMax_average_cls));
     base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms",
         page_load_metrics::LayoutShiftUmaValue(
             normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-        "SessionWindowByInputs.Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(
-            normalized_cls_data
-                .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
   }
   builder.Record(ukm::UkmRecorder::Get());
 

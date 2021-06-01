@@ -1558,16 +1558,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
         PageLoad::
             kLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000msName,
         250);
-    ukm_recorder.ExpectEntryMetric(
-        ukm_entry,
-        PageLoad::
-            kLayoutInstability_MaxCumulativeShiftScore_SessionWindowByInputs_Gap1000ms_Max5000msName,
-        150);
     ukm_recorder.ExpectEntryMetric(kv.second.get(),
                                    PageLoad::kNavigation_PageEndReason3Name,
                                    page_load_metrics::END_CLOSE);
   }
-
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.CumulativeShiftScore"),
               testing::ElementsAre(base::Bucket(25, 1)));
@@ -1575,10 +1569,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
                   "SessionWindow.Gap1000ms.Max5000ms"),
               testing::ElementsAre(base::Bucket(25, 1)));
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                  "SessionWindowByInputs.Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(15, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SiteInstanceRenderProcessAssignment) {
