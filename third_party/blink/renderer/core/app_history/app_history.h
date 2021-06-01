@@ -94,6 +94,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   Member<ScriptPromiseResolver> navigate_method_call_promise_resolver_;
   scoped_refptr<SerializedScriptValue> navigate_serialized_state_;
 
+  bool did_react_to_promise_ = false;
   ScriptValue navigate_event_info_;
 };
 

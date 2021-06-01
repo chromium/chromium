@@ -23,15 +23,18 @@ namespace {
 
 class NavigateReaction final : public ScriptFunction {
  public:
-  enum class ResolveType {
-    kFulfill,
-    kReject,
-  };
+  enum class ResolveType { kFulfill, kReject, kDetach };
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     ScriptPromiseResolver* resolver) {
     promise.Then(CreateFunction(script_state, resolver, ResolveType::kFulfill),
                  CreateFunction(script_state, resolver, ResolveType::kReject));
+  }
+
+  static void CleanupWithoutResolving(ScriptState* script_state,
+                                      ScriptPromiseResolver* resolver) {
+    ScriptPromise::CastUndefined(script_state)
+        .Then(CreateFunction(script_state, resolver, ResolveType::kDetach));
   }
 
   NavigateReaction(ScriptState* script_state,
@@ -74,6 +77,11 @@ class NavigateReaction final : public ScriptFunction {
 
   ScriptValue Call(ScriptValue value) final {
     DCHECK(window_);
+    if (type_ == ResolveType::kDetach) {
+      resolver_->Detach();
+      window_ = nullptr;
+      return ScriptValue();
+    }
     AppHistory::appHistory(*window_)->DispatchEvent(*InitEvent(value));
     if (resolver_) {
       if (type_ == ResolveType::kFulfill)
@@ -241,6 +249,7 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   base::AutoReset<Member<ScriptPromiseResolver>> promise(
       &navigate_method_call_promise_resolver_,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state));
+  base::AutoReset<bool> did_react(&did_react_to_promise_, false);
   base::AutoReset<ScriptValue> event_info(&navigate_event_info_,
                                           options->navigateInfo());
   WebFrameLoadType frame_load_type = options->replace()
@@ -262,6 +271,14 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Navigation was aborted");
     return ScriptPromise();
+  }
+
+  // The spec assumes it's ok to leave a promise permanently unresolved, but
+  // ScriptPromiseResolver requires either resolution or explicit detach.
+  // Do the detach on a microtask so that we can still return the promise.
+  if (!did_react_to_promise_) {
+    NavigateReaction::CleanupWithoutResolving(
+        script_state, navigate_method_call_promise_resolver_);
   }
   if (navigate_serialized_state_)
     current()->GetItem()->SetAppHistoryState(navigate_serialized_state_);
@@ -338,6 +355,8 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
                              event_type != NavigateEventType::kCrossDocument)) {
     if (promise.IsEmpty())
       promise = ScriptPromise::CastUndefined(script_state);
+    if (navigate_method_call_promise_resolver_)
+      did_react_to_promise_ = true;
     NavigateReaction::React(script_state, promise,
                             navigate_method_call_promise_resolver_);
   } else {
@@ -349,6 +368,8 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "Navigation was aborted"));
+    if (navigate_method_call_promise_resolver_)
+      did_react_to_promise_ = true;
     NavigateReaction::React(script_state, promise,
                             navigate_method_call_promise_resolver_);
   }

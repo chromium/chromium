@@ -1,0 +1,15 @@
+<body>
+PASS if no crash.
+<iframe id="i" src="../resources/dummy.html"></iframe>
+<script>
+// TODO: make this a testharness test and upstream this to WPT if
+// https://github.com/web-platform-tests/wpt/issues/7899 ever gets resolved
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+window.onload = () => {
+  let promise = i.contentWindow.appHistory.navigate("?1");
+  gc();
+}
+</script>
+</body>
