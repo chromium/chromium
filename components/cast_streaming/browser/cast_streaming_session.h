@@ -9,17 +9,25 @@
 
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "components/cast/message_port/message_port.h"
+#include "components/cast_streaming/browser/cast_message_port_impl.h"
+#include "components/openscreen_platform/network_util.h"
+#include "components/openscreen_platform/task_runner.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openscreen/src/cast/streaming/receiver.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
 namespace cast_streaming {
 
+class StreamConsumer;
+
 // Entry point for the Cast Streaming Receiver implementation. Used to start a
-// Cast Streaming Session for a provided FIDL MessagePort request.
+// Cast Streaming Session for a provided MessagePort server.
 class CastStreamingSession {
  public:
   template <class T>
@@ -86,8 +94,64 @@ class CastStreamingSession {
   void Stop();
 
  private:
-  class Internal;
-  std::unique_ptr<Internal> internal_;
+  // Owns the Open Screen ReceiverSession. The Streaming Session is tied to the
+  // lifespan of this object.
+  class ReceiverSessionClient
+      : public openscreen::cast::ReceiverSession::Client {
+   public:
+    ReceiverSessionClient(
+        CastStreamingSession::Client* client,
+        std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+    ~ReceiverSessionClient() final;
+
+    ReceiverSessionClient(const ReceiverSessionClient&) = delete;
+    ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
+
+   private:
+    void OnInitializationTimeout();
+
+    // Initializes the audio consumer with |audio_capture_config|. Returns an
+    // empty Optional on failure.
+    absl::optional<AudioStreamInfo> InitializeAudioConsumer(
+        openscreen::cast::Receiver* audio_receiver,
+        const openscreen::cast::AudioCaptureConfig& audio_capture_config);
+
+    // Initializes the video consumer with |video_capture_config|. Returns an
+    // empty Optional on failure.
+    absl::optional<VideoStreamInfo> InitializeVideoConsumer(
+        openscreen::cast::Receiver* video_receiver,
+        const openscreen::cast::VideoCaptureConfig& video_capture_config);
+
+    // openscreen::cast::ReceiverSession::Client implementation.
+    void OnNegotiated(
+        const openscreen::cast::ReceiverSession* session,
+        openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) final;
+    void OnReceiversDestroying(const openscreen::cast::ReceiverSession* session,
+                               ReceiversDestroyingReason reason) final;
+    void OnError(const openscreen::cast::ReceiverSession* session,
+                 openscreen::Error error) final;
+
+    void OnDataTimeout();
+    void OnCastChannelClosed();
+
+    openscreen_platform::TaskRunner task_runner_;
+    openscreen::cast::Environment environment_;
+    CastMessagePortImpl cast_message_port_impl_;
+    std::unique_ptr<openscreen::cast::ReceiverSession> receiver_session_;
+    base::OneShotTimer init_timeout_timer_;
+
+    // Timer to trigger connection closure if no data is received for 15
+    // seconds.
+    base::OneShotTimer data_timeout_timer_;
+
+    bool is_initialized_ = false;
+    CastStreamingSession::Client* const client_;
+    std::unique_ptr<StreamConsumer> audio_consumer_;
+    std::unique_ptr<StreamConsumer> video_consumer_;
+  };
+
+  std::unique_ptr<ReceiverSessionClient> receiver_session_;
 };
 
 }  // namespace cast_streaming
