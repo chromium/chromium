@@ -68,10 +68,7 @@ FeatureUsageMetrics::~FeatureUsageMetrics() {
 
 void FeatureUsageMetrics::RecordUsage(bool success) {
   DCHECK(delegate_->IsEligible());
-  // TODO(https://crbug.com/1208743) Remove this case when unit tests are fixed.
-  if (histogram_name_ != "ChromeOS.FeatureUsage.ESim") {
-    DCHECK(delegate_->IsEnabled());
-  }
+  DCHECK(delegate_->IsEnabled());
   DCHECK(start_usage_.is_null());
 #if DCHECK_IS_ON()
   last_record_usage_outcome_ = success;

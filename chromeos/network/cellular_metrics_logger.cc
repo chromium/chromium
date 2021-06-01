@@ -788,7 +788,12 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
                                  usage_duration);
         esim_feature_usage_metrics_->StopUsage();
       }
-      if (usage != CellularUsage::kNotConnected)
+
+      bool was_disconnected =
+          !last_esim_cellular_usage_.has_value() ||
+          last_esim_cellular_usage_ == CellularUsage::kNotConnected;
+
+      if (was_disconnected && usage != CellularUsage::kNotConnected)
         esim_feature_usage_metrics_->RecordUsage(/*success=*/true);
 
       if (usage == CellularUsage::kConnectedAndOnlyNetwork)
