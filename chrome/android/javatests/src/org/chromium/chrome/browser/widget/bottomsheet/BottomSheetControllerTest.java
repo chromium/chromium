@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -398,11 +399,11 @@ public class BottomSheetControllerTest {
             @Override
             public void onSheetClosed(@StateChangeReason int reason) {
                 closedHelper.notifyCalled();
+                mSheetController.removeObserver(this);
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mTestSupport.setSheetState(SheetState.HIDDEN, false));
+        ThreadUtils.runOnUiThread(() -> mTestSupport.setSheetState(SheetState.HIDDEN, false));
 
         closedHelper.waitForFirst();
 
@@ -661,14 +662,16 @@ public class BottomSheetControllerTest {
      */
     private void openNewTabInBackground() throws TimeoutException {
         CallbackHelper tabSelectedHelper = new CallbackHelper();
-        mActivity.getTabModelSelector().getCurrentModel().addObserver(new TabModelObserver() {
+        TabModel tabModel = mActivity.getTabModelSelector().getCurrentModel();
+        tabModel.addObserver(new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                 tabSelectedHelper.notifyCalled();
+                tabModel.removeObserver(this);
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        ThreadUtils.runOnUiThread(() -> {
             mActivity.getTabCreator(false).createNewTab(new LoadUrlParams("about:blank"),
                     TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
         });
