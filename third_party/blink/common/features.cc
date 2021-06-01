@@ -33,20 +33,8 @@ const base::Feature kConversionMeasurement{"ConversionMeasurement",
 const base::Feature kGMSCoreEmoji{"GMSCoreEmoji",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether the HandwritingRecognition API can be enabled. Disabling this feature
-// disables both the origin trial and the mojo interface. Enabling this feature
-// allows the API to be controlled by origin trial (see web runtime feature
-// `HandwritingRecognition`) and finch (see
-// `kHandwritingRecognitionWebPlatformApiFinch`).
-// TODO (crbug.com/1166910): Remove once the HandwritingRecognition API is more
-// widely available (likely M92).
-const base::Feature kHandwritingRecognitionWebPlatformApi{
-    "HandwritingRecognitionWebPlatformApi", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Whether the HandwritingRecognition API can be enabled. Disabling this feature
-// disables both the origin trial and the mojo interface. Defaults to enabled
-// so the feature can be controlled by finch, even when
-// `kHandwritingRecognitionWebPlatformApi` is set from command-line.
+// Whether the HandwritingRecognition API can be enabled by origin trial.
+// Disabling this feature disables both the origin trial and the mojo interface.
 const base::Feature kHandwritingRecognitionWebPlatformApiFinch{
     "HandwritingRecognitionWebPlatformApiFinch",
     base::FEATURE_ENABLED_BY_DEFAULT};

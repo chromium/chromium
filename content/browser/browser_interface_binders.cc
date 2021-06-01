@@ -728,8 +728,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kHandwritingRecognitionWebPlatformApi) &&
-      base::FeatureList::IsEnabled(
           blink::features::kHandwritingRecognitionWebPlatformApiFinch)) {
     map->Add<handwriting::mojom::HandwritingRecognitionService>(
         base::BindRepeating(&CreateHandwritingRecognitionService));
