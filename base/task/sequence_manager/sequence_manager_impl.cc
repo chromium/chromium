@@ -1125,6 +1125,11 @@ std::unique_ptr<NativeWorkHandle> SequenceManagerImpl::OnNativeWorkPending(
   return std::make_unique<NativeWorkHandleImpl>(this, priority);
 }
 
+void SequenceManagerImpl::PrioritizeYieldingToNative(
+    base::TimeTicks prioritize_until) {
+  controller_->PrioritizeYieldingToNative(prioritize_until);
+}
+
 void SequenceManagerImpl::AddDestructionObserver(
     CurrentThread::DestructionObserver* destruction_observer) {
   main_thread_only().destruction_observers.AddObserver(destruction_observer);

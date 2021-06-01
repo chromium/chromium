@@ -253,9 +253,21 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
+  MessagePump::Delegate::NextWorkInfo next_work_info{};
+
   work_deduplicator_.OnWorkStarted();
   LazyNow continuation_lazy_now(time_source_);
   TimeDelta delay_till_next_task = DoWorkImpl(&continuation_lazy_now);
+
+  // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
+  // This will inform the MessagePump to schedule a new continuation based on
+  // the information below, but even if its immediate let the native sequence
+  // have a chance to run.
+  if (!main_thread_only().yield_to_native_after_batch.is_null() &&
+      continuation_lazy_now.Now() <
+          main_thread_only().yield_to_native_after_batch) {
+    next_work_info.yield_to_native = true;
+  }
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
       delay_till_next_task.is_zero() ? WorkDeduplicator::NextTask::kIsImmediate
@@ -264,14 +276,15 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
       ShouldScheduleWork::kScheduleImmediate) {
     // Need to run new work immediately, but due to the contract of DoWork
     // we only need to return a null TimeTicks to ensure that happens.
-    return MessagePump::Delegate::NextWorkInfo();
+    return next_work_info;
   }
 
   // While the math below would saturate when |delay_till_next_task.is_max()|;
   // special-casing here avoids unnecessarily sampling Now() when out of work.
   if (delay_till_next_task.is_max()) {
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
-    return {TimeTicks::Max()};
+    next_work_info.delayed_run_time = TimeTicks::Max();
+    return next_work_info;
   }
 
   // The MessagePump will schedule the delay on our behalf, so we need to update
@@ -287,13 +300,16 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     main_thread_only().next_delayed_do_work =
         main_thread_only().quit_runloop_after;
     // If we've passed |quit_runloop_after| there's no more work to do.
-    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after)
-      return {TimeTicks::Max()};
+    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
+      next_work_info.delayed_run_time = TimeTicks::Max();
+      return next_work_info;
+    }
   }
 
-  return {CapAtOneDay(main_thread_only().next_delayed_do_work,
-                      &continuation_lazy_now),
-          continuation_lazy_now.Now()};
+  next_work_info.delayed_run_time = CapAtOneDay(
+      main_thread_only().next_delayed_do_work, &continuation_lazy_now);
+  next_work_info.recent_now = continuation_lazy_now.Now();
+  return next_work_info;
 }
 
 TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
@@ -511,6 +527,11 @@ bool ThreadControllerWithMessagePumpImpl::IsTaskExecutionAllowed() const {
 
 MessagePump* ThreadControllerWithMessagePumpImpl::GetBoundMessagePump() const {
   return pump_.get();
+}
+
+void ThreadControllerWithMessagePumpImpl::PrioritizeYieldingToNative(
+    base::TimeTicks prioritize_until) {
+  main_thread_only().yield_to_native_after_batch = prioritize_until;
 }
 
 #if defined(OS_IOS)

@@ -344,6 +344,10 @@ void ThreadControllerImpl::DetachFromMessagePump() {
 }
 #endif  // OS_IOS
 
+void ThreadControllerImpl::PrioritizeYieldingToNative(base::TimeTicks) {
+  NOTREACHED();
+}
+
 }  // namespace internal
 }  // namespace sequence_manager
 }  // namespace base

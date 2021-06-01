@@ -72,6 +72,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetTaskExecutionAllowed(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
+  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
 #if defined(OS_IOS) || defined(OS_ANDROID)
   void AttachToMessagePump() override;
 #endif
@@ -117,6 +118,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
     // Number of tasks processed in a single DoWork invocation.
     int work_batch_size = 1;
+
+    // While Now() is less than |yield_to_native_after_batch| we will request a
+    // yield to the MessagePump after |work_batch_size| work items.
+    base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
     // Tracks the number and state of each run-level managed by this instance.
     RunLevelTracker run_level_tracker;

@@ -520,6 +520,76 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 }
 
+TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  auto delayed_time = Seconds(10);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        clock_.SetNowTicks(Seconds(5));
+        MockCallback<OnceClosure> tasks[5];
+
+        // A: Post 4 application tasks, 3 immediate 1 delayed.
+        // B: Run one of them (enter active)
+        //   C: Expect we return immediate work item without yield_to_native
+        //      (default behaviour).
+        // D: Set PrioritizeYieldingToNative until 8 seconds and run second
+        //    task.
+        //   E: Expect we return immediate work item with yield_to_native.
+        // F: Exceed the PrioritizeYieldingToNative deadline and run third task.
+        //   G: Expect we return immediate work item without yield_to_native.
+        // H: Set PrioritizeYieldingToNative to Max() and run third of them
+        //   I: Expect we return a delayed work item with yield_to_native.
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[4].Get(), delayed_time);
+
+        // B:
+        EXPECT_CALL(tasks[0], Run());
+        auto next_work_item = thread_controller_.DoWork();
+        // C:
+        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
+        EXPECT_FALSE(next_work_item.yield_to_native);
+
+        // D:
+        thread_controller_.PrioritizeYieldingToNative(Seconds(8));
+        EXPECT_CALL(tasks[1], Run());
+        next_work_item = thread_controller_.DoWork();
+        // E:
+        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
+        EXPECT_TRUE(next_work_item.yield_to_native);
+
+        // F:
+        clock_.SetNowTicks(Seconds(8));
+        EXPECT_CALL(tasks[2], Run());
+        next_work_item = thread_controller_.DoWork();
+        // G:
+        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
+        EXPECT_FALSE(next_work_item.yield_to_native);
+
+        // H:
+        thread_controller_.PrioritizeYieldingToNative(base::TimeTicks::Max());
+        EXPECT_CALL(tasks[3], Run());
+        next_work_item = thread_controller_.DoWork();
+
+        // I:
+        EXPECT_EQ(next_work_item.delayed_run_time, delayed_time);
+        EXPECT_TRUE(next_work_item.yield_to_native);
+
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+      }));
+
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(message_pump_);
+}
+
 TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
   // This test ensures that a opt-of-runloop Quit() (which is possible with some
   // pump implementations) doesn't affect the next RunLoop::Run call.
