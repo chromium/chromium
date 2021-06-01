@@ -209,7 +209,7 @@ gfx::AcceleratedWidget WaylandScreen::GetAcceleratedWidgetAtScreenPoint(
   // point or not.
   auto* window =
       connection_->wayland_window_manager()->GetCurrentFocusedWindow();
-  if (window && window->GetBounds().Contains(point))
+  if (window && window->GetBoundsInDIP().Contains(point))
     return window->GetWidget();
   return gfx::kNullAcceleratedWidget;
 }

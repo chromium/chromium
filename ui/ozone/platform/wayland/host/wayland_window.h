@@ -225,6 +225,9 @@ class WaylandWindow : public PlatformWindow,
     return ui_task_runner_;
   }
 
+  // Returns bounds in DIP.
+  gfx::Rect GetBoundsInDIP() const;
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);

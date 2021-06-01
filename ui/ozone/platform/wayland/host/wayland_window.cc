@@ -264,6 +264,10 @@ gfx::Rect WaylandWindow::GetBounds() const {
   return bounds_px_;
 }
 
+gfx::Rect WaylandWindow::GetBoundsInDIP() const {
+  return gfx::ScaleToRoundedRect(bounds_px_, 1.0 / buffer_scale());
+}
+
 void WaylandWindow::SetTitle(const std::u16string& title) {}
 
 void WaylandWindow::SetCapture() {

@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -246,6 +247,14 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
 }
 
 TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
+  // Now, send enter event for the surface, which was created before.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output_->resource());
+
+  Sync();
+
   // If there is no focused window (focus is set whenever a pointer enters any
   // of the windows), there must be kNullAcceleratedWidget returned. There is no
   // real way to determine what window is located on a certain screen point in
@@ -268,11 +277,13 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
   MockPlatformWindowDelegate delegate;
+  auto menu_window_bounds =
+      gfx::Rect(window_->GetBounds().width() - 10,
+                window_->GetBounds().height() - 10, 100, 100);
   std::unique_ptr<WaylandWindow> menu_window =
-      CreateWaylandWindowWithProperties(
-          gfx::Rect(window_->GetBounds().width() - 10,
-                    window_->GetBounds().height() - 10, 100, 100),
-          PlatformWindowType::kMenu, window_->GetWidget(), &delegate);
+      CreateWaylandWindowWithProperties(menu_window_bounds,
+                                        PlatformWindowType::kMenu,
+                                        window_->GetWidget(), &delegate);
 
   Sync();
 
@@ -296,6 +307,22 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // Reset the focus to avoid crash on dtor as long as there is no real pointer
   // object.
   window_->SetPointerFocus(false);
+
+  // Part 2: test that the window is found when display's scale changes.
+  // Update scale.
+  output_->SetScale(2);
+  output_->Flush();
+
+  Sync();
+
+  auto menu_bounds_px = menu_window->GetBounds();
+  // Translate the point to dip.
+  auto point_in_screen =
+      gfx::ScaleToRoundedPoint(menu_bounds_px.origin(), 1.f / 2);
+  menu_window->SetPointerFocus(true);
+  widget_at_screen_point =
+      platform_screen_->GetAcceleratedWidgetAtScreenPoint(point_in_screen);
+  EXPECT_EQ(widget_at_screen_point, menu_window->GetWidget());
 }
 
 TEST_P(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
