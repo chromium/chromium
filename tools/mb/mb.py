@@ -686,19 +686,11 @@ class MetaBuildWrapper(object):
     # We trap the command explicitly and rewrite the error output so that
     # the error message is actually correct for a Chromium check out.
     self.PrintCmd(cmd)
-    ret, out, err = self.Run(cmd, force_verbose=False)
+    ret, out, _ = self.Run(cmd, force_verbose=False)
     if ret:
       self.Print('  -> returned %d' % ret)
       if out:
         self.Print(out, end='')
-      if err:
-        # The swarming client will return an exit code of 2 (via
-        # argparse.ArgumentParser.error()) and print a message to indicate
-        # that auth failed, so we have to parse the message to check.
-        if (ret == 2 and 'Please login to' in err):
-          err = err.replace(' auth.py', ' tools/swarming_client/auth.py')
-          self.Print(err, end='', file=sys.stderr)
-
       return ret
 
     try:
