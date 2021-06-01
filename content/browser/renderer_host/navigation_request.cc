@@ -802,6 +802,22 @@ bool CoepBlockIframe(
          !network::CompatibleWithCrossOriginIsolated(child_coep);
 }
 
+// Computes the history offset of the new document compared to the current one.
+int EstimateHistoryOffset(NavigationController& controller,
+                          bool should_replace_current_entry) {
+  if (should_replace_current_entry)
+    return 0;
+
+  int current_index = controller.GetLastCommittedEntryIndex();
+  int pending_index = controller.GetPendingEntryIndex();
+
+  // +1 for non history navigation.
+  if (current_index == -1 || pending_index == -1)
+    return 1;
+
+  return pending_index - current_index;
+}
+
 }  // namespace
 
 // static
@@ -1167,6 +1183,9 @@ NavigationRequest::NavigationRequest(
                 : NavigationTypeToReloadType(common_params_->navigation_type)),
       nav_entry_id_(entry ? entry->GetUniqueID() : 0),
       from_begin_navigation_(from_begin_navigation),
+      navigation_entry_offset_(
+          EstimateHistoryOffset(frame_tree_node_->navigator().controller(),
+                                common_params_->should_replace_current_entry)),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
@@ -1394,8 +1413,6 @@ NavigationRequest::NavigationRequest(
   }
 
   begin_params_->headers = headers.ToString();
-
-  navigation_entry_offset_ = EstimateHistoryOffset();
 
   commit_params_->is_browser_initiated = browser_initiated_;
 }
@@ -4576,22 +4593,6 @@ void NavigationRequest::IgnoreCommitInterfaceDisconnection() {
 
 bool NavigationRequest::IsSameDocument() {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
-}
-
-int NavigationRequest::EstimateHistoryOffset() {
-  if (common_params_->should_replace_current_entry)
-    return 0;
-
-  NavigationController& controller = frame_tree_node_->navigator().controller();
-
-  int current_index = controller.GetLastCommittedEntryIndex();
-  int pending_index = controller.GetPendingEntryIndex();
-
-  // +1 for non history navigation.
-  if (current_index == -1 || pending_index == -1)
-    return 1;
-
-  return pending_index - current_index;
 }
 
 void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck(

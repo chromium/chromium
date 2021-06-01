@@ -1126,10 +1126,6 @@ class CONTENT_EXPORT NavigationRequest
   // when we commit the new page.
   void AddOldPageInfoToCommitParamsIfNeeded();
 
-  // Compute the history offset of the new document compared to the current one.
-  // See navigation_history_offset_ for more details.
-  int EstimateHistoryOffset();
-
   // Record download related UseCounters when navigation is a download before
   // filtered by download_policy.
   void RecordDownloadUseCountersPrePolicyCheck(
@@ -1475,8 +1471,7 @@ class CONTENT_EXPORT NavigationRequest
   bool upgrade_if_insecure_ = false;
 
   // The offset of the new document in the history.
-  // See NavigationHandle::GetNavigationEntryOffset() for details.
-  int navigation_entry_offset_ = 0;
+  const int navigation_entry_offset_ = 0;
 
   // Owns the NavigationThrottles associated with this navigation, and is
   // responsible for notifying them about the various navigation events.
