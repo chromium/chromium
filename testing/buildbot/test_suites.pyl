@@ -425,12 +425,6 @@
       },
     },
 
-    'check_network_annotations_script': {
-      'check_network_annotations': {
-        'script': 'check_network_annotations.py',
-      },
-    },
-
     'chrome_public_wpt': {
       'chrome_public_wpt': {
         'swarming': {
@@ -889,6 +883,9 @@
     },
 
     'chromium_linux_scripts': {
+      'check_network_annotations': {
+        'script': 'check_network_annotations.py',
+      },
       'check_static_initializers': {
         'script': 'check_static_initializers.py',
       },
@@ -910,12 +907,6 @@
       'check_static_initializers': {
         'script': 'check_static_initializers.py',
       },
-      'webkit_lint': {
-        'script': 'blink_lint_expectations.py',
-      },
-    },
-
-    'chromium_scripts': {
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
       },
@@ -1101,6 +1092,15 @@
         'swarming': {
           'shards': 12,
         }
+      },
+    },
+
+    'chromium_win_scripts': {
+      'check_network_annotations': {
+        'script': 'check_network_annotations.py',
+      },
+      'webkit_lint': {
+        'script': 'blink_lint_expectations.py',
       },
     },
 

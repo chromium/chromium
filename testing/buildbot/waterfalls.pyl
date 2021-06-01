@@ -2529,7 +2529,7 @@
           'all'
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_linux_scripts',
         }
       },
       'Linux Builder (j-500) (n2) (reclient)': {
@@ -2704,7 +2704,7 @@
           'pdf_fuzzers'
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_win_scripts',
         },
       },
       'android-backuprefptr-arm-fyi-rel': {
@@ -3096,7 +3096,7 @@
           'all',
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_linux_scripts',
         },
       },
       'linux-chromium-tests-staging-tests': {
@@ -4842,7 +4842,7 @@
           'all'
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_linux_scripts',
         }
       },
       'Linux Builder (dbg)': {
@@ -4855,17 +4855,6 @@
           'google_apis_unittests',
           'sync_integration_tests'
         ]
-      },
-      'Linux Builder Robocrop': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'scripts': 'check_network_annotations_script',
-        }
       },
       'Linux Ozone Tester (Headless)': {
         'mixins': [
@@ -4923,7 +4912,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-          'scripts': 'chromium_linux_scripts',
         },
       },
       'Linux Tests (dbg)(1)': {
@@ -4933,18 +4921,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_dbg_isolated_scripts',
-        },
-      },
-      'Linux Tests Robocrop': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-xenial',
-          'robocrop-swarming-pool',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-          'scripts': 'chromium_linux_scripts',
         },
       },
       # For documentation, see //services/network/README.md.
@@ -5981,7 +5957,7 @@
           'pdf_fuzzers'
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_win_scripts',
         },
       },
       'Win x64 Builder': {
@@ -5989,7 +5965,7 @@
           'pdf_fuzzers'
         ],
         'test_suites': {
-          'scripts': 'check_network_annotations_script',
+          'scripts': 'chromium_win_scripts',
         },
       },
       # 'Win10 Tests x64' and 'Win7 Tests (1)' should have the same set of
@@ -6004,7 +5980,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-          'scripts': 'chromium_scripts',
         },
       },
       'Win10 Tests x64 (dbg)': {
@@ -6030,7 +6005,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-          'scripts': 'chromium_scripts',
         },
       },
       'Win7 Tests (dbg)(1)': {

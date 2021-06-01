@@ -31,6 +31,36 @@
         "name": "check_network_annotations",
         "script": "check_network_annotations.py",
         "swarming": {}
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py",
+        "swarming": {}
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "checkdeps",
+        "script": "checkdeps.py",
+        "swarming": {}
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "checkperms",
+        "script": "checkperms.py",
+        "swarming": {}
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "headless_python_unittests",
+        "script": "headless_python_unittests.py",
+        "swarming": {}
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py",
+        "swarming": {}
       }
     ]
   },
@@ -1726,6 +1756,11 @@
       {
         "name": "check_network_annotations",
         "script": "check_network_annotations.py",
+        "swarming": {}
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py",
         "swarming": {}
       }
     ]
@@ -59491,6 +59526,31 @@
         "name": "check_network_annotations",
         "script": "check_network_annotations.py",
         "swarming": {}
+      },
+      {
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py",
+        "swarming": {}
+      },
+      {
+        "name": "checkdeps",
+        "script": "checkdeps.py",
+        "swarming": {}
+      },
+      {
+        "name": "checkperms",
+        "script": "checkperms.py",
+        "swarming": {}
+      },
+      {
+        "name": "headless_python_unittests",
+        "script": "headless_python_unittests.py",
+        "swarming": {}
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py",
+        "swarming": {}
       }
     ]
   },
@@ -63629,6 +63689,12 @@
       }
     ],
     "scripts": [
+      {
+        "isolate_profile_data": true,
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      },
       {
         "isolate_profile_data": true,
         "name": "check_static_initializers",

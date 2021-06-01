@@ -1002,13 +1002,6 @@
       },
     },
   },
-  'robocrop-swarming-pool': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.tests.robocrop',
-      },
-    },
-  },
   'sailfish': {
     # Pixel 1
     'swarming': {
