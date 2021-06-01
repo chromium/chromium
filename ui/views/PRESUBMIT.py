@@ -8,6 +8,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
+
 INCLUDE_CPP_FILES_ONLY = (
   r'.*\.(cc|h)$',
 )
