@@ -34,7 +34,7 @@ void ApplyAshFontStyles(int context,
 
   switch (style) {
     case STYLE_EMPHASIZED:
-      details.weight = gfx::Font::Weight::SEMIBOLD;
+      details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case STYLE_SHARESHEET:
       DCHECK(context == CONTEXT_SHARESHEET_BUBBLE_TITLE ||
