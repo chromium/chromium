@@ -33,7 +33,7 @@
             "${pref}": {
               "value": "The value that |pref| should take on.",
               "expect_default": "Whether or not the pref value should be the default one (i.e. unmanaged and user-modifiable). Defaults to false if not specified.",
-              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state', 'cros_setting']. Defaults to 'user_profile' if not specified.",
+              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
             }
@@ -5576,19 +5576,7 @@
   "DevicePciPeripheralDataAccessEnabled": {},
 
   "DeviceMetricsReportingEnabled": {
-    "os": ["chromeos"],
-    "official_only": true,
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceMetricsReportingEnabled": true
-        },
-        "prefs": { "cros.metrics.reportingEnabled": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceEphemeralUsersEnabled": {},
@@ -5730,20 +5718,7 @@
   "ExtensionCacheSize": {},
 
   "DeviceShowLowDiskSpaceNotification": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ShowLowDiskSpaceNotification": false
-        },
-        "prefs": {
-          "cros.device.show_low_disk_space_notification": {
-            "value": false,
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceLoginScreenDomainAutoComplete": {},
@@ -5751,19 +5726,7 @@
   "AllowKioskAppControlChromeVersion": {},
 
   "LoginAuthenticationBehavior": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "LoginAuthenticationBehavior": 1
-        },
-        "prefs": {
-          "cros.device.login_authentication_behavior": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "UsbDetachableWhitelist": {},
@@ -5773,51 +5736,15 @@
   "DeviceAllowBluetooth": {},
 
   "DeviceWiFiAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceWiFiAllowed": false
-        },
-        "prefs": {
-          "cros.device.device_wifi_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceQuirksDownloadEnabled": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceQuirksDownloadEnabled": true
-        },
-        "prefs": {
-          "cros.device.quirks_download_enabled": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "SystemTimezoneAutomaticDetection": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SystemTimezoneAutomaticDetection": 1
-        },
-        "prefs": {
-          "cros.device.system_timezone_automatic_detection": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "WebRestrictionsAuthority": {},
@@ -5863,21 +5790,7 @@
   },
 
   "LoginVideoCaptureAllowedUrls": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "LoginVideoCaptureAllowedUrls": [
-            "https://example.com"
-          ]
-        },
-        "prefs": {
-          "cros.device.login_video_capture_allowed_urls": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceLoginScreenExtensions": {
@@ -5908,22 +5821,7 @@
   },
 
   "DeviceWallpaperImage": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceWallpaperImage": {
-            "url": "http://localhost/",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        },
-        "prefs": {
-          "cros.device_wallpaper_image": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "BrowserNetworkTimeQueriesEnabled": {
@@ -5986,19 +5884,7 @@
   },
 
   "CastReceiverName": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CastReceiverName": "Hallway"
-        },
-        "prefs": {
-          "cros.device.cast_receiver.name": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceNativePrinters": {
@@ -6016,51 +5902,15 @@
   },
 
   "DeviceNativePrintersAccessMode": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceNativePrintersAccessMode": 1
-        },
-        "prefs": {
-          "cros.device.native_printers_access_mode": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceNativePrintersBlacklist": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceNativePrintersBlacklist": ["id4", "id7", "id10"]
-        },
-        "prefs": {
-          "cros.device.native_printers_blacklist": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceNativePrintersWhitelist": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceNativePrintersWhitelist": ["id4", "id7", "id10"]
-        },
-        "prefs": {
-          "cros.device.native_printers_whitelist": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceExternalPrintServers": {
@@ -6107,68 +5957,19 @@
   },
 
   "DevicePrintersAccessMode": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePrintersAccessMode": 1
-        },
-        "prefs": {
-          "cros.device.native_printers_access_mode": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DevicePrintersBlocklist": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePrintersBlocklist": ["id4", "id7", "id10"]
-        },
-        "prefs": {
-          "cros.device.native_printers_blacklist": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DevicePrintersAllowlist": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePrintersAllowlist": ["id4", "id7", "id10"]
-        },
-        "prefs": {
-          "cros.device.native_printers_whitelist": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "TPMFirmwareUpdateSettings": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "allow-user-initiated-powerwash": true,
-          "auto-update-mode": 2
-        },
-        "prefs": {
-          "cros.tpm_firmware_update_settings": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "MinimumRequiredChromeVersion": {
@@ -6176,81 +5977,21 @@
   },
 
   "DeviceMinimumVersion": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceMinimumVersion": {
-            "requirements": [
-              {"chromeos_version" : "13121.0.0", "warning_period" : 0, "aue_warning_period" : 14}
-            ],
-            "unmanaged_user_restricted": true
-          }
-        },
-        "prefs": {
-          "cros.device.min_version": {
-            "value": {
-              "requirements": [
-                {"chromeos_version" : "13121.0.0", "warning_period" : 0, "aue_warning_period" : 14}
-              ],
-              "unmanaged_user_restricted": true
-            },
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceMinimumVersionAueMessage": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceMinimumVersionAueMessage": "Please return your device."
-        },
-        "prefs": {
-          "cros.device.min_version_aue_message": {
-            "value": "Please return this device.",
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceLoginScreenAutoSelectCertificateForUrls": {},
 
   "UnaffiliatedArcAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "unaffiliated_arc_allowed": false
-        },
-        "prefs": {
-          "cros.unaffiliated_arc_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceHostnameTemplate": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceHostnameTemplate": "chromebook-${ASSET_ID}"
-        },
-        "prefs": {
-          "cros.network.hostname_template": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "ContextAwareAccessSignalsAllowlist": {
@@ -6379,19 +6120,7 @@
   },
 
   "VirtualMachinesAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "virtual_machines_allowed": true
-        },
-        "prefs": {
-          "cros.device.virtual_machines_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "CrostiniAllowed": {
@@ -6407,19 +6136,7 @@
   },
 
   "DeviceUnaffiliatedCrostiniAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "device_unaffiliated_crostini_allowed": false
-        },
-        "prefs": {
-          "cros.device.unaffiliated_crostini_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "CrostiniExportImportUIAllowed": {
@@ -6828,35 +6545,11 @@
   },
 
   "PluginVmAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PluginVmAllowed": true
-        },
-        "prefs": {
-          "cros.device.plugin_vm_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "PluginVmLicenseKey": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PluginVmLicenseKey": "LICENSE_KEY"
-        },
-        "prefs": {
-          "cros.device.plugin_vm_license_key": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "ParentAccessCodeConfig": {
@@ -6946,19 +6639,7 @@
   },
 
   "DeviceRebootOnUserSignout": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceRebootOnUserSignout": 0
-        },
-        "prefs": {
-          "cros.device.reboot_on_user_signout": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "ForceNetworkInProcess": {
@@ -6966,19 +6647,7 @@
   },
 
   "DeviceWilcoDtcAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceWilcoDtcAllowed": true
-        },
-        "prefs": {
-          "cros.device.wilco_dtc_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceWilcoDtcConfiguration": {
@@ -7077,19 +6746,7 @@
   },
 
   "DeviceDockMacAddressSource": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceDockMacAddressSource": 2
-        },
-        "prefs": {
-          "cros.device.device_dock_mac_address_source": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceAdvancedBatteryChargeModeEnabled": {
@@ -7190,37 +6847,11 @@
   },
 
   "DevicePowerwashAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePowerwashAllowed": true
-        },
-        "prefs": {
-          "cros.device.device_powerwash_allowed": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceWebBasedAttestationAllowedUrls": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceWebBasedAttestationAllowedUrls": [
-            "[*.]example.com"
-          ]
-        },
-        "prefs": {
-          "cros.device.web_based_attestation_allowed_urls": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "EmojiSuggestionEnabled": {
@@ -7470,36 +7101,11 @@
   },
 
   "DeviceBorealisAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceBorealisAllowed": false
-        },
-        "prefs": {
-          "cros.device.borealis_allowed": {
-            "value": false,
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceAllowedBluetoothServices": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceAllowedBluetoothServices": ["1124","180A","180F","1812"]
-        },
-        "prefs": {
-          "cros.device.allowed_bluetooth_services": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceDebugPacketCaptureAllowed": {},
@@ -8150,24 +7756,7 @@
     ]
   },
   "SystemProxySettings": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-     {
-      "policies": {
-       "SystemProxySettings": {
-        "system_proxy_enabled": "true",
-        "system_services_username": "test_user",
-        "system_services_password": "0000",
-        "policy_credentials_auth_schemes": ["basic","digest"]
-       }
-      },
-      "prefs": {
-      "cros.system_proxy_settings": {
-        "location": "cros_setting"
-      }
-      }
-     }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
   "NativeWindowOcclusionEnabled":  {
     "os":  ["win"],
@@ -8282,17 +7871,7 @@
     ]
   },
   "DeviceChannelDowngradeBehavior": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "DeviceChannelDowngradeBehavior": 0 },
-        "prefs": {
-          "cros.system.channelDowngradeBehavior": {
-            "location": "cros_setting"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
   "BackForwardCacheEnabled": {
     "os": ["android"],

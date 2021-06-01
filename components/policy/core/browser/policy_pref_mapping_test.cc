@@ -41,7 +41,6 @@ enum class PrefLocation {
   kUserProfile,
   kSigninProfile,
   kLocalState,
-  kCrosSetting,
 };
 
 PrefLocation GetPrefLocation(const base::Value& settings) {
@@ -52,8 +51,6 @@ PrefLocation GetPrefLocation(const base::Value& settings) {
     return PrefLocation::kLocalState;
   if (*location == "signin_profile")
     return PrefLocation::kSigninProfile;
-  if (*location == "cros_setting")
-    return PrefLocation::kCrosSetting;
   NOTREACHED() << "Unknown pref location: " << *location;
   return PrefLocation::kUserProfile;
 }
@@ -534,9 +531,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
             case PrefLocation::kLocalState:
               prefs = local_state;
               break;
-            case PrefLocation::kCrosSetting:
-              // TODO(https://crbug.com/809991) Verify CrosSettings mappings
-              continue;
             default:
               NOTREACHED() << "Unhandled pref location: "
                            << static_cast<int>(pref_case->location());
