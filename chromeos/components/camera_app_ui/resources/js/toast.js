@@ -19,7 +19,9 @@ function update(message, spoken) {
   element.textContent = message;
 
   element.classList.toggle('spoken', spoken);
-  animate.play(element);
+  if (!spoken) {
+    animate.play(element);
+  }
 }
 
 /**
