@@ -10,10 +10,12 @@
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
@@ -179,7 +181,8 @@ scoped_refptr<MessageQuotaChecker> MessageQuotaChecker::MaybeCreateForTesting(
   return MaybeCreateImpl(config);
 }
 
-MessageQuotaChecker::MessageQuotaChecker(const Configuration* config)
+MessageQuotaChecker::MessageQuotaChecker(const Configuration* config,
+                                         base::PassKey<MessageQuotaChecker>)
     : config_(config), creation_time_(base::TimeTicks::Now()) {}
 MessageQuotaChecker::~MessageQuotaChecker() = default;
 
@@ -210,7 +213,8 @@ scoped_refptr<MessageQuotaChecker> MessageQuotaChecker::MaybeCreateImpl(
   if (base::RandInt(0, config.sample_rate - 1) != 0)
     return nullptr;
 
-  return new MessageQuotaChecker(&config);
+  return base::MakeRefCounted<MessageQuotaChecker>(
+      &config, base::PassKey<MessageQuotaChecker>());
 }
 
 absl::optional<size_t> MessageQuotaChecker::GetCurrentMessagePipeQuota() {

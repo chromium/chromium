@@ -14,9 +14,11 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
@@ -299,21 +301,26 @@ class MultiplexRouter::MessageWrapper {
 
 struct MultiplexRouter::Task {
  public:
+  enum Type { MESSAGE, NOTIFY_ERROR };
+
   // Doesn't take ownership of |message| but takes its contents.
   static std::unique_ptr<Task> CreateMessageTask(
       MessageWrapper message_wrapper) {
-    Task* task = new Task(MESSAGE);
+    auto task = std::make_unique<Task>(MESSAGE, base::PassKey<Task>());
     task->message_wrapper = std::move(message_wrapper);
-    return base::WrapUnique(task);
+    return task;
   }
   static std::unique_ptr<Task> CreateNotifyErrorTask(
       InterfaceEndpoint* endpoint) {
-    Task* task = new Task(NOTIFY_ERROR);
+    auto task = std::make_unique<Task>(NOTIFY_ERROR, base::PassKey<Task>());
     task->endpoint_to_notify = endpoint;
-    return base::WrapUnique(task);
+    return task;
   }
 
-  ~Task() {}
+  explicit Task(Type in_type, base::PassKey<Task>) : type(in_type) {}
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
+  ~Task() = default;
 
   bool IsMessageTask() const { return type == MESSAGE; }
   bool IsNotifyErrorTask() const { return type == NOTIFY_ERROR; }
@@ -321,13 +328,7 @@ struct MultiplexRouter::Task {
   MessageWrapper message_wrapper;
   scoped_refptr<InterfaceEndpoint> endpoint_to_notify;
 
-  enum Type { MESSAGE, NOTIFY_ERROR };
   Type type;
-
- private:
-  explicit Task(Type in_type) : type(in_type) {}
-
-  DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
 // static
@@ -444,8 +445,11 @@ InterfaceId MultiplexRouter::AssociateInterface(
         id |= kInterfaceIdNamespaceMask;
     } while (base::Contains(endpoints_, id));
 
-    InterfaceEndpoint* endpoint = new InterfaceEndpoint(this, id);
-    endpoints_[id] = endpoint;
+    auto endpoint_ref = base::MakeRefCounted<InterfaceEndpoint>(this, id);
+    // Raw pointer use is safe because the InterfaceEndpoint will remain alive
+    // as long as a reference to it exists in the `endpoints_` map.
+    InterfaceEndpoint* endpoint = endpoint_ref.get();
+    endpoints_[id] = std::move(endpoint_ref);
     if (encountered_error_)
       UpdateEndpointStateMayRemove(endpoint, PEER_ENDPOINT_CLOSED);
     endpoint->set_handle_created();
@@ -1136,8 +1140,11 @@ MultiplexRouter::InterfaceEndpoint* MultiplexRouter::FindOrInsertEndpoint(
 
   InterfaceEndpoint* endpoint = FindEndpoint(id);
   if (!endpoint) {
-    endpoint = new InterfaceEndpoint(this, id);
-    endpoints_[id] = endpoint;
+    auto endpoint_ref = base::MakeRefCounted<InterfaceEndpoint>(this, id);
+    // Raw pointer use is safe because the InterfaceEndpoint will remain alive
+    // as long as a reference to it exists in the `endpoints_` map.
+    endpoint = endpoint_ref.get();
+    endpoints_[id] = std::move(endpoint_ref);
     if (inserted)
       *inserted = true;
   }

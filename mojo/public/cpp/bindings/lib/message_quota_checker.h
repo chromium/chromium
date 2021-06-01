@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -79,9 +80,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageQuotaChecker
     double decayed_average_ = 0.0;
   };
 
+  // Exposed for use in tests.
+  struct Configuration;
+
   // Returns a new instance if this invocation has been sampled for quota
   // checking.
   static scoped_refptr<MessageQuotaChecker> MaybeCreate();
+
+  // Public for base::MakeRefCounted(). Use MaybeCreate().
+  MessageQuotaChecker(const Configuration* config,
+                      base::PassKey<MessageQuotaChecker>);
 
   // Call before writing a message to |message_pipe_|.
   void BeforeWrite();
@@ -99,14 +107,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageQuotaChecker
 
   // Test support.
   size_t GetCurrentQuotaStatusForTesting();
-  struct Configuration;
   static Configuration GetConfigurationForTesting();
   static scoped_refptr<MessageQuotaChecker> MaybeCreateForTesting(
       const Configuration& config);
 
  private:
   friend class base::RefCountedThreadSafe<MessageQuotaChecker>;
-  explicit MessageQuotaChecker(const Configuration* config);
   ~MessageQuotaChecker();
   static Configuration GetConfiguration();
   static scoped_refptr<MessageQuotaChecker> MaybeCreateImpl(

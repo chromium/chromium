@@ -10,10 +10,12 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/c/system/core.h"
 
 namespace mojo {
@@ -39,13 +41,20 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
 
   // SyncMessageFilter can be used on threads without sequence-local storage
   // being available. Those receive a unique, standalone SyncHandleRegistry.
-  if (!base::SequencedTaskRunnerHandle::IsSet())
-    return new SyncHandleRegistry();
+  if (!base::SequencedTaskRunnerHandle::IsSet()) {
+    return base::MakeRefCounted<SyncHandleRegistry>(
+        base::PassKey<SyncHandleRegistry>());
+  }
 
-  if (!*g_current_sync_handle_watcher)
-    g_current_sync_handle_watcher->emplace(new SyncHandleRegistry());
+  if (!*g_current_sync_handle_watcher) {
+    g_current_sync_handle_watcher->emplace(
+        base::MakeRefCounted<SyncHandleRegistry>(
+            base::PassKey<SyncHandleRegistry>()));
+  }
   return *g_current_sync_handle_watcher->GetValuePointer();
 }
+
+SyncHandleRegistry::SyncHandleRegistry(base::PassKey<SyncHandleRegistry>) {}
 
 bool SyncHandleRegistry::RegisterHandle(const Handle& handle,
                                         MojoHandleSignals handle_signals,
@@ -159,8 +168,6 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
   return false;
 }
-
-SyncHandleRegistry::SyncHandleRegistry() = default;
 
 SyncHandleRegistry::~SyncHandleRegistry() = default;
 

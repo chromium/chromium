@@ -296,11 +296,11 @@ void ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
 }
 
 ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle()
-    : state_(new State) {}
+    : state_(base::MakeRefCounted<State>()) {}
 
 ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle(
     ScopedInterfaceEndpointHandle&& other)
-    : state_(new State) {
+    : state_(base::MakeRefCounted<State>()) {
   state_.swap(other.state_);
 }
 
@@ -355,7 +355,7 @@ void ScopedInterfaceEndpointHandle::ResetWithReason(
 ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle(
     InterfaceId id,
     scoped_refptr<AssociatedGroupController> group_controller)
-    : state_(new State(id, std::move(group_controller))) {
+    : state_(base::MakeRefCounted<State>(id, std::move(group_controller))) {
   DCHECK(!IsValidInterfaceId(state_->id()) || state_->group_controller());
 }
 
@@ -367,7 +367,7 @@ bool ScopedInterfaceEndpointHandle::NotifyAssociation(
 
 void ScopedInterfaceEndpointHandle::ResetInternal(
     const absl::optional<DisconnectReason>& reason) {
-  scoped_refptr<State> new_state(new State);
+  auto new_state = base::MakeRefCounted<State>();
   state_->Close(reason);
   state_.swap(new_state);
 }

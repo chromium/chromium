@@ -105,7 +105,10 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
  public:
   using Proxy = typename Interface::Proxy_;
 
-  AssociatedInterfacePtrState() {}
+  AssociatedInterfacePtrState() = default;
+  AssociatedInterfacePtrState(const AssociatedInterfacePtrState&) = delete;
+  AssociatedInterfacePtrState& operator=(const AssociatedInterfacePtrState&) =
+      delete;
   ~AssociatedInterfacePtrState() = default;
 
   Proxy* instance() {
@@ -125,7 +128,7 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
         info.PassHandle(), info.version(),
         std::make_unique<typename Interface::ResponseValidator_>(),
         std::move(runner), Interface::Name_);
-    proxy_.reset(new Proxy(endpoint_client()));
+    proxy_ = std::make_unique<Proxy>(endpoint_client());
   }
 
   // After this method is called, the object is in an invalid state and
@@ -138,8 +141,6 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
 
  private:
   std::unique_ptr<Proxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedInterfacePtrState);
 };
 
 }  // namespace internal
