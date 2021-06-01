@@ -63,18 +63,6 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
                         std::vector<ScopedOverlayAccess*> accesses) final;
 
  private:
-  struct PendingOverlay {
-    PendingOverlay(OverlayCandidate candidate,
-                   std::vector<gfx::GpuFence> release_fences);
-    ~PendingOverlay();
-
-    PendingOverlay(PendingOverlay&&);
-    PendingOverlay& operator=(PendingOverlay&&);
-
-    OverlayCandidate candidate;
-    std::vector<gfx::GpuFence> release_fences;
-  };
-
   struct PendingFrame {
     explicit PendingFrame(uint32_t ordinal);
     ~PendingFrame();
@@ -98,7 +86,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
     bool remove_buffer_collection = false;
 
     // Vector of overlays that are associated with this frame.
-    std::vector<PendingOverlay> overlays;
+    std::vector<OverlayCandidate> overlays;
   };
 
   struct PresentationState {
