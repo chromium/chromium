@@ -1798,8 +1798,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ChromeShareScreenshot",
-                        "PreemptiveLinkToTextGeneration"
+                        "ChromeShareScreenshot"
                     ],
                     "min_os_version": "5.1"
                 }
@@ -7079,6 +7078,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SharedClipboardUI"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SharedHighlightingClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreemptiveLinkToTextGeneration"
                     ]
                 }
             ]
