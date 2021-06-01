@@ -337,14 +337,11 @@ class RenderViewImplTest : public RenderViewTest {
     return render_widget_host_->LastCompositionBounds();
   }
 
-  void ReceiveDisableDeviceEmulation(RenderViewImpl* view) {
-    view->GetWebView()->DisableDeviceEmulation();
-  }
+  void ReceiveDisableDeviceEmulation() { web_view_->DisableDeviceEmulation(); }
 
   void ReceiveEnableDeviceEmulation(
-      RenderViewImpl* view,
       const blink::DeviceEmulationParams& params) {
-    view->GetWebView()->EnableDeviceEmulation(params);
+    web_view_->EnableDeviceEmulation(params);
   }
 
   void GoToOffsetWithParams(int offset,
@@ -352,7 +349,7 @@ class RenderViewImplTest : public RenderViewTest {
                             mojom::CommonNavigationParamsPtr common_params,
                             mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
-    blink::WebView* webview = view()->GetWebView();
+    blink::WebView* webview = web_view_;
     int pending_offset = offset + webview->HistoryBackListCount();
 
     commit_params->page_state = state;
@@ -511,14 +508,12 @@ class RenderViewImplTest : public RenderViewTest {
   }
 
   void EnablePreferredSizeMode() {
-    blink::WebView* webview = view()->GetWebView();
-    webview->EnablePreferredSizeChangedMode();
+    web_view_->EnablePreferredSizeChangedMode();
   }
 
   gfx::Size GetPreferredSize() {
-    blink::WebView* webview = view()->GetWebView();
-    webview->UpdatePreferredSize();
-    return gfx::Size(webview->GetPreferredSizeForTest());
+    web_view_->UpdatePreferredSize();
+    return gfx::Size(web_view_->GetPreferredSizeForTest());
   }
 
   gfx::Size MainWidgetSizeInDIPS() {
@@ -529,9 +524,8 @@ class RenderViewImplTest : public RenderViewTest {
   }
 
   int GetScrollbarWidth() {
-    blink::WebView* webview = view()->GetWebView();
-    return webview->MainFrameWidget()->Size().width() -
-           webview->MainFrame()
+    return web_view_->MainFrameWidget()->Size().width() -
+           web_view_->MainFrame()
                ->ToWebLocalFrame()
                ->VisibleContentRect()
                .width();
@@ -545,7 +539,7 @@ class RenderViewImplBlinkSettingsTest : public RenderViewImplTest {
  public:
   virtual void DoSetUp() { RenderViewImplTest::SetUp(); }
 
-  blink::WebSettings* settings() { return view()->GetWebView()->GetSettings(); }
+  blink::WebSettings* settings() { return web_view_->GetSettings(); }
 
  protected:
   // Blink settings may be specified on the command line, which must
@@ -582,8 +576,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     visual_properties.new_size = gfx::Size(100, 100);
     visual_properties.compositor_viewport_pixel_rect = gfx::Rect(200, 200);
     visual_properties.visible_viewport_size = visual_properties.new_size;
-    visual_properties.auto_resize_enabled =
-        view()->GetWebView()->AutoResizeMode();
+    visual_properties.auto_resize_enabled = web_view_->AutoResizeMode();
     visual_properties.min_size_for_auto_resize = min_size_for_autoresize_;
     visual_properties.max_size_for_auto_resize = max_size_for_autoresize_;
     visual_properties.local_surface_id =
@@ -601,7 +594,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     blink::DeviceEmulationParams params;
     params.view_size = gfx::Size(width, height);
     params.device_scale_factor = dpr;
-    ReceiveEnableDeviceEmulation(view(), params);
+    ReceiveEnableDeviceEmulation(params);
     EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_width, &emulated_width));
     EXPECT_EQ(width, emulated_width);
     EXPECT_TRUE(
@@ -616,8 +609,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
   void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size) {
     min_size_for_autoresize_ = min_size;
     max_size_for_autoresize_ = max_size;
-    blink::WebView* webview = view()->GetWebView();
-    webview->EnableAutoResizeForTesting(min_size, max_size);
+    web_view_->EnableAutoResizeForTesting(min_size, max_size);
   }
 
  private:
@@ -684,7 +676,7 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   args.browser_controls_constraint = cc::BrowserControlsState::kHidden;
   args.scroll_gesture_did_end = false;
 
-  view()->GetWebView()->MainFrameWidget()->ApplyViewportChangesForTesting(args);
+  web_view_->MainFrameWidget()->ApplyViewportChangesForTesting(args);
   EXPECT_TRUE(root_web_frame->FirstChild()
                   ->ToWebRemoteFrame()
                   ->GetPendingVisualPropertiesForTesting()
@@ -707,7 +699,7 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
 
   // Reset the flag, make sure both children respond.
   args.is_pinch_gesture_active = false;
-  view()->GetWebView()->MainFrameWidget()->ApplyViewportChangesForTesting(args);
+  web_view_->MainFrameWidget()->ApplyViewportChangesForTesting(args);
   EXPECT_FALSE(root_web_frame->FirstChild()
                    ->ToWebRemoteFrame()
                    ->GetPendingVisualPropertiesForTesting()
@@ -916,10 +908,9 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
 }
 
 TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
-  blink::RendererPreferences prefs =
-      view()->GetWebView()->GetRendererPreferences();
+  blink::RendererPreferences prefs = web_view_->GetRendererPreferences();
   prefs.browser_handles_all_top_level_requests = true;
-  view()->GetWebView()->SetRendererPreferences(prefs);
+  web_view_->SetRendererPreferences(prefs);
 
   const blink::WebNavigationType kNavTypes[] = {
       blink::kWebNavigationTypeLinkClicked,
@@ -1085,10 +1076,10 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   EXPECT_EQ(device_scale,
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
 
-  ReceiveDisableDeviceEmulation(view());
+  ReceiveDisableDeviceEmulation();
 
   blink::DeviceEmulationParams params;
-  ReceiveEnableDeviceEmulation(view(), params);
+  ReceiveEnableDeviceEmulation(params);
   // Don't disable here to test that emulation is being shutdown properly.
 }
 
@@ -1156,7 +1147,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   static_cast<mojom::Frame*>(frame())->Unload(
       kProxyRoutingId, true, replication_state->Clone(),
       blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
-  EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
+  EXPECT_TRUE(web_view_->MainFrame()->IsWebRemoteFrame());
 
   // Do the remote-to-local transition for the proxy, which is to create a
   // provisional local frame.
@@ -1215,8 +1206,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale,
-            view()->GetWebView()->ZoomFactorForDeviceScaleFactor());
+  EXPECT_EQ(device_scale, web_view_->ZoomFactorForDeviceScaleFactor());
 
   double device_pixel_ratio;
   std::u16string get_dpr = u"Number(window.devicePixelRatio)";
@@ -1227,8 +1217,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   int width;
   std::u16string get_width = u"Number(document.documentElement.clientWidth)";
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_width, &width));
-  EXPECT_EQ(view()->GetWebView()->MainFrameWidget()->Size().width(),
-            width * device_scale);
+  EXPECT_EQ(web_view_->MainFrameWidget()->Size().width(), width * device_scale);
 }
 
 // Test that when a parent detaches a remote child after the provisional
@@ -1297,7 +1286,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       ->Unload(kProxyRoutingId, true,
                ReconstructReplicationStateForTesting(main_frame),
                blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
-  EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
+  EXPECT_TRUE(web_view_->MainFrame()->IsWebRemoteFrame());
 }
 
 class TextInputStateFakeRenderWidgetHost : public FakeRenderWidgetHost {
@@ -2042,7 +2031,7 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       // result.
       const int kMaxOutputCharacters = 128;
       std::u16string output = TestWebFrameContentDumper::DumpWebViewAsText(
-                                  view()->GetWebView(), kMaxOutputCharacters)
+                                  web_view_, kMaxOutputCharacters)
                                   .Utf16();
       EXPECT_EQ(base::WideToUTF16(ime_message->result), output);
     }
@@ -2093,7 +2082,7 @@ TEST_F(RenderViewImplTest, OnSetTextDirection) {
     // expected result.
     const int kMaxOutputCharacters = 16;
     std::u16string output = TestWebFrameContentDumper::DumpWebViewAsText(
-                                view()->GetWebView(), kMaxOutputCharacters)
+                                web_view_, kMaxOutputCharacters)
                                 .Utf16();
     EXPECT_EQ(base::WideToUTF16(test_case.expected_result), output);
   }
@@ -2528,7 +2517,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   // expected result.
   const int kMaxOutputCharacters = 256;
   std::string output = TestWebFrameContentDumper::DumpWebViewAsText(
-                           view()->GetWebView(), kMaxOutputCharacters)
+                           web_view_, kMaxOutputCharacters)
                            .Utf8();
   EXPECT_EQ(output, "hello \n\nworld");
 }
@@ -2645,7 +2634,7 @@ TEST_F(RendererErrorPageTest, RegularError) {
   FrameLoadWaiter(main_frame).Wait();
   const int kMaxOutputCharacters = 22;
   EXPECT_EQ("A suffusion of yellow.",
-            TestWebFrameContentDumper::DumpWebViewAsText(view()->GetWebView(),
+            TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
                                                          kMaxOutputCharacters)
                 .Ascii());
 }
@@ -2864,7 +2853,7 @@ TEST_F(RenderViewImplTest, PreferredSizeZoomed) {
 
   main_frame_widget()->SetZoomLevelForTesting(
       blink::PageZoomFactorToZoomLevel(2.0));
-  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view_->MainFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
   size = GetPreferredSize();
   EXPECT_EQ(gfx::Size(800 + scrollbar_width, 800), size);
@@ -2895,7 +2884,7 @@ TEST_F(RenderViewImplScaleFactorTest, PreferredSizeWithScaleFactor) {
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new browser-initiated navigation.
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
-  blink::WebView* webview = view()->GetWebView();
+  blink::WebView* webview = web_view_;
   EXPECT_EQ(0, webview->HistoryBackListCount());
   EXPECT_EQ(0, webview->HistoryBackListCount() +
                    webview->HistoryForwardListCount() + 1);
@@ -2915,7 +2904,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new history browser-initiated navigation.
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
-  blink::WebView* webview = view()->GetWebView();
+  blink::WebView* webview = web_view_;
   EXPECT_EQ(0, webview->HistoryBackListCount());
   EXPECT_EQ(0, webview->HistoryBackListCount() +
                    webview->HistoryForwardListCount() + 1);
@@ -2937,7 +2926,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new history browser-initiated navigation with should_clear_history_list
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
-  blink::WebView* webview = view()->GetWebView();
+  blink::WebView* webview = web_view_;
   EXPECT_EQ(0, webview->HistoryBackListCount());
   EXPECT_EQ(0, webview->HistoryBackListCount() +
                    webview->HistoryForwardListCount() + 1);
@@ -3096,18 +3085,18 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
       "}"
       "</style>");
 
-  EXPECT_EQ(1.f, view()->GetWebView()->PageScaleFactor());
-  EXPECT_EQ(1.f, view()->GetWebView()->MinimumPageScaleFactor());
+  EXPECT_EQ(1.f, web_view_->PageScaleFactor());
+  EXPECT_EQ(1.f, web_view_->MinimumPageScaleFactor());
 
   blink::web_pref::WebPreferences prefs;
   prefs.shrinks_viewport_contents_to_fit = true;
   prefs.default_minimum_page_scale_factor = 0.1f;
   prefs.default_maximum_page_scale_factor = 5.5f;
-  view()->GetWebView()->SetWebPreferences(prefs);
+  web_view_->SetWebPreferences(prefs);
 
-  EXPECT_EQ(1.f, view()->GetWebView()->PageScaleFactor());
-  EXPECT_EQ(1.f, view()->GetWebView()->MinimumPageScaleFactor());
-  EXPECT_EQ(5.5f, view()->GetWebView()->MaximumPageScaleFactor());
+  EXPECT_EQ(1.f, web_view_->PageScaleFactor());
+  EXPECT_EQ(1.f, web_view_->MinimumPageScaleFactor());
+  EXPECT_EQ(5.5f, web_view_->MaximumPageScaleFactor());
 }
 
 TEST_F(RenderViewImplDisableZoomForDSFTest,
@@ -3139,10 +3128,10 @@ TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF1) {
     TestEmulatedSizeDprDsf(1005, 1102, 3.f, 1.f);
   }
 
-  ReceiveDisableDeviceEmulation(view());
+  ReceiveDisableDeviceEmulation();
 
   blink::DeviceEmulationParams params;
-  ReceiveEnableDeviceEmulation(view(), params);
+  ReceiveEnableDeviceEmulation(params);
   // Don't disable here to test that emulation is being shutdown properly.
 }
 
@@ -3168,10 +3157,10 @@ TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF2) {
     TestEmulatedSizeDprDsf(1005, 1102, 3.f, device_scale);
   }
 
-  ReceiveDisableDeviceEmulation(view());
+  ReceiveDisableDeviceEmulation();
 
   blink::DeviceEmulationParams params;
-  ReceiveEnableDeviceEmulation(view(), params);
+  ReceiveEnableDeviceEmulation(params);
   // Don't disable here to test that emulation is being shutdown properly.
 }
 
@@ -3278,13 +3267,13 @@ TEST_F(RenderViewImplScaleFactorTest, AutoResizeWithoutZoomForDSF) {
 TEST_F(RenderViewImplTest, ZoomLevelUpdate) {
   // 0 will use the minimum zoom level, which is the default, nothing will
   // change.
-  EXPECT_FLOAT_EQ(0u, view()->GetWebView()->ZoomLevel());
+  EXPECT_FLOAT_EQ(0u, web_view_->ZoomLevel());
 
   double zoom_level = blink::PageZoomFactorToZoomLevel(0.25);
   // Change the zoom level to 25% and check if the view gets the change.
   main_frame_widget()->SetZoomLevelForTesting(zoom_level);
   // Use EXPECT_FLOAT_EQ here because view()->GetZoomLevel returns a float.
-  EXPECT_FLOAT_EQ(zoom_level, view()->GetWebView()->ZoomLevel());
+  EXPECT_FLOAT_EQ(zoom_level, web_view_->ZoomLevel());
 }
 
 #endif

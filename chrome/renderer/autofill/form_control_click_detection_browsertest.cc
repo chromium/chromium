@@ -23,7 +23,7 @@ class FormControlClickDetectionTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
     // Must be set before loading HTML.
-    view_->GetWebView()->SetDefaultPageScaleLimits(1, 4);
+    web_view_->SetDefaultPageScaleLimits(1, 4);
 
     LoadHTML(
         "<form>"
@@ -170,8 +170,8 @@ TEST_F(FormControlClickDetectionTest, TextAreaFocusedAndClicked) {
 TEST_F(FormControlClickDetectionTest, ScaledTextareaClicked) {
   ClearAutofillAgentTestState();
   EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
-  view_->GetWebView()->SetPageScaleFactor(3);
-  view_->GetWebView()->SetVisualViewportOffset(gfx::PointF(50, 50));
+  web_view_->SetPageScaleFactor(3);
+  web_view_->SetVisualViewportOffset(gfx::PointF(50, 50));
 
   // Click textarea_1.
   SimulatePointClick(gfx::Point(30, 30));
@@ -183,8 +183,8 @@ TEST_F(FormControlClickDetectionTest, ScaledTextareaClicked) {
 TEST_F(FormControlClickDetectionTest, ScaledTextareaTapped) {
   ClearAutofillAgentTestState();
   EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
-  view_->GetWebView()->SetPageScaleFactor(3);
-  view_->GetWebView()->SetVisualViewportOffset(gfx::PointF(50, 50));
+  web_view_->SetPageScaleFactor(3);
+  web_view_->SetVisualViewportOffset(gfx::PointF(50, 50));
 
   // Tap textarea_1.
   SimulateRectTap(gfx::Rect(30, 30, 30, 30));

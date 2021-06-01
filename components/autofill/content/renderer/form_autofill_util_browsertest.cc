@@ -982,7 +982,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
       </body>)");
 
   // Ensure that Android runs at default page scale.
-  view_->GetWebView()->SetPageScaleFactor(1.0);
+  web_view_->SetPageScaleFactor(1.0);
 
   std::vector<WebElement> iframes = [this] {
     WebDocument doc = GetMainFrame()->GetDocument();

@@ -114,7 +114,7 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPI) {
   float scale_factors[] = {1, 1.5, 2};
 
   for (float factor : scale_factors) {
-    view_->GetWebView()->SetPageScaleFactor(factor);
+    web_view_->SetPageScaleFactor(factor);
 
     // Hit the root
     EXPECT_EQ(GetCompositorElementId(),

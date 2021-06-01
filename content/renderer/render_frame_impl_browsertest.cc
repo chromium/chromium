@@ -260,9 +260,8 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   main_frame_widget->ApplyVisualProperties(visual_properties);
   // The main frame widget's size is the "widget size", not the visible viewport
   // size, which is given to blink separately.
-  EXPECT_EQ(gfx::Size(view_->GetWebView()->MainFrameWidget()->Size()),
-            widget_size);
-  EXPECT_EQ(gfx::SizeF(view_->GetWebView()->VisualViewportSize()),
+  EXPECT_EQ(gfx::Size(web_view_->MainFrameWidget()->Size()), widget_size);
+  EXPECT_EQ(gfx::SizeF(web_view_->VisualViewportSize()),
             gfx::SizeF(visible_size));
   // The main frame doesn't change other local roots directly.
   EXPECT_NE(gfx::Size(frame_widget()->Size()), visible_size);

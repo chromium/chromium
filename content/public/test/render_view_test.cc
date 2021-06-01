@@ -324,7 +324,7 @@ RenderViewTest::RenderViewTest(bool hook_render_frame_creation)
 RenderViewTest::~RenderViewTest() = default;
 
 WebLocalFrame* RenderViewTest::GetMainFrame() {
-  return view_->GetWebView()->MainFrame()->ToWebLocalFrame();
+  return web_view_->MainFrame()->ToWebLocalFrame();
 }
 
 void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
@@ -371,7 +371,7 @@ void RenderViewTest::LoadHTML(const char* html) {
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
-  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view_->MainFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
 }
 
@@ -384,7 +384,7 @@ void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
-  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view_->MainFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
 }
 
@@ -538,6 +538,7 @@ void RenderViewTest::SetUp() {
   waiter.Wait();
 
   view_ = view;
+  web_view_ = view->GetWebView();
 }
 
 void RenderViewTest::TearDown() {
@@ -558,6 +559,7 @@ void RenderViewTest::TearDown() {
   // |view_| is ref-counted and deletes itself during the RunUntilIdle() call
   // below.
   view_ = nullptr;
+  web_view_ = nullptr;
   process_.reset();
 
   // After telling the view to close and resetting process_ we may get
@@ -773,7 +775,7 @@ void RenderViewTest::Reload(const GURL& url) {
   FrameLoadWaiter waiter(frame);
   frame->Navigate(std::move(common_params), std::move(commit_params));
   waiter.Wait();
-  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view_->MainFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
 }
 
@@ -853,7 +855,7 @@ void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
 }
 
 blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {
-  return view_->GetWebView()->MainFrameWidget();
+  return web_view_->MainFrameWidget();
 }
 
 ContentClient* RenderViewTest::CreateContentClient() {
@@ -886,7 +888,7 @@ void RenderViewTest::GoToOffset(int offset,
                                 const GURL& url,
                                 const blink::PageState& state) {
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  blink::WebView* webview = view->GetWebView();
+  blink::WebView* webview = web_view_;
   int history_list_length =
       webview->HistoryBackListCount() + webview->HistoryForwardListCount() + 1;
   int pending_offset = offset + webview->HistoryBackListCount();
