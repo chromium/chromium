@@ -86,7 +86,8 @@ class SubresourceRedirectSimTest
       // Scroll down until the image is visible.
       GetDocument().View()->LayoutViewport()->SetScrollOffset(
           ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
-      Compositor().BeginFrame();
+      if (Compositor().NeedsBeginFrame())
+        Compositor().BeginFrame();
       test::RunPendingTasks();
       image_resource.Complete(ReadTestImage());
     }
