@@ -75,9 +75,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -845,16 +843,16 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+
   // Apps that are not in the App Service may call this function.
   // E.g. extensions, apps that are using their platform specific IDs.
-  if (proxy->AppRegistryCache().GetAppType(app_id) ==
-      apps::mojom::AppType::kUnknown) {
+  if (app_type == apps::mojom::AppType::kUnknown) {
     return;
   }
 
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::Get(profile);
-  if (web_app_provider && web_app_provider->registrar().IsInstalled(app_id)) {
+  if (app_type == apps::mojom::AppType::kWeb ||
+      app_type == apps::mojom::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(
         profile, app_id,
         AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
