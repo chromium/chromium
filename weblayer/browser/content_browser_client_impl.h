@@ -201,6 +201,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       LoginAuthRequiredCallback auth_required_callback) override;
   std::unique_ptr<content::TtsEnvironmentAndroid> CreateTtsEnvironmentAndroid()
       override;
+  bool ShouldObserveContainerViewLocationForDialogOverlays() override;
 #endif  // OS_ANDROID
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;

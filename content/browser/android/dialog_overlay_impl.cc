@@ -10,7 +10,9 @@
 #include "content/public/android/content_jni_headers/DialogOverlayImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -64,18 +66,25 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
   if (power_efficient && !web_contents_impl->IsFullscreen())
     return 0;
 
-  return reinterpret_cast<jlong>(
-      new DialogOverlayImpl(obj, rfhi, web_contents_impl, power_efficient));
+  bool observe_container_view =
+      GetContentClient()
+          ->browser()
+          ->ShouldObserveContainerViewLocationForDialogOverlays();
+
+  return reinterpret_cast<jlong>(new DialogOverlayImpl(
+      obj, rfhi, web_contents_impl, power_efficient, observe_container_view));
 }
 
 DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
                                      RenderFrameHostImpl* rfhi,
                                      WebContents* web_contents,
-                                     bool power_efficient)
+                                     bool power_efficient,
+                                     bool observe_container_view)
     : WebContentsObserver(web_contents),
       rfhi_(rfhi),
       power_efficient_(power_efficient),
-      observed_window_android_(false) {
+      observed_window_android_(false),
+      observe_container_view_(observe_container_view) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(rfhi_);
 
@@ -116,6 +125,10 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
     ScopedJavaLocalRef<jobject> token = window->GetWindowToken();
     Java_DialogOverlayImpl_onWindowToken(env, obj, token);
   }
+
+  // Pass up a reference to the container view so we can observe its location.
+  // The observer will notify us if there is none yet.
+  StartObservingContainerView();
 }
 
 DialogOverlayImpl::~DialogOverlayImpl() {
@@ -156,6 +169,9 @@ void DialogOverlayImpl::UnregisterCallbacksIfNeeded() {
 
   if (!rfhi_)
     return;
+
+  // No need to track the container view location anymore.
+  StopObservingContainerView();
 
   // We clear overlay mode here rather than in Destroy(), because we may have
   // been called via a WebContentsDestroyed() event, and this might be the last
@@ -230,6 +246,8 @@ void DialogOverlayImpl::OnAttachedToWindow() {
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
     Java_DialogOverlayImpl_onWindowToken(env, obj, token);
+
+  StartObservingContainerView();
 }
 
 void DialogOverlayImpl::OnDetachedFromWindow() {
@@ -246,6 +264,26 @@ void DialogOverlayImpl::RegisterWindowObserverIfNeeded(
     observed_window_android_ = true;
     window->AddObserver(this);
   }
+}
+
+void DialogOverlayImpl::StartObservingContainerView() {
+  ObserveContainerViewIfNeeded(
+      web_contents()->GetNativeView()->GetContainerView());
+}
+
+void DialogOverlayImpl::StopObservingContainerView() {
+  ObserveContainerViewIfNeeded(/*container_view=*/nullptr);
+}
+
+void DialogOverlayImpl::ObserveContainerViewIfNeeded(
+    const ScopedJavaLocalRef<jobject>& container_view) {
+  if (!observe_container_view_)
+    return;
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = obj_.get(env);
+  if (!obj.is_null())
+    Java_DialogOverlayImpl_observeContainerView(env, obj, container_view);
 }
 
 // Helper class that has permission to talk to SyncCallRestrictions.  Rather

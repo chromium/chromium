@@ -30,7 +30,8 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   DialogOverlayImpl(const base::android::JavaParamRef<jobject>& obj,
                     RenderFrameHostImpl* rfhi,
                     WebContents* web_contents,
-                    bool power_efficient);
+                    bool power_efficient,
+                    bool observe_container_view);
   ~DialogOverlayImpl() override;
 
   // Called when the java side is ready for token / dismissed callbacks.  May
@@ -77,6 +78,11 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   void Stop();
   void RegisterWindowObserverIfNeeded(ui::WindowAndroid* window);
 
+  void StartObservingContainerView();
+  void StopObservingContainerView();
+  void ObserveContainerViewIfNeeded(
+      const base::android::ScopedJavaLocalRef<jobject>& container_view);
+
   // Java object that owns us.
   JavaObjectWeakGlobalRef obj_;
 
@@ -84,10 +90,13 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   RenderFrameHostImpl* rfhi_;
 
   // Do we care about power efficiency?
-  bool power_efficient_;
+  const bool power_efficient_;
 
   // Whether we added ourselves as an observer through WindowAndroid.
   bool observed_window_android_;
+
+  // Whether we should observe the container view for location changes.
+  const bool observe_container_view_;
 };
 
 }  // namespace content

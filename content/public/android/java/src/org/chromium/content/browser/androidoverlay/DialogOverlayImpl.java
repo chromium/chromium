@@ -7,6 +7,8 @@ package org.chromium.content.browser.androidoverlay;
 import android.content.Context;
 import android.os.IBinder;
 import android.view.Surface;
+import android.view.View;
+import android.view.ViewTreeObserver;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -26,7 +28,8 @@ import org.chromium.mojo.system.MojoException;
  * from that thread from the UI thread.
  */
 @JNINamespace("content")
-public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host {
+public class DialogOverlayImpl
+        implements AndroidOverlay, DialogOverlayCore.Host, ViewTreeObserver.OnPreDrawListener {
     private static final String TAG = "DialogOverlayImpl";
 
     private AndroidOverlayClient mClient;
@@ -46,6 +49,12 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
     // Temporary, so we don't need to keep allocating arrays.
     private final int[] mCompositorOffset = new int[2];
 
+    // The last rect passed to scheduleLayout().
+    private Rect mLastRect;
+
+    // Observes the container view to update our location.
+    private ViewTreeObserver mContainerViewViewTreeObserver;
+
     /**
      * @param client Mojo client interface.
      * @param config initial overlay configuration.
@@ -58,6 +67,7 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
 
         mClient = client;
         mReleasedRunnable = releasedRunnable;
+        mLastRect = copyRect(config.rect);
 
         mDialogCore = new DialogOverlayCore();
 
@@ -123,6 +133,8 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
     public void scheduleLayout(final Rect rect) {
         ThreadUtils.assertOnUiThread();
 
+        mLastRect = copyRect(rect);
+
         if (mDialogCore == null) return;
 
         // |rect| is relative to the compositor surface.  Convert it to be relative to the screen.
@@ -166,6 +178,13 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         // client to close their connection first.
     }
 
+    // ViewTreeObserver.OnPreDrawListener implementation.
+    @Override
+    public boolean onPreDraw() {
+        scheduleLayout(mLastRect);
+        return true;
+    }
+
     /**
      * Callback from native that the window token has changed.
      */
@@ -181,6 +200,19 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         // between windows, that might make the client's job easier. It wouldn't have to guess when
         // a new token is available.
         mDialogCore.onWindowToken(token);
+    }
+
+    @CalledByNative
+    private void observeContainerView(View containerView) {
+        if (mContainerViewViewTreeObserver != null && mContainerViewViewTreeObserver.isAlive()) {
+            mContainerViewViewTreeObserver.removeOnPreDrawListener(this);
+        }
+        mContainerViewViewTreeObserver = null;
+
+        if (containerView != null) {
+            mContainerViewViewTreeObserver = containerView.getViewTreeObserver();
+            mContainerViewViewTreeObserver.addOnPreDrawListener(this);
+        }
     }
 
     /**
@@ -237,6 +269,9 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         // We close |mClient| first to prevent leaking the mojo router object.
         if (mClient != null) mClient.close();
         mClient = null;
+
+        // Native should have cleaned up the container view before we reach this.
+        assert mContainerViewViewTreeObserver == null;
     }
 
     private void notifyDestroyed() {
@@ -264,6 +299,18 @@ public class DialogOverlayImpl implements AndroidOverlay, DialogOverlayCore.Host
         final MessagePipeHandle handle = proxy.getProxyHandler().passHandle();
         final int nativeHandle = handle.releaseNativeHandle();
         DialogOverlayImplJni.get().notifyDestroyedSynchronously(nativeHandle);
+    }
+
+    /**
+     * Creates a copy of |rect| and returns it.
+     */
+    private static Rect copyRect(Rect rect) {
+        Rect copy = new Rect();
+        copy.x = rect.x;
+        copy.y = rect.y;
+        copy.width = rect.width;
+        copy.height = rect.height;
+        return copy;
     }
 
     @NativeMethods

@@ -1882,6 +1882,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Creates the TtsEnvironmentAndroid. A return value of null results in using
   // a default implementation.
   virtual std::unique_ptr<TtsEnvironmentAndroid> CreateTtsEnvironmentAndroid();
+
+  // If enabled, DialogOverlays will observe the container view for location
+  // changes and reposition themselves automatically. Note that this comes with
+  // some overhead and should only be enabled if the embedder itself can be
+  // moved. Defaults to false.
+  virtual bool ShouldObserveContainerViewLocationForDialogOverlays();
 #endif
 
   // Obtains the list of MIME types that are for plugins with external handlers.

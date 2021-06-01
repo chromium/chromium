@@ -1129,6 +1129,14 @@ ContentBrowserClientImpl::CreateTtsEnvironmentAndroid() {
   return std::make_unique<TtsEnvironmentAndroidImpl>();
 }
 
+bool ContentBrowserClientImpl::
+    ShouldObserveContainerViewLocationForDialogOverlays() {
+  // Observe location changes of the container view as WebLayer might be
+  // embedded in a scrollable container and we need to update the position of
+  // any DialogOverlays.
+  return true;
+}
+
 #endif  // OS_ANDROID
 
 content::SpeechRecognitionManagerDelegate*
