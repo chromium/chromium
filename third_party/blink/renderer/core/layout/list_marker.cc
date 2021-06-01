@@ -128,8 +128,6 @@ void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
 LayoutObject* ListMarker::GetContentChild(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* const first_child = marker.SlowFirstChild();
-  if (!first_child)
-    return nullptr;
   if (IsA<LayoutNGTextCombine>(first_child))
     return first_child->SlowFirstChild();
   return first_child;
