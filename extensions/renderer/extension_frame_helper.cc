@@ -498,7 +498,6 @@ void ExtensionFrameHelper::AppWindowClosed(bool send_onclosed) {
 
 void ExtensionFrameHelper::SetSpatialNavigationEnabled(bool enabled) {
   render_frame()
-      ->GetRenderView()
       ->GetWebView()
       ->GetSettings()
       ->SetSpatialNavigationEnabled(enabled);

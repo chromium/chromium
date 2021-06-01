@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "content/common/pepper_file_util.h"
-#include "content/public/renderer/render_view.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -143,13 +143,13 @@ int32_t PepperFileSystemHost::OnHostMsgInitIsolatedFileSystem(
   if (!storage::ValidateIsolatedFileSystemId(fsid))
     return PP_ERROR_BADARGUMENT;
 
-  RenderView* view =
-      renderer_ppapi_host_->GetRenderViewForInstance(pp_instance());
-  if (!view)
+  RenderFrame* frame =
+      renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance());
+  if (!frame)
     return PP_ERROR_FAILED;
 
   url::Origin main_frame_origin(
-      view->GetWebView()->MainFrame()->GetSecurityOrigin());
+      frame->GetWebView()->MainFrame()->GetSecurityOrigin());
   const std::string root_name = ppapi::IsolatedFileSystemTypeToRootName(type);
   if (root_name.empty())
     return PP_ERROR_BADARGUMENT;

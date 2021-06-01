@@ -59,7 +59,7 @@ PP_Resource PepperInProcessResourceCreation::CreateBrowserFont(
   // GPU process whether these features are blacklisted or not.
   gpu::GpuFeatureInfo gpu_feature_info;
   ppapi::Preferences prefs(PpapiPreferencesBuilder::Build(
-      host_impl_->GetRenderViewForInstance(instance)
+      host_impl_->GetRenderFrameForInstance(instance)
           ->GetWebView()
           ->GetWebPreferences(),
       gpu_feature_info));
