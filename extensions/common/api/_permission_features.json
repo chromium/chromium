@@ -548,6 +548,18 @@
       "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
     },
     {
+      // https://crbug.com/1194693
+      "channel": "stable",
+      "component_extensions_auto_granted": false,
+      "extension_types": ["login_screen_extension"],
+      "location": "policy",
+      "platforms": ["chromeos"],
+      "allowlist": [
+        "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
+        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+      ]
+    },
+    {
       "channel": "stable",
       "dependencies": ["behavior:imprivata_login_screen_extension"],
       "extension_types": ["login_screen_extension"]

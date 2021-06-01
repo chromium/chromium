@@ -38,8 +38,7 @@
     "allowlist": [
       "05D1DBD6E8B9C4690FFA7D50E6F60C5290DC662A"   // crbug.com/941107
     ]
-  },
-  {
+  }, {
     // Strict restrictions for stable channel.
     // For now only allowlisted apps.
     "channel": "stable",
@@ -52,6 +51,17 @@
       "85DA1AC24AF23CDA9F5A19858EB9C6E9E1BA57F6",  // Sign-in Screen Test App
       "EC3DE21E048B67319893889529354DFBFA96FD23",  // Smart Card Connector
       "6B748A5C005F21B7CBCF4170C2F883E435DEB511"   // CSSI Smart Card Middleware
+    ]
+  }, {
+    // https://crbug.com/1194693
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
     ]
   }, {
     // Explicitly allowlist extensions that should always be available
