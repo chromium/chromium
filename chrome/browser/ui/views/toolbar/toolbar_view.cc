@@ -301,9 +301,6 @@ void ToolbarView::Init() {
   home_ = AddChildView(std::move(home));
   location_bar_ = AddChildView(std::move(location_bar));
 
-  if (read_later_button)
-    read_later_button_ = AddChildView(std::move(read_later_button));
-
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
 
@@ -334,6 +331,9 @@ void ToolbarView::Init() {
 
   if (send_tab_to_self_button)
     send_tab_to_self_button_ = AddChildView(std::move(send_tab_to_self_button));
+
+  if (read_later_button)
+    read_later_button_ = AddChildView(std::move(read_later_button));
 
   if (toolbar_account_icon_container) {
     toolbar_account_icon_container_ =
