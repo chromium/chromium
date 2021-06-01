@@ -199,7 +199,7 @@ void TCPSocket::Read(int count, ReadCompletionCallback callback) {
 
 void TCPSocket::RecvFrom(int count, RecvFromCompletionCallback callback) {
   std::move(callback).Run(net::ERR_FAILED, nullptr,
-                          false /* socket_destroying */, nullptr, 0);
+                          false /* socket_destroying */, std::string(), 0);
 }
 
 void TCPSocket::SendTo(scoped_refptr<net::IOBuffer> io_buffer,
