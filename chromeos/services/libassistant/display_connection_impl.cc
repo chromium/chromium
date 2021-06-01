@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -18,7 +19,8 @@ DisplayConnectionImpl::DisplayConnectionImpl(
     bool media_session_enabled)
     : observer_(observer),
       feedback_ui_enabled_(feedback_ui_enabled),
-      media_session_enabled_(media_session_enabled) {
+      media_session_enabled_(media_session_enabled),
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(observer_);
 }
 
@@ -40,7 +42,11 @@ void DisplayConnectionImpl::OnAssistantEvent(
   }
 
   if (event.has_speech_level_event()) {
-    observer_->OnSpeechLevelUpdated(event.speech_level_event().speech_level());
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DisplayConnectionObserver::OnSpeechLevelUpdated,
+                       base::Unretained(observer_),
+                       event.speech_level_event().speech_level()));
   }
 }
 

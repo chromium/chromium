@@ -28,7 +28,7 @@ namespace {
 constexpr const char kFakeAudioFile[] = "/tmp/fake_audio.pcm";
 
 std::vector<uint8_t> ReadFileData(base::File* file) {
-  const int file_size = file->GetLength();
+  const std::vector<uint8_t>::size_type file_size = file->GetLength();
   std::vector<uint8_t> result(file_size);
 
   bool success = file->ReadAtCurrentPosAndCheck(result);
@@ -48,60 +48,55 @@ int DivideAndRoundUp(int dividend, int divisor) {
 }  // namespace
 
 // A fake audio input device (also known as a microphone).
-// This fake device will wait until the |audio_file| exists,
+// This fake device will wait until the `kFakeAudioFile` exists,
 // and it will then forward its data as microphone input.
-// Finally it will remove |audio_file| (so we do not keep responding the
+// Finally it will remove `kFakeAudioFile` (so we do not keep responding the
 // same thing over and over again).
-class FakeInputDevice : public media::AudioCapturerSource {
+class FakeInputDevice {
  public:
-  explicit FakeInputDevice(const std::string& audio_file)
-      : audio_file_(audio_file) {}
+  FakeInputDevice() = default;
+  ~FakeInputDevice() = default;
 
   // AudioCapturerSource implementation.
   void Initialize(const media::AudioParameters& params,
-                  CaptureCallback* callback) override {
+                  media::AudioCapturerSource::CaptureCallback* callback) {
     audio_parameters_ = params;
     callback_ = callback;
   }
 
-  void Start() override {
+  void Start() {
     LOG(INFO) << "Starting fake input device";
     PostDelayedTask(FROM_HERE,
-                    base::BindOnce(&FakeInputDevice::WaitForAudioFile, this),
+                    base::BindOnce(&FakeInputDevice::WaitForAudioFile,
+                                   weak_factory_.GetWeakPtr()),
                     base::TimeDelta::FromMilliseconds(100));
   }
 
-  void Stop() override {
+  void Stop() {
     LOG(INFO) << "Stopping fake input device";
-    task_runner_.reset();
+    callback_ = nullptr;
   }
-  void SetVolume(double volume) override {}
-  void SetAutomaticGainControl(bool enabled) override {}
-  void SetOutputDeviceForAec(const std::string& output_device_id) override {}
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner() {
+    return task_runner_;
+  }
 
  private:
-  ~FakeInputDevice() override = default;
-
   void WaitForAudioFile() {
     DCHECK(RunsTasksInCurrentSequence(task_runner_));
 
-    base::FilePath path{audio_file_};
+    base::FilePath path{kFakeAudioFile};
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                               base::File::FLAG_DELETE_ON_CLOSE);
     if (!file.IsValid()) {
-      LOG(ERROR)
-          << "" << audio_file_
-          << " not found. Please run chromeos/assistant/tools/send-audio.sh";
-
-      PostDelayedTask(FROM_HERE,
-                      base::BindOnce(&FakeInputDevice::WaitForAudioFile, this),
-                      base::TimeDelta::FromSeconds(1));
+      SendSilence();
       return;
     }
 
-    LOG(INFO) << "Opening audio file " << audio_file_;
+    LOG(INFO) << "Opening audio file " << kFakeAudioFile;
     ReadAudioFile(&file);
-    SendSilence();
+    file.Close();
+    SendAudio();
   }
 
   void ReadAudioFile(base::File* file) {
@@ -119,20 +114,34 @@ class FakeInputDevice : public media::AudioCapturerSource {
     std::vector<uint8_t> data = ReadFileData(file);
 
     // Convert it to a list of blocks of the requested size.
-    media::AudioBlockFifo audio_blocks(audio_parameters_.channels(),
-                                       audio_parameters_.frames_per_buffer(),
-                                       blocks_count);
-    audio_blocks.Push(data.data(), frame_count, bytes_per_frame);
+    audio_blocks_ = std::make_unique<media::AudioBlockFifo>(
+        audio_parameters_.channels(), audio_parameters_.frames_per_buffer(),
+        blocks_count);
+    audio_blocks_->Push(data.data(), frame_count, bytes_per_frame);
     // Add silence so the last block is also complete.
-    audio_blocks.PushSilence(audio_blocks.GetUnfilledFrames());
+    audio_blocks_->PushSilence(audio_blocks_->GetUnfilledFrames());
+  }
 
+  void SendAudio() {
     // Send the blocks to the callback
-    while (audio_blocks.available_blocks()) {
-      const media::AudioBus* block = audio_blocks.Consume();
-      const base::TimeTicks time = base::TimeTicks::Now();
-      callback_->Capture(block, time, /*volume=*/0.5,
-                         /*key_pressed=*/false);
+    if (audio_blocks_->available_blocks() <= 0) {
+      audio_blocks_.reset();
+      SendSilence();
+      return;
     }
+
+    const media::AudioBus* block = audio_blocks_->Consume();
+    auto delay_in_microseconds =
+        audio_parameters_.GetMicrosecondsPerFrame() * block->frames();
+    PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FakeInputDevice::SendAudio, weak_factory_.GetWeakPtr()),
+        base::TimeDelta::FromMicrosecondsD(delay_in_microseconds));
+
+    DVLOG(2) << "Send " << block->frames() << " audio frames";
+    const base::TimeTicks time = base::TimeTicks::Now();
+    if (callback_)
+      callback_->Capture(block, time, /*volume=*/0.5, /*key_pressed=*/false);
   }
 
   // LibAssistant doesn't expect the microphone to stop sending data.
@@ -142,41 +151,74 @@ class FakeInputDevice : public media::AudioCapturerSource {
     DCHECK(RunsTasksInCurrentSequence(task_runner_));
 
     auto audio_packet = media::AudioBus::Create(audio_parameters_);
+    auto delay_in_microseconds =
+        audio_parameters_.GetMicrosecondsPerFrame() * audio_packet->frames();
     const base::TimeTicks time = base::TimeTicks::Now();
-    callback_->Capture(audio_packet.get(), time, /*volume=*/0.5,
-                       /*key_pressed=*/false);
+    if (callback_) {
+      callback_->Capture(audio_packet.get(), time, /*volume=*/0.5,
+                         /*key_pressed=*/false);
+    }
 
     PostDelayedTask(FROM_HERE,
-                    base::BindOnce(&FakeInputDevice::SendSilence, this),
-                    base::TimeDelta::FromMilliseconds(100));
+                    base::BindOnce(&FakeInputDevice::WaitForAudioFile,
+                                   weak_factory_.GetWeakPtr()),
+                    base::TimeDelta::FromMicrosecondsD(delay_in_microseconds));
   }
 
   void PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) {
-    // We use a local copy of the refcounted pointer to the task runner so it
-    // can not be deleted between the check and the invocation.
-    auto runner = task_runner_;
-    if (!runner)
-      return;  // This means Stop was called.
-    runner->PostDelayedTask(from_here, std::move(task), delay);
+    task_runner_->PostDelayedTask(from_here, std::move(task), delay);
   }
 
   bool RunsTasksInCurrentSequence(
       scoped_refptr<base::SequencedTaskRunner> runner) {
-    return (runner == nullptr) || runner->RunsTasksInCurrentSequence();
+    return runner->RunsTasksInCurrentSequence();
   }
 
-  std::string audio_file_;
   media::AudioParameters audio_parameters_;
-  CaptureCallback* callback_;
+  media::AudioCapturerSource::CaptureCallback* callback_;
+  std::unique_ptr<media::AudioBlockFifo> audio_blocks_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+
+  base::WeakPtrFactory<FakeInputDevice> weak_factory_{this};
+};
+
+// This wrapper class runs on the caller sequence, `FakeInputDevice` runs on a
+// separate background sequence. This wrapper manages the life cycle of
+// `FakeInputDevice` and makes sure it's deleted on the right sequence.
+class FakeInputDeviceWrapper : public media::AudioCapturerSource {
+ public:
+  FakeInputDeviceWrapper()
+      : fake_input_device_(std::make_unique<FakeInputDevice>()) {}
+
+  // AudioCapturerSource implementation.
+  void Initialize(const media::AudioParameters& params,
+                  CaptureCallback* callback) override {
+    fake_input_device_->Initialize(params, callback);
+  }
+
+  void Start() override { fake_input_device_->Start(); }
+
+  void Stop() override { fake_input_device_->Stop(); }
+
+  void SetVolume(double volume) override {}
+  void SetAutomaticGainControl(bool enabled) override {}
+  void SetOutputDeviceForAec(const std::string& output_device_id) override {}
+
+ private:
+  ~FakeInputDeviceWrapper() override {
+    fake_input_device_->task_runner()->DeleteSoon(
+        FROM_HERE, std::move(fake_input_device_));
+  }
+
+  std::unique_ptr<FakeInputDevice> fake_input_device_;
 };
 
 scoped_refptr<media::AudioCapturerSource> CreateFakeInputDevice() {
-  return base::MakeRefCounted<FakeInputDevice>(kFakeAudioFile);
+  return base::MakeRefCounted<FakeInputDeviceWrapper>();
 }
 
 }  // namespace libassistant

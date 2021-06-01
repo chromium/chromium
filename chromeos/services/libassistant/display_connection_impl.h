@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "libassistant/display/proto/display_connection.pb.h"
@@ -53,6 +54,7 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
 
   Delegate* delegate_ GUARDED_BY(update_display_request_mutex_) = nullptr;
 
+  // Owned by the parent which also owns `this`.
   DisplayConnectionObserver* const observer_;
 
   // Whether Assistant feedback UI is enabled.
@@ -78,6 +80,8 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
   // Both LibAssistant and Chrome threads may update and send display request so
   // we always guard access with |update_display_request_mutex_|.
   base::Lock update_display_request_mutex_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace libassistant
