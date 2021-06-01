@@ -482,7 +482,6 @@ void AppListPresenterImpl::OnVisibilityWillChange(bool visible,
 void AppListPresenterImpl::OnClosed() {
   if (!is_target_visibility_show_)
     shelf_observation_.RemoveAllObservations();
-  controller_->ViewClosed();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -101,9 +101,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Invoked when the app list is closing.
   virtual void ViewClosing() = 0;
 
-  // Invoked when the app list is closed.
-  virtual void ViewClosed() = 0;
-
   // Gets the wallpaper prominent colors.
   virtual const std::vector<SkColor>& GetWallpaperProminentColors() = 0;
 
