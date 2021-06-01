@@ -33,9 +33,9 @@ testOverriddenToString(new Function, false)
 
 }
 testOverriddenToString(/^regex$/, true)
-RegExp
+/^regex$/
 testOverriddenToString(/^regex$/, false)
-RegExp
+/^regex$/
 testOverriddenToString(new Date, true)
 Date
 testOverriddenToString(new Date, false)
