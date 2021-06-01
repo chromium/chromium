@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
@@ -167,12 +168,18 @@ void InitializeMojo(mojo::core::Configuration* config) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
   if (is_browser) {
-    if (mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)) {
-      config->is_broker_process = false;
+    // On Lacros, Chrome is not always the broker, because ash-chrome is.
+    // Otherwise, look at the command line flag to decide whether it is
+    // a broker.
+    config->is_broker_process =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        false
+#else
+        !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)
+#endif
+        ;
+    if (!config->is_broker_process)
       config->force_direct_shared_memory_allocation = true;
-    } else {
-      config->is_broker_process = true;
-    }
   } else {
 #if defined(OS_WIN)
     if (base::win::GetVersion() >= base::win::Version::WIN8_1) {
