@@ -170,7 +170,7 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
 #if defined(USE_LIBSECRET)
   if (selected_backend == os_crypt::SelectedLinuxBackend::GNOME_ANY ||
       selected_backend == os_crypt::SelectedLinuxBackend::GNOME_LIBSECRET) {
-    key_storage = std::make_unique<KeyStorageLibsecret>(std::move(application_name));
+    key_storage = std::make_unique<KeyStorageLibsecret>(application_name);
     if (key_storage->WaitForInitOnTaskRunner()) {
       VLOG(1) << "OSCrypt using Libsecret as backend.";
       return key_storage;
@@ -183,7 +183,7 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
   if (selected_backend == os_crypt::SelectedLinuxBackend::GNOME_ANY ||
       selected_backend == os_crypt::SelectedLinuxBackend::GNOME_KEYRING) {
     key_storage = std::make_unique<KeyStorageKeyring>(config.main_thread_runner,
-                                                      std::move(application_name));
+                                                      application_name);
     if (key_storage->WaitForInitOnTaskRunner()) {
       VLOG(1) << "OSCrypt using Keyring as backend.";
       return key_storage;
