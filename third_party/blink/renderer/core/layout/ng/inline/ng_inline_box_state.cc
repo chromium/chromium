@@ -63,7 +63,11 @@ NGInlineBoxState::NGInlineBoxState(const NGInlineBoxState&& state)
     font = state.font;
 }
 
-void NGInlineBoxState::InitializeFont(const LayoutObject& layout_object) {
+void NGInlineBoxState::ResetStyle(const ComputedStyle& style_ref,
+                                  bool is_svg,
+                                  const LayoutObject& layout_object) {
+  style = &style_ref;
+  is_svg_text = is_svg;
   if (!is_svg_text) {
     scaling_factor = 1.0f;
     font = &style->GetFont();
@@ -194,9 +198,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
   // Initialize the box state for the line box.
   NGInlineBoxState& line_box_state = LineBoxState();
   if (line_box_state.style != &line_style) {
-    line_box_state.style = &line_style;
-    line_box_state.is_svg_text = node.IsSvgText();
-    line_box_state.InitializeFont(*node.GetLayoutBox());
+    line_box_state.ResetStyle(line_style, node.IsSvgText(),
+                              *node.GetLayoutBox());
 
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
@@ -233,9 +236,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   stack_.resize(stack_.size() + 1);
   NGInlineBoxState* box = &stack_.back();
   box->fragment_start = line_box.size();
-  box->style = &style;
-  box->is_svg_text = is_svg_text_;
-  box->InitializeFont(*item.GetLayoutObject());
+  box->ResetStyle(style, is_svg_text_, *item.GetLayoutObject());
   box->item = &item;
   box->has_start_edge = item_result.has_edge;
   box->margin_inline_start = item_result.margins.inline_start;
