@@ -55,7 +55,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -423,7 +423,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   bool isSyncUser = false;
   if (self.browserState) {
     syncer::SyncService* syncService =
-        ProfileSyncServiceFactory::GetForBrowserState(self.browserState);
+        SyncServiceFactory::GetForBrowserState(self.browserState);
     isSyncUser = password_bubble_experiment::IsSmartLockUser(syncService);
   }
   infobars::InfoBarManager* infoBarManager =

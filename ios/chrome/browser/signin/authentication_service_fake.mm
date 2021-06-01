@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -95,7 +95,7 @@ AuthenticationServiceFake::CreateAuthenticationService(
       browser_state->GetPrefs(),
       SyncSetupServiceFactory::GetForBrowserState(browser_state),
       IdentityManagerFactory::GetForBrowserState(browser_state),
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state)));
+      SyncServiceFactory::GetForBrowserState(browser_state)));
   service->Initialize(std::make_unique<AuthenticationServiceDelegateFake>());
   return service;
 }

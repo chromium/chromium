@@ -74,7 +74,7 @@
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 #include "ios/chrome/browser/signin/ios_chrome_signin_status_metrics_provider_delegate.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
 #include "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -440,8 +440,7 @@ bool IOSChromeMetricsServiceClient::RegisterForBrowserStateEvents(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   ObserveServiceForDeletions(history_service);
   syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      SyncServiceFactory::GetInstance()->GetForBrowserState(browser_state);
   StartObserving(sync, browser_state->GetPrefs());
   return (history_service != nullptr && sync != nullptr);
 }

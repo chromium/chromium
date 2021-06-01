@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 
 #include <utility>
 
@@ -39,24 +39,23 @@
 namespace ios_web_view {
 
 // static
-WebViewProfileSyncServiceFactory*
-WebViewProfileSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<WebViewProfileSyncServiceFactory> instance;
+WebViewSyncServiceFactory* WebViewSyncServiceFactory::GetInstance() {
+  static base::NoDestructor<WebViewSyncServiceFactory> instance;
   return instance.get();
 }
 
 // static
-syncer::SyncService* WebViewProfileSyncServiceFactory::GetForBrowserState(
+syncer::SyncService* WebViewSyncServiceFactory::GetForBrowserState(
     WebViewBrowserState* browser_state) {
   return static_cast<syncer::SyncService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
-WebViewProfileSyncServiceFactory::WebViewProfileSyncServiceFactory()
+WebViewSyncServiceFactory::WebViewSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "ProfileSyncService",
+          "SyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  // The ProfileSyncService depends on various SyncableServices being around
+  // The SyncService depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order.
   DependsOn(WebViewDeviceInfoSyncServiceFactory::GetInstance());
@@ -70,10 +69,10 @@ WebViewProfileSyncServiceFactory::WebViewProfileSyncServiceFactory()
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
-WebViewProfileSyncServiceFactory::~WebViewProfileSyncServiceFactory() {}
+WebViewSyncServiceFactory::~WebViewSyncServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-WebViewProfileSyncServiceFactory::BuildServiceInstanceFor(
+WebViewSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);

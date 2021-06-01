@@ -19,8 +19,8 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/suggestions/suggestions_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -157,7 +157,7 @@ class SpotlightSuggestionsBridge
                                    browserState)
                  bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
                                    browserState)
-                   syncService:ProfileSyncServiceFactory::GetForBrowserState(
+                   syncService:SyncServiceFactory::GetForBrowserState(
                                    browserState)
             suggestionsService:suggestions::SuggestionsServiceFactory::
                                    GetForBrowserState(browserState)];

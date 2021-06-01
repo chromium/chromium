@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -54,7 +54,7 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(CreatePrefService());
     test_cbs_builder.AddTestingFactory(
-        ProfileSyncServiceFactory::GetInstance(),
+        SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockSyncService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
@@ -94,8 +94,7 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 
   syncer::MockSyncService* mock_sync_service() {
     return static_cast<syncer::MockSyncService*>(
-        ProfileSyncServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
   }
 
   web::WebTaskEnvironment task_environment_;

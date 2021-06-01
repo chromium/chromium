@@ -8,7 +8,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 
 // static
@@ -35,7 +35,7 @@ SyncSetupServiceFactory::SyncSetupServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SyncSetupService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SyncSetupServiceFactory::~SyncSetupServiceFactory() {
@@ -46,5 +46,5 @@ std::unique_ptr<KeyedService> SyncSetupServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SyncSetupService>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+      SyncServiceFactory::GetForBrowserState(browser_state));
 }

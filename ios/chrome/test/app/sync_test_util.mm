@@ -37,7 +37,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -61,8 +61,7 @@ void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
   syncer::ProfileSyncService* service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
-          browser_state);
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(browser_state);
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
@@ -106,8 +105,7 @@ void StartSync() {
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   sync_setup_service->SetSyncEnabled(true);
   syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
-          browser_state);
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(browser_state);
   sync_service->TriggerPoliciesLoadedForTest();
 }
 
@@ -124,7 +122,7 @@ void TriggerSyncCycle(syncer::ModelType type) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
   sync_service->TriggerRefresh({type});
 }
 
@@ -191,7 +189,7 @@ bool IsSyncInitialized() {
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
   syncer::SyncService* syncService =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
   return syncService->IsEngineInitialized();
 }
 

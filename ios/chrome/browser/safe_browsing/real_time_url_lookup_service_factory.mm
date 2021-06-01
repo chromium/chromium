@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/safe_browsing/user_population.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -44,7 +44,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
           "RealTimeUrlLookupService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());
 }
 
@@ -68,7 +68,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       base::BindRepeating(
           &safe_browsing::SyncUtils::
               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
-          ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state),
+          SyncServiceFactory::GetForBrowserState(chrome_browser_state),
           IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
       chrome_browser_state->IsOffTheRecord(),
       GetApplicationContext()->GetVariationsService(),

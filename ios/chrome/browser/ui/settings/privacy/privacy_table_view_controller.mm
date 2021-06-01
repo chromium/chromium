@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
@@ -221,8 +221,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   std::vector<GURL> urls;
 
   syncer::SyncService* syncService =
-      ProfileSyncServiceFactory::GetInstance()->GetForBrowserState(
-          _browserState);
+      SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
   if (!signin::IsMobileIdentityConsistencyEnabled()) {
     privacyFooterText =

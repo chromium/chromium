@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,7 +40,7 @@ ChromeUserPopulation GetUserPopulation(ChromeBrowserState* browser_state) {
   population.set_is_incognito(browser_state->IsOffTheRecord());
 
   syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
   bool is_history_sync_enabled =
       sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);

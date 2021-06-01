@@ -8,7 +8,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 
@@ -23,9 +23,8 @@ namespace sync_bookmarks {
 SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
     id<SyncObserverModelBridge> delegate,
     ChromeBrowserState* browserState)
-    : SyncObserverBridge(
-          delegate,
-          ProfileSyncServiceFactory::GetForBrowserState(browserState)),
+    : SyncObserverBridge(delegate,
+                         SyncServiceFactory::GetForBrowserState(browserState)),
       identity_manager_(
           IdentityManagerFactory::GetForBrowserState(browserState)),
       browser_state_(browserState) {}

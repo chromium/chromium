@@ -18,7 +18,7 @@
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
-#import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -38,7 +38,7 @@ std::unique_ptr<WebViewPasswordManagerClient>
 WebViewPasswordManagerClient::Create(web::WebState* web_state,
                                      WebViewBrowserState* browser_state) {
   syncer::SyncService* sync_service =
-      ios_web_view::WebViewProfileSyncServiceFactory::GetForBrowserState(
+      ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
           browser_state);
   signin::IdentityManager* identity_manager =
       ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(

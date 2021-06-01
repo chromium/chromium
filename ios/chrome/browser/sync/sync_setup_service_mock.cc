@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/web/public/browser_state.h"
 
 SyncSetupServiceMock::SyncSetupServiceMock(syncer::SyncService* sync_service)
@@ -23,5 +23,5 @@ std::unique_ptr<KeyedService> SyncSetupServiceMock::CreateKeyedService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+      SyncServiceFactory::GetForBrowserState(browser_state));
 }

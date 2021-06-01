@@ -18,8 +18,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_create_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     ChromeBrowserState* browserState = self.browser->GetBrowserState();
     self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_TITLE);
     syncer::SyncService* syncService =
-        ProfileSyncServiceFactory::GetForBrowserState(browserState);
+        SyncServiceFactory::GetForBrowserState(browserState);
     _isUsingExplicitPassphrase =
         syncService->IsEngineInitialized() &&
         syncService->GetUserSettings()->IsUsingExplicitPassphrase();
@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       DCHECK(switches::IsSyncAllowedByFlag());
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       syncer::SyncService* service =
-          ProfileSyncServiceFactory::GetForBrowserState(browserState);
+          SyncServiceFactory::GetForBrowserState(browserState);
       if (service->IsEngineInitialized() &&
           !service->GetUserSettings()->IsUsingExplicitPassphrase()) {
         SyncCreatePassphraseTableViewController* controller =
@@ -220,7 +220,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       << "onSyncStateChanged called after -settingsWillBeDismissed";
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(browserState);
   BOOL isNowUsingExplicitPassphrase =
       service->IsEngineInitialized() &&
       service->GetUserSettings()->IsUsingExplicitPassphrase();

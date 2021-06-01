@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -59,7 +59,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
@@ -102,7 +102,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   }
 
   SyncService* sync_service() {
-    return ProfileSyncServiceFactory::GetForBrowserState(browser_state_.get());
+    return SyncServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
   ios::FakeChromeIdentityService* identity_service() {

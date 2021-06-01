@@ -30,7 +30,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,10 +42,10 @@
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
-                              NewPersonalizedDataCollectionConsentHelper(
-                                  ProfileSyncServiceFactory::GetForBrowserState(
-                                      browser_state_))),
+      url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForBrowserState(browser_state_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {}
 
@@ -211,7 +211,7 @@ bool AutocompleteProviderClientImpl::IsAuthenticated() const {
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
   syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_);
   return sync && sync->IsSyncFeatureActive();
 }
 

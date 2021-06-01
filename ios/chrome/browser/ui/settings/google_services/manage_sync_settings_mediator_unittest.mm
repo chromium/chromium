@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -74,7 +74,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     identity_service()->AddIdentity(identity);
 
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
@@ -99,7 +99,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        ProfileSyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
 
     mediator_ = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:sync_service_mock_

@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -101,7 +101,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(browserState);
   // TODO(crbug.com/1208307): The reason this is an if and not a DCHECK is
   // because SyncCreatePassphraseTableViewController inherits from this class.
   // This should be changed, i.e. either extract the minimum common logic
@@ -303,14 +303,14 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   if (!_syncObserver.get()) {
     _syncObserver.reset(new SyncObserverBridge(
-        self, ProfileSyncServiceFactory::GetForBrowserState(browserState)));
+        self, SyncServiceFactory::GetForBrowserState(browserState)));
   }
 
   // Clear out the error message.
   self.syncErrorMessage = nil;
 
   syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(browserState);
   DCHECK(service);
   // It is possible for a race condition to happen where a user is allowed
   // to call the backend with the passphrase before the backend is
@@ -489,7 +489,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 - (void)onSyncStateChanged {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForBrowserState(browserState);
+      SyncServiceFactory::GetForBrowserState(browserState);
 
   if (!service->IsEngineInitialized()) {
     return;

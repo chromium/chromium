@@ -39,7 +39,7 @@
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -471,7 +471,7 @@ bool ChromePasswordProtectionService::IsExtendedReporting() {
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
   syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_);
   return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled();
 }
 
@@ -802,4 +802,3 @@ PrefService* ChromePasswordProtectionService::GetPrefs() const {
 bool ChromePasswordProtectionService::IsSafeBrowsingEnabled() {
   return ::safe_browsing::IsSafeBrowsingEnabled(*GetPrefs());
 }
-

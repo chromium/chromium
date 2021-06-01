@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 
 #include <stddef.h>
 
@@ -24,9 +24,9 @@
 
 using syncer::DataTypeController;
 
-class ProfileSyncServiceFactoryTest : public PlatformTest {
+class SyncServiceFactoryTest : public PlatformTest {
  public:
-  ProfileSyncServiceFactoryTest() {
+  SyncServiceFactoryTest() {
     TestChromeBrowserState::Builder browser_state_builder;
     // BOOKMARKS requires the FaviconService, which requires the HistoryService.
     browser_state_builder.AddTestingFactory(
@@ -112,17 +112,16 @@ class ProfileSyncServiceFactoryTest : public PlatformTest {
 };
 
 // Verify that the disable sync flag disables creation of the sync service.
-TEST_F(ProfileSyncServiceFactoryTest, DisableSyncFlag) {
+TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
-  EXPECT_FALSE(
-      ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state()));
+  EXPECT_FALSE(SyncServiceFactory::GetForBrowserState(chrome_browser_state()));
 }
 
 // Verify that a normal (no command line flags) PSS can be created and
 // properly initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
   syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount(), types.Size());
@@ -131,11 +130,11 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
 
 // Verify that a PSS with a disabled datatype can be created and properly
 // initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableOne) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDisableOne) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
   SetDisabledTypes(disabled_types);
   syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
@@ -144,12 +143,12 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableOne) {
 
 // Verify that a PSS with multiple disabled datatypes can be created and
 // properly initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableMultiple) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDisableMultiple) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
                                       syncer::BOOKMARKS);
   SetDisabledTypes(disabled_types);
   syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());

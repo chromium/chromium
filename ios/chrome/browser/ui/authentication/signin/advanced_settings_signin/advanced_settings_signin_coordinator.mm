@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -82,8 +82,7 @@ using l10n_util::GetNSString;
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   syncer::SyncService* syncService =
-      ProfileSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.advancedSettingsSigninMediator = [[AdvancedSettingsSigninMediator alloc]
       initWithSyncSetupService:syncSetupService
          authenticationService:authenticationService

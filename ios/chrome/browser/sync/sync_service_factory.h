@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -20,7 +20,7 @@ class SyncService;
 
 // Singleton that owns all SyncServices and associates them with
 // ChromeBrowserState.
-class ProfileSyncServiceFactory : public BrowserStateKeyedServiceFactory {
+class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static syncer::SyncService* GetForBrowserState(
       ChromeBrowserState* browser_state);
@@ -35,17 +35,17 @@ class ProfileSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   GetAsProfileSyncServiceForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
-  static ProfileSyncServiceFactory* GetInstance();
+  static SyncServiceFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<ProfileSyncServiceFactory>;
+  friend class base::NoDestructor<SyncServiceFactory>;
 
-  ProfileSyncServiceFactory();
-  ~ProfileSyncServiceFactory() override;
+  SyncServiceFactory();
+  ~SyncServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_

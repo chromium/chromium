@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
-#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -71,7 +71,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     ChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
@@ -94,8 +94,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         SyncSetupServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        ProfileSyncServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
 
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(

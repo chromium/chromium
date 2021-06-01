@@ -49,7 +49,7 @@
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
-#import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #include "ios/web_view/internal/web_view_download_manager.h"
@@ -199,7 +199,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewIdentityManagerFactory::GetInstance();
   WebViewGCMProfileServiceFactory::GetInstance();
   WebViewProfileInvalidationProviderFactory::GetInstance();
-  WebViewProfileSyncServiceFactory::GetInstance();
+  WebViewSyncServiceFactory::GetInstance();
   WebViewModelTypeStoreServiceFactory::GetInstance();
 
   BrowserStateDependencyManager::GetInstance()

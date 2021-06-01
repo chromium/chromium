@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_clear_browsing_data_coordinator.h"
@@ -96,8 +96,7 @@
       _browsingHistoryDriver.get(),
       ios::HistoryServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState()));
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()));
   self.historyTableViewController.historyService =
       _browsingHistoryService.get();
 

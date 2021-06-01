@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_PROFILE_SYNC_SERVICE_FACTORY_H_
-#define IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_PROFILE_SYNC_SERVICE_FACTORY_H_
+#ifndef IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_SYNC_SERVICE_FACTORY_H_
+#define IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_SYNC_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -20,27 +20,26 @@ class WebViewBrowserState;
 
 // Singleton that owns all ProfileSyncService and associates them with
 // WebViewBrowserState.
-class WebViewProfileSyncServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+class WebViewSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static syncer::SyncService* GetForBrowserState(
       WebViewBrowserState* browser_state);
 
-  static WebViewProfileSyncServiceFactory* GetInstance();
+  static WebViewSyncServiceFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<WebViewProfileSyncServiceFactory>;
+  friend class base::NoDestructor<WebViewSyncServiceFactory>;
 
-  WebViewProfileSyncServiceFactory();
-  ~WebViewProfileSyncServiceFactory() override;
+  WebViewSyncServiceFactory();
+  ~WebViewSyncServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 
-  DISALLOW_COPY_AND_ASSIGN(WebViewProfileSyncServiceFactory);
+  DISALLOW_COPY_AND_ASSIGN(WebViewSyncServiceFactory);
 };
 
 }  // namespace ios_web_view
 
-#endif  // IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_PROFILE_SYNC_SERVICE_FACTORY_H_
+#endif  // IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_SYNC_SERVICE_FACTORY_H_

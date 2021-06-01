@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 
 #include <utility>
 
@@ -68,13 +68,13 @@ void UpdateNetworkTime(const base::Time& network_time,
 }  // namespace
 
 // static
-ProfileSyncServiceFactory* ProfileSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<ProfileSyncServiceFactory> instance;
+SyncServiceFactory* SyncServiceFactory::GetInstance() {
+  static base::NoDestructor<SyncServiceFactory> instance;
   return instance.get();
 }
 
 // static
-syncer::SyncService* ProfileSyncServiceFactory::GetForBrowserState(
+syncer::SyncService* SyncServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
   if (!switches::IsSyncAllowedByFlag())
     return nullptr;
@@ -84,7 +84,7 @@ syncer::SyncService* ProfileSyncServiceFactory::GetForBrowserState(
 }
 
 // static
-syncer::SyncService* ProfileSyncServiceFactory::GetForBrowserStateIfExists(
+syncer::SyncService* SyncServiceFactory::GetForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
   if (!switches::IsSyncAllowedByFlag())
     return nullptr;
@@ -95,7 +95,7 @@ syncer::SyncService* ProfileSyncServiceFactory::GetForBrowserStateIfExists(
 
 // static
 syncer::ProfileSyncService*
-ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
     ChromeBrowserState* browser_state) {
   return static_cast<syncer::ProfileSyncService*>(
       GetForBrowserState(browser_state));
@@ -103,17 +103,17 @@ ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
 
 // static
 syncer::ProfileSyncService*
-ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserStateIfExists(
+SyncServiceFactory::GetAsProfileSyncServiceForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
   return static_cast<syncer::ProfileSyncService*>(
       GetForBrowserStateIfExists(browser_state));
 }
 
-ProfileSyncServiceFactory::ProfileSyncServiceFactory()
+SyncServiceFactory::SyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "ProfileSyncService",
+          "SyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  // The ProfileSyncService depends on various SyncableServices being around
+  // The SyncService depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order.
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
@@ -137,10 +137,9 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
-ProfileSyncServiceFactory::~ProfileSyncServiceFactory() {}
+SyncServiceFactory::~SyncServiceFactory() {}
 
-std::unique_ptr<KeyedService>
-ProfileSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);

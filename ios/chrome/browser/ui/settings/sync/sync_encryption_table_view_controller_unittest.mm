@@ -12,7 +12,7 @@
 #include "components/sync/driver/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -38,7 +38,7 @@ class SyncEncryptionTableViewControllerTest
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
-        ProfileSyncServiceFactory::GetInstance(),
+        SyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateTestSyncService));
     browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
@@ -46,7 +46,7 @@ class SyncEncryptionTableViewControllerTest
     ChromeBrowserState* browserState = browser_.get()->GetBrowserState();
     syncer::TestSyncService* test_sync_service =
         static_cast<syncer::TestSyncService*>(
-            ProfileSyncServiceFactory::GetForBrowserState(browserState));
+            SyncServiceFactory::GetForBrowserState(browserState));
     test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();

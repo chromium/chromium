@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 #include "ios/chrome/browser/safe_browsing/features.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -58,7 +58,7 @@ using password_manager::SyncState;
 namespace {
 
 const syncer::SyncService* GetSyncService(ChromeBrowserState* browser_state) {
-  return ProfileSyncServiceFactory::GetForBrowserStateIfExists(browser_state);
+  return SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
 }
 
 }  // namespace
@@ -94,7 +94,7 @@ IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
 
 SyncState IOSChromePasswordManagerClient::GetPasswordSyncState() const {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(bridge_.browserState);
+      SyncServiceFactory::GetForBrowserState(bridge_.browserState);
   return password_manager_util::GetPasswordSyncState(sync_service);
 }
 

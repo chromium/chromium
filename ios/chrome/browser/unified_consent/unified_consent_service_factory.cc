@@ -16,14 +16,14 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "UnifiedConsentService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 UnifiedConsentServiceFactory::~UnifiedConsentServiceFactory() = default;
@@ -61,7 +61,7 @@ UnifiedConsentServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
 
   // Record settings for pre- and post-UnifiedConsent users.
   unified_consent::metrics::RecordSettingsHistogram(user_pref_service);

@@ -23,8 +23,6 @@ source_set("sync") {
     "ios_user_event_service_factory.h",
     "model_type_store_service_factory.cc",
     "model_type_store_service_factory.h",
-    "profile_sync_service_factory.cc",
-    "profile_sync_service_factory.h",
     "send_tab_to_self_sync_service_factory.h",
     "send_tab_to_self_sync_service_factory.mm",
     "session_sync_service_factory.h",
@@ -33,6 +31,8 @@ source_set("sync") {
     "sync_invalidations_service_factory.mm",
     "sync_observer_bridge.h",
     "sync_observer_bridge.mm",
+    "sync_service_factory.cc",
+    "sync_service_factory.h",
     "sync_setup_service.cc",
     "sync_setup_service.h",
     "sync_setup_service_factory.cc",
@@ -134,8 +134,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",
-    "profile_sync_service_factory_unittest.cc",
     "session_sync_service_factory_unittest.cc",
+    "sync_service_factory_unittest.cc",
   ]
   deps = [
     ":sync",
