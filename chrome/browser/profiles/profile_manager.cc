@@ -365,7 +365,7 @@ void NukeProfileFromDisk(const base::FilePath& profile_path,
 void ProfileCleanedUp(base::Value profile_path_value) {
   ListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                   prefs::kProfilesDeleted);
-  deleted_profiles->Remove(profile_path_value, nullptr);
+  deleted_profiles->EraseListValue(profile_path_value);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
