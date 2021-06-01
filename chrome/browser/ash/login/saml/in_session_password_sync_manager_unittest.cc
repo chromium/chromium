@@ -89,6 +89,7 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   std::unique_ptr<MockLockHandler> lock_handler_;
   std::unique_ptr<InSessionPasswordSyncManager> manager_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<user_manager::KnownUser> known_user_;
 };
 
 InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
@@ -103,6 +104,8 @@ InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
 
   user_manager_ =
       static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  known_user_ =
+      std::make_unique<user_manager::KnownUser>(user_manager_->GetLocalState());
 }
 
 InSessionPasswordSyncManagerTest::~InSessionPasswordSyncManagerTest() {
@@ -235,9 +238,9 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
 
 TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
   base::Time now = test_environment_.GetMockClock()->Now();
-  user_manager::known_user::SetLastOnlineSignin(saml_login_account_id1_, now);
-  user_manager::known_user::SetOfflineSigninLimit(saml_login_account_id1_,
-                                                  kSamlOnlineShortDelay);
+  known_user_->SetLastOnlineSignin(saml_login_account_id1_, now);
+  known_user_->SetOfflineSigninLimit(saml_login_account_id1_,
+                                     kSamlOnlineShortDelay);
   base::Time expected_signin_time = now + kSamlOnlineShortDelay;
 
   primary_profile_->GetPrefs()->SetBoolean(
@@ -261,7 +264,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
   manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::ReauthenticationReason::kNone);
-  now = user_manager::known_user::GetLastOnlineSignin(saml_login_account_id1_);
+  now = known_user_->GetLastOnlineSignin(saml_login_account_id1_);
   EXPECT_EQ(now, expected_signin_time);
 }
 
@@ -292,7 +295,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateTokenNotInitialized) {
             InSessionPasswordSyncManager::ReauthenticationReason::kNone);
   EXPECT_FALSE(IsTokenFetcherCreated());
   std::string sync_token =
-      user_manager::known_user::GetPasswordSyncToken(saml_login_account_id1_);
+      known_user_->GetPasswordSyncToken(saml_login_account_id1_);
   EXPECT_EQ(kFakeToken, sync_token);
 }
 
