@@ -797,7 +797,7 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kMediaRouterTabMirroringSources);
-    update->Remove(base::Value(origin), nullptr);
+    update->EraseListValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.
@@ -855,7 +855,7 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
     ListPrefUpdate update(
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
         prefs::kMediaRouterTabMirroringSources);
-    update->Remove(base::Value(origin), nullptr);
+    update->EraseListValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.
