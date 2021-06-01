@@ -57,6 +57,10 @@ void CacheStorageContextImpl::Init(
     mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+    mojo::PendingReceiver<storage::mojom::QuotaClient>
+        cache_storage_client_remote,
+    mojo::PendingReceiver<storage::mojom::QuotaClient>
+        background_fetch_client_remote,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,29 +77,18 @@ void CacheStorageContextImpl::Init(
   DCHECK(!cache_manager_);
   cache_manager_ = LegacyCacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
-      base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy,
+      base::SequencedTaskRunnerHandle::Get(), std::move(quota_manager_proxy),
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)));
 
-  mojo::PendingRemote<storage::mojom::QuotaClient> cache_storage_client;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CacheStorageQuotaClient>(
           cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI),
-      cache_storage_client.InitWithNewPipeAndPassReceiver());
-  quota_manager_proxy->RegisterClient(
-      std::move(cache_storage_client),
-      storage::QuotaClientType::kServiceWorkerCache,
-      {blink::mojom::StorageType::kTemporary});
-
-  mojo::PendingRemote<storage::mojom::QuotaClient> background_fetch_client;
+      std::move(cache_storage_client_remote));
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CacheStorageQuotaClient>(
           cache_manager_, storage::mojom::CacheStorageOwner::kBackgroundFetch),
-      background_fetch_client.InitWithNewPipeAndPassReceiver());
-  quota_manager_proxy->RegisterClient(
-      std::move(background_fetch_client),
-      storage::QuotaClientType::kBackgroundFetch,
-      {blink::mojom::StorageType::kTemporary});
+      std::move(background_fetch_client_remote));
 }
 
 void CacheStorageContextImpl::AddReceiver(

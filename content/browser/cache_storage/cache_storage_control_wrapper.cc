@@ -16,11 +16,33 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(quota_manager_proxy);
 
+  // QuotaManagerProxy::RegisterClient() must be called during construction
+  // until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> cache_storage_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient>
+      cache_storage_client_receiver =
+          cache_storage_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy->RegisterClient(
+      std::move(cache_storage_client_remote),
+      storage::QuotaClientType::kServiceWorkerCache,
+      {blink::mojom::StorageType::kTemporary});
+  mojo::PendingRemote<storage::mojom::QuotaClient>
+      background_fetch_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient>
+      background_fetch_client_receiver =
+          background_fetch_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy->RegisterClient(
+      std::move(background_fetch_client_remote),
+      storage::QuotaClientType::kBackgroundFetch,
+      {blink::mojom::StorageType::kTemporary});
+
   cache_storage_context_ = base::SequenceBound<CacheStorageContextImpl>(
       CacheStorageContextImpl::CreateSchedulerTaskRunner());
   cache_storage_context_.AsyncCall(&CacheStorageContextImpl::Init)
       .WithArgs(cache_storage_control_.BindNewPipeAndPassReceiver(),
                 user_data_directory, std::move(quota_manager_proxy),
+                std::move(cache_storage_client_receiver),
+                std::move(background_fetch_client_receiver),
                 std::move(blob_storage_context));
 
   if (special_storage_policy) {

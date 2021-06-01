@@ -14,6 +14,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,6 +59,10 @@ class CONTENT_EXPORT CacheStorageContextImpl
   void Init(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
             const base::FilePath& user_data_directory,
             scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+            mojo::PendingReceiver<storage::mojom::QuotaClient>
+                cache_storage_client_remote,
+            mojo::PendingReceiver<storage::mojom::QuotaClient>
+                background_fetch_client_remote,
             mojo::PendingRemote<storage::mojom::BlobStorageContext>
                 blob_storage_context);
 
