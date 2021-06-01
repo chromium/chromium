@@ -223,7 +223,9 @@ void SpellcheckServiceHybridUnitTestBase::RunGetDictionariesTest(
 
   prefs()->SetString(language::prefs::kAcceptLanguages, accept_languages);
   base::ListValue spellcheck_dictionaries_list;
-  spellcheck_dictionaries_list.AppendStrings(spellcheck_dictionaries);
+  for (std::string dict : spellcheck_dictionaries) {
+    spellcheck_dictionaries_list.Append(dict);
+  }
   prefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                spellcheck_dictionaries_list);
 
