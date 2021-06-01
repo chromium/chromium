@@ -6067,6 +6067,7 @@ test("unit_tests") {
       "../common/extensions/api/common_extension_api_unittest.cc",
       "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
       "../common/extensions/api/extension_action/page_action_manifest_unittest.cc",
+      "../common/extensions/api/speech/tts_engine_manifest_handler_unittest.cc",
       "../common/extensions/api/storage/storage_schema_manifest_handler_unittest.cc",
       "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
