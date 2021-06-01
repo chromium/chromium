@@ -169,7 +169,8 @@ void CanvasPerformanceMonitor::CurrentTaskDrawsToContext(
     // canvases per render task.
     measure_current_task_ = !(task_counter_++ % kSamplingProbabilityInv);
 
-    if (context->Host()
+    if (context->Host() && context->Host()->GetTopExecutionContext() &&
+        context->Host()
             ->GetTopExecutionContext()
             ->IsInRequestAnimationFrame()) {
       call_type_ = CallType::kAnimation;
