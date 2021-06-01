@@ -69,23 +69,14 @@ void RegisterProbesSettingBackupPref(PrefRegistrySimple* registry) {
 }
 
 void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
-// TODO(crbug.com/1177778): Allow this to run on Android when there is a flag
-// controlling a settings ui redesign for Android as was done on Desktop. A
-// model for this new flag has been left commented in the code, in the interim
-// this code will continue to migrate any Desktop users who have not yet been
-// migrated.
-#if !defined(OS_ANDROID)
-  // If the "android settings redesign" is enabled and the user value of the
-  // preference hasn't been backed up yet, back it up, and clear it. That way,
-  // the preference will revert to using the hardcoded default value (unless
-  // it's managed by a policy or an extension). This is necessary, as the
-  // "android settings redesign" removed the user-facing toggle, and so the
-  // user value of the preference is no longer modifiable.
-  if (!prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
+// TODO(crbug.com/1177778): remove this code around M97 to make sure the vast
+// majority of the clients are migrated.
 #if defined(OS_ANDROID)
-// if(base::FeatureList::IsEnabled("kAndroidSettingsRedesign")) {
+  if (!prefs->HasPrefPath(kAlternateErrorPagesBackup) &&
+      base::FeatureList::IsEnabled(features::kLinkDoctorDeprecationAndroid)) {
+#else
+  if (!prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
 #endif  // defined(OS_ANDROID)
-
     // If the user never changed the value of the preference and still uses
     // the hardcoded default value, we'll consider it to be the user value for
     // the purposes of this migration.
@@ -100,24 +91,20 @@ void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
     DCHECK(user_value->is_bool());
     prefs->SetBoolean(kAlternateErrorPagesBackup, user_value->GetBool());
     prefs->ClearPref(embedder_support::kAlternateErrorPagesEnabled);
-#if defined(OS_ANDROID)
-// }
-#endif  // defined(OS_ANDROID)
   }
-// The reverse migration should only occur on Android, so this guard should
-// remain after the "android settings redesign" begins.
+// The reverse migration should only occur on Android at the time of rollout.
+// TODO(crbug.com/1177778): remove this part once the rollout is complete.
 #if defined(OS_ANDROID)
-  // If the "android settings redesign" is rolled back and there is a backed up
+  // If the Link Doctor deprecation is rolled back and there is a backed up
   // value of the preference, restore it to the original preference, and clear
   // the backup.
-  if (prefs->HasPrefPath(kAlternateErrorPagesBackup)
-      /* && !base::FeatureList::IsEnabled("kAndroidSettingsRedesign") */) {
+  if (prefs->HasPrefPath(kAlternateErrorPagesBackup) &&
+      !base::FeatureList::IsEnabled(features::kLinkDoctorDeprecationAndroid)) {
     prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled,
                       prefs->GetBoolean(kAlternateErrorPagesBackup));
     prefs->ClearPref(kAlternateErrorPagesBackup);
   }
 #endif  // defined(OS_ANDROID)
-#endif  // !defined(OS_ANDROID)
 }
 
 net::DohProviderEntry::List ProvidersForCountry(
