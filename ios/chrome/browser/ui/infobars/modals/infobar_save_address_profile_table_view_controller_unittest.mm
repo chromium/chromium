@@ -61,11 +61,6 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
       setupModalViewControllerWithPrefs:GetDataForUpdateModal()];
   [update_view_controller loadModel];
 
-  EXPECT_EQ(4, NumberOfSections());
-  // Expect footer for the first section to be non-null.
-  EXPECT_NE(nil, [update_view_controller.tableViewModel footerForSection:0]);
-  CheckSectionHeader(@"New", 1);
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
-  CheckSectionHeader(@"Old", 2);
-  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(6, NumberOfItemsInSection(0));
 }

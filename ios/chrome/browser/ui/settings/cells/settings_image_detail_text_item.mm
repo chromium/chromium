@@ -44,6 +44,10 @@
   if (self.image && self.alignImageWithFirstLineOfText) {
     [cell alignImageWithFirstLineOfText:YES];
   }
+
+  if (self.image && self.leftAlignImage) {
+    [cell setImageViewContentMode:UIViewContentModeLeft];
+  }
 }
 
 @end

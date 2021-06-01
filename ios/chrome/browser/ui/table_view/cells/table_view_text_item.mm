@@ -46,6 +46,13 @@
         self.accessibilityLabel ? self.accessibilityLabel : self.text;
   }
 
+  if (self.textFont) {
+    cell.textLabel.font = self.textFont;
+  } else {
+    cell.textLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  }
+
   // Decide cell.textLabel.textColor in order:
   //   1. this.textColor;
   //   2. styler.cellTitleColor;
