@@ -1375,6 +1375,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  [_bookmarkInteractionController shutdown];
+  _bookmarkInteractionController = nil;
 }
 
 #pragma mark - NSObject

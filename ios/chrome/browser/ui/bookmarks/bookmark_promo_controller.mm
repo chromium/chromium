@@ -67,7 +67,14 @@
 }
 
 - (void)dealloc {
+  [self shutdown];
+}
+
+- (void)shutdown {
   [_signinPromoViewMediator signinPromoViewIsRemoved];
+  _signinPromoViewMediator = nil;
+
+  _identityManagerObserverBridge.reset();
 }
 
 - (void)hidePromoCell {

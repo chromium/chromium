@@ -26,8 +26,9 @@ BookmarkModelBridge::BookmarkModelBridge(
 }
 
 BookmarkModelBridge::~BookmarkModelBridge() {
-  DCHECK(model_);
-  model_->RemoveObserver(this);
+  if (model_) {
+    model_->RemoveObserver(this);
+  }
 }
 
 void BookmarkModelBridge::BookmarkModelLoaded(BookmarkModel* model,
@@ -36,9 +37,9 @@ void BookmarkModelBridge::BookmarkModelLoaded(BookmarkModel* model,
 }
 
 void BookmarkModelBridge::BookmarkModelBeingDeleted(BookmarkModel* model) {
-  // This is an inconsistent state in the application lifecycle. The bookmark
-  // model shouldn't disappear.
-  NOTREACHED();
+  DCHECK(model_);
+  model_->RemoveObserver(this);
+  model_ = nullptr;
 }
 
 void BookmarkModelBridge::BookmarkNodeMoved(BookmarkModel* model,

@@ -120,6 +120,9 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 - (void)disconnect {
+  [_bookmarkPromoController shutdown];
+  _bookmarkPromoController = nil;
+
   _modelBridge = nullptr;
   _syncedBookmarksObserver = nullptr;
   self.browserState = nullptr;

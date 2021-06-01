@@ -42,6 +42,9 @@ class ChromeBrowserState;
                                 (id<BookmarkPromoControllerDelegate>)delegate
                            presenter:(id<SigninPresenter>)presenter;
 
+// Called before the instance is deallocated.
+- (void)shutdown;
+
 // Hides the promo cell. It won't be presented again on this profile.
 - (void)hidePromoCell;
 

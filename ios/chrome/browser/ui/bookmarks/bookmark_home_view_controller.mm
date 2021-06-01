@@ -87,6 +87,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using bookmarks::BookmarkNode;
 using l10n_util::GetNSString;
 
@@ -238,10 +242,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 @implementation BookmarkHomeViewController
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - Initializer
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -272,9 +272,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)dealloc {
+  [self shutdown];
+}
+
+- (void)shutdown {
+  [_bookmarkInteractionController shutdown];
+  _bookmarkInteractionController = nil;
+
   [self.mediator disconnect];
   _sharedState.tableView.dataSource = nil;
   _sharedState.tableView.delegate = nil;
+
+  _bridge.reset();
 }
 
 - (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode {
