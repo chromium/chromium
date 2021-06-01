@@ -16,12 +16,15 @@ const uint16_t k700Weight = 700;
 const char kBebasNeueFontName[] = "Bebas Neue";
 const char kMansalvaFontName[] = "Mansalva";
 const char kRobotoCondensedFontName[] = "Roboto Condensed";
+const char kRockSaltFontName[] = "Rock Salt";
 const char kSourceSerifProFontName[] = "Source Serif Pro";
 
+const ARGBColor kBlue900Color = 0xFF174EA6;
 const ARGBColor kGreen50Color = 0xFFE6F4EA;
 const ARGBColor kGreen900Color = 0xFF0D652D;
 const ARGBColor kGrey200Color = 0xFFE8EAED;
 const ARGBColor kGrey900Color = 0xFF202124;
+const ARGBColor kRed500Color = 0xFFEA4335;
 const ARGBColor kYellow400Color = 0xFFFCC934;
 
 const ARGBColor kWhiteColor = 0xFFFFFFFF;
@@ -64,6 +67,19 @@ NoteTemplate GetClassicTemplate() {
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
+// TODO(crbug.com/1194168): Add background image support.
+NoteTemplate GetFriendlyTemplate() {
+  return NoteTemplate(
+      /*id=*/NoteTemplateIds::kFriendly,
+      l10n_util::GetStringUTF8(
+          IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_FRIENDLY),
+      Background(/*color=*/0XFFF3E8FD),
+      TextStyle(kRockSaltFontName,
+                /*font_color=*/kGrey900Color, k400Weight,
+                /*all_caps=*/false, TextAlignment::kStart),
+      /*footer_style=*/CreateLightBackgroundFooterStyle());
+}
+
 NoteTemplate GetFreshTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kFresh,
@@ -88,7 +104,7 @@ NoteTemplate GetPowerfulTemplate() {
 }
 
 NoteTemplate GetImpactfulTemplate() {
-  // TODO(crbug.com/1194168): Add text background color.
+  // TODO(crbug.com/1194168): Add offset text highlights support.
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kImpactful,
       l10n_util::GetStringUTF8(
@@ -104,14 +120,26 @@ NoteTemplate GetLovelyTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kLovely,
       l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_LOVELY),
-      /*main_background*/
+      /*main_background=*/
       Background(/*colors=*/{0xFFCEF9FF, 0xFFF1DFFF},
                  LinearGradientDirection::kTopRightToBottomLeft),
-      /*content_background*/ Background(/*color=*/kWhiteColor),
+      /*content_background=*/Background(/*color=*/kWhiteColor),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/false, TextAlignment::kCenter),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
+}
+
+NoteTemplate GetGroovyTemplate() {
+  return NoteTemplate(
+      /*id=*/NoteTemplateIds::kGroovy,
+      l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_GROOVY),
+      Background(/*color=*/kRed500Color),
+      TextStyle(kBebasNeueFontName,
+                /*font_color=*/kYellow400Color, k400Weight,
+                /*all_caps=*/true, TextAlignment::kStart,
+                /*highlight_color=*/kBlue900Color),
+      /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
 NoteTemplate GetMonochromeTemplate() {
@@ -127,7 +155,7 @@ NoteTemplate GetMonochromeTemplate() {
 }
 
 NoteTemplate GetBoldTemplate() {
-  // TODO(crbug.com/1194168): Add text background color.
+  // TODO(crbug.com/1194168): Add offset text highlights support.
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kBold,
       l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_BOLD),
