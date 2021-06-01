@@ -18714,7 +18714,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.0.Under10KB" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -18724,7 +18724,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.1.10KBTo50KB" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -18734,7 +18734,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.2.50KBTo100KB" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -18744,7 +18744,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.3.100KBTo1MB" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -18754,7 +18754,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.4.Over1MB" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -18764,7 +18764,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.LoadError" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2022-01-15">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
