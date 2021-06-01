@@ -43,6 +43,11 @@ class ImeService : public mojom::ImeService,
       mojo::PendingRemote<mojom::InputChannel> from_engine,
       const std::vector<uint8_t>& extra,
       ConnectToImeEngineCallback callback) override;
+  void ConnectToInputMethod(
+      const std::string& ime_spec,
+      mojo::PendingReceiver<mojom::InputChannel> to_engine,
+      mojo::PendingRemote<mojom::InputChannel> from_engine,
+      ConnectToInputMethodCallback callback) override;
 
   // ImeCrosPlatform overrides:
   const char* GetImeBundleDir() override;

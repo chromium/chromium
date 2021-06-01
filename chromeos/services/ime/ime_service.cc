@@ -85,6 +85,17 @@ void ImeService::ConnectToImeEngine(
   std::move(callback).Run(bound);
 }
 
+void ImeService::ConnectToInputMethod(
+    const std::string& ime_spec,
+    mojo::PendingReceiver<mojom::InputChannel> to_engine,
+    mojo::PendingRemote<mojom::InputChannel> from_engine,
+    ConnectToInputMethodCallback callback) {
+  input_engine_ = std::make_unique<InputEngine>();
+  bool bound = input_engine_->BindRequest(ime_spec, std::move(to_engine),
+                                          std::move(from_engine), /*extra=*/{});
+  std::move(callback).Run(bound);
+}
+
 const char* ImeService::GetImeBundleDir() {
   return kBundledInputMethodsDirPath;
 }

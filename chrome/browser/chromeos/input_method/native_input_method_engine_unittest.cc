@@ -76,6 +76,18 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
     std::move(callback).Run(/*bound=*/true);
   }
 
+  void ConnectToInputMethod(
+      const std::string& ime_spec,
+      mojo::PendingReceiver<ime::mojom::InputChannel> to_engine,
+      mojo::PendingRemote<ime::mojom::InputChannel> from_engine,
+      ConnectToInputMethodCallback callback) override {
+    receiver_.Bind(std::move(to_engine));
+    if (remote_) {
+      remote_->Bind(std::move(from_engine));
+    }
+    std::move(callback).Run(/*bound=*/true);
+  }
+
  private:
   mojo::Receiver<ime::mojom::InputChannel> receiver_;
   mojo::Remote<ime::mojom::InputChannel>* remote_;

@@ -85,9 +85,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:ar", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -115,9 +115,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:ar", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -145,9 +145,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:ar", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -175,9 +175,9 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:ar", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -206,9 +206,9 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:ar", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -277,9 +277,9 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -355,9 +355,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -413,9 +413,9 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> to_engine_remote;
 
-  remote_manager_->ConnectToImeEngine(
+  remote_manager_->ConnectToInputMethod(
       "m17n:km", to_engine_remote.BindNewPipeAndPassReceiver(),
-      test_channel.CreatePendingRemote(), extra,
+      test_channel.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
