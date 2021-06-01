@@ -453,6 +453,9 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenRange&,
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenRange&, const CSSParserContext&);
 
+CSSValue* ConsumeContainerName(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeContainerType(CSSParserTokenRange&);
+
 UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
 
 // https://drafts.csswg.org/css-counter-styles-3/#typedef-counter-style-name

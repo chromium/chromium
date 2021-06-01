@@ -204,6 +204,19 @@ inline Containment& operator|=(Containment& a, Containment b) {
   return a = a | b;
 }
 
+static const size_t kContainerTypeBits = 2;
+enum EContainerType {
+  kContainerTypeNone = 0x0,
+  kContainerTypeInlineSize = 0x1,
+  kContainerTypeBlockSize = 0x2,
+};
+inline EContainerType operator|(EContainerType a, EContainerType b) {
+  return EContainerType(int(a) | int(b));
+}
+inline EContainerType& operator|=(EContainerType& a, EContainerType b) {
+  return a = a | b;
+}
+
 static const size_t kTextUnderlinePositionBits = 4;
 enum TextUnderlinePosition {
   kTextUnderlinePositionAuto = 0x0,

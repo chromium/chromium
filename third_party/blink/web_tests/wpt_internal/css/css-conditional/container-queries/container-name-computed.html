@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Computed values of container-name</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #outer { container-name: foo; }
+</style>
+<div id="outer">
+  <div id="target"></div>
+  <div id="target2"></div>
+</div>
+<script>
+test_computed_value('container-name', 'initial', 'none');
+test_computed_value('container-name', 'inherit', 'foo');
+test_computed_value('container-name', 'unset', 'none');
+test_computed_value('container-name', 'foo');
+test_computed_value('container-name', 'FoO');
+
+test(() => {
+  assert_equals(getComputedStyle(outer).containerName, 'foo');
+  assert_equals(getComputedStyle(target2).containerName, 'none');
+}, 'container-type is not inherited');
+</script>

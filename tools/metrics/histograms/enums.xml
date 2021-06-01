@@ -51386,6 +51386,8 @@ Called by update_use_counter_css.py.-->
   <int value="694" label="border-end-end-radius"/>
   <int value="695" label="accent-color"/>
   <int value="696" label="size-adjust"/>
+  <int value="697" label="container-name"/>
+  <int value="698" label="container-type"/>
 </enum>
 
 <enum name="MappedEditingCommands">

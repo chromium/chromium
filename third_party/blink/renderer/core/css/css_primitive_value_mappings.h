@@ -1544,6 +1544,22 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
+inline EContainerType CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNone:
+      return kContainerTypeNone;
+    case CSSValueID::kInlineSize:
+      return kContainerTypeInlineSize;
+    case CSSValueID::kBlockSize:
+      return kContainerTypeBlockSize;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return kContainerTypeNone;
+}
+
+template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TextUnderlinePosition position)
     : CSSValue(kIdentifierClass) {
   switch (position) {

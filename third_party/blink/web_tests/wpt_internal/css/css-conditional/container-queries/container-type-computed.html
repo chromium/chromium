@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Computed values of container-type</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #outer { container-type: inline-size; }
+</style>
+<div id="outer">
+  <div id="target"></div>
+  <div id="target2"></div>
+</div>
+<script>
+test_computed_value('container-type', 'initial', 'none');
+test_computed_value('container-type', 'inherit', 'inline-size');
+test_computed_value('container-type', 'unset', 'none');
+test_computed_value('container-type', 'inline-size');
+test_computed_value('container-type', 'block-size');
+test_computed_value('container-type', 'inline-size block-size');
+test_computed_value('container-type', 'block-size inline-size', 'inline-size block-size');
+
+test(() => {
+  assert_equals(getComputedStyle(outer).containerType, 'inline-size');
+  assert_equals(getComputedStyle(target2).containerType, 'none');
+}, 'container-type is not inherited');
+</script>

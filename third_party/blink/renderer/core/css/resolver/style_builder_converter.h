@@ -296,6 +296,9 @@ class StyleBuilderConverter {
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);
 
+  static AtomicString ConvertContainerName(StyleResolverState&,
+                                           const CSSValue&);
+
   static void CountSystemColorComputeToSelfUsage(
       const StyleResolverState& state);
 };
