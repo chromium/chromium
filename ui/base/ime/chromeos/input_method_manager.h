@@ -14,7 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/ime/chromeos/ime_keyset.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
