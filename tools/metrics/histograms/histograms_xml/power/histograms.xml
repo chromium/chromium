@@ -97,7 +97,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2021-11-21">
+    expires_after="2021-11-28">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
@@ -316,7 +316,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-11-21">
+    expires_after="2021-11-28">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>

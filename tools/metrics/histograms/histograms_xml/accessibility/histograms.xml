@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformGestureType"
-    enum="ChromeVoxGestureType" expires_after="2021-09-19">
+    enum="ChromeVoxGestureType" expires_after="2021-11-28">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

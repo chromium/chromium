@@ -355,7 +355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
-    expires_after="2021-09-29">
+    expires_after="2021-11-28">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -367,7 +367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2021-09-29">
+    expires_after="2021-11-28">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2011,7 +2011,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.ScreenshotController.ScreenshotsPerWeek" units="int"
-    expires_after="2021-09-29">
+    expires_after="2021-11-28">
   <owner>xiyuan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>

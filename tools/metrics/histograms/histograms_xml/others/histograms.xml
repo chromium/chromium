@@ -12267,7 +12267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.CookieDomainCount" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-28">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12278,7 +12278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.DatabaseSize" units="KiB"
-    expires_after="2021-09-19">
+    expires_after="2021-11-28">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12289,7 +12289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.RecordCount" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-28">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12300,7 +12300,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.StorageOriginCount" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-28">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12311,7 +12311,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.TopFrameOriginCount" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-28">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
