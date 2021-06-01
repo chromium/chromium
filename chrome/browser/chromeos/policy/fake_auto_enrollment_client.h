@@ -26,8 +26,9 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
    public:
     // The factory will notify |fake_client_created_callback| when a
     // |AutoEnrollmentClient| has been created through one of its methods.
-    FactoryImpl(const base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>&
-                    fake_client_created_callback);
+    explicit FactoryImpl(
+        const base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>&
+            fake_client_created_callback);
     ~FactoryImpl() override;
 
     std::unique_ptr<AutoEnrollmentClient> CreateForFRE(

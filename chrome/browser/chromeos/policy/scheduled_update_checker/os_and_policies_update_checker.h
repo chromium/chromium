@@ -42,7 +42,7 @@ class OsAndPoliciesUpdateChecker
     : public chromeos::UpdateEngineClient::Observer,
       public chromeos::NetworkStateHandlerObserver {
  public:
-  OsAndPoliciesUpdateChecker(
+  explicit OsAndPoliciesUpdateChecker(
       chromeos::NetworkStateHandler* network_state_handler);
   ~OsAndPoliciesUpdateChecker() override;
 

@@ -282,8 +282,9 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:
-    ScopedFakeSerialNumber(chromeos::system::ScopedFakeStatisticsProvider*
-                               fake_statistics_provider) {
+    explicit ScopedFakeSerialNumber(
+        chromeos::system::ScopedFakeStatisticsProvider*
+            fake_statistics_provider) {
       // The fake serial number must be set before |configuration| is
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(

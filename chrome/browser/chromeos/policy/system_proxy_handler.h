@@ -19,7 +19,7 @@ namespace policy {
 // proxy credentials for system services connecting through System-proxy.
 class SystemProxyHandler {
  public:
-  SystemProxyHandler(chromeos::CrosSettings* cros_settings);
+  explicit SystemProxyHandler(chromeos::CrosSettings* cros_settings);
 
   SystemProxyHandler(const SystemProxyHandler&) = delete;
   SystemProxyHandler& operator=(const SystemProxyHandler&) = delete;

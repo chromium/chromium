@@ -31,7 +31,7 @@ class ServerBackedStateKeysBroker {
       base::OnceCallbackList<void(const std::vector<std::string>&)>;
   using StateKeysCallback = StateKeysCallbackList::CallbackType;
 
-  ServerBackedStateKeysBroker(
+  explicit ServerBackedStateKeysBroker(
       chromeos::SessionManagerClient* session_manager_client);
   ~ServerBackedStateKeysBroker();
 

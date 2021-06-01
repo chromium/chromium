@@ -20,7 +20,7 @@ class PolicyService;
 class DevicePrintServersExternalDataHandler
     : public DeviceCloudExternalDataPolicyHandler {
  public:
-  DevicePrintServersExternalDataHandler(PolicyService* policy_service);
+  explicit DevicePrintServersExternalDataHandler(PolicyService* policy_service);
   DevicePrintServersExternalDataHandler(
       const DevicePrintServersExternalDataHandler&) = delete;
   DevicePrintServersExternalDataHandler& operator=(
