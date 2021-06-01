@@ -35,6 +35,8 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
  private:
   ~AudioOutputStreamFuchsia() override;
 
+  bool is_started() { return callback_ != nullptr; }
+
   // Returns minimum |payload_buffer_| size for the current |min_lead_time_|.
   size_t GetMinBufferSize();
 
@@ -51,6 +53,9 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
 
   // Resets internal state and reports an error to |callback_|.
   void ReportError();
+
+  // Callback for AudioRenderer::Pause().
+  void OnPauseComplete(int64_t reference_time, int64_t media_time);
 
   // Requests data from AudioSourceCallback, passes it to the mixer and
   // schedules |timer_| for the next call.
@@ -75,6 +80,11 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   AudioSourceCallback* callback_ = nullptr;
 
   double volume_ = 1.0;
+
+  // Set to true when Pause() call is pending. AudioRenderer handles Pause()
+  // asynchronously, so Play() should not be called again until Pause() is
+  // complete.
+  bool pause_pending_ = false;
 
   base::TimeTicks reference_time_;
 

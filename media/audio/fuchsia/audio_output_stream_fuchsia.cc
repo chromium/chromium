@@ -8,6 +8,7 @@
 #include <zircon/syscalls.h>
 
 #include "base/bind.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -88,19 +89,27 @@ void AudioOutputStreamFuchsia::Start(AudioSourceCallback* callback) {
   DCHECK(!timer_.IsRunning());
   callback_ = callback;
 
-  // Start playback only after OnMinLeadTimeChanged is received.
-  if (min_lead_time_.has_value())
-    PumpSamples();
+  // Delay PumpSamples() until OnMinLeadTimeChanged is received and Pause() is
+  // not pending.
+  if (!min_lead_time_.has_value() || pause_pending_)
+    return;
+
+  PumpSamples();
 }
 
 void AudioOutputStreamFuchsia::Stop() {
   callback_ = nullptr;
-  if (!reference_time_.is_null()) {
-    reference_time_ = base::TimeTicks();
-    audio_renderer_->PauseNoReply();
-    audio_renderer_->DiscardAllPacketsNoReply();
-  }
   timer_.Stop();
+
+  // Nothing to do if playback is not started or being stopped.
+  if (reference_time_.is_null() || pause_pending_)
+    return;
+
+  reference_time_ = base::TimeTicks();
+  pause_pending_ = true;
+  audio_renderer_->Pause(
+      fit::bind_member(this, &AudioOutputStreamFuchsia::OnPauseComplete));
+  audio_renderer_->DiscardAllPacketsNoReply();
 }
 
 // This stream is always used with sub second buffer sizes, where it's
@@ -183,14 +192,14 @@ void AudioOutputStreamFuchsia::OnMinLeadTimeChanged(int64_t min_lead_time) {
 
   // If playback was started but we were waiting for MinLeadTime, then start
   // pumping samples now.
-  if (callback_ && min_lead_time_was_unknown) {
+  if (is_started() && min_lead_time_was_unknown) {
     DCHECK(!timer_.IsRunning());
     PumpSamples();
   }
 }
 
 void AudioOutputStreamFuchsia::OnRendererError(zx_status_t status) {
-  LOG(WARNING) << "AudioRenderer has failed.";
+  ZX_LOG(WARNING, status) << "AudioRenderer has failed";
   ReportError();
 }
 
@@ -201,7 +210,19 @@ void AudioOutputStreamFuchsia::ReportError() {
     callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
+void AudioOutputStreamFuchsia::OnPauseComplete(int64_t reference_time,
+                                               int64_t media_time) {
+  DCHECK(pause_pending_);
+  pause_pending_ = false;
+
+  // If the stream was restarted while Pause() was pending then we can start
+  // pumping samples again.
+  if (is_started())
+    PumpSamples();
+}
+
 void AudioOutputStreamFuchsia::PumpSamples() {
+  DCHECK(is_started());
   DCHECK(audio_renderer_);
 
   // Allocate payload buffer if necessary.
