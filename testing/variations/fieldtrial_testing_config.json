@@ -8088,6 +8088,25 @@
             ]
         }
     ],
+    "V8FastApiCalls": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "android",
+                "mac",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8TurboFastApiCalls"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8OffThreadFinalization": [
         {
             "platforms": [
