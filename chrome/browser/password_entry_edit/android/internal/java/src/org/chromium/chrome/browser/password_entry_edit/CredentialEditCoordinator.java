@@ -68,7 +68,6 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     void setCredential(String displayUrlOrAppName, String username, String password,
             String displayFederationOrigin, boolean isInsecureCredential) {
         mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, displayUrlOrAppName)
                          .with(FEDERATION_ORIGIN, displayFederationOrigin)
                          .build();
@@ -93,6 +92,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     @Override
     public void onStartFragment() {
         CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
+        mModel.set(UI_ACTION_HANDLER, mMediator);
     }
 
     @Override
