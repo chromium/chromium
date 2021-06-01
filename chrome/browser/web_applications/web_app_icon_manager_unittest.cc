@@ -1381,7 +1381,7 @@ TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
-  ui::SetSupportedScaleFactors(
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
@@ -1424,7 +1424,8 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
-  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
   const AppId app_id = web_app->app_id();
@@ -1461,7 +1462,8 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
-  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
   const AppId app_id = web_app->app_id();
@@ -1474,7 +1476,8 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
-  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
   const AppId app_id = web_app->app_id();
@@ -1495,7 +1498,8 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_DownsizingFromSingleIcon) {
-  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
   const AppId app_id = web_app->app_id();
@@ -1529,7 +1533,8 @@ TEST_F(WebAppIconManagerTest,
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_BiggerUiScaleFactorIconMissing) {
-  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
+  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = CreateWebApp();
   const AppId app_id = web_app->app_id();
