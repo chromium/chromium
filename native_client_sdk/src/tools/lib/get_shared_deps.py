@@ -89,7 +89,7 @@ def GetNeeded(main_files, objdump, lib_path):
 def _GetNeededDynamic(main_files, objdump, lib_path):
   examined = set()
   all_files, unexamined = GleanFromObjdump(main_files, None, objdump, lib_path)
-  for arch in all_files.itervalues():
+  for arch in all_files.values():
     if unexamined:
       if arch == 'arm':
         unexamined.add((LOADER_ARM, arch))
@@ -106,7 +106,7 @@ def _GetNeededDynamic(main_files, objdump, lib_path):
 
     # Call GleanFromObjdump() for each architecture.
     needed = set()
-    for arch, files in files_to_examine.iteritems():
+    for arch, files in files_to_examine.items():
       new_files, new_needed = GleanFromObjdump(files, arch, objdump, lib_path)
       all_files.update(new_files)
       needed |= new_needed
@@ -117,7 +117,7 @@ def _GetNeededDynamic(main_files, objdump, lib_path):
   # With the runnable-ld.so scheme we have today, the proper name of
   # the dynamic linker should be excluded from the list of files.
   ldso = [LD_NACL_MAP[arch] for arch in set(OBJDUMP_ARCH_MAP.values())]
-  for filename, arch in all_files.items():
+  for filename, arch in list(all_files.items()):
     name = os.path.basename(filename)
     if name in ldso:
       del all_files[filename]
@@ -156,10 +156,11 @@ def GleanFromObjdump(files, arch, objdump, lib_path):
       for path in _FindLibsInPath(filename, lib_path):
         full_paths.add(path)
 
-  cmd = [objdump, '-p'] + list(full_paths)
+  cmd = [objdump, '-p'] + list(sorted(full_paths))
   env = {'LANG': 'en_US.UTF-8'}
   proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE, bufsize=-1,
+                          universal_newlines=True,
                           env=env)
 
   input_info = {}

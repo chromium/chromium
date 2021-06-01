@@ -454,7 +454,7 @@ def Zip(args):
           zip_info.date_time = time.localtime(st.st_mtime)[0:6]
           zip_info.compress_type = zip_stream.compression
           zip_info.flag_bits = 0x00
-          zip_info.external_attr = (st[0] & 0xFFFF) << 16L
+          zip_info.external_attr = (st[0] & 0xFFFF) << 16
           zip_info.CRC = 0
           zip_info.compress_size = 0
           zip_info.file_size = 0
