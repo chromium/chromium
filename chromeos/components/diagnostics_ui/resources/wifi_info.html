@@ -6,16 +6,16 @@
     value="[[network.state]]">
   </data-point>
   <data-point id="signalStrength" header="Signal strength"
-    value="[[network.networkProperties.signalStrength]]">
+    value="[[network.typeProperties.wifi.signalStrength]]">
   </data-point>
   <data-point id="frequency" header="Frequency"
-    value="[[network.networkProperties.frequency]]">
+    value="[[network.typeProperties.wifi.frequency]]">
   </data-point>
   <data-point id="bssid" header="bssid"
-    value="[[network.networkProperties.bssid]]">
+    value="[[network.typeProperties.wifi.bssid]]">
   </data-point>
   <data-point id="ssid" header="ssid"
-    value="[[network.networkProperties.ssid]]">
+    value="[[network.typeProperties.wifi.ssid]]">
   </data-point>
   <data-point id="guid" header="Guid"
     value="[[network.guid]]">
@@ -24,15 +24,16 @@
     value="[[network.macAddress]]">
   </data-point>
   <data-point id="ipAddress" header="IP Address"
-    value="[[network.ipConfigProperties.ipAddress]]">
+    value="[[network.ipConfig.ipAddress]]">
   </data-point>
   <data-point id="gateway" header="Gateway"
-    value="[[network.ipConfigProperties.gateway]]">
+    value="[[network.ipConfig.gateway]]">
   </data-point>
   <data-point id="nameServers" header="Name Servers"
-    value="[[network.ipConfigProperties.gateway]]">
+    value="[[network.ipConfig.gateway]]">
   </data-point>
+  <!-- TODO(michaelcheco): Use routing prefix to get value for subnet mask. -->
   <data-point id="subnetMask" header="Subnet Mask"
-    value="[[network.ipConfigProperties.subnetMask]]">
+    value="[[network.ipConfig.routingPrefix]]">
   </data-point>
 </div>

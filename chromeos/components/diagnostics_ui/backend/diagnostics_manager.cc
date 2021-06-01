@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/components/diagnostics_ui/backend/input_data_provider.h"
+#include "chromeos/components/diagnostics_ui/backend/network_health_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
@@ -18,12 +19,21 @@ DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler)
           session_log_handler->GetTelemetryLog())),
       system_routine_controller_(std::make_unique<SystemRoutineController>(
           session_log_handler->GetRoutineLog())) {
+  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>();
+  }
+
   if (features::IsInputInDiagnosticsAppEnabled()) {
     input_data_provider_ = std::make_unique<InputDataProvider>();
   }
 }
 
 DiagnosticsManager::~DiagnosticsManager() = default;
+
+NetworkHealthProvider* DiagnosticsManager::GetNetworkHealthProvider() const {
+  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
+  return network_health_provider_.get();
+}
 
 SystemDataProvider* DiagnosticsManager::GetSystemDataProvider() const {
   return system_data_provider_.get();

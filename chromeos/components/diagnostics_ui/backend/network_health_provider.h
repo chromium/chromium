@@ -51,6 +51,9 @@ class NetworkHealthProvider
   void ObserveNetwork(mojo::PendingRemote<mojom::NetworkStateObserver> observer,
                       const std::string& guid) override;
 
+  void BindInterface(
+      mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver);
+
   // CrosNetworkConfigObserver
   void OnNetworkStateListChanged() override;
   void OnDeviceStateListChanged() override;
@@ -128,6 +131,8 @@ class NetworkHealthProvider
   // Remotes for tracking observers that will be notified of changes to the
   // list of active networks.
   mojo::RemoteSet<mojom::NetworkListObserver> network_list_observers_;
+
+  mojo::Receiver<mojom::NetworkHealthProvider> receiver_{this};
 };
 
 }  // namespace diagnostics

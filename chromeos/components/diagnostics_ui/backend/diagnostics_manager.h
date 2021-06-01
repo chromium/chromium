@@ -10,6 +10,7 @@
 namespace chromeos {
 namespace diagnostics {
 
+class NetworkHealthProvider;
 class SessionLogHandler;
 class SystemDataProvider;
 class SystemRoutineController;
@@ -25,11 +26,13 @@ class DiagnosticsManager {
   DiagnosticsManager(const DiagnosticsManager&) = delete;
   DiagnosticsManager& operator=(const DiagnosticsManager&) = delete;
 
+  NetworkHealthProvider* GetNetworkHealthProvider() const;
   SystemDataProvider* GetSystemDataProvider() const;
   SystemRoutineController* GetSystemRoutineController() const;
   InputDataProvider* GetInputDataProvider() const;
 
  private:
+  std::unique_ptr<NetworkHealthProvider> network_health_provider_;
   std::unique_ptr<SystemDataProvider> system_data_provider_;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
   std::unique_ptr<InputDataProvider> input_data_provider_;

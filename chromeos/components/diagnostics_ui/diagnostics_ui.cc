@@ -13,9 +13,11 @@
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 #include "chromeos/components/diagnostics_ui/backend/input_data_provider.h"
+#include "chromeos/components/diagnostics_ui/backend/network_health_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
+#include "chromeos/components/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources.h"
@@ -176,6 +178,16 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
 DiagnosticsDialogUI::~DiagnosticsDialogUI() {
   const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
   diagnostics::metrics::EmitAppOpenDuration(time_open);
+}
+
+void DiagnosticsDialogUI::BindInterface(
+    mojo::PendingReceiver<diagnostics::mojom::NetworkHealthProvider> receiver) {
+  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
+  diagnostics::NetworkHealthProvider* network_health_provider =
+      diagnostics_manager_->GetNetworkHealthProvider();
+  if (network_health_provider) {
+    network_health_provider->BindInterface(std::move(receiver));
+  }
 }
 
 void DiagnosticsDialogUI::BindInterface(

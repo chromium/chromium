@@ -268,20 +268,22 @@ export const fakeNetworkGuidInfoList = [
 export let fakeWifiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
-  networkProperties: {
-    signalStrength: 65,
-    frequency: 5745,
-    bssid: '44:07:0b:06:2d:85',
-    ssid: 'Dial Up',
+  typeProperties: {
+    wifi: {
+      signalStrength: 65,
+      frequency: 5745,
+      bssid: '44:07:0b:06:2d:85',
+      ssid: 'Dial Up',
+    },
   },
   guid: 'wifiGuid',
   name: 'Dial Up',
   macAddress: '84:C5:A6:30:3F:31',
-  ipConfigProperties: {
+  ipConfig: {
     ipAddress: '192.168.86.197',
     gateway: '192.168.86.1',
     nameServers: ['192.168.86.1'],
-    subnetMask: '255.255.255.0',
+    routingPrefix: 24,
   },
 };
 
@@ -290,22 +292,26 @@ export let fakeWifiNetwork = {
 export let fakeEthernetNetwork = {
   state: NetworkState.kOnline,
   type: NetworkType.kEthernet,
-  networkProperties: {},
+  typeProperties: {
+    ethernet: {},
+  },
   guid: 'ethernetGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:31',
-  ipConfigProperties: null,
+  ipConfig: null,
 };
 
 /** @type {!Network} */
 export let fakeCellularNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
-  networkProperties: {},
+  typeProperties: {
+    cellular: {},
+  },
   guid: 'cellularGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
-  ipConfigProperties: null,
+  ipConfig: null,
 };
 
 /** @type {!Array<!KeyboardInfo>} */

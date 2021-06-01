@@ -2,13 +2,19 @@
 </style>
 
 <div id="infoElementContainer">
-  <wifi-info id="wifiInfo" network="[[network_]]"
-    hidden$="[[!isWifiNetwork_(network_.type)]]">
-  </wifi-info>
-  <ethernet-info id="ethernetInfo" network="[[network_]]"
-    hidden$="[[!isEthernetNetwork_(network_.type)]]">
-  </ethernet-info>
-  <cellular-info id="cellularInfo" network="[[network_]]"
-    hidden$="[[!isCellularNetwork_(network_.type)]]">
-  </cellular-info>
+  <template is="dom-if"
+      if="[[isWifiNetwork_(network_.type)]]">
+    <wifi-info id="wifiInfo" network="[[network_]]">
+    </wifi-info>
+  </template>
+  <template is="dom-if"
+      if="[[isEthernetNetwork_(network_.type)]]">
+    <ethernet-info id="ethernetInfo" network="[[network_]]">
+    </ethernet-info>
+  </template>
+  <template is="dom-if"
+      if="[[isCellularNetwork_(network_.type)]]">
+    <cellular-info id="cellularInfo" network="[[network_]]">
+    </cellular-info>
+  </template>
 </div>

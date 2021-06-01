@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/mojom/input_data_provider.mojom-forward.h"
+#include "chromeos/components/diagnostics_ui/mojom/network_health_provider.mojom-forward.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +33,10 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
 
   DiagnosticsDialogUI(const DiagnosticsDialogUI&) = delete;
   DiagnosticsDialogUI& operator=(const DiagnosticsDialogUI&) = delete;
+
+  void BindInterface(
+      mojo::PendingReceiver<diagnostics::mojom::NetworkHealthProvider>
+          receiver);
 
   void BindInterface(
       mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver);

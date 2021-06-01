@@ -43,35 +43,34 @@ export function wifiInfoTestSuite() {
           `${fakeWifiNetwork.state}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#signalStrength'),
-          fakeWifiNetwork.networkProperties.signalStrength);
+          `${fakeWifiNetwork.typeProperties.wifi.signalStrength}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#frequency'),
-          fakeWifiNetwork.networkProperties.frequency);
+          `${fakeWifiNetwork.typeProperties.wifi.frequency}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#bssid'),
-          fakeWifiNetwork.networkProperties.bssid);
+          fakeWifiNetwork.typeProperties.wifi.bssid);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#ssid'),
-          fakeWifiNetwork.networkProperties.ssid);
+          fakeWifiNetwork.typeProperties.wifi.ssid);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#guid'),
           fakeWifiNetwork.guid);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#macAddress'),
-          fakeWifiNetwork.macAddress);
+          `${fakeWifiNetwork.macAddress}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#ipAddress'),
-          /** @type {string} */ (fakeWifiNetwork.ipConfigProperties.ipAddress));
+          `${fakeWifiNetwork.ipConfig.ipAddress}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#gateway'),
-          /** @type {string} */ (fakeWifiNetwork.ipConfigProperties.gateway));
+          `${fakeWifiNetwork.ipConfig.gateway}`);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#nameServers'),
-          fakeWifiNetwork.ipConfigProperties.nameServers[0]);
+          fakeWifiNetwork.ipConfig.nameServers[0]);
       dx_utils.assertTextContains(
           dx_utils.getDataPointValue(wifiInfoElement, '#subnetMask'),
-          /** @type {string} */
-          (fakeWifiNetwork.ipConfigProperties.subnetMask));
+          `${fakeWifiNetwork.ipConfig.routingPrefix}`);
     });
   });
 }

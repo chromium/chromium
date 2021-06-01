@@ -193,6 +193,7 @@
 #include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/mojom/input_data_provider.mojom.h"
+#include "chromeos/components/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/components/eche_app_ui/eche_app_ui.h"
@@ -807,6 +808,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::InputDataProvider,
       chromeos::DiagnosticsDialogUI>(map);
+
+  if (chromeos::features::IsNetworkingInDiagnosticsAppEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::diagnostics::mojom::NetworkHealthProvider,
+        chromeos::DiagnosticsDialogUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::SystemDataProvider,

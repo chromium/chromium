@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "chromeos/services/network_config/in_process_instance.h"
@@ -315,6 +316,12 @@ void NetworkHealthProvider::ObserveNetwork(
   network_properties.observer =
       mojo::Remote<mojom::NetworkStateObserver>(std::move(observer));
   NotifyNetworkStateObserver(network_properties);
+}
+
+void NetworkHealthProvider::BindInterface(
+    mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver) {
+  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
+  receiver_.Bind(std::move(pending_receiver));
 }
 
 void NetworkHealthProvider::NotifyNetworkListObservers() {

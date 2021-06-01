@@ -23,6 +23,12 @@ export class FakeNetworkHealthProvider {
   constructor() {
     this.observables_ = new FakeObservables();
 
+    /** @private {?Promise} */
+    this.observeNetworkListPromise_ = null;
+
+    /** @private {?Promise} */
+    this.observeNetworkStatePromise_ = null;
+
     this.registerObservables();
   }
 
@@ -32,10 +38,11 @@ export class FakeNetworkHealthProvider {
    * @return {!Promise}
    */
   observeNetworkList(remote) {
-    return this.observe_(ON_NETWORK_LIST_CHANGED_METHOD_NAME, (networkGuid) => {
-      remote.onNetworkListChanged(
-          /** @type {!NetworkGuidInfo} */ (networkGuid));
-    });
+    this.observeNetworkListPromise_ = this.observe_(
+        ON_NETWORK_LIST_CHANGED_METHOD_NAME, (networkGuidInfo) => {
+          remote.onNetworkListChanged(
+              networkGuidInfo.networkGuids, networkGuidInfo.activeGuid);
+        });
   }
 
   /*
@@ -47,7 +54,7 @@ export class FakeNetworkHealthProvider {
    * @return {!Promise}
    */
   observeNetwork(remote, guid) {
-    return this.observeWithArg_(
+    this.observeNetworkStatePromise_ = this.observeWithArg_(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, (network) => {
           remote.onNetworkStateChanged(
               /** @type {!Network} */ (network));
@@ -70,6 +77,22 @@ export class FakeNetworkHealthProvider {
   setFakeNetworkState(guid, networkStateList) {
     this.observables_.setObservableDataForArg(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, networkStateList);
+  }
+
+  /**
+   * Returns the promise for the most recent network list observation.
+   * @return {?Promise}
+   */
+  getObserveNetworkListPromiseForTesting() {
+    return this.observeNetworkListPromise_;
+  }
+
+  /**
+   * Returns the promise for the most recent network state observation.
+   * @return {?Promise}
+   */
+  getObserveNetworkStatePromiseForTesting() {
+    return this.observeNetworkStatePromise_;
   }
 
   /**
@@ -110,7 +133,7 @@ export class FakeNetworkHealthProvider {
     this.registerObservables();
   }
 
-  /*
+  /**
    * Sets up an observer for methodName.
    * @template T
    * @param {string} methodName

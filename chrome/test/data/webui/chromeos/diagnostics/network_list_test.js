@@ -156,8 +156,10 @@ export function networkListTestSuite() {
   test('NetworkCardElementsPopulated', () => {
     let networkCardElements;
     return initializeNetworkList(fakeNetworkGuidInfoList)
-        .then(async () => {
+        .then(() => flushTasks())
+        .then(() => {
           networkCardElements = getNetworkCardElements();
+
           // The first network list observation provides guids for Cellular
           // and WiFi. The connectivity-card is responsbile for the Ethernet
           // guid as it's the currently active guid.
@@ -176,7 +178,9 @@ export function networkListTestSuite() {
 
           return triggerNetworkListObserver();
         })
+        .then(() => flushTasks())
         .then(() => {
+          networkCardElements = getNetworkCardElements();
           const cellularInfoElement = dx_utils.getCellularInfoElement(
               networkCardElements[0].$$('network-info'));
           dx_utils.assertTextContains(

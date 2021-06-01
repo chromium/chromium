@@ -10,7 +10,7 @@ import './wifi_info.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface, NetworkType} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
@@ -28,6 +28,12 @@ Polymer({
    * @private {?NetworkHealthProviderInterface}
    */
   networkHealthProvider_: null,
+
+  /**
+   * Receiver responsible for observing a single active network connection.
+   * @private {?NetworkStateObserverReceiver}
+   */
+  networkStateObserverReceiver_: null,
 
   properties: {
     /** @type {string} */
@@ -54,11 +60,21 @@ Polymer({
     if (!this.guid) {
       return;
     }
-    // TODO(michaelcheco): Reset observer when the real
-    // observeNetwork implementation is added.
 
-    // Calling observeNetwork will trigger onNetworkStateChanged.
-    this.networkHealthProvider_.observeNetwork(this, this.guid);
+    if (this.networkStateObserverReceiver_) {
+      this.networkStateObserverReceiver_.$.close();
+      this.networkStateObserverReceiver_ = null;
+    }
+
+    this.networkStateObserverReceiver_ = new NetworkStateObserverReceiver(
+        /**
+         * @type {!NetworkStateObserverInterface}
+         */
+        (this));
+
+    this.networkHealthProvider_.observeNetwork(
+        this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
+        this.guid);
   },
 
   /**

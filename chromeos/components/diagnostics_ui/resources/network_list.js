@@ -9,7 +9,7 @@ import './network_card.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js'
+import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js'
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
@@ -26,6 +26,12 @@ Polymer({
    * @private {?NetworkHealthProviderInterface}
    */
   networkHealthProvider_: null,
+
+  /**
+   * Receiver responsible for observing active network guids.
+   * @private {?NetworkListObserverReceiver}
+   */
+  networkListObserverReceiver_: null,
 
   properties: {
     /** @type {boolean} */
@@ -60,23 +66,35 @@ Polymer({
     this.observeNetworkList_();
   },
 
+  /** @override */
+  detached() {
+    this.networkListObserverReceiver_.$.close();
+  },
+
   /** @private */
   observeNetworkList_() {
     // Calling observeNetworkList will trigger onNetworkListChanged.
-    this.networkHealthProvider_.observeNetworkList(this);
+    this.networkListObserverReceiver_ = new NetworkListObserverReceiver(
+        /**
+         * @type {!NetworkListObserverInterface}
+         */
+        (this));
+
+    this.networkHealthProvider_.observeNetworkList(
+        this.networkListObserverReceiver_.$.bindNewPipeAndPassRemote());
   },
 
   /**
    * Implements NetworkListObserver.onNetworkListChanged
-   * @param {!NetworkGuidInfo} networkGuidInfo
+   * @param {!Array<string>} networkGuids
+   * @param {string} activeGuid
    */
-  onNetworkListChanged(networkGuidInfo) {
+  onNetworkListChanged(networkGuids, activeGuid) {
     // The connectivity-card is responsible for displaying the active network
     // so we need to filter out the activeGuid to avoid displaying a
     // a network-card for it.
-    this.otherNetworkGuids_ = networkGuidInfo.networkGuids.filter(
-        guid => guid !== networkGuidInfo.activeGuid);
-    this.activeGuid_ = networkGuidInfo.activeGuid || '';
+    this.otherNetworkGuids_ = networkGuids.filter(guid => guid !== activeGuid);
+    this.activeGuid_ = activeGuid;
   },
 
   /**
