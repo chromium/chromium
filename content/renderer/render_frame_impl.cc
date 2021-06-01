@@ -55,6 +55,7 @@
 #include "cc/trees/ukm_manager.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/debug_utils.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_gesture.h"
@@ -2530,7 +2531,8 @@ void RenderFrameImpl::BindWebUI(
 }
 
 void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
-    const mojom::OldPageInfo* old_page_info) {
+    const mojom::OldPageInfo* old_page_info,
+    const GURL& new_page_url) {
   if (!old_page_info)
     return;
   RenderFrameImpl* old_main_render_frame = RenderFrameImpl::FromRoutingID(
@@ -2541,8 +2543,38 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
     // we should check if it still exists.
     return;
   }
-  CHECK(IsMainFrame());
-  CHECK(old_main_render_frame->IsMainFrame());
+  if (!IsMainFrame() && !old_main_render_frame->IsMainFrame()) {
+    // This shouldn't happen because `old_page_info` should only be set on
+    // cross-BrowsingInstance navigations, which can only happen on main frames.
+    // However, we got some reports of this happening (see
+    // https://crbug.com/1207271).
+    SCOPED_CRASH_KEY_BOOL("old_page_info", "new_is_main_frame", IsMainFrame());
+    SCOPED_CRASH_KEY_STRING256("old_page_info", "new_url", new_page_url.spec());
+    SCOPED_CRASH_KEY_BOOL("old_page_info", "old_is_main_frame",
+                          old_main_render_frame->IsMainFrame());
+    SCOPED_CRASH_KEY_STRING256("old_page_info", "old_url",
+                               old_main_render_frame->GetLoadingUrl().spec());
+    SCOPED_CRASH_KEY_NUMBER("old_page_info", "old_routing_id",
+                            old_page_info->routing_id_for_old_main_frame);
+    SCOPED_CRASH_KEY_BOOL(
+        "old_page_info", "old_is_frozen",
+        old_page_info->new_lifecycle_state_for_old_page->is_frozen);
+    SCOPED_CRASH_KEY_BOOL("old_page_info", "old_is_in_bfcache",
+                          old_page_info->new_lifecycle_state_for_old_page
+                              ->is_in_back_forward_cache);
+    SCOPED_CRASH_KEY_BOOL(
+        "old_page_info", "old_is_hidden",
+        old_page_info->new_lifecycle_state_for_old_page->visibility ==
+            PageVisibilityState::kHidden);
+    SCOPED_CRASH_KEY_BOOL(
+        "old_page_info", "old_pagehide_dispatch",
+        old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch ==
+            blink::mojom::PagehideDispatch::kNotDispatched);
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugNonMainFrameWithOldPageInfo);
+    NOTREACHED();
+    return;
+  }
   DCHECK_EQ(old_page_info->new_lifecycle_state_for_old_page->visibility,
             PageVisibilityState::kHidden);
   DCHECK_NE(old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch,
@@ -2578,7 +2610,7 @@ void RenderFrameImpl::CommitNavigation(
       this, kMayReplaceInitialEmptyDocument);
 
   SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
-      commit_params->old_page_info.get());
+      commit_params->old_page_info.get(), common_params->url);
 
   bool was_initiated_in_this_frame =
       navigation_client_impl_ &&

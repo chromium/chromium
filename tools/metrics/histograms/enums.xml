@@ -17911,6 +17911,7 @@ Called by update_debug_scenarios.py.-->
      please refer to content/common/debug_utils.h. -->
 
   <int value="1" label="kDebugSameDocNavigationDocIdMismatch"/>
+  <int value="2" label="kDebugNonMainFrameWithOldPageInfo"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">

@@ -27,9 +27,12 @@ namespace content {
 enum class DebugScenario {
   kDebugSameDocNavigationDocIdMismatch = 1,
 
+  // A non-main frame navigation with old_page_info set was detected.
+  kDebugNonMainFrameWithOldPageInfo = 2,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugSameDocNavigationDocIdMismatch
+  kMaxValue = kDebugNonMainFrameWithOldPageInfo
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be

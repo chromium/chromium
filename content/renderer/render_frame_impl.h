@@ -1021,7 +1021,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // implemented later.
   // TODO(crbug.com/1110744): Support unload-in-commit.
   void SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
-      const mojom::OldPageInfo* old_page_info);
+      const mojom::OldPageInfo* old_page_info,
+      const GURL& new_page_url);
 
   // Updates the state when asked to commit a history navigation.  Sets
   // |item_for_history_navigation| and |load_type| to the appropriate values for
