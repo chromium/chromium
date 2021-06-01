@@ -209,6 +209,8 @@ class PsmHelper {
           << "PSM error: unexpected internal logic error during creating "
              "PSM RLWE client";
       has_psm_error_ = true;
+      base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
+                                    PsmResult::kCreateRlweClientLibraryError);
       return;
     }
 
@@ -240,9 +242,6 @@ class PsmHelper {
       return;
     }
 
-    // Report the psm attempt and start the timer to measure successful private
-    // set membership requests.
-    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kAttempt);
     time_start_ = base::TimeTicks::Now();
 
     on_completion_callback_ = std::move(callback);
@@ -250,7 +249,8 @@ class PsmHelper {
     // Start the protocol and its timeout timer.
     psm_timeout_.Start(
         FROM_HERE, kPsmTimeout,
-        base::BindOnce(&PsmHelper::OnTimeout, base::Unretained(this)));
+        base::BindOnce(&PsmHelper::StoreErrorAndStop, base::Unretained(this),
+                       PsmResult::kTimeout));
     SendPsmRlweOprfRequest();
   }
 
@@ -292,14 +292,10 @@ class PsmHelper {
   }
 
  private:
-  void OnTimeout() {
-    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kTimeout);
-    StoreErrorAndStop();
-  }
-
-  void StoreErrorAndStop() {
-    // Record the error. Note that a timeout is also recorded as error.
-    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kError);
+  void StoreErrorAndStop(PsmResult psm_result) {
+    // Note that kUMAPsmResult histogram is only using initial enrollment as a
+    // suffix until PSM support FRE.
+    base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
 
     // Stop the PSM timer.
     psm_timeout_.Stop();
@@ -323,7 +319,7 @@ class PsmHelper {
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "RLWE OPRF request";
-      StoreErrorAndStop();
+      StoreErrorAndStop(PsmResult::kCreateOprfRequestLibraryError);
       return;
     }
 
@@ -362,7 +358,7 @@ class PsmHelper {
                  .rlwe_response()
                  .has_oprf_response()) {
           LOG(ERROR) << "PSM error: empty OPRF RLWE response";
-          StoreErrorAndStop();
+          StoreErrorAndStop(PsmResult::kEmptyOprfResponseError);
           return;
         }
 
@@ -373,12 +369,12 @@ class PsmHelper {
       case DM_STATUS_REQUEST_FAILED: {
         LOG(ERROR)
             << "PSM error: RLWE OPRF request failed due to connection error";
-        StoreErrorAndStop();
+        StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }
       default: {
         LOG(ERROR) << "PSM error: RLWE OPRF request failed due to server error";
-        StoreErrorAndStop();
+        StoreErrorAndStop(PsmResult::kServerError);
         return;
       }
     }
@@ -401,7 +397,7 @@ class PsmHelper {
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "RLWE query request";
-      StoreErrorAndStop();
+      StoreErrorAndStop(PsmResult::kCreateQueryRequestLibraryError);
       return;
     }
 
@@ -441,7 +437,7 @@ class PsmHelper {
                  .rlwe_response()
                  .has_query_response()) {
           LOG(ERROR) << "PSM error: empty query RLWE response";
-          StoreErrorAndStop();
+          StoreErrorAndStop(PsmResult::kEmptyQueryResponseError);
           return;
         }
 
@@ -459,14 +455,14 @@ class PsmHelper {
           LOG(ERROR) << "PSM error: unexpected internal logic error during "
                         "processing the "
                         "RLWE query response";
-          StoreErrorAndStop();
+          StoreErrorAndStop(PsmResult::kProcessingQueryResponseLibraryError);
           return;
         }
 
         LOG(WARNING) << "PSM query request completed successfully";
 
-        base::UmaHistogramEnumeration(kUMAPsmRequestStatus,
-                                      PsmStatus::kSuccessfulDetermination);
+        base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
+                                      PsmResult::kSuccessfulDetermination);
         RecordPsmSuccessTimeHistogram();
 
         // The RLWE query response has been processed successfully. Extract
@@ -499,13 +495,13 @@ class PsmHelper {
       case DM_STATUS_REQUEST_FAILED: {
         LOG(ERROR)
             << "PSM error: RLWE query request failed due to connection error";
-        StoreErrorAndStop();
+        StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }
       default: {
         LOG(ERROR)
             << "PSM error: RLWE query request failed due to server error";
-        StoreErrorAndStop();
+        StoreErrorAndStop(PsmResult::kServerError);
         return;
       }
     }
@@ -577,6 +573,10 @@ class PsmHelper {
 
   // The time when the PSM request started.
   base::TimeTicks time_start_;
+
+  // The UMA histogram suffix. It's set only to ".InitialEnrollment" for an
+  // |AutoEnrollmentClient| until PSM will support FRE.
+  const std::string uma_suffix_ = kUMAHashDanceSuffixInitialEnrollment;
 
   // A sequence checker to prevent the race condition of having the possibility
   // of the destructor being called and any of the callbacks.
