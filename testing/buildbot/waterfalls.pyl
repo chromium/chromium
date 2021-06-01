@@ -403,7 +403,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
