@@ -6,9 +6,6 @@ specific_include_rules = {
     "+chrome/browser/ash/crosapi",
     "+ui/message_center/message_center.h",
   ],
-  "power_ash\.cc": [
-    "+services/device/wake_lock/power_save_blocker/power_save_blocker.h",
-  ],
   "screen_manager_ash\.cc": [
     # For window parenting.
     "+ash/shell.h",

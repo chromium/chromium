@@ -29,7 +29,6 @@ mojom("mojom") {
     "message_center.mojom",
     "metrics_reporting.mojom",
     "notification.mojom",
-    "power.mojom",
     "prefs.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
