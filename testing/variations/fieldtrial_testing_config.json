@@ -8116,7 +8116,9 @@
                 "windows",
                 "android",
                 "mac",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "chromeos",
+                "ios"
             ],
             "experiments": [
                 {
