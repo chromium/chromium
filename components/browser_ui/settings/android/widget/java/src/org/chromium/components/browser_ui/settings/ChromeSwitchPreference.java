@@ -23,7 +23,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private View mView;
     /** The color resource ID for tinting of the view's background. */
     @ColorRes
-    private int mBackgroundColorRes;
+    private Integer mBackgroundColorRes;
 
     public ChromeSwitchPreference(Context context) {
         super(context);
@@ -72,13 +72,13 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
      * @param colorRes
      */
     public void setBackgroundColor(@ColorRes int colorRes) {
-        if (mBackgroundColorRes == colorRes) return;
+        if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
     }
 
     private void updateBackground() {
-        if (mView == null) return;
+        if (mView == null || mBackgroundColorRes == null) return;
         mView.setBackgroundColor(mBackgroundColorRes);
     }
 }
