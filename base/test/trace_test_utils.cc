@@ -7,6 +7,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/tracing/perfetto_platform.h"
+#include "third_party/perfetto/include/perfetto/tracing.h"
 
 namespace base {
 namespace test {
@@ -66,11 +67,25 @@ RebindableTaskRunner* GetClientLibTaskRunner() {
 
 }  // namespace
 
+TracingEnvironment::TracingEnvironment() {
+  if (perfetto::Tracing::IsInitialized())
+    return;
+  static tracing::PerfettoPlatform perfetto_platform(
+      tracing::PerfettoPlatform::TaskRunnerType::kBuiltin);
+  perfetto::TracingInitArgs init_args;
+  init_args.backends = perfetto::BackendType::kInProcessBackend;
+  init_args.platform = &perfetto_platform;
+  perfetto::Tracing::Initialize(init_args);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TrackEvent::Register();
+#endif
+}
+
 TracingEnvironment::TracingEnvironment(
     TaskEnvironment& task_environment,
     scoped_refptr<SequencedTaskRunner> task_runner,
     tracing::PerfettoPlatform* perfetto_platform)
-    : task_environment_(task_environment) {
+    : task_environment_(&task_environment) {
   // Since Perfetto's platform backend can only be initialized once in a
   // process, we give it a task runner that can outlive the per-test task
   // environment.
@@ -80,12 +95,26 @@ TracingEnvironment::TracingEnvironment(
   client_lib_task_runner->set_task_runner(std::move(task_runner));
 
   // Wait for any posted construction tasks to execute.
-  task_environment_.RunUntilIdle();
+  task_environment_->RunUntilIdle();
 }
 
 TracingEnvironment::~TracingEnvironment() {
-  // Wait for any posted destruction tasks to execute.
-  task_environment_.RunUntilIdle();
+  if (task_environment_) {
+    // Wait for any posted destruction tasks to execute.
+    task_environment_->RunUntilIdle();
+  }
+}
+
+// static
+perfetto::protos::gen::TraceConfig TracingEnvironment::GetDefaultTraceConfig() {
+  perfetto::protos::gen::TraceConfig trace_config;
+  auto* buffer_config = trace_config.add_buffers();
+  buffer_config->set_size_kb(1024 * 1024);
+  auto* data_source = trace_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("track_event");
+  source_config->set_target_buffer(0);
+  return trace_config;
 }
 
 }  // namespace test

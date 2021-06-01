@@ -14,8 +14,8 @@ namespace base {
 namespace trace_event {
 namespace {
 
-const char kTestBlameContextCategory[] = "test";
-const char kDisabledTestBlameContextCategory[] = "disabled-by-default-test";
+const char kTestBlameContextCategory[] = "base";
+const char kDisabledTestBlameContextCategory[] = "disabled-by-default-base";
 const char kTestBlameContextName[] = "TestBlameContext";
 const char kTestBlameContextType[] = "TestBlameContextType";
 const char kTestBlameContextScope[] = "TestBlameContextScope";

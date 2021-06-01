@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/trace_log.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 namespace base {
 namespace tracing {
@@ -21,14 +22,23 @@ namespace test {
 // //services/tracing for recording traces in multiprocess configurations.
 class TracingEnvironment {
  public:
+  // Construct a tracing environment using the default Perfetto tracing
+  // platform.
+  TracingEnvironment();
+
+  // Constructs a tracing environment with the given task runner and Perfetto
+  // tracing platform.
   explicit TracingEnvironment(TaskEnvironment&,
                               scoped_refptr<SequencedTaskRunner> =
                                   ThreadPool::CreateSequencedTaskRunner({}),
                               base::tracing::PerfettoPlatform* = nullptr);
   ~TracingEnvironment();
 
+  // Builds a default Perfetto trace config with track events enabled.
+  static perfetto::protos::gen::TraceConfig GetDefaultTraceConfig();
+
  private:
-  TaskEnvironment& task_environment_;
+  TaskEnvironment* task_environment_ = nullptr;
 };
 
 }  // namespace test

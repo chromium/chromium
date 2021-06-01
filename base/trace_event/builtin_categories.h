@@ -392,20 +392,12 @@ class BASE_EXPORT BuiltinCategories {
  public:
   // Returns a built-in category name at |index| in the registry.
   static constexpr const char* At(size_t index) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    return perfetto::internal::kCategories[index].name;
-#else
     return kBuiltinCategories[index];
-#endif
   }
 
   // Returns the amount of built-in categories in the registry.
   static constexpr size_t Size() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    return perfetto::internal::kCategoryCount;
-#else
     return base::size(kBuiltinCategories);
-#endif
   }
 
   // Where in the builtin category list to start when populating the

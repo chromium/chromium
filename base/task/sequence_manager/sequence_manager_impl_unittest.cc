@@ -2957,7 +2957,7 @@ TEST_P(SequenceManagerTest, BlameContextAttribution) {
 
   trace_analyzer::Start("*");
   {
-    trace_event::BlameContext blame_context("cat", "name", "type", "scope", 0,
+    trace_event::BlameContext blame_context("base", "name", "type", "scope", 0,
                                             nullptr);
     blame_context.Initialize();
     queue->SetBlameContext(&blame_context);

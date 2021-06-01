@@ -19,6 +19,9 @@
 namespace base {
 namespace trace_event {
 
+// Pseudostack-based heap profiling isn't supported with Perfetto.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 // Define all strings once, because the pseudo stack requires pointer equality,
 // and string interning is unreliable.
 const char kThreadName[] = "TestThread";
@@ -346,6 +349,8 @@ TEST_F(AllocationContextTrackerTest, IgnoreAllocationTest) {
   ASSERT_FALSE(AllocationContextTracker::GetInstanceForCurrentThread()
                    ->GetContextSnapshot(&ctx));
 }
+
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

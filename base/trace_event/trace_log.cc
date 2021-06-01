@@ -297,6 +297,23 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
         WriteDebugAnnotations(trace_event, ctx.event());
         auto* legacy_event = ctx.event()->set_legacy_event();
         legacy_event->set_phase(trace_event->phase());
+        uint32_t id_flags =
+            trace_event->flags() &
+            (TRACE_EVENT_FLAG_HAS_ID | TRACE_EVENT_FLAG_HAS_LOCAL_ID |
+             TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
+        switch (id_flags) {
+          case TRACE_EVENT_FLAG_HAS_ID:
+            legacy_event->set_unscoped_id(trace_event->id());
+            break;
+          case TRACE_EVENT_FLAG_HAS_LOCAL_ID:
+            legacy_event->set_local_id(trace_event->id());
+            break;
+          case TRACE_EVENT_FLAG_HAS_GLOBAL_ID:
+            legacy_event->set_global_id(trace_event->id());
+            break;
+          default:
+            break;
+        }
       });
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

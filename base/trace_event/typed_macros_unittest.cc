@@ -6,6 +6,7 @@
 
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/typed_macros_embedder_support.h"
@@ -14,17 +15,38 @@
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pb.h"
+#include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "base/tracing/perfetto_platform.h"
+#endif
 
 namespace base {
 namespace trace_event {
 
 namespace {
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+std::unique_ptr<perfetto::TracingSession> g_tracing_session;
+#else
 constexpr const char kRecordAllCategoryFilter[] = "*";
+#endif
 
+void EnableTrace() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  g_tracing_session = perfetto::Tracing::NewTrace();
+  g_tracing_session->Setup(test::TracingEnvironment::GetDefaultTraceConfig());
+  g_tracing_session->StartBlocking();
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+}
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 void CancelTraceAsync(WaitableEvent* flush_complete_event) {
   TraceLog::GetInstance()->CancelTracing(base::BindRepeating(
       [](WaitableEvent* complete_event,
@@ -34,12 +56,17 @@ void CancelTraceAsync(WaitableEvent* flush_complete_event) {
       },
       base::Unretained(flush_complete_event)));
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 void CancelTrace() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  g_tracing_session.reset();
+#else  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   WaitableEvent flush_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
                                      WaitableEvent::InitialState::NOT_SIGNALED);
   CancelTraceAsync(&flush_complete_event);
   flush_complete_event.Wait();
+#endif
 }
 
 struct TestTrackEvent;
@@ -113,7 +140,40 @@ class TypedTraceEventTest : public testing::Test {
 
   ~TypedTraceEventTest() override { ResetTypedTraceEventsForTesting(); }
 
+  void FlushTrace() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::TrackEvent::Flush();
+    g_tracing_session->StopBlocking();
+    std::vector<char> serialized_data = g_tracing_session->ReadTraceBlocking();
+    perfetto::protos::Trace trace;
+    EXPECT_TRUE(
+        trace.ParseFromArray(serialized_data.data(), serialized_data.size()));
+    for (const auto& packet : trace.packet()) {
+      if (packet.has_track_event()) {
+        std::string serialized_event = packet.track_event().SerializeAsString();
+        event_.prepare_called = true;
+        event_.event->AppendRawProtoBytes(serialized_event.data(),
+                                          serialized_event.size());
+        event_.OnTrackEventCompleted();
+
+        std::string serialized_interned_data =
+            packet.interned_data().SerializeAsString();
+        event_.incremental_state.serialized_interned_data->AppendRawProtoBytes(
+            serialized_interned_data.data(), serialized_interned_data.size());
+
+        std::string serialized_packet = packet.SerializeAsString();
+        packet_.prepare_called = true;
+        packet_.packet->AppendRawProtoBytes(serialized_packet.data(),
+                                            serialized_packet.size());
+        packet_.OnTracePacketCompleted();
+        break;
+      }
+    }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  }
+
   perfetto::protos::TrackEvent ParseTrackEvent() {
+    FlushTrace();
     auto serialized_data = event_.event.SerializeAsArray();
     perfetto::protos::TrackEvent track_event;
     EXPECT_TRUE(track_event.ParseFromArray(serialized_data.data(),
@@ -122,6 +182,9 @@ class TypedTraceEventTest : public testing::Test {
   }
 
  protected:
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  test::TracingEnvironment tracing_environment_;
+#endif
   TestTrackEvent event_;
   TestTracePacket packet_;
 };
@@ -129,14 +192,16 @@ class TypedTraceEventTest : public testing::Test {
 }  // namespace
 
 TEST_F(TypedTraceEventTest, CallbackExecutedWhenTracingEnabled) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
-  TRACE_EVENT("cat", "Name", [this](perfetto::EventContext ctx) {
+  TRACE_EVENT("cat", "Name", [&](perfetto::EventContext ctx) {
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_EQ(ctx.event(), event_.event.get());
+#endif
     perfetto::protos::pbzero::LogMessage* log = ctx.event()->set_log_message();
     log->set_body_iid(1);
   });
+  FlushTrace();
 
   EXPECT_TRUE(event_.prepare_called);
   EXPECT_FALSE(event_.event.empty());
@@ -158,11 +223,11 @@ TEST_F(TypedTraceEventTest, CallbackNotExecutedWhenTracingDisabled) {
 }
 
 TEST_F(TypedTraceEventTest, DescriptorPacketWrittenForEventWithTrack) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT("cat", "Name", perfetto::Track(1234));
 
+  FlushTrace();
   EXPECT_TRUE(event_.prepare_called);
   EXPECT_FALSE(event_.event.empty());
   EXPECT_TRUE(event_.event_completed);
@@ -175,8 +240,7 @@ TEST_F(TypedTraceEventTest, DescriptorPacketWrittenForEventWithTrack) {
 }
 
 TEST_F(TypedTraceEventTest, InternedData) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
   const TraceSourceLocation location("TestFunction", "test.cc", 123);
   size_t iid = 0;
 
@@ -204,6 +268,7 @@ TEST_F(TypedTraceEventTest, InternedData) {
     size_t iid4 = InternedSourceLocation::Get(&ctx, location3);
     EXPECT_EQ(iid, iid4);
   });
+  FlushTrace();
 
   auto serialized_data =
       event_.incremental_state.serialized_interned_data.SerializeAsArray();
@@ -230,6 +295,7 @@ TEST_F(TypedTraceEventTest, InternedData) {
     EXPECT_NE(0u, iid);
     log->set_body_iid(iid);
   });
+  FlushTrace();
 
   // No new data should have been interned the second time around.
   EXPECT_EQ(
@@ -240,8 +306,7 @@ TEST_F(TypedTraceEventTest, InternedData) {
 }
 
 TEST_F(TypedTraceEventTest, InstantThreadEvent) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ThreadEvent", [](perfetto::EventContext) {});
   auto track_event = ParseTrackEvent();
@@ -251,8 +316,7 @@ TEST_F(TypedTraceEventTest, InstantThreadEvent) {
 }
 
 TEST_F(TypedTraceEventTest, InstantProcessEvent) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ProcessEvent", perfetto::ProcessTrack::Current(),
                       [](perfetto::EventContext) {});
@@ -264,8 +328,7 @@ TEST_F(TypedTraceEventTest, InstantProcessEvent) {
 }
 
 TEST_F(TypedTraceEventTest, InstantGlobalEvent) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "GlobalEvent", perfetto::Track::Global(1234),
                       [](perfetto::EventContext) {});
@@ -277,8 +340,7 @@ TEST_F(TypedTraceEventTest, InstantGlobalEvent) {
 }
 
 TEST_F(TypedTraceEventTest, InstantGlobalDefaultEvent) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "GlobalDefaultEvent", perfetto::Track::Global(0),
                       [](perfetto::EventContext) {});
@@ -290,8 +352,7 @@ TEST_F(TypedTraceEventTest, InstantGlobalDefaultEvent) {
 }
 
 TEST_F(TypedTraceEventTest, BeginEventOnDefaultTrackDoesNotWriteTrackUuid) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_BEGIN("cat", "Name");
   auto begin_event = ParseTrackEvent();
@@ -301,8 +362,7 @@ TEST_F(TypedTraceEventTest, BeginEventOnDefaultTrackDoesNotWriteTrackUuid) {
 }
 
 TEST_F(TypedTraceEventTest, EndEventOnDefaultTrackDoesNotWriteTrackUuid) {
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
+  EnableTrace();
 
   TRACE_EVENT_END("cat");
   auto end_event = ParseTrackEvent();
