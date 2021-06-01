@@ -55,15 +55,15 @@ NGInlineBoxState::NGInlineBoxState(const NGInlineBoxState&& state)
       pending_descendants(std::move(state.pending_descendants)),
       include_used_fonts(state.include_used_fonts),
       has_box_placeholder(state.has_box_placeholder),
-      needs_box_fragment(state.needs_box_fragment) {
+      needs_box_fragment(state.needs_box_fragment),
+      is_svg_text(state.is_svg_text) {
   if (state.scaled_font)
     font = &*scaled_font;
   else
     font = state.font;
 }
 
-void NGInlineBoxState::InitializeFont(bool is_svg_text,
-                                      const LayoutObject& layout_object) {
+void NGInlineBoxState::InitializeFont(const LayoutObject& layout_object) {
   if (!is_svg_text) {
     scaling_factor = 1.0f;
     font = &style->GetFont();
@@ -78,10 +78,16 @@ void NGInlineBoxState::InitializeFont(bool is_svg_text,
 void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
                                           const Font& fontref,
                                           FontBaseline baseline_type) {
-  if (const SimpleFontData* font_data = fontref.PrimaryFont())
-    text_metrics = font_data->GetFontMetrics().GetFontHeight(baseline_type);
-  else
+  if (const SimpleFontData* font_data = fontref.PrimaryFont()) {
+    if (is_svg_text) {
+      text_metrics =
+          font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
+    } else {
+      text_metrics = font_data->GetFontMetrics().GetFontHeight(baseline_type);
+    }
+  } else {
     text_metrics = FontHeight();
+  }
   text_top = -text_metrics.ascent;
   text_height = text_metrics.LineHeight();
 
@@ -189,7 +195,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
   NGInlineBoxState& line_box_state = LineBoxState();
   if (line_box_state.style != &line_style) {
     line_box_state.style = &line_style;
-    line_box_state.InitializeFont(node.IsSvgText(), *node.GetLayoutBox());
+    line_box_state.is_svg_text = node.IsSvgText();
+    line_box_state.InitializeFont(*node.GetLayoutBox());
 
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
@@ -227,7 +234,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   NGInlineBoxState* box = &stack_.back();
   box->fragment_start = line_box.size();
   box->style = &style;
-  box->InitializeFont(is_svg_text_, *item.GetLayoutObject());
+  box->is_svg_text = is_svg_text_;
+  box->InitializeFont(*item.GetLayoutObject());
   box->item = &item;
   box->has_start_edge = item_result.has_edge;
   box->margin_inline_start = item_result.margins.inline_start;
@@ -304,8 +312,6 @@ void NGInlineLayoutStateStack::AddBoxFragmentPlaceholder(
   DCHECK(box != stack_.begin() &&
          box->item->Type() != NGInlineItem::kAtomicInline);
   box->has_box_placeholder = true;
-  DCHECK(box->style);
-  const ComputedStyle& style = *box->style;
 
   LayoutUnit block_offset;
   LayoutUnit block_size;
@@ -313,7 +319,13 @@ void NGInlineLayoutStateStack::AddBoxFragmentPlaceholder(
     // The inline box should have the height of the font metrics without the
     // line-height property. Compute from style because |box->metrics| includes
     // the line-height property.
-    FontHeight metrics = style.GetFontHeight(baseline_type);
+    FontHeight metrics;
+    if (const auto* font_data = box->font->PrimaryFont()) {
+      metrics =
+          is_svg_text_
+              ? font_data->GetFontMetrics().GetFloatFontHeight(baseline_type)
+              : font_data->GetFontMetrics().GetFontHeight(baseline_type);
+    }
 
     // Extend the block direction of the box by borders and paddings. Inline
     // direction is already included into positions in NGLineBreaker.
