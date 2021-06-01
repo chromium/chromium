@@ -30,11 +30,14 @@ that.)
   * **Security_Severity-Critical**: **Pri-0**.
   * **High** and **Medium**: **Pri-1**.
   * **Low**: **Pri-2**.
-* **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Designates
-which branch(es) were impacted by the bug. Only apply the label corresponding
-with the earliest affected branch. **None** means that a security bug is in a
-disabled feature, or otherwise doesn't impact Chrome: see the section below
-for more detail.
+* **FoundIn-#**: Designates which milestones of Chrome are
+impacted by the bug. Multiple labels may be set, but the most important one
+is the earliest affected milestone.
+* **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Derived
+from **FoundIn**, this label specifies the earliest affected release channel.
+Should not normally be set by humans, except in the case of **None** which
+means that the bug is in a disabled feature, or otherwise doesn't impact
+Chrome: see the section below for more details.
     * Note that **Security_Severity** should still be set on
       **Security_Impact-None** issues, as if the feature were enabled or the
       code reachable.
@@ -215,10 +218,11 @@ There should be exactly one **Security_Impact-X** label and it should be one of
 the 4 valid impact labels (None, Stable, Beta, Head). This rule removes any
 invalid and excess impact labels.
 
-### Adjust **Security_Impact-X** To Match Milestone Labels
+### Adjust **Security_Impact-X** To Match FoundIn Labels
 
-Based on **M-#** milestone labels this rule assigns corresponding
+Based on **FoundIn-#** milestone labels this rule assigns corresponding
 **Security_Impact-X** labels if they are incorrect or absent.
+**Security_Impact-None** is never changed.
 
 ### Update **M-#** Labels
 
@@ -289,13 +293,15 @@ memory corruption against the latest (e.g.) M29 dev channel. The labels
 a novel and nasty-looking buffer overflow in the renderer process. ClusterFuzz
 also confirms that all current releases are affected. Since M27 is the current
 Stable release, and M28 is in Beta, we add the labels of the earliest affected
-release: **M-27**, **Security_Impact-Stable**. The severity of a buffer overflow
+release: **FoundIn-27**. The severity of a buffer overflow
 in a renderer implies **Security_Severity-High** and **Pri-1**. Any external
 report for a confirmed vulnerability needs **reward-topanel**. Sheriffbot will
 usually add it automatically. The stack trace provided by ClusterFuzz suggests
 that the bug is in the component **Blink>DOM**, and such bugs should be labeled
 as applying to all OSs except iOS (where Blink is not used): **OS-**{**Linux**,
-**Windows**, **Android**, **Chrome**, **Fuchsia**}.
+**Windows**, **Android**, **Chrome**, **Fuchsia**}. Sheriffbot will check
+whether 27 is the current stable, beta or head milestone; let's assume
+**Security_Impact-Stable** is applied by Sheriffbot this time.
 1. Within a day or two, the sheriff was able to get the bug assigned and — oh
 joy! — fixed very quickly. When the bug's status changes to **Fixed**,
 Sheriffbot will add the **Merge-Requested** label, and will change

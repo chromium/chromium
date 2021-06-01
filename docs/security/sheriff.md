@@ -268,11 +268,17 @@ the regular `Security_Severity-*` label. If the bug is not exploitable, or is
 mitigated, the V8 team will reduce the security severity (to avoid unnecessary
 risk of merging the bug into stable branches).
 
-#### Step 3. Set Impact
+#### Step 3. Set FoundIn
 
-Identify the earliest affected branch (stable, beta or head) and set either
-`Security_Impact-Stable`, `Security_Impact-Beta` or `Security_Impact-Head`.
+Identify the earliest affected branch (stable, beta or head) and set the
+corresponding `FoundIn` label (for example `FoundIn-66` if the stable
+milestone is 66 and you've confirmed it's reproducible on M66).
 If you reproduced the bug with ClusterFuzz, it should do this on your behalf.
+
+If in doubt about the currently active milestones, check
+[ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows).
+There's no need to check for reproducibility on milestones earlier than the
+current Stable milestone.
 
 #### Step 4. [Check other labels](security-labels.md).
 
@@ -289,7 +295,7 @@ was filed using the Security template):
 * **If the reporter wants to remain anonymous or if the bug description or
   comments contain PII**, add **Restrict-View-SecurityEmbargo**.
 * **Security_Severity** - your responsibility as Sheriff.
-* **Security_Impact** - your responsibility as Sheriff.
+* **FoundIn** - your responsibility as Sheriff.
 * **reward_to** - if the bug was filed internally on behalf of somebody
   external. This is also very important; please check.
 
