@@ -46,9 +46,16 @@ class ScopedPaintState {
       return;
     }
     const auto* properties = fragment_to_paint_->PaintProperties();
-    if (properties && properties->PaintOffsetTranslation()) {
+    if (!properties)
+      return;
+    if (properties->PaintOffsetTranslation()) {
       AdjustForPaintOffsetTranslation(object,
                                       *properties->PaintOffsetTranslation());
+    } else if (object.IsNGSVGText()) {
+      if (const auto* transform = properties->Transform()) {
+        adjusted_paint_info_.emplace(paint_info);
+        adjusted_paint_info_->TransformCullRect(*transform);
+      }
     }
   }
 
