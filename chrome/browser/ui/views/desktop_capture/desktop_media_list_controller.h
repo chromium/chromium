@@ -132,9 +132,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
       view_observations_{this};
 
   // Auto-selection. Used only in tests.
-  const std::string auto_select_source_;
-  const bool auto_accept_tab_capture_;
-  const bool auto_reject_tab_capture_;
+  const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_source_;     // Any source by its title.
+  const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };
