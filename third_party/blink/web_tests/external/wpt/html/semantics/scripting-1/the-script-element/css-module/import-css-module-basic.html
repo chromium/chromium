@@ -37,9 +37,13 @@
             iframe.src = "resources/css-module-at-import-iframe.html";
             iframe.onload = test.step_func_done(function () {
                 assert_equals(iframe.contentDocument.load_error, undefined);
+                assert_equals(iframe.contentDocument.adoptedStyleSheets[0].cssRules.length, 1, "Parser should skip @import rule");
                 assert_not_equals(getComputedStyle(iframe.contentDocument.querySelector('#test'))
                     .backgroundColor, "rgb(255, 0, 0)",
                     "CSS module @import should not succeed");
+                assert_equals(getComputedStyle(iframe.contentDocument.querySelector('#test2'))
+                    .backgroundColor, "rgb(0, 255, 0)",
+                    "Rule after @import should still be applied");
             });
             document.body.appendChild(iframe);
         }, "An @import CSS Module should not load, but should not throw an exception");
@@ -48,12 +52,17 @@
             const iframe = document.createElement("iframe");
             iframe.src = "resources/malformed-iframe.html";
             iframe.onload = test.step_func_done(function () {
+                assert_equals(iframe.contentDocument.load_error, undefined);
+                assert_equals(iframe.contentDocument.adoptedStyleSheets[0].cssRules.length, 1, "Import of malformed CSS should succeed and rules after the parse error should still be parsed");
                 assert_not_equals(getComputedStyle(iframe.contentDocument.querySelector('#test'))
                     .backgroundColor, "rgb(255, 0, 0)",
-                    "Malformed CSS should not load");
+                    "Malformed CSS rule should not be applied");
+                assert_equals(getComputedStyle(iframe.contentDocument.querySelector('#test2'))
+                    .backgroundColor, "rgb(0, 255, 0)",
+                    "Parsing should recover and rules after malformed rules should be applied");
             });
             document.body.appendChild(iframe);
-        }, "Malformed CSS should not load");
+        }, "A parse error should not prevent subsequent rules from being included in a CSS module");
 
         async_test(function (test) {
             const iframe = document.createElement("iframe");
