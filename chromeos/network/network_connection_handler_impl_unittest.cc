@@ -62,6 +62,9 @@ const char kTestIccid[] = "1234567890123456789";
 const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/1";
 const char kTestEid[] = "123456789012345678901234567890123";
 
+const char kTestCellularServicePath2[] = "cellular_service_path_2";
+const char kTestIccid2[] = "9876543210987654321";
+
 class TestNetworkConnectionObserver : public NetworkConnectionObserver {
  public:
   TestNetworkConnectionObserver() = default;
@@ -83,6 +86,7 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
 
   void DisconnectRequested(const std::string& service_path) override {
     requests_.insert(service_path);
+    disconnect_requests_.insert(service_path);
   }
 
   bool GetRequested(const std::string& service_path) {
@@ -96,7 +100,12 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
     return iter->second;
   }
 
+  const std::set<std::string>& disconnect_requests() {
+    return disconnect_requests_;
+  }
+
  private:
+  std::set<std::string> disconnect_requests_;
   std::set<std::string> requests_;
   std::map<std::string, std::string> results_;
 
@@ -219,6 +228,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    helper_.hermes_euicc_test()->SetInteractiveDelay(
+        base::TimeDelta::FromSeconds(0));
+    helper_.manager_test()->SetInteractiveDelay(
+        base::TimeDelta::FromSeconds(0));
     managed_config_handler_.reset();
     network_profile_handler_.reset();
     network_connection_handler_->RemoveObserver(
@@ -361,10 +374,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         HermesResponseStatus::kErrorUnknown);
   }
 
-  void SetCellularServiceConnectable() {
-    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
-                                               shill::kConnectableProperty,
-                                               base::Value(true));
+  void SetCellularServiceConnectable(
+      const std::string& service_path = kTestCellularServicePath) {
+    helper_.service_test()->SetServiceProperty(
+        service_path, shill::kConnectableProperty, base::Value(true));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -436,6 +449,25 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddCellularService(
+      bool has_eid,
+      const std::string& service_path = kTestCellularServicePath,
+      const std::string& iccid = kTestIccid) {
+    // Add idle, non-connectable network.
+    helper_.service_test()->AddService(service_path, kTestCellularGuid,
+                                       kTestCellularName, shill::kTypeCellular,
+                                       shill::kStateIdle, /*visible=*/true);
+
+    if (has_eid) {
+      helper_.service_test()->SetServiceProperty(
+          service_path, shill::kEidProperty, base::Value(kTestEid));
+    }
+
+    helper_.service_test()->SetServiceProperty(
+        service_path, shill::kIccidProperty, base::Value(iccid));
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Used when testing a code that accesses NetworkHandler::Get() directly (e.g.
   // when checking if VPN is disabled by policy when attempting to connect to a
   // VPN network). NetworkStateTestHelper can not be used here. That's because
@@ -476,23 +508,6 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   void AddCellularDevice() {
     helper_.device_test()->AddDevice(
         kTestCellularDevicePath, shill::kTypeCellular, kTestCellularDeviceName);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void AddCellularService(bool has_eid) {
-    // Add idle, non-connectable network.
-    helper_.service_test()->AddService(
-        kTestCellularServicePath, kTestCellularGuid, kTestCellularName,
-        shill::kTypeCellular, shill::kStateIdle, /*visible=*/true);
-
-    if (has_eid) {
-      helper_.service_test()->SetServiceProperty(
-          kTestCellularServicePath, shill::kEidProperty, base::Value(kTestEid));
-    }
-
-    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
-                                               shill::kIccidProperty,
-                                               base::Value(kTestIccid));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1168,6 +1183,63 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile_Fails) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkConnectionHandler::kErrorESimProfileIssue,
+            GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, MultipleCellularConnect) {
+  Init();
+  AddCellularServiceWithESimProfile();
+  AddCellularService(/*has_eid=*/false, kTestCellularServicePath2, kTestIccid2);
+
+  // Delay hermes operation so that first connect will be waiting in
+  // CellularConnectionHandler.
+  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      base::TimeDelta::FromSeconds(10));
+  Connect(kTestCellularServicePath);
+  Connect(kTestCellularServicePath2);
+
+  // Verify that second connect request fails with device busy.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(NetworkConnectionHandler::kErrorCellularDeviceBusy,
+            GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, CellularConnectTimeout) {
+  const base::TimeDelta kCellularConnectTimeout =
+      base::TimeDelta::FromSeconds(150);
+  Init();
+  AddNonConnectablePSimService();
+  SetCellularServiceConnectable(kTestCellularServicePath);
+
+  ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      base::TimeDelta::FromSeconds(200));
+  Connect(kTestCellularServicePath);
+  AdvanceClock(kCellularConnectTimeout);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorConnectTimeout,
+            GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       CellularConnectTimeout_StubToShillBacked) {
+  const base::TimeDelta kCellularConnectTimeout =
+      base::TimeDelta::FromSeconds(150);
+  Init();
+  AddCellularServiceWithESimProfile(/*is_stub=*/true);
+
+  // Connect to a stub path. Internally, this should wait until a connectable
+  // Shill-backed service is created.
+  Connect(GenerateStubCellularServicePath(kTestIccid));
+
+  // Now, Create a shill backed service for the same network.
+  ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      base::TimeDelta::FromSeconds(200));
+  AddNonConnectableESimService();
+  SetCellularServiceConnectable();
+
+  // Verify that connection timesout properly even when network path
+  // transitioned.
+  AdvanceClock(kCellularConnectTimeout);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorConnectTimeout,
             GetResultAndReset());
 }
 
