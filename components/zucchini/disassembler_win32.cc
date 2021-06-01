@@ -363,7 +363,6 @@ bool DisassemblerWin32<Traits>::ParseAndStoreRel32() {
 
   ParseAndStoreAbs32();
 
-  AddressTranslator::OffsetToRvaCache location_offset_to_rva(translator_);
   AddressTranslator::RvaToOffsetCache target_rva_checker(translator_);
 
   for (const pe::ImageSectionHeader& section : sections_) {
@@ -382,24 +381,18 @@ bool DisassemblerWin32<Traits>::ParseAndStoreRel32() {
         image_[{section.file_offset_of_raw_data, size_to_use}];
     Abs32GapFinder gap_finder(image_, region, abs32_locations_,
                               Traits::kVAWidth);
-    typename Traits::RelFinder finder;
+    typename Traits::RelFinder rel_finder(image_, translator_);
     // Iterate over gaps between abs32 references, to avoid collision.
-    for (auto gap = gap_finder.GetNext(); gap.has_value();
-         gap = gap_finder.GetNext()) {
-      finder.SetRegion(gap.value());
-      // Iterate over heuristically detected rel32 references, validate, and add
-      // to |rel32_locations_|.
-      for (auto rel32 = finder.GetNext(); rel32.has_value();
-           rel32 = finder.GetNext()) {
-        offset_t rel32_offset = offset_t(rel32->location - image_.begin());
-        rva_t rel32_rva = location_offset_to_rva.Convert(rel32_offset);
-        DCHECK_NE(rel32_rva, kInvalidRva);
-        rva_t target_rva = rel32_rva + 4 + image_.read<uint32_t>(rel32_offset);
-        if (target_rva_checker.IsValid(target_rva) &&
-            (rel32->can_point_outside_section ||
-             (start_rva <= target_rva && target_rva < end_rva))) {
-          finder.Accept();
-          rel32_locations_.push_back(rel32_offset);
+    while (gap_finder.FindNext()) {
+      rel_finder.SetRegion(gap_finder.GetGap());
+      // Heuristically detect rel32 references, store if valid.
+      while (rel_finder.FindNext()) {
+        auto rel32 = rel_finder.GetRel32();
+        if (target_rva_checker.IsValid(rel32.target_rva) &&
+            (rel32.can_point_outside_section ||
+             (start_rva <= rel32.target_rva && rel32.target_rva < end_rva))) {
+          rel_finder.Accept();
+          rel32_locations_.push_back(rel32.location);
         }
       }
     }

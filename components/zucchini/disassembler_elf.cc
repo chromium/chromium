@@ -417,35 +417,31 @@ std::vector<ReferenceGroup> DisassemblerElfIntel<Traits>::MakeReferenceGroups()
 template <class Traits>
 void DisassemblerElfIntel<Traits>::ParseExecSection(
     const typename Traits::Elf_Shdr& section) {
+  // |this->| is needed to access protected members of templated base class. To
+  // reduce noise, use local references for these.
   ConstBufferView& image_ = this->image_;
+  const AddressTranslator& translator_ = this->translator_;
   auto& abs32_locations_ = this->abs32_locations_;
-
-  std::ptrdiff_t from_offset_to_rva = section.sh_addr - section.sh_offset;
 
   // Range of values was ensured in ParseHeader().
   rva_t start_rva = base::checked_cast<rva_t>(section.sh_addr);
   rva_t end_rva = base::checked_cast<rva_t>(start_rva + section.sh_size);
 
-  AddressTranslator::RvaToOffsetCache target_rva_checker(this->translator_);
+  AddressTranslator::RvaToOffsetCache target_rva_checker(translator_);
 
   ConstBufferView region(image_.begin() + section.sh_offset, section.sh_size);
   Abs32GapFinder gap_finder(image_, region, abs32_locations_, 4);
-  typename Traits::Rel32FinderUse finder;
-  for (auto gap = gap_finder.GetNext(); gap.has_value();
-       gap = gap_finder.GetNext()) {
-    finder.SetRegion(gap.value());
-    for (auto rel32 = finder.GetNext(); rel32.has_value();
-         rel32 = finder.GetNext()) {
-      offset_t rel32_offset =
-          base::checked_cast<offset_t>(rel32->location - image_.begin());
-      rva_t rel32_rva = rva_t(rel32_offset + from_offset_to_rva);
-      DCHECK_NE(rel32_rva, kInvalidRva);
-      rva_t target_rva = rel32_rva + 4 + image_.read<uint32_t>(rel32_offset);
-      if (target_rva_checker.IsValid(target_rva) &&
-          (rel32->can_point_outside_section ||
-           (start_rva <= target_rva && target_rva < end_rva))) {
-        finder.Accept();
-        rel32_locations_.push_back(rel32_offset);
+  typename Traits::Rel32FinderUse rel_finder(image_, translator_);
+  // Iterate over gaps between abs32 references, to avoid collision.
+  while (gap_finder.FindNext()) {
+    rel_finder.SetRegion(gap_finder.GetGap());
+    while (rel_finder.FindNext()) {
+      auto rel32 = rel_finder.GetRel32();
+      if (target_rva_checker.IsValid(rel32.target_rva) &&
+          (rel32.can_point_outside_section ||
+           (start_rva <= rel32.target_rva && rel32.target_rva < end_rva))) {
+        rel_finder.Accept();
+        rel32_locations_.push_back(rel32.location);
       }
     }
   }

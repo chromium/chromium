@@ -40,9 +40,10 @@ TEST(Abs32GapFinderTest, All) {
     Abs32GapFinder gap_finder(image, region, abs32_locations, abs32_width);
 
     std::string out_str;
-    for (auto gap = gap_finder.GetNext(); gap; gap = gap_finder.GetNext()) {
-      size_t lo = static_cast<size_t>(gap->begin() - image.begin());
-      size_t hi = static_cast<size_t>(gap->end() - image.begin());
+    while (gap_finder.FindNext()) {
+      ConstBufferView gap = gap_finder.GetGap();
+      size_t lo = static_cast<size_t>(gap.begin() - image.begin());
+      size_t hi = static_cast<size_t>(gap.end() - image.begin());
       out_str.append(base::StringPrintf("[%" PRIuS ",%" PRIuS ")", lo, hi));
     }
     return out_str;
@@ -125,10 +126,15 @@ class TestRel32Finder : public Rel32Finder {
   // Rel32Finder:
   NextIterators Scan(ConstBufferView region) override { return next_result; }
 
-  bool GetNext() { return FindNext(); }
-
   NextIterators next_result;
 };
+
+AddressTranslator GetTrivialTranslator(size_t size) {
+  AddressTranslator translator;
+  EXPECT_EQ(AddressTranslator::kSuccess,
+            translator.Initialize({{0, size, 0U, size}}));
+  return translator;
+}
 
 }  // namespace
 
@@ -136,8 +142,8 @@ TEST(Rel32FinderTest, Scan) {
   const size_t kRegionTotal = 99;
   std::vector<uint8_t> buffer(kRegionTotal);
   ConstBufferView image(buffer.data(), buffer.size());
-
-  TestRel32Finder finder;
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  TestRel32Finder finder(image, translator);
   finder.SetRegion(image);
 
   auto check_finder_state = [&](const TestRel32Finder& finder,
@@ -153,88 +159,135 @@ TEST(Rel32FinderTest, Scan) {
   check_finder_state(finder, 0, 0);
 
   finder.next_result = {image.begin() + 1, image.begin() + 1};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 1, 1);
 
   finder.next_result = {image.begin() + 2, image.begin() + 2};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 2, 2);
 
   finder.next_result = {image.begin() + 5, image.begin() + 6};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 5, 6);
   finder.Accept();
   check_finder_state(finder, 6, 6);
 
   finder.next_result = {image.begin() + 7, image.begin() + 7};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 7, 7);
 
   finder.next_result = {image.begin() + 8, image.begin() + 8};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 8, 8);
 
   finder.next_result = {image.begin() + 99, image.begin() + 99};
-  EXPECT_TRUE(finder.GetNext());
+  EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 99, 99);
 
   finder.next_result = {nullptr, nullptr};
-  EXPECT_FALSE(finder.GetNext());
+  EXPECT_FALSE(finder.FindNext());
   check_finder_state(finder, 99, 99);
 }
 
+namespace {
+
+// X86 test data. (x) and +x entries are covered by abs32 references, which have
+// width = 4.
+constexpr uint8_t kDataX86[] = {
+    0x55,                                // 00: push  ebp
+    0x8B,   0xEC,                        // 01: mov   ebp,esp
+    0xE8,   0,      0,   0,   0,         // 03: call  08
+    (0xE9), +0,     +0,  +0,  0,         // 08: jmp   0D
+    0x0F,   0x80,   0,   0,   0,   0,    // 0D: jo    13
+    0x0F,   0x81,   0,   0,   (0), +0,   // 13: jno   19
+    +0x0F,  +0x82,  0,   0,   0,   0,    // 19: jb    1F
+    0x0F,   0x83,   0,   0,   0,   0,    // 1F: jae   25
+    0x0F,   (0x84), +0,  +0,  +0,  (0),  // 25: je    2B
+    +0x0F,  +0x85,  +0,  0,   0,   0,    // 2B: jne   31
+    0x0F,   0x86,   0,   0,   0,   0,    // 31: jbe   37
+    0x0F,   0x87,   0,   0,   0,   0,    // 37: ja    3D
+    0x0F,   0x88,   0,   (0), +0,  +0,   // 3D: js    43
+    +0x0F,  0x89,   0,   0,   0,   0,    // 43: jns   49
+    0x0F,   0x8A,   0,   0,   0,   0,    // 49: jp    4F
+    0x0F,   0x8B,   (0), +0,  +0,  +0,   // 4F: jnp   55
+    0x0F,   0x8C,   0,   0,   0,   0,    // 55: jl    5B
+    0x0F,   0x8D,   0,   0,   (0), +0,   // 5B: jge   61
+    +0x0F,  +0x8E,  (0), +0,  +0,  +0,   // 61: jle   67
+    0x0F,   0x8F,   0,   0,   0,   0,    // 67: jg    6D
+    0x5D,                                // 6D: pop   ebp
+    0xC3,                                // C3: ret
+};
+
+// Abs32 locations corresponding to |kDataX86|, with width = 4.
+constexpr uint8_t kAbs32X86[] = {0x08, 0x17, 0x26, 0x2A,
+                                 0x40, 0x51, 0x5F, 0x63};
+
+}  // namespace
+
 TEST(Rel32FinderX86Test, FindNext) {
-  constexpr uint8_t data[] = {
-      0x55,                                // 00: push  ebp
-      0x8B, 0xEC,                          // 01: mov   ebp,esp
-      0xE8, 0x00, 0x00, 0x00, 0x00,        // 03: call  08
-      0xE9, 0x00, 0x00, 0x00, 0x00,        // 08: jmp   0D
-      0x0F, 0x80, 0x00, 0x00, 0x00, 0x00,  // 0D: jo    13
-      0x0F, 0x81, 0x00, 0x00, 0x00, 0x00,  // 13: jno   19
-      0x0F, 0x82, 0x00, 0x00, 0x00, 0x00,  // 19: jb    1F
-      0x0F, 0x83, 0x00, 0x00, 0x00, 0x00,  // 1F: jae   25
-      0x0F, 0x84, 0x00, 0x00, 0x00, 0x00,  // 25: je    2B
-      0x0F, 0x85, 0x00, 0x00, 0x00, 0x00,  // 2B: jne   31
-      0x0F, 0x86, 0x00, 0x00, 0x00, 0x00,  // 31: jbe   37
-      0x0F, 0x87, 0x00, 0x00, 0x00, 0x00,  // 37: ja    3D
-      0x0F, 0x88, 0x00, 0x00, 0x00, 0x00,  // 3D: js    43
-      0x0F, 0x89, 0x00, 0x00, 0x00, 0x00,  // 43: jns   49
-      0x0F, 0x8A, 0x00, 0x00, 0x00, 0x00,  // 49: jp    4F
-      0x0F, 0x8B, 0x00, 0x00, 0x00, 0x00,  // 4F: jnp   55
-      0x0F, 0x8C, 0x00, 0x00, 0x00, 0x00,  // 55: jl    5B
-      0x0F, 0x8D, 0x00, 0x00, 0x00, 0x00,  // 5B: jge   61
-      0x0F, 0x8E, 0x00, 0x00, 0x00, 0x00,  // 61: jle   67
-      0x0F, 0x8F, 0x00, 0x00, 0x00, 0x00,  // 67: jg    6D
-      0x5D,                                // 6D: pop   ebp
-      0xC3,                                // C3: ret
-  };
-
   ConstBufferView image =
-      ConstBufferView::FromRange(std::begin(data), std::end(data));
-
-  Rel32FinderX86 rel_finder;
+      ConstBufferView::FromRange(std::begin(kDataX86), std::end(kDataX86));
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  Rel32FinderX86 rel_finder(image, translator);
   rel_finder.SetRegion(image);
 
-  // List of expected locations as pairs of {cursor offset, rel32 offset}.
+  // List of expected locations as pairs of {cursor offset, rel32 offset},
+  // ignoring |kAbs32X86|.
   std::vector<std::pair<size_t, size_t>> expected_locations = {
       {0x04, 0x04}, {0x09, 0x09}, {0x0E, 0x0F}, {0x14, 0x15}, {0x1A, 0x1B},
       {0x20, 0x21}, {0x26, 0x27}, {0x2C, 0x2D}, {0x32, 0x33}, {0x38, 0x39},
       {0x3E, 0x3F}, {0x44, 0x45}, {0x4A, 0x4B}, {0x50, 0x51}, {0x56, 0x57},
       {0x5C, 0x5D}, {0x62, 0x63}, {0x68, 0x69},
   };
-
   for (auto location : expected_locations) {
-    auto result = rel_finder.GetNext();
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(rel_finder.FindNext());
+    auto rel32 = rel_finder.GetRel32();
 
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
-    EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
-    EXPECT_FALSE(result->can_point_outside_section);
+    EXPECT_EQ(location.second, rel32.location);
+    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    EXPECT_FALSE(rel32.can_point_outside_section);
     rel_finder.Accept();
   }
-  EXPECT_EQ(absl::nullopt, rel_finder.GetNext());
+  EXPECT_FALSE(rel_finder.FindNext());
+}
+
+TEST(Rel32FinderX86Test, Integrated) {
+  // Truncated form of Rel32FinderIntel::Result.
+  typedef std::pair<offset_t, rva_t> TruncatedResults;
+
+  ConstBufferView image =
+      ConstBufferView::FromRange(std::begin(kDataX86), std::end(kDataX86));
+  std::vector<offset_t> abs32_locations(std::begin(kAbs32X86),
+                                        std::end(kAbs32X86));
+  std::vector<TruncatedResults> rel32_results;
+
+  Abs32GapFinder gap_finder(image, image, abs32_locations, 4U);
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  Rel32FinderX86 rel_finder(image, translator);
+  while (gap_finder.FindNext()) {
+    auto gap = gap_finder.GetGap();
+    rel_finder.SetRegion(gap_finder.GetGap());
+    while (rel_finder.FindNext()) {
+      auto rel32 = rel_finder.GetRel32();
+      rel32_results.emplace_back(
+          TruncatedResults{rel32.location, rel32.target_rva});
+    }
+  }
+
+  std::vector<TruncatedResults> expected_rel32_results = {
+      {0x04, 0x08},
+      /* {0x09, 0x0D}, */ {0x0F, 0x13},
+      /* {0x15, 0x19}, */ /*{0x1B, 0x1F}, */
+      {0x21, 0x25},
+      /* {0x27, 0x2B}, */ /* {0x2D, 0x31}, */ {0x33, 0x37},
+      {0x39, 0x3D},
+      /* {0x3F, 0x43}, */ /* {0x45, 0x49}, */ {0x4B, 0x4F},
+      /* {0x51, 0x55}, */ {0x57, 0x5B},
+      /* {0x5D, 0x61}, */ /* {0x63, 0x67}, */ {0x69, 0x6D},
+  };
+  EXPECT_EQ(expected_rel32_results, rel32_results);
 }
 
 TEST(Rel32FinderX86Test, Accept) {
@@ -247,13 +300,14 @@ TEST(Rel32FinderX86Test, Accept) {
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(data), std::end(data));
 
-  auto next_location = [&](Rel32FinderX86& rel_finder) -> size_t {
-    auto result = rel_finder.GetNext();
-    EXPECT_TRUE(result.has_value());
-    return result->location - image.begin();
+  auto next_location = [](Rel32FinderX86& rel_finder) -> offset_t {
+    EXPECT_TRUE(rel_finder.FindNext());
+    auto rel32 = rel_finder.GetRel32();
+    return rel32.location;
   };
 
-  Rel32FinderX86 rel_finder;
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  Rel32FinderX86 rel_finder(image, translator);
   rel_finder.SetRegion(image);
 
   EXPECT_EQ(0x05U, next_location(rel_finder));  // False positive.
@@ -264,57 +318,68 @@ TEST(Rel32FinderX86Test, Accept) {
   EXPECT_EQ(0x0BU, next_location(rel_finder));  // Found if 0x0A is discarded.
 }
 
+namespace {
+
+// X64 test data. (x) and +x entries are covered by abs32 references, which have
+// width = 8.
+constexpr uint8_t kDataX64[] = {
+    0x55,                                      // 00: push  ebp
+    0x8B,   0xEC,                              // 01: mov   ebp,esp
+    0xE8,   0,      0,     0,   0,             // 03: call  08
+    0xE9,   0,      0,     0,   (0),           // 08: jmp   0D
+    +0x0F,  +0x80,  +0,    +0,  +0,  +0,       // 0D: jo    13
+    +0x0F,  0x81,   0,     0,   0,   0,        // 13: jno   19
+    0x0F,   0x82,   0,     0,   0,   0,        // 19: jb    1F
+    (0x0F), +0x83,  +0,    +0,  +0,  +0,       // 1F: jae   25
+    +0x0F,  +0x84,  0,     0,   0,   0,        // 25: je    2B
+    0x0F,   0x85,   0,     0,   0,   0,        // 2B: jne   31
+    0x0F,   0x86,   (0),   +0,  +0,  +0,       // 31: jbe   37
+    +0x0F,  +0x87,  +0,    +0,  (0), +0,       // 37: ja    3D
+    +0x0F,  +0x88,  +0,    +0,  +0,  +0,       // 3D: js    43
+    0x0F,   0x89,   0,     0,   0,   0,        // 43: jns   49
+    (0x0F), +0x8A,  +0,    +0,  +0,  +0,       // 49: jp    4F
+    +0x0F,  +0x8B,  0,     0,   0,   0,        // 4F: jnp   55
+    0x0F,   0x8C,   0,     0,   0,   0,        // 55: jl    5B
+    0x0F,   0x8D,   0,     0,   0,   0,        // 5B: jge   61
+    0x0F,   0x8E,   0,     0,   0,   0,        // 61: jle   67
+    0x0F,   0x8F,   0,     (0), +0,  +0,       // 67: jg    6F
+    +0xFF,  +0x15,  +0,    +0,  +0,  0,        // 6D: call  [rip+00]      # 73
+    0xFF,   0x25,   0,     0,   0,   0,        // 73: jmp   [rip+00]      # 79
+    0x8B,   0x05,   0,     0,   0,   0,        // 79: mov   eax,[rip+00]  # 7F
+    0x8B,   0x3D,   0,     0,   0,   0,        // 7F: mov   edi,[rip+00]  # 85
+    0x8D,   0x05,   0,     0,   0,   0,        // 85: lea   eax,[rip+00]  # 8B
+    0x8D,   0x3D,   0,     0,   0,   0,        // 8B: lea   edi,[rip+00]  # 91
+    0x48,   0x8B,   0x05,  0,   0,   0,  0,    // 91: mov   rax,[rip+00]  # 98
+    0x48,   (0x8B), +0x3D, +0,  +0,  +0, +0,   // 98: mov   rdi,[rip+00]  # 9F
+    +0x48,  +0x8D,  0x05,  0,   0,   0,  0,    // 9F: lea   rax,[rip+00]  # A6
+    0x48,   0x8D,   0x3D,  0,   0,   0,  0,    // A6: lea   rdi,[rip+00]  # AD
+    0x4C,   0x8B,   0x05,  0,   0,   0,  (0),  // AD: mov   r8,[rip+00]   # B4
+    +0x4C,  +0x8B,  +0x3D, +0,  +0,  +0, +0,   // B4: mov   r15,[rip+00]  # BB
+    0x4C,   0x8D,   0x05,  0,   0,   0,  0,    // BB: lea   r8,[rip+00]   # C2
+    0x4C,   0x8D,   0x3D,  0,   0,   0,  0,    // C2: lea   r15,[rip+00]  # C9
+    0x66,   0x8B,   0x05,  (0), +0,  +0, +0,   // C9: mov   ax,[rip+00]   # D0
+    +0x66,  +0x8B,  +0x3D, +0,  0,   0,  0,    // D0: mov   di,[rip+00]   # D7
+    0x66,   0x8D,   0x05,  0,   0,   0,  0,    // D7: lea   ax,[rip+00]   # DE
+    0x66,   0x8D,   0x3D,  0,   0,   0,  0,    // DE: lea   di,[rip+00]   # E5
+    0x5D,                                      // E5: pop   ebp
+    0xC3,                                      // E6: ret
+};
+
+// Abs32 locations corresponding to |kDataX64|, with width = 8.
+constexpr uint8_t kAbs32X64[] = {0x0C, 0x1F, 0x33, 0x3B, 0x49,
+                                 0x6A, 0x99, 0xB3, 0xCC};
+
+}  // namespace
+
 TEST(Rel32FinderX64Test, FindNext) {
-  constexpr uint8_t data[] = {
-      0x55,                                      // 00: push  ebp
-      0x8B, 0xEC,                                // 01: mov   ebp,esp
-      0xE8, 0x00, 0x00, 0x00, 0x00,              // 03: call  08
-      0xE9, 0x00, 0x00, 0x00, 0x00,              // 08: jmp   0D
-      0x0F, 0x80, 0x00, 0x00, 0x00, 0x00,        // 0D: jo    13
-      0x0F, 0x81, 0x00, 0x00, 0x00, 0x00,        // 13: jno   19
-      0x0F, 0x82, 0x00, 0x00, 0x00, 0x00,        // 19: jb    1F
-      0x0F, 0x83, 0x00, 0x00, 0x00, 0x00,        // 1F: jae   25
-      0x0F, 0x84, 0x00, 0x00, 0x00, 0x00,        // 25: je    2B
-      0x0F, 0x85, 0x00, 0x00, 0x00, 0x00,        // 2B: jne   31
-      0x0F, 0x86, 0x00, 0x00, 0x00, 0x00,        // 31: jbe   37
-      0x0F, 0x87, 0x00, 0x00, 0x00, 0x00,        // 37: ja    3D
-      0x0F, 0x88, 0x00, 0x00, 0x00, 0x00,        // 3D: js    43
-      0x0F, 0x89, 0x00, 0x00, 0x00, 0x00,        // 43: jns   49
-      0x0F, 0x8A, 0x00, 0x00, 0x00, 0x00,        // 49: jp    4F
-      0x0F, 0x8B, 0x00, 0x00, 0x00, 0x00,        // 4F: jnp   55
-      0x0F, 0x8C, 0x00, 0x00, 0x00, 0x00,        // 55: jl    5B
-      0x0F, 0x8D, 0x00, 0x00, 0x00, 0x00,        // 5B: jge   61
-      0x0F, 0x8E, 0x00, 0x00, 0x00, 0x00,        // 61: jle   67
-      0x0F, 0x8F, 0x00, 0x00, 0x00, 0x00,        // 67: jg    6F
-      0xFF, 0x15, 0x00, 0x00, 0x00, 0x00,        // 6D: call  [rip+00]
-      0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,        // 73: jmp   [rip+00]
-      0x8B, 0x05, 0x00, 0x00, 0x00, 0x00,        // 79: mov   eax,[rip+00]
-      0x8B, 0x3D, 0x00, 0x00, 0x00, 0x00,        // 7F: mov   edi,[rip+00]
-      0x8D, 0x05, 0x00, 0x00, 0x00, 0x00,        // 85: lea   eax,[rip+00]
-      0x8D, 0x3D, 0x00, 0x00, 0x00, 0x00,        // 8B: lea   edi,[rip+00]
-      0x48, 0x8B, 0x05, 0x00, 0x00, 0x00, 0x00,  // 91: mov   rax,[rip+00]
-      0x48, 0x8B, 0x3D, 0x00, 0x00, 0x00, 0x00,  // 98: mov   rdi,[rip+00]
-      0x48, 0x8D, 0x05, 0x00, 0x00, 0x00, 0x00,  // 9F: lea   rax,[rip+00]
-      0x48, 0x8D, 0x3D, 0x00, 0x00, 0x00, 0x00,  // A6: lea   rdi,[rip+00]
-      0x4C, 0x8B, 0x05, 0x00, 0x00, 0x00, 0x00,  // AD: mov   r8,[rip+00]
-      0x4C, 0x8B, 0x3D, 0x00, 0x00, 0x00, 0x00,  // B4: mov   r15,[rip+00]
-      0x4C, 0x8D, 0x05, 0x00, 0x00, 0x00, 0x00,  // BB: lea   r8,[rip+00]
-      0x4C, 0x8D, 0x3D, 0x00, 0x00, 0x00, 0x00,  // C2: lea   r15,[rip+00]
-      0x66, 0x8B, 0x05, 0x00, 0x00, 0x00, 0x00,  // C9: mov   ax,[rip+00]
-      0x66, 0x8B, 0x3D, 0x00, 0x00, 0x00, 0x00,  // D0: mov   di,[rip+00]
-      0x66, 0x8D, 0x05, 0x00, 0x00, 0x00, 0x00,  // D7: lea   ax,[rip+00]
-      0x66, 0x8D, 0x3D, 0x00, 0x00, 0x00, 0x00,  // DE: lea   di,[rip+00]
-      0x5D,                                      // E5: pop   ebp
-      0xC3,                                      // E6: ret
-  };
-
   ConstBufferView image =
-      ConstBufferView::FromRange(std::begin(data), std::end(data));
-
-  Rel32FinderX64 rel_finder;
+      ConstBufferView::FromRange(std::begin(kDataX64), std::end(kDataX64));
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  Rel32FinderX64 rel_finder(image, translator);
   rel_finder.SetRegion(image);
 
-  // Lists of expected locations as pairs of {cursor offset, rel32 offset}.
+  // Lists of expected locations as pairs of {cursor offset, rel32 offset},
+  // ignoring |kAbs32X64|.
   std::vector<std::pair<size_t, size_t>> expected_locations = {
       {0x04, 0x04}, {0x09, 0x09}, {0x0E, 0x0F}, {0x14, 0x15}, {0x1A, 0x1B},
       {0x20, 0x21}, {0x26, 0x27}, {0x2C, 0x2D}, {0x32, 0x33}, {0x38, 0x39},
@@ -329,29 +394,76 @@ TEST(Rel32FinderX64Test, FindNext) {
   };
   // Jump instructions, which cannot point outside section.
   for (auto location : expected_locations) {
-    auto result = rel_finder.GetNext();
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(rel_finder.FindNext());
+    auto rel32 = rel_finder.GetRel32();
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
-    EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
-    EXPECT_FALSE(result->can_point_outside_section);
+    EXPECT_EQ(location.second, rel32.location);
+    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    EXPECT_FALSE(rel32.can_point_outside_section);
     rel_finder.Accept();
   }
   // PC-relative data access instructions, which can point outside section.
   for (auto location : expected_locations_rip) {
-    auto result = rel_finder.GetNext();
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(rel_finder.FindNext());
+    auto rel32 = rel_finder.GetRel32();
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
-    EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
-    EXPECT_TRUE(result->can_point_outside_section);
+    EXPECT_EQ(location.second, rel32.location);
+    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    EXPECT_TRUE(rel32.can_point_outside_section);  // Different from before.
     rel_finder.Accept();
   }
-  EXPECT_EQ(absl::nullopt, rel_finder.GetNext());
+  EXPECT_FALSE(rel_finder.FindNext());
 }
 
-// TODO(huangs): Test that integrates Abs32GapFinder and Rel32Finder.
+TEST(Rel32FinderX64Test, Integrated) {
+  // Truncated form of Rel32FinderIntel::Result.
+  typedef std::pair<offset_t, rva_t> TruncatedResults;
+
+  ConstBufferView image =
+      ConstBufferView::FromRange(std::begin(kDataX64), std::end(kDataX64));
+  std::vector<offset_t> abs32_locations(std::begin(kAbs32X64),
+                                        std::end(kAbs32X64));
+  std::vector<TruncatedResults> rel32_results;
+
+  Abs32GapFinder gap_finder(image, image, abs32_locations, 8U);
+  AddressTranslator translator(GetTrivialTranslator(image.size()));
+  Rel32FinderX64 rel_finder(image, translator);
+  while (gap_finder.FindNext()) {
+    auto gap = gap_finder.GetGap();
+    rel_finder.SetRegion(gap_finder.GetGap());
+    while (rel_finder.FindNext()) {
+      auto rel32 = rel_finder.GetRel32();
+      rel32_results.emplace_back(
+          TruncatedResults{rel32.location, rel32.target_rva});
+    }
+  }
+
+  std::vector<TruncatedResults> expected_rel32_results = {
+      {0x04, 0x08},
+      /* {0x09, 0x0D}, */
+      /*{0x0F, 0x13}, */ /* {0x15, 0x19}, */ {0x1B, 0x1F},
+      /* {0x21, 0x25}, */ /* {0x27, 0x2B}, */ {0x2D, 0x31},
+      /* {0x33, 0x37}, */ /* {0x39, 0x3D}, */
+      /* {0x3F, 0x43}, */ {0x45, 0x49},
+      /* {0x4B, 0x4F}, */ /* {0x51, 0x55}, */
+      {0x57, 0x5B},
+      {0x5D, 0x61},
+      {0x63, 0x67}, /* {0x69, 0x6F}, */
+      /* {0x6F, 0x73}, */ {0x75, 0x79},
+      {0x7B, 0x7F},
+      {0x81, 0x85},
+      {0x87, 0x8B},
+      {0x8D, 0x91},
+      {0x94, 0x98},
+      /* {0x9B, 0x9F}, */ /* {0xA2, 0xA6}, */ {0xA9, 0xAD},
+      /* {0xB0, 0xB4}, */ /* {0xB7, 0xBB}, */ {0xBE, 0xC2},
+      {0xC5, 0xC9},
+      /* {0xCC, 0xD0}, */ /* {0xD3, 0xD7}, */ {0xDA, 0xDE},
+      {0xE1, 0xE5},
+  };
+  EXPECT_EQ(expected_rel32_results, rel32_results);
+}
 
 }  // namespace zucchini

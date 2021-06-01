@@ -63,6 +63,8 @@ offset_t AddressTranslator::RvaToOffsetCache::Convert(rva_t rva) const {
 
 AddressTranslator::AddressTranslator() = default;
 
+AddressTranslator::AddressTranslator(AddressTranslator&&) = default;
+
 AddressTranslator::~AddressTranslator() = default;
 
 AddressTranslator::Status AddressTranslator::Initialize(

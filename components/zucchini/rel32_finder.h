@@ -9,10 +9,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -49,33 +48,57 @@ class Abs32GapFinder {
                  ConstBufferView region,
                  const std::vector<offset_t>& abs32_locations,
                  size_t abs32_width);
+  Abs32GapFinder(const Abs32GapFinder&) = delete;
+  const Abs32GapFinder& operator=(const Abs32GapFinder&) = delete;
   ~Abs32GapFinder();
 
-  // Returns the next available gap, or nullopt if exhausted.
-  absl::optional<ConstBufferView> GetNext();
+  // Searches for the next available gap, and returns successfulness.
+  bool FindNext();
+
+  // Returns the cached result from the last successful FindNext().
+  ConstBufferView GetGap() const { return gap_; }
 
  private:
   const ConstBufferView::const_iterator base_;
   const ConstBufferView::const_iterator region_end_;
-  ConstBufferView::const_iterator current_lo_;
-  std::vector<offset_t>::const_iterator abs32_current_;
-  std::vector<offset_t>::const_iterator abs32_end_;
-  size_t abs32_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(Abs32GapFinder);
+  ConstBufferView::const_iterator cur_lo_;
+  const std::vector<offset_t>::const_iterator abs32_end_;
+  std::vector<offset_t>::const_iterator abs32_cur_;
+  const size_t abs32_width_;
+  ConstBufferView gap_;
 };
 
 // A class to scan regions within an image to find successive rel32 references.
 // Architecture-specific parsing and result extraction are delegated to
-// inherited classes. This is typically used along with Abs32GapFinder to find
-// search regions.
+// inherited classes (say, Rel32Finder_Impl). Sample extraction loop, combined
+// with Abs32GapFinder usage:
+//
+//   Abs32GapFinder gap_finder(...);
+//   Rel32Finder_Impl finder(...);
+//   while (gap_finder.FindNext()) {
+//     rel_finder.SetRegion(gap_finder.GetGap());
+//     while (rel_finder.FindNext()) {
+//       auto rel32 = rel_finder.GetRel32();  // In Rel32Finder_Impl.
+//       if (architecture_specific_validation(rel32)) {
+//         rel_finder.Accept();
+//         // Store rel32.
+//       }
+//     }
+//   }
 class Rel32Finder {
  public:
-  Rel32Finder();
+  Rel32Finder(ConstBufferView image, const AddressTranslator& translator);
+  Rel32Finder(const Rel32Finder&) = delete;
+  const Rel32Finder& operator=(const Rel32Finder&) = delete;
   virtual ~Rel32Finder();
 
   // Assigns the scan |region| for rel32 references to enable FindNext() use.
   void SetRegion(ConstBufferView region);
+
+  // Scans for the next rel32 reference, and returns whether any is found, so a
+  // "while" loop can be used for iterative rel32 extraction. The results are
+  // cached in Rel32Finder_Impl and obtained by Rel32Finder_Impl::GetRel32().
+  bool FindNext();
 
   // When a rel32 reference is found, the caller needs to decide whether to keep
   // the result (perhaps following more validation). If it decides to keep the
@@ -98,11 +121,6 @@ class Rel32Finder {
     ConstBufferView::const_iterator accept;
   };
 
-  // Scans for the next rel32 reference, and returns whether any is found, so a
-  // "while" loop can be used for iterative rel32 extraction. The results are
-  // cached in Rel32Finder_Impl and obtained by Rel32Finder_Impl::GetRel32().
-  bool FindNext();
-
   // Detects and extracts architecture-specific rel32 reference. For each one
   // found, the implementation should cache the necessary data to be retrieved
   // via accessors. Returns a NextIterators that stores alternatives for where
@@ -110,20 +128,25 @@ class Rel32Finder {
   // NextIterators are nulls.
   virtual NextIterators Scan(ConstBufferView region) = 0;
 
+  const ConstBufferView image_;
+  AddressTranslator::OffsetToRvaCache offset_to_rva_;
+
  private:
   ConstBufferView region_;
   ConstBufferView::const_iterator accept_it_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32Finder);
 };
 
 // Parsing for X86 or X64: we perform naive scan for opcodes that have rel32 as
 // an argument, and disregard instruction alignment.
 class Rel32FinderIntel : public Rel32Finder {
  public:
-  // Struct to store GetNext() results.
+  Rel32FinderIntel(const Rel32FinderIntel&) = delete;
+  const Rel32FinderIntel& operator=(const Rel32FinderIntel&) = delete;
+
+  // Struct to store GetRel32() results.
   struct Result {
-    ConstBufferView::const_iterator location;
+    offset_t location;
+    rva_t target_rva;
 
     // Some references must have their target in the same section as location,
     // which we use this to heuristically reject rel32 reference candidates.
@@ -133,12 +156,8 @@ class Rel32FinderIntel : public Rel32Finder {
 
   using Rel32Finder::Rel32Finder;
 
-  // Returns the next available Result, or nullopt if exhausted.
-  absl::optional<Result> GetNext() {
-    if (FindNext())
-      return rel32_;
-    return absl::nullopt;
-  }
+  // Returns the cached result from the last successful FindNext().
+  const Result& GetRel32() { return rel32_; }
 
  protected:
   // Helper for Scan() that also assigns |rel32_|.
@@ -151,9 +170,6 @@ class Rel32FinderIntel : public Rel32Finder {
 
   // Rel32Finder:
   NextIterators Scan(ConstBufferView region) override = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Rel32FinderIntel);
 };
 
 // X86 instructions.
@@ -161,11 +177,12 @@ class Rel32FinderX86 : public Rel32FinderIntel {
  public:
   using Rel32FinderIntel::Rel32FinderIntel;
 
+  Rel32FinderX86(const Rel32FinderX86&) = delete;
+  const Rel32FinderX86& operator=(const Rel32FinderX86&) = delete;
+
  private:
   // Rel32Finder:
   NextIterators Scan(ConstBufferView region) override;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32FinderX86);
 };
 
 // X64 instructions.
@@ -173,11 +190,12 @@ class Rel32FinderX64 : public Rel32FinderIntel {
  public:
   using Rel32FinderIntel::Rel32FinderIntel;
 
+  Rel32FinderX64(const Rel32FinderX64&) = delete;
+  const Rel32FinderX64& operator=(const Rel32FinderX64&) = delete;
+
  private:
   // Rel32Finder:
   NextIterators Scan(ConstBufferView region) override;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32FinderX64);
 };
 
 }  // namespace zucchini

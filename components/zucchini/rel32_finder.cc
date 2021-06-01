@@ -26,44 +26,43 @@ Abs32GapFinder::Abs32GapFinder(ConstBufferView image,
 
   const offset_t begin_offset =
       base::checked_cast<offset_t>(region.begin() - image.begin());
-  // Find the first |abs32_current_| with |*abs32_current_ >= begin_offset|.
-  abs32_current_ = std::lower_bound(abs32_locations.begin(),
-                                    abs32_locations.end(), begin_offset);
+  // Find the first |abs32_cur_| with |*abs32_cur_ >= begin_offset|.
+  abs32_cur_ = std::lower_bound(abs32_locations.begin(), abs32_locations.end(),
+                                begin_offset);
 
-  // Find lower boundary, accounting for possibility that |abs32_current_[-1]|
+  // Find lower boundary, accounting for the possibility that |abs32_cur_[-1]|
   // may straddle across |region.begin()|.
-  current_lo_ = region.begin();
-  if (abs32_current_ > abs32_locations.begin()) {
-    current_lo_ = std::max(current_lo_,
-                           image.begin() + abs32_current_[-1] + abs32_width_);
-  }
+  cur_lo_ = region.begin();
+  if (abs32_cur_ > abs32_locations.begin())
+    cur_lo_ = std::max(cur_lo_, image.begin() + abs32_cur_[-1] + abs32_width_);
 }
 
 Abs32GapFinder::~Abs32GapFinder() = default;
 
-absl::optional<ConstBufferView> Abs32GapFinder::GetNext() {
-  // Iterate over |[abs32_current_, abs32_end_)| and emit segments.
-  while (abs32_current_ != abs32_end_ &&
-         base_ + *abs32_current_ < region_end_) {
-    ConstBufferView::const_iterator hi = base_ + *abs32_current_;
-    ConstBufferView gap = ConstBufferView::FromRange(current_lo_, hi);
-    current_lo_ = hi + abs32_width_;
-    ++abs32_current_;
-    if (!gap.empty())
-      return gap;
+bool Abs32GapFinder::FindNext() {
+  // Iterate over |[abs32_cur_, abs32_end_)| and emit segments.
+  while (abs32_cur_ != abs32_end_ && base_ + *abs32_cur_ < region_end_) {
+    ConstBufferView::const_iterator hi = base_ + *abs32_cur_;
+    gap_ = ConstBufferView::FromRange(cur_lo_, hi);
+    cur_lo_ = hi + abs32_width_;
+    ++abs32_cur_;
+    if (!gap_.empty())
+      return true;
   }
   // Emit final segment.
-  if (current_lo_ < region_end_) {
-    ConstBufferView gap = ConstBufferView::FromRange(current_lo_, region_end_);
-    current_lo_ = region_end_;
-    return gap;
+  if (cur_lo_ < region_end_) {
+    gap_ = ConstBufferView::FromRange(cur_lo_, region_end_);
+    cur_lo_ = region_end_;
+    return true;
   }
-  return absl::nullopt;
+  return false;
 }
 
 /******** Rel32Finder ********/
 
-Rel32Finder::Rel32Finder() {}
+Rel32Finder::Rel32Finder(ConstBufferView image,
+                         const AddressTranslator& translator)
+    : image_(image), offset_to_rva_(translator) {}
 
 Rel32Finder::~Rel32Finder() = default;
 
@@ -95,7 +94,12 @@ Rel32Finder::NextIterators Rel32FinderIntel::SetResult(
     ConstBufferView::const_iterator cursor,
     uint32_t opcode_size,
     bool can_point_outside_section) {
-  rel32_ = {cursor + opcode_size, can_point_outside_section};
+  offset_t location =
+      base::checked_cast<offset_t>((cursor + opcode_size) - image_.begin());
+  rva_t location_rva = offset_to_rva_.Convert(location);
+  DCHECK_NE(location_rva, kInvalidRva);
+  rva_t target_rva = location_rva + 4 + image_.read<uint32_t>(location);
+  rel32_ = {location, target_rva, can_point_outside_section};
   return {cursor + 1, cursor + (opcode_size + 4)};
 }
 
