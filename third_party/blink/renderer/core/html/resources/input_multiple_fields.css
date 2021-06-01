@@ -56,32 +56,6 @@ input::-webkit-datetime-edit-year-field {
     padding: 1px;
 }
 
-/* Use highlight color. */
-input::-webkit-datetime-edit-ampm-field:focus,
-input::-webkit-datetime-edit-day-field:focus,
-input::-webkit-datetime-edit-hour-field:focus,
-input::-webkit-datetime-edit-millisecond-field:focus,
-input::-webkit-datetime-edit-minute-field:focus,
-input::-webkit-datetime-edit-month-field:focus,
-input::-webkit-datetime-edit-second-field:focus,
-input::-webkit-datetime-edit-week-field:focus,
-input::-webkit-datetime-edit-year-field:focus {
-    background-color: highlight;
-    color: highlighttext;
-}
-
-input::-webkit-datetime-edit-year-field[disabled],
-input::-webkit-datetime-edit-month-field[disabled],
-input::-webkit-datetime-edit-week-field[disabled],
-input::-webkit-datetime-edit-day-field[disabled],
-input::-webkit-datetime-edit-ampm-field[disabled],
-input::-webkit-datetime-edit-hour-field[disabled],
-input::-webkit-datetime-edit-millisecond-field[disabled],
-input::-webkit-datetime-edit-minute-field[disabled],
-input::-webkit-datetime-edit-second-field[disabled] {
-    color: GrayText;
-}
-
 /* If you update padding, border, or margin in the following ruleset, update
    DateTimeEditElement::customStyelForRenderer too. */
 input::-webkit-datetime-edit-text {

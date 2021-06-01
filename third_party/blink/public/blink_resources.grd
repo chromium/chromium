@@ -9,7 +9,7 @@
   <release seq="1">
     <includes>
       <!-- GRIT minimizes all CSS and Javascript -->
-      <include name="IDR_UASTYLE_HTML_CSS" file="../renderer/core/html/resources/html.css" type="BINDATA" compress="gzip"/>
+      <include name="IDR_UASTYLE_HTML_CSS" file="../renderer/core/html/resources/html.css" flattenhtml="true" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_QUIRKS_CSS" file="../renderer/core/html/resources/quirks.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_VIEW_SOURCE_CSS" file="../renderer/core/css/view-source.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS" file="../renderer/core/html/resources/android.css" type="BINDATA" compress="gzip"/>
@@ -19,9 +19,7 @@
         <include name="IDR_UASTYLE_THEME_MAC_CSS" file="../renderer/core/html/resources/mac.css" type="BINDATA" compress="gzip"/>
       </if>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="gzip"/>
-      <include name="IDR_UASTYLE_THEME_WIN_CSS" file="../renderer/core/html/resources/win.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_WIN_QUIRKS_CSS" file="../renderer/core/html/resources/win_quirks.css" type="BINDATA" compress="gzip"/>
-      <include name="IDR_UASTYLE_THEME_CONTROLS_REFRESH_CSS" file="../renderer/core/html/resources/controls_refresh.css" flattenhtml="true" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_POPUP_CSS" file="../renderer/core/css/popup.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="gzip"/>

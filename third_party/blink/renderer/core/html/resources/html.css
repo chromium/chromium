@@ -445,17 +445,31 @@ input, textarea, select, button {
     text-align: start;
 }
 
+textarea {
+  appearance: auto;
+  border: 1px solid -internal-light-dark(#767676, #858585);
+  column-count: initial !important;
+  -webkit-rtl-ordering: logical;
+  resize: auto;
+  cursor: text;
+  padding: 2px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: -internal-light-dark(#ffffff, #3B3B3B);
+  font-family: monospace;
+}
+
 input[type="hidden" i] {
     display: none
 }
 
 input {
     appearance: auto;
-    padding: 1px;
-    background-color: -internal-light-dark(white, black);
-    border: 2px inset;
+    padding:1px 0;
+    border: 2px inset -internal-light-dark(#767676, #858585);
     -webkit-rtl-ordering: logical;
     cursor: text;
+    background-color: -internal-light-dark(#ffffff, #3B3B3B);
 }
 
 input[type="search" i] {
@@ -495,6 +509,7 @@ input[type="search" i]::-webkit-search-cancel-button {
     flex: none;
     -webkit-user-modify: read-only !important;
     margin-inline-start: 1px;
+    margin-right: 3px;
     opacity: 0;
     pointer-events: none;
     user-select: none !important;
@@ -503,6 +518,21 @@ input[type="search" i]::-webkit-search-cancel-button {
 input[type="search" i]:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-search-cancel-button {
     opacity: 1;
     pointer-events: auto;
+}
+
+input[type="search" i]::-webkit-search-results-decoration {
+  margin: auto 3px auto 2px;
+}
+
+input,
+input[type="email" i],
+input[type="number" i],
+input[type="password" i],
+input[type="search" i],
+input[type="tel" i],
+input[type="text" i],
+input[type="url" i] {
+  padding: 1px 2px;
 }
 
 input::-webkit-inner-spin-button {
@@ -519,24 +549,6 @@ input::-webkit-inner-spin-button {
 input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-inner-spin-button {
     opacity: 1;
     pointer-events: auto;
-}
-
-select {
-    border-radius: 5px;
-}
-
-textarea {
-    appearance: auto;
-    background-color: -internal-light-dark(white, black);
-    border: 1px solid;
-    column-count: initial !important;
-    -webkit-rtl-ordering: logical;
-    flex-direction: column;
-    resize: auto;
-    cursor: text;
-    padding: 2px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
 }
 
 ::-webkit-input-placeholder {
@@ -574,12 +586,39 @@ textarea::-internal-input-suggested {
     overflow-anchor: none;
 }
 
+textarea::-internal-input-suggested {
+  font-family: monospace !important;
+}
+
 input[type="password" i] {
     -webkit-text-security: disc !important;
 }
 
 input[type="password" i]::-internal-input-suggested {
     -webkit-text-security: disc !important;
+}
+
+input[type="password" i]::-internal-reveal {
+  width: 1.3em;
+  height: 1.3em;
+  cursor: default;
+  flex: none;
+  background-image: -webkit-image-set(url(images/password_reveal_on.svg) 1x);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+input[type="password" i]::-internal-reveal.reveal {
+  background-image: -webkit-image-set(url(images/password_reveal_off.svg) 1x);
+}
+
+input[type="password" i]::-internal-reveal:hover,
+input[type="password" i]::-internal-reveal:focus {
+  border-radius: 1px;
+  cursor: pointer;
 }
 
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
@@ -623,12 +662,17 @@ select:-internal-autofill-selected {
   color: -internal-light-dark(black, white) !important;
 }
 
-input[type="radio" i], input[type="checkbox" i] {
-    margin: 3px 0.5ex;
+input[type="radio" i],
+input[type="checkbox" i] {
+    margin:3px 3px 3px 4px;
     padding: initial;
     background-color: initial;
     border: initial;
     cursor: default;
+}
+
+input[type="radio" i] {
+  margin:3px 3px 0 5px;
 }
 
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
@@ -647,15 +691,28 @@ input[type="file" i]::-webkit-file-upload-button {
     font-size: inherit;
 }
 
-input[type="button" i], input[type="submit" i], input[type="reset" i], input[type="file" i]::-webkit-file-upload-button, button {
+input[type="button" i],
+input[type="submit" i],
+input[type="reset" i],
+input[type="file" i]::-webkit-file-upload-button,
+button {
     align-items: flex-start;
     text-align: center;
     cursor: default;
-    color: -internal-light-dark(ButtonText, #AAAAAA);
-    padding: 2px 6px 3px 6px;
-    border: 2px outset ButtonFace;
-    background-color: ButtonFace;
-    box-sizing: border-box
+    padding: 1px 6px;
+    border: 2px outset -internal-light-dark(#767676, #858585);
+    box-sizing: border-box;
+    background-color: -internal-light-dark(#efefef, #3B3B3B);
+    color: -internal-light-dark(black, white);
+}
+
+input[type="checkbox" i]:disabled,
+input[type="file" i]:disabled,
+input[type="hidden" i]:disabled,
+input[type="image" i]:disabled,
+input[type="radio" i]:disabled,
+input[type="range" i]:disabled {
+    background-color: initial;
 }
 
 input[type="range" i] {
@@ -663,11 +720,12 @@ input[type="range" i] {
     padding: initial;
     border: initial;
     margin: 2px;
-    color: #909090;
     cursor: default;
+    color: -internal-light-dark(#101010, #ffffff);
 }
 
-input[type="range" i]::-webkit-slider-container, input[type="range" i]::-webkit-media-slider-container {
+input[type="range" i]::-webkit-slider-container,
+input[type="range" i]::-webkit-media-slider-container {
     appearance: inherit;
     flex: 1;
     min-inline-size: 0;
@@ -694,16 +752,32 @@ input[type="range" i]::-webkit-slider-runnable-track {
     display: block;
 }
 
-input[type="range" i]::-webkit-slider-thumb, input[type="range" i]::-webkit-media-slider-thumb {
+input[type="range" i]::-webkit-slider-thumb,
+input[type="range" i]::-webkit-media-slider-thumb {
     appearance: auto;
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
     display: block;
 }
 
-input[type="button" i]:disabled, input[type="submit" i]:disabled, input[type="reset" i]:disabled,
-input[type="file" i]:disabled::-webkit-file-upload-button, button:disabled,
-select:disabled, optgroup:disabled, option:disabled,
+input[type="range" i]:disabled {
+  color: #c5c5c5;
+}
+
+input[type="button" i]:disabled,
+input[type="submit" i]:disabled,
+input[type="reset" i]:disabled,
+input[type="color" i]:disabled,
+input[type="file" i]:disabled::-webkit-file-upload-button,
+button:disabled {
+  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+select:disabled,
+optgroup:disabled,
+option:disabled,
 select[disabled]>option {
     color: -internal-light-dark(GrayText, #aaa);
 }
@@ -717,8 +791,15 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 }
 
 input:disabled, textarea:disabled {
-    color: -internal-light-dark(#545454, #aaa);
     cursor: default;
+    background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+    color: -internal-light-dark(#545454, #aaaaaa);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  border-color: rgba(118, 118, 118, 0.3);
 }
 
 option:-internal-spatial-navigation-focus {
@@ -756,11 +837,12 @@ input[type="color" i] {
     appearance: auto;
     width: 44px;
     height: 23px;
-    background-color: ButtonFace;
     /* Same as native_theme_base. */
-    border: 1px #a9a9a9 solid;
+    border: 1px solid -internal-light-dark(#767676, #858585);
     padding: 1px 2px;
     cursor: default;
+    background-color: -internal-light-dark(#efefef, #3B3B3B);
+    color: -internal-light-dark(black, white);
 }
 
 input[type="color" i]::-webkit-color-swatch-wrapper {
@@ -841,27 +923,87 @@ select {
     appearance: auto;
     box-sizing: border-box;
     align-items: center;
-    border: 1px solid;
     white-space: pre;
     -webkit-rtl-ordering: logical;
     color: -internal-light-dark(black, white);
-    background-color: -internal-light-dark(white, black);
+    background-color: -internal-light-dark(#ffffff, #3B3B3B);
+    border: 1px solid -internal-light-dark(#767676, #858585);
     cursor: default;
+    border-radius: 0;
+}
+
+select:disabled {
+  opacity: 0.7;
+}
+
+/* -internal-list-box is how we specify select[multiple] */
+/* select[multiple] is an exception to the prohibition on sizes here
+   because it is one of the few controls with borders that grow on zoom
+   (to solve a nasty scrollbar location problem) */
+select:-internal-list-box {
+    appearance: auto;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    vertical-align: text-bottom;
+    white-space: nowrap;
+    border-radius: 2px;
 }
 
 select:not(:-internal-list-box) {
     overflow: visible !important;
 }
 
-select:-internal-list-box {
-    appearance: auto;
-    align-items: flex-start;
-    border: 1px inset gray;
-    border-radius: initial;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    vertical-align: text-bottom;
-    white-space: nowrap;
+select:-internal-list-box optgroup option:before {
+    content: "\00a0\00a0\00a0\00a0";;
+}
+
+select:-internal-list-box option,
+select:-internal-list-box optgroup {
+    line-height: initial !important;
+}
+
+/* option selected, list-box focused */
+select:-internal-list-box:focus option:checked,
+select:-internal-list-box:focus option:checked:hover {
+    /* TODO(crbug.com/1129658): The dark mode color here should be handled
+       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
+    background-color: -internal-light-dark(-internal-active-list-box-selection, #99C8FF) !important;
+    color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
+}
+
+select:-internal-list-box:focus option:checked:disabled {
+    /* TODO(crbug.com/1129658): The dark mode color here should be handled
+       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
+    background-color: -internal-light-dark(-internal-inactive-list-box-selection, rgba(59, 59, 59, 0.3)) !important;
+}
+
+/* option selected, list-box not focused */
+select:-internal-list-box option:checked,
+select:-internal-list-box option:checked:hover {
+    background-color: -internal-light-dark(#cecece, #545454) !important;
+    color: -internal-light-dark(#101010, #FFFFFF) !important;
+}
+
+select:-internal-list-box:disabled option:checked,
+select:-internal-list-box option:checked:disabled,
+select:-internal-list-box option:checked:disabled:hover {
+    color: -internal-light-dark(gray, #aaa) !important;
+}
+
+select:-internal-list-box hr {
+    border-style: none;
+    margin-block-start: 0.5em;
+    margin-block-end: 0;
+}
+
+select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
+    outline: auto 1px -webkit-focus-ring-color;
+    outline-offset: -1px;
+}
+
+select:-internal-list-box option:hover {
+    background-color: initial;
 }
 
 optgroup {
@@ -875,45 +1017,6 @@ option {
     padding: 0 2px 1px 2px;
     white-space: nowrap;
     min-height: 1.2em;
-}
-
-select:-internal-list-box optgroup option:before {
-    content: "\00a0\00a0\00a0\00a0";;
-}
-
-select:-internal-list-box option,
-select:-internal-list-box optgroup {
-    line-height: initial !important;
-}
-
-select:-internal-list-box:focus option:checked {
-    background-color: -internal-active-list-box-selection !important;
-    color: -internal-active-list-box-selection-text !important;
-}
-
-select:-internal-list-box:focus option:checked:disabled {
-    background-color: -internal-inactive-list-box-selection !important;
-}
-
-select:-internal-list-box option:checked {
-    background-color: -internal-inactive-list-box-selection !important;
-    color: -internal-inactive-list-box-selection-text !important;
-}
-
-select:-internal-list-box:disabled option:checked,
-select:-internal-list-box option:checked:disabled {
-    color: gray !important;
-}
-
-select:-internal-list-box hr {
-    border-style: none;
-    margin-block-start: 0.5em;
-    margin-block-end: 0;
-}
-
-select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
-    outline: auto 1px -webkit-focus-ring-color;
-    outline-offset: -1px;
 }
 
 /* selectmenu */
@@ -959,7 +1062,9 @@ meter::-webkit-meter-inner-element {
 }
 
 meter::-webkit-meter-inner-element:-internal-shadow-host-has-appearance {
-    display: block;
+    display: grid;
+    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+    position: relative;
 }
 
 meter::-internal-fallback:-internal-shadow-host-has-appearance {
@@ -967,32 +1072,39 @@ meter::-internal-fallback:-internal-shadow-host-has-appearance {
 }
 
 meter::-webkit-meter-bar {
-    background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
     height: 100%;
     width: 100%;
     -webkit-user-modify: read-only !important;
+    background: -internal-light-dark(#efefef, #3B3B3B);
+    border: thin solid -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
+    grid-row-start: line1;
+    grid-row-end: line2;
+    border-radius: 20px;
     box-sizing: border-box;
+    align-self: unsafe center;
+    position: absolute;
+    overflow: hidden;
 }
 
 meter::-webkit-meter-optimum-value {
-    background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
     height: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
+    background: -internal-light-dark(#107c10, #74b374)
 }
 
 meter::-webkit-meter-suboptimum-value {
-    background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
     height: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
+    background: -internal-light-dark(#ffb900, #f2c812)
 }
 
 meter::-webkit-meter-even-less-good-value {
-    background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
     height: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
+    background: -internal-light-dark(#d83b01, #e98f6d)
 }
 
 /* progress */
@@ -1109,19 +1221,101 @@ embed:focus-visible, iframe:focus-visible, object:focus-visible {
 }
 
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-    outline-offset: -2px
+    outline-offset: 0;
 }
 
 input[type="button" i]:focus-visible,
-input[type="checkbox" i]:focus-visible,
 input[type="file" i]:focus-visible,
 input[type="hidden" i]:focus-visible,
 input[type="image" i]:focus-visible,
-input[type="radio" i]:focus-visible,
 input[type="reset" i]:focus-visible,
 input[type="submit" i]:focus-visible,
 input[type="file" i]:focus-visible::-webkit-file-upload-button {
     outline-offset: 0
+}
+
+input[type="checkbox" i]:focus-visible,
+input[type="radio" i]:focus-visible {
+  outline-offset: 2px;
+}
+
+
+input[type="date" i]::-webkit-calendar-picker-indicator,
+input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
+input[type="month" i]::-webkit-calendar-picker-indicator,
+input[type="week" i]::-webkit-calendar-picker-indicator {
+  background-image: -internal-light-dark(-webkit-image-set(url(images/calendar_icon.svg) 1x), -webkit-image-set(url(images/calendar_icon_white.svg) 1x));
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 1.2em;
+  margin-inline-start: 24px;
+  opacity: 1;
+  outline: none;
+  padding-bottom: 2px;
+  padding-inline-start: 3px;
+  padding-inline-end: 3px;
+  padding-top: 2px;
+  width: 1.2em;
+}
+
+input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="datetime-local" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="month" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
+  outline: solid 2px -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+input[type="time" i]::-webkit-calendar-picker-indicator {
+  background-image: -internal-light-dark(-webkit-image-set(url(images/time_icon.svg) 1x), -webkit-image-set(url(images/time_icon_white.svg) 1x));
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 1.05em;
+  margin-inline-start: 8px;
+  opacity: 1;
+  outline: none;
+  padding-bottom: 3px;
+  padding-inline-start: 3px;
+  padding-inline-end: 3px;
+  padding-top: 3px;
+  width: 1.05em;
+}
+
+input[type="time" i]::-webkit-calendar-picker-indicator:focus-visible {
+  outline: solid 2px -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+input::-webkit-calendar-picker-indicator:hover {
+  background-color: initial;
+}
+
+input::-webkit-datetime-edit-ampm-field:focus,
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-hour-field:focus,
+input::-webkit-datetime-edit-millisecond-field:focus,
+input::-webkit-datetime-edit-minute-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-second-field:focus,
+input::-webkit-datetime-edit-week-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
+    background-color: -internal-light-dark(highlight, #99C8FF);
+    color: -internal-light-dark(highlighttext, #000000);
+    outline: none;
+}
+
+input::-webkit-datetime-edit-year-field[disabled],
+input::-webkit-datetime-edit-month-field[disabled],
+input::-webkit-datetime-edit-week-field[disabled],
+input::-webkit-datetime-edit-day-field[disabled],
+input::-webkit-datetime-edit-ampm-field[disabled],
+input::-webkit-datetime-edit-hour-field[disabled],
+input::-webkit-datetime-edit-millisecond-field[disabled],
+input::-webkit-datetime-edit-minute-field[disabled],
+input::-webkit-datetime-edit-second-field[disabled] {
+    color: -internal-light-dark(GrayText, #000000);
 }
 
 a:-webkit-any-link {
@@ -1136,6 +1330,10 @@ a:-webkit-any-link:active {
 
 a:-webkit-any-link:read-write {
     cursor: text;
+}
+
+a:-webkit-any-link:focus-visible {
+  outline-offset: 1px;
 }
 
 /* HTML5 ruby elements */

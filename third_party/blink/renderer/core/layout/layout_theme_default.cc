@@ -63,18 +63,11 @@ String LayoutThemeDefault::ExtraDefaultStyleSheet() {
           ? UncompressResourceAsASCIIString(
                 IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS)
           : String();
-  String windows_style_sheet =
-      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_WIN_CSS);
-  String controls_refresh_style_sheet =
-      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CONTROLS_REFRESH_CSS);
   StringBuilder builder;
-  builder.ReserveCapacity(
-      extra_style_sheet.length() + multiple_fields_style_sheet.length() +
-      windows_style_sheet.length() + controls_refresh_style_sheet.length());
+  builder.ReserveCapacity(extra_style_sheet.length() +
+                          multiple_fields_style_sheet.length());
   builder.Append(extra_style_sheet);
   builder.Append(multiple_fields_style_sheet);
-  builder.Append(windows_style_sheet);
-  builder.Append(controls_refresh_style_sheet);
   return builder.ToString();
 }
 
