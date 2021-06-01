@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 
 class GURL;
@@ -82,6 +83,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // `top_frame_origin`) is not allowed to access cookies in this context, and
   // "privacy mode" should be enabled for the URL request in question.
   bool IsPrivacyModeEnabled(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin) const;
+
+  // Returns true if the given cookie is accessible according to user
+  // cookie-blocking settings. Assumes that the cookie is otherwise accessible
+  // (i.e. that the cookie is otherwise valid with no other exclusion reasons).
+  bool IsCookieAccessible(
+      const net::CanonicalCookie& cookie,
       const GURL& url,
       const GURL& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) const;

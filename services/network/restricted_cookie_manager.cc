@@ -210,8 +210,9 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // not deleted. This check prevents the site from observing their cookies
     // being deleted at a later time, which can happen due to eviction or due to
     // the user explicitly deleting all cookies.
-    if (!restricted_cookie_manager_->cookie_settings()->IsCookieAccessAllowed(
-            url_, site_for_cookies_.RepresentativeUrl(), top_frame_origin_)) {
+    if (!restricted_cookie_manager_->cookie_settings()->IsCookieAccessible(
+            change.cookie, url_, site_for_cookies_.RepresentativeUrl(),
+            top_frame_origin_)) {
       return;
     }
 
@@ -399,8 +400,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   }
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
-  bool blocked = !cookie_settings_->IsCookieAccessAllowed(
-      url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
+  bool blocked = !cookie_settings_->IsCookieAccessible(
+      cookie, url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
 
   net::CookieInclusionStatus status;
   if (blocked)

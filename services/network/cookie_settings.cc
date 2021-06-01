@@ -89,6 +89,15 @@ bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
          url.SchemeIsCryptographic();
 }
 
+bool CookieSettings::IsCookieAccessible(
+    const net::CanonicalCookie& cookie,
+    const GURL& url,
+    const GURL& site_for_cookies,
+    const absl::optional<url::Origin>& top_frame_origin) const {
+  // TODO(https://crbug.com/1203706): Rewrite this to look at the cookie itself.
+  return IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin);
+}
+
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {

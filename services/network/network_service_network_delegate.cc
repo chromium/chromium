@@ -216,11 +216,9 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     bool allowed_from_caller) {
   bool allowed =
       allowed_from_caller &&
-      network_context_->cookie_manager()
-          ->cookie_settings()
-          .IsCookieAccessAllowed(request.url(),
-                                 request.site_for_cookies().RepresentativeUrl(),
-                                 request.isolation_info().top_frame_origin());
+      network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
+          cookie, request.url(), request.site_for_cookies().RepresentativeUrl(),
+          request.isolation_info().top_frame_origin());
   if (!allowed)
     return false;
   URLLoader* url_loader = URLLoader::ForRequest(request);
