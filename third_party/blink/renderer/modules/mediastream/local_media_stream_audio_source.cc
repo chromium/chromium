@@ -126,7 +126,7 @@ void LocalMediaStreamAudioSource::OnCaptureError(
       base::StringPrintf("LocalMediaStreamAudioSource::OnCaptureError: %d, %s",
                          code, why.c_str()));
 
-  StopSourceOnError(why);
+  StopSourceOnError(code, why);
 }
 
 void LocalMediaStreamAudioSource::OnCaptureMuted(bool is_muted) {

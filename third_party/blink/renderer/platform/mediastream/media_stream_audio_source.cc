@@ -251,13 +251,24 @@ void MediaStreamAudioSource::StopAudioDeliveryTo(MediaStreamAudioTrack* track) {
   }
 }
 
-void MediaStreamAudioSource::StopSourceOnError(const std::string& why) {
+void MediaStreamAudioSource::StopSourceOnError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& why) {
   LogMessage(base::StringPrintf("%s({why=%s})", __func__, why.c_str()));
+
   // Stop source when error occurs.
   PostCrossThreadTask(
       *task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&WebPlatformMediaStreamSource::StopSource,
-                          GetWeakPtr()));
+      CrossThreadBindOnce(
+          &MediaStreamAudioSource::StopSourceOnErrorOnTaskRunner, GetWeakPtr(),
+          code));
+}
+
+void MediaStreamAudioSource::StopSourceOnErrorOnTaskRunner(
+    media::AudioCapturerSource::ErrorCode code) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  SetErrorCode(code);
+  StopSource();
 }
 
 void MediaStreamAudioSource::SetMutedState(bool muted_state) {

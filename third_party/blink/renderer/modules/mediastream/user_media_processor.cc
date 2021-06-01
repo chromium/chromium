@@ -1768,17 +1768,28 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
   for (auto* device_it = pending_local_sources_.begin();
        device_it != pending_local_sources_.end(); ++device_it) {
     if (IsSameSource(*device_it, source)) {
-      WebPlatformMediaStreamSource* const source_extra_data =
+      WebPlatformMediaStreamSource* const platform_source =
           source->GetPlatformSource();
-      const bool is_audio_source =
-          source->GetType() == MediaStreamSource::kTypeAudio;
-      NotifyCurrentRequestInfoOfAudioSourceStarted(
-          source_extra_data,
-          is_audio_source ? MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO
-                          : MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO,
-          String::FromUTF8(is_audio_source
-                               ? "Failed to access audio capture device"
-                               : "Failed to access video capture device"));
+      MediaStreamRequestResult result;
+      String message;
+      if (source->GetType() == MediaStreamSource::kTypeAudio) {
+        auto error = MediaStreamAudioSource::From(source)->ErrorCode();
+        if (error.has_value() &&
+            error.value() ==
+                media::AudioCapturerSource::ErrorCode::kSystemPermissions) {
+          result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+          message =
+              "System Permssions prevented access to audio capture device";
+        } else {
+          result = MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO;
+          message = "Failed to access audio capture device";
+        }
+      } else {
+        result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;
+        message = "Failed to access video capture device";
+      }
+      NotifyCurrentRequestInfoOfAudioSourceStarted(platform_source, result,
+                                                   message);
       pending_local_sources_.erase(device_it);
       return true;
     }
