@@ -611,7 +611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat"
-    enum="PageLoadTimingUnderStat" expires_after="2021-09-26">
+    enum="PageLoadTimingUnderStat" expires_after="2021-11-28">
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records if the time from navigation to first contentful paint was less than
@@ -639,7 +639,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Scheme.HTTPS.PaintTiming.UnderStat"
-    enum="PageLoadTimingUnderStat" expires_after="2021-09-26">
+    enum="PageLoadTimingUnderStat" expires_after="2021-11-28">
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records if the time from navigation to first contentful paint was less than
