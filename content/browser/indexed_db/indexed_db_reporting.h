@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace url {
-class Origin;
+namespace blink {
+class StorageKey;
 }
 
 namespace content {
@@ -92,14 +92,15 @@ enum class IndexedDBAction {
 };
 
 void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
-                      const url::Origin& origin);
+                      const blink::StorageKey& storage_key);
 
 void ReportInternalError(const char* type,
                          IndexedDBBackingStoreErrorSource location);
 
-void ReportSchemaVersion(int version, const url::Origin& origin);
+void ReportSchemaVersion(int version, const blink::StorageKey& storage_key);
 
-void ReportV2Schema(bool has_broken_blobs, const url::Origin& origin);
+void ReportV2Schema(bool has_broken_blobs,
+                    const blink::StorageKey& storage_key);
 
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);

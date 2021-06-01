@@ -110,8 +110,10 @@ CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
         leveldb::Status::IOError("Unable to create IndexedDB database path");
     LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
                << "\"";
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
-                     origin);
+    ReportOpenStatus(
+        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
     return {base::FilePath(), base::FilePath(), status};
   }
 
@@ -122,8 +124,10 @@ CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
       // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
       indexed_db::GetBlobStoreFileName(blink::StorageKey(origin)));
   if (indexed_db::IsPathTooLong(filesystem, leveldb_path)) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
-                     origin);
+    ReportOpenStatus(
+        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
     status = leveldb::Status::IOError("File path too long");
     return {base::FilePath(), base::FilePath(), status};
   }
@@ -715,8 +719,10 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
   }
 
   if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     origin);
+    ReportOpenStatus(
+        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
 
     if (disk_full) {
       context_->quota_manager_proxy()->NotifyWriteFailed(origin);
@@ -738,15 +744,20 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
       LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
 
   if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     origin);
+    ReportOpenStatus(
+        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
 
     return {IndexedDBOriginStateHandle(), s, CreateDefaultError(),
             data_loss_info, /*was_cold_open=*/true};
   }
 
   if (!is_incognito_and_in_memory)
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS, origin);
+    ReportOpenStatus(
+        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
 
   auto run_tasks_callback = base::BindRepeating(
       &IndexedDBFactoryImpl::MaybeRunTasksForOrigin,
@@ -834,7 +845,8 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
       if (is_first_attempt) {
         ReportOpenStatus(
             indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_PRIOR_CORRUPTION,
-            origin);
+            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+            blink::StorageKey(origin));
       }
       data_loss_info.status = blink::mojom::IDBDataLoss::Total;
       data_loss_info.message = base::StrCat(
@@ -903,14 +915,16 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
     ReportOpenStatus(
         indexed_db::
             INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
-        origin);
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
     return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
   } else if (UNLIKELY(!are_schemas_known)) {
     LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
                   "failure to open.";
     ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
-        origin);
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin));
     return {nullptr, leveldb::Status::Corruption("Unknown IndexedDB schema"),
             std::move(data_loss_info), /*is_disk_full=*/false};
   }

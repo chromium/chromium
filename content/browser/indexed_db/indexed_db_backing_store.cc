@@ -708,7 +708,10 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     INTERNAL_READ_ERROR(SET_UP_METADATA);
     return s;
   }
-  indexed_db::ReportSchemaVersion(db_schema_version, origin_);
+  indexed_db::ReportSchemaVersion(
+      db_schema_version,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin_));
   if (!found) {
     // Initialize new backing store.
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
@@ -790,7 +793,8 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   if (!s.ok()) {
     indexed_db::ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_METADATA_SETUP,
-        origin_);
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        blink::StorageKey(origin_));
     INTERNAL_WRITE_ERROR(SET_UP_METADATA);
     return s;
   }
@@ -801,7 +805,8 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
       indexed_db::ReportOpenStatus(
           indexed_db::
               INDEXED_DB_BACKING_STORE_OPEN_FAILED_CLEANUP_JOURNAL_ERROR,
-          origin_);
+          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+          blink::StorageKey(origin_));
     }
   }
 #if DCHECK_IS_ON()
@@ -3140,7 +3145,10 @@ Status IndexedDBBackingStore::MigrateToV3(LevelDBWriteBatch* write_batch) {
     INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
     return InternalInconsistencyStatus();
   }
-  indexed_db::ReportV2Schema(has_blobs, origin_);
+  indexed_db::ReportV2Schema(
+      has_blobs,
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      blink::StorageKey(origin_));
   if (has_blobs) {
     INTERNAL_CONSISTENCY_ERROR(UPGRADING_SCHEMA_CORRUPTED_BLOBS);
     if (origin_.host() != "docs.google.com")
