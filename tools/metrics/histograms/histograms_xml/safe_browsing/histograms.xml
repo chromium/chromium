@@ -1958,7 +1958,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
-    expires_after="2021-07-07">
+    expires_after="2022-06-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
