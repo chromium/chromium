@@ -82,8 +82,7 @@ using ServiceWeakPtr = base::WeakPtr<PlatformKeysServiceImpl>;
 class NSSOperationState {
  public:
   explicit NSSOperationState(ServiceWeakPtr weak_ptr)
-      : service_weak_ptr_(weak_ptr),
-        origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : service_weak_ptr_(weak_ptr) {}
 
   virtual ~NSSOperationState() = default;
 
@@ -102,9 +101,6 @@ class NSSOperationState {
   // Weak pointer to the PlatformKeysServiceImpl that created this state. Used
   // to check if the callback should be still called.
   ServiceWeakPtr service_weak_ptr_;
-  // The task runner on which the NSS operation was called. Any reply must be
-  // posted to this runner.
-  scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NSSOperationState);
@@ -192,7 +188,7 @@ class GenerateRSAKeyState : public NSSOperationState {
                           status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -231,7 +227,7 @@ class GenerateECKeyState : public NSSOperationState {
                           status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -287,7 +283,7 @@ class SignState : public NSSOperationState {
     EmitOperationStatusToHistogram(status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), signature, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -340,7 +336,7 @@ class SelectCertificatesState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), std::move(matches), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -376,7 +372,7 @@ class GetCertificatesState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), std::move(certs), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -408,7 +404,7 @@ class GetAllKeysState : public NSSOperationState {
                 Status status) {
     auto bound_callback = base::BindOnce(
         std::move(callback_), std::move(public_key_spki_der_list), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -441,7 +437,7 @@ class ImportCertificateState : public NSSOperationState {
  private:
   void CallBack(const base::Location& from, Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -474,7 +470,7 @@ class RemoveCertificateState : public NSSOperationState {
  private:
   void CallBack(const base::Location& from, Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -508,7 +504,7 @@ class RemoveKeyState : public NSSOperationState {
  private:
   void CallBack(const base::Location& from, Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -540,7 +536,7 @@ class GetTokensState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), std::move(token_ids), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -578,7 +574,7 @@ class GetKeyLocationsState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), token_ids, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -618,7 +614,7 @@ class SetAttributeForKeyState : public NSSOperationState {
  private:
   void CallBack(const base::Location& from, Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_), status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -659,7 +655,7 @@ class GetAttributeForKeyState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), attribute_value, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
@@ -696,7 +692,7 @@ class IsKeyOnTokenState : public NSSOperationState {
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), on_token, status);
-    origin_task_runner_->PostTask(
+    content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
