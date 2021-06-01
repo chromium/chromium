@@ -79,7 +79,17 @@ SkBitmap WebImage::FromData(const WebData& data,
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(index);
   if (!frame || decoder->Failed())
     return {};
-  return frame->Bitmap();
+
+  if (decoder->Orientation().Orientation() == ImageOrientationEnum::kDefault)
+    return frame->Bitmap();
+
+  cc::PaintImage paint_image(Image::ResizeAndOrientImage(
+      cc::PaintImage::CreateFromBitmap(frame->Bitmap()),
+      decoder->Orientation()));
+
+  SkBitmap bitmap;
+  paint_image.GetSwSkImage()->asLegacyBitmap(&bitmap);
+  return bitmap;
 }
 
 SkBitmap WebImage::DecodeSVG(const WebData& data,

@@ -56,7 +56,9 @@ class WebImage {
 
   // Decodes the given image data. If the image has multiple frames,
   // then the frame whose size is desired_size is returned. Otherwise,
-  // the first frame is returned.
+  // the first frame is returned. If the image contains EXIF data that changes
+  // the orientation, the returned image will be rotated such that the result is
+  // top-left oriented.
   BLINK_EXPORT static SkBitmap FromData(const WebData&,
                                         const gfx::Size& desired_size);
 
