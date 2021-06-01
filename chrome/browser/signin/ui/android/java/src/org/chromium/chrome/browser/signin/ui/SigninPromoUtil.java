@@ -24,6 +24,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -110,11 +111,8 @@ public final class SigninPromoUtil {
             SigninPromoController.OnDismissListener listener) {
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        if (!accountManagerFacade.isCachePopulated()) {
-            signinPromoController.setupPromoView(view, /* profileData= */ null, listener);
-            return;
-        }
-        final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+        final List<Account> accounts =
+                accountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
         if (accounts.isEmpty()) {
             signinPromoController.setupPromoView(view, /* profileData= */ null, listener);
             return;

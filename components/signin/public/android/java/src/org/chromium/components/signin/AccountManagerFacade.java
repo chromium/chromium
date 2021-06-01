@@ -49,14 +49,6 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Returns whether the account cache has already been populated. {@link #tryGetGoogleAccounts()}
-     * and similar methods will return instantly if the cache has been populated, otherwise these
-     * methods may block waiting for the cache to be populated.
-     */
-    @AnyThread
-    boolean isCachePopulated();
-
-    /**
      * Retrieves all Google accounts on the device from the cache.
      * Returns an empty array if an error occurs while getting account list.
      * If the cache is not yet populated, the optional will be empty.

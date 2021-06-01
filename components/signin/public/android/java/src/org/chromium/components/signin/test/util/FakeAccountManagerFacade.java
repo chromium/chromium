@@ -71,11 +71,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public boolean isCachePopulated() {
-        return true;
-    }
-
-    @Override
     public Optional<List<Account>> getGoogleAccounts() {
         List<Account> accounts = new ArrayList<>();
         synchronized (mLock) {
