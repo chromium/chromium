@@ -1417,6 +1417,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.StorePolicy.Duration" units="ms"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
