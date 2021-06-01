@@ -80,26 +80,18 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox) {
-  bool using_dawn = usage & SHARED_IMAGE_USAGE_WEBGPU;
-  bool vulkan_usage = gr_context_type == GrContextType::kVulkan &&
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
-  bool using_interop_factory =
-      vulkan_usage || using_dawn || (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-
-  if (using_interop_factory) {
-    // TODO(crbug.com/969114): Not all shared image factory implementations
-    // support concurrent read/write usage.
-    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
-      LOG(ERROR) << "Unable to create SharedImage backing: Interoperability is "
-                    "not supported for concurrent read/write usage";
-      return false;
-    }
-
-    *allow_legacy_mailbox = false;
-    return true;
+  // Doesn't support gmb for now
+  if (gmb_type != gfx::EMPTY_BUFFER) {
+    return false;
+  }
+  // TODO(crbug.com/969114): Not all shared image factory implementations
+  // support concurrent read/write usage.
+  if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+    return false;
   }
 
-  return false;
+  *allow_legacy_mailbox = false;
+  return true;
 }
 
 }  // namespace gpu

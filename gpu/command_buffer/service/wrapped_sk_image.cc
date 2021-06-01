@@ -506,13 +506,12 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
   if (!CanUseWrappedSkImage(usage, gr_context_type) || thread_safe) {
     return false;
   }
-
-  if (gmb_type == gfx::EMPTY_BUFFER || CanImportGpuMemoryBuffer(gmb_type)) {
-    *allow_legacy_mailbox = false;
-    return true;
+  if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
+    return false;
   }
 
-  return false;
+  *allow_legacy_mailbox = false;
+  return true;
 }
 
 std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
