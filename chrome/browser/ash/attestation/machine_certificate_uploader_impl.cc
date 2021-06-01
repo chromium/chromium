@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -116,8 +117,8 @@ void MachineCertificateUploaderImpl::Start() {
   if (!attestation_flow_) {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
-    default_attestation_flow_ =
-        std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
+    default_attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
+        std::move(attestation_ca_client));
     attestation_flow_ = default_attestation_flow_.get();
   }
 
