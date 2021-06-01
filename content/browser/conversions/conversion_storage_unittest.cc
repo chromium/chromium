@@ -833,6 +833,8 @@ TEST_F(ConversionStorageTest,
   EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
   EXPECT_TRUE(ReportsEqual({}, actual_reports));
