@@ -154,7 +154,7 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
       NOTREACHED();
-      return ascent_;
+      return float_ascent_;
     case kIdeographicBaseline:
       return FloatHeight() / 2;
 
@@ -167,27 +167,27 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
       // TODO(layout-dev): Should refer to 'ideo' in OpenType.
       return FloatHeight();
     case kXMiddleBaseline:
-      return ascent_ - XHeight() / 2;
+      return float_ascent_ - XHeight() / 2;
     case kMathBaseline:
       // TODO(layout-dev): Should refer to 'math' in OpenType or 'bsln' value 4
       // in TrueType AAT.
-      return ascent_ * 0.5f;
+      return float_ascent_ * 0.5f;
     case kHangingBaseline:
       // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3
       // in TrueType AAT.
-      return ascent_ * 0.2f;
+      return float_ascent_ * 0.2f;
     case kTextOverBaseline:
       return 0;
   }
   NOTREACHED();
-  return ascent_;
+  return float_ascent_;
 }
 
 int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
       NOTREACHED();
-      return ascent_int_;
+      return int_ascent_;
     case kIdeographicBaseline:
       return Height() - Height() / 2;
 
@@ -200,19 +200,19 @@ int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
       // TODO(layout-dev): Should refer to 'ideo' in OpenType.
       return Height();
     case kXMiddleBaseline:
-      return ascent_int_ - static_cast<int>(XHeight() / 2);
+      return int_ascent_ - static_cast<int>(XHeight() / 2);
     case kMathBaseline:
       // TODO(layout-dev): Should refer to 'math' in OpenType or 'bsln' value 4
       // in TrueType AAT.
-      return ascent_int_ / 2;
+      return int_ascent_ / 2;
     case kHangingBaseline:
       // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3
       // in TrueType AAT.
-      return ascent_int_ * 2 / 10;
+      return int_ascent_ * 2 / 10;
     case kTextOverBaseline:
       return 0;
   }
   NOTREACHED();
-  return ascent_int_;
+  return int_ascent_;
 }
 }
