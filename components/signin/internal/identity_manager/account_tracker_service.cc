@@ -620,17 +620,13 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
     return;
 
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetSize(); ++i) {
-    base::DictionaryValue* dict = nullptr;
-    if (update->GetDictionary(i, &dict)) {
-      std::string value;
-      if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_info.account_id.ToString()) {
-        update->Remove(i, nullptr);
-        break;
-      }
-    }
-  }
+  const std::string account_id = account_info.account_id.ToString();
+  update->EraseListValueIf([&account_id](const base::Value& value) {
+    if (!value.is_dict())
+      return false;
+    const std::string* account_key = value.FindStringKey(kAccountKeyPath);
+    return account_key && *account_key == account_id;
+  });
 }
 
 CoreAccountId AccountTrackerService::PickAccountIdForAccount(
