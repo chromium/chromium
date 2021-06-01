@@ -208,6 +208,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSerialPortOpen,
           WebFeature::kHidRequestDevice,
           WebFeature::kHidDeviceOpen,
+          WebFeature::kCrossOriginWasmModuleSharing,
       }));
   return *opt_in_features;
 }
