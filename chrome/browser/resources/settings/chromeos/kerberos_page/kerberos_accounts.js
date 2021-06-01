@@ -62,9 +62,6 @@ Polymer({
     supportedSettingIds: {
       type: Object,
       value: () => new Set([
-        chromeos.settings.mojom.Setting.kAddKerberosTicket,
-        chromeos.settings.mojom.Setting.kRemoveKerberosTicket,
-        chromeos.settings.mojom.Setting.kSetActiveKerberosTicket,
         chromeos.settings.mojom.Setting.kAddKerberosTicketV2,
         chromeos.settings.mojom.Setting.kRemoveKerberosTicketV2,
         chromeos.settings.mojom.Setting.kSetActiveKerberosTicketV2,
@@ -109,8 +106,7 @@ Polymer({
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.KERBEROS_ACCOUNTS &&
-        route !== settings.routes.KERBEROS_ACCOUNTS_V2) {
+    if (route !== settings.routes.KERBEROS_ACCOUNTS_V2) {
       return;
     }
 

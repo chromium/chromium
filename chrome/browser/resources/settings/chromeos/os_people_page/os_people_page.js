@@ -149,11 +149,6 @@ Polymer({
               settings.routes.ACCOUNT_MANAGER.path,
               '#account-manager-subpage-trigger');
         }
-        if (settings.routes.KERBEROS_ACCOUNTS) {
-          map.set(
-              settings.routes.KERBEROS_ACCOUNTS.path,
-              '#kerberos-accounts-subpage-trigger');
-        }
         return map;
       },
     },
@@ -519,11 +514,6 @@ Polymer({
     if (this.isAccountManagerEnabled_) {
       settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
     }
-  },
-
-  /** @private */
-  onKerberosAccountsTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.KERBEROS_ACCOUNTS);
   },
 
   /** @private */

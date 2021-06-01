@@ -117,9 +117,6 @@ cr.define('settings', function() {
             r.OS_PEOPLE, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH,
             Subpage.kManageOtherPeople);
       }
-      r.KERBEROS_ACCOUNTS = createSubpage(
-          r.OS_PEOPLE, mojom.KERBEROS_ACCOUNTS_SUBPAGE_PATH,
-          Subpage.kKerberosAccounts);
     }
 
     const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&

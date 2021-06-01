@@ -50,7 +50,6 @@
 /**
  * @typedef {{
  *   googleAccounts: boolean,
- *   kerberosAccounts: boolean,
  *   lockScreen: boolean,
  *   manageUsers: boolean,
  * }}
@@ -137,8 +136,6 @@ cr.define('settings', function() {
       autofill: true,
       people: {
         lockScreen: true,
-        kerberosAccounts:
-            isKerberosEnabled && !isKerberosSettingsSectionEnabled,
         googleAccounts: isAccountManagerEnabled,
         manageUsers: true,
       },

@@ -59304,9 +59304,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="307" label="Restrict Sign In"/>
   <int value="308" label="Add To User Allowlist"/>
   <int value="309" label="Remove From User Allowlist"/>
-  <int value="310" label="Add Kerberos Ticket"/>
-  <int value="311" label="Remove Kerberos Ticket"/>
-  <int value="312" label="Set Active Kerberos Ticket"/>
+  <int value="310" label="Add Kerberos Ticket (Deprecated)"/>
+  <int value="311" label="Remove Kerberos Ticket (Deprecated)"/>
+  <int value="312" label="Set Active Kerberos Ticket (Deprecated)"/>
   <int value="313" label="Add Fingerprint"/>
   <int value="314" label="Remove Fingerprint"/>
   <int value="315" label="Set Up Parental Controls"/>
@@ -59448,7 +59448,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1705" label="Report an Issue"/>
   <int value="1706" label="View Terms of Service"/>
   <int value="1707" label="Open Diagnostics App"/>
-  <int value="1800" label="View Add Kerberos Ticket V2"/>
+  <int value="1800" label="Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>
 </enum>
@@ -59531,7 +59531,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="304" label="Security And Sign In"/>
   <int value="305" label="Fingerprint"/>
   <int value="306" label="Manage Other People"/>
-  <int value="307" label="Kerberos Accounts"/>
+  <int value="307" label="Kerberos Accounts (Deprecated)"/>
   <int value="400" label="Pointers"/>
   <int value="401" label="Keyboard"/>
   <int value="402" label="Stylus"/>

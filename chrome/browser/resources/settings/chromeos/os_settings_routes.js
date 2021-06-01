@@ -46,7 +46,6 @@
  *   INTERNET: !settings.Route,
  *   INTERNET_NETWORKS: !settings.Route,
  *   KERBEROS: !settings.Route,
- *   KERBEROS_ACCOUNTS: !settings.Route,
  *   KERBEROS_ACCOUNTS_V2: !settings.Route,
  *   KEYBOARD: !settings.Route,
  *   KNOWN_NETWORKS: !settings.Route,

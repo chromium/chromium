@@ -122,8 +122,6 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
       chromeos::settings::mojom::kExternalStorageSubpagePath},
      {ChromePage::HELP, chromeos::settings::mojom::kAboutChromeOsSectionPath},
      {ChromePage::INTERNET, chromeos::settings::mojom::kNetworkSectionPath},
-     {ChromePage::KERBEROSACCOUNTS,
-      chromeos::settings::mojom::kKerberosAccountsSubpagePath},
      {ChromePage::KEYBOARDOVERLAY,
       chromeos::settings::mojom::kKeyboardSubpagePath},
      {ChromePage::KNOWNNETWORKS,
@@ -201,11 +199,12 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kAboutPagesMapping[] =
      {ChromePage::ABOUTHISTORY, "chrome://history/"}};
 
 constexpr arc::mojom::ChromePage kDeprecatedPages[] = {
-    ChromePage::DEPRECATED_DOWNLOADEDCONTENT,
-    ChromePage::DEPRECATED_PLUGINVMDETAILS,
     ChromePage::DEPRECATED_CROSTINIDISKRESIZE,
+    ChromePage::DEPRECATED_DOWNLOADEDCONTENT,
+    ChromePage::DEPRECATED_KERBEROSACCOUNTS,
     ChromePage::DEPRECATED_OSLANGUAGESDETAILS,
     ChromePage::DEPRECATED_OSLANGUAGESINPUTMETHODS,
+    ChromePage::DEPRECATED_PLUGINVMDETAILS,
 };
 
 // mojom::ChromePage::LAST returns the amount of valid entries - 1.

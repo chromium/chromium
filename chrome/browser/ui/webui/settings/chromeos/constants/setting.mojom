@@ -79,9 +79,10 @@ enum Setting {
   kRestrictSignIn = 307,
   kAddToUserAllowlist = 308,
   kRemoveFromUserAllowlist = 309,
-  kAddKerberosTicket = 310,
-  kRemoveKerberosTicket = 311,
-  kSetActiveKerberosTicket = 312,
+  // Note: Values 310, 311 and 312 were for kAddKerberosTicket,
+  // kRemoveKerberosTicket and kSetActiveKerberosTicket, respectively. These
+  // settings have been moved to a separate Kerberos section - see
+  // https://crbug.com/1186190. Do not reuse.
   kAddFingerprint = 313,
   kRemoveFingerprint = 314,
   kSetUpParentalControls = 315,

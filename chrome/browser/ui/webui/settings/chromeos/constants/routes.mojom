@@ -60,7 +60,8 @@ enum Subpage {
   kSecurityAndSignIn = 304,
   kFingerprint = 305,
   kManageOtherPeople = 306,
-  kKerberosAccounts = 307,
+  // Note: Value 307 was for Kerberos Accounts Subpage, which has been migrated
+  // to a separate section - see https://crbug.com/1186190. Do not reuse.
 
   // Device section.
   kPointers = 400,
@@ -174,7 +175,6 @@ const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
 const string kSecurityAndSignInSubpagePath = "lockScreen";
 const string kFingerprintSubpagePath = "lockScreen/fingerprint";
 const string kManageOtherPeopleSubpagePath = "accounts";
-const string kKerberosAccountsSubpagePath = "kerberosAccounts";
 
 // Device section.
 const string kDeviceSectionPath = "device";

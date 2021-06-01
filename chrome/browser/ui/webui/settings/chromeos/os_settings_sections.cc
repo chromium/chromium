@@ -65,7 +65,7 @@ OsSettingsSections::OsSettingsSections(
 
   auto people_section = std::make_unique<PeopleSection>(
       profile, search_tag_registry, sync_service, supervised_user_service,
-      kerberos_credentials_manager, identity_manager, profile->GetPrefs());
+      identity_manager, profile->GetPrefs());
   sections_map_[mojom::Section::kPeople] = people_section.get();
   sections_.push_back(std::move(people_section));
 
