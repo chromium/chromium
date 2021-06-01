@@ -1,14 +1,14 @@
-From 9c1c7d53df33edf41754988587a1e6c6f2c3a299 Mon Sep 17 00:00:00 2001
+From 71c4cc6340fc4acba809b8205a63b6cd2c2e7489 Mon Sep 17 00:00:00 2001
 From: Mohamed Heikal <mheikal@google.com>
 Date: Wed, 26 May 2021 19:03:39 -0400
-Subject: [PATCH 3/3] Add disassemble command to keeps
+Subject: [PATCH 3/4] Add disassemble command to keeps
 
 ---
  src/main/keep.txt | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/main/keep.txt b/src/main/keep.txt
-index f3e6dd454..491840e44 100644
+index e03ef61f8..5454561a4 100644
 --- a/src/main/keep.txt
 +++ b/src/main/keep.txt
 @@ -7,6 +7,7 @@
