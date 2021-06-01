@@ -19,10 +19,12 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/database/database_connections.h"
 #include "url/origin.h"
@@ -88,10 +90,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     virtual ~Observer() = default;
   };
 
+  static scoped_refptr<DatabaseTracker> Create(
+      const base::FilePath& profile_path,
+      bool is_incognito,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
+
+  // Exposed for base::MakeRefCounted. Users should call Create().
   DatabaseTracker(const base::FilePath& profile_path,
                   bool is_incognito,
-                  SpecialStoragePolicy* special_storage_policy,
-                  QuotaManagerProxy* quota_manager_proxy);
+                  scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+                  scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+                  base::PassKey<DatabaseTracker>);
+
+  DatabaseTracker(const DatabaseTracker&) = delete;
+  DatabaseTracker& operator=(const DatabaseTracker&) = delete;
 
   void DatabaseOpened(const std::string& origin_identifier,
                       const std::u16string& database_name,
@@ -176,6 +189,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   void SetForceKeepSessionState();
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
+
+ protected:
+  // Subclasses need PassKeys to call the constructor.
+  static base::PassKey<DatabaseTracker> CreatePassKey() {
+    return base::PassKey<DatabaseTracker>();
+  }
 
  private:
   friend class base::RefCountedThreadSafe<DatabaseTracker>;

@@ -8,17 +8,23 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/net_errors.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -32,6 +38,7 @@
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/sqlite/sqlite3.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -73,10 +80,22 @@ int64_t OriginInfo::GetDatabaseSize(const std::u16string& database_name) const {
 OriginInfo::OriginInfo(const std::string& origin_identifier, int64_t total_size)
     : origin_identifier_(origin_identifier), total_size_(total_size) {}
 
-DatabaseTracker::DatabaseTracker(const base::FilePath& profile_path,
-                                 bool is_incognito,
-                                 SpecialStoragePolicy* special_storage_policy,
-                                 QuotaManagerProxy* quota_manager_proxy)
+scoped_refptr<DatabaseTracker> DatabaseTracker::Create(
+    const base::FilePath& profile_path,
+    bool is_incognito,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy) {
+  return base::MakeRefCounted<DatabaseTracker>(
+      profile_path, is_incognito, std::move(special_storage_policy),
+      std::move(quota_manager_proxy), base::PassKey<DatabaseTracker>());
+}
+
+DatabaseTracker::DatabaseTracker(
+    const base::FilePath& profile_path,
+    bool is_incognito,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    base::PassKey<DatabaseTracker>)
     : is_incognito_(is_incognito),
       profile_path_(profile_path),
       db_dir_(is_incognito_
@@ -87,14 +106,14 @@ DatabaseTracker::DatabaseTracker(const base::FilePath& profile_path,
           .page_size = 4096,
           .cache_size = 500,
       })),
-      special_storage_policy_(special_storage_policy),
-      quota_manager_proxy_(quota_manager_proxy),
+      special_storage_policy_(std::move(special_storage_policy)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  if (quota_manager_proxy) {
+  if (quota_manager_proxy_) {
     // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy->RegisterLegacyClient(
+    quota_manager_proxy_->RegisterLegacyClient(
         base::MakeRefCounted<DatabaseQuotaClient>(this),
         QuotaClientType::kDatabase, {blink::mojom::StorageType::kTemporary});
   }

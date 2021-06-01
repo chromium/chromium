@@ -27,6 +27,8 @@
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_client.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,12 +42,15 @@ namespace storage {
 static const blink::mojom::StorageType kTemp =
     blink::mojom::StorageType::kTemporary;
 
-// Mock tracker class the mocks up those methods of the tracker
-// that are used by the QuotaClient.
+// Mocks DatabaseTracker methods used by DatabaseQuotaClient.
 class MockDatabaseTracker : public DatabaseTracker {
  public:
   MockDatabaseTracker()
-      : DatabaseTracker(base::FilePath(), false, nullptr, nullptr) {}
+      : DatabaseTracker(base::FilePath(),
+                        /*is_incognito=*/false,
+                        /*special_storage_policy=*/nullptr,
+                        /*quota_manager_proxy=*/nullptr,
+                        DatabaseTracker::CreatePassKey()) {}
 
   bool GetOriginInfo(const std::string& origin_identifier,
                      OriginInfo* info) override {

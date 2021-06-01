@@ -4,8 +4,15 @@
 
 #include "content/browser/web_database/web_database_host_impl.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,8 +25,12 @@
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -44,10 +55,10 @@ class WebDatabaseHostImplTest : public ::testing::Test {
         std::make_unique<MockRenderProcessHost>(&browser_context_);
 
     scoped_refptr<storage::DatabaseTracker> db_tracker =
-        base::MakeRefCounted<storage::DatabaseTracker>(
-            base::FilePath(), /*is_incognito=*/false,
-            /*special_storage_policy=*/nullptr,
-            /*quota_manager_proxy=*/nullptr);
+        storage::DatabaseTracker::Create(base::FilePath(),
+                                         /*is_incognito=*/false,
+                                         /*special_storage_policy=*/nullptr,
+                                         /*quota_manager_proxy=*/nullptr);
 
     task_runner_ = db_tracker->task_runner();
     host_ = std::make_unique<WebDatabaseHostImpl>(process_id(),

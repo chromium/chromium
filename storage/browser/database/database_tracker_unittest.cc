@@ -205,13 +205,12 @@ class DatabaseTracker_TestHelper_Test {
     base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
-        new MockSpecialStoragePolicy;
+    auto special_storage_policy =
+        base::MakeRefCounted<MockSpecialStoragePolicy>();
     special_storage_policy->AddProtected(GURL(kOrigin2Url));
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(
-            temp_dir.GetPath(), incognito_mode, special_storage_policy.get(),
-            nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), incognito_mode, std::move(special_storage_policy),
+        /*quota_manager_proxy=*/nullptr);
 
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
@@ -312,13 +311,12 @@ class DatabaseTracker_TestHelper_Test {
     base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
-        new MockSpecialStoragePolicy;
+    auto special_storage_policy =
+        base::MakeRefCounted<MockSpecialStoragePolicy>();
     special_storage_policy->AddProtected(GURL(kOrigin2Url));
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(
-            temp_dir.GetPath(), incognito_mode, special_storage_policy.get(),
-            nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), incognito_mode, std::move(special_storage_policy),
+        /*quota_manager_proxy=*/nullptr);
 
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
@@ -465,12 +463,10 @@ class DatabaseTracker_TestHelper_Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
     // Initialize the tracker with a QuotaManagerProxy
-    scoped_refptr<TestQuotaManagerProxy> test_quota_proxy(
-        new TestQuotaManagerProxy);
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(temp_dir.GetPath(),
-                                              incognito_mode, nullptr,
-                                              test_quota_proxy.get()));
+    auto test_quota_proxy = base::MakeRefCounted<TestQuotaManagerProxy>();
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), incognito_mode,
+        /*special_storage_policy=*/nullptr, test_quota_proxy);
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -595,13 +591,12 @@ class DatabaseTracker_TestHelper_Test {
     base::FilePath origin1_db_dir;
     base::FilePath origin2_db_dir;
     {
-      scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
-          new MockSpecialStoragePolicy;
+      auto special_storage_policy =
+          base::MakeRefCounted<MockSpecialStoragePolicy>();
       special_storage_policy->AddSessionOnly(GURL(kOrigin2Url));
-      scoped_refptr<DatabaseTracker> tracker(
-          base::MakeRefCounted<DatabaseTracker>(temp_dir.GetPath(), false,
-                                                special_storage_policy.get(),
-                                                nullptr));
+      scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+          temp_dir.GetPath(), false, std::move(special_storage_policy),
+          /*quota_manager_proxy=*/nullptr);
       base::RunLoop run_loop;
       tracker->task_runner()->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -646,9 +641,9 @@ class DatabaseTracker_TestHelper_Test {
     }
 
     // At this point, the database tracker should be gone. Create a new one.
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(temp_dir.GetPath(), false,
-                                              nullptr, nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), /*is_incognito=*/false,
+        /*special_storage_policy=*/nullptr, /*quota_manager_proxy=*/nullptr);
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -690,13 +685,12 @@ class DatabaseTracker_TestHelper_Test {
     base::FilePath origin1_db_dir;
     base::FilePath origin2_db_dir;
     {
-      scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
-          new MockSpecialStoragePolicy;
+      auto special_storage_policy =
+          base::MakeRefCounted<MockSpecialStoragePolicy>();
       special_storage_policy->AddSessionOnly(GURL(kOrigin2Url));
-      scoped_refptr<DatabaseTracker> tracker(
-          base::MakeRefCounted<DatabaseTracker>(temp_dir.GetPath(), false,
-                                                special_storage_policy.get(),
-                                                nullptr));
+      scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+          temp_dir.GetPath(), false, std::move(special_storage_policy),
+          /*quota_manager_proxy=*/nullptr);
       base::RunLoop run_loop;
       tracker->task_runner()->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -743,9 +737,9 @@ class DatabaseTracker_TestHelper_Test {
     }
 
     // At this point, the database tracker should be gone. Create a new one.
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(temp_dir.GetPath(), false,
-                                              nullptr, nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), false, /*special_storage_policy=*/nullptr,
+        /*quota_manager_proxy=*/nullptr);
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -780,9 +774,9 @@ class DatabaseTracker_TestHelper_Test {
     base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(
-            temp_dir.GetPath(), kUseInMemoryTrackerDatabase, nullptr, nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), kUseInMemoryTrackerDatabase,
+        /*special_storage_policy=*/nullptr, /*quota_manager_proxy=*/nullptr);
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -836,9 +830,9 @@ class DatabaseTracker_TestHelper_Test {
     base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    scoped_refptr<DatabaseTracker> tracker(
-        base::MakeRefCounted<DatabaseTracker>(
-            temp_dir.GetPath(), kUseInMemoryTrackerDatabase, nullptr, nullptr));
+    scoped_refptr<DatabaseTracker> tracker = DatabaseTracker::Create(
+        temp_dir.GetPath(), kUseInMemoryTrackerDatabase,
+        /*special_storage_policy=*/nullptr, /*quota_manager_proxy=*/nullptr);
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {

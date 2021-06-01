@@ -1176,13 +1176,12 @@ void StoragePartitionImpl::Initialize(
 
   // Each consumer is responsible for registering its QuotaClient during
   // its construction.
-  filesystem_context_ =
-      CreateFileSystemContext(browser_context_, partition_path_, is_in_memory_,
-                              quota_manager_proxy.get());
+  filesystem_context_ = CreateFileSystemContext(
+      browser_context_, partition_path_, is_in_memory_, quota_manager_proxy);
 
-  database_tracker_ = base::MakeRefCounted<storage::DatabaseTracker>(
+  database_tracker_ = storage::DatabaseTracker::Create(
       partition_path_, is_in_memory_,
-      browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy.get());
+      browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 
   dom_storage_context_ = DOMStorageContextWrapper::Create(
       this, browser_context_->GetSpecialStoragePolicy());
