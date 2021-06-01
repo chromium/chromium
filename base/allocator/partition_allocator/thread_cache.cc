@@ -29,6 +29,9 @@ ThreadCacheRegistry g_instance;
 }
 
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+BASE_EXPORT thread_local ThreadCache* g_thread_cache;
+#endif
 
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
@@ -384,6 +387,18 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
 
   // This may allocate.
   PartitionTlsSet(g_thread_cache_key, tcache);
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+  // |thread_local| variables with destructors cause issues on some platforms.
+  // Since we need a destructor (to empty the thread cache), we cannot use it
+  // directly. However, TLS accesses with |thread_local| are typically faster,
+  // as it can turn into a fixed offset load from a register (GS/FS on Linux
+  // x86, for instance). On Windows, saving/restoring the last error increases
+  // cost as well.
+  //
+  // To still get good performance, use |thread_local| to store a raw pointer,
+  // and rely on the platform TLS to call the destructor.
+  g_thread_cache = tcache;
+#endif  // defined(PA_THREAD_CACHE_FAST_TLS)
 
   return tcache;
 }
@@ -426,6 +441,10 @@ ThreadCache::~ThreadCache() {
 // static
 void ThreadCache::Delete(void* tcache_ptr) {
   auto* tcache = reinterpret_cast<ThreadCache*>(tcache_ptr);
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+  g_thread_cache = nullptr;
+#endif
+
   auto* root = tcache->root_;
   reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
   root->RawFree(tcache_ptr);
@@ -436,7 +455,11 @@ void ThreadCache::Delete(void* tcache_ptr) {
   //
   // TODO(lizeb): Investigate whether this is needed on POSIX as well.
   PartitionTlsSet(g_thread_cache_key, reinterpret_cast<void*>(kTombstone));
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+  g_thread_cache = reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
+
+#endif  // defined(OS_WIN)
 }
 
 ThreadCache::Bucket::Bucket() {

@@ -19,6 +19,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -27,6 +28,20 @@ namespace internal {
 class ThreadCache;
 
 extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
+// On Windows, |thread_local| variables cannot be marked "dllexport", see
+// compiler error C2492 at
+// https://docs.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/compiler-error-c2492?view=msvc-160.
+// Don't use it there.
+//
+// On Android, we have to go through emutls, since this is always a shared
+// library, so don't bother.
+#if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && !defined(OS_ANDROID)
+#define PA_THREAD_CACHE_FAST_TLS
+#endif
+
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+extern BASE_EXPORT thread_local ThreadCache* g_thread_cache;
+#endif
 
 // Global registry of all ThreadCache instances.
 //
@@ -159,7 +174,11 @@ class BASE_EXPORT ThreadCache {
   static void EnsureThreadSpecificDataInitialized();
 
   static ThreadCache* Get() {
+#if defined(PA_THREAD_CACHE_FAST_TLS)
+    return g_thread_cache;
+#else
     return reinterpret_cast<ThreadCache*>(PartitionTlsGet(g_thread_cache_key));
+#endif
   }
 
   static bool IsValid(ThreadCache* tcache) {
