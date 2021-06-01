@@ -7716,7 +7716,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TextFragmentColorChangeBlink"
+                        "TextFragmentColorChange"
                     ]
                 }
             ]
