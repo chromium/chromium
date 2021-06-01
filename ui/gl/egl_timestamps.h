@@ -25,6 +25,7 @@ class GL_EXPORT EGLTimestampClient {
   virtual bool GetFrameTimestampInfoIfAvailable(
       base::TimeTicks* presentation_time,
       base::TimeDelta* composite_interval,
+      base::TimeTicks* writes_done_time,
       uint32_t* presentation_flags,
       int frame_id) = 0;
 };

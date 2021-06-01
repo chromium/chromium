@@ -42,6 +42,11 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
     return input.latch_timestamp;
   }
 
+  static base::TimeTicks writes_done_timestamp(
+      const gfx::PresentationFeedback& input) {
+    return input.writes_done_timestamp;
+  }
+
   static bool Read(gfx::mojom::PresentationFeedbackDataView data,
                    gfx::PresentationFeedback* out) {
     out->flags = data.flags();
@@ -49,7 +54,8 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
            data.ReadInterval(&out->interval) &&
            data.ReadAvailableTimestamp(&out->available_timestamp) &&
            data.ReadReadyTimestamp(&out->ready_timestamp) &&
-           data.ReadLatchTimestamp(&out->latch_timestamp);
+           data.ReadLatchTimestamp(&out->latch_timestamp) &&
+           data.ReadWritesDoneTimestamp(&out->writes_done_timestamp);
   }
 };
 

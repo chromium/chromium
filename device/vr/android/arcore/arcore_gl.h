@@ -237,7 +237,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void SubmitVizFrame(int16_t frame_index,
                       ArCompositorFrameSink::FrameType frame_type);
   void DidNotProduceVizFrame(int16_t frame_index);
-  void OnBeginFrame(const viz::BeginFrameArgs& args);
+  void OnBeginFrame(const viz::BeginFrameArgs& args,
+                    const viz::FrameTimingDetailsMap&);
   void OnReclaimedGpuFenceAvailable(WebXrFrame* frame,
                                     std::unique_ptr<gfx::GpuFence> gpu_fence);
   void ClearRenderingFrame(WebXrFrame* frame);
@@ -336,6 +337,13 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   device::SlidingTimeDeltaAverage average_process_time_;
   device::SlidingTimeDeltaAverage average_render_time_;
 
+  // The rendering time ratio is an estimate of recent GPU utilization that's
+  // reported to blink through the GetFrameData response. If this is greater
+  // than 1.0, it's not possible to hit the target framerate and the application
+  // should reduce its workload. If utilization data is unavailable, it remains
+  // at zero which disables dynamic viewport scaling. (This value is an
+  // instantaneous snapshot and not an average, the blink side is expected to do
+  // its own smoothing when using this data.)
   float rendering_time_ratio_ = 0.0f;
 
   FPSMeter fps_meter_;
