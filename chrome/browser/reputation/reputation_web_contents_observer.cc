@@ -429,8 +429,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
 #if defined(OS_ANDROID)
     if (messages::IsSafetyTipMessagesUiEnabled()) {
       should_call_safety_tip_dialog = false;
-      delegate_.DisplaySafetyTipPrompt(result.safety_tip_status, result.url,
-                                       web_contents(),
+      delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
+                                       result.suggested_url, web_contents(),
                                        std::move(close_callback));
     }
 #endif
@@ -483,8 +483,9 @@ void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
 #if defined(OS_ANDROID)
   if (messages::IsSafetyTipMessagesUiEnabled()) {
     should_call_safety_tip_dialog = false;
-    delegate_.DisplaySafetyTipPrompt(result.safety_tip_status, result.url,
-                                     web_contents(), std::move(close_callback));
+    delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
+                                     result.suggested_url, web_contents(),
+                                     std::move(close_callback));
   }
 #endif
   if (should_call_safety_tip_dialog) {
