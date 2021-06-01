@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -61,7 +62,8 @@ void StartCrashReporter(const std::string& version) {
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  absl::optional<base::FilePath> database_path = GetVersionedDirectory();
+  const absl::optional<base::FilePath> database_path =
+      GetVersionedDirectory(GetUpdaterScope());
   if (!database_path) {
     LOG(DFATAL) << "Failed to get the database path.";
     return;

@@ -217,7 +217,8 @@ void ComServerApp::UninstallSelf() {
 bool ComServerApp::SwapRPCInterfaces() {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
-  absl::optional<base::FilePath> versioned_directory = GetVersionedDirectory();
+  const absl::optional<base::FilePath> versioned_directory =
+      GetVersionedDirectory(updater_scope());
   if (!versioned_directory)
     return false;
   for (const CLSID& clsid : GetActiveServers()) {

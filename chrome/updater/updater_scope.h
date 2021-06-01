@@ -7,9 +7,6 @@
 
 #include <ostream>
 
-#include "base/command_line.h"
-#include "chrome/updater/constants.h"
-
 namespace updater {
 
 // Scope of the service invocation.
@@ -21,12 +18,6 @@ enum class UpdaterScope {
   kSystem = 2,
 };
 
-inline UpdaterScope GetProcessScope() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kSystemSwitch)
-             ? UpdaterScope::kSystem
-             : UpdaterScope::kUser;
-}
-
 inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
@@ -35,6 +26,12 @@ inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
       return os << "System";
   }
 }
+
+// Returns the scope of the updater, which is either per-system or per-user.
+// The updater scope is determined from command line arguments of the process,
+// the presence and content of the --tag argument, and the integrity level
+// of the process, where applicable.
+UpdaterScope GetUpdaterScope();
 
 }  // namespace updater
 

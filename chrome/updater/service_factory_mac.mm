@@ -10,11 +10,11 @@
 namespace updater {
 
 scoped_refptr<UpdateService> CreateUpdateService() {
-  return base::MakeRefCounted<UpdateServiceProxy>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceProxy>(GetUpdaterScope());
 }
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
-  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetUpdaterScope());
 }
 
 }  // namespace updater

@@ -16,6 +16,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
@@ -57,8 +58,10 @@ class AppServerTest : public AppServer {
 };
 
 void ClearPrefs() {
+  const UpdaterScope updater_scope = GetUpdaterScope();
   for (const absl::optional<base::FilePath>& path :
-       {GetBaseDirectory(), GetVersionedDirectory()}) {
+       {GetBaseDirectory(updater_scope),
+        GetVersionedDirectory(updater_scope)}) {
     ASSERT_TRUE(path);
     ASSERT_TRUE(
         base::DeleteFile(path->Append(FILE_PATH_LITERAL("prefs.json"))));

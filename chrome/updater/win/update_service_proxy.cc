@@ -436,9 +436,7 @@ void UpdaterCallback::OnRunOnSTA(LONG status_code) {
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  DCHECK_EQ(updater_scope, UpdaterScope::kUser);
-}
+          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
 UpdateServiceProxy::~UpdateServiceProxy() = default;
 

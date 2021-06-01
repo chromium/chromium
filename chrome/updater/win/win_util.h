@@ -108,6 +108,10 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
+// Returns true if the process is running with elevated privileges of a
+// user in the an administrator group.
+bool IsRunningElevated();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

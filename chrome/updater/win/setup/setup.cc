@@ -122,7 +122,8 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "GetTempDir failed.";
     return -1;
   }
-  absl::optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  const absl::optional<base::FilePath> versioned_dir =
+      GetVersionedDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;

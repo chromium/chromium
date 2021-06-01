@@ -31,12 +31,12 @@ class WRLModuleInitializer {
 
 scoped_refptr<UpdateService> CreateUpdateService() {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<UpdateServiceProxy>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceProxy>(GetUpdaterScope());
 }
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetUpdaterScope());
 }
 
 }  // namespace updater

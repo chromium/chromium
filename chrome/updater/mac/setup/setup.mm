@@ -316,8 +316,8 @@ bool DeleteCandidateInstallFolder(UpdaterScope scope) {
   return DeleteFolder(GetVersionedUpdaterFolderPath(scope));
 }
 
-bool DeleteDataFolder() {
-  return DeleteFolder(GetBaseDirectory());
+bool DeleteDataFolder(UpdaterScope scope) {
+  return DeleteFolder(GetBaseDirectory(scope));
 }
 
 }  // namespace
@@ -434,7 +434,7 @@ int Uninstall(UpdaterScope scope) {
 
   UninstallOtherVersions(scope);
 
-  if (!DeleteDataFolder())
+  if (!DeleteDataFolder(scope))
     return setup_exit_codes::kFailedToDeleteDataFolder;
 
   if (!DeleteInstallFolder(scope))

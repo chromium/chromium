@@ -24,7 +24,7 @@ int InstallUpdater() {
   base::CommandLine command_line(
       test_executable.DirName().AppendASCII("UpdaterSetup.exe"));
   command_line.AppendSwitch(kInstallSwitch);
-  if (GetProcessScope() == UpdaterScope::kSystem)
+  if (GetUpdaterScope() == UpdaterScope::kSystem)
     command_line.AppendSwitch(kSystemSwitch);
   command_line.AppendSwitch("enable-logging");
   command_line.AppendSwitchASCII("--vmodule", "*/updater/*=2");

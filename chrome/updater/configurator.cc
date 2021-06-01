@@ -48,7 +48,7 @@ Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
     : prefs_(std::move(prefs)),
       external_constants_(CreateExternalConstants()),
       activity_data_service_(
-          std::make_unique<ActivityDataService>(GetProcessScope())),
+          std::make_unique<ActivityDataService>(GetUpdaterScope())),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(

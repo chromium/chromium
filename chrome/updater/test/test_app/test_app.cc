@@ -23,6 +23,7 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/update_client.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -139,7 +140,7 @@ int TestAppMain(int argc, const char** argv) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  updater::InitLogging(FILE_PATH_LITERAL("test_app.log"));
+  updater::InitLogging(GetUpdaterScope(), FILE_PATH_LITERAL("test_app.log"));
 
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return MakeTestApp()->Run();

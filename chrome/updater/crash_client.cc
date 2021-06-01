@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -49,13 +50,14 @@ CrashClient* CrashClient::GetInstance() {
   return crash_client.get();
 }
 
-bool CrashClient::InitializeDatabaseOnly() {
+bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  absl::optional<base::FilePath> database_path = GetVersionedDirectory();
+  const absl::optional<base::FilePath> database_path =
+      GetVersionedDirectory(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;
@@ -70,10 +72,10 @@ bool CrashClient::InitializeDatabaseOnly() {
   return true;
 }
 
-bool CrashClient::InitializeCrashReporting() {
+bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!InitializeDatabaseOnly())
+  if (!InitializeDatabaseOnly(updater_scope))
     return false;
 
 #if defined(OS_WIN)

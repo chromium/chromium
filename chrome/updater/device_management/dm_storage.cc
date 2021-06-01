@@ -17,6 +17,7 @@
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -193,8 +194,8 @@ DMStorage::GetOmahaPolicySettings() const {
 }
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  absl::optional<base::FilePath> updater_versioned_path =
-      GetVersionedDirectory();
+  const absl::optional<base::FilePath> updater_versioned_path =
+      GetVersionedDirectory(GetUpdaterScope());
   if (!updater_versioned_path)
     return nullptr;
 

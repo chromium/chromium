@@ -20,6 +20,8 @@
 
 namespace updater {
 
+enum class UpdaterScope;
+
 // Manages the install of one application. Some of the functions of this
 // class are blocking and can't be invoked on the main sequence.
 //
@@ -97,6 +99,8 @@ class Installer final : public update_client::CrxInstaller {
   absl::optional<base::FilePath> GetCurrentInstallDir() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  UpdaterScope updater_scope_;
 
   const std::string app_id_;
   scoped_refptr<PersistedData> persisted_data_;

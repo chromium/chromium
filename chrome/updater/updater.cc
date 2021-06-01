@@ -20,6 +20,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/crash/core/common/crash_key.h"
@@ -48,13 +49,14 @@
 //   arguments for --install.
 
 namespace updater {
-
 namespace {
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
-void InitLogging(const base::CommandLine& command_line) {
+void InitLogging(UpdaterScope updater_scope,
+                 const base::CommandLine& command_line) {
   logging::LoggingSettings settings;
-  absl::optional<base::FilePath> log_dir = GetBaseDirectory();
+  const absl::optional<base::FilePath> log_dir =
+      GetBaseDirectory(updater_scope);
   if (!log_dir) {
     LOG(ERROR) << "Error getting base dir.";
     return;
@@ -71,12 +73,12 @@ void InitLogging(const base::CommandLine& command_line) {
           << settings.log_file_path;
 }
 
-void InitializeCrashReporting() {
+void InitializeCrashReporting(UpdaterScope updater_scope) {
   crash_reporter::InitializeCrashKeys();
   static crash_reporter::CrashKeyString<16> crash_key_process_type(
       "process_type");
   crash_key_process_type.Set("updater");
-  if (CrashClient::GetInstance()->InitializeCrashReporting())
+  if (CrashClient::GetInstance()->InitializeCrashReporting(updater_scope))
     VLOG(1) << "Crash reporting initialized.";
   else
     VLOG(1) << "Crash reporting is not available.";
@@ -135,17 +137,18 @@ int UpdaterMain(int argc, const char* const* argv) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  VLOG(1) << "Command line: " << command_line->GetCommandLineString();
+
   if (command_line->HasSwitch(kTestSwitch))
     return 0;
 
-  InitLogging(*command_line);
-
-  VLOG(1) << "Command line: " << command_line->GetCommandLineString();
+  const UpdaterScope updater_scope = GetUpdaterScope();
+  InitLogging(updater_scope, *command_line);
   if (command_line->HasSwitch(kCrashHandlerSwitch))
     return CrashReporterMain();
-
-  InitializeCrashReporting();
+  InitializeCrashReporting(updater_scope);
 
   const int retval = HandleUpdaterCommands(command_line);
   DVLOG(1) << __func__ << " returned " << retval << ".";

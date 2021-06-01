@@ -13,7 +13,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace tagging {
 
 // This struct contains the attributes for a given app parsed from a part of the
@@ -223,7 +222,6 @@ ErrorCode Parse(base::StringPiece tag,
                 TagArgs* args);
 
 }  // namespace tagging
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_TAG_H_

@@ -77,7 +77,8 @@ void DeleteComInterfaces(HKEY root) {
 }
 
 int RunUninstallScript(bool uninstall_all) {
-  absl::optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  const absl::optional<base::FilePath> versioned_dir =
+      GetVersionedDirectory(UpdaterScope());
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;
@@ -89,7 +90,8 @@ int RunUninstallScript(bool uninstall_all) {
   if (!size || size >= MAX_PATH)
     return -1;
 
-  base::FilePath script_path = versioned_dir->AppendASCII(kUninstallScript);
+  const base::FilePath script_path =
+      versioned_dir->AppendASCII(kUninstallScript);
 
   std::wstring cmdline = cmd_path;
   base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",

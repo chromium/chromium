@@ -358,8 +358,26 @@ base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
 
 bool PathOwnedByUser(const base::FilePath& path) {
   // TODO(crbug.com/1147094): Implement for Win.
-
   return true;
+}
+
+// TODO(crbug.com/1212187): maybe handle filtered tokens.
+bool IsRunningElevated() {
+  SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
+  PSID administrators_group = nullptr;
+  if (!::AllocateAndInitializeSid(&nt_authority, 2, SECURITY_BUILTIN_DOMAIN_RID,
+                                  DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0,
+                                  &administrators_group)) {
+    return false;
+  }
+
+  BOOL result = false;
+  if (!::CheckTokenMembership(NULL, administrators_group, &result)) {
+    result = false;
+  }
+  ::FreeSid(administrators_group);
+
+  return result;
 }
 
 }  // namespace updater

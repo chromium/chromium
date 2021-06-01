@@ -11,7 +11,6 @@
 #include "base/strings/string_piece.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -54,11 +53,7 @@ class App : public base::RefCountedThreadSafe<App> {
   // will exit with the specified code.
   void Shutdown(int exit_code);
 
-  // The scope in which the updater is running. This is determined from
-  // the command line arguments, including the tag arguments.
   UpdaterScope updater_scope() const;
-
-  absl::optional<tagging::TagArgs> tag_args() const;
 
  private:
   // Allows initialization of the thread pool for specific environments, in
@@ -78,11 +73,8 @@ class App : public base::RefCountedThreadSafe<App> {
   // A callback that quits the main sequence runloop.
   base::OnceCallback<void(int)> quit_;
 
-  // Indicates the presence of --system on the command line.
-  const UpdaterScope process_scope_;
-
-  // Contains the tag if a tag is present on the command line.
-  const absl::optional<tagging::TagArgs> tag_args_;
+  // Indicates the scope of the updater: per-system or per-user.
+  const UpdaterScope updater_scope_;
 };
 
 }  // namespace updater

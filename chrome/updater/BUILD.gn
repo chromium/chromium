@@ -110,6 +110,7 @@ if (is_win || is_mac) {
       "update_service_internal_impl_inactive.h",
       "updater.cc",
       "updater.h",
+      "updater_scope.cc",
       "updater_scope.h",
       "util.cc",
       "util.h",

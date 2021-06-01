@@ -11,14 +11,14 @@
 
 namespace updater {
 
-TEST(UpdaterScope, GetProcessScope) {
+TEST(UpdaterScope, GetUpdaterScope) {
   base::test::ScopedCommandLine original_command_line;
   {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->RemoveSwitch(kSystemSwitch);
-    DCHECK_EQ(GetProcessScope(), UpdaterScope::kUser);
+    DCHECK_EQ(GetUpdaterScope(), UpdaterScope::kUser);
     command_line->AppendSwitch(kSystemSwitch);
-    DCHECK_EQ(GetProcessScope(), UpdaterScope::kSystem);
+    DCHECK_EQ(GetUpdaterScope(), UpdaterScope::kSystem);
   }
 }
 

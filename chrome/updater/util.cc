@@ -11,6 +11,8 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -22,7 +24,6 @@
 #endif
 
 namespace updater {
-
 namespace {
 
 const char kHexString[] = "0123456789ABCDEF";
@@ -85,8 +86,7 @@ std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
 
 }  // namespace
 
-absl::optional<base::FilePath> GetBaseDirectory() {
-  UpdaterScope scope = GetProcessScope();
+absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> app_data_dir;
 #if defined(OS_WIN)
   base::FilePath path;
@@ -115,8 +115,8 @@ absl::optional<base::FilePath> GetBaseDirectory() {
   return product_data_dir;
 }
 
-absl::optional<base::FilePath> GetVersionedDirectory() {
-  absl::optional<base::FilePath> product_dir = GetBaseDirectory();
+absl::optional<base::FilePath> GetVersionedDirectory(UpdaterScope scope) {
+  const absl::optional<base::FilePath> product_dir = GetBaseDirectory(scope);
   if (!product_dir) {
     LOG(ERROR) << "Failed to get the base directory.";
     return absl::nullopt;
@@ -131,6 +131,25 @@ absl::optional<base::FilePath> GetVersionedDirectory() {
   return versioned_dir;
 }
 
+absl::optional<tagging::TagArgs> GetTagArgs() {
+  static const absl::optional<tagging::TagArgs> tag_args =
+      []() -> absl::optional<tagging::TagArgs> {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
+    if (tag.empty())
+      return absl::nullopt;
+    tagging::TagArgs tag_args;
+    const tagging::ErrorCode error =
+        tagging::Parse(tag, absl::nullopt, &tag_args);
+    VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
+        << "Tag parsing returned " << error << ".";
+    return error == tagging::ErrorCode::kSuccess ? absl::make_optional(tag_args)
+                                                 : absl::nullopt;
+  }();
+
+  return tag_args;
+}
+
 base::CommandLine MakeElevated(base::CommandLine command_line) {
 #if defined(OS_MAC)
   command_line.PrependWrapper("/usr/bin/sudo");
@@ -139,9 +158,11 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 }
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
-void InitLogging(const base::FilePath::StringType& filename) {
+void InitLogging(UpdaterScope updater_scope,
+                 const base::FilePath::StringType& filename) {
   logging::LoggingSettings settings;
-  absl::optional<base::FilePath> log_dir = GetBaseDirectory();
+  const absl::optional<base::FilePath> log_dir =
+      GetBaseDirectory(updater_scope);
   if (!log_dir) {
     LOG(ERROR) << "Error getting base dir.";
     return;

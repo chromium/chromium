@@ -27,6 +27,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -144,8 +145,8 @@ void AppInstall::WakeCandidate() {
 }
 
 void AppInstall::MaybeInstallApp() {
-  const std::string app_id = [this]() {
-    absl::optional<tagging::TagArgs> tag_args = this->tag_args();
+  const std::string app_id = []() {
+    absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
     if (tag_args && !tag_args->apps.empty()) {
       // TODO(crbug.com/1128631): support bundles. For now, assume one app.
       DCHECK_EQ(tag_args->apps.size(), size_t{1});

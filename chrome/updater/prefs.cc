@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/updater/prefs_impl.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -72,7 +73,8 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
   if (!lock)
     return nullptr;
 
-  absl::optional<base::FilePath> global_prefs_dir = GetBaseDirectory();
+  const absl::optional<base::FilePath> global_prefs_dir =
+      GetBaseDirectory(GetUpdaterScope());
   if (!global_prefs_dir)
     return nullptr;
   VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
@@ -92,7 +94,8 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
 }
 
 std::unique_ptr<LocalPrefs> CreateLocalPrefs() {
-  absl::optional<base::FilePath> local_prefs_dir = GetVersionedDirectory();
+  const absl::optional<base::FilePath> local_prefs_dir =
+      GetVersionedDirectory(GetUpdaterScope());
   if (!local_prefs_dir)
     return nullptr;
 

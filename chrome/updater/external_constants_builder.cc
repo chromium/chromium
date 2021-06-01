@@ -10,6 +10,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,7 +73,8 @@ ExternalConstantsBuilder::ClearServerKeepAliveSeconds() {
 }
 
 bool ExternalConstantsBuilder::Overwrite() {
-  absl::optional<base::FilePath> base_path = GetBaseDirectory();
+  const absl::optional<base::FilePath> base_path =
+      GetBaseDirectory(GetUpdaterScope());
   if (!base_path) {
     LOG(ERROR) << "Can't find base directory; can't save constant overrides.";
     return false;
