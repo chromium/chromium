@@ -5,31 +5,40 @@
 #ifndef COMPONENTS_VARIATIONS_PREF_NAMES_H_
 #define COMPONENTS_VARIATIONS_PREF_NAMES_H_
 
+#include "base/component_export.h"
+
 namespace variations {
 namespace prefs {
 
 // Alphabetical list of preference names specific to the variations component.
 // Keep alphabetized and document each in the .cc file.
 
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kDeviceVariationsRestrictionsByPolicy[];
-extern const char kVariationsCompressedSeed[];
-extern const char kVariationsCountry[];
-extern const char kVariationsCrashStreak[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsCompressedSeed[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsCountry[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsCrashStreak[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsFailedToFetchSeedStreak[];
-extern const char kVariationsLastFetchTime[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsLastFetchTime[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsPermanentConsistencyCountry[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsPermanentOverriddenCountry[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsRestrictionsByPolicy[];
-extern const char kVariationsRestrictParameter[];
-extern const char kVariationsSafeCompressedSeed[];
-extern const char kVariationsSafeSeedDate[];
-extern const char kVariationsSafeSeedFetchTime[];
-extern const char kVariationsSafeSeedLocale[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsRestrictParameter[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeCompressedSeed[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedDate[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedFetchTime[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedLocale[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsSafeSeedPermanentConsistencyCountry[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsSafeSeedSessionConsistencyCountry[];
-extern const char kVariationsSafeSeedSignature[];
-extern const char kVariationsSeedDate[];
-extern const char kVariationsSeedSignature[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedSignature[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedDate[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedSignature[];
 
 }  // namespace prefs
 }  // namespace variations

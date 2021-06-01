@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -29,7 +30,7 @@ class ProcessedStudy;
 struct ClientFilterableState;
 
 // Helper class to instantiate field trials from a variations seed.
-class VariationsSeedProcessor {
+class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
  public:
   using UIStringOverrideCallback =
       base::RepeatingCallback<void(uint32_t, const std::u16string&)>;

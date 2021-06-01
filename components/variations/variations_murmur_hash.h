@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/strings/string_piece.h"
 
 namespace variations {
@@ -16,7 +17,7 @@ namespace internal {
 
 // Hash utilities for NormalizedMurmurHashEntropyProvider. For more info, see:
 // https://docs.google.com/document/d/1cPF5PruriWNP2Z5gSkq4MBTm0wSZqLyIJkUO9ekibeo
-class VariationsMurmurHash {
+class COMPONENT_EXPORT(VARIATIONS) VariationsMurmurHash {
  public:
   // Prepares data to be hashed by VariationsMurmurHash: align and zero-pad to a
   // multiple of 4 bytes, and produce the same uint32_t values regardless of

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -32,7 +33,7 @@ class VariationsClient;
 // (i) VariationsIDs associated with external experiments, which can be sent
 // only for signed-in users and (ii) VariationsIDs that can be sent in first-
 // and third-party contexts.
-struct VariationsHeaderKey {
+struct COMPONENT_EXPORT(VARIATIONS) VariationsHeaderKey {
   bool is_signed_in;
   Study_GoogleWebVisibility web_visibility;
 
@@ -43,10 +44,11 @@ struct VariationsHeaderKey {
 // A helper class for maintaining client experiments and metrics state
 // transmitted in custom HTTP request headers.
 // This class is a thread-safe singleton.
-class VariationsIdsProvider : public base::FieldTrialList::Observer,
-                              public SyntheticTrialObserver {
+class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
+    : public base::FieldTrialList::Observer,
+      public SyntheticTrialObserver {
  public:
-  class Observer {
+  class COMPONENT_EXPORT(VARIATIONS) Observer {
    public:
     // Called when variation ids headers are updated.
     virtual void VariationIdsHeaderUpdated() = 0;

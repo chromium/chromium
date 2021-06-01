@@ -88,18 +88,21 @@ enum IDCollectionKey {
 // the trial and append groups) and needs to have a variations::VariationID
 // associated with it so Google servers can recognize the FieldTrial.
 // Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 const std::string& trial_name,
                                 const std::string& group_name,
                                 VariationID id);
 
 // As above, but overwrites any previously set id. Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationIDForce(IDCollectionKey key,
                                      const std::string& trial_name,
                                      const std::string& group_name,
                                      VariationID id);
 
 // As above, but takes an ActiveGroupId hash pair, rather than the string names.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
                                            const ActiveGroupId& active_group,
                                            VariationID id);
@@ -110,47 +113,57 @@ void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
 // for the named group. This API can be nicely combined with
 // FieldTrial::GetActiveFieldTrialGroups() to enumerate the variation IDs for
 // all active FieldTrial groups. Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationID(IDCollectionKey key,
                                  const std::string& trial_name,
                                  const std::string& group_name);
 
 // Same as GetGoogleVariationID(), but takes in a hashed |active_group| rather
 // than the string trial and group name.
+COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationIDFromHashes(IDCollectionKey key,
                                            const ActiveGroupId& active_group);
 
 // Deprecated. Use base::AssociateFieldTrialParams() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool AssociateVariationParams(const std::string& trial_name,
                               const std::string& group_name,
                               const std::map<std::string, std::string>& params);
 
 // Deprecated. Use base::GetFieldTrialParams() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParams(const std::string& trial_name,
                         std::map<std::string, std::string>* params);
 
 // Deprecated. Use base::GetFieldTrialParamsByFeature() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParamsByFeature(const base::Feature& feature,
                                  std::map<std::string, std::string>* params);
 
 // Deprecated. Use base::GetFieldTrialParamValue() instead.
+COMPONENT_EXPORT(VARIATIONS)
 std::string GetVariationParamValue(const std::string& trial_name,
                                    const std::string& param_name);
 
 // Deprecated. Use base::GetFieldTrialParamValueByFeature() instead.
+COMPONENT_EXPORT(VARIATIONS)
 std::string GetVariationParamValueByFeature(const base::Feature& feature,
                                             const std::string& param_name);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsInt() instead.
+COMPONENT_EXPORT(VARIATIONS)
 int GetVariationParamByFeatureAsInt(const base::Feature& feature,
                                     const std::string& param_name,
                                     int default_value);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsDouble() instead.
+COMPONENT_EXPORT(VARIATIONS)
 double GetVariationParamByFeatureAsDouble(const base::Feature& feature,
                                           const std::string& param_name,
                                           double default_value);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsBool() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParamByFeatureAsBool(const base::Feature& feature,
                                       const std::string& param_name,
                                       bool default_value);
@@ -160,11 +173,11 @@ namespace testing {
 
 // Clears all of the mapped associations. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
-void ClearAllVariationIDs();
+COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationIDs();
 
 // Clears all of the associated params. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
-void ClearAllVariationParams();
+COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationParams();
 
 }  // namespace testing
 

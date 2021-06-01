@@ -5,20 +5,31 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_SWITCHES_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_SWITCHES_H_
 
+#include "base/component_export.h"
+
 namespace variations {
 namespace switches {
 
 // Alphabetical list of switches specific to the variations component. Document
 // each in the .cc file.
 
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableFieldTrialTestingConfig[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableBenchmarking[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kFakeVariationsChannel[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceFieldTrialParams[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceVariationIds[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceDisableVariationIds[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsOverrideCountry[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsServerURL[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsInsecureServerURL[];
 
 }  // namespace switches

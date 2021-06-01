@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/variations/active_field_trials.h"
 
@@ -18,7 +19,7 @@ namespace variations {
 // A Field Trial and its selected group, which represent a particular
 // Chrome configuration state. For example, the trial name could map to
 // a preference name, and the group name could map to a preference value.
-struct SyntheticTrialGroup {
+struct COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
  public:
   SyntheticTrialGroup(uint32_t trial, uint32_t group);
   ~SyntheticTrialGroup();
@@ -31,7 +32,7 @@ struct SyntheticTrialGroup {
 };
 
 // Interface class to observe changes to synthetic trials in MetricsService.
-class SyntheticTrialObserver {
+class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialObserver {
  public:
   // Called when the list of synthetic field trial groups has changed.
   virtual void OnSyntheticTrialsChanged(
