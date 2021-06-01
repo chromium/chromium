@@ -1995,7 +1995,12 @@ class OopTextBlobPixelTest
 };
 
 TEST_P(OopTextBlobPixelTest, Config) {
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  // Broken on emulators: https://crbug.com/1189284
+  GTEST_SKIP();
+#else
   RunTest();
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
