@@ -68,7 +68,7 @@ TEST_F('WelcomeSigninViewTest', 'All', function() {
 var WelcomeNavigationBehaviorTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://welcome/test_loader.html?module=welcome/navigation_behavior_test.js';
+    return 'chrome://welcome/test_loader.html?module=welcome/navigation_mixin_test.js';
   }
 };
 

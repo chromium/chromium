@@ -12,7 +12,7 @@ import '../strings.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationMixin} from './navigation_behavior.js';
+import {NavigationMixin} from './navigation_mixin.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';

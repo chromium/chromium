@@ -5,7 +5,7 @@
 import 'chrome://welcome/welcome_app.js';
 
 import {LandingViewProxyImpl} from 'chrome://welcome/landing_view_proxy.js';
-import {navigateTo, Routes} from 'chrome://welcome/navigation_behavior.js';
+import {navigateTo, Routes} from 'chrome://welcome/navigation_mixin.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
