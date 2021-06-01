@@ -2546,7 +2546,7 @@ String AXNodeObject::GetValueForControl() const {
     // We don't retrieve the element's value attribute on purpose. The value
     // attribute might be sanitized and might be different from what is actually
     // displayed inside the <select> element on screen.
-    return select_element->InnerElement().innerText();
+    return select_element->InnerElement().GetInnerTextWithoutUpdate();
   }
 
   if (IsAtomicTextField()) {
@@ -3047,7 +3047,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
 String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
                                          bool recursive) const {
   if (!CanHaveChildren())
-    return recursive ? String() : GetElement()->innerText();
+    return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
 
   StringBuilder accumulated_text;
   AXObject* previous = nullptr;
