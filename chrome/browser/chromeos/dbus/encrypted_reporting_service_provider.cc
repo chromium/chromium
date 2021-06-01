@@ -180,9 +180,10 @@ void EncryptedReportingServiceProvider::UploadHelper::
             if (!self) {
               return;  // Provider expired
             }
-            self->build_cloud_policy_client_cb_.Run(
+            self->build_cloud_policy_client_cb_.Run(base::BindPostTask(
+                self->sequenced_task_runner_,
                 base::BindOnce(&UploadHelper::OnCloudPolicyClientResult,
-                               self->weak_ptr_factory_.GetWeakPtr()));
+                               self->weak_ptr_factory_.GetWeakPtr())));
           },
           weak_ptr_factory_.GetWeakPtr()),
       backoff_entry_->GetTimeUntilRelease());
