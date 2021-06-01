@@ -2575,6 +2575,7 @@
 <translation id="3742666961763734085">ಆ ಹೆಸರಿನ ಸಾಂಸ್ಥಿಕ ಘಟಕವನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3744111561329211289">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="3747077776423672805">ಆ್ಯಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; Google Play ಸ್ಟೋರ್ &gt; Android ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ&gt; ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್ ನಿರ್ವಾಹಕಕ್ಕೆ ಹೋಗಿ ನಂತರ ನೀವು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುವ ಆ್ಯಪ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ (ಆ್ಯಪ್ ಹುಡುಕಲು ನಿಮಗೆ ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡುವ ಅಗತ್ಯವಿರಬಹುದು). ನಂತರ ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಅಥವಾ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="3747220812138541072">ನೀವು ಟೈಪ್ ಮಾಡುವಾಗ ಗೋಚರಿಸುವ ಇನ್‌ಲೈನ್‌ ಬರವಣಿಗೆಯ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3748706263662799310">ಬಗ್ ವರದಿ ಮಾಡಿ</translation>
 <translation id="3752582316358263300">ಸರಿ...</translation>
 <translation id="3753033997400164841">ಒಮ್ಮೆ ಸಂಗ್ರಹಿಸಿ. ಎಲ್ಲೆಡೆ ಬಳಸಿ</translation>
@@ -3263,6 +3264,7 @@
 <translation id="4510614391273086606">Linux ಫೈಲ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು, ಅವುಗಳ ಬ್ಯಾಕಪ್ ಮಾಡಲಾದ ಸ್ಥಿತಿಗೆ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="451102079304155829">ಕಾರ್ಟ್‌ಗಳು</translation>
 <translation id="4513275008300099962">ವಿಂಡೋ ನಿಯಂತ್ರಣಗಳ ಓವರ್‌ಲೇಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="4513872120116766993">ಮುನ್ಸೂಚಕ ಬರವಣಿಗೆ</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> ಮೂಲಕ ಸಂಚಾಲಿತಗೊಂಡಿದೆ</translation>
 <translation id="4514610446763173167">ಪ್ಲೇ ಮಾಡಲು ಅಥವಾ ವಿರಾಮಗೊಳಿಸಲು ವೀಡಿಯೊವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
@@ -4428,6 +4430,7 @@
 <translation id="5826395379250998812">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು, ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">ಸೆಮಿ-ಟ್ರಾನ್ಸ್‌ಪರೆಂಟ್</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">ಮುಂದಿನ ಪದದ ಮುನ್ನೋಟಗಳು</translation>
 <translation id="5828545842856466741">ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ...</translation>
 <translation id="5828633471261496623">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5830720307094128296">&amp;ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
@@ -6298,6 +6301,7 @@
 <translation id="78526636422538552">ಹೆಚ್ಚಿನ Google ಖಾತೆಗಳ ಸೇರಿಸುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7853747251428735">ಇನ್ನಷ್ಟು ಪರಿಕರ&amp;ಗಳು</translation>
 <translation id="7855678561139483478">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
+<translation id="7857093393627376423">ಪಠ್ಯ ಸಲಹೆಗಳು</translation>
 <translation id="7857117644404132472">ವಿನಾಯಿತಿ ಸೇರಿಸು</translation>
 <translation id="7857949311770343000">ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವುದು ಈ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವೇ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>

@@ -492,6 +492,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6066301408025741299">ប៉ះដើម្បីបោះបង់</translation>
 <translation id="60829778314739003">ទទួលយក និងបន្ត</translation>
+<translation id="6084848228346514841">ជ្រើសរើស​ផ្ទាំង</translation>
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6119050551270742952">ទំព័របណ្ដាញ​បច្ចុប្បន្ន​ស្ថិតនៅក្នុងមុខងារឯកជន</translation>
 <translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
@@ -782,6 +783,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
 <translation id="8840513115188359703">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។</translation>
+<translation id="8868471676553493380">{count,plural, =1{ផ្ទាំង {count}}other{ផ្ទាំង {count}}}</translation>
 <translation id="8870413625673593573">បានបិទកន្លងទៅថ្មីៗ</translation>
 <translation id="8876882697946675716">បន្តឱ្យ​ឧបករណ៍​របស់អ្នក​ធ្វើសមកាលកម្ម</translation>
 <translation id="8881801611828450202">ស្វែងរក​រួបភាពនេះ​នៅលើ <ph name="SEARCH_ENGINE" /></translation>

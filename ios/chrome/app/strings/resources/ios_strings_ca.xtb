@@ -492,6 +492,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6066301408025741299">Toca per cancel·lar.</translation>
 <translation id="60829778314739003">Accepta i continua</translation>
+<translation id="6084848228346514841">Selecciona pestanyes</translation>
 <translation id="6108923351542677676">Configuració en curs...</translation>
 <translation id="6119050551270742952">La pàgina web actual està en mode d'incògnit</translation>
 <translation id="6122191549521593678">En línia</translation>
@@ -782,6 +783,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8840513115188359703">No se us tancarà la sessió del compte de Google.</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>

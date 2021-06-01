@@ -492,6 +492,7 @@
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
 <translation id="60829778314739003">接受並繼續</translation>
+<translation id="6084848228346514841">選取分頁</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6119050551270742952">目前的網頁處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -782,6 +783,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓你的裝置保持同步</translation>
 <translation id="8881801611828450202">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>

@@ -492,6 +492,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6066301408025741299">Appuyez sur l'écran pour annuler.</translation>
 <translation id="60829778314739003">Accepter et continuer</translation>
+<translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6108923351542677676">Configuration en cours…</translation>
 <translation id="6119050551270742952">La page Web actuelle est en mode navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -783,6 +784,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="8870413625673593573">Récemment fermés</translation>
 <translation id="8876882697946675716">Synchroniser vos appareils</translation>
 <translation id="8881801611828450202">Chercher cette image sur <ph name="SEARCH_ENGINE" /></translation>

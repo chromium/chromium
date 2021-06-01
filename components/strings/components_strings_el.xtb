@@ -735,6 +735,7 @@
 <translation id="3631244953324577188">Βιομετρικά</translation>
 <translation id="3633738897356909127">Κουμπί ενημέρωσης Chrome, πατήστε Enter για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome.</translation>
 <translation id="3634530185120165534">Δίσκος 5</translation>
+<translation id="3637662659967048211">Αποθήκευση στον Λογαριασμό Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Εφαρμογή:</translation>
 <translation id="3650584904733503804">Επιτυχής επικύρωση</translation>
@@ -1415,6 +1416,7 @@
 <translation id="6106989379647458772">Η ιστοσελίδα στη διεύθυνση <ph name="PAGE" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε μια νέα διεύθυνση ιστού.</translation>
 <translation id="6107012941649240045">Εκδόθηκε σε</translation>
 <translation id="610911394827799129">Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="6113594885686374546">Κουμπί Συνέχιση διαδρομής, πατήστε Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
 <translation id="6120179357481664955">Θυμάστε το αναγνωριστικό UPI;</translation>
 <translation id="6123290840358279103">Προβολή εικονικής κάρτας</translation>
@@ -1490,6 +1492,7 @@
 <translation id="6423385022588644828">Επιβεβαιώστε πιο γρήγορα τις κάρτες σας, χρησιμοποιώντας το Touch ID από εδώ και στο εξής</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Δίπλωση παράθυρο</translation>
+<translation id="6428146287756735566">Συνέχιση διαδρομής για προβολή σχετική δραστηριότητας στο Ιστορικό Chrome</translation>
 <translation id="6428450836711225518">Επαλήθευση του αριθμού τηλεφώνου σας</translation>
 <translation id="6433490469411711332">Επεξεργασία στοιχείων επαφής</translation>
 <translation id="6433595998831338502">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> απέρριψε τη σύνδεση.</translation>
@@ -1541,6 +1544,7 @@
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6645291930348198241">Πρόσβαση σε cookie και δεδομένα ιστοτόπου.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Κανένας}=1{Από 1 ιστότοπο (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}other{Από # ιστοτόπους (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}}</translation>
+<translation id="6647197322759179819">Συνέχιση διαδρομής</translation>
 <translation id="6648459603387803038">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.</translation>
 <translation id="6648524591329069940">Γραμματοσειρά Serif</translation>
 <translation id="6651270836885078973">Η διαχείριση γίνεται από:</translation>
@@ -2195,6 +2199,7 @@
 <translation id="9114524666733003316">Επιβεβαίωση κάρτας…</translation>
 <translation id="9114581008513152754">Αυτός ο ιστότοπος δεν είναι διαχειριζόμενος από κάποια εταιρεία ή άλλον οργανισμό. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί να πραγματοποιηθεί εκτός Chrome. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">Φρέσκο</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
 <translation id="9119042192571987207">Έγινε μεταφόρτωση</translation>
 <translation id="9128016270925453879">Οι πολιτικές φορτώθηκαν</translation>
 <translation id="9128870381267983090">Σύνδεση σε δίκτυο</translation>

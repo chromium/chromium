@@ -3865,6 +3865,10 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       In caso contrario, gli indirizzi IP locali vengono nascosti tramite nomi host mDNS.
       Tieni presente che questo criterio riduce la sicurezza degli indirizzi IP locali se richiesto dagli amministratori.</translation>
 <translation id="614662973812186053">Questa norma controlla anche la raccolta dei dati diagnostici e sull'utilizzo di Android.</translation>
+<translation id="6154509171634387825">Avviso: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (indicativamente a ottobre 2021); in quel momento, questo criterio smetterà di funzionare.
+
+      Se il criterio viene impostato su vero, le suite di crittografia 3DES in TLS verranno attivate. Se viene impostato su falso, verranno disattivate. Se il criterio non viene configurato, le suite di crittografia 3DES sono disattivate per impostazione predefinita. Questo criterio potrebbe essere usato per mantenere momentaneamente la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
+      </translation>
 <translation id="6155350825868160236">Consenti all'utente di decidere se usare o meno servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="6155936611791017817">Impostazione stato predefinito del puntatore grande nella schermata di accesso</translation>
 <translation id="6157537876488211233">Elenco separato da virgole delle regole di bypass proxy</translation>
