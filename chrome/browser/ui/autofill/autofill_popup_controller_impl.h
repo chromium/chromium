@@ -105,7 +105,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
-  const std::u16string& GetSuggestionValueAt(int row) const override;
+  std::u16string GetSuggestionMainTextAt(int row) const override;
+  std::u16string GetSuggestionMinorTextAt(int row) const override;
   const std::u16string& GetSuggestionLabelAt(int row) const override;
   bool GetRemovalConfirmationText(int list_index,
                                   std::u16string* title,

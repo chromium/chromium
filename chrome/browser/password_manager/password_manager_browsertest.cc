@@ -3845,8 +3845,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   controller = autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);
   EXPECT_EQ(2, controller->GetLineCount());
-  EXPECT_EQ(u"user", controller->GetSuggestionValueAt(0));
-  EXPECT_NE(u"admin", controller->GetSuggestionValueAt(1));
+  EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
+  EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
 
   // The username_field should get re-filled with "user" instead of "admin".
   WaitForElementValue("username_field", "user");

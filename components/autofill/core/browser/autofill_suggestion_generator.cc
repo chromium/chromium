@@ -7,9 +7,11 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -50,6 +52,7 @@ AutofillSuggestionGenerator::AutofillSuggestionGenerator(
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
+    const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillType& type,
     const std::string& app_locale) {
@@ -86,73 +89,23 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
             type, credit_card->record_type() == CreditCard::MASKED_SERVER_CARD,
             &prefix_matched_suggestion)) {
-      // Make a new suggestion.
-      suggestions.emplace_back(Suggestion());
-      Suggestion* suggestion = &suggestions.back();
-
-      suggestion->value = credit_card->GetInfo(type, app_locale);
-      suggestion->icon = credit_card->CardIconStringForAutofillSuggestion();
-      suggestion->backend_id = credit_card->guid();
-      suggestion->match = prefix_matched_suggestion
-                              ? Suggestion::PREFIX_MATCH
-                              : Suggestion::SUBSTRING_MATCH;
-
-      // Get the nickname for the card suggestion, which may not be the same as
-      // the card's nickname if there are duplicates of the card on file.
-      std::u16string suggestion_nickname =
-          GetDisplayNicknameForCreditCard(*credit_card);
-
-      // If the value is the card number, the label is the expiration date.
-      // Otherwise the label is the card number, or if that is empty the
-      // cardholder name. The label should never repeat the value.
-      if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-        suggestion->value = credit_card->CardIdentifierStringForAutofillDisplay(
-            suggestion_nickname);
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-        suggestion->label = credit_card->GetInfo(
-            AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
-#else
-        suggestion->label = credit_card->DescriptiveExpiration(app_locale);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
-
-      } else if (credit_card->number().empty()) {
-        DCHECK_EQ(credit_card->record_type(), CreditCard::LOCAL_CARD);
-        if (credit_card->HasNonEmptyValidNickname()) {
-          suggestion->label = credit_card->nickname();
-        } else if (type.GetStorableType() != CREDIT_CARD_NAME_FULL) {
-          suggestion->label = credit_card->GetInfo(
-              AutofillType(CREDIT_CARD_NAME_FULL), app_locale);
-        }
-      } else {
-#if defined(OS_ANDROID)
-        // On Android devices, the label is formatted as
-        // "Nickname/Network  ••••1234" when the keyboard accessory experiment
-        // is disabled and as "••••1234" when it's enabled.
-        suggestion->label =
-            base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)
-                ? credit_card->ObfuscatedLastFourDigits()
-                : credit_card->CardIdentifierStringForAutofillDisplay(
-                      suggestion_nickname);
-#elif defined(OS_IOS)
-        // E.g. "••••1234"".
-        suggestion->label = credit_card->ObfuscatedLastFourDigits();
-#else
-        // E.g. "Nickname/Network  ••••1234, expires on 01/25".
-        suggestion->label =
-            credit_card->CardIdentifierStringAndDescriptiveExpiration(
-                app_locale);
-#endif
+      // If the card is enrolled in virtual card, add a new suggestion option
+      // for it above its original suggestion.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableMerchantBoundVirtualCards) &&
+          credit_card->virtual_card_enrollment_state() ==
+              CreditCard::ENROLLED &&
+          (!base::FeatureList::IsEnabled(
+               features::kAutofillSuggestVirtualCardsOnlyOnFullFormDetection) ||
+           IsCompleteCreditCardFormIncludingCvcField(form_structure))) {
+        suggestions.push_back(CreateCreditCardSuggestion(
+            *credit_card, type, prefix_matched_suggestion,
+            /*virtual_card_option=*/true, app_locale));
       }
-#if defined(OS_ANDROID)
-      // Set the IPH feature in order to show the IPH bubble when the virtual
-      // card is presented in the keyboard accessory.
-      if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
-        suggestion->feature_for_iph =
-            feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature
-                .name;
-      }
-#endif  // OS_ANDROID
+
+      suggestions.push_back(CreateCreditCardSuggestion(
+          *credit_card, type, prefix_matched_suggestion,
+          /*virtual_card_option=*/false, app_locale));
     }
   }
 
@@ -215,6 +168,83 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   }
   // Fall back to nickname of |card|, which may be empty.
   return card.nickname();
+}
+
+Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
+    const CreditCard& credit_card,
+    const AutofillType& type,
+    bool prefix_matched_suggestion,
+    bool virtual_card_option,
+    const std::string& app_locale) const {
+  Suggestion suggestion;
+
+  suggestion.value = credit_card.GetInfo(type, app_locale);
+  suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
+  suggestion.backend_id = credit_card.guid();
+  suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
+                                               : Suggestion::SUBSTRING_MATCH;
+
+  // Get the nickname for the card suggestion, which may not be the same as
+  // the card's nickname if there are duplicates of the card on file.
+  std::u16string suggestion_nickname =
+      GetDisplayNicknameForCreditCard(credit_card);
+
+  // If the value is the card number, the label is the expiration date.
+  // Otherwise the label is the card number, or if that is empty the
+  // cardholder name. The label should never repeat the value.
+  if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+    suggestion.value =
+        credit_card.CardIdentifierStringForAutofillDisplay(suggestion_nickname);
+
+#if defined(OS_ANDROID) || defined(OS_IOS)
+    suggestion.label = credit_card.GetInfo(
+        AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
+#else
+    suggestion.label = credit_card.DescriptiveExpiration(app_locale);
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+
+  } else if (credit_card.number().empty()) {
+    DCHECK_EQ(credit_card.record_type(), CreditCard::LOCAL_CARD);
+    if (credit_card.HasNonEmptyValidNickname()) {
+      suggestion.label = credit_card.nickname();
+    } else if (type.GetStorableType() != CREDIT_CARD_NAME_FULL) {
+      suggestion.label =
+          credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale);
+    }
+  } else {
+#if defined(OS_ANDROID)
+    // On Android devices, the label is formatted as
+    // "Nickname/Network  ••••1234" when the keyboard accessory experiment
+    // is disabled and as "••••1234" when it's enabled.
+    suggestion.label =
+        base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)
+            ? credit_card.ObfuscatedLastFourDigits()
+            : credit_card.CardIdentifierStringForAutofillDisplay(
+                  suggestion_nickname);
+#elif defined(OS_IOS)
+    // E.g. "••••1234"".
+    suggestion.label = credit_card.ObfuscatedLastFourDigits();
+#else
+    // E.g. "Nickname/Network  ••••1234, expires on 01/25".
+    suggestion.label =
+        credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale);
+#endif
+  }
+
+  if (virtual_card_option) {
+#if defined(OS_ANDROID)
+    // Set the IPH feature in order to show the IPH bubble when the virtual
+    // card is presented in the keyboard accessory.
+    suggestion.feature_for_iph =
+        feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
+#endif  // OS_ANDROID
+
+    // TODO(crbug.com/1196021): Populate custom_icon with card art if available.
+    suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    suggestion.is_value_secondary = true;
+  }
+
+  return suggestion;
 }
 
 }  // namespace autofill

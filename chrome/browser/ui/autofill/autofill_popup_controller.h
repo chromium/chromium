@@ -37,13 +37,22 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // Returns the full set of autofill suggestions, if applicable.
   virtual std::vector<Suggestion> GetSuggestions() const = 0;
 
-  // Returns the suggestion at the given |row| index.
+  // Returns the suggestion at the given |row| index. The |Suggestion| is the
+  // data model including information that is to be shown in the UI.
   virtual const Suggestion& GetSuggestionAt(int row) const = 0;
 
-  // Returns the suggestion value string at the given |row| index.
-  virtual const std::u16string& GetSuggestionValueAt(int row) const = 0;
+  // Returns the suggestion main text string at the given |row| index. The main
+  // text is shown in primary or secondary text style, serving as the title of
+  // the suggestion.
+  virtual std::u16string GetSuggestionMainTextAt(int row) const = 0;
 
-  // Returns the suggestion label string at the given |row| index.
+  // Returns the suggestion minor text string at the given |row| index. The
+  // minor text is shown in secondary text style, serving as the sub-title of
+  // the suggestion item.
+  virtual std::u16string GetSuggestionMinorTextAt(int row) const = 0;
+
+  // Returns the suggestion label string at the given |row| index. The label
+  // includes detailed but less important information for the suggestion.
   virtual const std::u16string& GetSuggestionLabelAt(int row) const = 0;
 
   // Returns whether the item at |list_index| can be removed. If so, fills

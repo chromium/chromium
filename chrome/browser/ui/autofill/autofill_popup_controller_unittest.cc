@@ -160,7 +160,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents;
   using AutofillPopupControllerImpl::GetSuggestionAt;
   using AutofillPopupControllerImpl::GetSuggestionLabelAt;
-  using AutofillPopupControllerImpl::GetSuggestionValueAt;
+  using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
   using AutofillPopupControllerImpl::GetWeakPtr;
   using AutofillPopupControllerImpl::RemoveSelectedLine;
   using AutofillPopupControllerImpl::selected_line;
@@ -507,7 +507,7 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
 
   Suggestion result0 = autofill_popup_controller_->GetSuggestionAt(0);
   EXPECT_EQ(value1, result0.value);
-  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionValueAt(0));
+  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
   EXPECT_EQ(label1, result0.label);
   EXPECT_EQ(std::u16string(), result0.additional_label);
   EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionLabelAt(0));
@@ -537,12 +537,12 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
 
   // Original one first, followed by new one, then separator.
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionAt(0).value);
-  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionValueAt(0));
+  EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
   EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionAt(0).label);
   EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(0).additional_label);
   EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionAt(1).value);
-  EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionValueAt(1));
+  EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionMainTextAt(1));
   EXPECT_EQ(label2, autofill_popup_controller_->GetSuggestionAt(1).label);
   EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(1).additional_label);

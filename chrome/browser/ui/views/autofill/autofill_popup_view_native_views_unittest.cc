@@ -46,6 +46,7 @@ const struct TypeClicks kClickTestCase[] = {
     {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN, 1},
     {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE, 1},
     {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY, 1},
+    {autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, 1},
 };
 
 class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {

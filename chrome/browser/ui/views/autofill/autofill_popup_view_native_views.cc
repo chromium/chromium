@@ -259,10 +259,6 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  protected:
-  // Holds a view and a label that is stored inside the view. It can be the
-  // same object.
-  using ViewWithLabel = std::pair<std::unique_ptr<views::View>, views::Label*>;
-
   AutofillPopupItemView(AutofillPopupViewNativeViews* popup_view,
                         int line_number,
                         int frontend_id)
@@ -277,11 +273,14 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   int GetFrontendId() const;
 
   virtual int GetPrimaryTextStyle() = 0;
-  // Returns a value view. The label part is optional but allow caller to keep
-  // track of all the labels for background color update.
-  virtual ViewWithLabel CreateValueLabel();
+  // Returns a main text label view. The label part is optional but allow caller
+  // to keep track of all the labels for background color update.
+  virtual std::unique_ptr<views::View> CreateMainTextView();
+  // Returns a minor text label view. The label is shown side by side with the
+  // main text view, but in a secondary style. Can be nullptr.
+  virtual std::unique_ptr<views::View> CreateMinorTextView();
   // The description view can be nullptr.
-  virtual ViewWithLabel CreateDescriptionLabel();
+  virtual std::unique_ptr<views::View> CreateDescriptionView();
 
   // Returns the font weight to be applied to primary info.
   virtual gfx::Font::Weight GetPrimaryTextWeight() const = 0;
@@ -297,7 +296,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
 
  private:
   // Returns a vector of optional labels to be displayed beneath value.
-  virtual std::vector<ViewWithLabel> CreateSubtextLabels();
+  virtual std::vector<std::unique_ptr<views::View>> CreateSubtextViews();
 
   // Returns the minimum cross axis size depending on the length of
   // GetSubtexts();
@@ -336,7 +335,7 @@ class AutofillPopupSuggestionView : public AutofillPopupItemView {
   // AutofillPopupItemView:
   int GetPrimaryTextStyle() override;
   gfx::Font::Weight GetPrimaryTextWeight() const override;
-  std::vector<ViewWithLabel> CreateSubtextLabels() override;
+  std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
   AutofillPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number,
                               int frontend_id);
@@ -361,9 +360,9 @@ class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
 
  protected:
   // AutofillPopupItemView:
-  ViewWithLabel CreateValueLabel() override;
-  std::vector<ViewWithLabel> CreateSubtextLabels() override;
-  ViewWithLabel CreateDescriptionLabel() override;
+  std::unique_ptr<views::View> CreateMainTextView() override;
+  std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
+  std::unique_ptr<views::View> CreateDescriptionView() override;
   gfx::Font::Weight GetPrimaryTextWeight() const override;
 
  private:
@@ -476,15 +475,23 @@ END_METADATA
 
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   AutofillPopupController* controller = popup_view()->controller();
-  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
   std::vector<std::u16string> text;
-  text.push_back(suggestion.value);
 
-  if (!suggestion.label.empty()) {
+  auto main_text = controller->GetSuggestionMainTextAt(GetLineNumber());
+  text.push_back(main_text);
+
+  auto minor_text = controller->GetSuggestionMinorTextAt(GetLineNumber());
+  if (!minor_text.empty())
+    text.push_back(minor_text);
+
+  auto label_text = controller->GetSuggestionLabelAt(GetLineNumber());
+  if (!label_text.empty()) {
     // |label| is not populated for footers or autocomplete entries.
-    text.push_back(suggestion.label);
+    text.push_back(label_text);
   }
 
+  // TODO(siyua): GetSuggestionLabelAt should return a vector of strings.
+  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
   if (!suggestion.offer_label.empty()) {
     // |offer_label| is only populated for credit card suggestions.
     text.push_back(suggestion.offer_label);
@@ -581,29 +588,52 @@ void AutofillPopupItemView::CreateContent() {
                       /*resize=*/false, layout_manager);
   }
 
-  ViewWithLabel value_label = CreateValueLabel();
-  std::vector<ViewWithLabel> subtext_labels = CreateSubtextLabels();
-  ViewWithLabel description_label = CreateDescriptionLabel();
+  std::unique_ptr<views::View> main_text_label = CreateMainTextView();
+  std::unique_ptr<views::View> minor_text_label = CreateMinorTextView();
+  std::vector<std::unique_ptr<views::View>> subtext_labels =
+      CreateSubtextViews();
+  std::unique_ptr<views::View> description_label = CreateDescriptionView();
 
   std::unique_ptr<views::View> all_labels = std::make_unique<views::View>();
   views::GridLayout* grid_layout =
       all_labels->SetLayoutManager(std::make_unique<views::GridLayout>());
   BuildColumnSet(grid_layout);
   grid_layout->StartRow(0, 0);
-  grid_layout->AddView(std::move(value_label.first));
-  KeepLabel(value_label.second);
-  if (description_label.first) {
-    grid_layout->AddView(std::move(description_label.first));
-    KeepLabel(description_label.second);
+
+  // Create the first line text view.
+  if (minor_text_label) {
+    auto first_line_container = std::make_unique<views::View>();
+    first_line_container
+        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetCollapseMargins(true)
+        .SetDefault(views::kMarginsKey,
+                    gfx::Insets(
+                        /*vertical=*/0,
+                        /*horizontal=*/
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+
+    first_line_container->AddChildView(std::move(main_text_label));
+    first_line_container->AddChildView(std::move(minor_text_label));
+    grid_layout->AddView(std::move(first_line_container));
+  } else {
+    grid_layout->AddView(std::move(main_text_label));
+  }
+
+  if (description_label) {
+    grid_layout->AddView(std::move(description_label));
   } else {
     grid_layout->SkipColumns(1);
   }
 
   UpdateLayoutSize(layout_manager, subtext_labels.size());
-  for (ViewWithLabel& subtext_label : subtext_labels) {
+  for (std::unique_ptr<views::View>& subtext_label : subtext_labels) {
     grid_layout->StartRowWithPadding(0, 0, 0, kAdjacentLabelsVerticalSpacing);
-    grid_layout->AddView(std::move(subtext_label.first));
-    KeepLabel(subtext_label.second);
+    grid_layout->AddView(std::move(subtext_label));
     grid_layout->SkipColumns(1);
   }
 
@@ -643,11 +673,10 @@ std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
                     : popup_view()->GetBackgroundColor());
 }
 
-AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
+std::unique_ptr<views::View> AutofillPopupItemView::CreateMainTextView() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
-  ViewWithLabel view_and_label;
   std::u16string text =
-      popup_view()->controller()->GetSuggestionValueAt(GetLineNumber());
+      popup_view()->controller()->GetSuggestionMainTextAt(GetLineNumber());
   if (popup_view()
           ->controller()
           ->GetSuggestionAt(GetLineNumber())
@@ -655,33 +684,42 @@ AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_SECONDARY);
-    view_and_label.second = label.get();
-    view_and_label.first = std::move(label);
-    return view_and_label;
+    KeepLabel(label.get());
+    return label;
   }
 
-  auto text_label = CreateLabelWithStyleAndContext(
-      popup_view()->controller()->GetSuggestionValueAt(GetLineNumber()),
+  std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
+      popup_view()->controller()->GetSuggestionMainTextAt(GetLineNumber()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, GetPrimaryTextStyle());
 
   const gfx::Font::Weight font_weight = GetPrimaryTextWeight();
-  if (font_weight != text_label->font_list().GetFontWeight()) {
-    text_label->SetFontList(
-        text_label->font_list().DeriveWithWeight(font_weight));
+  if (font_weight != label->font_list().GetFontWeight()) {
+    label->SetFontList(label->font_list().DeriveWithWeight(font_weight));
   }
 
-  view_and_label.second = text_label.get();
-  view_and_label.first = std::move(text_label);
-  return view_and_label;
+  KeepLabel(label.get());
+  return label;
 }
 
-AutofillPopupItemView::ViewWithLabel
-AutofillPopupItemView::CreateDescriptionLabel() {
-  return ViewWithLabel();
+std::unique_ptr<views::View> AutofillPopupItemView::CreateMinorTextView() {
+  std::u16string text =
+      popup_view()->controller()->GetSuggestionMinorTextAt(GetLineNumber());
+  if (text.empty())
+    return nullptr;
+
+  std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  KeepLabel(label.get());
+  return label;
 }
 
-std::vector<AutofillPopupItemView::ViewWithLabel>
-AutofillPopupItemView::CreateSubtextLabels() {
+std::unique_ptr<views::View> AutofillPopupItemView::CreateDescriptionView() {
+  return nullptr;
+}
+
+std::vector<std::unique_ptr<views::View>>
+AutofillPopupItemView::CreateSubtextViews() {
   return {};
 }
 
@@ -744,14 +782,14 @@ AutofillPopupSuggestionView::AutofillPopupSuggestionView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
-std::vector<AutofillPopupItemView::ViewWithLabel>
-AutofillPopupSuggestionView::CreateSubtextLabels() {
+std::vector<std::unique_ptr<views::View>>
+AutofillPopupSuggestionView::CreateSubtextViews() {
   const std::u16string& second_row_label =
-      popup_view()->controller()->GetSuggestionAt(GetLineNumber()).label;
+      popup_view()->controller()->GetSuggestionLabelAt(GetLineNumber());
   const std::u16string& third_row_label =
       popup_view()->controller()->GetSuggestionAt(GetLineNumber()).offer_label;
 
-  std::vector<AutofillPopupItemView::ViewWithLabel> labels;
+  std::vector<std::unique_ptr<views::View>> labels;
   for (const std::u16string& text : {second_row_label, third_row_label}) {
     // If a row is missing, do not include any further rows.
     if (text.empty())
@@ -760,10 +798,8 @@ AutofillPopupSuggestionView::CreateSubtextLabels() {
     auto label = CreateLabelWithStyleAndContext(
         text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY);
-    ViewWithLabel result;
-    result.second = label.get();
-    result.first = std::move(label);
-    labels.emplace_back(std::move(result));
+    KeepLabel(label.get());
+    labels.emplace_back(std::move(label));
   }
 
   return labels;
@@ -781,41 +817,41 @@ PasswordPopupSuggestionView* PasswordPopupSuggestionView::Create(
   return result;
 }
 
-AutofillPopupItemView::ViewWithLabel
-PasswordPopupSuggestionView::CreateValueLabel() {
-  ViewWithLabel label = AutofillPopupSuggestionView::CreateValueLabel();
-  label.first = std::make_unique<ConstrainedWidthView>(
-      std::move(label.first), kAutofillPopupUsernameMaxWidth);
+std::unique_ptr<views::View> PasswordPopupSuggestionView::CreateMainTextView() {
+  std::unique_ptr<views::View> label =
+      AutofillPopupSuggestionView::CreateMainTextView();
+  label = std::make_unique<ConstrainedWidthView>(
+      std::move(label), kAutofillPopupUsernameMaxWidth);
   return label;
 }
 
-std::vector<AutofillPopupItemView::ViewWithLabel>
-PasswordPopupSuggestionView::CreateSubtextLabels() {
-  auto label = CreateLabelWithStyleAndContext(
+std::vector<std::unique_ptr<views::View>>
+PasswordPopupSuggestionView::CreateSubtextViews() {
+  std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
       masked_password_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::TRUNCATE);
-  ViewWithLabel result;
-  result.second = label.get();
-  result.first = std::make_unique<ConstrainedWidthView>(
+  KeepLabel(label.get());
+
+  std::unique_ptr<views::View> result = std::make_unique<ConstrainedWidthView>(
       std::move(label), kAutofillPopupPasswordMaxWidth);
-  std::vector<AutofillPopupItemView::ViewWithLabel> labels;
+  std::vector<std::unique_ptr<views::View>> labels;
   labels.emplace_back(std::move(result));
   return labels;
 }
 
-AutofillPopupItemView::ViewWithLabel
-PasswordPopupSuggestionView::CreateDescriptionLabel() {
+std::unique_ptr<views::View>
+PasswordPopupSuggestionView::CreateDescriptionView() {
   if (origin_.empty())
-    return ViewWithLabel();
+    return nullptr;
 
-  auto label = CreateLabelWithStyleAndContext(
+  std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
       origin_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::ELIDE_HEAD);
-  ViewWithLabel result;
-  result.second = label.get();
-  result.first = std::make_unique<ConstrainedWidthView>(
+  KeepLabel(label.get());
+
+  std::unique_ptr<views::View> result = std::make_unique<ConstrainedWidthView>(
       std::move(label), kAutofillPopupUsernameMaxWidth);
   return result;
 }
@@ -879,10 +915,9 @@ void AutofillPopupFooterView::CreateContent() {
       views::MenuConfig::instance().touchable_menu_height +
       AutofillPopupBaseView::GetCornerRadius());
 
-  ViewWithLabel value_label = CreateValueLabel();
-  value_label.first->SetEnabled(!suggestion.is_loading);
-  AddChildView(std::move(value_label.first));
-  KeepLabel(value_label.second);
+  auto main_text_label = CreateMainTextView();
+  main_text_label->SetEnabled(!suggestion.is_loading);
+  AddChildView(std::move(main_text_label));
   AddSpacerWithSize(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
@@ -1003,7 +1038,7 @@ void AutofillPopupWarningView::CreateContent() {
       gfx::Insets(vertical_margin, horizontal_margin)));
 
   auto text_label = std::make_unique<views::Label>(
-      controller->GetSuggestionValueAt(GetLineNumber()),
+      controller->GetSuggestionMainTextAt(GetLineNumber()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
   text_label->SetEnabledColor(popup_view()->GetWarningColor());
   text_label->SetMultiLine(true);

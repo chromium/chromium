@@ -542,6 +542,7 @@ class BrowserAutofillManager
   // |should_display_gpay_logo| will be set to true if there is no credit card
   // suggestions or all suggestions come from Payments server.
   std::vector<Suggestion> GetCreditCardSuggestions(
+      const FormStructure& form_structure,
       const FormFieldData& field,
       const AutofillType& type,
       bool* should_display_gpay_logo) const;

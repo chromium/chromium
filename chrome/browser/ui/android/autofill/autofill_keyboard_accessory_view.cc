@@ -73,6 +73,17 @@ void AutofillKeyboardAccessoryView::Show() {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
           GetIconResourceID(suggestion.icon));
     }
+
+    std::u16string value;
+    std::u16string label;
+    if (controller_->GetSuggestionMinorTextAt(i).empty()) {
+      value = controller_->GetSuggestionMainTextAt(i);
+      label = controller_->GetSuggestionLabelAt(i);
+    } else {
+      value = controller_->GetSuggestionMainTextAt(i);
+      label = controller_->GetSuggestionMinorTextAt(i);
+    }
+
     // Set the offer title to display as the item tag.
     std::u16string item_tag = std::u16string();
     if (base::FeatureList::IsEnabled(
@@ -85,9 +96,8 @@ void AutofillKeyboardAccessoryView::Show() {
           ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
     }
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++,
-        ConvertUTF16ToJavaString(env, controller_->GetSuggestionValueAt(i)),
-        ConvertUTF16ToJavaString(env, controller_->GetSuggestionLabelAt(i)),
+        env, data_array, position++, ConvertUTF16ToJavaString(env, value),
+        ConvertUTF16ToJavaString(env, label),
         ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
         suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),

@@ -17,6 +17,7 @@ class AutofillClient;
 class AutofillType;
 class CreditCard;
 struct FormFieldData;
+class FormStructure;
 class PersonalDataManager;
 struct Suggestion;
 
@@ -33,6 +34,7 @@ class AutofillSuggestionGenerator {
 
   // Generates suggestions for all available credit cards.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
+      const FormStructure& form_structure,
       const FormFieldData& field,
       const AutofillType& type,
       const std::string& app_locale);
@@ -52,6 +54,17 @@ class AutofillSuggestionGenerator {
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
  private:
+  // Creates a suggestion for the given |credit_card|. |type| denotes the
+  // AutofillType of the field that is focused when the query is triggered.
+  // |prefix_matched_suggestion| indicates whether the suggestion has content
+  // that prefix-matches the field content. |virtual_card_option| suggests
+  // whether the suggestion is a virtual card option.
+  Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
+                                        const AutofillType& type,
+                                        bool prefix_matched_suggestion,
+                                        bool virtual_card_option,
+                                        const std::string& app_locale) const;
+
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
   AutofillClient* autofill_client_;

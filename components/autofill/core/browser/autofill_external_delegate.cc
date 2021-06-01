@@ -282,6 +282,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const std::u16string& value,
 #else
     NOTREACHED();
 #endif
+  } else if (identifier == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    // TODO(crbug.com/1196021): Add handling logic.
   } else {
     if (identifier > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(

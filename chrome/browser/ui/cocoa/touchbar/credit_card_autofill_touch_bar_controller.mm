@@ -115,7 +115,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 
 - (NSButton*)createCreditCardButtonAtRow:(int)row {
   NSString* label =
-      base::SysUTF16ToNSString(_controller->GetSuggestionValueAt(row));
+      base::SysUTF16ToNSString(_controller->GetSuggestionMainTextAt(row));
   NSString* subtext =
       base::SysUTF16ToNSString(_controller->GetSuggestionLabelAt(row));
 

@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
@@ -76,8 +77,13 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
       Java_AutofillPopupBridge_createAutofillSuggestionArray(env, count);
 
   for (size_t i = 0; i < count; ++i) {
-    ScopedJavaLocalRef<jstring> value = base::android::ConvertUTF16ToJavaString(
-        env, controller_->GetSuggestionValueAt(i));
+    std::u16string value_text =
+        controller_->GetSuggestionMinorTextAt(i).empty()
+            ? controller_->GetSuggestionMainTextAt(i)
+            : base::StrCat({controller_->GetSuggestionMainTextAt(i), u" ",
+                            controller_->GetSuggestionMinorTextAt(i)});
+    ScopedJavaLocalRef<jstring> value =
+        base::android::ConvertUTF16ToJavaString(env, value_text);
     ScopedJavaLocalRef<jstring> label = base::android::ConvertUTF16ToJavaString(
         env, controller_->GetSuggestionLabelAt(i));
     int android_icon_id = 0;

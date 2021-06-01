@@ -599,8 +599,8 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   DCHECK_EQ(FieldTypeGroup::kCreditCard, type.group());
 
   bool should_display_gpay_logo;
-  auto cards =
-      GetCreditCardSuggestions(field_data, type, &should_display_gpay_logo);
+  auto cards = GetCreditCardSuggestions(FormStructure(form), field_data, type,
+                                        &should_display_gpay_logo);
 
   DCHECK(!cards.empty());
 
@@ -1932,6 +1932,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
+    const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillType& type,
     bool* should_display_gpay_logo) const {
@@ -1943,12 +1944,16 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   std::vector<Suggestion> suggestions;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-        field, type, app_locale_);
+        form_structure, field, type, app_locale_);
   }
 
+  // TODO(crbug.com/1196021): Once the profile suggestion creation is moved to
+  // AutofillSuggestionGenerator, move this part as well.
   for (Suggestion& suggestion : suggestions) {
-    suggestion.frontend_id =
-        MakeFrontendID(suggestion.backend_id, std::string());
+    if (suggestion.frontend_id == 0) {
+      suggestion.frontend_id =
+          MakeFrontendID(suggestion.backend_id, std::string());
+    }
   }
 
   credit_card_form_event_logger_->set_suggestions(suggestions);
@@ -2578,9 +2583,9 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   context->is_autofill_available = true;
 
   if (context->is_filling_credit_card) {
-    *suggestions =
-        GetCreditCardSuggestions(field, context->focused_field->Type(),
-                                 &context->should_display_gpay_logo);
+    *suggestions = GetCreditCardSuggestions(*context->form_structure, field,
+                                            context->focused_field->Type(),
+                                            &context->should_display_gpay_logo);
   } else {
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);
@@ -2682,18 +2687,12 @@ bool BrowserAutofillManager::ShouldShowVirtualCardOption(
   if (GetVirtualCardCandidates(personal_data_).empty())
     return false;
 
-  // If card number field or expiration date field is not detected, return
-  // false.
-  if (!form_structure->IsCompleteCreditCardForm())
+  // If not all of card number field, expiration date field and CVC field are
+  // detected, return false.
+  if (!IsCompleteCreditCardFormIncludingCvcField(*form_structure))
     return false;
 
-  // If CVC field is detected, then all requirements are met, otherwise return
-  // false.
-  for (auto& field : *form_structure) {
-    if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)
-      return true;
-  }
-  return false;
+  return true;
 }
 #endif
 

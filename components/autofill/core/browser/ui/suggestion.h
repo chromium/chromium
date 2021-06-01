@@ -47,7 +47,11 @@ struct Suggestion {
   // (see popup_item_ids.h) have special built-in meanings.
   int frontend_id = 0;
 
+  // The text that will be filled in to the focused field and is displayed as
+  // the main text in the suggestion. Its style depends on |is_value_secondary|.
   std::u16string value;
+
+  // The text displayed on the second line in a suggestion.
   std::u16string label;
   // A label to be shown beneath |label| that will display information about any
   // credit card offers or rewards.
@@ -65,7 +69,7 @@ struct Suggestion {
   // account store. If it's empty, no store indication should be shown.
   std::string store_indicator_icon;
   MatchMode match = PREFIX_MATCH;
-  // |value| should be displayed as secondary text.
+  // Whether |value| should be displayed as secondary text.
   bool is_value_secondary = false;
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);

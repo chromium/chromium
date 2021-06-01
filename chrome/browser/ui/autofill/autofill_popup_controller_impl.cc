@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +29,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
@@ -330,9 +332,21 @@ const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
   return suggestions_[row];
 }
 
-const std::u16string& AutofillPopupControllerImpl::GetSuggestionValueAt(
+std::u16string AutofillPopupControllerImpl::GetSuggestionMainTextAt(
     int row) const {
-  return suggestions_[row].value;
+  return suggestions_[row].frontend_id ==
+                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
+             : suggestions_[row].value;
+}
+
+std::u16string AutofillPopupControllerImpl::GetSuggestionMinorTextAt(
+    int row) const {
+  return suggestions_[row].frontend_id ==
+                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
+             ? suggestions_[row].value
+             : std::u16string();
 }
 
 const std::u16string& AutofillPopupControllerImpl::GetSuggestionLabelAt(

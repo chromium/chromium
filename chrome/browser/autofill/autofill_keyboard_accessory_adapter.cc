@@ -98,10 +98,16 @@ const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
   return controller_->GetSuggestionAt(OffsetIndexFor(row));
 }
 
-const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionValueAt(
+std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMainTextAt(
     int row) const {
-  DCHECK(controller_) << "Call GetSuggestionValueAt only from its owner!";
-  return controller_->GetSuggestionValueAt(OffsetIndexFor(row));
+  DCHECK(controller_) << "Call GetSuggestionMainTextAt only from its owner!";
+  return controller_->GetSuggestionMainTextAt(OffsetIndexFor(row));
+}
+
+std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMinorTextAt(
+    int row) const {
+  DCHECK(controller_) << "Call GetSuggestionMinorTextAt only from its owner!";
+  return controller_->GetSuggestionMinorTextAt(OffsetIndexFor(row));
 }
 
 const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionLabelAt(
