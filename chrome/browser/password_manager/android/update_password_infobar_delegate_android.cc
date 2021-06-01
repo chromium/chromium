@@ -9,7 +9,7 @@
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/android/infobars/update_password_infobar.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/chromium_strings.h"
@@ -34,7 +34,7 @@ void UpdatePasswordInfoBarDelegate::Create(
   // passwords to their Google Account.
   const bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(
-          ProfileSyncServiceFactory::GetForProfile(
+          SyncServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(std::make_unique<UpdatePasswordInfoBar>(

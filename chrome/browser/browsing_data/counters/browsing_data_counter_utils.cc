@@ -30,7 +30,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #endif
 

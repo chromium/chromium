@@ -33,8 +33,8 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -588,7 +588,7 @@ std::vector<ProfileSyncServiceHarness*> SyncTest::GetSyncClients() {
 }
 
 ProfileSyncService* SyncTest::GetSyncService(int index) {
-  return ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
+  return SyncServiceFactory::GetAsProfileSyncServiceForProfile(
       GetProfile(index));
 }
 
@@ -735,8 +735,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   // ProfileSyncServiceHarness - some tests expect the ProfileSyncService to
   // already exist.
   ProfileSyncService* profile_sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
-          GetProfile(index));
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(GetProfile(index));
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
     profile_sync_service->OverrideNetworkForTest(
@@ -851,7 +850,7 @@ void SyncTest::InitializeInvalidations(int index) {
       break;
     case IN_PROCESS_FAKE_SERVER: {
       configuration_refresher_->Observe(
-          ProfileSyncServiceFactory::GetForProfile(GetProfile(index)));
+          SyncServiceFactory::GetForProfile(GetProfile(index)));
       break;
     }
     case SERVER_TYPE_UNDECIDED:

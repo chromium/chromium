@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,7 +33,7 @@ PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -45,7 +45,7 @@ KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
       HostContentSettingsMapFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs(),
       profile->GetProfilePolicyConnector()->policy_service(),
-      ProfileSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile));
 }
 

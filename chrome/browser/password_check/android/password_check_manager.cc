@@ -8,7 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/password_check_bridge.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -336,7 +336,7 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
 
 bool PasswordCheckManager::CanUseAccountCheck() const {
   SyncState sync_state = password_manager_util::GetPasswordSyncState(
-      ProfileSyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(profile_));
   switch (sync_state) {
     case SyncState::kNotSyncing:
       ABSL_FALLTHROUGH_INTENDED;
@@ -379,7 +379,7 @@ void PasswordCheckManager::OnScriptsFetched() {
 
 bool PasswordCheckManager::ShouldFetchPasswordScripts() const {
   SyncState sync_state = password_manager_util::GetPasswordSyncState(
-      ProfileSyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(profile_));
 
   // Password change scripts are using password generation, so automatic
   // password change should not be offered to non sync users.

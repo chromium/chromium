@@ -25,7 +25,7 @@
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   std::unique_ptr<ProfileSyncServiceHarness> harness =
       test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   secondary_account_helper::SignInSecondaryAccount(
       profile, &test_url_loader_factory_, "secondary_user@email.com");

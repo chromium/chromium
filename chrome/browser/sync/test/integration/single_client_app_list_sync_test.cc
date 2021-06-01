@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   app_list::AppListSyncableService* service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   const size_t kNumApps = 5;
   syncer::StringOrdinal pin_position =

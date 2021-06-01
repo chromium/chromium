@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 
 #include <stddef.h>
 
@@ -39,7 +39,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #endif
 
-class ProfileSyncServiceFactoryTest : public testing::Test {
+class SyncServiceFactoryTest : public testing::Test {
  public:
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,16 +64,14 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileSyncServiceFactoryTest() {
+  SyncServiceFactoryTest() {
     // Fake network stack is required for WIFI_CONFIGURATIONS datatype.
     chromeos::NetworkHandler::Initialize();
   }
-  ~ProfileSyncServiceFactoryTest() override {
-    chromeos::NetworkHandler::Shutdown();
-  }
+  ~SyncServiceFactoryTest() override { chromeos::NetworkHandler::Shutdown(); }
 #else
-  ProfileSyncServiceFactoryTest() = default;
-  ~ProfileSyncServiceFactoryTest() override = default;
+  SyncServiceFactoryTest() = default;
+  ~SyncServiceFactoryTest() override = default;
 #endif
 
   // Returns the collection of default datatypes.
@@ -188,16 +186,16 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
 };
 
 // Verify that the disable sync flag disables creation of the sync service.
-TEST_F(ProfileSyncServiceFactoryTest, DisableSyncFlag) {
+TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
-  EXPECT_EQ(nullptr, ProfileSyncServiceFactory::GetForProfile(profile()));
+  EXPECT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 }
 
 // Verify that a normal (no command line flags) PSS can be created and
 // properly initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
   syncer::ProfileSyncService* pss =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
   syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, syncer::ModelTypeSet());
@@ -208,11 +206,11 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
 
 // Verify that a PSS with a disabled datatype can be created and properly
 // initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableOne) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDisableOne) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
   SetDisabledTypes(disabled_types);
   syncer::ProfileSyncService* pss =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
   syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);
@@ -223,12 +221,12 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableOne) {
 
 // Verify that a PSS with multiple disabled datatypes can be created and
 // properly initialized.
-TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableMultiple) {
+TEST_F(SyncServiceFactoryTest, CreatePSSDisableMultiple) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
                                       syncer::BOOKMARKS);
   SetDisabledTypes(disabled_types);
   syncer::ProfileSyncService* pss =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
   syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);

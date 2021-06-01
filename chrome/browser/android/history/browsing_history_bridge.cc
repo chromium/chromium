@@ -16,7 +16,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
@@ -35,7 +35,7 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(
   history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
       this, local_history, sync_service);
 

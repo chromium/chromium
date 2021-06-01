@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -189,21 +189,20 @@ void OSSyncHandler::PushSyncPrefs() {
 }
 
 syncer::SyncService* OSSyncHandler::GetSyncService() const {
-  const bool is_sync_allowed =
-      ProfileSyncServiceFactory::IsSyncAllowed(profile_);
-  return is_sync_allowed ? ProfileSyncServiceFactory::GetForProfile(profile_)
+  const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
+  return is_sync_allowed ? SyncServiceFactory::GetForProfile(profile_)
                          : nullptr;
 }
 
 void OSSyncHandler::AddSyncServiceObserver() {
   // Observe even if sync isn't allowed. IsSyncAllowed() can change mid-session.
-  SyncService* service = ProfileSyncServiceFactory::GetForProfile(profile_);
+  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (service)
     service->AddObserver(this);
 }
 
 void OSSyncHandler::RemoveSyncServiceObserver() {
-  SyncService* service = ProfileSyncServiceFactory::GetForProfile(profile_);
+  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (service)
     service->RemoveObserver(this);
 }

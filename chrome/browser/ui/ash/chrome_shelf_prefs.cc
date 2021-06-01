@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -150,7 +150,7 @@ void MarkDefaultPinLayoutRolled(Profile* profile,
 // mode.
 bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   // No |sync_service| in incognito mode.
   if (!sync_service)
     return true;

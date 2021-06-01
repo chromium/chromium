@@ -17,7 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
@@ -94,7 +94,7 @@ class SaveUpdateWithAccountStoreBubbleControllerTest : public ::testing::Test {
             &password_manager::BuildPasswordStore<
                 content::BrowserContext,
                 testing::StrictMock<password_manager::MockPasswordStore>>));
-    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestSyncService));
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;

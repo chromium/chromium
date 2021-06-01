@@ -8,7 +8,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_observer.h"
 #include "components/prefs/pref_service.h"
@@ -38,7 +38,7 @@ bool AppSyncUIState::ShouldObserveAppSyncForProfile(Profile* profile) {
   if (!profile || profile->IsOffTheRecord())
     return false;
 
-  if (!ProfileSyncServiceFactory::HasSyncService(profile))
+  if (!SyncServiceFactory::HasSyncService(profile))
     return false;
 
   return profile->IsNewProfile();
@@ -77,7 +77,7 @@ void AppSyncUIState::StartObserving() {
   extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
   extension_registry_->AddObserver(this);
 
-  sync_service_ = ProfileSyncServiceFactory::GetForProfile(profile_);
+  sync_service_ = SyncServiceFactory::GetForProfile(profile_);
   CHECK(sync_service_);
   sync_service_->AddObserver(this);
 }

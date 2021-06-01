@@ -6,7 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -20,7 +20,7 @@ std::unique_ptr<ProfileSyncServiceHarness> InitializeProfileForSync(
     base::WeakPtr<fake_server::FakeServer> fake_server) {
   DCHECK(profile);
 
-  ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile)
+  SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile)
       ->OverrideNetworkForTest(
           fake_server::CreateFakeServerHttpPostProviderFactory(
               fake_server->AsWeakPtr()));

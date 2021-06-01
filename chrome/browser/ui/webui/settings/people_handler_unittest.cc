@@ -22,7 +22,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -220,7 +220,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
 
     mock_sync_service_ = static_cast<syncer::MockSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockSyncService)));
 
     ON_CALL(*mock_sync_service_, IsAuthenticatedAccountPrimary())

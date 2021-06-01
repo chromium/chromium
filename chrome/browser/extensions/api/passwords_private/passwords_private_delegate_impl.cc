@@ -22,7 +22,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/common/pref_names.h"
@@ -170,7 +170,7 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
           std::make_unique<
               password_manager::PasswordAccountStorageSettingsWatcher>(
               profile_->GetPrefs(),
-              ProfileSyncServiceFactory::GetForProfile(profile_),
+              SyncServiceFactory::GetForProfile(profile_),
               base::BindRepeating(&PasswordsPrivateDelegateImpl::
                                       OnAccountStorageOptInStateChanged,
                                   base::Unretained(this)))),
@@ -485,7 +485,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 
 bool PasswordsPrivateDelegateImpl::IsOptedInForAccountStorage() {
   return password_manager::features_util::IsOptedInForAccountStorage(
-      profile_->GetPrefs(), ProfileSyncServiceFactory::GetForProfile(profile_));
+      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(

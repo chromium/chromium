@@ -20,7 +20,7 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -168,8 +168,7 @@ class LocalCardMigrationBrowserTest
         "components/test/data/autofill");
     embedded_test_server()->StartAcceptingConnections();
 
-    ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
-        browser()->profile())
+    SyncServiceFactory::GetAsProfileSyncServiceForProfile(browser()->profile())
         ->OverrideNetworkForTest(
             fake_server::CreateFakeServerHttpPostProviderFactory(
                 GetFakeServer()->AsWeakPtr()));

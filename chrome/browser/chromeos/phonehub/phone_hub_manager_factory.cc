@@ -15,8 +15,8 @@
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
@@ -73,7 +73,7 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
   DependsOn(secure_channel::NearbyConnectorFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(HistoryUiFaviconRequestHandlerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 PhoneHubManagerFactory::~PhoneHubManagerFactory() = default;
@@ -100,7 +100,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
       std::make_unique<BrowserTabsModelProviderImpl>(
           multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
               profile),
-          ProfileSyncServiceFactory::GetInstance()->GetForProfile(profile),
+          SyncServiceFactory::GetInstance()->GetForProfile(profile),
           SessionSyncServiceFactory::GetInstance()->GetForProfile(profile),
           std::make_unique<BrowserTabsMetadataFetcherImpl>(
               HistoryUiFaviconRequestHandlerFactory::GetInstance()

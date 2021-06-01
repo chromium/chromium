@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -189,7 +189,7 @@ void MetricProvider::DisableRecording() {
 MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
     Profile* profile) {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service)
     return RecordAttemptStatus::kSyncServiceUnavailable;
   syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();

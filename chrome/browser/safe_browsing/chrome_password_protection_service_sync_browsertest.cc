@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -67,7 +67,7 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     syncer::ProfileSyncService* sync_service =
-        ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
+        SyncServiceFactory::GetAsProfileSyncServiceForProfile(
             browser()->profile());
 
     sync_service->OverrideNetworkForTest(

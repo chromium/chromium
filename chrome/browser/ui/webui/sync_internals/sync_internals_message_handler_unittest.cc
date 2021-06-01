@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -102,7 +102,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
     web_ui_.set_web_contents(web_contents());
     test_sync_service_ = static_cast<TestSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildTestSyncService)));
     fake_user_event_service_ = static_cast<FakeUserEventService*>(
         browser_sync::UserEventServiceFactory::GetInstance()
@@ -234,7 +234,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   ListValue empty_list;
@@ -281,7 +281,7 @@ TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfoSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   handler()->AllowJavascriptForTesting();

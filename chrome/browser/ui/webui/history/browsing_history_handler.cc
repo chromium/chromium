@@ -26,7 +26,7 @@
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -342,7 +342,7 @@ void BrowsingHistoryHandler::StartQueryHistory() {
   HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
       this, local_history, sync_service);
 

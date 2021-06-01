@@ -13,7 +13,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -40,7 +40,7 @@ ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
 }

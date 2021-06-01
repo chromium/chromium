@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -169,7 +169,7 @@ std::u16string GetDisplayFederation(
 
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   return (sync_service &&
           sync_service->GetUserSettings()->IsFirstSetupComplete() &&
           sync_service->IsSyncFeatureActive() &&

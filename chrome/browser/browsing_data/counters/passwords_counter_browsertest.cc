@@ -10,7 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, SameDomain) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, blocklisted) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PrefChanged) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, StoreChanged) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PeriodChanged) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
                                           ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,

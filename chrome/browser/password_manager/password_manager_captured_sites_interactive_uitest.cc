@@ -12,7 +12,7 @@
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -173,7 +173,7 @@ class CapturedSitesPasswordManagerBrowserTest
                   // Set up a TestSyncService which will happily return
                   // "everything is active" so that password generation is
                   // considered enabled.
-                  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+                  SyncServiceFactory::GetInstance()->SetTestingFactory(
                       context, base::BindRepeating(&BuildTestSyncService));
 
                   PasswordStoreFactory::GetInstance()->SetTestingFactory(

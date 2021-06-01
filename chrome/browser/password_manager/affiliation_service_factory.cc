@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -35,7 +35,7 @@ KeyedService* AffiliationServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   network::SharedURLLoaderFactory* url_loader_factory =
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()

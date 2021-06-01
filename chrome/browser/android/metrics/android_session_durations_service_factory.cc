@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace {
@@ -66,7 +66,7 @@ AndroidSessionDurationsServiceFactory::AndroidSessionDurationsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "AndroidSessionDurationsService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -88,7 +88,7 @@ KeyedService* AndroidSessionDurationsServiceFactory::BuildServiceInstanceFor(
 
   auto* service = new AndroidSessionDurationsService();
   service->InitializeForRegularProfile(
-      ProfileSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile));
   return service;
 }

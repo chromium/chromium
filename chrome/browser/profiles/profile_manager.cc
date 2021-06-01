@@ -70,7 +70,7 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -1894,9 +1894,9 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
       observer.OnProfileMarkedForPermanentDeletion(profile);
 
     // Disable sync for doomed profile.
-    if (ProfileSyncServiceFactory::HasSyncService(profile)) {
+    if (SyncServiceFactory::HasSyncService(profile)) {
       syncer::SyncService* sync_service =
-          ProfileSyncServiceFactory::GetForProfile(profile);
+          SyncServiceFactory::GetForProfile(profile);
       // Ensure data is cleared even if sync was already off.
       sync_service->StopAndClear();
     }

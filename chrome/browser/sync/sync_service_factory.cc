@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 
 #include <string>
 #include <utility>
@@ -103,13 +103,12 @@ void UpdateNetworkTime(const base::Time& network_time,
 }  // anonymous namespace
 
 // static
-ProfileSyncServiceFactory* ProfileSyncServiceFactory::GetInstance() {
-  return base::Singleton<ProfileSyncServiceFactory>::get();
+SyncServiceFactory* SyncServiceFactory::GetInstance() {
+  return base::Singleton<SyncServiceFactory>::get();
 }
 
 // static
-syncer::SyncService* ProfileSyncServiceFactory::GetForProfile(
-    Profile* profile) {
+syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
   if (!switches::IsSyncAllowedByFlag()) {
     return nullptr;
   }
@@ -120,11 +119,11 @@ syncer::SyncService* ProfileSyncServiceFactory::GetForProfile(
 
 // static
 syncer::ProfileSyncService*
-ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(Profile* profile) {
+SyncServiceFactory::GetAsProfileSyncServiceForProfile(Profile* profile) {
   return static_cast<syncer::ProfileSyncService*>(GetForProfile(profile));
 }
 
-content::BrowserContext* ProfileSyncServiceFactory::GetBrowserContextToUse(
+content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord())
     return nullptr;
@@ -133,10 +132,10 @@ content::BrowserContext* ProfileSyncServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-ProfileSyncServiceFactory::ProfileSyncServiceFactory()
+SyncServiceFactory::SyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
-        "ProfileSyncService",
-        BrowserContextDependencyManager::GetInstance()) {
+          "SyncService",
+          BrowserContextDependencyManager::GetInstance()) {
   // The ProfileSyncService depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
@@ -183,9 +182,9 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-ProfileSyncServiceFactory::~ProfileSyncServiceFactory() = default;
+SyncServiceFactory::~SyncServiceFactory() = default;
 
-KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
+KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   syncer::ProfileSyncService::InitParams init_params;
 
@@ -290,18 +289,18 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
 }
 
 // static
-bool ProfileSyncServiceFactory::HasSyncService(Profile* profile) {
+bool SyncServiceFactory::HasSyncService(Profile* profile) {
   return GetInstance()->GetServiceForBrowserContext(profile, false) != nullptr;
 }
 
 // static
-bool ProfileSyncServiceFactory::IsSyncAllowed(Profile* profile) {
+bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
   DCHECK(profile);
 
   if (HasSyncService(profile)) {
     syncer::SyncService* sync_service = GetForProfile(profile);
     return !sync_service->HasDisableReason(
-               syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+        syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   }
 
   // No ProfileSyncService created yet - we don't want to create one, so just
@@ -313,7 +312,7 @@ bool ProfileSyncServiceFactory::IsSyncAllowed(Profile* profile) {
 
 // static
 std::vector<const syncer::SyncService*>
-ProfileSyncServiceFactory::GetAllSyncServices() {
+SyncServiceFactory::GetAllSyncServices() {
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   std::vector<const syncer::SyncService*> sync_services;
@@ -326,11 +325,11 @@ ProfileSyncServiceFactory::GetAllSyncServices() {
 }
 
 // static
-void ProfileSyncServiceFactory::SetSyncClientFactoryForTest(
+void SyncServiceFactory::SetSyncClientFactoryForTest(
     SyncClientFactory* client_factory) {
   client_factory_ = client_factory;
 }
 
 // static
-ProfileSyncServiceFactory::SyncClientFactory*
-    ProfileSyncServiceFactory::client_factory_ = nullptr;
+SyncServiceFactory::SyncClientFactory* SyncServiceFactory::client_factory_ =
+    nullptr;

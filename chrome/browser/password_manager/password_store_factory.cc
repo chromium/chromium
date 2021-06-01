@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -93,7 +93,7 @@ void PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
   if (!password_store)
     return;
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
       password_store.get(), sync_service,

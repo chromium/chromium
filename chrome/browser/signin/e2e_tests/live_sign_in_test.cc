@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -266,7 +266,7 @@ class LiveSignInTest : public signin::test::LiveTest {
   syncer::SyncService* sync_service() { return sync_service(browser()); }
 
   syncer::SyncService* sync_service(Browser* browser) {
-    return ProfileSyncServiceFactory::GetForProfile(browser->profile());
+    return SyncServiceFactory::GetForProfile(browser->profile());
   }
 
   AccountReconcilor* account_reconcilor() {

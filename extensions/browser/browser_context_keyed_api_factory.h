@@ -82,7 +82,7 @@ class BrowserContextKeyedAPI : public KeyedService {
 //         BrowserContextKeyedAPIFactory<ApiResourceManager<T>>* factory) {
 //       factory->DependsOn(
 //           ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-//       factory->DependsOn(ProfileSyncServiceFactory::GetInstance());
+//       factory->DependsOn(SyncServiceFactory::GetInstance());
 //       ...
 //     }
 //   };

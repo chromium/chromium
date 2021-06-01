@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
@@ -16,7 +16,7 @@ AuthErrorObserverFactory::AuthErrorObserverFactory()
     : BrowserContextKeyedServiceFactory(
           "AuthErrorObserver",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
 }
 

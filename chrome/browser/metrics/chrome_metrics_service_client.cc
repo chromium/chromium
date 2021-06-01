@@ -57,7 +57,7 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tracing/background_tracing_metrics_provider.h"
 #include "chrome/browser/translate/translate_ranker_metrics_provider.h"
 #include "chrome/common/buildflags.h"
@@ -409,7 +409,7 @@ class ProfileClientImpl
     if (!profile)
       return nullptr;
 
-    return ProfileSyncServiceFactory::GetForProfile(profile);
+    return SyncServiceFactory::GetForProfile(profile);
   }
 
   base::Time GetNetworkTime() const override {
@@ -805,7 +805,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<syncer::PassphraseTypeMetricsProvider>(
-          base::BindRepeating(&ProfileSyncServiceFactory::GetAllSyncServices)));
+          base::BindRepeating(&SyncServiceFactory::GetAllSyncServices)));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<HttpsEngagementMetricsProvider>());
@@ -1028,7 +1028,7 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
 
   ObserveServiceForDeletions(history_service);
 
-  syncer::SyncService* sync = ProfileSyncServiceFactory::GetForProfile(profile);
+  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   if (!sync) {
     return false;
   }

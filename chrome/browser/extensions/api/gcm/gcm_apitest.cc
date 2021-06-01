@@ -78,7 +78,7 @@ class GcmApiTest : public ExtensionApiTest {
 
 void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   // We now always create the GCMProfileService instance in
-  // ProfileSyncServiceFactory that is called when a profile is being
+  // SyncServiceFactory that is called when a profile is being
   // initialized. In order to prevent it from being created, we add the switch
   // to disable the sync logic.
   command_line->AppendSwitch(switches::kDisableSync);

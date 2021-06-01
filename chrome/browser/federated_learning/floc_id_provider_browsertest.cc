@@ -21,7 +21,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -376,7 +376,7 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
 
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        ProfileSyncServiceFactory::GetForProfile(browser()->profile()));
+        SyncServiceFactory::GetForProfile(browser()->profile()));
   }
 
   syncer::FakeUserEventService* user_event_service() {
@@ -391,7 +391,7 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
 
  protected:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
         context,
         base::BindRepeating(&FlocIdProviderSortingLshUninitializedBrowserTest::
                                 CreateSyncService,
@@ -442,7 +442,7 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
     Profile* profile = Profile::FromBrowserContext(context);
 
     syncer::SyncService* sync_service =
-        ProfileSyncServiceFactory::GetForProfile(profile);
+        SyncServiceFactory::GetForProfile(profile);
 
     PrivacySandboxSettings* privacy_sandbox_settings =
         PrivacySandboxSettingsFactory::GetForProfile(profile);

@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -94,7 +94,7 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
       last_avatar_error_(sync_ui_util::GetAvatarSyncErrorType(profile)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
 
-  if (auto* sync_service = ProfileSyncServiceFactory::GetForProfile(profile_))
+  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile_))
     sync_service_observation_.Observe(sync_service);
 
   AvatarToolbarButton::State state = GetState();
@@ -176,7 +176,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
-  if (!ProfileSyncServiceFactory::IsSyncAllowed(profile_) ||
+  if (!SyncServiceFactory::IsSyncAllowed(profile_) ||
       !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
           signin::ConsentLevel::kSync)) {
     return AvatarToolbarButton::State::kNormal;

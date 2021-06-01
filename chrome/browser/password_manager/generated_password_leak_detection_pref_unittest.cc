@@ -9,7 +9,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -72,7 +72,7 @@ class GeneratedPasswordLeakDetectionPrefTest : public testing::Test {
       BuildTestProfile(test_url_loader_factory_);
   syncer::TestSyncService* sync_service_ =
       static_cast<syncer::TestSyncService*>(
-          ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
               profile(),
               base::BindRepeating(&BuildTestSyncService)));
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor_{

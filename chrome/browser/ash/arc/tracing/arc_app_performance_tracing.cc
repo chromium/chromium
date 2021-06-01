@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -417,7 +417,7 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   }
 
   const syncer::SyncUserSettings* sync_user_settings =
-      ProfileSyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+      SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
 
   if (sync_user_settings->IsUsingExplicitPassphrase()) {
     VLOG(1) << "Cannot trace: User has a sync passphrase.";

@@ -34,7 +34,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
@@ -177,8 +177,8 @@ typedef autofill::SavePasswordProgressLogger Logger;
 namespace {
 
 const syncer::SyncService* GetSyncService(Profile* profile) {
-  if (ProfileSyncServiceFactory::HasSyncService(profile))
-    return ProfileSyncServiceFactory::GetForProfile(profile);
+  if (SyncServiceFactory::HasSyncService(profile))
+    return SyncServiceFactory::GetForProfile(profile);
   return nullptr;
 }
 
@@ -644,7 +644,7 @@ ChromePasswordManagerClient::GetAccountPasswordStore() const {
 password_manager::SyncState ChromePasswordManagerClient::GetPasswordSyncState()
     const {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   return password_manager_util::GetPasswordSyncState(sync_service);
 }
 
@@ -1169,9 +1169,8 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     : content::WebContentsObserver(web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       password_manager_(this),
-      password_feature_manager_(
-          profile_->GetPrefs(),
-          ProfileSyncServiceFactory::GetForProfile(profile_)),
+      password_feature_manager_(profile_->GetPrefs(),
+                                SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
       password_reuse_detection_manager_(this),
       driver_factory_(nullptr),
@@ -1417,7 +1416,7 @@ bool ChromePasswordManagerClient::ShouldAnnotateNavigationEntries(
     return false;
 
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service || !sync_service->IsSyncFeatureActive() ||
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;

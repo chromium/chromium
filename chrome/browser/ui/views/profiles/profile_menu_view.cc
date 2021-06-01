@@ -29,7 +29,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -535,7 +535,7 @@ void ProfileMenuView::BuildSyncInfo() {
   Profile* profile = browser()->profile();
   // Only show the sync info if signin and sync are allowed.
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) ||
-      !ProfileSyncServiceFactory::IsSyncAllowed(profile)) {
+      !SyncServiceFactory::IsSyncAllowed(profile)) {
     return;
   }
 

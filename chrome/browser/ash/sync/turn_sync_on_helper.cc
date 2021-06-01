@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -220,7 +220,7 @@ void TurnSyncOnHelper::FinishSyncSetup(
 }
 
 syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
-  return ProfileSyncServiceFactory::IsSyncAllowed(profile_)
-             ? ProfileSyncServiceFactory::GetForProfile(profile_)
+  return SyncServiceFactory::IsSyncAllowed(profile_)
+             ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;
 }

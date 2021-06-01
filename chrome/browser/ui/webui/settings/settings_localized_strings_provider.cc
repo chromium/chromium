@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
@@ -1102,7 +1102,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "migrationEnabled",
       !is_guest_mode && autofill::IsCreditCardMigrationEnabled(
                             personal_data, profile->GetPrefs(),
-                            ProfileSyncServiceFactory::GetForProfile(profile),
+                            SyncServiceFactory::GetForProfile(profile),
                             /*is_test_mode=*/false,
                             /*log_manager=*/nullptr));
   html_source->AddBoolean(

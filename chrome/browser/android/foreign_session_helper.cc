@@ -14,8 +14,8 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/pref_names.h"
@@ -177,8 +177,7 @@ jboolean ForeignSessionHelper::IsTabSyncEnabled(JNIEnv* env) {
 }
 
 void ForeignSessionHelper::TriggerSessionSync(JNIEnv* env) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 
@@ -299,8 +298,7 @@ void ForeignSessionHelper::DeleteForeignSession(
 void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
     JNIEnv* env,
     jboolean enabled) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 

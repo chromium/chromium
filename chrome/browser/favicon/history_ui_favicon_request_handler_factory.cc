@@ -10,7 +10,7 @@
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/favicon/core/history_ui_favicon_request_handler_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -47,7 +47,7 @@ HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(LargeIconServiceFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 HistoryUiFaviconRequestHandlerFactory::
@@ -64,7 +64,7 @@ KeyedService* HistoryUiFaviconRequestHandlerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new favicon::HistoryUiFaviconRequestHandlerImpl(
       base::BindRepeating(&CanSendHistoryData,
-                          ProfileSyncServiceFactory::GetForProfile(profile)),
+                          SyncServiceFactory::GetForProfile(profile)),
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       LargeIconServiceFactory::GetForBrowserContext(context));

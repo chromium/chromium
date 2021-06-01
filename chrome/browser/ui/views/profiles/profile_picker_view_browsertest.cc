@@ -20,7 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
   prefs.SetManagedForTest(true);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_being_created);
+      SyncServiceFactory::GetForProfile(profile_being_created);
 
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
   prefs.SetManagedForTest(true);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_being_created);
+      SyncServiceFactory::GetForProfile(profile_being_created);
 
   // Inject a fake tab helper that confirms the enterprise dialog right away.
   base::RunLoop loop_until_enterprise_confirmed;
@@ -1216,7 +1216,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
   prefs.SetManagedForTest(true);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_being_created);
+      SyncServiceFactory::GetForProfile(profile_being_created);
 
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.

@@ -11,7 +11,7 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -220,7 +220,7 @@ StatusLabels GetStatusLabels(syncer::SyncService* sync_service,
 
 StatusLabels GetStatusLabels(Profile* profile) {
   DCHECK(profile);
-  return GetStatusLabels(ProfileSyncServiceFactory::GetForProfile(profile),
+  return GetStatusLabels(SyncServiceFactory::GetForProfile(profile),
                          IdentityManagerFactory::GetForProfile(profile),
                          signin_util::IsUserSignoutAllowedForProfile(profile));
 }
@@ -231,7 +231,7 @@ MessageType GetStatus(Profile* profile) {
 
 absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   const syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   // If there is no SyncService (probably because sync is disabled from the
   // command line), then there's no error to show.

@@ -56,7 +56,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
@@ -388,7 +388,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
         extensions::manifest_keys::kPlatformAppBackgroundScripts,
         std::move(scripts));
 
-    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestSyncService));
 
     extensions::TestExtensionSystem* extension_system(
@@ -413,7 +413,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     // Many pinned app tests assume OS sync is enabled.
     if (chromeos::features::IsSplitSettingsSyncEnabled()) {
       syncer::SyncService* sync_service =
-          ProfileSyncServiceFactory::GetForProfile(profile());
+          SyncServiceFactory::GetForProfile(profile());
       sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
     }
 
@@ -1436,7 +1436,7 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
 TEST_F(ChromeShelfControllerSplitSettingsSyncTest, PreinstalledApps) {
   // Simulate a user who opted out of sync.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile());
+      SyncServiceFactory::GetForProfile(profile());
   sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(false);
 
   InitShelfController();

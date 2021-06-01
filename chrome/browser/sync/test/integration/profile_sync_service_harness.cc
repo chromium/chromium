@@ -18,7 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
@@ -187,8 +187,7 @@ ProfileSyncServiceHarness::ProfileSyncServiceHarness(
     const std::string& password,
     SigninType signin_type)
     : profile_(profile),
-      service_(ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
-          profile)),
+      service_(SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile)),
       username_(username),
       password_(password),
       signin_type_(signin_type),

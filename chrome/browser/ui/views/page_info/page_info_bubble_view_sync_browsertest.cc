@@ -8,7 +8,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -92,7 +92,7 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
  protected:
   void SetupSyncForAccount(Profile* profile) {
     syncer::ProfileSyncService* sync_service =
-        ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
+        SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
 
     sync_service->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(

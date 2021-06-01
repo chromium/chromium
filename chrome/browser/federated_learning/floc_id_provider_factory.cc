@@ -13,7 +13,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -37,7 +37,7 @@ FlocIdProviderFactory::FlocIdProviderFactory()
     : BrowserContextKeyedServiceFactory(
           "FlocIdProvider",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(FlocRemotePermissionServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -51,7 +51,7 @@ KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service)
     return nullptr;
 

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
@@ -113,7 +113,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
         "test@gmail.com", signin::ConsentLevel::kSync);
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildTestSyncService)));
     user_settings_ = sync_service_->GetUserSettings();
 

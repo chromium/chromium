@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
@@ -63,8 +63,7 @@ void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow(
 
 void SyncConfirmationUI::Initialize(
     absl::optional<SkColor> profile_creation_flow_color) {
-  const bool is_sync_allowed =
-      ProfileSyncServiceFactory::IsSyncAllowed(profile_);
+  const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISyncConfirmationHost);

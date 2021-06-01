@@ -19,7 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -156,7 +156,7 @@ std::vector<password_manager::PasswordForm> GetPasswordsInStoreForRealm(
 
 void SetUpSyncInTransportMode(Profile* profile) {
   auto* sync_service = static_cast<syncer::TestSyncService*>(
-      ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile,
           base::BindRepeating(
               [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {

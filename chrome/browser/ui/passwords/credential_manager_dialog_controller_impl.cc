@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
@@ -87,7 +87,7 @@ std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
 
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   return password_bubble_experiment::IsSmartLockUser(sync_service);
 }
 

@@ -29,7 +29,7 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
@@ -203,7 +203,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
   // The one-time notice in the dialog.
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
-      ProfileSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       WebHistoryServiceFactory::GetForProfile(profile), chrome::GetChannel(),
       base::BindOnce(&EnableDialogAboutOtherFormsOfBrowsingHistory,
                      ScopedJavaGlobalRef<jobject>(env, listener)));

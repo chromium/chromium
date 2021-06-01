@@ -20,7 +20,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
@@ -63,7 +63,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         base::BindRepeating(&GetUpdatedWebHistoryService,
                             base::Unretained(profile)),
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile));
   }
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistoryBasic) {
     // The history option on the basic tab doesn't use a counter.
@@ -97,7 +97,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
                                             ServiceAccessType::EXPLICIT_ACCESS),
         AccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        ProfileSyncServiceFactory::GetForProfile(profile),
+        SyncServiceFactory::GetForProfile(profile),
         std::move(credential_store));
   }
 
@@ -105,7 +105,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
     return std::make_unique<browsing_data::AutofillCounter>(
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kDeleteDownloadHistory) {

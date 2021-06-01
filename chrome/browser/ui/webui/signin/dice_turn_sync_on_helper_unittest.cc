@@ -25,7 +25,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -202,7 +202,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactory(
       ChromeSigninClientFactory::GetInstance(),
       base::BindRepeating(&signin::BuildTestSigninClient));
-  profile_builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
+  profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                     base::BindRepeating(&BuildMockSyncService));
   profile_builder.AddTestingFactory(
       policy::UserPolicySigninServiceFactory::GetInstance(),
@@ -299,7 +299,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   syncer::MockSyncService* GetMockSyncService(Profile* profile) {
     return static_cast<syncer::MockSyncService*>(
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile));
   }
 
   DiceTurnSyncOnHelper* CreateDiceTurnOnSyncHelper(

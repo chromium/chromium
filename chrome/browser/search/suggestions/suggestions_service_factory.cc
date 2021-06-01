@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -45,7 +45,7 @@ SuggestionsServiceFactory::SuggestionsServiceFactory()
           "SuggestionsService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SuggestionsServiceFactory::~SuggestionsServiceFactory() {}
@@ -57,7 +57,7 @@ KeyedService* SuggestionsServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   std::unique_ptr<SuggestionsStore> suggestions_store(
       new SuggestionsStore(profile->GetPrefs()));

@@ -61,7 +61,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -1644,7 +1644,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalLastHour) {
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
-  ProfileSyncServiceFactory::GetForProfile(GetProfile());
+  SyncServiceFactory::GetForProfile(GetProfile());
 
   ASSERT_FALSE(tester.HasProfile());
   tester.AddProfilesAndCards();
@@ -1666,7 +1666,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalOlderThan30Days) {
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
-  ProfileSyncServiceFactory::GetForProfile(GetProfile());
+  SyncServiceFactory::GetForProfile(GetProfile());
 
   const base::Time k32DaysOld = base::Time::Now();
   task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
@@ -1704,7 +1704,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
-  ProfileSyncServiceFactory::GetForProfile(GetProfile());
+  SyncServiceFactory::GetForProfile(GetProfile());
 
   ASSERT_FALSE(tester.HasProfile());
   tester.AddProfilesAndCards();
@@ -1725,7 +1725,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
-  ProfileSyncServiceFactory::GetForProfile(GetProfile());
+  SyncServiceFactory::GetForProfile(GetProfile());
 
   ASSERT_FALSE(tester.HasProfile());
   tester.AddProfilesAndCards();
@@ -1751,7 +1751,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
-  ProfileSyncServiceFactory::GetForProfile(GetProfile());
+  SyncServiceFactory::GetForProfile(GetProfile());
 
   tester.AddProfilesAndCards();
   EXPECT_FALSE(tester.HasOrigin(std::string()));

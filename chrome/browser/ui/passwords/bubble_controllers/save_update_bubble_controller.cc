@@ -9,7 +9,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -81,7 +81,7 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
 
 bool IsSyncUser(Profile* profile) {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   return password_bubble_experiment::IsSmartLockUser(sync_service);
 }
 
@@ -208,7 +208,7 @@ bool SaveUpdateBubbleController::ReplaceToShowPromotionIfNeeded() {
     return false;
   PrefService* prefs = profile->GetPrefs();
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   // Signin promotion.
   if (password_bubble_experiment::ShouldShowChromeSignInPasswordPromo(
           prefs, sync_service)) {
@@ -281,8 +281,7 @@ void SaveUpdateBubbleController::ReportInteractions() {
     if (profile) {
       user_state = password_manager::features_util::
           ComputePasswordAccountStorageUserState(
-              profile->GetPrefs(),
-              ProfileSyncServiceFactory::GetForProfile(profile));
+              profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
     }
     metrics_util::LogSaveUIDismissalReason(dismissal_reason_, user_state);
   }

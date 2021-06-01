@@ -19,7 +19,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -703,7 +703,7 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
                 // Set up a TestSyncService which will happily return
                 // "everything is active" so that password generation is
                 // considered enabled.
-                ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+                SyncServiceFactory::GetInstance()->SetTestingFactory(
                     context, base::BindRepeating(&BuildTestSyncService));
 
                 PasswordStoreFactory::GetInstance()->SetTestingFactory(

@@ -15,7 +15,7 @@ struct DefaultSingletonTraits;
 class SharingMessageBridge;
 
 // Factory for sharing message bridge. We need this factory to prevent cyclic
-// dependency between SharingServiceFactory and ProfileSyncServiceFactory.
+// dependency between SharingServiceFactory and SyncServiceFactory.
 class SharingMessageBridgeFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Returns singleton instance of SharingMessageBridgeFactory.

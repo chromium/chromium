@@ -27,7 +27,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
@@ -153,7 +153,7 @@ const PrefService* ChromeAutofillClient::GetPrefs() const {
 syncer::SyncService* ChromeAutofillClient::GetSyncService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return ProfileSyncServiceFactory::GetForProfile(profile);
+  return SyncServiceFactory::GetForProfile(profile);
 }
 
 signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {

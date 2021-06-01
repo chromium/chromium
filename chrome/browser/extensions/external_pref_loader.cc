@@ -33,7 +33,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -157,8 +157,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     DCHECK(
         profile_->GetPrefs()->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
     pref_change_registrar_.reset();
-    syncer::SyncService* service =
-        ProfileSyncServiceFactory::GetForProfile(profile_);
+    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
     if (!service->GetUserSettings()->IsOsSyncFeatureEnabled()) {
       // User opted-out of OS sync, OS sync will never start, we're done here.
       Finish();
@@ -169,8 +168,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   }
 
   void MaybeObserveSyncStart() {
-    syncer::SyncService* service =
-        ProfileSyncServiceFactory::GetForProfile(profile_);
+    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
     DCHECK(service);
     if (!service->CanSyncFeatureStart()) {
       Finish();
@@ -218,8 +216,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     DCHECK(prefs);
     syncable_pref_observation_.Observe(prefs);
 
-    syncer::SyncService* service =
-        ProfileSyncServiceFactory::GetForProfile(profile_);
+    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
     sync_service_observation_.Observe(service);
   }
 
@@ -267,7 +264,7 @@ void ExternalPrefLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if ((options_ & DELAY_LOAD_UNTIL_PRIORITY_SYNC) &&
-      (profile_ && ProfileSyncServiceFactory::IsSyncAllowed(profile_))) {
+      (profile_ && SyncServiceFactory::IsSyncAllowed(profile_))) {
     pending_waiter_list_.push_back(
         std::make_unique<PrioritySyncReadyWaiter>(profile_));
     PrioritySyncReadyWaiter* waiter_ptr = pending_waiter_list_.back().get();

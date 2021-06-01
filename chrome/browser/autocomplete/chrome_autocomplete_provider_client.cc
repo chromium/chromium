@@ -35,7 +35,7 @@
 #include "chrome/browser/query_tiles/tile_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_service.h"
@@ -186,10 +186,9 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
     Profile* profile)
     : profile_(profile),
       scheme_classifier_(profile),
-      url_consent_helper_(
-          unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(
-                  ProfileSyncServiceFactory::GetForProfile(profile_))),
+      url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
+                              NewPersonalizedDataCollectionConsentHelper(
+                                  SyncServiceFactory::GetForProfile(profile_))),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
@@ -398,8 +397,7 @@ bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {
-  syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile_);
   return sync && sync->IsSyncFeatureActive();
 }
 

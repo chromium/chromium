@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PrefChanged) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PeriodChanged) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
       base::BindRepeating(&HistoryCounterTest::GetFakeWebHistoryService,
                           base::Unretained(this), base::Unretained(profile),
                           false),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,

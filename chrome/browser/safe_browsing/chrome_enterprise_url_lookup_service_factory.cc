@@ -15,7 +15,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/utils.h"

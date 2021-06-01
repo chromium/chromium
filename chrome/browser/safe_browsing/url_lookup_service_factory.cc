@@ -15,7 +15,7 @@
 #include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -46,7 +46,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
           "RealTimeUrlLookupService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   DependsOn(AdvancedProtectionStatusManagerFactory::GetInstance());
@@ -72,7 +72,7 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&safe_browsing::SyncUtils::
                               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
-                          ProfileSyncServiceFactory::GetForProfile(profile),
+                          SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(), g_browser_process->variations_service(),
       g_browser_process->safe_browsing_service()

@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -46,7 +46,7 @@ ChromeUserPopulation GetUserPopulation(Profile* profile) {
 
   population.set_is_incognito(profile->IsOffTheRecord());
 
-  syncer::SyncService* sync = ProfileSyncServiceFactory::GetForProfile(profile);
+  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   bool is_history_sync_enabled =
       sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);

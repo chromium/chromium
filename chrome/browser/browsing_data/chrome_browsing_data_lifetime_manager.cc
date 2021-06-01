@@ -22,7 +22,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -278,7 +278,7 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
   auto* data_types = profile_->GetPrefs()->GetList(
       browsing_data::prefs::kClearBrowsingDataOnExitList);
   if (data_types && !data_types->GetList().empty() &&
-      !ProfileSyncServiceFactory::IsSyncAllowed(profile_)) {
+      !SyncServiceFactory::IsSyncAllowed(profile_)) {
     profile_->GetPrefs()->SetBoolean(
         browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending, true);
     auto* remover = profile_->GetBrowsingDataRemover();
@@ -322,7 +322,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
     if (removal_settings.time_to_live_in_hours <= 0)
       continue;
 
-    if (ProfileSyncServiceFactory::IsSyncAllowed(profile_))
+    if (SyncServiceFactory::IsSyncAllowed(profile_))
       continue;
 
     auto deletion_end_time = end_time_for_testing_.value_or(

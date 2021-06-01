@@ -20,8 +20,8 @@
 #include "chrome/android/chrome_jni_headers/ProfileSyncService_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -93,7 +93,7 @@ ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(
   }
 
   sync_service_ =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile_);
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile_);
 }
 
 bool ProfileSyncServiceAndroid::Init() {

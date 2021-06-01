@@ -30,7 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "chrome/common/chrome_paths.h"
@@ -286,7 +286,7 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
 
   Profile* profile =  Profile::FromBrowserContext(browser_context());
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     // Sync flag is disabled (perhaps prohibited by policy).
     dict->SetBoolean(kSyncThemes, false);

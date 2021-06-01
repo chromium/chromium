@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -99,7 +99,7 @@ class ExternalPrefLoaderTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     sync_service_ = static_cast<TestSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
     sync_service_->SetFirstSetupComplete(true);
   }

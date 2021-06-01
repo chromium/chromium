@@ -26,7 +26,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -342,7 +342,7 @@ void PeopleHandler::OnJavascriptAllowed() {
   // This is intentionally not using GetSyncService(), to go around the
   // Profile::IsSyncAllowed() check.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   if (sync_service)
     sync_service_observation_.Observe(sync_service);
 }
@@ -413,8 +413,8 @@ void PeopleHandler::OnDidClosePage(const base::ListValue* args) {
 }
 
 syncer::SyncService* PeopleHandler::GetSyncService() const {
-  return ProfileSyncServiceFactory::IsSyncAllowed(profile_)
-             ? ProfileSyncServiceFactory::GetForProfile(profile_)
+  return SyncServiceFactory::IsSyncAllowed(profile_)
+             ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;
 }
 
@@ -905,8 +905,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
   // This is intentionally not using GetSyncService(), in order to access more
   // nuanced information, since GetSyncService() returns nullptr if anything
   // makes Profile::IsSyncAllowed() false.
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   bool disallowed_by_policy =
       service && service->HasDisableReason(
                      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);

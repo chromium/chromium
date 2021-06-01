@@ -5,7 +5,7 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -16,7 +16,7 @@ namespace {
 // Returns true if the user is signed in and full history sync is enabled,
 // and false otherwise.
 bool IsHistorySyncEnabled(Profile* profile) {
-  syncer::SyncService* sync = ProfileSyncServiceFactory::GetForProfile(profile);
+  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
          sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
 }

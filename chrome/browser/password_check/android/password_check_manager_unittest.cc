@@ -18,7 +18,7 @@
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -127,11 +127,10 @@ MockPasswordScriptsFetcher* CreateAndUseMockPasswordScriptsFetcher(
 }
 
 syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
-  return ProfileSyncServiceFactory::GetInstance()
-      ->SetTestingSubclassFactoryAndUse(
-          profile, base::BindLambdaForTesting([](content::BrowserContext*) {
-            return std::make_unique<syncer::TestSyncService>();
-          }));
+  return SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      profile, base::BindLambdaForTesting([](content::BrowserContext*) {
+        return std::make_unique<syncer::TestSyncService>();
+      }));
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,

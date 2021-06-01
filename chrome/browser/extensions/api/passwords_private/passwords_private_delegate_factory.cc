@@ -9,7 +9,7 @@
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system_provider.h"
 
@@ -38,7 +38,7 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 PasswordsPrivateDelegateFactory::~PasswordsPrivateDelegateFactory() = default;

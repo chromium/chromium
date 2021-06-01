@@ -105,7 +105,7 @@
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -418,7 +418,7 @@ void SaveSyncTrustedVaultKeysToProfile(
     const SyncTrustedVaultKeys& trusted_vault_keys,
     Profile* profile) {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     return;
   }
@@ -1724,7 +1724,7 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   quirks::QuirksManager::Get()->OnLoginCompleted();
 
   if (features::ShouldUseBrowserSyncConsent() &&
-      ProfileSyncServiceFactory::IsSyncAllowed(profile)) {
+      SyncServiceFactory::IsSyncAllowed(profile)) {
     turn_sync_on_helper_ = std::make_unique<TurnSyncOnHelper>(profile);
   }
 

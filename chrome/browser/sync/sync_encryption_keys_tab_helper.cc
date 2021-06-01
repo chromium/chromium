@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
@@ -118,7 +118,7 @@ void SyncEncryptionKeysTabHelper::CreateForWebContents(
     return;
   }
 
-  syncer::SyncService* sync_service = ProfileSyncServiceFactory::GetForProfile(
+  syncer::SyncService* sync_service = SyncServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   if (!sync_service) {
     return;

@@ -30,7 +30,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
@@ -78,7 +78,7 @@ class DiceTurnSyncOnHelperShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "DiceTurnSyncOnHelperShutdownNotifier") {
     DependsOn(IdentityManagerFactory::GetInstance());
-    DependsOn(ProfileSyncServiceFactory::GetInstance());
+    DependsOn(SyncServiceFactory::GetInstance());
     DependsOn(UnifiedConsentServiceFactory::GetInstance());
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
@@ -458,8 +458,8 @@ void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
 }
 
 syncer::SyncService* DiceTurnSyncOnHelper::GetSyncService() {
-  return ProfileSyncServiceFactory::IsSyncAllowed(profile_)
-             ? ProfileSyncServiceFactory::GetForProfile(profile_)
+  return SyncServiceFactory::IsSyncAllowed(profile_)
+             ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;
 }
 

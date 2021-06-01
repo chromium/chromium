@@ -26,7 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -247,7 +247,7 @@ InputMethodPrivateAddWordToDictionaryFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
-  syncer::SyncService* sync_service = ProfileSyncServiceFactory::GetForProfile(
+  syncer::SyncService* sync_service = SyncServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context()));
   if (!sync_service)
     return RespondNow(Error(

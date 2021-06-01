@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
@@ -86,7 +86,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        ProfileSyncServiceFactory::GetForProfile(profile()));
+        SyncServiceFactory::GetForProfile(profile()));
     web_history_service_ = static_cast<history::FakeWebHistoryService*>(
         WebHistoryServiceFactory::GetForProfile(profile()));
     ASSERT_TRUE(web_history_service_);
@@ -102,7 +102,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {ProfileSyncServiceFactory::GetInstance(),
+        {SyncServiceFactory::GetInstance(),
          base::BindRepeating(&BuildTestSyncService)},
         {WebHistoryServiceFactory::GetInstance(),
          base::BindRepeating(&BuildFakeWebHistoryService)},

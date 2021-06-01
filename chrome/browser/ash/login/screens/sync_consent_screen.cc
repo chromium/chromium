@@ -16,7 +16,7 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -42,8 +42,8 @@ constexpr base::TimeDelta kSyncConsentSettingsShowDelay =
     base::TimeDelta::FromSeconds(3);
 
 syncer::SyncService* GetSyncService(Profile* profile) {
-  if (ProfileSyncServiceFactory::HasSyncService(profile))
-    return ProfileSyncServiceFactory::GetForProfile(profile);
+  if (SyncServiceFactory::HasSyncService(profile))
+    return SyncServiceFactory::GetForProfile(profile);
   return nullptr;
 }
 

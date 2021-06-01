@@ -8,7 +8,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -77,7 +77,7 @@ GeneratedPasswordLeakDetectionPref::GeneratedPasswordLeakDetectionPref(
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile))
     identity_manager_observer_.Observe(identity_manager);
 
-  if (auto* sync_service = ProfileSyncServiceFactory::GetForProfile(profile))
+  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile))
     sync_service_observer_.Observe(sync_service);
 }
 

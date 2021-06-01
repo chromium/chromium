@@ -5,7 +5,7 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   Profile* profile = browser()->profile();
 
   syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
 
   sync_service->OverrideNetworkForTest(
       fake_server::CreateFakeServerHttpPostProviderFactory(

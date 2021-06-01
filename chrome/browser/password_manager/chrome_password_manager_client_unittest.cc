@@ -24,7 +24,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -216,7 +216,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   syncer::TestSyncService* SetupBasicTestSync() {
     syncer::TestSyncService* sync_service =
         static_cast<syncer::TestSyncService*>(
-            ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
                 profile(), base::BindRepeating(&CreateTestSyncService)));
     return sync_service;
   }

@@ -28,7 +28,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -69,7 +69,7 @@ const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
 
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  return ProfileSyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+  return SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
 }
 
 class ConsentRecordedWaiter

@@ -22,7 +22,7 @@
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
 #include "chrome/browser/sync_file_system/logger.h"
 #include "chrome/browser/sync_file_system/sync_direction.h"
@@ -269,7 +269,7 @@ void SyncFileSystemService::Shutdown() {
   remote_service_.reset();
 
   syncer::SyncService* profile_sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   if (profile_sync_service)
     profile_sync_service->RemoveObserver(this);
 
@@ -472,7 +472,7 @@ void SyncFileSystemService::Initialize(
   remote_sync_runners_.push_back(std::move(remote_syncer));
 
   syncer::SyncService* profile_sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   if (profile_sync_service) {
     UpdateSyncEnabledStatus(profile_sync_service);
     profile_sync_service->AddObserver(this);

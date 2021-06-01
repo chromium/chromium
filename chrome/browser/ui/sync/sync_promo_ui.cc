@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/base/sync_prefs.h"
 
 bool SyncPromoUI::ShouldShowSyncPromo(Profile* profile) {
@@ -17,7 +17,7 @@ bool SyncPromoUI::ShouldShowSyncPromo(Profile* profile) {
 
   syncer::SyncPrefs prefs(profile->GetPrefs());
   // Don't show if sync is not allowed to start or is running in local mode.
-  if (!ProfileSyncServiceFactory::IsSyncAllowed(profile) ||
+  if (!SyncServiceFactory::IsSyncAllowed(profile) ||
       prefs.IsLocalSyncEnabled()) {
     return false;
   }

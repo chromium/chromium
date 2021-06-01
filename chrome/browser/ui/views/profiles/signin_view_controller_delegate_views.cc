@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/reauth_util.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -49,7 +49,7 @@ const int kReauthDialogHeight = 520;
 int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // If sync is disabled, then the sync confirmation dialog looks like an error
   // dialog and thus it has the same preferred size.
-  return ProfileSyncServiceFactory::IsSyncAllowed(profile)
+  return SyncServiceFactory::IsSyncAllowed(profile)
              ? kSyncConfirmationDialogHeight
              : kSigninErrorDialogHeight;
 }

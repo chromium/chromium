@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
@@ -384,7 +384,7 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
 }
 
 SyncService* SyncInternalsMessageHandler::GetSyncService() {
-  return ProfileSyncServiceFactory::GetForProfile(
+  return SyncServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui())->GetOriginalProfile());
 }
 

@@ -26,7 +26,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
@@ -444,9 +444,9 @@ void AppListSyncableService::BuildModel() {
   // Install default page brakes for tablet form factor devices here as
   // these devices do not have app list sync turned on.
   if (chromeos::switches::IsTabletFormFactor() && profile_->IsNewProfile()) {
-    DCHECK(!ProfileSyncServiceFactory::GetForProfile(profile_)
-                ->GetActiveDataTypes()
-                .Has(syncer::APP_LIST));
+    DCHECK(
+        !SyncServiceFactory::GetForProfile(profile_)->GetActiveDataTypes().Has(
+            syncer::APP_LIST));
     // Create call back to create the default page break items at later time so
     // that default page break items are not removed by
     // |PruneRedundantPageBreakItems|

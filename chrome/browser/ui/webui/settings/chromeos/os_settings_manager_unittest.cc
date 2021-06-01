@@ -17,7 +17,7 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -63,7 +63,7 @@ class OsSettingsManagerTest : public testing::Test {
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             profile),
         phonehub::PhoneHubManagerFactory::GetForProfile(profile),
-        ProfileSyncServiceFactory::GetForProfile(profile),
+        SyncServiceFactory::GetForProfile(profile),
         SupervisedUserServiceFactory::GetForProfile(profile),
         kerberos_credentials_manager,
         ArcAppListPrefsFactory::GetForBrowserContext(profile),

@@ -12,7 +12,7 @@
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -60,7 +60,7 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
   standard_params.has_seen_welcome_page =
       prefs && prefs->GetBoolean(prefs::kHasSeenWelcomePage);
   standard_params.is_signin_allowed =
-      ProfileSyncServiceFactory::IsSyncAllowed(profile);
+      SyncServiceFactory::IsSyncAllowed(profile);
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
     standard_params.is_signed_in =
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
@@ -80,7 +80,7 @@ StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
   if (!process_startup || !browser_creator)
     return tabs;
   if (browser_creator->welcome_back_page() &&
-      CanShowWelcome(ProfileSyncServiceFactory::IsSyncAllowed(profile),
+      CanShowWelcome(SyncServiceFactory::IsSyncAllowed(profile),
                      profile->IsSupervised(),
                      signin_util::IsForceSigninEnabled())) {
     tabs.emplace_back(GetWelcomePageUrl(false), false);

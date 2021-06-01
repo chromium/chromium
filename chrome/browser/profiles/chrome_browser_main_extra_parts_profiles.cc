@@ -87,7 +87,7 @@
 #include "chrome/browser/signin/signin_profile_attributes_updater_factory.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
@@ -401,7 +401,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   prerender::NoStatePrefetchManagerFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
   ProfileNetworkContextServiceFactory::GetInstance();
-  ProfileSyncServiceFactory::GetInstance();
+  SyncServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
   ProfileThemeUpdateServiceFactory::GetInstance();
 #endif

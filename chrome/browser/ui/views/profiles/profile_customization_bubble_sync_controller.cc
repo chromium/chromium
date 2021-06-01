@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -58,7 +58,7 @@ void ProfileCustomizationBubbleSyncController::
                                              views::View* anchor_view,
                                              SkColor suggested_profile_color) {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   // TODO(crbug.com/1213112): A speculative fix, remove if not functional or not
   // needed.
   if (!profile || !anchor_view || !sync_service)
@@ -92,7 +92,7 @@ void ProfileCustomizationBubbleSyncController::
 bool ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
     Profile* profile) {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   return CanSyncStart(sync_service);
 }
 

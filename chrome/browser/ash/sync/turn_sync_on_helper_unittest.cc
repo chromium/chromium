@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -63,7 +63,7 @@ class TurnSyncOnHelperTest : public BrowserWithTestWindowTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildTestSyncService)));
     // Reset the sync service to the pre-setup state.
     sync_service_->SetFirstSetupComplete(false);

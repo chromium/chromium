@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_
 
 #include <memory>
 #include <vector>
@@ -27,7 +27,7 @@ class ProfileSyncService;
 class SyncService;
 }  // namespace syncer
 
-class ProfileSyncServiceFactory : public BrowserContextKeyedServiceFactory {
+class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   using SyncClientFactory =
       base::RepeatingCallback<std::unique_ptr<browser_sync::ChromeSyncClient>(
@@ -49,7 +49,7 @@ class ProfileSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // |profile| must not be nullptr.
   static bool IsSyncAllowed(Profile* profile);
 
-  static ProfileSyncServiceFactory* GetInstance();
+  static SyncServiceFactory* GetInstance();
 
   // Overrides how the SyncClient is created for testing purposes.
   static void SetSyncClientFactoryForTest(SyncClientFactory* client_factory);
@@ -59,10 +59,10 @@ class ProfileSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   static std::vector<const syncer::SyncService*> GetAllSyncServices();
 
  private:
-  friend struct base::DefaultSingletonTraits<ProfileSyncServiceFactory>;
+  friend struct base::DefaultSingletonTraits<SyncServiceFactory>;
 
-  ProfileSyncServiceFactory();
-  ~ProfileSyncServiceFactory() override;
+  SyncServiceFactory();
+  ~SyncServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
@@ -74,7 +74,7 @@ class ProfileSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // This is a raw pointer so it can be statically initialized.
   static SyncClientFactory* client_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileSyncServiceFactory);
+  DISALLOW_COPY_AND_ASSIGN(SyncServiceFactory);
 };
 
-#endif  // CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_SYNC_SYNC_SERVICE_FACTORY_H_

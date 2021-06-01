@@ -17,7 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -339,7 +339,7 @@ class MetricProviderSyncSettingsTest : public testing::Test {
  protected:
   TestSyncService* GetSyncService(TestingProfile* profile) {
     TestSyncService* sync_service = static_cast<TestSyncService*>(
-        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile, base::BindRepeating(&TestingSyncFactoryFunction)));
     sync_service->SetFirstSetupComplete(true);
     return sync_service;

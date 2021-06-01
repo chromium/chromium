@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -142,7 +142,7 @@ WebAppMover::~WebAppMover() = default;
 void WebAppMover::Start() {
   // We cannot grab the SyncService in the constructor without creating a
   // circular KeyedService dependency.
-  sync_service_ = ProfileSyncServiceFactory::GetForProfile(profile_);
+  sync_service_ = SyncServiceFactory::GetForProfile(profile_);
   // This can be a nullptr if the --disable-sync switch is specified.
   if (sync_service_)
     sync_observer_.Observe(sync_service_);
