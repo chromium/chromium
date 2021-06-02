@@ -637,13 +637,21 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     PrefService* local_state = g_browser_process->local_state();
-    if (local_state &&
-        !local_state->GetBoolean(lacros_prefs::kShowedExperimentalBannerPref)) {
-      LacrosStartupInfoBarDelegate::Create(infobar_manager);
+    if (local_state) {
+      // We show the banner if it's never shown before.
+      bool should_show_banner =
+          !local_state->GetBoolean(lacros_prefs::kShowedExperimentalBannerPref);
+      // If Lacros is not the primary browser, we always show the banner.
+      should_show_banner |= !chromeos::LacrosService::Get()
+                                 ->init_params()
+                                 ->standalone_browser_is_primary;
 
-      // Mark the pref as shown, so that we don't show the banner again.
-      local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
-                              true);
+      if (should_show_banner) {
+        LacrosStartupInfoBarDelegate::Create(infobar_manager);
+
+        local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
+                                true);
+      }
     }
 #endif
 
