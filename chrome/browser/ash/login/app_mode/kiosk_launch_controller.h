@@ -183,6 +183,9 @@ class KioskLaunchController
   // Whether the network is required for the installation.
   bool network_required_ = false;
 
+  // Whether the controller has already been cleaned-up.
+  bool cleaned_up_ = false;
+
   // Used to login into kiosk user profile.
   std::unique_ptr<KioskProfileLoader> kiosk_profile_loader_;
 
