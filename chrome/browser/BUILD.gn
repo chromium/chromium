@@ -5243,6 +5243,12 @@ static_library("browser") {
     if (use_x11) {
       deps += [ "//ui/gfx/x" ]
     }
+
+    # device_info_fetcher uses a "defined(USE_GIO)" macro, so if it's refactored
+    # away from this file make sure gio_config is still added to configs.
+    if (use_gio) {
+      configs += [ "//build/linux:gio_config" ]
+    }
   }
 
   if (is_linux || is_chromeos_lacros) {
