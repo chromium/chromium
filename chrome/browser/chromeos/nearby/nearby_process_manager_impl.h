@@ -96,7 +96,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   bool AttemptToBindToUtilityProcess();
 
   void OnSharingProcessCrash();
-  void OnMojoPipeDisconnect();
+  void OnMojoPipeDisconnect(NearbyProcessShutdownReason shutdown_reason);
   void OnReferenceDeleted(const base::UnguessableToken& reference_id);
   void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);

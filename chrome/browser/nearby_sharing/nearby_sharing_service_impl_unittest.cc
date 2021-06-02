@@ -4303,7 +4303,8 @@ TEST_P(NearbySharingServiceRestartTest, RestartsServiceWhenAppropriate) {
       break;
 
     case NearbyProcessShutdownReason::kCrash:
-    case NearbyProcessShutdownReason::kMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
       expected_to_restart =
           is_enabled && recent_shutdown_count <=
                             NearbySharingServiceImpl::
@@ -4326,9 +4327,11 @@ INSTANTIATE_TEST_SUITE_P(
     NearbySharingServiceRestartTest,
     testing::Combine(
         testing::Bool(),
-        testing::Values(NearbyProcessShutdownReason::kNormal,
-                        NearbyProcessShutdownReason::kCrash,
-                        NearbyProcessShutdownReason::kMojoPipeDisconnection),
+        testing::Values(
+            NearbyProcessShutdownReason::kNormal,
+            NearbyProcessShutdownReason::kCrash,
+            NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection,
+            NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection),
         testing::Values(0,
                         NearbySharingServiceImpl::
                                 kMaxRecentNearbyProcessUnexpectedShutdownCount -

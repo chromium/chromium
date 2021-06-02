@@ -335,7 +335,8 @@ void NearbyConnections::OnDisconnect(MojoDependencyName dependency_name) {
     return;
   }
 
-  LOG(WARNING) << "Nearby dependency mojo disconnected: ["
+  LOG(WARNING) << "The utility process has detected that the browser process "
+                  "has disconnected from a mojo pipe: ["
                << GetMojoDependencyName(dependency_name) << "]";
   base::UmaHistogramEnumeration(
       "Nearby.Connections.UtilityProcessShutdownReason."

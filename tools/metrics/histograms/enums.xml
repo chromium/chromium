@@ -54353,7 +54353,9 @@ Called by update_use_counter_css.py.-->
 <enum name="NearbyConnectionsUtilityProcessShutdownReason">
   <int value="0" label="Normal"/>
   <int value="1" label="Crash"/>
-  <int value="2" label="Mojo pipe disconnection"/>
+  <int value="2" label="Mojo pipe disconnection (deprecated)"/>
+  <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
+  <int value="4" label="Utility process disconnected Connections mojo pipe"/>
 </enum>
 
 <enum name="NearbyShareAttachmentType">

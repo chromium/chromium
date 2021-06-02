@@ -34,8 +34,9 @@ class NearbyProcessManager : public KeyedService {
   enum class NearbyProcessShutdownReason {
     kNormal = 0,
     kCrash = 1,
-    kMojoPipeDisconnection = 2,
-    kMaxValue = kMojoPipeDisconnection
+    kDecoderMojoPipeDisconnection = 3,
+    kConnectionsMojoPipeDisconnection = 4,
+    kMaxValue = kConnectionsMojoPipeDisconnection
   };
 
   using NearbyProcessStoppedCallback =
