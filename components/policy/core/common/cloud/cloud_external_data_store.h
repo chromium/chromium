@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_STORE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_STORE_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_EXTERNAL_DATA_STORE_H_
+#define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_EXTERNAL_DATA_STORE_H_
 
 #include <stddef.h>
 
@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/policy_export.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -32,7 +33,7 @@ class ResourceCache;
 // * Stores sharing a cache must use different cache_keys to avoid namespace
 //   overlaps.
 // * The cache must outlive all stores using it.
-class CloudExternalDataStore {
+class POLICY_EXPORT CloudExternalDataStore {
  public:
   CloudExternalDataStore(const std::string& cache_key,
                          scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -72,4 +73,4 @@ class CloudExternalDataStore {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_STORE_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_EXTERNAL_DATA_STORE_H_

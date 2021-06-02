@@ -9,7 +9,7 @@
 
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/chromeos/policy/cloud_external_data_store.h"
+#include "components/policy/core/common/cloud/cloud_external_data_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/policy_constants.h"

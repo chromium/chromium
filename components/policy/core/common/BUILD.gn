@@ -32,6 +32,8 @@ source_set("internal") {
     "cloud/chrome_browser_cloud_management_metrics.h",
     "cloud/cloud_external_data_manager.cc",
     "cloud/cloud_external_data_manager.h",
+    "cloud/cloud_external_data_store.cc",
+    "cloud/cloud_external_data_store.h",
     "cloud/cloud_policy_client.cc",
     "cloud/cloud_policy_client.h",
     "cloud/cloud_policy_client_registration_helper.cc",
@@ -237,6 +239,8 @@ source_set("internal") {
   if (is_android || is_ios) {
     sources += [ "cloud/component_cloud_policy_service_stub.cc" ]
     sources -= [
+      "cloud/cloud_external_data_store.cc",
+      "cloud/cloud_external_data_store.h",
       "cloud/component_cloud_policy_service.cc",
       "cloud/component_cloud_policy_store.cc",
       "cloud/component_cloud_policy_store.h",
@@ -490,6 +494,7 @@ source_set("unit_tests") {
   }
   if (!is_android && !is_ios) {
     sources += [
+      "cloud/cloud_external_data_store_unittest.cc",
       "cloud/component_cloud_policy_service_unittest.cc",
       "cloud/component_cloud_policy_store_unittest.cc",
       "cloud/component_cloud_policy_updater_unittest.cc",

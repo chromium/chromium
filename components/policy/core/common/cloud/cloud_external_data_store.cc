@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_store.h"
+#include "components/policy/core/common/cloud/cloud_external_data_store.h"
 
 #include <set>
 
@@ -30,10 +30,7 @@ CloudExternalDataStore::CloudExternalDataStore(
     const std::string& cache_key,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ResourceCache* cache)
-    : cache_key_(cache_key),
-      task_runner_(task_runner),
-      cache_(cache) {
-}
+    : cache_key_(cache_key), task_runner_(task_runner), cache_(cache) {}
 
 CloudExternalDataStore::~CloudExternalDataStore() {
   // No RunsTasksInCurrentSequence() check to avoid unit tests failures.
