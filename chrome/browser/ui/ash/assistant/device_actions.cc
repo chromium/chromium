@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
@@ -112,6 +113,7 @@ DeviceActions::DeviceActions(std::unique_ptr<DeviceActionsDelegate> delegate)
 DeviceActions::~DeviceActions() = default;
 
 void DeviceActions::SetWifiEnabled(bool enabled) {
+  NET_LOG(USER) << __func__ << ":" << enabled;
   NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), enabled,
       chromeos::network_handler::ErrorCallback());

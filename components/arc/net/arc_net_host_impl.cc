@@ -18,6 +18,7 @@
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -646,6 +647,7 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
     return;
   }
 
+  NET_LOG(USER) << __func__ << ":" << is_enabled;
   GetStateHandler()->SetTechnologyEnabled(
       chromeos::NetworkTypePattern::WiFi(), is_enabled,
       chromeos::network_handler::ErrorCallback());
