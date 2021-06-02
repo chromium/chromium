@@ -103,7 +103,7 @@ namespace platformKeys {
   callback VerificationCallback = void (VerificationResult result);
 
   interface Functions {
-    // This function filters from a list of client certificates the ones that
+    // This method filters from a list of client certificates the ones that
     // are known to the platform, match <code>request</code> and for which the
     // extension has permission to access the certificate and its private key.
     // If <code>interactive</code> is true, the user is presented a dialog where
@@ -130,7 +130,7 @@ namespace platformKeys {
     // "SHA-256", "SHA-384", or "SHA-512", e.g.
     // <code>{"hash": { "name": "none" } }</code>. The sign function will then
     // apply PKCS#1 v1.5 padding but not hash the given data.
-    // <p>Currently, this function only supports the "RSASSA-PKCS1-v1_5" and
+    // <p>Currently, this method only supports the "RSASSA-PKCS1-v1_5" and
     // "ECDSA" algorithms.</p>
     [nocompile] static void getKeyPair(ArrayBuffer certificate,
                                        object parameters,
@@ -151,7 +151,7 @@ namespace platformKeys {
     // operation before a sign. It is possible to pass "none" as the hash name,
     // in which case the sign function will apply PKCS#1 v1.5 padding and but
     // not hash the given data.
-    // <p>Currently, this function supports the "ECDSA" algorithm with
+    // <p>Currently, this method supports the "ECDSA" algorithm with
     // named-curve P-256 and "RSASSA-PKCS1-v1_5" algorithm with one of the
     // hashing algorithms "none", "SHA-1", "SHA-256", "SHA-384", and
     // "SHA-512".</p>
