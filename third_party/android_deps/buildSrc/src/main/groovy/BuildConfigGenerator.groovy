@@ -409,7 +409,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append("""\
                 |  # https://crbug.com/1213876
                 |  deps =
-                |      [ "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_common_java" ]
+                |      [ "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_java" ]
                 |""".stripMargin())
                 break
             case 'androidx_core_core':

@@ -26,8 +26,9 @@ import convert_dex_profile
 _IGNORE_WARNINGS = (
     # Caused by Play Services:
     r'Type `libcore.io.Memory` was not found',
-    # Caused by a missing final class in flogger:
+    # Caused by flogger supporting these as fallbacks. Not needed at runtime.
     r'Type `dalvik.system.VMStack` was not found',
+    r'Type `sun.misc.SharedSecrets` was not found',
     # Caused by jacoco code coverage:
     r'Type `java.lang.management.ManagementFactory` was not found',
     # TODO(wnwen): Remove this after R8 version 3.0.26-dev:
