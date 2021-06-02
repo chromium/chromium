@@ -56,7 +56,7 @@ suite('SiteDetailsPermission', function() {
 
     return browserProxy.whenCalled('setOriginPermissions').then((args) => {
       assertEquals(origin, args[0]);
-      assertDeepEquals([testElement.category], args[1]);
+      assertDeepEquals(testElement.category, args[1]);
       assertEquals(expectedContentSetting, args[2]);
     });
   }

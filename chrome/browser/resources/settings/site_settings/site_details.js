@@ -150,7 +150,9 @@ Polymer({
         this.fetchingForHost_ = this.toUrl(this.origin_).hostname;
         this.storedData_ = '';
         this.websiteUsageProxy_.fetchUsageTotal(this.fetchingForHost_);
-        this.updatePermissions_(this.getCategoryList());
+        this.browserProxy.getCategoryList(this.origin_).then((categoryList) => {
+          this.updatePermissions_(categoryList, /*hideOthers=*/ true);
+        });
       }
     });
   },
@@ -169,13 +171,12 @@ Polymer({
         origin === undefined || origin === '') {
       return;
     }
-    if (!this.getCategoryList().includes(category)) {
-      return;
-    }
 
-    // Site details currently doesn't support embedded origins, so ignore it
-    // and just check whether the origins are the same.
-    this.updatePermissions_([category]);
+    this.browserProxy.getCategoryList(this.origin_).then((categoryList) => {
+      if (categoryList.includes(category)) {
+        this.updatePermissions_([category], /*hideOthers=*/ false);
+      }
+    });
   },
 
   /**
@@ -199,9 +200,11 @@ Polymer({
    * |this.origin_|.
    * @param {!Array<!ContentSettingsTypes>} categoryList The list
    *     of categories to update permissions for.
+   * @param {boolean} hideOthers If true, permissions for categories not in
+   *     |categoryList| will be hidden.
    * @private
    */
-  updatePermissions_(categoryList) {
+  updatePermissions_(categoryList, hideOthers) {
     const permissionsMap =
         /**
          * @type {!Object<!ContentSettingsTypes,
@@ -212,6 +215,9 @@ Polymer({
             (map, element) => {
               if (categoryList.includes(element.category)) {
                 map[element.category] = element;
+              } else if (hideOthers) {
+                // This will hide any permission not in the category list.
+                element.site = null;
               }
               return map;
             },
@@ -266,7 +272,7 @@ Polymer({
    */
   onResetSettings_(e) {
     this.browserProxy.setOriginPermissions(
-        this.origin_, this.getCategoryList(), ContentSetting.DEFAULT);
+        this.origin_, null, ContentSetting.DEFAULT);
 
     this.onCloseDialog_(e);
   },

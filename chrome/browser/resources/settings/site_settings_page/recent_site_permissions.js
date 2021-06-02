@@ -396,8 +396,7 @@ Polymer({
    */
   async populateList_() {
     this.recentSitePermissionsList_ =
-        await this.browserProxy.getRecentSitePermissions(
-            this.getCategoryList(), 3);
+        await this.browserProxy.getRecentSitePermissions(3);
   },
 
   /**

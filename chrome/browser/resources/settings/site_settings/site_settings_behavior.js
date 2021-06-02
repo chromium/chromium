@@ -178,59 +178,6 @@ const SiteSettingsBehaviorImpl = {
     };
   },
 
-  /**
-   * Returns list of categories for each setting.ContentSettingsTypes that are
-   * currently enabled.
-   * @return {!Array<!ContentSettingsTypes>}
-   */
-  getCategoryList() {
-    if (this.contentTypes_.length === 0) {
-      for (const typeName in ContentSettingsTypes) {
-        const contentType = ContentSettingsTypes[typeName];
-        // <if expr="not chromeos and not is_win">
-        if (contentType === ContentSettingsTypes.PROTECTED_CONTENT) {
-          continue;
-        }
-        // </if>
-        // Some categories store their data in a custom way.
-        if (contentType === ContentSettingsTypes.COOKIES ||
-            contentType === ContentSettingsTypes.PROTOCOL_HANDLERS ||
-            contentType === ContentSettingsTypes.ZOOM_LEVELS) {
-          continue;
-        }
-        this.contentTypes_.push(contentType);
-      }
-    }
-
-    const addOrRemoveSettingWithFlag = (type, flag) => {
-      if (loadTimeData.getBoolean(flag)) {
-        if (!this.contentTypes_.includes(type)) {
-          this.contentTypes_.push(type);
-        }
-      } else {
-        if (this.contentTypes_.includes(type)) {
-          this.contentTypes_.splice(this.contentTypes_.indexOf(type), 1);
-        }
-      }
-    };
-    // These categories are gated behind flags.
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.BLUETOOTH_SCANNING,
-        'enableExperimentalWebPlatformFeatures');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.ADS, 'enableSafeBrowsingSubresourceFilter');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.PAYMENT_HANDLER,
-        'enablePaymentHandlerContentSetting');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.BLUETOOTH_DEVICES,
-        'enableWebBluetoothNewPermissionsBackend');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.WINDOW_PLACEMENT,
-        'enableExperimentalWebPlatformFeatures');
-    return this.contentTypes_.slice(0);
-  },
-
 };
 
 /** @polymerBehavior */

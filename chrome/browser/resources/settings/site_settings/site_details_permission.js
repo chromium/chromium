@@ -41,7 +41,8 @@ Polymer({
     useAutomaticLabel: {type: Boolean, value: false},
 
     /**
-     * The site that this widget is showing details for.
+     * The site that this widget is showing details for, or null if this widget
+     * should be hidden.
      * @type {RawSiteException}
      */
     site: Object,
@@ -67,16 +68,17 @@ Polymer({
         this.onDefaultSettingChanged_.bind(this));
   },
 
-  shouldHideCategory_(category) {
-    return !this.getCategoryList().includes(category);
-  },
-
   /**
-   * Updates the drop-down value after |site| has changed.
-   * @param {!RawSiteException} site The site to display.
+   * Updates the drop-down value after |site| has changed. If |site| is null,
+   * this element will hide.
+   * @param {?RawSiteException} site The site to display.
    * @private
    */
   siteChanged_(site) {
+    if (!site) {
+      return;
+    }
+
     if (site.source === SiteSettingSource.DEFAULT) {
       this.defaultSetting_ = site.setting;
       this.$.permission.value = ContentSetting.DEFAULT;
@@ -123,7 +125,7 @@ Polymer({
    */
   onPermissionSelectionChange_() {
     this.browserProxy.setOriginPermissions(
-        this.site.origin, [this.category], this.$.permission.value);
+        this.site.origin, this.category, this.$.permission.value);
   },
 
   /**
@@ -183,6 +185,14 @@ Polymer({
       return muteString;
     }
     return blockString;
+  },
+
+  /**
+   * Returns true if |this| should be hidden.
+   * @private
+   */
+  shouldHideCategory_() {
+    return !this.site;
   },
 
   /**

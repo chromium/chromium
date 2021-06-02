@@ -543,9 +543,6 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
 TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   base::ListValue get_all_sites_args;
   get_all_sites_args.AppendString(kCallbackId);
-  base::Value category_list(base::Value::Type::LIST);
-  category_list.Append(kNotifications);
-  get_all_sites_args.Append(std::move(category_list));
 
   // Test all sites is empty when there are no preferences.
   handler()->HandleGetAllSites(&get_all_sites_args);
@@ -744,9 +741,6 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
 
   base::ListValue get_recent_permissions_args;
   get_recent_permissions_args.AppendString(kCallbackId);
-  base::Value category_list(base::Value::Type::LIST);
-  category_list.Append(kNotifications);
-  get_recent_permissions_args.Append(std::move(category_list));
   get_recent_permissions_args.Append(3);
 
   // Configure prefs and auto blocker with a controllable clock.
@@ -783,15 +777,11 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
         url1, ContentSettingsType::NOTIFICATIONS, false);
 
   clock.Advance(base::TimeDelta::FromHours(2));
-  map->SetContentSettingDefaultScope(url2, url2, ContentSettingsType::IMAGES,
-                                     CONTENT_SETTING_ALLOW);
   clock.Advance(base::TimeDelta::FromHours(1));
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(&clock);
-  incognito_map->SetContentSettingDefaultScope(
-      url1, url1, ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW);
 
   clock.Advance(base::TimeDelta::FromHours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
@@ -1340,11 +1330,7 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
   // Block notifications.
   base::ListValue set_args;
   set_args.AppendString(origin_with_port);
-  {
-    auto category_list = std::make_unique<base::ListValue>();
-    category_list->AppendString(kNotifications);
-    set_args.Append(std::move(category_list));
-  }
+  set_args.AppendString(kNotifications);
   set_args.AppendString(
       content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
   handler()->HandleSetOriginPermissions(&set_args);
@@ -1353,9 +1339,7 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
   // Reset things back to how they were.
   base::ListValue reset_args;
   reset_args.AppendString(origin_with_port);
-  auto category_list = std::make_unique<base::ListValue>();
-  category_list->AppendString(kNotifications);
-  reset_args.Append(std::move(category_list));
+  reset_args.AppendString(std::move(kNotifications));
   reset_args.AppendString(
       content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
 
@@ -1677,11 +1661,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // Block notifications.
   base::ListValue set_args;
   set_args.AppendString(origin_anchor_string);
-  {
-    auto category_list = std::make_unique<base::ListValue>();
-    category_list->AppendString(kNotifications);
-    set_args.Append(std::move(category_list));
-  }
+  set_args.AppendString(kNotifications);
   set_args.AppendString(
       content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
   handler()->HandleSetOriginPermissions(&set_args);
@@ -1873,9 +1853,6 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   {
     base::ListValue get_all_sites_args;
     get_all_sites_args.AppendString(kCallbackId);
-    base::Value category_list(base::Value::Type::LIST);
-    category_list.Append(kNotifications);
-    get_all_sites_args.Append(std::move(category_list));
 
     handler()->HandleGetAllSites(&get_all_sites_args);
 
@@ -1911,9 +1888,6 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   {
     base::ListValue get_recent_permissions_args;
     get_recent_permissions_args.AppendString(kCallbackId);
-    base::Value category_list(base::Value::Type::LIST);
-    category_list.Append(kNotifications);
-    get_recent_permissions_args.Append(std::move(category_list));
     get_recent_permissions_args.Append(3);
 
     handler()->HandleGetRecentSitePermissions(&get_recent_permissions_args);

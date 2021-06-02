@@ -170,13 +170,20 @@ export class SiteSettingsPrefsBrowserProxy {
   getDefaultValueForContentType(contentType) {}
 
   /**
-   * Gets a list of sites, grouped by eTLD+1, affected by any of the content
-   * settings specified by |contentTypes|.
-   * @param {!Array<!ContentSettingsTypes>} contentTypes A list of
-   *     the content types to retrieve sites for.
+   * Gets a list of sites, grouped by eTLD+1, affected by any content settings
+   * that should be visible to the user.
    * @return {!Promise<!Array<!SiteGroup>>}
    */
-  getAllSites(contentTypes) {}
+  getAllSites() {}
+
+  /**
+   * Returns a list of content settings types that are controlled via a standard
+   * permissions UI and should be made visible to the user.
+   * @param {!string} origin The associated origin for which categories should
+   *     be shown or hidden.
+   * @return {!Promise<!Array<string>>}
+   */
+  getCategoryList(origin) {}
 
   /**
    * Get the string which describes the current effective cookie setting.
@@ -189,12 +196,10 @@ export class SiteSettingsPrefsBrowserProxy {
    * numSources different origin/profile (inconigto/regular) pairings.
    * This includes permissions adjusted by embargo, but excludes any set
    * via policy.
-   * @param {!Array<!ContentSettingsTypes>} contentTypes A list of
-   *     the content types to retrieve sites with recently changed settings.
    * @param {!number} numSources Maximum number of different sources to return
    * @return {!Promise<!Array<!RecentSitePermissions>>}
    */
-  getRecentSitePermissions(contentTypes, numSources) {}
+  getRecentSitePermissions(numSources) {}
 
   /**
    * Gets the chooser exceptions for a particular chooser type.
@@ -235,14 +240,13 @@ export class SiteSettingsPrefsBrowserProxy {
    * Resets the permissions for a list of categories for a given origin. This
    * does not support incognito settings or patterns.
    * @param {string} origin The origin to reset permissions for.
-   * @param {!Array<!ContentSettingsTypes>} contentTypes A list of
-   *     categories to set the permission for. Typically this would be a
-   *     single category, but sometimes it is useful to clear any permissions
-   *     set for all categories.
+   * @param {?ContentSettingsTypes} category The category to set the permission
+   *     for. If null, this applies to all categories. (Sometimes it is useful
+   *     to clear any permissions set for all categories.)
    * @param {!ContentSetting} blanketSetting The setting to set all
    *     permissions listed in |contentTypes| to.
    */
-  setOriginPermissions(origin, contentTypes, blanketSetting) {}
+  setOriginPermissions(origin, category, blanketSetting) {}
 
   /**
    * Resets the category permission for a given origin (expressed as primary
@@ -413,8 +417,13 @@ export class SiteSettingsPrefsBrowserProxyImpl {
   }
 
   /** @override */
-  getAllSites(contentTypes) {
-    return sendWithPromise('getAllSites', contentTypes);
+  getAllSites() {
+    return sendWithPromise('getAllSites');
+  }
+
+  /** @override */
+  getCategoryList(origin) {
+    return sendWithPromise('getCategoryList', origin);
   }
 
   /** @override */
@@ -423,9 +432,8 @@ export class SiteSettingsPrefsBrowserProxyImpl {
   }
 
   /** @override */
-  getRecentSitePermissions(contentTypes, numSources) {
-    return sendWithPromise(
-        'getRecentSitePermissions', contentTypes, numSources);
+  getRecentSitePermissions(numSources) {
+    return sendWithPromise('getRecentSitePermissions', numSources);
   }
 
   /** @override */

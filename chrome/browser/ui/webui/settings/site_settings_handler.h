@@ -169,14 +169,20 @@ class SiteSettingsHandler
   // the front end when fetching finished.
   void HandleGetAllSites(const base::ListValue* args);
 
+  // Returns a list of content settings types that are controlled via a standard
+  // permissions UI and should be made visible to the user. There is a single
+  // nullable string argument, which represents an associated origin. See
+  // `SiteSettingsPrefsBrowserProxy#getCategoryList`.
+  void HandleGetCategoryList(const base::ListValue* args);
+
   // Returns a string for display describing the current cookie settings.
   void HandleGetCookieSettingDescription(const base::ListValue* args);
 
   // Returns a list containing the most recent permission changes for the
-  // provided content types grouped by origin/profile (incognito, regular)
-  // combinations, limited to N origin/profile pairings. This includes
-  // permission changes made by embargo, but does not include permissions
-  // enforced via policy.
+  // content types that are visiblein settings, grouped by origin/profile
+  // (incognito, regular) combinations, limited to N origin/profile pairings.
+  // This includes permission changes made by embargo, but does not include
+  // permissions enforced via policy.
   void HandleGetRecentSitePermissions(const base::ListValue* args);
 
   // Called when the list of origins using storage has been fetched, and sends

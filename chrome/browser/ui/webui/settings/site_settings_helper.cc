@@ -9,10 +9,13 @@
 #include <set>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -25,6 +28,7 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -43,6 +47,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -401,16 +406,80 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
   return base::StringPiece();
 }
 
-std::vector<ContentSettingsType> ContentSettingsTypesFromGroupNames(
-    const base::Value::ConstListView types) {
-  std::vector<ContentSettingsType> content_types;
-  content_types.reserve(types.size());
-  for (const auto& value : types) {
-    const auto& type = value.GetString();
-    content_types.push_back(
-        site_settings::ContentSettingsTypeFromGroupName(type));
+const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
+  // First build the list of permissions that will be shown regardless of
+  // `origin`. Some categories such as COOKIES store their data in a custom way,
+  // so are not included here.
+  static base::NoDestructor<std::vector<ContentSettingsType>> base_types({
+    ContentSettingsType::AR, ContentSettingsType::AUTOMATIC_DOWNLOADS,
+        ContentSettingsType::BACKGROUND_SYNC,
+        ContentSettingsType::CLIPBOARD_READ_WRITE,
+        ContentSettingsType::FILE_HANDLING,
+        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+        ContentSettingsType::FONT_ACCESS, ContentSettingsType::GEOLOCATION,
+        ContentSettingsType::HID_GUARD, ContentSettingsType::IDLE_DETECTION,
+        ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
+        ContentSettingsType::MEDIASTREAM_CAMERA,
+        ContentSettingsType::MEDIASTREAM_MIC, ContentSettingsType::MIDI_SYSEX,
+        ContentSettingsType::MIXEDSCRIPT, ContentSettingsType::NOTIFICATIONS,
+        ContentSettingsType::POPUPS,
+#if defined(IS_CHROMEOS_ASH) || defined(OS_WIN)
+        ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+#endif
+        ContentSettingsType::SENSORS, ContentSettingsType::SERIAL_GUARD,
+        ContentSettingsType::SOUND, ContentSettingsType::USB_GUARD,
+        ContentSettingsType::VR,
+  });
+  static bool initialized = false;
+  if (!initialized) {
+    // The permission categories in this block are only shown when running with
+    // certain flags/switches.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ::switches::kEnableExperimentalWebPlatformFeatures)) {
+      base_types->push_back(ContentSettingsType::BLUETOOTH_SCANNING);
+      base_types->push_back(ContentSettingsType::WINDOW_PLACEMENT);
+    }
+
+    if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps))
+      base_types->push_back(ContentSettingsType::PAYMENT_HANDLER);
+
+    if (base::FeatureList::IsEnabled(
+            features::kWebBluetoothNewPermissionsBackend)) {
+      base_types->push_back(ContentSettingsType::BLUETOOTH_GUARD);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            subresource_filter::kSafeBrowsingSubresourceFilter)) {
+      base_types->push_back(ContentSettingsType::ADS);
+    }
+
+    initialized = true;
   }
-  return content_types;
+
+  return *base_types;
+}
+
+std::vector<ContentSettingsType> GetVisiblePermissionCategoriesForOrigin(
+    Profile* profile,
+    const GURL& origin) {
+  const std::vector<ContentSettingsType>& base_types =
+      GetVisiblePermissionCategories();
+  std::vector<ContentSettingsType> types_for_origin;
+  std::copy_if(
+      base_types.begin(), base_types.end(),
+      std::back_inserter(types_for_origin),
+      [&profile, &origin](ContentSettingsType type) {
+        // File Handling is only relevant for installed PWAs that ask for
+        // certain file types; if this is not the case, the control will do
+        // nothing and thus is hidden.
+        if (type == ContentSettingsType::FILE_HANDLING &&
+            web_app::GetFileHandlersForAllWebAppsWithOrigin(profile, origin)
+                .empty()) {
+          return false;
+        }
+        return true;
+      });
+  return types_for_origin;
 }
 
 std::string SiteSettingSourceToString(const SiteSettingSource source) {

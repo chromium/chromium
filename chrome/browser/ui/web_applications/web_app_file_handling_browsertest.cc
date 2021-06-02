@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -796,6 +797,35 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
 #endif
   EXPECT_NE(std::u16string::npos, display_string_app1.find(html));
   EXPECT_NE(std::u16string::npos, display_string_app1.find(jpeg));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       SettingsCategoryVisibility) {
+  // The file handling permission is visible in a general context.
+  const std::vector<ContentSettingsType>& all_categories =
+      site_settings::GetVisiblePermissionCategories();
+  EXPECT_FALSE(std::find(all_categories.begin(), all_categories.end(),
+                         ContentSettingsType::FILE_HANDLING) ==
+               all_categories.end());
+
+  // The file handling permission is not visible in the context of an origin
+  // that doesn't correspond to a PWA.
+  std::vector<ContentSettingsType> categories_for_arbitrary_website =
+      site_settings::GetVisiblePermissionCategoriesForOrigin(
+          profile(), GURL("https://example.com"));
+  EXPECT_TRUE(std::find(categories_for_arbitrary_website.begin(),
+                        categories_for_arbitrary_website.end(),
+                        ContentSettingsType::FILE_HANDLING) ==
+              categories_for_arbitrary_website.end());
+
+  // The file handling permission *is* visible for a PWA origin.
+  InstallFileHandlingPWA();
+  std::vector<ContentSettingsType> categories_for_pwa =
+      site_settings::GetVisiblePermissionCategoriesForOrigin(
+          profile(), GetSecureAppURL().GetOrigin());
+  EXPECT_FALSE(std::find(categories_for_pwa.begin(), categories_for_pwa.end(),
+                         ContentSettingsType::FILE_HANDLING) ==
+               categories_for_pwa.end());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

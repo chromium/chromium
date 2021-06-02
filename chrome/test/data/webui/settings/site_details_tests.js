@@ -197,83 +197,6 @@ suite('SiteDetails', function() {
     return siteDetailsElement;
   }
 
-  test('all site settings are shown', function() {
-    // Add ContentsSettingsTypes which are not supposed to be shown on the Site
-    // Details page here.
-    const nonSiteDetailsContentSettingsTypes = [
-      ContentSettingsTypes.COOKIES,
-      ContentSettingsTypes.PROTOCOL_HANDLERS,
-      ContentSettingsTypes.ZOOM_LEVELS,
-    ];
-    if (!isChromeOS && !isWindows) {
-      nonSiteDetailsContentSettingsTypes.push(
-          ContentSettingsTypes.PROTECTED_CONTENT);
-    }
-
-    // A list of optionally shown content settings mapped to their loadTimeData
-    // flag string.
-    const optionalSiteDetailsContentSettingsTypes =
-        /** @type {!ContentSettingsType : string} */ ({});
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .BLUETOOTH_SCANNING] =
-        'enableExperimentalWebPlatformFeatures';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .WINDOW_PLACEMENT] =
-        'enableExperimentalWebPlatformFeatures';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .PAYMENT_HANDLER] =
-        'enablePaymentHandlerContentSetting';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes.ADS] =
-        'enableSafeBrowsingSubresourceFilter';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .BLUETOOTH_DEVICES] =
-        'enableWebBluetoothNewPermissionsBackend';
-
-    const controlledSettingsCount = /** @type{string : int } */ ({});
-
-    controlledSettingsCount['enableExperimentalWebPlatformFeatures'] = 2;
-    controlledSettingsCount['enablePaymentHandlerContentSetting'] = 1;
-    controlledSettingsCount['enableSafeBrowsingSubresourceFilter'] = 1;
-    controlledSettingsCount['enableWebBluetoothNewPermissionsBackend'] = 1;
-
-    browserProxy.setPrefs(prefs);
-
-    // First, explicitly set all the optional settings to false.
-    for (const contentSetting in optionalSiteDetailsContentSettingsTypes) {
-      const loadTimeDataOverride = {};
-      loadTimeDataOverride[optionalSiteDetailsContentSettingsTypes
-                               [contentSetting]] = false;
-      loadTimeData.overrideValues(loadTimeDataOverride);
-    }
-
-    // Iterate over each flag in on / off state, assuming that the on state
-    // means the content setting will show, and off hides it.
-    for (const contentSetting in optionalSiteDetailsContentSettingsTypes) {
-      const numContentSettings = Object.keys(ContentSettingsTypes).length -
-          nonSiteDetailsContentSettingsTypes.length -
-          Object.keys(optionalSiteDetailsContentSettingsTypes).length;
-
-      const loadTimeDataOverride = {};
-      loadTimeDataOverride[optionalSiteDetailsContentSettingsTypes
-                               [contentSetting]] = true;
-      loadTimeData.overrideValues(loadTimeDataOverride);
-      testElement = createSiteDetails('https://foo.com:443');
-      assertEquals(
-          numContentSettings +
-              controlledSettingsCount[optionalSiteDetailsContentSettingsTypes[
-                  [contentSetting]]],
-          testElement.getCategoryList().length);
-
-      // Check for setting = off at the end to ensure that the setting does
-      // not carry over for the next iteration.
-      loadTimeDataOverride[optionalSiteDetailsContentSettingsTypes
-                               [contentSetting]] = false;
-      loadTimeData.overrideValues(loadTimeDataOverride);
-      testElement = createSiteDetails('https://foo.com:443');
-      assertEquals(numContentSettings, testElement.getCategoryList().length);
-    }
-  });
-
   test('usage heading shows properly', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
@@ -364,14 +287,6 @@ suite('SiteDetails', function() {
 
   test('correct pref settings are shown', function() {
     browserProxy.setPrefs(prefs);
-    // Make sure all the possible content settings are shown for this test.
-    loadTimeData.overrideValues({
-      enableExperimentalWebPlatformFeatures: true,
-      enableFileSystemWriteContentSetting: true,
-      enablePaymentHandlerContentSetting: true,
-      enableSafeBrowsingSubresourceFilter: true,
-      enableWebBluetoothNewPermissionsBackend: true,
-    });
     testElement = createSiteDetails('https://foo.com:443');
 
     return browserProxy.whenCalled('isOriginValid')
@@ -425,6 +340,31 @@ suite('SiteDetails', function() {
         });
   });
 
+  test('categories can be hidden', function() {
+    browserProxy.setPrefs(prefs);
+    // Only the categories in this list should be visible to the user.
+    browserProxy.setCategoryList(
+        [ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.GEOLOCATION]);
+    testElement = createSiteDetails('https://foo.com:443');
+
+    return browserProxy.whenCalled('isOriginValid')
+        .then(() => {
+          return browserProxy.whenCalled('getOriginPermissions');
+        })
+        .then(() => {
+          testElement.root.querySelectorAll('site-details-permission')
+              .forEach((siteDetailsPermission) => {
+                const shouldBeVisible = siteDetailsPermission.category ===
+                        ContentSettingsTypes.NOTIFICATIONS ||
+                    siteDetailsPermission.category ===
+                        ContentSettingsTypes.GEOLOCATION;
+                assertEquals(
+                    !shouldBeVisible, siteDetailsPermission.$.details.hidden);
+              });
+        });
+  });
+
+
   test('show confirmation dialog on reset settings', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
@@ -444,7 +384,7 @@ suite('SiteDetails', function() {
     // Accepting the dialog will make a call to setOriginPermissions.
     return browserProxy.whenCalled('setOriginPermissions').then((args) => {
       assertEquals(testElement.origin, args[0]);
-      assertDeepEquals(testElement.getCategoryList(), args[1]);
+      assertDeepEquals(null, args[1]);
       assertEquals(ContentSetting.DEFAULT, args[2]);
     });
   });

@@ -221,15 +221,7 @@ Polymer({
    * @private
    */
   populateList_() {
-    /** @type {!Array<ContentSettingsTypes>} */
-    const contentTypes = this.getCategoryList();
-    // Make sure to include cookies, because All Sites handles data storage +
-    // cookies as well as regular ContentSettingsTypes.
-    if (!contentTypes.includes(ContentSettingsTypes.COOKIES)) {
-      contentTypes.push(ContentSettingsTypes.COOKIES);
-    }
-
-    this.browserProxy.getAllSites(contentTypes).then((response) => {
+    this.browserProxy.getAllSites().then((response) => {
       // Create a new map to make an observable change.
       const newMap = /** @type {!Map<string, !SiteGroup>} */
           (new Map(this.siteGroupMap));
@@ -549,7 +541,7 @@ Polymer({
           this.originRepresentation(
               this.actionMenuModel_.item.origins[0].origin);
       return loadTimeData.substituteString(this.i18n(messageId), displayName);
-      }
+    }
   },
 
   /**
@@ -613,14 +605,13 @@ Polymer({
   },
 
   /**
-   * Resets permission settings for a single origin.
+   * Resets all permission settings for a single origin.
    * @param {string} origin
    * @private
    */
   resetPermissionsForOrigin_: function(origin) {
-    const contentSettingsTypes = this.getCategoryList();
     this.browserProxy.setOriginPermissions(
-        origin, contentSettingsTypes, ContentSetting.DEFAULT);
+        origin, null, ContentSetting.DEFAULT);
   },
 
   /**
