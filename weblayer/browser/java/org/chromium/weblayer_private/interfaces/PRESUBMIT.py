@@ -15,6 +15,8 @@ import subprocess
 import sys
 import tempfile
 
+USE_PYTHON3 = True
+
 _INCOMPATIBLE_API_ERROR_STRING = """You have made an incompatible API change.
 Generally this means one of the following:
   A function has been removed.
