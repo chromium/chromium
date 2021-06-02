@@ -667,10 +667,17 @@ IN_PROC_BROWSER_TEST_F(
     DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest,
     MetricNotRecordedOnRegisteredAccount) {
   chromeos::UserAddingScreen::Get()->Start();
+
+  // Verify that the launcher usage state is recorded when switching accounts.
+  base::HistogramTester tester;
   AddUser(registered_user_id_);
+  tester.ExpectBucketCount(
+      "Apps.AppListUsageByNewUsers",
+      static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::
+                           kNotUsedBeforeSwitchingAccounts),
+      1);
 
   // Verify that the metric is not recorded.
-  base::HistogramTester tester;
   ShowAppListAndVerify();
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
@@ -694,4 +701,40 @@ IN_PROC_BROWSER_TEST_F(
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
       0);
+}
+
+class DurationBetweenSeesionActivationAndFirstLauncherShowingShutdownTest
+    : public DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest {
+ public:
+  DurationBetweenSeesionActivationAndFirstLauncherShowingShutdownTest() =
+      default;
+  ~DurationBetweenSeesionActivationAndFirstLauncherShowingShutdownTest()
+      override = default;
+
+ protected:
+  // DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest:
+  void SetUpOnMainThread() override {
+    DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest::
+        SetUpOnMainThread();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void TearDown() override {
+    histogram_tester_->ExpectBucketCount(
+        "Apps.AppListUsageByNewUsers",
+        static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::
+                             kNotUsedBeforeDestruction),
+        1);
+    DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest::
+        TearDown();
+  }
+
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+// Verify that the launcher usage state is recorded when shutting down.
+IN_PROC_BROWSER_TEST_F(
+    DurationBetweenSeesionActivationAndFirstLauncherShowingShutdownTest,
+    NotUseLauncherBeforeShuttingDown) {
+  // Do nothing. Verify the histogram after the browser process is terminated.
 }

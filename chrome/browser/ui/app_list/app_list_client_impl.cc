@@ -78,7 +78,21 @@ AppListClientImpl::AppListClientImpl()
 AppListClientImpl::~AppListClientImpl() {
   SetProfile(nullptr);
 
-  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
+  auto* user_manager = user_manager::UserManager::Get();
+  user_manager->RemoveSessionStateObserver(this);
+
+  // We assume that the current user is new if `state_for_new_user_` has value.
+  if (state_for_new_user_.has_value() &&
+      !state_for_new_user_->showing_recorded) {
+    DCHECK(user_manager->IsCurrentUserNew());
+
+    // Prefer the function to the macro because the usage data is recorded no
+    // more than once per second.
+    base::UmaHistogramEnumeration(
+        "Apps.AppListUsageByNewUsers",
+        AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
+  }
+
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
   DCHECK_EQ(this, g_app_list_client_instance);
@@ -339,6 +353,13 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     // be both new. It should not happen in the real world.
     state_for_new_user_ = StateForNewUser();
   } else if (state_for_new_user_) {
+    if (!state_for_new_user_->showing_recorded) {
+      // We assume that the previous user before switching was new if
+      // `state_for_new_user_` is not null.
+      base::UmaHistogramEnumeration(
+          "Apps.AppListUsageByNewUsers",
+          AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
+    }
     state_for_new_user_.reset();
   }
 
@@ -637,4 +658,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
         /*sample=*/launcher_action_duration, kTimeMetricsMin, kTimeMetricsMax,
         kTimeMetricsBucketCount);
   }
+
+  base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers",
+                                AppListUsageStateByNewUsers::kUsed);
 }

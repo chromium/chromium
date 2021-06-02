@@ -3285,6 +3285,12 @@ Unknown properties are collapsed to zero. -->
   <int value="10" label="Peeking To Half"/>
 </enum>
 
+<enum name="AppListUsageStateByNewUsers">
+  <int value="0" label="LAUNCHER_USED"/>
+  <int value="1" label="LAUNCHER_NOT_USED_BEFORE_DESTRUCTION"/>
+  <int value="2" label="LAUNCHER_NOT_USED_BEFORE_SWITCHING_ACCOUNTS"/>
+</enum>
+
 <enum name="AppListUserEvent">
   <int value="0" label="Impression"/>
   <int value="1" label="Launch"/>

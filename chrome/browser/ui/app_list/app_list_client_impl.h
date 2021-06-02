@@ -43,6 +43,27 @@ class AppListClientImpl
       public session_manager::SessionManagerObserver,
       public TemplateURLServiceObserver {
  public:
+  // Indicates the launcher usage state during the session started by a new user
+  // (i.e. the session completing the OOBE flow) but before any account
+  // switching. These are used in histograms, do not remove/renumber entries. If
+  // you're adding to this enum with the intention that it will be logged,
+  // update the AppListUsageStateByNewUsers enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AppListUsageStateByNewUsers {
+    // Launcher is used during the session started by a new user.
+    kUsed = 0,
+
+    // Launcher is not used before destruction. The destruction can be triggered
+    // in the following scenarios: logging out all account, shutting down the
+    // device and system crashes.
+    kNotUsedBeforeDestruction = 1,
+
+    // Launcher is not used before switching accounts.
+    kNotUsedBeforeSwitchingAccounts = 2,
+
+    kMaxValue = kNotUsedBeforeSwitchingAccounts,
+  };
+
   AppListClientImpl();
   AppListClientImpl(const AppListClientImpl&) = delete;
   AppListClientImpl& operator=(const AppListClientImpl&) = delete;
