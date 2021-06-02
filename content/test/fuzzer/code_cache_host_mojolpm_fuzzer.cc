@@ -24,6 +24,7 @@
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/fuzzer/code_cache_host_mojolpm_fuzzer.pb.h"
 #include "mojo/core/embedder/embedder.h"
+#include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-mojolpm.h"
@@ -213,7 +214,9 @@ void CodeCacheHostTestcase::SetUpOnUIThread() {
       std::make_unique<content::CacheStorageControlWrapper>(
           content::GetIOThreadTaskRunner({}), browser_context_->GetPath(),
           browser_context_->GetSpecialStoragePolicy(),
-          /*quota_manager_proxy=*/nullptr,
+          browser_context_->GetDefaultStoragePartition()
+              ->GetQuotaManager()
+              ->proxy(),
           /*blob_storage_context=*/mojo::NullRemote());
 
   generated_code_cache_context_ =
