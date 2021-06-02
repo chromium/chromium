@@ -15,7 +15,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -405,9 +404,6 @@ class CreditCard : public AutofillDataModel {
   // since we only store the full name.
   std::u16string temp_card_first_name_;
   std::u16string temp_card_last_name_;
-
-  // Info of tokenizized credit card if available.
-  sync_pb::CloudTokenData cloud_token_data_;
 
   // The nickname of the card. May be empty when nickname is not set.
   std::u16string nickname_;
