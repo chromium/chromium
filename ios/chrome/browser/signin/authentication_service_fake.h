@@ -35,10 +35,6 @@ class AuthenticationServiceFake : public AuthenticationService {
                bool force_clear_browsing_data,
                ProceduralBlock completion) override;
 
-  void SetHaveAccountsChangedWhileInBackground(bool changed);
-
-  bool HaveAccountsChangedWhileInBackground() const override;
-
   bool IsAuthenticated() const override;
 
   ChromeIdentity* GetAuthenticatedIdentity() const override;
@@ -55,7 +51,6 @@ class AuthenticationServiceFake : public AuthenticationService {
   void SignOutInternal(ProceduralBlock completion);
 
   __strong ChromeIdentity* authenticated_identity_;
-  bool have_accounts_changed_while_in_background_;
 
   // WeakPtrFactory should be last.
   base::WeakPtrFactory<AuthenticationServiceFake> weak_factory_{this};

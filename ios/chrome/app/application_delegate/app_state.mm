@@ -247,11 +247,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
   _applicationInBackground = YES;
 
-  if (self.mainBrowserState) {
-    AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
-        ->OnApplicationDidEnterBackground();
-  }
-
   crash_keys::SetCurrentlyInBackground(true);
 
   if (self.initStage < InitStageBrowserObjectsForUI) {

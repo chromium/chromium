@@ -15,6 +15,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync/driver/mock_sync_service.h"
@@ -65,7 +66,7 @@ CoreAccountId GetAccountId(ChromeIdentity* identity) {
 
 class AuthenticationServiceTest : public PlatformTest {
  protected:
-  AuthenticationServiceTest() {
+  AuthenticationServiceTest() : identity_test_env_() {
     identity_service()->AddIdentities(@[ @"foo", @"foo2" ]);
 
     TestChromeBrowserState::Builder builder;
@@ -103,20 +104,8 @@ class AuthenticationServiceTest : public PlatformTest {
     EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(0);
   }
 
-  void StoreKnownAccountsWhileInForeground() {
-    authentication_service()->StoreKnownAccountsWhileInForeground();
-  }
-
-  std::vector<CoreAccountId> GetLastKnownAccountsFromForeground() {
-    return authentication_service()->GetLastKnownAccountsFromForeground();
-  }
-
   void FireApplicationWillEnterForeground() {
     authentication_service()->OnApplicationWillEnterForeground();
-  }
-
-  void FireApplicationDidEnterBackground() {
-    authentication_service()->OnApplicationDidEnterBackground();
   }
 
   void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
@@ -124,8 +113,8 @@ class AuthenticationServiceTest : public PlatformTest {
     authentication_service()->OnAccessTokenRefreshFailed(identity, user_info);
   }
 
-  void FireIdentityListChanged(bool keychainReload) {
-    authentication_service()->OnIdentityListChanged(keychainReload);
+  void FireIdentityListChanged(bool keychain_reload) {
+    authentication_service()->OnIdentityListChanged(keychain_reload);
   }
 
   void SetCachedMDMInfo(ChromeIdentity* identity, NSDictionary* user_info) {
@@ -171,6 +160,7 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
@@ -217,7 +207,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
   // Set the authentication service as "In Foreground", remove identity and run
   // the loop.
-  FireApplicationDidEnterBackground();
   FireApplicationWillEnterForeground();
   identity_service()->ForgetIdentity(identity(0), nil);
   base::RunLoop().RunUntilIdle();
@@ -239,8 +228,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
 
   // Set the authentication service as "In Background", remove identity and run
   // the loop.
-  FireApplicationDidEnterBackground();
-  identity_service()->ForgetIdentity(identity(0), nil);
+  identity_service()->SimulateForgetIdentityFromOtherApp(identity(0));
   base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), but not prompted for sign
@@ -251,24 +239,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
   EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
-}
-
-TEST_F(AuthenticationServiceTest, StoreAndGetAccountsInPrefs) {
-  // Profile starts empty.
-  std::vector<CoreAccountId> accounts = GetLastKnownAccountsFromForeground();
-  EXPECT_TRUE(accounts.empty());
-
-  // Sign in.
-  SetExpectationsForSignIn();
-  authentication_service()->SignIn(identity(0));
-
-  // Store the accounts and get them back from the prefs. They should be the
-  // same as the token service accounts.
-  StoreKnownAccountsWhileInForeground();
-  accounts = GetLastKnownAccountsFromForeground();
-  ASSERT_EQ(2u, accounts.size());
-  EXPECT_EQ(CoreAccountId("foo2ID"), accounts[0]);
-  EXPECT_EQ(CoreAccountId("fooID"), accounts[1]);
 }
 
 TEST_F(AuthenticationServiceTest,
@@ -292,8 +262,8 @@ TEST_F(AuthenticationServiceTest,
 
   // Simulate a switching to background and back to foreground, triggering a
   // credentials reload.
-  FireApplicationDidEnterBackground();
-  FireApplicationWillEnterForeground();
+  identity_service()->FireChromeIdentityReload();
+  base::RunLoop().RunUntilIdle();
 
   // Accounts are reloaded, "foo3@foo.com" is added as it is now in
   // ChromeIdentityService.
@@ -305,90 +275,59 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_EQ(CoreAccountId("fooID"), accounts[2].account_id);
 }
 
-TEST_F(AuthenticationServiceTest, HaveAccountsChanged_Default) {
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
-}
-
-TEST_F(AuthenticationServiceTest, HaveAccountsChanged_NoChange) {
+// Tests the account list is approved after adding an account with in Chrome.
+TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_AddedByUser) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(true);
+  FireIdentityListChanged(/*keychain_reload=*/false);
   base::RunLoop().RunUntilIdle();
-
-  // If an account is added while the application is in foreground, then the
-  // have accounts changed state should stay false.
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
-
-  // Backgrounding the app should not change the have accounts changed state.
-  FireApplicationDidEnterBackground();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
-
-  // Foregrounding the app should not change the have accounts changed state.
-  FireApplicationWillEnterForeground();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_TRUE(authentication_service()->IsAccountListApprovedByUser());
 }
 
-TEST_F(AuthenticationServiceTest, HaveAccountsChanged_ChangedInBackground) {
+// Tests the account list is unapproved after an account is added by an other
+// app (through the keychain).
+TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_ChangedByKeychain) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(true);
+  FireIdentityListChanged(/*keychain_reload=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
-
-  // Simulate a switching to background and back to foreground, changing the
-  // accounts while in background (no notification fired by |identity_service|).
-  FireApplicationDidEnterBackground();
-  identity_service()->AddIdentities(@[ @"foo4" ]);
-  FireApplicationWillEnterForeground();
-  EXPECT_TRUE(authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
 
-TEST_F(AuthenticationServiceTest, HaveAccountsChanged_CalledInBackground) {
+// Tests the account list is unapproved after two accounts are added by an other
+// app (through the keychain).
+TEST_F(AuthenticationServiceTest,
+       AccountListApprovedByUser_ChangedTwiceByKeychain) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(true);
+  FireIdentityListChanged(/*keychain_reload=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Simulate a switching to background, changing the accounts while in
   // background.
-  FireApplicationDidEnterBackground();
   identity_service()->AddIdentities(@[ @"foo4" ]);
-  FireIdentityListChanged(true);
+  FireIdentityListChanged(/*keychain_reload=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(authentication_service()->HaveAccountsChangedWhileInBackground());
-
-  // Entering foreground should not change the have accounts changed state.
-  FireApplicationWillEnterForeground();
-  EXPECT_TRUE(authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
 
 // Regression test for http://crbug.com/1006717
-TEST_F(AuthenticationServiceTest, HaveAccountsChanged_ResetOntwoBackgrounds) {
+TEST_F(AuthenticationServiceTest,
+       AccountListApprovedByUser_ResetOntwoBackgrounds) {
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(true);
+  FireIdentityListChanged(/*keychain_reload=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
-
-  // Simulate a switching to background, changing the accounts while in
-  // background.
-  FireApplicationDidEnterBackground();
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Clear |kSigninLastAccounts| pref to simulate a case when the list of
   // accounts in pref |kSigninLastAccounts| are no the same as the ones
@@ -397,15 +336,13 @@ TEST_F(AuthenticationServiceTest, HaveAccountsChanged_ResetOntwoBackgrounds) {
   // When entering foreground, the have accounts changed state should be
   // updated.
   FireApplicationWillEnterForeground();
-  EXPECT_TRUE(authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Backgrounding and foregrounding the application a second time should update
   // the list of accounts in |kSigninLastAccounts| and should reset the have
   // account changed state.
-  FireApplicationDidEnterBackground();
   FireApplicationWillEnterForeground();
-  EXPECT_FALSE(
-      authentication_service()->HaveAccountsChangedWhileInBackground());
+  EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
 
 TEST_F(AuthenticationServiceTest, IsAuthenticatedBackground) {
@@ -416,7 +353,6 @@ TEST_F(AuthenticationServiceTest, IsAuthenticatedBackground) {
 
   // Remove the signed in identity while in background, and check that
   // IsAuthenticated is up-to-date.
-  FireApplicationDidEnterBackground();
   identity_service()->ForgetIdentity(identity(0), nil);
   base::RunLoop().RunUntilIdle();
 
@@ -445,7 +381,6 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
     observer.SetOnErrorStateOfRefreshTokenUpdatedCallback(
         base::BindLambdaForTesting([&]() { notification_received = true; }));
 
-    FireApplicationDidEnterBackground();
     FireApplicationWillEnterForeground();
     EXPECT_TRUE(notification_received);
     EXPECT_EQ(
@@ -460,7 +395,6 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
     observer.SetOnErrorStateOfRefreshTokenUpdatedCallback(
         base::BindLambdaForTesting([&]() { notification_received = true; }));
 
-    FireApplicationDidEnterBackground();
     FireApplicationWillEnterForeground();
     EXPECT_FALSE(notification_received);
   }

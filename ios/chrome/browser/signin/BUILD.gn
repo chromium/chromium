@@ -45,6 +45,8 @@ source_set("signin") {
     "signin_error_controller_factory.h",
     "signin_util.h",
     "signin_util.mm",
+    "user_approved_account_list_manager.h",
+    "user_approved_account_list_manager.mm",
   ]
   deps = [
     "//base",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
+    "user_approved_account_list_manager_unittest.mm",
   ]
   deps = [
     ":signin",

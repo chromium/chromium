@@ -208,7 +208,7 @@ void FakeChromeIdentityService::ForgetIdentity(
     ChromeIdentity* identity,
     ForgetIdentityCallback callback) {
   [identities_ removeObject:identity];
-  FireIdentityListChanged(false);
+  FireIdentityListChanged(/*keychain_reload=*/false);
   if (callback) {
     // Forgetting an identity is normally an asynchronous operation (that
     // require some network calls), this is replicated here by dispatching
@@ -309,6 +309,16 @@ FakeChromeIdentityService::IsSubjectToMinorModeRestrictions(
       [identity.userEmail hasSuffix:kMinorModeIdentityEmailSuffix]);
 }
 
+void FakeChromeIdentityService::SimulateForgetIdentityFromOtherApp(
+    ChromeIdentity* identity) {
+  [identities_ removeObject:identity];
+  FireChromeIdentityReload();
+}
+
+void FakeChromeIdentityService::FireChromeIdentityReload() {
+  FireIdentityListChanged(/*keychain_reload=*/true);
+}
+
 void FakeChromeIdentityService::SetUpForIntegrationTests() {}
 
 void FakeChromeIdentityService::AddManagedIdentities(NSArray* identitiesNames) {
@@ -348,7 +358,7 @@ void FakeChromeIdentityService::AddIdentity(ChromeIdentity* identity) {
   if (![identities_ containsObject:identity]) {
     [identities_ addObject:identity];
   }
-  FireIdentityListChanged(false);
+  FireIdentityListChanged(/*keychain_reload=*/false);
 }
 
 void FakeChromeIdentityService::SetFakeMDMError(bool fakeMDMError) {

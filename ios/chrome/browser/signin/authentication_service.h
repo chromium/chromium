@@ -15,6 +15,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace syncer {
@@ -62,11 +63,18 @@ class AuthenticationService : public KeyedService,
   // Returns whether user should be prompted to Sign in to Chrome.
   bool ShouldPromptForSignIn() const;
 
-  // Returns whether the token service accounts have changed since the last time
-  // they were stored in the browser state prefs. This storing happens every
-  // time the accounts change in foreground.
-  // This reloads the cached accounts if the information might be stale.
-  virtual bool HaveAccountsChangedWhileInBackground() const;
+  // Returns whether the current account list has been approved by the user.
+  // This method should only be called when there is a primary account.
+  //
+  // TODO(crbug.com/1084491): To make sure IsAccountListApprovedByUser()
+  // a non-stale value, an notification need to be implemented when the SSO
+  // keychain is reloaded. The user can add/remove an account while Chrome
+  // is in foreground (with split screen on iPad).
+  bool IsAccountListApprovedByUser() const;
+
+  // Saves the current account list in Chrome as being approved by the user.
+  // This method should only be called when there is a primary account.
+  void ApproveAccountList();
 
   // ChromeIdentity management
 
@@ -124,10 +132,6 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
-  // This needs to be invoked when the application enters background to
-  // sync the accounts between the IdentityManager and the SSO library.
-  void OnApplicationDidEnterBackground();
-
  private:
   friend class AuthenticationServiceTest;
   friend class AuthenticationServiceFake;
@@ -135,21 +139,6 @@ class AuthenticationService : public KeyedService,
   // Migrates the token service accounts stored in prefs from emails to account
   // ids.
   void MigrateAccountsStoredInPrefsIfNeeded();
-
-  // Saves the last known list of accounts from the token service when
-  // the app is in foreground. This can be used when app comes back from
-  // background to detect if any changes occurred to the list. Must only
-  // be called when the application is in foreground.
-  // See HaveAccountsChangesWhileInBackground().
-  void StoreKnownAccountsWhileInForeground();
-
-  // Gets the accounts previously stored as the foreground accounts in the
-  // browser state prefs.
-  // Returns the list of previously stored known accounts. This list
-  // is only updated when the app is in foreground and used to detect
-  // if any change occurred while the app was in background.
-  // See HaveAccountsChangesWhileInBackground().
-  std::vector<CoreAccountId> GetLastKnownAccountsFromForeground();
 
   // Returns the cached MDM infos associated with |identity|. If the cache
   // is stale for |identity|, the entry might be removed.
@@ -159,14 +148,6 @@ class AuthenticationService : public KeyedService,
   // Returns whether the notification associated with |user_info| was fully
   // handled.
   bool HandleMDMNotification(ChromeIdentity* identity, NSDictionary* user_info);
-
-  // Reloads the accounts to reflect the change in the SSO identities. If
-  // |should_store_accounts_| is true, it will also store the available accounts
-  // in the  browser state prefs.
-  //
-  // |in_foreground| indicates whether the application was in foreground when
-  // the identity list change notification was received.
-  void HandleIdentityListChanged();
 
   // Verifies that the authenticated user is still associated with a valid
   // ChromeIdentity. This method must only be called when the user is
@@ -185,22 +166,13 @@ class AuthenticationService : public KeyedService,
   // Checks if the authenticated identity was removed by calling
   // |HandleForgottenIdentity|. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  // |should_prompt| indicates whether the user should be prompted if the
-  // authenticated identity was removed.
-  void ReloadCredentialsFromIdentities(bool should_prompt);
-
-  // Computes whether the available accounts have changed since the last time
-  // they were stored in the  browser state prefs.
-  //
-  // This method should only be called when the application is in background
-  // or when the application is entering foregorund.
-  void UpdateHaveAccountsChangedWhileInBackground();
-
-  // Returns whether the application is currently in the foreground or not.
-  bool InForeground() const;
+  // |keychain_reload| indicates if the identity list has to be reloaded because
+  // the keychain has changed.
+  void ReloadCredentialsFromIdentities(bool keychain_reload);
 
   // signin::IdentityManager::Observer implementation.
-  void OnEndBatchOfRefreshTokenStateChanges() override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeIdentityServiceObserver implementation.
   void OnIdentityListChanged(bool keychainReload) override;
@@ -222,10 +194,8 @@ class AuthenticationService : public KeyedService,
   // Whether Initialized has been called.
   bool initialized_ = false;
 
-  // Whether the accounts have changed while the AuthenticationService was in
-  // background. When the AuthenticationService is in background, this value
-  // cannot be trusted.
-  bool have_accounts_changed_while_in_background_ = false;
+  // Manager for the approved account list.
+  UserApprovedAccountListManager user_approved_account_list_manager_;
 
   // Whether the AuthenticationService is currently reloading credentials, used
   // to avoid an infinite reloading loop.

@@ -73,6 +73,12 @@ class FakeChromeIdentityService : public ChromeIdentityService {
                     NSDictionary* user_info,
                     ios::MDMStatusCallback callback));
 
+  // Simulates |identity| removed from another Google app.
+  void SimulateForgetIdentityFromOtherApp(ChromeIdentity* identity);
+
+  // Simulates reloading the identities from the keychain by SSOAuth.
+  void FireChromeIdentityReload();
+
   // Sets up the mock methods for integration tests.
   void SetUpForIntegrationTests();
 

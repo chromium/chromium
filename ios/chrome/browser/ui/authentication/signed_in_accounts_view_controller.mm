@@ -210,7 +210,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   return !gSignedInAccountsViewControllerIsShown &&
          authService->IsAuthenticated() &&
-         authService->HaveAccountsChangedWhileInBackground();
+         !authService->IsAccountListApprovedByUser();
 }
 
 #pragma mark Initialization
@@ -233,6 +233,9 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }
 
 - (void)dismissWithCompletion:(ProceduralBlock)completion {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  authService->ApproveAccountList();
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:completion];
 }
