@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_local_account_external_data_service.h"
+#include "chrome/browser/chromeos/policy/external_data/device_local_account_external_data_service.h"
 
 #include <memory>
 #include <set>
@@ -48,13 +48,12 @@ DeviceLocalAccountExternalDataService::
 }
 
 void DeviceLocalAccountExternalDataService::OnPolicyUpdated(
-    const std::string& user_id) {
-}
+    const std::string& user_id) {}
 
 void DeviceLocalAccountExternalDataService::OnDeviceLocalAccountsChanged() {
   std::set<std::string> account_ids;
   for (ExternalDataManagerMap::iterator it = external_data_managers_.begin();
-       it != external_data_managers_.end(); ) {
+       it != external_data_managers_.end();) {
     if (it->second->HasOneRef()) {
       external_data_managers_.erase(it++);
     } else {
@@ -69,9 +68,9 @@ void DeviceLocalAccountExternalDataService::OnDeviceLocalAccountsChanged() {
 }
 
 scoped_refptr<DeviceLocalAccountExternalDataManager>
-    DeviceLocalAccountExternalDataService::GetExternalDataManager(
-        const std::string& account_id,
-        CloudPolicyStore* policy_store) {
+DeviceLocalAccountExternalDataService::GetExternalDataManager(
+    const std::string& account_id,
+    CloudPolicyStore* policy_store) {
   scoped_refptr<DeviceLocalAccountExternalDataManager>& external_data_manager =
       external_data_managers_[account_id];
   if (!external_data_manager.get()) {

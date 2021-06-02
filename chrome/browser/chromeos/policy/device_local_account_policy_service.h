@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/policy/device_local_account_extension_tracker.h"
-#include "chrome/browser/chromeos/policy/device_local_account_external_data_manager.h"
+#include "chrome/browser/chromeos/policy/external_data/device_local_account_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"

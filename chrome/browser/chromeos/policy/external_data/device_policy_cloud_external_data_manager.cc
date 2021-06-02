@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_policy_cloud_external_data_manager.h"
+#include "chrome/browser/chromeos/policy/external_data/device_policy_cloud_external_data_manager.h"
 
 #include <stdint.h>
 #include <utility>

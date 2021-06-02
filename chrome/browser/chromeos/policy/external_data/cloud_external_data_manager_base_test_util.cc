@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base_test_util.h"
 
 #include <utility>
 

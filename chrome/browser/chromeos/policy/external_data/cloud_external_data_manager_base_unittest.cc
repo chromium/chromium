@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base.h"
 
 #include <map>
 #include <memory>
@@ -56,9 +56,9 @@ const char k20ByteData[] = "20 bytes............";
 
 const PolicyDetails kPolicyDetails[] = {
     // deprecated  future, device_policy  id    max_external_data_size
-    {  false,      false,  false,         1,    0},
-    {  false,      false,  false,         2,    10},
-    {  false,      false,  false,         3,    20},
+    {false, false, false, 1, 0},
+    {false, false, false, 2, 10},
+    {false, false, false, 3, 20},
 };
 
 const char kCacheKey[] = "data";
@@ -108,8 +108,7 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(CloudExternalDataManagerBaseTest);
 };
 
-CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {
-}
+CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {}
 
 void CloudExternalDataManagerBaseTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -124,14 +123,12 @@ void CloudExternalDataManagerBaseTest::SetUp() {
                                       base::Value(std::string()), nullptr);
   // Make |k10BytePolicy| reference 10 bytes of external data.
   SetExternalDataReference(
-      k10BytePolicy,
-      ConstructMetadata(k10BytePolicyURL,
-                        crypto::SHA256HashString(k10ByteData)));
+      k10BytePolicy, ConstructMetadata(k10BytePolicyURL,
+                                       crypto::SHA256HashString(k10ByteData)));
   // Make |k20BytePolicy| reference 20 bytes of external data.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k20ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k20ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   url_loader_factory_ =
@@ -414,9 +411,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Modify the external data reference for |k20BytePolicy|, allowing the
   // download to be retried immediately.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k10ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k10ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Attempt to retrieve external data for |k20BytePolicy| again. Verify that
@@ -430,9 +426,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // Modify the external data reference for |k20BytePolicy|, allowing the
   // download to be retried immediately.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k20ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k20ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Serve external data for |k20BytePolicy| that does not match the hash
@@ -451,9 +446,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadError) {
   // download to be retried immediately. The external data reference now matches
   // the data being served.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k10ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k10ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Attempt to retrieve external data for |k20BytePolicy| again. Verify that
@@ -578,9 +572,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
 
   // Modify the external data reference for |k20BytePolicy|.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k10ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k10ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Verify that the old external data for |k20BytePolicy| has been pruned from
@@ -627,9 +620,8 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
   // Modify the external data reference for |k10BytePolicy| to match the
   // external data being served.
   SetExternalDataReference(
-      k10BytePolicy,
-      ConstructMetadata(k10BytePolicyURL,
-                        crypto::SHA256HashString(k20ByteData)));
+      k10BytePolicy, ConstructMetadata(k10BytePolicyURL,
+                                       crypto::SHA256HashString(k20ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Retrieve external data for |k10BytePolicy|. Verify that the callback is
@@ -720,9 +712,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PolicyChangeWhileDownloadPending) {
   // external data now being served. Verify that the callback is invoked with
   // the downloaded data.
   SetExternalDataReference(
-      k20BytePolicy,
-      ConstructMetadata(k20BytePolicyURL,
-                        crypto::SHA256HashString(k10ByteData)));
+      k20BytePolicy, ConstructMetadata(k20BytePolicyURL,
+                                       crypto::SHA256HashString(k10ByteData)));
   cloud_policy_store_.NotifyStoreLoaded();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, callback_data_.size());

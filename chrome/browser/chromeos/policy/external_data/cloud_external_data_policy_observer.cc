@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_policy_observer.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_policy_observer.h"
 
 #include <memory>
 #include <set>
@@ -56,9 +56,7 @@ CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(
     CloudExternalDataPolicyObserver* parent,
     const std::string& user_id,
     PolicyService* policy_service)
-    : parent_(parent),
-      user_id_(user_id),
-      policy_service_(policy_service) {
+    : parent_(parent), user_id_(user_id), policy_service_(policy_service) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 
   if (!IsDeviceLocalAccountUser(user_id, NULL)) {
@@ -66,8 +64,9 @@ CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(
     // during login. This is omitted for device-local accounts because their
     // policy is available before login and the external data reference will
     // have been seen by the |parent_| already.
-    const PolicyMap::Entry* entry = policy_service_->GetPolicies(
-        PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+    const PolicyMap::Entry* entry =
+        policy_service_
+            ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
             .Get(parent_->policy_);
     // Notify |parent_| even when |entry| is null (i.e. the policy never existed
     // or once existed but was cleared later).
@@ -91,7 +90,7 @@ void CloudExternalDataPolicyObserver::PolicyServiceObserver::OnPolicyUpdated(
   if ((!previous_entry && current_entry) ||
       (previous_entry && !current_entry) ||
       (previous_entry && current_entry &&
-           !previous_entry->Equals(*current_entry))) {
+       !previous_entry->Equals(*current_entry))) {
     // Notify |parent_| if the external data reference for |user_id_| has
     // changed.
     parent_->HandleExternalDataPolicyUpdate(user_id_, current_entry);
@@ -100,13 +99,11 @@ void CloudExternalDataPolicyObserver::PolicyServiceObserver::OnPolicyUpdated(
 
 void CloudExternalDataPolicyObserver::Delegate::OnExternalDataSet(
     const std::string& policy,
-    const std::string& user_id) {
-}
+    const std::string& user_id) {}
 
 void CloudExternalDataPolicyObserver::Delegate::OnExternalDataCleared(
     const std::string& policy,
-    const std::string& user_id) {
-}
+    const std::string& user_id) {}
 
 void CloudExternalDataPolicyObserver::Delegate::OnExternalDataFetched(
     const std::string& policy,
@@ -114,8 +111,7 @@ void CloudExternalDataPolicyObserver::Delegate::OnExternalDataFetched(
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {}
 
-CloudExternalDataPolicyObserver::Delegate::~Delegate() {
-}
+CloudExternalDataPolicyObserver::Delegate::~Delegate() {}
 
 CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
     ash::CrosSettings* cros_settings,
@@ -244,7 +240,7 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
 
   for (DeviceLocalAccountEntryMap::iterator it =
            device_local_account_entries_.begin();
-       it != device_local_account_entries_.end(); ) {
+       it != device_local_account_entries_.end();) {
     if (!base::Contains(device_local_accounts, it->first)) {
       const std::string user_id = it->first;
       device_local_account_entries_.erase(it++);

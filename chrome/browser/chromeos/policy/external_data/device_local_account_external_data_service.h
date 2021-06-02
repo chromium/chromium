@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chromeos/policy/device_local_account_external_data_manager.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/external_data/device_local_account_external_data_manager.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 
 namespace base {
@@ -38,13 +38,13 @@ class DeviceLocalAccountExternalDataService
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
 
-  scoped_refptr<DeviceLocalAccountExternalDataManager>
-      GetExternalDataManager(const std::string& account_id,
-                             CloudPolicyStore* policy_store);
+  scoped_refptr<DeviceLocalAccountExternalDataManager> GetExternalDataManager(
+      const std::string& account_id,
+      CloudPolicyStore* policy_store);
 
  private:
   typedef std::map<std::string,
-                   scoped_refptr<DeviceLocalAccountExternalDataManager> >
+                   scoped_refptr<DeviceLocalAccountExternalDataManager>>
       ExternalDataManagerMap;
 
   DeviceLocalAccountPolicyService* parent_;
@@ -58,4 +58,4 @@ class DeviceLocalAccountExternalDataService
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA_SERVICE_H_

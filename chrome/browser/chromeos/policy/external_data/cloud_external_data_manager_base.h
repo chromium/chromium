@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_
 
 #include <memory>
 
@@ -39,9 +39,8 @@ class CloudExternalDataManagerBase : public CloudExternalDataManager {
 
   // Allows downloaded external data to be cached in |external_data_store|.
   // Ownership of the store is taken. The store can be destroyed by calling
-  // SetExternalDataStore(std::unique_ptr<CloudExternalDataStore>()). Accesses
-  // to the
-  // store are made via |backend_task_runner_| only.
+  // SetExternalDataStore(nullptr). Accesses to the store are made via
+  // |backend_task_runner_| only.
   void SetExternalDataStore(
       std::unique_ptr<CloudExternalDataStore> external_data_store);
 
@@ -85,4 +84,4 @@ class CloudExternalDataManagerBase : public CloudExternalDataManager {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_CLOUD_EXTERNAL_DATA_MANAGER_BASE_H_

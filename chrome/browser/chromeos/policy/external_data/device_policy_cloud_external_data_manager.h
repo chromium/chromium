@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_
 
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base.h"
 #include "components/policy/core/common/policy_details.h"
 
 namespace base {
@@ -52,4 +52,4 @@ class DevicePolicyCloudExternalDataManager
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_DEVICE_POLICY_CLOUD_EXTERNAL_DATA_MANAGER_H_

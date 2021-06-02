@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/user_cloud_external_data_manager.h"
+#include "chrome/browser/chromeos/policy/external_data/user_cloud_external_data_manager.h"
 
 #include <memory>
 
@@ -36,7 +36,7 @@ UserCloudExternalDataManager::UserCloudExternalDataManager(
 }
 
 UserCloudExternalDataManager::~UserCloudExternalDataManager() {
-  SetExternalDataStore(std::unique_ptr<CloudExternalDataStore>());
+  SetExternalDataStore(nullptr);
   backend_task_runner_->DeleteSoon(FROM_HERE, resource_cache_);
 }
 

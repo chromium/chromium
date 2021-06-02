@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_cloud_external_data_policy_observer.h"
+#include "chrome/browser/chromeos/policy/external_data/device_cloud_external_data_policy_observer.h"
 
 #include <memory>
 #include <string>
@@ -14,8 +14,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_service.h"

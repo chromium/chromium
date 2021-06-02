@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_policy_observer.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_policy_observer.h"
 
 #include <memory>
 #include <utility>
@@ -21,11 +21,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_local_account_external_data_manager.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_provider.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base_test_util.h"
+#include "chrome/browser/chromeos/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/chromeos/policy/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -58,9 +58,9 @@
 
 namespace em = enterprise_management;
 
+using ::testing::_;
 using ::testing::Mock;
 using ::testing::Return;
-using ::testing::_;
 
 namespace policy {
 
@@ -80,8 +80,7 @@ void ConstructAvatarPolicy(const std::string& file_name,
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   ASSERT_TRUE(base::ReadFileToString(
-      test_data_dir.Append("chromeos").Append(file_name),
-      policy_data));
+      test_data_dir.Append("chromeos").Append(file_name), policy_data));
   base::JSONWriter::Write(
       *test::ConstructExternalDataReference(url, *policy_data), policy);
 }
@@ -176,8 +175,7 @@ CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()
           DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {
-}
+CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {}
 
 void CloudExternalDataPolicyObserverTest::SetUp() {
   ash::DeviceSettingsTestBase::SetUp();
@@ -203,13 +201,9 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
       .WillByDefault(Return(true));
   user_policy_provider_.Init();
 
-  ConstructAvatarPolicy("avatar1.jpg",
-                        kAvatar1URL,
-                        &avatar_policy_1_data_,
+  ConstructAvatarPolicy("avatar1.jpg", kAvatar1URL, &avatar_policy_1_data_,
                         &avatar_policy_1_);
-  ConstructAvatarPolicy("avatar2.jpg",
-                        kAvatar2URL,
-                        &avatar_policy_2_data_,
+  ConstructAvatarPolicy("avatar2.jpg", kAvatar2URL, &avatar_policy_2_data_,
                         &avatar_policy_2_);
 }
 
@@ -226,7 +220,6 @@ void CloudExternalDataPolicyObserverTest::TearDown() {
   cros_settings_.reset();
   ash::DeviceSettingsTestBase::TearDown();
 }
-
 
 void CloudExternalDataPolicyObserverTest::OnExternalDataSet(
     const std::string& policy,
@@ -319,7 +312,7 @@ void CloudExternalDataPolicyObserverTest::RemoveDeviceLocalAccount(
 }
 
 DeviceLocalAccountPolicyBroker*
-    CloudExternalDataPolicyObserverTest::GetBrokerForDeviceLocalAccountUser() {
+CloudExternalDataPolicyObserverTest::GetBrokerForDeviceLocalAccountUser() {
   return device_local_account_policy_service_->GetBrokerForUser(
       device_local_account_user_id_);
 }

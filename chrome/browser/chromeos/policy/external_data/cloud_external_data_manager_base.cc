@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_manager_base.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_manager_base.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -62,7 +62,7 @@ class CloudExternalDataManagerBase::Backend {
 
   // Allows downloaded external data to be cached in |external_data_store|.
   // Ownership of the store is taken. The store can be destroyed by calling
-  // SetExternalDataStore(std::unique_ptr<CloudExternalDataStore>()).
+  // SetExternalDataStore(nullptr).
   void SetExternalDataStore(
       std::unique_ptr<CloudExternalDataStore> external_data_store);
 
@@ -208,7 +208,7 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
     external_data_store_->Prune(metadata_);
 
   for (FetchCallbackMap::iterator it = pending_downloads_.begin();
-       it != pending_downloads_.end(); ) {
+       it != pending_downloads_.end();) {
     const std::string policy = it->first;
     Metadata::const_iterator metadata = metadata_.find(policy);
     if (metadata == metadata_.end()) {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_CLOUD_EXTERNAL_DATA_POLICY_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_CLOUD_EXTERNAL_DATA_POLICY_HANDLER_H_
 
-#include "chrome/browser/chromeos/policy/cloud_external_data_policy_observer.h"
+#include "chrome/browser/chromeos/policy/external_data/cloud_external_data_policy_observer.h"
 
 namespace policy {
 
