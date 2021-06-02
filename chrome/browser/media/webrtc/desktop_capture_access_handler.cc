@@ -277,8 +277,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
         return;
       }
       ui = GetDevicesForDesktopCapture(
-          web_contents, &devices, screen_id,
-          blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+          web_contents, url::Origin::Create(request.security_origin), &devices,
+          screen_id, blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
           blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
           capture_audio, request.disable_local_echo, display_notification,
           application_title, application_title);
@@ -471,8 +471,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
       display_notification_ && ShouldDisplayNotification(extension);
 
   ui = GetDevicesForDesktopCapture(
-      web_contents, &devices, media_id,
-      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      web_contents, url::Origin::Create(request.security_origin), &devices,
+      media_id, blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE, capture_audio,
       request.disable_local_echo, display_notification,
       GetApplicationTitle(web_contents, extension),
@@ -618,7 +618,9 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
     const bool display_notification =
         display_notification_ && ShouldDisplayNotification(extension);
     ui = GetDevicesForDesktopCapture(
-        web_contents, &devices, media_id, pending_request.request.video_type,
+        web_contents,
+        url::Origin::Create(pending_request.request.security_origin), &devices,
+        media_id, pending_request.request.video_type,
         pending_request.request.audio_type, media_id.audio_share,
         pending_request.request.disable_local_echo, display_notification,
         GetApplicationTitle(web_contents, extension),

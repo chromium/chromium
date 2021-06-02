@@ -18,6 +18,7 @@
 // Returns an instance of MediaStreamUI to be passed to content layer.
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     content::WebContents* web_contents,
+    const url::Origin& capturer_origin,
     blink::MediaStreamDevices* devices,
     const content::DesktopMediaID& media_id,
     blink::mojom::MediaStreamType devices_video_type,

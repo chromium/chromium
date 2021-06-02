@@ -323,7 +323,9 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
           (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
           media_id.web_contents_id.disable_local_echo;
       ui = GetDevicesForDesktopCapture(
-          web_contents, &devices, media_id, pending_request.request.video_type,
+          web_contents,
+          url::Origin::Create(pending_request.request.security_origin),
+          &devices, media_id, pending_request.request.video_type,
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
           media_id.audio_share, disable_local_echo, display_notification_,
           visible_url, visible_url);
