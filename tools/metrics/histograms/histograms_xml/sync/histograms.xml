@@ -1266,7 +1266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.SyncedHistoryFaviconAvailability"
-    enum="FaviconAvailabilityStatus" expires_after="2021-07-10">
+    enum="FaviconAvailabilityStatus" expires_after="2022-07-10">
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
