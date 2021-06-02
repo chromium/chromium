@@ -50,10 +50,11 @@ class SignalFilterProcessorTest : public testing::Test {
 TEST_F(SignalFilterProcessorTest, UserActionRegistrationFlow) {
   std::string kUserActionName1 = "some_action_1";
   segment_database_->AddUserAction(
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS, kUserActionName1);
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      kUserActionName1);
   std::string kUserActionName2 = "some_action_2";
   segment_database_->AddUserAction(
-      OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
       kUserActionName2);
 
   std::set<uint64_t> actions;

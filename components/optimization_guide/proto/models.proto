@@ -230,6 +230,12 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
   // Target for determining topics present on a page.
   OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
+  // Target for segmentation: New tab page user.
+  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB = 4;
+  // Target for segmentation: Share user.
+  OPTIMIZATION_TARGET_SEGMENTATION_SHARE = 5;
+  // Target for segmentation: Voice user.
+  OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
 }
 
 // The types of models that can be evaluated.

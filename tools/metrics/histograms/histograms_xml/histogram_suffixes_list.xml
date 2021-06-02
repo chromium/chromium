@@ -12544,6 +12544,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="LanguageDetection" label="Language detection"/>
   <suffix name="PageTopics" label="Page topics"/>
   <suffix name="PainfulPageLoad" label="Painful page load"/>
+  <suffix name="SegmentationNewTab" label="Segmentation: New tab page user"/>
+  <suffix name="SegmentationShare" label="Segmentation: Share user"/>
+  <suffix name="SegmentationVoice" label="Segmentation: Voice user"/>
   <affected-histogram name="OptimizationGuide.IsPredictionModelValid"/>
   <affected-histogram
       name="OptimizationGuide.PredictionManager.ModelTypeChanged"/>

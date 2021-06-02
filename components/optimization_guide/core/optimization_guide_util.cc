@@ -26,6 +26,12 @@ std::string GetStringNameForOptimizationTarget(
       return "LanguageDetection";
     case proto::OPTIMIZATION_TARGET_PAGE_TOPICS:
       return "PageTopics";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+      return "SegmentationNewTab";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+      return "SegmentationShare";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+      return "SegmentationVoice";
   }
   NOTREACHED();
   return std::string();

@@ -17,7 +17,7 @@ using testing::SaveArg;
 namespace segmentation_platform {
 namespace {
 constexpr auto kTestOptimizationTarget =
-    OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS;
+    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 }  // namespace
 
 class MockModelExecutionObserver : public ModelExecutionScheduler::Observer {
