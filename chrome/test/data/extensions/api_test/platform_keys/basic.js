@@ -464,17 +464,37 @@ async function verifyEcKeyPairValidity(publicKey, privateKey) {
 }
 
 function testGetRsaKeyPairRejectEcdsa() {
+  const rsa_key = data.client_1;
+
   chrome.platformKeys.getKeyPair(
-      data.client_1.buffer, EC_KEY_PARAMS,
+      rsa_key.buffer, EC_KEY_PARAMS,
       callbackFail(
           'The requested Algorithm is not permitted by the certificate.'));
 }
 
 function testGetEcKeyPairRejectRsa() {
-  const KEY_PARAMS = {name: 'RSASSA-PKCS1-V1_5', hash: {name: 'SHA-1'}};
+  const RSA_KEY_PARAMS = {name: 'RSASSA-PKCS1-V1_5', hash: {name: 'SHA-1'}};
 
   chrome.platformKeys.getKeyPair(
-      data.ec_cert.buffer, KEY_PARAMS,
+      data.ec_cert.buffer, RSA_KEY_PARAMS,
+      callbackFail(
+          'The requested Algorithm is not permitted by the certificate.'));
+}
+
+function testGetKeyPairBySpkiRsaKeyRejectsEcdsa() {
+  const rsa_key = data.client_1_spki;
+
+  chrome.platformKeys.getKeyPairBySpki(
+      rsa_key.buffer, EC_KEY_PARAMS,
+      callbackFail(
+          'The requested Algorithm is not permitted by the certificate.'));
+}
+
+function testGetKeyPairBySpkiEcKeyRejectsRsa() {
+  const RSA_KEY_PARAMS = {name: 'RSASSA-PKCS1-V1_5', hash: {name: 'SHA-1'}};
+
+  chrome.platformKeys.getKeyPairBySpki(
+      data.ec_spki.buffer, RSA_KEY_PARAMS,
       callbackFail(
           'The requested Algorithm is not permitted by the certificate.'));
 }
@@ -755,6 +775,8 @@ var testSuites = {
       testGetKeyPairRejectsRSAPSS,
       testGetRsaKeyPairRejectEcdsa,
       testGetEcKeyPairRejectRsa,
+      testGetKeyPairBySpkiRsaKeyRejectsEcdsa,
+      testGetKeyPairBySpkiEcKeyRejectsRsa,
       testGetRsaKeyPair,
       testGetEcKeyPair,
       testSignNoHash,

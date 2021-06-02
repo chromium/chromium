@@ -127,6 +127,15 @@ struct PublicKeyInfo {
   size_t key_size_bits = 0;
 };
 
+// Checks if the certificate key type and the algorithm are
+//    - valid
+//    - supported
+//    - compatible
+// Returns Status::kSuccess if they are, or the correct error reason if they
+// are not.
+Status CheckKeyTypeAndAlgorithm(net::X509Certificate::PublicKeyType key_type,
+                                const std::string& algorithm_name);
+
 // Returns the certificate key type that supports the given algorithm,
 // or |kPublicKeyTypeUnknown| if the algorithm is unknown or unsupported.
 net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(

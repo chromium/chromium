@@ -276,6 +276,26 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
 PublicKeyInfo::PublicKeyInfo() = default;
 PublicKeyInfo::~PublicKeyInfo() = default;
 
+Status CheckKeyTypeAndAlgorithm(net::X509Certificate::PublicKeyType key_type,
+                                const std::string& algorithm_name) {
+  if (key_type != net::X509Certificate::kPublicKeyTypeRSA &&
+      key_type != net::X509Certificate::kPublicKeyTypeECDSA) {
+    return Status::kErrorAlgorithmNotSupported;
+  }
+
+  if (algorithm_name != kWebCryptoRsassaPkcs1v15 &&
+      algorithm_name != kWebCryptoEcdsa) {
+    return Status::kErrorAlgorithmNotSupported;
+  }
+
+  if (key_type !=
+      chromeos::platform_keys::GetKeyTypeForAlgorithm(algorithm_name)) {
+    return Status::kErrorAlgorithmNotPermittedByCertificate;
+  }
+
+  return Status::kSuccess;
+}
+
 net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
     const std::string& algorithm_name) {
   // Currently, the only supported combinations are:
