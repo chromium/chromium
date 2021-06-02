@@ -331,6 +331,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

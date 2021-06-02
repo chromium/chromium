@@ -4138,6 +4138,25 @@
             ]
         }
     ],
+    "IOSStartSurface": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "ShrinkLogo",
+                    "params": {
+                        "ReturnToStartSurfaceInactiveDurationInSeconds": "0",
+                        "shrink_logo": "true"
+                    },
+                    "enable_features": [
+                        "StartSurface"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUMABackgroundSessions": [
         {
             "platforms": [
