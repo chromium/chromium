@@ -59150,6 +59150,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="No supported hints found">
     Hints processed but no supported hints found.
   </int>
+  <int value="7" label="Failed to read previously-attempted version">
+    Previous version for which processing did not complete could not be read so
+    clearing the state and skipping for the session. Will try again next
+    session.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideRaceNavigationFetchAttemptStatus">

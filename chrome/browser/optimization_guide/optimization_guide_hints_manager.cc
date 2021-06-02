@@ -89,9 +89,12 @@ void MaybeRunUpdateClosure(base::OnceClosure update_closure) {
 // Returns whether the particular component version can be processed, and if it
 // can be, locks the semaphore (in the form of a pref) to signal that the
 // processing of this particular version has started.
-bool CanProcessComponentVersion(PrefService* pref_service,
-                                const base::Version& version) {
+bool CanProcessComponentVersion(
+    PrefService* pref_service,
+    const base::Version& version,
+    optimization_guide::ProcessHintsComponentResult* out_result) {
   DCHECK(version.IsValid());
+  DCHECK(out_result);
 
   const std::string previous_attempted_version_string = pref_service->GetString(
       optimization_guide::prefs::kPendingHintsProcessingVersion);
@@ -103,9 +106,13 @@ bool CanProcessComponentVersion(PrefService* pref_service,
       // Clear pref for fresh start next time.
       pref_service->ClearPref(
           optimization_guide::prefs::kPendingHintsProcessingVersion);
+      *out_result = optimization_guide::ProcessHintsComponentResult::
+          kFailedPreviouslyAttemptedVersionInvalid;
       return false;
     }
     if (previous_attempted_version.CompareTo(version) == 0) {
+      *out_result = optimization_guide::ProcessHintsComponentResult::
+          kFailedFinishProcessing;
       // Previously attempted same version without completion.
       return false;
     }
@@ -335,6 +342,17 @@ void OptimizationGuideHintsManager::Shutdown() {
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
   if (navigation_predictor_service)
     navigation_predictor_service->RemoveObserver(this);
+
+  base::UmaHistogramBoolean("OptimizationGuide.ProcessingComponentAtShutdown",
+                            is_processing_component_);
+  if (is_processing_component_) {
+    // If we are currently processing the component and we are asked to shut
+    // down, we should clear the pref since the function to clear the pref will
+    // not run after shut down and we will think that we failed to process the
+    // component due to a crash.
+    pref_service_->ClearPref(
+        optimization_guide::prefs::kPendingHintsProcessingVersion);
+  }
 }
 
 // static
@@ -377,10 +395,9 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
     return;
   }
 
-  if (!CanProcessComponentVersion(pref_service_, info.version)) {
-    optimization_guide::RecordProcessHintsComponentResult(
-        optimization_guide::ProcessHintsComponentResult::
-            kFailedFinishProcessing);
+  optimization_guide::ProcessHintsComponentResult out_result;
+  if (!CanProcessComponentVersion(pref_service_, info.version, &out_result)) {
+    optimization_guide::RecordProcessHintsComponentResult(out_result);
     MaybeRunUpdateClosure(std::move(next_update_closure_));
     return;
   }
@@ -398,6 +415,7 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   // processing will be skipped.
   // base::Unretained(this) is safe since |this| owns |background_task_runner_|
   // and the callback will be canceled if destroyed.
+  is_processing_component_ = true;
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ReadComponentFile, info),
       base::BindOnce(&OptimizationGuideHintsManager::UpdateComponentHints,
@@ -524,6 +542,7 @@ void OptimizationGuideHintsManager::UpdateComponentHints(
 
   // If we get here, the component file has been processed correctly and did not
   // crash the device.
+  is_processing_component_ = false;
   pref_service_->ClearPref(
       optimization_guide::prefs::kPendingHintsProcessingVersion);
 

@@ -366,6 +366,9 @@ class OptimizationGuideHintsManager
   // |optimization_guide_service_|.
   absl::optional<optimization_guide::HintsComponentInfo> hints_component_info_;
 
+  // Whether the component is currently being processed.
+  bool is_processing_component_ = false;
+
   // The set of optimization types that have been registered with the hints
   // manager.
   //
