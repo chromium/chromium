@@ -305,17 +305,34 @@ AccountInfo IdentityManager::FindExtendedAccountInfo(
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByAccountId(
     const CoreAccountId& account_id) const {
+  if (!HasAccountWithRefreshToken(account_id))
+    return AccountInfo();
+
+  // AccountTrackerService returns an empty AccountInfo if the account is not
+  // found.
   return account_tracker_service_->GetAccountInfo(account_id);
 }
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByEmailAddress(
     const std::string& email_address) const {
-  return account_tracker_service_->FindAccountInfoByEmail(email_address);
+  AccountInfo account_info =
+      account_tracker_service_->FindAccountInfoByEmail(email_address);
+  // AccountTrackerService always returns an AccountInfo, even on failure. In
+  // case of failure, the AccountInfo will be unpopulated, thus we should not
+  // be able to find a valid refresh token.
+  return HasAccountWithRefreshToken(account_info.account_id) ? account_info
+                                                             : AccountInfo();
 }
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
     const std::string& gaia_id) const {
-  return account_tracker_service_->FindAccountInfoByGaiaId(gaia_id);
+  AccountInfo account_info =
+      account_tracker_service_->FindAccountInfoByGaiaId(gaia_id);
+  // AccountTrackerService always returns an AccountInfo, even on failure. In
+  // case of failure, the AccountInfo will be unpopulated, thus we should not
+  // be able to find a valid refresh token.
+  return HasAccountWithRefreshToken(account_info.account_id) ? account_info
+                                                             : AccountInfo();
 }
 
 absl::optional<AccountInfo>
@@ -537,6 +554,12 @@ IdentityManager::GetAccountsWithRefreshTokens(JNIEnv* env) const {
   return array;
 }
 #endif
+
+AccountInfo IdentityManager::FindExtendedPrimaryAccountInfo(
+    ConsentLevel consent_level) {
+  CoreAccountId account_id = GetPrimaryAccountId(consent_level);
+  return account_tracker_service_->GetAccountInfo(account_id);
+}
 
 PrimaryAccountManager* IdentityManager::GetPrimaryAccountManager() const {
   return primary_account_manager_.get();

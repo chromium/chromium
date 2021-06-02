@@ -53,6 +53,7 @@ class PrefRegistrySimple;
 class AccountFetcherService;
 class AccountTrackerService;
 class GaiaCookieManagerService;
+class NewTabPageUI;
 
 namespace signin {
 
@@ -253,9 +254,8 @@ class IdentityManager : public KeyedService,
 
   // Returns extended information for account identified by |account_info|, or
   // an empty AccountInfo if the account is not found.
-  // Note: these functions may return a non-empty Accountinfo even if no refresh
-  // token is available for the account (in particular before tokens are
-  // loaded).
+  // Note: these functions return an empty AccountInfo if no refresh token is
+  // available for the account (in particular before tokens are loaded).
   AccountInfo FindExtendedAccountInfo(
       const CoreAccountInfo& account_info) const;
   // The same as `FindExtendedAccountInfo()` but finds an account by account ID.
@@ -627,6 +627,19 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, OnNetworkInitialized);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,
                            ForceRefreshOfExtendedAccountInfo);
+  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
+
+  // Only caller to FindExtendedPrimaryAccountInfo().
+  // TODO(https://crbug.com/1213351): Delete once the private call has been
+  // removed.
+  friend class ::NewTabPageUI;
+
+  // Returns the extended account info for the primary account. This function
+  // does not require tokens to be loaded.
+  // Do not add more external callers, as account info is generally not
+  // available until tokens are loaded.
+  // TODO(https://crbug.com/1213351): Remove existing external callers.
+  AccountInfo FindExtendedPrimaryAccountInfo(ConsentLevel consent_level);
 
   // Private getters used for testing only (i.e. see identity_test_utils.h).
   PrimaryAccountManager* GetPrimaryAccountManager() const;

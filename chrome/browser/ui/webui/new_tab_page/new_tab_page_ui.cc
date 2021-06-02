@@ -70,22 +70,6 @@ namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 
-bool IsDriveModuleEnabled(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule)) {
-    return false;
-  }
-  if (base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpDriveModule,
-          ntp_features::kNtpDriveModuleManagedUsersOnlyParam) != "true") {
-    return true;
-  }
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager
-      ->FindExtendedAccountInfoByAccountId(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
-      .IsManaged();
-}
-
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
     Profile* profile,
     const base::Time& navigation_start_time) {
@@ -276,7 +260,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   source->AddBoolean(
       "chromeCartModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
-  source->AddBoolean("driveModuleEnabled", IsDriveModuleEnabled(profile));
+  source->AddBoolean("driveModuleEnabled",
+                     NewTabPageUI::IsDriveModuleEnabled(profile));
   source->AddBoolean(
       "ruleBasedDiscountEnabled",
       base::GetFieldTrialParamValueByFeature(
@@ -364,6 +349,24 @@ bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
 // static
 void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
+}
+
+// static
+bool NewTabPageUI::IsDriveModuleEnabled(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule)) {
+    return false;
+  }
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpDriveModule,
+          ntp_features::kNtpDriveModuleManagedUsersOnlyParam) != "true") {
+    return true;
+  }
+  // TODO(https://crbug.com/1213351): Stop calling the private method
+  // FindExtendedPrimaryAccountInfo().
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  return identity_manager
+      ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSync)
+      .IsManaged();
 }
 
 void NewTabPageUI::BindInterface(
