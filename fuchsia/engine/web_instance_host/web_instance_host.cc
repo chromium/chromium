@@ -120,20 +120,22 @@ zx::channel ValidateDirectoryAndTakeChannel(
   return directory.Unbind().TakeChannel();
 }
 
-void AppendFeature(base::StringPiece features_flag,
-                   base::StringPiece feature_string,
-                   base::CommandLine* command_line) {
-  if (!command_line->HasSwitch(features_flag)) {
-    command_line->AppendSwitchNative(std::string(features_flag),
-                                     feature_string);
+// Appends |value| to the value of |switch_name| in the |command_line|.
+// The switch is assumed to consist of comma-separated values. If |switch_name|
+// is already set in |command_line| then a comma will be appended, followed by
+// |value|, otherwise the switch will be set to |value|.
+void AppendToSwitch(base::StringPiece switch_name,
+                    base::StringPiece value,
+                    base::CommandLine* command_line) {
+  if (!command_line->HasSwitch(switch_name)) {
+    command_line->AppendSwitchNative(switch_name, value);
     return;
   }
 
-  std::string new_feature_string = base::StrCat(
-      {command_line->GetSwitchValueASCII(features_flag), ",", feature_string});
-  command_line->RemoveSwitch(features_flag);
-  command_line->AppendSwitchNative(std::string(features_flag),
-                                   new_feature_string);
+  std::string new_value = base::StrCat(
+      {command_line->GetSwitchValueASCII(switch_name), ",", value});
+  command_line->RemoveSwitch(switch_name);
+  command_line->AppendSwitchNative(switch_name, new_value);
 }
 
 // File names must not contain directory separators, nor match the special
@@ -247,12 +249,12 @@ void HandleUnsafelyTreatInsecureOriginsAsSecureParam(
     if (origin == switches::kAllowRunningInsecureContent) {
       launch_args->AppendSwitch(switches::kAllowRunningInsecureContent);
     } else if (origin == kDisableMixedContentAutoupgradeOrigin) {
-      AppendFeature(switches::kDisableFeatures,
-                    kMixedContentAutoupgradeFeatureName, launch_args);
+      AppendToSwitch(switches::kDisableFeatures,
+                     kMixedContentAutoupgradeFeatureName, launch_args);
     } else {
       // Pass the rest of the list to the Context process.
-      AppendFeature(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-                    origin, launch_args);
+      AppendToSwitch(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+                     origin, launch_args);
     }
   }
 }
@@ -543,10 +545,11 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
 
   if (use_overlays_for_video) {
     // Overlays are only available if OutputPresenterFuchsia is in use.
-    AppendFeature(switches::kEnableFeatures,
-                  features::kUseSkiaOutputDeviceBufferQueue.name, &launch_args);
-    AppendFeature(switches::kEnableFeatures,
-                  features::kUseRealBuffersForPageFlipTest.name, &launch_args);
+    AppendToSwitch(switches::kEnableFeatures,
+                   features::kUseSkiaOutputDeviceBufferQueue.name,
+                   &launch_args);
+    AppendToSwitch(switches::kEnableFeatures,
+                   features::kUseRealBuffersForPageFlipTest.name, &launch_args);
     launch_args.AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                   "underlay");
     launch_args.AppendSwitch(switches::kUseOverlaysForVideo);
@@ -563,8 +566,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     launch_args.AppendSwitch(switches::kUseVulkan);
     const std::vector<base::StringPiece> enabled_features = {
         features::kUseSkiaRenderer.name, features::kVulkan.name};
-    AppendFeature(switches::kEnableFeatures,
-                  base::JoinString(enabled_features, ","), &launch_args);
+    AppendToSwitch(switches::kEnableFeatures,
+                   base::JoinString(enabled_features, ","), &launch_args);
 
     // SkiaRenderer requires out-of-process rasterization be enabled.
     launch_args.AppendSwitch(switches::kEnableOopRasterization);
@@ -625,8 +628,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
       return ZX_ERR_INVALID_ARGS;
     }
 
-    AppendFeature(switches::kDisableFeatures,
-                  features::kEnableSoftwareOnlyVideoCodecs.name, &launch_args);
+    AppendToSwitch(switches::kDisableFeatures,
+                   features::kEnableSoftwareOnlyVideoCodecs.name, &launch_args);
   }
 
   if (!HandleCdmDataDirectoryParam(&params, &launch_args, &launch_info)) {
