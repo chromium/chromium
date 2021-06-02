@@ -128,7 +128,6 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
  private:
-  std::unique_ptr<PrerenderHost> AbandonHostInternal(int frame_tree_node_id);
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
