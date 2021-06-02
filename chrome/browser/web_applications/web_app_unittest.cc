@@ -4,22 +4,31 @@
 
 #include "chrome/browser/web_applications/web_app.h"
 
+#include <string>
+
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
 
+// Presubmits and IDEs don't like whitespace at the end of lines.
+std::string RemoveTrailingWhitespace(std::string str) {
+  RE2::GlobalReplace(&str, "\\s+\\n", "\n");
+  return str;
+}
+
 std::string WebAppToPlatformAgnosticString(std::unique_ptr<WebApp> web_app) {
   // Force this to be nullopt to avoid platform specific differences.
   web_app->SetWebAppChromeOsData(absl::nullopt);
   std::stringstream ss;
   ss << *web_app;
-  return ss.str();
+  return RemoveTrailingWhitespace(ss.str());
 }
 
 }  // namespace
@@ -148,28 +157,28 @@ TEST(WebAppTest, EmptyAppToDebugString) {
       WebAppToPlatformAgnosticString(std::make_unique<WebApp>("empty_app"));
   EXPECT_EQ(debug_string,
             R"(app_id: empty_app
-manifest_url: 
+manifest_url:
 manifest_id: nullopt
-name: 
-start_url: 
+name:
+start_url:
 launch_query_params: nullopt
-scope: 
+scope:
 theme_color: none
 background_color: none
-display_mode: 
+display_mode:
 display_override:
-user_display_mode: 
+user_display_mode:
 user_page_ordinal: INVALID[]
 user_launch_ordinal: INVALID[]
 sources:
 is_locally_installed: 1
 is_in_sync_install: 0
 sync_fallback_data:
-  name: 
+  name:
   theme_color: none
-  scope: 
+  scope:
   icon_infos:
-description: 
+description:
 last_badging_time: 1601-01-01 00:00:00.000 UTC
 last_launch_time: 1601-01-01 00:00:00.000 UTC
 install_time: 1601-01-01 00:00:00.000 UTC
@@ -188,7 +197,7 @@ share_target:
 additional_search_terms:
 protocol_handlers:
 url_handlers:
-note_taking_new_note_url: 
+note_taking_new_note_url:
 capture_links: kUndefined
 chromeos_data:
   nullopt
@@ -357,7 +366,7 @@ url_handlers:
     has_origin_wildcard: true
     paths:
     exclude_paths:
-note_taking_new_note_url: 
+note_taking_new_note_url:
 capture_links: kNewClient
 chromeos_data:
   nullopt
