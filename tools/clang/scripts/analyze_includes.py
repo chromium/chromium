@@ -355,12 +355,27 @@ def analyze(target, revision, build_log_file, json_file):
 
 
   log('Computing added sizes...')
-  added_sizes = {name: 0 for name in includes}
+
+  # Split each src -> dst edge in includes into src -> (src,dst) -> dst, so that
+  # we can compute how much each include graph edge adds to the size by doing
+  # dominance analysis on the (src,dst) nodes.
+  augmented_includes = {}
+  for src in includes:
+    augmented_includes[src] = set()
+    for dst in includes[src]:
+      augmented_includes[src].add((src, dst))
+      augmented_includes[(src, dst)] = {dst}
+
+  added_sizes = {node: 0 for node in augmented_includes}
   for r in roots:
-    doms = compute_doms(r, includes)
-    for n in doms:
-      for d in doms[n]:
-        added_sizes[d] += sizes[n]
+    doms = compute_doms(r, augmented_includes)
+    for node in doms:
+      if not node in sizes:
+        # Skip the (src,dst) pseudo nodes.
+        continue
+      for dom in doms[node]:
+        added_sizes[dom] += sizes[node]
+
 
   # Assign a number to each filename for tighter JSON representation.
   names = []
@@ -385,11 +400,13 @@ def analyze(target, revision, build_log_file, json_file):
           'date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
           'files': names,
           'roots': [nr(x) for x in sorted(roots)],
-          'includes': [[nr(x) for x in includes[n]] for n in names],
+          'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
           'included_by': [[nr(x) for x in included_by[n]] for n in names],
           'sizes': [sizes[n] for n in names],
           'tsizes': [trans_sizes[n] for n in names],
           'asizes': [added_sizes[n] for n in names],
+          'esizes': [[added_sizes[(s, d)] for d in sorted(includes[s])]
+                     for s in names],
           'prevalence': [prevalence[n] for n in names],
       }, json_file)
 
