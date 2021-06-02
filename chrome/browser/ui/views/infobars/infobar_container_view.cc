@@ -66,9 +66,8 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildView(content_shadow_);
-  views::FocusRing::SetColorContextForSubtree(
-      this, ThemeProperties::COLOR_TOOLBAR,
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  views::FocusRing::SetBackgroundColorIdForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR);
 }
 
 InfoBarContainerView::~InfoBarContainerView() {

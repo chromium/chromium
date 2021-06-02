@@ -28,7 +28,6 @@ namespace views {
 namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingBackgroundColorId, -1)
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingFallbackColorId, -1)
 
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
@@ -40,50 +39,36 @@ ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
                : ui::NativeTheme::kColorId_AlertSeverityHigh;
 }
 
-View* GetViewForSubtreeColors(View* view) {
+int GetBackgroundColorId(View* view) {
   int color_id_property = view->GetProperty(kFocusRingBackgroundColorId);
   if (color_id_property != -1)
-    return view;
+    return color_id_property;
   if (!view->parent())
-    return nullptr;
-  return GetViewForSubtreeColors(view->parent());
+    return -1;
+  return GetBackgroundColorId(view->parent());
+}
+
+SkColor GetBackgroundColor(View* view) {
+  int color_id = GetBackgroundColorId(view);
+  return color_id == -1 ? view->GetNativeTheme()->GetSystemColor(
+                              ui::NativeTheme::kColorId_WindowBackground)
+                        : view->GetThemeProvider()->GetColor(color_id);
 }
 
 SkColor GetColor(View* focus_ring, bool valid) {
-  const ui::NativeTheme* const native_theme = focus_ring->GetNativeTheme();
   const SkColor default_color =
-      native_theme->GetSystemColor(ColorIdForValidity(valid));
+      focus_ring->GetNativeTheme()->GetSystemColor(ColorIdForValidity(valid));
 
   if (!valid)
     return default_color;
 
-  View* const fallback_color_view = GetViewForSubtreeColors(focus_ring);
-
-  const SkColor background_color =
-      fallback_color_view
-          ? focus_ring->GetThemeProvider()->GetColor(
-                fallback_color_view->GetProperty(kFocusRingBackgroundColorId))
-          : focus_ring->GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_WindowBackground);
-
-  const SkColor focus_ring_color =
-      color_utils::PickGoogleColor(default_color, background_color,
-                                   color_utils::kMinimumVisibleContrastRatio);
-
-  // If the Google color is contrasty enough, use it.
-  if (color_utils::GetContrastRatio(focus_ring_color, background_color) >
-      color_utils::kMinimumVisibleContrastRatio) {
-    return focus_ring_color;
-  }
-
-  return fallback_color_view
-             ? focus_ring->GetThemeProvider()->GetColor(
-                   fallback_color_view->GetProperty(kFocusRingFallbackColorId))
-             : focus_ring_color;
+  return color_utils::PickGoogleColor(
+      default_color, GetBackgroundColor(focus_ring),
+      color_utils::kMinimumVisibleContrastRatio);
 }
 
 double GetCornerRadius() {
-  double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
+  const double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
   return FocusableBorder::kCornerRadiusDp + thickness;
 }
 
@@ -120,11 +105,9 @@ FocusRing* FocusRing::Install(View* parent) {
   return parent->AddChildView(std::move(ring));
 }
 
-void FocusRing::SetColorContextForSubtree(View* view,
-                                          int background_color_id,
-                                          int fallback_color_id) {
+void FocusRing::SetBackgroundColorIdForSubtree(View* view,
+                                               int background_color_id) {
   view->SetProperty(kFocusRingBackgroundColorId, background_color_id);
-  view->SetProperty(kFocusRingFallbackColorId, fallback_color_id);
 }
 
 FocusRing::~FocusRing() = default;

@@ -490,9 +490,8 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   if (browser_view)
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
 
-  views::FocusRing::SetColorContextForSubtree(
-      this, ThemeProperties::COLOR_TOOLBAR,
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  views::FocusRing::SetBackgroundColorIdForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR);
 }
 
 BookmarkBarView::~BookmarkBarView() {

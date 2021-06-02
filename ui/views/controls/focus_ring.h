@@ -38,16 +38,19 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   static FocusRing* Install(View* parent);
 
   // Configures `view` so that FocusRings under it are aware of the background
-  // they are painted against. If the default color can't be made to contrast
-  // against `background_color_id` then `fallback_color_id` will be used.
+  // they are painted against. Unless the color of the FocusRing has been
+  // explicitly set, a color will be chosen that contrasts well against
+  // `background_color_id`.
   // Warning: The FocusRing ThemeProvider is queried for these IDs, do not use
   // NativeTheme color IDs here.
   // WARNING: This is temporary shenanigans to solve an accessibility problem.
   // DO NOT COPY this pattern or its implementation to other places in its
   // current state.
-  static void SetColorContextForSubtree(View* view,
-                                        int background_color_id,
-                                        int fallback_color_id);
+  // TODO(pbos): This seems not directly related to the FocusRing anymore,
+  // perhaps we could inform the view of what background color it's being
+  // painted onto orthogonally to how FocusRing uses it.
+  static void SetBackgroundColorIdForSubtree(View* view,
+                                             int background_color_id);
 
   ~FocusRing() override;
 
