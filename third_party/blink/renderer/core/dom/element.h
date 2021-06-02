@@ -1253,6 +1253,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       return;
     SetStyleShouldForceLegacyLayoutInternal(force);
   }
+  FRIEND_TEST_ALL_PREFIXES(LayoutNGTextCombineTest, LegacyQuote);
   void SetStyleShouldForceLegacyLayoutInternal(bool);
 
   // Return whether this element needs legacy layout because of a child.

@@ -112,8 +112,10 @@ void CounterContentData::Trace(Visitor* visitor) const {
 LayoutObject* QuoteContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style,
-    LegacyLayout) const {
+    LegacyLayout legacy) const {
   LayoutObject* layout_object = new LayoutQuote(pseudo, quote_);
+  if (legacy == LegacyLayout::kForce)
+    layout_object->SetForceLegacyLayout();
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }

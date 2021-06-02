@@ -137,6 +137,50 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1215026
+TEST_F(LayoutNGTextCombineTest, LegacyQuote) {
+  InsertStyleElement(
+      "q { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root><q>ab</q></div>");
+  auto& root = *GetElementById("root");
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutInline Q
+  |  +--LayoutInline ::before
+  |  |  +--LayoutQuote (anonymous)
+  |  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "ab"
+  |  +--LayoutInline ::after
+  |  |  +--LayoutQuote (anonymous)
+  |  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
+
+  // Force legacy layout
+  root.SetStyleShouldForceLegacyLayout(true);
+  GetDocument().documentElement()->SetForceReattachLayoutTree();
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="root"
+  +--LayoutInline Q
+  |  +--LayoutInline ::before
+  |  |  +--LayoutQuote (anonymous)
+  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  +--LayoutTextCombine #text "ab"
+  |  +--LayoutInline ::after
+  |  |  +--LayoutQuote (anonymous)
+  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()))
+      << "No more LayoutNGTextCombine";
+}
+
 TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
