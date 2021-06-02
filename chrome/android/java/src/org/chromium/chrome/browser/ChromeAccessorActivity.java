@@ -4,22 +4,21 @@
 
 package org.chromium.chrome.browser;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.chrome.browser.share.ShareRegistrationCoordinator.ShareBroadcastReceiver;
 
 /**
  * {@code ChromeActivityAccessor} is the base class for share options, which
  * are activities that are shown in the share chooser. Activities subclassing
- * ChromeAccessorActivity override handleAction.
+ * ChromeAccessorActivity need to:
+ * - Override #getBroadcastAction.
+ * - Register to receive that broadcast in ShareRegistrationCoordinator.
  */
 public abstract class ChromeAccessorActivity extends AppCompatActivity {
     @Override
@@ -32,39 +31,17 @@ public abstract class ChromeAccessorActivity extends AppCompatActivity {
             if (!Intent.ACTION_SEND.equals(intent.getAction())) return;
             if (!IntentUtils.safeHasExtra(intent, ShareHelper.EXTRA_TASK_ID)) return;
 
-            ChromeActivity triggeringActivity = getTriggeringActivity();
-            if (triggeringActivity == null) return;
-
-            handleAction(/* triggeringActivity= */ triggeringActivity,
-                    /* menuOrKeyboardActionController= */ triggeringActivity);
+            ShareBroadcastReceiver.sendShareBroadcastWithAction(
+                    intent.getIntExtra(ShareHelper.EXTRA_TASK_ID, 0), getBroadcastAction());
         } finally {
             finish();
         }
     }
 
     /**
-     * Returns the ChromeActivity that called the share intent picker.
+     * Return a unique action string which is used to register to receive the broadcast in
+     * ShareRegistrationController. Usually, the best option is to use the stringified class name
+     * with the "BroadcastAction" postfix.
      */
-    private ChromeActivity getTriggeringActivity() {
-        int triggeringTaskId =
-                IntentUtils.safeGetIntExtra(getIntent(), ShareHelper.EXTRA_TASK_ID, 0);
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity.getTaskId() == triggeringTaskId && activity instanceof ChromeActivity) {
-                return (ChromeActivity) activity;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Completes the share action.
-     *
-     * Override this activity to implement desired share functionality.  This activity
-     * will be destroyed immediately after this method is called.
-     *
-     * @param triggeringActivity The {@link Activity} that triggered the share.
-     * @param menuOrKeyboardActionController Handles menu or keyboard actions.
-     */
-    protected abstract void handleAction(Activity triggeringActivity,
-            MenuOrKeyboardActionController menuOrKeyboardActionController);
+    protected abstract String getBroadcastAction();
 }

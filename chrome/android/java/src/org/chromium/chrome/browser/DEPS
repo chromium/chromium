@@ -14,9 +14,6 @@ include_rules = [
 specific_include_rules = {
   # Exceptions to the ChromeActivity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.
-  "ChromeAccessorActivity\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "ChromeActivitySessionTracker\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
@@ -96,9 +93,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ChromePaymentRequestService\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "SendTabToSelfShareActivity\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "InterceptNavigationDelegateClientImpl\.java": [

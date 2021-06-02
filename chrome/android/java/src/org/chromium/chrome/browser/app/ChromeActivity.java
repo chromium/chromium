@@ -54,6 +54,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -139,12 +140,14 @@ import org.chromium.chrome.browser.omaha.notification.UpdateNotificationControll
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
+import org.chromium.chrome.browser.share.ShareRegistrationCoordinator;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -368,6 +371,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
 
+    private ShareRegistrationCoordinator mShareRegistrationCoordinator;
+
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -567,6 +572,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
             // Should be called after TabModels are initialized.
+            mShareRegistrationCoordinator = new ShareRegistrationCoordinator(
+                    this, mActivityTabProvider, mRootUiCoordinator.getBottomSheetController());
+            // Some share types are registered in the coorindator itself.
+            mShareRegistrationCoordinator.registerShareType(PrintShareActivity.BROADCAST_ACTION,
+                    () -> doPrintShare(this, mActivityTabProvider));
+
             ShareDelegate shareDelegate =
                     new ShareDelegateImpl(mRootUiCoordinator.getBottomSheetController(),
                             getLifecycleDispatcher(), getActivityTabProvider(),
@@ -1464,6 +1475,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mBookmarkBridgeSupplier = null;
         }
 
+        if (mShareRegistrationCoordinator != null) mShareRegistrationCoordinator.destroy();
         if (mShareDelegateSupplier != null) {
             mShareDelegateSupplier.destroy();
         }
@@ -2364,18 +2376,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.print_id) {
-            // TODO(crbug.com/1155789): Move this logic to PrintShareActivity once the current tab
-            // is available as UnownedUserData.
-            PrintingController printingController = PrintingControllerImpl.getInstance();
-            if (printingController != null && !printingController.isBusy()
-                    && UserPrefs.get(Profile.getLastUsedRegularProfile())
-                               .getBoolean(Pref.PRINTING_ENABLED)) {
-                printingController.startPrint(
-                        new TabPrinter(currentTab), new PrintManagerDelegateImpl(this));
-                RecordUserAction.record("MobileMenuPrint");
-                return true;
-            }
-            return false;
+            RecordUserAction.record("MobileMenuPrint");
+            return doPrintShare(this, mActivityTabProvider);
         }
 
         if (id == R.id.add_to_homescreen_id) {
@@ -2731,5 +2733,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @VisibleForTesting
     public DisplayAndroidObserver getDisplayAndroidObserverForTesting() {
         return mDisplayAndroidObserver;
+    }
+
+    /** Returns whether the print action was successfully started. */
+    private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
+        PrintingController printingController = PrintingControllerImpl.getInstance();
+
+        if (!currentTabSupplier.hasValue()) return false;
+        if (printingController == null || printingController.isBusy()) return false;
+        if (!UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
+            return false;
+        }
+        printingController.startPrint(
+                new TabPrinter(currentTabSupplier.get()), new PrintManagerDelegateImpl(activity));
+        return true;
     }
 }
