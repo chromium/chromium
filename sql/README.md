@@ -111,6 +111,17 @@ implementation in SQLite. To make this optimization easier to use, any column
 that is a primary key and has an `INTEGER` type is considered an alias for
 rowid.
 
+Each SQLite index
+[is stored in a B-tree](https://sqlite.org/fileformat2.html#representation_of_sql_indices).
+Each index entry is stored as a B-tree node whose key is made up of the record's
+index key column values, followed by the record's primary key column values.
+
+`WITHOUT ROWID` table indexes can include primary key columns without additional
+storage costs. This is because indexes for `WITHOUT ROWID` tables enjoy
+[a space optimization](https://sqlite.org/fileformat2.html#representation_of_sql_indices)
+where columns in both the primary key and the index key are not stored twice in
+B-tree nodes.
+
 
 ### Query processing
 
@@ -207,8 +218,8 @@ Format statements like so.
      // clang-format on
 ```
 
-* SQLite keywords should use ALL CAPS. This makes SQL query literals easier to
-  distinguish and search for.
+* [SQLite keywords](https://sqlite.org/lang_keywords.html) should use ALL CAPS.
+  This makes SQL query literals easier to distinguish and search for.
 
 * Identifiers, such as table and row names, should use snake_case.
 
@@ -262,6 +273,11 @@ Format statements like so.
 
 
 ### Schema style
+
+Identifiers (table / index / column names and aliases) must not be
+[current SQLite keywords](https://sqlite.org/lang_keywords.html). Identifiers
+may not start with the `sqlite_` prefix, to avoid conflicting with the name of a
+[SQLite internal schema object](https://www.sqlite.org/fileformat2.html#storage_of_the_sql_database_schema).
 
 Column types should only be one of the the SQLite storage types (`INTEGER`,
 `REAL`, `TEXT`, `BLOB`), so readers can avoid reasoning about SQLite's type
