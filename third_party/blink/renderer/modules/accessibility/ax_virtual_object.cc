@@ -85,17 +85,18 @@ AccessibleNode* AXVirtualObject::GetAccessibleNode() const {
   return accessible_node_;
 }
 
-String AXVirtualObject::TextAlternative(bool recursive,
-                                        bool in_aria_labelled_by_traversal,
-                                        AXObjectSet& visited,
-                                        ax::mojom::NameFrom& name_from,
-                                        AXRelatedObjectVector* related_objects,
-                                        NameSources* name_sources) const {
+String AXVirtualObject::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   if (!accessible_node_)
     return String();
 
   bool found_text_alternative = false;
-  return AriaTextAlternative(recursive, in_aria_labelled_by_traversal, visited,
+  return AriaTextAlternative(recursive, aria_label_or_description_root, visited,
                              name_from, related_objects, name_sources,
                              &found_text_alternative);
 }

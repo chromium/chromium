@@ -619,7 +619,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Internal functions used by name and description, above.
   typedef HeapHashSet<Member<const AXObject>> AXObjectSet;
   virtual String TextAlternative(bool recursive,
-                                 bool in_aria_labelled_by_traversal,
+                                 const AXObject* aria_label_or_description_root,
                                  AXObjectSet& visited,
                                  ax::mojom::blink::NameFrom& name_from,
                                  AXRelatedObjectVector* related_objects,
@@ -1386,21 +1386,23 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Used only inside textAlternative():
   static String CollapseWhitespace(const String&);
-  static String RecursiveTextAlternative(const AXObject&,
-                                         bool in_aria_labelled_by_traversal,
-                                         AXObjectSet& visited);
-  static String RecursiveTextAlternative(const AXObject&,
-                                         bool in_aria_labelled_by_traversal,
-                                         AXObjectSet& visited,
-                                         ax::mojom::blink::NameFrom& name_from);
+  static String RecursiveTextAlternative(
+      const AXObject&,
+      const AXObject* aria_label_or_description_root,
+      AXObjectSet& visited);
+  static String RecursiveTextAlternative(
+      const AXObject&,
+      const AXObject* aria_label_or_description_root,
+      AXObjectSet& visited,
+      ax::mojom::blink::NameFrom& name_from);
   String AriaTextAlternative(bool recursive,
-                             bool in_aria_labelled_by_traversal,
+                             const AXObject* aria_label_or_description_root,
                              AXObjectSet& visited,
                              ax::mojom::blink::NameFrom&,
                              AXRelatedObjectVector*,
                              NameSources*,
                              bool* found_text_alternative) const;
-  String TextFromElements(bool in_aria_labelled_by_traversal,
+  String TextFromElements(bool in_aria_labelledby_traversal,
                           AXObjectSet& visited,
                           HeapVector<Member<Element>>& elements,
                           AXRelatedObjectVector* related_objects) const;

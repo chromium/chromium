@@ -2876,7 +2876,7 @@ String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
   // Initialize |name_from|, as TextAlternative() might never set it in some
   // cases.
   name_from = ax::mojom::blink::NameFrom::kNone;
-  String text = TextAlternative(false, false, visited, name_from,
+  String text = TextAlternative(false, nullptr, visited, name_from,
                                 &related_objects, nullptr);
 
   ax::mojom::blink::Role role = RoleValue();
@@ -2898,29 +2898,30 @@ String AXObject::GetName(NameSources* name_sources) const {
   AXObjectSet visited;
   ax::mojom::blink::NameFrom tmp_name_from;
   AXRelatedObjectVector tmp_related_objects;
-  String text = TextAlternative(false, false, visited, tmp_name_from,
+  String text = TextAlternative(false, nullptr, visited, tmp_name_from,
                                 &tmp_related_objects, name_sources);
   text = text.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   return text;
 }
 
-String AXObject::RecursiveTextAlternative(const AXObject& ax_obj,
-                                          bool in_aria_labelled_by_traversal,
-                                          AXObjectSet& visited) {
+String AXObject::RecursiveTextAlternative(
+    const AXObject& ax_obj,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited) {
   ax::mojom::blink::NameFrom tmp_name_from;
-  return RecursiveTextAlternative(ax_obj, in_aria_labelled_by_traversal,
+  return RecursiveTextAlternative(ax_obj, aria_label_or_description_root,
                                   visited, tmp_name_from);
 }
 
 String AXObject::RecursiveTextAlternative(
     const AXObject& ax_obj,
-    bool in_aria_labelled_by_traversal,
+    const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::blink::NameFrom& name_from) {
-  if (visited.Contains(&ax_obj) && !in_aria_labelled_by_traversal)
+  if (visited.Contains(&ax_obj) && !aria_label_or_description_root)
     return String();
 
-  return ax_obj.TextAlternative(true, in_aria_labelled_by_traversal, visited,
+  return ax_obj.TextAlternative(true, aria_label_or_description_root, visited,
                                 name_from, nullptr, nullptr);
 }
 
@@ -3002,20 +3003,21 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
          (!ParentObject() || !ParentObject()->IsHiddenViaStyle());
 }
 
-String AXObject::AriaTextAlternative(bool recursive,
-                                     bool in_aria_labelled_by_traversal,
-                                     AXObjectSet& visited,
-                                     ax::mojom::blink::NameFrom& name_from,
-                                     AXRelatedObjectVector* related_objects,
-                                     NameSources* name_sources,
-                                     bool* found_text_alternative) const {
+String AXObject::AriaTextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::blink::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources,
+    bool* found_text_alternative) const {
   String text_alternative;
   bool already_visited = visited.Contains(this);
   visited.insert(this);
 
   // Step 2A from: http://www.w3.org/TR/accname-aam-1.1
   // If you change this logic, update AXNodeObject::nameFromLabelElement, too.
-  if (!in_aria_labelled_by_traversal &&
+  if (!aria_label_or_description_root &&
       IsHiddenForTextAlternativeCalculation()) {
     *found_text_alternative = true;
     return String();
@@ -3023,7 +3025,7 @@ String AXObject::AriaTextAlternative(bool recursive,
 
   // Step 2B from: http://www.w3.org/TR/accname-aam-1.1
   // If you change this logic, update AXNodeObject::nameFromLabelElement, too.
-  if (!in_aria_labelled_by_traversal && !already_visited) {
+  if (!aria_label_or_description_root && !already_visited) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
 
     // Check ARIA attributes.
@@ -3116,9 +3118,11 @@ String AXObject::TextFromElements(
     AXObject* ax_element = AXObjectCache().GetOrCreate(element);
     if (ax_element) {
       found_valid_element = true;
-
-      String result = RecursiveTextAlternative(
-          *ax_element, in_aria_labelledby_traversal, visited);
+      AXObject* aria_labelled_by_node = nullptr;
+      if (in_aria_labelledby_traversal)
+        aria_labelled_by_node = ax_element;
+      String result =
+          RecursiveTextAlternative(*ax_element, aria_labelled_by_node, visited);
       visited.insert(ax_element);
       local_related_objects.push_back(
           MakeGarbageCollected<NameSourceRelatedObject>(ax_element, result));

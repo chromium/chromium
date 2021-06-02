@@ -1019,12 +1019,13 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
 // Properties of interactive elements.
 //
 
-String AXLayoutObject::TextAlternative(bool recursive,
-                                       bool in_aria_labelled_by_traversal,
-                                       AXObjectSet& visited,
-                                       ax::mojom::blink::NameFrom& name_from,
-                                       AXRelatedObjectVector* related_objects,
-                                       NameSources* name_sources) const {
+String AXLayoutObject::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::blink::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   if (layout_object_) {
     absl::optional<String> text_alternative = GetCSSAltText(GetNode());
     bool found_text_alternative = false;
@@ -1082,9 +1083,9 @@ String AXLayoutObject::TextAlternative(bool recursive,
     }
   }
 
-  return AXNodeObject::TextAlternative(recursive, in_aria_labelled_by_traversal,
-                                       visited, name_from, related_objects,
-                                       name_sources);
+  return AXNodeObject::TextAlternative(
+      recursive, aria_label_or_description_root, visited, name_from,
+      related_objects, name_sources);
 }
 
 //

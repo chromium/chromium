@@ -174,12 +174,13 @@ void AXMenuListOption::GetRelativeBounds(AXObject** out_container,
   }
 }
 
-String AXMenuListOption::TextAlternative(bool recursive,
-                                         bool in_aria_labelled_by_traversal,
-                                         AXObjectSet& visited,
-                                         ax::mojom::NameFrom& name_from,
-                                         AXRelatedObjectVector* related_objects,
-                                         NameSources* name_sources) const {
+String AXMenuListOption::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
   if (name_sources)
@@ -190,7 +191,7 @@ String AXMenuListOption::TextAlternative(bool recursive,
 
   bool found_text_alternative = false;
   String text_alternative = AriaTextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources, &found_text_alternative);
   if (found_text_alternative && !name_sources)
     return text_alternative;

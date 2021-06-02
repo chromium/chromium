@@ -89,7 +89,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // AX name calc.
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::blink::NameFrom&,
                          AXRelatedObjectVector*,

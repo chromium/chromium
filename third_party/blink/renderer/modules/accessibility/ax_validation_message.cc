@@ -99,7 +99,7 @@ ListedElement* AXValidationMessage::RelatedFormControlIfVisible() const {
 
 String AXValidationMessage::TextAlternative(
     bool recursive,
-    bool in_aria_labelled_by_traversal,
+    const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::NameFrom& name_from,
     AXRelatedObjectVector* related_objects,

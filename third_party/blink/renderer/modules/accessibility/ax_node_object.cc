@@ -2868,12 +2868,13 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
   return name;
 }
 
-String AXNodeObject::TextAlternative(bool recursive,
-                                     bool in_aria_labelled_by_traversal,
-                                     AXObjectSet& visited,
-                                     ax::mojom::blink::NameFrom& name_from,
-                                     AXRelatedObjectVector* related_objects,
-                                     NameSources* name_sources) const {
+String AXNodeObject::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::blink::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
   if (name_sources)
@@ -2914,7 +2915,7 @@ String AXNodeObject::TextAlternative(bool recursive,
 
   // Step 2C from: http://www.w3.org/TR/accname-aam-1.1 -- aria-label.
   String text_alternative = AriaTextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources, &found_text_alternative);
   if (found_text_alternative && !name_sources)
     return text_alternative;
@@ -2930,7 +2931,7 @@ String AXNodeObject::TextAlternative(bool recursive,
     return text_alternative;
 
   // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1 -- from content.
-  if (in_aria_labelled_by_traversal || SupportsNameFromContents(recursive)) {
+  if (aria_label_or_description_root || SupportsNameFromContents(recursive)) {
     Node* node = GetNode();
     if (!IsA<HTMLSelectElement>(node)) {  // Avoid option descendant text
       name_from = ax::mojom::blink::NameFrom::kContents;
@@ -2957,7 +2958,7 @@ String AXNodeObject::TextAlternative(bool recursive,
     }
   }
 
-  // Step 2H from: http://www.w3.org/TR/accname-aam-1.1
+  // Step 2I from: http://www.w3.org/TR/accname-aam-1.1
   name_from = ax::mojom::blink::NameFrom::kTitle;
   if (name_sources) {
     name_sources->push_back(NameSource(found_text_alternative, kTitleAttr));
@@ -3097,7 +3098,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
       result = child->TextFromDescendants(visited, true);
     } else {
       result =
-          RecursiveTextAlternative(*child, false, visited, child_name_from);
+          RecursiveTextAlternative(*child, nullptr, visited, child_name_from);
     }
 
     if (!result.IsEmpty() && previous && accumulated_text.length() &&
@@ -4723,7 +4724,7 @@ String AXNodeObject::NativeTextAlternative(
       AXObject* figcaption_ax_object = AXObjectCache().GetOrCreate(figcaption);
       if (figcaption_ax_object) {
         text_alternative =
-            RecursiveTextAlternative(*figcaption_ax_object, false, visited);
+            RecursiveTextAlternative(*figcaption_ax_object, nullptr, visited);
 
         if (related_objects) {
           local_related_objects.push_back(
@@ -4786,7 +4787,7 @@ String AXNodeObject::NativeTextAlternative(
       AXObject* caption_ax_object = AXObjectCache().GetOrCreate(caption);
       if (caption_ax_object) {
         text_alternative =
-            RecursiveTextAlternative(*caption_ax_object, false, visited);
+            RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
         if (related_objects) {
           local_related_objects.push_back(
               MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,
@@ -4845,7 +4846,7 @@ String AXNodeObject::NativeTextAlternative(
       AXObject* title_ax_object = AXObjectCache().GetOrCreate(title);
       if (title_ax_object && !visited.Contains(title_ax_object)) {
         text_alternative =
-            RecursiveTextAlternative(*title_ax_object, false, visited);
+            RecursiveTextAlternative(*title_ax_object, nullptr, visited);
         if (related_objects) {
           local_related_objects.push_back(
               MakeGarbageCollected<NameSourceRelatedObject>(title_ax_object,
@@ -4880,7 +4881,7 @@ String AXNodeObject::NativeTextAlternative(
       // Avoid an infinite loop
       if (legend_ax_object && !visited.Contains(legend_ax_object)) {
         text_alternative =
-            RecursiveTextAlternative(*legend_ax_object, false, visited);
+            RecursiveTextAlternative(*legend_ax_object, nullptr, visited);
 
         if (related_objects) {
           local_related_objects.push_back(
@@ -5125,7 +5126,7 @@ String AXNodeObject::Description(
     if (ruby_annotation_ax_object) {
       AXObjectSet visited;
       description =
-          RecursiveTextAlternative(*ruby_annotation_ax_object, true, visited);
+          RecursiveTextAlternative(*ruby_annotation_ax_object, this, visited);
       if (related_objects) {
         related_objects->push_back(
             MakeGarbageCollected<NameSourceRelatedObject>(
@@ -5158,7 +5159,7 @@ String AXNodeObject::Description(
       if (caption_ax_object) {
         AXObjectSet visited;
         description =
-            RecursiveTextAlternative(*caption_ax_object, false, visited);
+            RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
         if (related_objects) {
           related_objects->push_back(
               MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,

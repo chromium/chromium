@@ -193,7 +193,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String GetName(ax::mojom::blink::NameFrom&,
                  AXObjectVector* name_objects) const override;
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::blink::NameFrom&,
                          AXRelatedObjectVector*,

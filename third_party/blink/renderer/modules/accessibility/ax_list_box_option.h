@@ -50,7 +50,7 @@ class AXListBoxOption final : public AXLayoutObject {
   bool OnNativeSetSelectedAction(bool) override;
 
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,

@@ -38,7 +38,7 @@ class AXValidationMessage final : public AXMockObject {
   bool IsValidationMessage() const override { return true; }
   bool IsVisible() const override;
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,

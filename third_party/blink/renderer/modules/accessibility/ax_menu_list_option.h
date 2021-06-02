@@ -61,7 +61,7 @@ class AXMenuListOption final : public AXNodeObject {
                          SkMatrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,

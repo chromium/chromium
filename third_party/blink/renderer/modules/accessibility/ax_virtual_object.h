@@ -30,7 +30,7 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
                                      bool& result) const override;
   AccessibleNode* GetAccessibleNode() const override;
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,

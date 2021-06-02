@@ -27,7 +27,7 @@ AccessibilityMediaElement::AccessibilityMediaElement(
 
 String AccessibilityMediaElement::TextAlternative(
     bool recursive,
-    bool in_aria_labelled_by_traversal,
+    const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::NameFrom& name_from,
     AXRelatedObjectVector* related_objects,
@@ -41,7 +41,7 @@ String AccessibilityMediaElement::TextAlternative(
     return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
   }
   return AXLayoutObject::TextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources);
 }
 
