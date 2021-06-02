@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -67,7 +68,7 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t length,
                             uint32_t info_class);
 
-  PolicyBase* policy_base_;
+  CheckedPtr<PolicyBase> policy_base_;
   DISALLOW_COPY_AND_ASSIGN(FilesystemDispatcher);
 };
 

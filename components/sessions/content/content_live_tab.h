@@ -6,6 +6,7 @@
 #define COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/live_tab.h"
@@ -56,7 +57,7 @@ class SESSIONS_EXPORT ContentLiveTab
     return web_contents_->GetController();
   }
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentLiveTab);
 };

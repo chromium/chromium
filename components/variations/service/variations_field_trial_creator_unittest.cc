@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -232,7 +233,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   // Whether to simulate having a corrupted safe seed.
   bool has_corrupted_safe_seed_ = false;
 
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsSeedStore);
 };
@@ -276,7 +277,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestVariationsSeedStore seed_store_;
-  SafeSeedManager* const safe_seed_manager_;
+  const CheckedPtr<SafeSeedManager> safe_seed_manager_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsFieldTrialCreator);

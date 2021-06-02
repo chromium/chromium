@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -106,7 +107,7 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
   std::map<std::string, std::unique_ptr<SavedFiles>>
       extension_id_to_saved_files_;
   content::NotificationRegistrar registrar_;
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 };
 
 }  // namespace apps

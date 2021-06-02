@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -182,7 +183,7 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
-  storage::BlobStorageContext* blob_storage_context_;
+  CheckedPtr<storage::BlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::BlobDataHandle> blob_handle_;
   std::unique_ptr<disk_cache::Backend> cache_backend_;
   ScopedWritableEntry disk_cache_entry_;

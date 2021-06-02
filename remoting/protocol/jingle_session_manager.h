@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session_manager.h"
@@ -63,7 +64,7 @@ class JingleSessionManager : public SessionManager,
   // Called by JingleSession when it is being destroyed.
   void SessionDestroyed(JingleSession* session);
 
-  SignalStrategy* signal_strategy_ = nullptr;
+  CheckedPtr<SignalStrategy> signal_strategy_ = nullptr;
   IncomingSessionCallback incoming_session_callback_;
   std::unique_ptr<CandidateSessionConfig> protocol_config_;
 

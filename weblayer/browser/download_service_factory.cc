@@ -5,6 +5,7 @@
 #include "weblayer/browser/download_service_factory.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -102,7 +103,7 @@ class DownloadBlobContextGetterFactory
     std::move(callback).Run(browser_context_->GetBlobStorageContext());
   }
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace

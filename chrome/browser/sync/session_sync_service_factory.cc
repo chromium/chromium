@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/session_sync_service_factory.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -113,7 +114,7 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   }
 
  private:
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   std::unique_ptr<sync_sessions::SyncedWindowDelegatesGetter>
       window_delegates_getter_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;

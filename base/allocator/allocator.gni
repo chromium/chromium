@@ -65,7 +65,7 @@ declare_args() {
   # Set use_backup_ref_ptr true to use BackupRefPtr as the implementation of
   # CheckedPtr<T>.  The _fake option doesn't enable BackupRefPtr, but pretends
   # it's enabled for syntethic field trial (for testing purposes only).
-  use_backup_ref_ptr = false
+  use_backup_ref_ptr = true
   use_backup_ref_ptr_fake = false
 
   # If enabled BackupRefPtr (BRP) is enabled, additional options are available:
@@ -81,11 +81,11 @@ declare_args() {
   #   BRP-pool block list (use only if use_brp_pool_blocklist is on)
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
-  enable_runtime_backup_ref_ptr_control = false
+  enable_runtime_backup_ref_ptr_control = true
   put_ref_count_in_previous_slot = false
-  enable_brp_directmap_support = false
-  use_brp_pool_blocklist = false
-  never_remove_from_brp_pool_blocklist = false
+  enable_brp_directmap_support = true
+  use_brp_pool_blocklist = true
+  never_remove_from_brp_pool_blocklist = true
   enable_backup_ref_ptr_slow_checks = false
 }
 

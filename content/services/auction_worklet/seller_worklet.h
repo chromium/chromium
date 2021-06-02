@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -70,7 +71,7 @@ class SellerWorklet : public mojom::SellerWorklet {
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
       absl::optional<std::string> error_msg);
 
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
 
   const GURL script_source_url_;
   std::unique_ptr<WorkletLoader> worklet_loader_;

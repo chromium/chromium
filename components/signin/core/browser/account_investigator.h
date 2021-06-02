@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -109,8 +110,8 @@ class AccountInvestigator : public KeyedService,
       const std::vector<gaia::ListedAccount>& signed_out_accounts,
       signin_metrics::ReportingType type);
 
-  PrefService* pref_service_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<PrefService> pref_service_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
   // Handles invoking our periodic logic at the right time. As part of our
   // handling of this call we reset the timer for the next loop.

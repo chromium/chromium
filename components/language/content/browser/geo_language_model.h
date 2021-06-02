@@ -6,6 +6,7 @@
 #define COMPONENTS_LANGUAGE_CONTENT_BROWSER_GEO_LANGUAGE_MODEL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/language/core/browser/language_model.h"
 
 namespace language {
@@ -27,7 +28,7 @@ class GeoLanguageModel : public LanguageModel {
   // The GeoLanguageProvider is a Singleton so it outlives this object but it
   // is injected from the creator of this model to make testing easier by
   // passing in a mock.
-  const GeoLanguageProvider* const geo_language_provider_;
+  const CheckedPtr<const GeoLanguageProvider> geo_language_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(GeoLanguageModel);
 };

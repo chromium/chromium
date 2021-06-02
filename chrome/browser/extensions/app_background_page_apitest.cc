@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -171,7 +172,7 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
   }
 
  private:
-  const Extension* extension_;
+  CheckedPtr<const Extension> extension_;
 };
 
 }  // namespace

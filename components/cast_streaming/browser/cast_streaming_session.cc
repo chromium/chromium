@@ -98,7 +98,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
   audio_consumer_ = std::make_unique<StreamConsumer>(
       audio_receiver, media::kNoTimestamp, std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
-                          base::Unretained(client_)),
+                          base::Unretained(client_.get())),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 
@@ -133,7 +133,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
       video_receiver, base::TimeDelta::FromMinutes(10),
       std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
-                          base::Unretained(client_)),
+                          base::Unretained(client_.get())),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 

@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -87,7 +88,7 @@ class CONTENT_EXPORT StoragePartitionImplMap
   void PostCreateInitialization(StoragePartitionImpl* partition,
                                 bool in_memory);
 
-  BrowserContext* browser_context_;  // Not Owned.
+  CheckedPtr<BrowserContext> browser_context_;  // Not Owned.
   scoped_refptr<base::SequencedTaskRunner> file_access_runner_;
   PartitionMap partitions_;
 

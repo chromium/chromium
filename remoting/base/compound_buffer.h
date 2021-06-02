@@ -23,6 +23,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 
@@ -119,7 +120,7 @@ class CompoundBufferInputStream
   int64_t ByteCount() const override;
 
  private:
-  const CompoundBuffer* buffer_;
+  CheckedPtr<const CompoundBuffer> buffer_;
 
   size_t current_chunk_;
   int current_chunk_position_;

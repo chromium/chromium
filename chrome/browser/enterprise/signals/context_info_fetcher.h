@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content {
@@ -83,10 +84,10 @@ class ContextInfoFetcher {
 
   safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  CheckedPtr<enterprise_connectors::ConnectorsService> connectors_service_;
 };
 
 }  // namespace enterprise_signals

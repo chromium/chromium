@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/invalidate_type.h"
@@ -156,7 +157,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   WebContents* web_contents() { return monitor_->web_contents_; }
 
  protected:
-  AudioStreamMonitor* monitor_;
+  CheckedPtr<AudioStreamMonitor> monitor_;
 
  private:
   void ExpectWasRecentlyAudible() const {

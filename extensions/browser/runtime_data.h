@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace extensions {
@@ -77,7 +78,7 @@ class RuntimeData : public ExtensionRegistryObserver {
   typedef std::map<std::string, int> ExtensionFlagsMap;
   ExtensionFlagsMap extension_flags_;
 
-  ExtensionRegistry* registry_;  // Not owned.
+  CheckedPtr<ExtensionRegistry> registry_;  // Not owned.
 };
 
 }  // namespace extensions

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -319,7 +320,7 @@ class AvatarImageView : public views::ImageView {
   }
 
   ui::ImageModel avatar_image_;
-  const ProfileMenuViewBase* root_view_;
+  CheckedPtr<const ProfileMenuViewBase> root_view_;
 };
 
 class SyncButton : public HoverButton {
@@ -338,7 +339,7 @@ class SyncButton : public HoverButton {
   }
 
  private:
-  const ProfileMenuViewBase* root_view_;
+  CheckedPtr<const ProfileMenuViewBase> root_view_;
 };
 
 BEGIN_METADATA(SyncButton, HoverButton)
@@ -356,7 +357,7 @@ class SyncImageView : public views::ImageView {
   }
 
  private:
-  const ProfileMenuViewBase* root_view_;
+  CheckedPtr<const ProfileMenuViewBase> root_view_;
 };
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
@@ -1066,7 +1067,7 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
   }
 
  private:
-  ProfileMenuViewBase* owner_;
+  CheckedPtr<ProfileMenuViewBase> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };

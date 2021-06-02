@@ -10,6 +10,7 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 
 namespace media {
 
@@ -148,7 +149,7 @@ class IntervalMapConstIterator {
   }
 
  private:
-  const MapType* map_;
+  CheckedPtr<const MapType> map_;
 
   // Pointer to the entry in the IntervalMap that specifies the
   // beginning of the current interval.

@@ -78,7 +78,7 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
         // Changes to input, output, and feature reports are propagated to all
         // ancestor collections.
         if (state.collection) {
-          auto* collection = state.collection;
+          auto* collection = state.collection.get();
           while (collection) {
             collection->AddReportItem(current_item->tag(),
                                       current_item->GetShortData(), state);
@@ -106,7 +106,7 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
         // all ancestor collections.
         if (state.collection) {
           state.report_id = current_item->GetShortData();
-          auto* collection = state.collection;
+          auto* collection = state.collection.get();
           while (collection) {
             collection->report_ids_.push_back(state.report_id);
             collection = collection->parent_;

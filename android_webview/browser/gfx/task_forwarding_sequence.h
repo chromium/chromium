@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/ipc/single_task_sequence.h"
 
 namespace gpu {
@@ -59,8 +60,8 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
       scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data);
 
   // Raw pointer refer to the global instance.
-  TaskQueueWebView* const task_queue_;
-  gpu::SyncPointManager* const sync_point_manager_;
+  const CheckedPtr<TaskQueueWebView> task_queue_;
+  const CheckedPtr<gpu::SyncPointManager> sync_point_manager_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskForwardingSequence);

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/printing/cloud_print/privet_device_lister.h"
 #include "chrome/browser/printing/cloud_print/privet_http.h"
@@ -68,7 +69,7 @@ class PrivetLocalPrinterLister : PrivetDeviceLister::Delegate {
 
   std::unique_ptr<PrivetHTTPAsynchronousFactory> privet_http_factory_;
   DeviceContextMap device_contexts_;
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   std::unique_ptr<PrivetDeviceLister> privet_lister_;
 };

@@ -106,7 +106,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
-                          base::Unretained(navigation_handler_)),
+                          base::Unretained(navigation_handler_.get())),
       vector_icons::kBackArrowIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetProperty(views::kInternalPaddingKey,
@@ -126,7 +126,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
-                          base::Unretained(navigation_handler_)));
+                          base::Unretained(navigation_handler_.get())));
   close_button->SetVisible(true);
   close_button->SetProperty(views::kInternalPaddingKey,
                             close_button->GetInsets());
