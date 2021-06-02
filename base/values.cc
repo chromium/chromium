@@ -1681,12 +1681,6 @@ void ListValue::AppendString(const std::u16string& in_value) {
   list().emplace_back(in_value);
 }
 
-void ListValue::AppendStrings(const std::vector<std::string>& in_values) {
-  list().reserve(list().size() + in_values.size());
-  for (const auto& in_value : in_values)
-    list().emplace_back(in_value);
-}
-
 bool ListValue::Insert(size_t index, std::unique_ptr<Value> in_value) {
   DCHECK(in_value);
   if (index > list().size())

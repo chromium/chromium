@@ -917,8 +917,6 @@ class BASE_EXPORT ListValue : public Value {
   void AppendInteger(int in_value);
   void AppendString(StringPiece in_value);
   void AppendString(const std::u16string& in_value);
-  // DEPRECATED, use `Value::Append()` in a loop instead.
-  void AppendStrings(const std::vector<std::string>& in_values);
 
   using Value::Insert;
   // Insert a Value at index.
