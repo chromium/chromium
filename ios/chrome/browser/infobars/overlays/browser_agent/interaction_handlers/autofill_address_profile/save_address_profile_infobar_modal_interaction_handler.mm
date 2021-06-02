@@ -37,18 +37,7 @@ void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     std::u16string data = base::SysNSStringToUTF16(profileData[key]);
     GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
   }
-  GetInfoBarDelegate(infobar)->EditAccepted();
-  infobar->set_accepted(true);
-}
-
-void SaveAddressProfileInfobarModalInteractionHandler::CancelModal(
-    InfoBarIOS* infobar,
-    BOOL fromEditModal) {
-  if (fromEditModal) {
-    GetInfoBarDelegate(infobar)->EditDeclined();
-  } else {
-    GetInfoBarDelegate(infobar)->Cancel();
-  }
+  infobar->set_accepted(GetInfoBarDelegate(infobar)->EditAccepted());
 }
 
 #pragma mark - Private

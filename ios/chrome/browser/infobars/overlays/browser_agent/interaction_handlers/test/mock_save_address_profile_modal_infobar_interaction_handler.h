@@ -21,7 +21,6 @@ class MockSaveAddressProfileInfobarModalInteractionHandler
 
   MOCK_METHOD2(SaveEditedProfile,
                void(InfoBarIOS* infobar, NSDictionary* profileData));
-  MOCK_METHOD2(CancelModal, void(InfoBarIOS* infobar, BOOL fromEditView));
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_TEST_MOCK_SAVE_ADDRESS_PROFILE_MODAL_INFOBAR_INTERACTION_HANDLER_H_

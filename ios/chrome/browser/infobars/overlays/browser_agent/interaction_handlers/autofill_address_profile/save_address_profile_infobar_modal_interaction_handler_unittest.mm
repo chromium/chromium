@@ -53,20 +53,6 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, MainAction) {
 
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest,
        SaveEditedProfile) {
-  EXPECT_CALL(mock_delegate(), EditAccepted());
+  EXPECT_CALL(mock_delegate(), EditAccepted()).WillOnce(testing::Return(true));
   handler_.SaveEditedProfile(infobar_.get(), @{}.mutableCopy);
-}
-
-TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, EditDeclined) {
-  handler_.CancelModal(infobar_.get(), /*fromEditModal=*/YES);
-  EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::SaveAddressProfileOfferUserDecision::
-                kEditDeclined);
-}
-
-TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, Cancel) {
-  handler_.CancelModal(infobar_.get(), /*fromEditModal=*/NO);
-  EXPECT_EQ(
-      mock_delegate().user_decision(),
-      autofill::AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }

@@ -61,10 +61,9 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // |original_profile_|.
   std::vector<ProfileValueDifference> GetProfileDiff() const;
 
-  virtual void EditAccepted();
-  void EditDeclined();
-  void MessageTimeout();
-  void MessageDeclined();
+  // Calls |RunSaveAddressProfilePromptCallback| with the kEditAccepted|
+  // decision.
+  virtual bool EditAccepted();
 
   // Updates |profile_| |type| value to |value|.
   void SetProfileInfo(const ServerFieldType& type, const std::u16string& value);
@@ -77,24 +76,16 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   std::u16string GetMessageText() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  void InfoBarDismissed() override;
+  int GetButtons() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
-#if defined(UNIT_TEST)
-  // Getter for |user_decision_|. Used for the testing purposes.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
-    return user_decision_;
-  }
-#endif
-
  private:
-  // Fires the |address_profile_save_prompt_callback_| callback with
-  // |user_decision_|.
-  void RunSaveAddressProfilePromptCallback();
-
-  // Sets |user_decision_| based on |user_decision|.
-  void SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision user_decision);
+  // Fires the |address_profile_save_prompt_callback_| callback.
+  void RunSaveAddressProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // The application locale.
   std::string locale_;
@@ -109,11 +100,6 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback
       address_profile_save_prompt_callback_;
-
-  // Records the last user decision based on the interactions with the
-  // banner/modal to be sent with |address_profile_save_prompt_callback_|.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored;
 };
 
 }  // namespace autofill

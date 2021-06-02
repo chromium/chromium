@@ -34,12 +34,9 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
   // If the user has navigated away without saving the modal, then the
   // |address_profile_save_prompt_callback_| is run here.
   if (!address_profile_save_prompt_callback_.is_null()) {
-    DCHECK(
-        user_decision_ !=
-            AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted &&
-        user_decision_ !=
-            AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);
-    RunSaveAddressProfilePromptCallback();
+    // TODO(crbug.com/1167062): Record last action on the infobar and send
+    // callback accordingly.
+    InfoBarDismissed();
   }
 }
 
@@ -120,25 +117,10 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
                                    locale_);
 }
 
-void AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
-  user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted;
-  RunSaveAddressProfilePromptCallback();
-}
-
-void AutofillSaveUpdateAddressProfileDelegateIOS::EditDeclined() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined);
-}
-
-void AutofillSaveUpdateAddressProfileDelegateIOS::MessageTimeout() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout);
-}
-
-void AutofillSaveUpdateAddressProfileDelegateIOS::MessageDeclined() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined);
+bool AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
+  RunSaveAddressProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted);
+  return true;
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
@@ -159,20 +141,24 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
-  user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted;
-  RunSaveAddressProfilePromptCallback();
+  RunSaveAddressProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
   return true;
 }
 
+void AutofillSaveUpdateAddressProfileDelegateIOS::InfoBarDismissed() {
+  RunSaveAddressProfilePromptCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+}
+
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Cancel() {
-  SetUserDecision(
+  RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   return true;
 }
 
 int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
-  NOTREACHED();
+  // TODO(crbug.com/1167062): Replace with proper icon.
   return IDR_INFOBAR_AUTOFILL_CC;
 }
 
@@ -197,32 +183,21 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::ShouldExpire(
          ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
-void AutofillSaveUpdateAddressProfileDelegateIOS::
-    RunSaveAddressProfilePromptCallback() {
-  std::move(address_profile_save_prompt_callback_)
-      .Run(user_decision_, profile_);
+int AutofillSaveUpdateAddressProfileDelegateIOS::GetButtons() const {
+  return BUTTON_OK | BUTTON_CANCEL;
 }
 
-void AutofillSaveUpdateAddressProfileDelegateIOS::SetUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision user_decision) {
-  if (user_decision == AutofillClient::SaveAddressProfileOfferUserDecision::
-                           kMessageTimeout &&
-      user_decision_ == AutofillClient::SaveAddressProfileOfferUserDecision::
-                            kMessageDeclined) {
-    // |SaveAddressProfileInfobarBannerInteractionHandler::InfobarVisibilityChanged|
-    // would be called even when the banner is explicitly dismissed by the
-    // user. In that case, do not change the |user_decision_|.
-    return;
-  }
-  if (user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted ||
-      user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
-    // The infobar has already been saved. So, cancel should not change the
-    // |user_decision_| now.
-    return;
-  }
-  user_decision_ = user_decision;
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetButtonLabel(
+    InfoBarButton button) const {
+
+  NOTREACHED() << "Unsupported button label requested.";
+  return std::u16string();
+}
+
+void AutofillSaveUpdateAddressProfileDelegateIOS::
+    RunSaveAddressProfilePromptCallback(
+        AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  std::move(address_profile_save_prompt_callback_).Run(decision, profile_);
 }
 
 }  // namespace autofill

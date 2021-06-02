@@ -30,10 +30,6 @@ class SaveAddressProfileInfobarModalInteractionHandler
   virtual void SaveEditedProfile(InfoBarIOS* infobar,
                                  NSDictionary* profileData);
 
-  // Instructs the handler to inform the delegate that the view has been
-  // cancelled.
-  virtual void CancelModal(InfoBarIOS* infobar, BOOL fromEditModal);
-
  private:
   // InfobarModalInteractionHandler:
   std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
