@@ -160,8 +160,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   struct State {
     TransformAndOrigin transform_and_origin;
     scoped_refptr<const ScrollPaintPropertyNode> scroll;
-    scoped_refptr<const TransformPaintPropertyNode>
-        scroll_translation_for_fixed;
     // Use bitfield packing instead of separate bools to save space.
     struct Flags {
       bool flattens_inherited_transform : 1;
@@ -202,9 +200,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
           backface_visibility != other.backface_visibility ||
           rendering_context_id != other.rendering_context_id ||
           compositor_element_id != other.compositor_element_id ||
-          scroll != other.scroll ||
-          scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
-          !StickyConstraintEquals(other) ||
+          scroll != other.scroll || !StickyConstraintEquals(other) ||
           visible_frame_element_id != other.visible_frame_element_id) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
@@ -326,10 +322,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return state_.scroll.get();
   }
 
-  const TransformPaintPropertyNode* ScrollTranslationForFixed() const {
-    return state_.scroll_translation_for_fixed.get();
-  }
-
   // If true, this node is translated by the viewport bounds delta, which is
   // used to keep bottom-fixed elements appear fixed to the bottom of the
   // screen in the presence of URL bar movement.
@@ -422,13 +414,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
            CompositingReason::kActiveTransformAnimation;
   }
 
-  bool RequiresCompositingForFixedPosition() const {
-    return DirectCompositingReasons() & CompositingReason::kFixedPosition;
-  }
-
   bool RequiresCompositingForScrollDependentPosition() const {
     return DirectCompositingReasons() &
-           CompositingReason::kComboScrollDependentPosition;
+           CompositingReason::kScrollDependentPosition;
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {

@@ -140,31 +140,27 @@ TEST_F(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
 
   auto& sticky_scrolling =
       *To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky-scrolling"));
-  EXPECT_EQ(
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *sticky_scrolling.Layer()),
-      CompositingReason::kStickyPosition);
+  EXPECT_TRUE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *sticky_scrolling.Layer()));
 
   auto& sticky_no_scrolling = *To<LayoutBoxModelObject>(
       GetLayoutObjectByElementId("sticky-no-scrolling"));
-  EXPECT_EQ(
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *sticky_no_scrolling.Layer()),
-      CompositingReason::kNone);
+  EXPECT_FALSE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *sticky_no_scrolling.Layer()));
 
   auto& overflow_hidden_scrolling = *To<LayoutBoxModelObject>(
       GetLayoutObjectByElementId("overflow-hidden-scrolling"));
-  EXPECT_EQ(
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *overflow_hidden_scrolling.Layer()),
-      CompositingReason::kStickyPosition);
+  EXPECT_TRUE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *overflow_hidden_scrolling.Layer()));
 
   auto& overflow_hidden_no_scrolling = *To<LayoutBoxModelObject>(
       GetLayoutObjectByElementId("overflow-hidden-no-scrolling"));
-  EXPECT_EQ(
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *overflow_hidden_no_scrolling.Layer()),
-      CompositingReason::kNone);
+  EXPECT_FALSE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *overflow_hidden_no_scrolling.Layer()));
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_EQ(kPaintsIntoOwnBacking,

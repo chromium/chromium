@@ -31,8 +31,7 @@ using CompositingReasons = uint64_t;
   V(ActiveFilterAnimation)                                                    \
   V(ActiveBackdropFilterAnimation)                                            \
   V(AffectedByOuterViewportBoundsDelta)                                       \
-  V(FixedPosition)                                                            \
-  V(StickyPosition)                                                           \
+  V(ScrollDependentPosition)                                                  \
   V(OverflowScrolling)                                                        \
   V(OverflowScrollingParent)                                                  \
   V(OutOfFlowClipping)                                                        \
@@ -132,12 +131,10 @@ class PLATFORM_EXPORT CompositingReason {
         kWillChangeFilter | kWillChangeOther | kBackdropFilter |
         kWillChangeBackdropFilter,
 
-    kComboScrollDependentPosition = kFixedPosition | kStickyPosition,
-
     kComboAllDirectNonStyleDeterminedReasons =
         kVideo | kCanvas | kPlugin | kIFrame | kSVGRoot |
         kOverflowScrollingParent | kOutOfFlowClipping | kVideoOverlay |
-        kXrOverlay | kRoot | kRootScroller | kComboScrollDependentPosition |
+        kXrOverlay | kRoot | kRootScroller | kScrollDependentPosition |
         kAffectedByOuterViewportBoundsDelta | kBackfaceInvisibility3DAncestor |
         kDocumentTransitionSharedElement,
 
@@ -145,7 +142,7 @@ class PLATFORM_EXPORT CompositingReason {
                              kComboAllDirectNonStyleDeterminedReasons,
 
     kComboAllCompositedScrollingDeterminedReasons =
-        kComboScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
+        kScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
         kOverflowScrolling,
 
     kComboCompositedDescendants =
@@ -167,7 +164,7 @@ class PLATFORM_EXPORT CompositingReason {
     kPreventingSubpixelAccumulationReasons = kWillChangeTransform,
 
     kDirectReasonsForPaintOffsetTranslationProperty =
-        kComboScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
+        kScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
         kVideo | kCanvas | kPlugin | kIFrame | kSVGRoot,
     kDirectReasonsForTransformProperty =
         k3DTransform | kTrivial3DTransform | kWillChangeTransform |
