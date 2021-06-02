@@ -11,7 +11,8 @@
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif
 
-#include "base/notreached.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/bits.h"
 
 namespace base {
 namespace allocator {
@@ -26,34 +27,42 @@ kern_return_t MallocIntrospectionEnumerator(task_t task,
                                             vm_address_t zone_address,
                                             memory_reader_t reader,
                                             vm_range_recorder_t recorder) {
-  NOTREACHED();
+  // Should enumerate all memory regions allocated by this allocator, but not
+  // implemented just because of no use case for now.
   return KERN_FAILURE;
 }
 
 size_t MallocIntrospectionGoodSize(malloc_zone_t* zone, size_t size) {
-  return size;
+  return base::bits::AlignUp(size, base::kAlignment);
 }
 
 boolean_t MallocIntrospectionCheck(malloc_zone_t* zone) {
-  NOTREACHED();
+  // Should check the consistency of the allocator implementing this malloc
+  // zone, but not implemented just because of no use case for now.
   return true;
 }
 
 void MallocIntrospectionPrint(malloc_zone_t* zone, boolean_t verbose) {
-  NOTREACHED();
+  // Should print the current states of the zone for debugging / investigation
+  // purpose, but not implemented just because of no use case for now.
 }
 
 void MallocIntrospectionLog(malloc_zone_t* zone, void* address) {
-  NOTREACHED();
+  // Should enable logging of the activities on the given `address`, but not
+  // implemented just because of no use case for now.
 }
 
 void MallocIntrospectionForceLock(malloc_zone_t* zone) {
+  // Called before fork(2) to acquire the lock.
+  //
   // PartitionAllocMallocInitOnce() in
   // //base/allocator/partition_allocator/partition_root.cc has already
   // registered a set of fork handlers, so it's safe to do nothing here.
 }
 
 void MallocIntrospectionForceUnlock(malloc_zone_t* zone) {
+  // Called in the parent process after fork(2) to release the lock.
+  //
   // PartitionAllocMallocInitOnce() in
   // //base/allocator/partition_allocator/partition_root.cc has already
   // registered a set of fork handlers, so it's safe to do nothing here.
@@ -61,35 +70,45 @@ void MallocIntrospectionForceUnlock(malloc_zone_t* zone) {
 
 void MallocIntrospectionStatistics(malloc_zone_t* zone,
                                    malloc_statistics_t* stats) {
-  NOTREACHED();
+  // Should report the memory usage correctly, but not implemented just because
+  // of no use case for now.
+  stats->blocks_in_use = 0;
+  stats->size_in_use = 0;
+  stats->max_size_in_use = 0;  // High water mark of touched memory
+  stats->size_allocated = 0;   // Reserved in memory
 }
 
 boolean_t MallocIntrospectionZoneLocked(malloc_zone_t* zone) {
-  NOTREACHED();
+  // Should return true if the underlying PartitionRoot is locked, but not
+  // implemented just because this function seems not used effectively.
   return false;
 }
 
 boolean_t MallocIntrospectionEnableDischargeChecking(malloc_zone_t* zone) {
-  NOTREACHED();
+  // 'discharge' is not supported.
   return false;
 }
 
 void MallocIntrospectionDisableDischargeChecking(malloc_zone_t* zone) {
-  NOTREACHED();
+  // 'discharge' is not supported.
 }
 
 void MallocIntrospectionDischarge(malloc_zone_t* zone, void* memory) {
-  NOTREACHED();
+  // 'discharge' is not supported.
 }
 
 void MallocIntrospectionEnumerateDischargedPointers(
     malloc_zone_t* zone,
     void (^report_discharged)(void* memory, void* info)) {
-  NOTREACHED();
+  // 'discharge' is not supported.
 }
 
 void MallocIntrospectionReinitLock(malloc_zone_t* zone) {
-  NOTREACHED();
+  // Called in a child process after fork(2) to re-initialize the lock.
+  //
+  // PartitionAllocMallocInitOnce() in
+  // //base/allocator/partition_allocator/partition_root.cc has already
+  // registered a set of fork handlers, so it's safe to do nothing here.
 }
 
 void MallocIntrospectionPrintTask(task_t task,
@@ -97,14 +116,21 @@ void MallocIntrospectionPrintTask(task_t task,
                                   vm_address_t zone_address,
                                   memory_reader_t reader,
                                   print_task_printer_t printer) {
-  NOTREACHED();
+  // Should print the current states of another process's zone for debugging /
+  // investigation purpose, but not implemented just because of no use case
+  // for now.
 }
 
 void MallocIntrospectionTaskStatistics(task_t task,
                                        vm_address_t zone_address,
                                        memory_reader_t reader,
                                        malloc_statistics_t* stats) {
-  NOTREACHED();
+  // Should report the memory usage in another process's zone, but not
+  // implemented just because of no use case for now.
+  stats->blocks_in_use = 0;
+  stats->size_in_use = 0;
+  stats->max_size_in_use = 0;  // High water mark of touched memory
+  stats->size_allocated = 0;   // Reserved in memory
 }
 
 // malloc_zone_t's callback functions for our own zone
@@ -134,8 +160,7 @@ void* MallocZoneRealloc(malloc_zone_t* zone, void* ptr, size_t size) {
 }
 
 void MallocZoneDestroy(malloc_zone_t* zone) {
-  NOTREACHED();
-  IMMEDIATE_CRASH();
+  // No support to destroy the zone for now.
 }
 
 void* MallocZoneMemalign(malloc_zone_t* zone, size_t alignment, size_t size) {
@@ -196,8 +221,12 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   // `version` member indicates which APIs are supported in this zone.
   //   version >= 5: memalign is supported
   //   version >= 6: free_definite_size is supported
+  //   version >= 7: introspect's discharge family is supported
   //   version >= 8: pressure_relief is supported
+  //   version >= 9: introspect.reinit_lock is supported
   //   version >= 10: claimed_address is supported
+  //   version >= 11: introspect.print_task is supported
+  //   version >= 12: introspect.task_statistics is supported
   g_mac_malloc_zone.version = 6;
   g_mac_malloc_zone.zone_name = "PartitionAlloc";
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
