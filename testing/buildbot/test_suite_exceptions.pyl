@@ -3142,6 +3142,15 @@
       },
     },
   },
+  'web_engine_integration_tests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
+    },
+  },
   'webdriver_tests_suite': {
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
