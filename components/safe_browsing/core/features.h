@@ -143,6 +143,11 @@ extern const base::Feature kUseNewDownloadWarnings;
 // Android.
 extern const base::Feature kVisualFeaturesInPasswordProtectionAndroid;
 
+// Controls the behavior of visual features in CSD pings. This feature is
+// checked for the final size of the visual features and the minimum size of
+// the screen.
+extern const base::Feature kVisualFeaturesSizes;
+
 // Controls whether the delayed warning experiment is enabled.
 extern const base::Feature kDelayedWarnings;
 // True if mouse clicks should undelay the warnings immediately when delayed

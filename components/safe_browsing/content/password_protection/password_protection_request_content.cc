@@ -55,6 +55,24 @@ std::unique_ptr<VisualFeatures> ExtractVisualFeatures(
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
+int GetMinWidthForVisualFeatures() {
+  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
+    return base::GetFieldTrialParamByFeatureAsInt(
+        kVisualFeaturesSizes, "min_width", kMinWidthForVisualFeatures);
+  }
+
+  return kMinWidthForVisualFeatures;
+}
+
+int GetMinHeightForVisualFeatures() {
+  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
+    return base::GetFieldTrialParamByFeatureAsInt(
+        kVisualFeaturesSizes, "min_height", kMinHeightForVisualFeatures);
+  }
+
+  return kMinHeightForVisualFeatures;
+}
+
 }  // namespace
 
 PasswordProtectionRequestContent::PasswordProtectionRequestContent(
@@ -262,8 +280,8 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
       trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
       password_protection_service()->IsExtendedReporting() &&
       !password_protection_service()->IsIncognito() &&
-      request_proto_->content_area_width() >= kMinWidthForVisualFeatures &&
-      request_proto_->content_area_height() >= kMinHeightForVisualFeatures;
+      request_proto_->content_area_width() >= GetMinWidthForVisualFeatures() &&
+      request_proto_->content_area_height() >= GetMinHeightForVisualFeatures();
 #if !defined(OS_ANDROID)
   can_collect_visual_features &=
       zoom::ZoomController::GetZoomLevelForWebContents(web_contents_) <=

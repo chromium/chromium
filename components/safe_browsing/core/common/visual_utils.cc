@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/opencv/src/emd_wrapper.h"
@@ -130,6 +132,24 @@ uint8_t GetMedian(const std::vector<uint8_t>& data) {
   }
 }
 
+int GetPHashDownsampleWidth() {
+  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
+    return base::GetFieldTrialParamByFeatureAsInt(
+        kVisualFeaturesSizes, "phash_width", kPHashDownsampleWidth);
+  }
+
+  return kPHashDownsampleWidth;
+}
+
+int GetPHashDownsampleHeight() {
+  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
+    return base::GetFieldTrialParamByFeatureAsInt(
+        kVisualFeaturesSizes, "phash_height", kPHashDownsampleHeight);
+  }
+
+  return kPHashDownsampleHeight;
+}
+
 }  // namespace
 
 // A QuantizedColor takes the highest 3 bits of R, G, and B, and concatenates
@@ -240,9 +260,9 @@ bool GetBlurredImage(const SkBitmap& image,
   // average to be consistent with the backend.
   // TODO(drubery): Investigate whether this is necessary for performance or
   // not.
-  SkImageInfo downsampled_info =
-      SkImageInfo::MakeN32(kPHashDownsampleWidth, kPHashDownsampleHeight,
-                           SkAlphaType::kUnpremul_SkAlphaType, rec2020);
+  SkImageInfo downsampled_info = SkImageInfo::MakeN32(
+      GetPHashDownsampleWidth(), GetPHashDownsampleHeight(),
+      SkAlphaType::kUnpremul_SkAlphaType, rec2020);
   SkBitmap downsampled;
   if (!downsampled.tryAllocPixels(downsampled_info))
     return false;
