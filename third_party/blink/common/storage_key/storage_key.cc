@@ -8,8 +8,14 @@
 
 namespace blink {
 
+// static
 StorageKey StorageKey::Deserialize(const std::string& in) {
   return StorageKey(url::Origin::Create(GURL(in)));
+}
+
+// static
+StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
+  return Deserialize(origin);
 }
 
 std::string StorageKey::Serialize() const {

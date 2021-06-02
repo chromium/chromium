@@ -773,7 +773,7 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -894,7 +894,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -938,7 +938,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -975,7 +975,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -1933,7 +1933,7 @@ TEST_F(ServiceWorkerRegistryTest, DestroyRegistryDuringInflightCall) {
   {
     base::RunLoop loop;
     registry()->GetStorageUsageForStorageKey(
-        blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
+        blink::StorageKey::CreateFromStringForTesting("https://example.com/"),
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status, int64_t usage) {
               EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -1956,7 +1956,7 @@ TEST_F(ServiceWorkerRegistryTest,
   base::RunLoop loop;
   registry()->StoreUserData(
       /*registration_id=*/1,
-      blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
+      blink::StorageKey::CreateFromStringForTesting("https://example.com/"),
       {{"key", "value"}},
       base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
         EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);

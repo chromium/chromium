@@ -93,6 +93,21 @@ TEST(BlinkStorageKeyTest, Deserialize) {
   EXPECT_TRUE(key4.opaque());
 }
 
+// Test that string -> StorageKey test function performs as expected.
+TEST(BlinkStorageKeyTest, CreateFromStringForTesting) {
+  std::string example = "https://example.com/";
+  std::string wrong = "I'm not a valid URL.";
+
+  StorageKey key1 = StorageKey::CreateFromStringForTesting(example);
+  StorageKey key2 = StorageKey::CreateFromStringForTesting(wrong);
+  StorageKey key3 = StorageKey::CreateFromStringForTesting(std::string());
+
+  EXPECT_FALSE(key1.opaque());
+  EXPECT_EQ(key1, StorageKey(url::Origin::Create(GURL(example))));
+  EXPECT_TRUE(key2.opaque());
+  EXPECT_TRUE(key3.opaque());
+}
+
 // Test that a StorageKey, constructed by deserializing another serialized
 // StorageKey, is equivalent to the original.
 TEST(BlinkStorageKeyTest, SerializeDeserialize) {

@@ -261,7 +261,7 @@ Response ServiceWorkerHandler::StartWorker(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->StartActiveServiceWorker(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))),
+      GURL(scope_url), blink::StorageKey::CreateFromStringForTesting(scope_url),
       base::DoNothing());
   return Response::Success();
 }
@@ -272,7 +272,8 @@ Response ServiceWorkerHandler::SkipWaiting(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->SkipWaitingWorker(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
+      GURL(scope_url),
+      blink::StorageKey::CreateFromStringForTesting(scope_url));
   return Response::Success();
 }
 
@@ -311,7 +312,8 @@ Response ServiceWorkerHandler::UpdateRegistration(
   if (!context_)
     return CreateContextErrorResponse();
   context_->UpdateRegistration(
-      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
+      GURL(scope_url),
+      blink::StorageKey::CreateFromStringForTesting(scope_url));
   return Response::Success();
 }
 

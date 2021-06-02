@@ -36,9 +36,9 @@ class SharedWorkerInstanceTest : public testing::Test {
     blink::StorageKey storage_key;
     if (GURL(url).SchemeIs(url::kDataScheme)) {
       storage_key =
-          blink::StorageKey(url::Origin::Create(GURL("http://example.com/")));
+          blink::StorageKey::CreateFromStringForTesting("http://example.com/");
     } else {
-      storage_key = blink::StorageKey(url::Origin::Create(GURL(url)));
+      storage_key = blink::StorageKey::CreateFromStringForTesting(url);
     }
     return instance.Matches(GURL(url), std::string(name), storage_key);
   }
@@ -275,7 +275,7 @@ TEST_F(SharedWorkerInstanceTest, AddressSpace) {
     SharedWorkerInstance instance(
         GURL("http://example.com/w.js"), blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+        blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
         address_space,
         blink::mojom::SharedWorkerCreationContextType::kNonsecure);
     EXPECT_EQ(address_space, instance.creation_address_space());

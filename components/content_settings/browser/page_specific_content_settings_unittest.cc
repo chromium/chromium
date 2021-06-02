@@ -344,7 +344,7 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                           blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
-      blink::StorageKey(url::Origin::Create(GURL("https://youtube.com"))),
+      blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
       blocked_by_policy);
 
   const auto& objects = content_settings->allowed_local_shared_objects();

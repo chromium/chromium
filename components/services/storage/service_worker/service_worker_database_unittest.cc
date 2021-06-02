@@ -780,7 +780,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
       ServiceWorkerDatabase::Status::kOk,
       database->DeleteRegistration(
           kNonExistentRegistrationId,
-          blink::StorageKey(url::Origin::Create(GURL("https://example.net"))),
+          blink::StorageKey::CreateFromStringForTesting("https://example.net"),
           &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
@@ -2426,8 +2426,8 @@ TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
 
   // https://googlechrome.github.io/samples/service-worker/basic/ provided the
   // service worker for this test.
-  blink::StorageKey key(
-      url::Origin::Create(GURL("https://googlechrome.github.io/")));
+  blink::StorageKey key = blink::StorageKey::CreateFromStringForTesting(
+      "https://googlechrome.github.io/");
 
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;

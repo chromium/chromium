@@ -32,6 +32,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   // serialized.
   static StorageKey Deserialize(const std::string& in);
 
+  // Transforms a string into a StorageKey if possible (and an opaque StorageKey
+  // if not). Currently calls Deserialize, but this may change in future.
+  // For use in tests only.
+  static StorageKey CreateFromStringForTesting(const std::string& origin);
+
   // Serializes the `StorageKey` into a string.
   // This function will return the spec url of the underlying Origin. Do not
   // call if `this` is opaque.

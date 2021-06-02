@@ -1635,7 +1635,7 @@ TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
 
   const base::FilePath path_base = temp_dir_.GetPath();
   const StorageKey storage_key =
-      StorageKey(Origin::Create(GURL("http://www.google.com/")));
+      StorageKey::CreateFromStringForTesting("http://www.google.com/");
   ASSERT_FALSE(path_base.empty());
   ASSERT_TRUE(PathIsWritable(path_base));
 

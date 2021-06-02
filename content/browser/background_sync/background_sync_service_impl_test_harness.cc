@@ -186,7 +186,7 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
 
   embedded_worker_helper_->context_wrapper()->FindReadyRegistrationForId(
       sw_registration_id_,
-      blink::StorageKey(url::Origin::Create(GURL(kServiceWorkerScope))),
+      blink::StorageKey::CreateFromStringForTesting(kServiceWorkerScope),
       base::BindOnce(FindServiceWorkerRegistrationCallback, &sw_registration_));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sw_registration_);
