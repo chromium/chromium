@@ -82,7 +82,6 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
 #pragma mark WKHTTPCookieStoreObserver method
 
 - (void)cookiesDidChangeInCookieStore:(WKHTTPCookieStore*)cookieStore {
-  DCHECK(_HTTPCookieStore == cookieStore);
   _cachedCookies = nil;
 }
 
