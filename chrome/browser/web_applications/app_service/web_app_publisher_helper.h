@@ -134,6 +134,11 @@ class WebAppPublisherHelper {
 
   content::WebContents* LaunchAppWithParams(apps::AppLaunchParams params);
 
+  void SetPermission(const std::string& app_id,
+                     apps::mojom::PermissionPtr permission);
+
+  void OpenNativeSettings(const std::string& app_id);
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }

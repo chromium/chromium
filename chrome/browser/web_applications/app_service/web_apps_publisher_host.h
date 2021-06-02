@@ -90,6 +90,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
       apps::mojom::WindowInfoPtr window_info);
+  void SetPermission(const std::string& app_id,
+                     apps::mojom::PermissionPtr permission);
+  void OpenNativeSettings(const std::string& app_id);
 
  private:
   void OnReady();

@@ -151,6 +151,16 @@ content::WebContents* WebAppsPublisherHost::LaunchAppWithIntent(
       std::move(window_info));
 }
 
+void WebAppsPublisherHost::SetPermission(
+    const std::string& app_id,
+    apps::mojom::PermissionPtr permission) {
+  publisher_helper().SetPermission(app_id, std::move(permission));
+}
+
+void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
+  publisher_helper().OpenNativeSettings(app_id);
+}
+
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {

@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -173,60 +172,11 @@ void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,
 
 void WebAppsBase::SetPermission(const std::string& app_id,
                                 apps::mojom::PermissionPtr permission) {
-  if (!profile_) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  DCHECK(host_content_settings_map);
-
-  const GURL url = web_app->start_url();
-
-  ContentSettingsType permission_type =
-      static_cast<ContentSettingsType>(permission->permission_id);
-  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(
-          permission_type)) {
-    return;
-  }
-
-  DCHECK_EQ(permission->value_type,
-            apps::mojom::PermissionValueType::kTriState);
-  ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
-  switch (static_cast<apps::mojom::TriState>(permission->value)) {
-    case apps::mojom::TriState::kAllow:
-      permission_value = CONTENT_SETTING_ALLOW;
-      break;
-    case apps::mojom::TriState::kAsk:
-      permission_value = CONTENT_SETTING_ASK;
-      break;
-    case apps::mojom::TriState::kBlock:
-      permission_value = CONTENT_SETTING_BLOCK;
-      break;
-    default:  // Return if value is invalid.
-      return;
-  }
-
-  host_content_settings_map->SetContentSettingDefaultScope(
-      url, url, permission_type, permission_value);
+  publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
 void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
-  if (!profile_) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  chrome::ShowSiteSettings(profile_, web_app->start_url());
+  publisher_helper().OpenNativeSettings(app_id);
 }
 
 void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {

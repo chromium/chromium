@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -515,6 +517,65 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
 #endif
 
   return web_contents;
+}
+
+void WebAppPublisherHelper::SetPermission(
+    const std::string& app_id,
+    apps::mojom::PermissionPtr permission) {
+  if (!profile_) {
+    return;
+  }
+
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  DCHECK(host_content_settings_map);
+
+  const GURL url = web_app->start_url();
+
+  ContentSettingsType permission_type =
+      static_cast<ContentSettingsType>(permission->permission_id);
+  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(
+          permission_type)) {
+    return;
+  }
+
+  DCHECK_EQ(permission->value_type,
+            apps::mojom::PermissionValueType::kTriState);
+  ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
+  switch (static_cast<apps::mojom::TriState>(permission->value)) {
+    case apps::mojom::TriState::kAllow:
+      permission_value = CONTENT_SETTING_ALLOW;
+      break;
+    case apps::mojom::TriState::kAsk:
+      permission_value = CONTENT_SETTING_ASK;
+      break;
+    case apps::mojom::TriState::kBlock:
+      permission_value = CONTENT_SETTING_BLOCK;
+      break;
+    default:  // Return if value is invalid.
+      return;
+  }
+
+  host_content_settings_map->SetContentSettingDefaultScope(
+      url, url, permission_type, permission_value);
+}
+
+void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
+  if (!profile_) {
+    return;
+  }
+
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  chrome::ShowSiteSettings(profile(), web_app->start_url());
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
