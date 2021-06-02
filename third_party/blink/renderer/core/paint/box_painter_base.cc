@@ -565,6 +565,9 @@ bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
     return false;
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
+  // The generator can be null in testing environment.
+  if (!generator)
+    return false;
   return generator->GetBGColorPaintWorkletParams(node, animated_colors, offsets,
                                                  progress);
 }
