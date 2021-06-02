@@ -33,13 +33,15 @@ static constexpr char kSpecsKey[] = "entry.1341753442";
 static constexpr char kPlatformVersionKey[] = "entry.1193918294";
 static constexpr char kAppIdKey[] = "entry.2112096055";
 
-// Window names containing this are unidentified and probably aren't games.
+// App IDs containing this are unidentified and probably aren't games.
 // Don't prompt for feedback for them.
 static constexpr char kNonGameWindowPrefix[] = "org.chromium.borealis.xid.";
 
-// Windows with this name are not games. Don't prompt for feedback for them.
+// Windows with these app IDs are not games. Don't prompt for feedback for them.
 // Hashed by crx_file::id_util::GenerateId().
-static constexpr char kNonGameIdHash[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
+static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
+static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
+static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 
 absl::optional<int> GetBorealisAppId(std::string exec) {
   int app_id;
@@ -55,7 +57,13 @@ GURL FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
                      const std::string& window_title) {
   // Exclude windows that aren't games.
   if (app_id.find(kNonGameWindowPrefix) != std::string::npos ||
-      crx_file::id_util::GenerateId(app_id) == kNonGameIdHash) {
+      app_id == kBorealisMainAppId) {
+    return GURL();
+  }
+
+  std::string hash = crx_file::id_util::GenerateId(app_id);
+  if (hash == kNonGameIdHash1 || hash == kNonGameIdHash2 ||
+      hash == kNonGameIdHash3) {
     return GURL();
   }
 
