@@ -555,7 +555,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             super.initializeCompositor();
 
             // LocaleManager can only function after the native library is loaded.
-            mLocaleManager = AppHooks.get().getLocaleManager();
+            mLocaleManager = LocaleManager.getInstance();
             mLocaleManager.setSettingsLauncher(SETTINGS_LAUNCHER);
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 

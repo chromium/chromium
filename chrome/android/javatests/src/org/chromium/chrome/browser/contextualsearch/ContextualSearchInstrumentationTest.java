@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.F
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -201,13 +202,14 @@ public class ContextualSearchInstrumentationTest {
 
     @Before
     public void setUp() throws Exception {
-        LocaleManager.setInstanceForTest(new LocaleManager() {
-            @Override
-            public boolean needToCheckForSearchEnginePromo() {
-                return false;
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                @Override
+                public boolean needToCheckForSearchEnginePromo() {
+                    return false;
+                }
+            });
         });
-
         mTestServer = sActivityTestRule.getTestServer();
 
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));

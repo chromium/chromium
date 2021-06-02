@@ -20,11 +20,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -156,11 +156,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         // of using the singleton.
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
-                privacyPreferencesManager, overrideUrlLoadingDelegate,
-                AppHooks.get().getLocaleManager(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
-                LensController.getInstance(), launchAssistanceSettingsAction,
-                saveOfflineButtonState, omniboxUma);
+                privacyPreferencesManager, overrideUrlLoadingDelegate, LocaleManager.getInstance(),
+                mTemplateUrlServiceSupplier, backKeyBehavior, windowAndroid,
+                isTablet() && isTabletLayout(), searchEngineLogoUtils, LensController.getInstance(),
+                launchAssistanceSettingsAction, saveOfflineButtonState, omniboxUma);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),

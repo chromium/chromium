@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -48,13 +49,13 @@ public class DefaultSearchEnginePromoDialogTest {
             public Void call() {
                 ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
 
-                LocaleManager mockManager = new LocaleManager() {
+                LocaleManagerDelegate mockDelegate = new LocaleManagerDelegate() {
                     @Override
                     public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
                         return TemplateUrlServiceFactory.get().getTemplateUrls();
                     }
                 };
-                LocaleManager.setInstanceForTest(mockManager);
+                LocaleManager.getInstance().setDelegateForTest(mockDelegate);
                 return null;
             }
         });

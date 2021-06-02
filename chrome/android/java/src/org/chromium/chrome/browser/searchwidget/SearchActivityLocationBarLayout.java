@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -46,8 +46,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
                 locationBarDataProvider, searchEngineLogoUtils);
-        mPendingSearchPromoDecision =
-                AppHooks.get().getLocaleManager().needToCheckForSearchEnginePromo();
+        mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -57,8 +56,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
-        mPendingSearchPromoDecision =
-                AppHooks.get().getLocaleManager().needToCheckForSearchEnginePromo();
+        mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
     }
@@ -71,7 +69,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         SearchWidgetProvider.updateCachedVoiceSearchAvailability(
                 voiceRecognitionHandler.isVoiceSearchEnabled());
 
-        assert !AppHooks.get().getLocaleManager().needToCheckForSearchEnginePromo();
+        assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);

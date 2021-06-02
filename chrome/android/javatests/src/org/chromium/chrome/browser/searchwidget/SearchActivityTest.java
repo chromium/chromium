@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -139,20 +140,22 @@ public class SearchActivityTest {
             showSearchEngineDialogIfNeededCallback.notifyCalled();
 
             if (shouldShowRealSearchDialog) {
-                LocaleManager.setInstanceForTest(new LocaleManager() {
-                    @Override
-                    public int getSearchEnginePromoShowType() {
-                        return SearchEnginePromoType.SHOW_EXISTING;
-                    }
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                        @Override
+                        public int getSearchEnginePromoShowType() {
+                            return SearchEnginePromoType.SHOW_EXISTING;
+                        }
 
-                    @Override
-                    public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                        return TemplateUrlServiceFactory.get().getTemplateUrls();
-                    }
+                        @Override
+                        public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
+                            return TemplateUrlServiceFactory.get().getTemplateUrls();
+                        }
+                    });
                 });
                 super.showSearchEngineDialogIfNeeded(activity, onSearchEngineFinalized);
             } else {
-                LocaleManager.setInstanceForTest(new LocaleManager() {
+                LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                     @Override
                     public boolean needToCheckForSearchEnginePromo() {
                         return false;
@@ -198,7 +201,6 @@ public class SearchActivityTest {
     @After
     public void tearDown() {
         SearchActivity.setDelegateForTests(null);
-        LocaleManager.setInstanceForTest(null);
     }
 
     @Test
@@ -372,11 +374,13 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void testZeroSuggestBeforeNativeIsLoaded() {
-        LocaleManager.setInstanceForTest(new LocaleManager() {
-            @Override
-            public boolean needToCheckForSearchEnginePromo() {
-                return false;
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                @Override
+                public boolean needToCheckForSearchEnginePromo() {
+                    return false;
+                }
+            });
         });
 
         // Cache some mock results to show.

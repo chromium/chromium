@@ -123,6 +123,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.PictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
@@ -1693,7 +1694,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 Callback<Boolean> callback = result -> {
                     if (result != null && result) startActivity(searchIntent);
                 };
-                AppHooks.get().getLocaleManager().showSearchEnginePromoIfNeeded(
+                LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
                         ChromeActivity.this, callback);
             }
 

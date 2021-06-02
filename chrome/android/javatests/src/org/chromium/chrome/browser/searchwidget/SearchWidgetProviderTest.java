@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
@@ -139,7 +140,7 @@ public class SearchWidgetProviderTest {
         // it should say "Search with X".
         mDelegate.mViews.clear();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.setInstanceForTest(new LocaleManager() {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                 @Override
                 public boolean needToCheckForSearchEnginePromo() {
                     return false;
@@ -178,7 +179,7 @@ public class SearchWidgetProviderTest {
         // updated.
         mDelegate.mViews.clear();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.setInstanceForTest(new LocaleManager() {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                 @Override
                 public boolean needToCheckForSearchEnginePromo() {
                     return false;

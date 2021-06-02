@@ -11,11 +11,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -274,7 +274,7 @@ public class ContextualSearchTabHelper
         return !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
                 && !ContextualSearchManager.isContextualSearchDisabled()
                 && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
-                && !AppHooks.get().getLocaleManager().needToCheckForSearchEnginePromo()
+                && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                 // Svelte and Accessibility devices are incompatible with the first-run flow and
                 // Talkback has poor interaction with Contextual Search (see http://crbug.com/399708
                 // and http://crbug.com/396934).

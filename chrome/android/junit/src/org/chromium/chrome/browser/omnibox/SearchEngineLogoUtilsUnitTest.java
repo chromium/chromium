@@ -43,6 +43,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -80,7 +81,7 @@ public class SearchEngineLogoUtilsUnitTest {
     @Mock
     RoundedIconGenerator mRoundedIconGenerator;
     @Mock
-    LocaleManager mLocaleManager;
+    LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock
     BrowserStartupController mBrowserStartupController;
 
@@ -98,8 +99,8 @@ public class SearchEngineLogoUtilsUnitTest {
         doReturn(true)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), anyString(), anyInt(), any());
-        doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
-        LocaleManager.setInstanceForTest(mLocaleManager);
+        doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
+        LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
 
         doReturn(true).when(mBrowserStartupController).isFullBrowserStarted();
         mSearchEngineLogoUtils = new SearchEngineLogoUtils(mBrowserStartupController);
@@ -303,7 +304,9 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @Test
     public void needToCheckForSearchEnginePromo_SecurityExceptionThrown() {
-        doThrow(SecurityException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
+        doThrow(SecurityException.class)
+                .when(mLocaleManagerDelegate)
+                .needToCheckForSearchEnginePromo();
 
         try {
             mSearchEngineLogoUtils.needToCheckForSearchEnginePromo();
@@ -314,7 +317,9 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @Test
     public void needToCheckForSearchEnginePromo_DeadObjectRuntimeExceptionThrown() {
-        doThrow(RuntimeException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
+        doThrow(RuntimeException.class)
+                .when(mLocaleManagerDelegate)
+                .needToCheckForSearchEnginePromo();
 
         try {
             mSearchEngineLogoUtils.needToCheckForSearchEnginePromo();

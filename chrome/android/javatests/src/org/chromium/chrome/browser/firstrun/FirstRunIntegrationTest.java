@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -394,7 +395,7 @@ public class FirstRunIntegrationTest {
     private void runSearchEnginePromptTest(@SearchEnginePromoType final int searchPromoType)
             throws Exception {
         // Force the LocaleManager into a specific state.
-        LocaleManager mockManager = new LocaleManager() {
+        LocaleManagerDelegate mockDelegate = new LocaleManagerDelegate() {
             @Override
             public int getSearchEnginePromoShowType() {
                 return searchPromoType;
@@ -405,7 +406,8 @@ public class FirstRunIntegrationTest {
                 return TemplateUrlServiceFactory.get().getTemplateUrls();
             }
         };
-        LocaleManager.setInstanceForTest(mockManager);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> LocaleManager.getInstance().setDelegateForTest(mockDelegate));
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
 

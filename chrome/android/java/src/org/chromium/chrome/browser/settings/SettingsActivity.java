@@ -27,7 +27,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -344,7 +344,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof SearchEngineSettings) {
             SearchEngineSettings settings = (SearchEngineSettings) fragment;
             settings.setDisableAutoSwitchRunnable(
-                    () -> AppHooks.get().getLocaleManager().setSearchEngineAutoSwitch(false));
+                    () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
             settings.setSettingsLauncher(mSettingsLauncher);
         }
         if (fragment instanceof ImageDescriptionsSettings) {

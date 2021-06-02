@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -54,11 +54,10 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         mButton.setEnabled(false);
 
         assert TemplateUrlServiceFactory.get().isLoaded();
-        mSearchEnginePromoDialogType =
-                AppHooks.get().getLocaleManager().getSearchEnginePromoShowType();
+        mSearchEnginePromoDialogType = LocaleManager.getInstance().getSearchEnginePromoShowType();
         if (mSearchEnginePromoDialogType != SearchEnginePromoType.DONT_SHOW) {
             new DefaultSearchEngineDialogHelper(mSearchEnginePromoDialogType,
-                    AppHooks.get().getLocaleManager(), mEngineLayout, mButton,
+                    LocaleManager.getInstance(), mEngineLayout, mButton,
                     getPageDelegate()::advanceToNextPage);
         }
 

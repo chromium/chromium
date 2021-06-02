@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -100,7 +101,7 @@ public class LocationBarTest {
     @Mock
     private LensController mLensController;
     @Mock
-    private LocaleManager mLocaleManager;
+    private LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock
@@ -117,7 +118,7 @@ public class LocationBarTest {
     public void setUp() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-            LocaleManager.setInstanceForTest(mLocaleManager);
+            LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
             SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
         });
     }
@@ -126,7 +127,6 @@ public class LocationBarTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TemplateUrlServiceFactory.setInstanceForTesting(null);
-            LocaleManager.setInstanceForTest(null);
             SearchEngineLogoUtils.setInstanceForTesting(null);
         });
     }

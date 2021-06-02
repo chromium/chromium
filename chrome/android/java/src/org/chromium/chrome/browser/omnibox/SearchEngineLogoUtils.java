@@ -19,7 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -220,7 +220,7 @@ public class SearchEngineLogoUtils {
         // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
         // risk throwing exceptions. See the exception cases below for details.
         try {
-            return AppHooks.get().getLocaleManager().needToCheckForSearchEnginePromo();
+            return LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         } catch (SecurityException e) {
             Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/1027709\n", e);
             return false;
