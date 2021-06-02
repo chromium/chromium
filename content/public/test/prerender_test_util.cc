@@ -22,6 +22,7 @@ namespace content {
 namespace test {
 namespace {
 
+// TODO(https://crbug.com/1214964): Remove this script.
 constexpr char kAddPrerenderScript[] = R"({
     const link = document.createElement('link');
     link.rel = 'prerender';
@@ -267,8 +268,29 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
   host->WaitForLoadStopForTesting();
 }
 
-int PrerenderTestHelper::AddPrerender(const GURL& gurl) {
-  AddPrerenderAsync(gurl);
+int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  AddPrerenderAsync(prerendering_url);
+
+  WaitForPrerenderLoadCompletion(prerendering_url);
+  int host_id = GetHostForUrl(prerendering_url);
+  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  return host_id;
+}
+
+void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  std::string script = JsReplace(kAddSpeculationRuleScript, prerendering_url);
+
+  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
+  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
+  // with it. See the quick migration guide for EvalJs for more information.
+  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback());
+}
+
+int PrerenderTestHelper::AddLinkRelPrerender(const GURL& gurl) {
+  AddLinkRelPrerenderAsync(gurl);
 
   WaitForPrerenderLoadCompletion(gurl);
   int host_id = GetHostForUrl(gurl);
@@ -276,30 +298,11 @@ int PrerenderTestHelper::AddPrerender(const GURL& gurl) {
   return host_id;
 }
 
-void PrerenderTestHelper::AddPrerenderAsync(const GURL& gurl) {
+void PrerenderTestHelper::AddLinkRelPrerenderAsync(const GURL& gurl) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  const auto script = JsReplace(kAddPrerenderScript, gurl);
-  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
-}
-
-int PrerenderTestHelper::AddSpeculationRules(const GURL& prerendering_url) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  AddSpeculationRulesAsync(prerendering_url);
-
-  WaitForPrerenderLoadCompletion(prerendering_url);
-  const int host_id = GetHostForUrl(prerendering_url);
-  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-  return host_id;
-}
-
-void PrerenderTestHelper::AddSpeculationRulesAsync(
-    const GURL& prerendering_url) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  const auto script = JsReplace(kAddSpeculationRuleScript, prerendering_url);
-  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+  std::string script = JsReplace(kAddPrerenderScript, gurl);
+  ignore_result(ExecJs(GetWebContents()->GetMainFrame(), script));
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,

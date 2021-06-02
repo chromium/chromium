@@ -99,23 +99,27 @@ class PrerenderTestHelper {
   void WaitForPrerenderLoadCompletion(const GURL& gurl);
   void WaitForPrerenderLoadCompletion(int host_id);
 
-  // Adds <link rel=prerender> in the current main frame and waits until the
-  // completion of prerendering. Returns the id of the resulting prerendering
-  // host.
-  //
-  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
-  // the completion of prerendering.
-  int AddPrerender(const GURL& gurl);
-  void AddPrerenderAsync(const GURL& gurl);
-
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
   //
-  // AddSpeculationRulesAsync() is the same as AddSpeculationRules(), but does
+  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
+  // the completion of prerendering.
+  int AddPrerender(const GURL& prerendering_url);
+  void AddPrerenderAsync(const GURL& prerendering_url);
+
+  // DEPRECATED:
+  // TODO(https://crbug.com/1214964): Do not use AddLinkRelPrerender and
+  // AddLinkRelPrerenderAsync; the <link rel="prerender"> trigger will be
+  // removed soon.
+  // Adds <link rel=prerender> in the current main frame and waits until the
+  // completion of prerendering. Returns the id of the resulting prerendering
+  // host.
+  //
+  // AddLinkRelPrerenderAsync() is the same as AddLinkRelPrerender(), but does
   // not wait until the completion of prerendering.
-  int AddSpeculationRules(const GURL& prerendering_url);
-  void AddSpeculationRulesAsync(const GURL& prerendering_url);
+  int AddLinkRelPrerender(const GURL& gurl);
+  void AddLinkRelPrerenderAsync(const GURL& gurl);
 
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);

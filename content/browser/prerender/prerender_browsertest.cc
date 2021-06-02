@@ -151,12 +151,24 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     prerender_helper_->WaitForRequest(url, count);
   }
 
-  int AddPrerender(const GURL& url) {
-    return prerender_helper_->AddPrerender(url);
+  int AddPrerender(const GURL& prerendering_url) {
+    return prerender_helper_->AddPrerender(prerendering_url);
   }
 
-  void AddPrerenderAsync(const GURL& url) {
-    prerender_helper_->AddPrerenderAsync(url);
+  void AddPrerenderAsync(const GURL& prerendering_url) {
+    prerender_helper_->AddPrerenderAsync(prerendering_url);
+  }
+
+  // DEPRECATED:
+  // TODO(https://crbug.com/1214964) Do not use AddLinkRelPrerender and
+  // AddLinkRelPrerenderAsync; the <link rel="prerender"> trigger will be
+  // removed soon.
+  int AddLinkRelPrerender(const GURL& prerendering_url) {
+    return prerender_helper_->AddLinkRelPrerender(prerendering_url);
+  }
+
+  void AddLinkRelPrerenderAsync(const GURL& prerendering_url) {
+    prerender_helper_->AddLinkRelPrerenderAsync(prerendering_url);
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
@@ -174,14 +186,6 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     )";
     EXPECT_TRUE(ExecuteScriptAndExtractBool(host, js, &success));
     return success;
-  }
-
-  int AddSpeculationRules(const GURL& prerendering_url) {
-    return prerender_helper_->AddSpeculationRules(prerendering_url);
-  }
-
-  void AddSpeculationRulesAsync(const GURL& prerendering_url) {
-    prerender_helper_->AddSpeculationRulesAsync(prerendering_url);
   }
 
   void NavigatePrimaryPage(const GURL& url) {
@@ -290,6 +294,10 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+// Tests for the legacy prerender trigger of <link rel="prerender"> ============
+
+// TODO(https://crbug.com/1214964): Remove this test when we stop supporting
+// <link rel="prerender">.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
@@ -300,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
 
   // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  AddPrerender(kPrerenderingUrl);
+  AddLinkRelPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
   // A prerender host for the URL should be registered.
@@ -317,6 +325,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
+// TODO(https://crbug.com/1214964): Remove this test when we stop supporting
+// <link rel="prerender">.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?prerender1");
@@ -337,8 +347,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   // `kPrerenderingUrl2`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl1), 0);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl2), 0);
-  AddPrerender(kPrerenderingUrl1);
-  AddPrerender(kPrerenderingUrl2);
+  AddLinkRelPrerender(kPrerenderingUrl1);
+  AddLinkRelPrerender(kPrerenderingUrl2);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 
@@ -366,6 +376,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
+// TODO(https://crbug.com/1214964): Remove this test when we stop supporting
+// <link rel="prerender">.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   const GURL kInitialUrl = GetUrl("/prerender/duplicate_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
@@ -414,6 +426,60 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
+// END: Tests for the legacy prerender trigger of <link rel="prerender"> =======
+
+// Tests that the speculationrules trigger works.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+
+  // Start prerendering `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  // The prerender host should be consumed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+}
+
+// Tests that the speculationrules-triggered prerender would be destroyed after
+// its initiator navigates away.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // TODO(https://crbug.com/1186893): PrerenderHost is not deleted when the
+  // page enters BackForwardCache, though it should be. While this functionality
+  // is not implemented, disable BackForwardCache for testing and wait for the
+  // old RenderFrameHost to be deleted after we navigate away from it.
+  DisableBackForwardCacheForTesting(
+      web_contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Navigate the initiator page to a non-prerendered page. This destroys the
+  // prerendered page.
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  NavigatePrimaryPage(GetUrl("/empty.html?elsewhere"));
+  host_observer.WaitForDestroyed();
+
+  // The prerender host should be destroyed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+}
+
+// TODO(https://crbug.com/1214964): Test this case with speculationrules.
 // Tests that prerendering triggered by prerendered pages is deferred until
 // activation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
@@ -470,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -482,6 +548,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
   shell()->Close();
 }
 
+// TODO(https://crbug.com/1214964): Test this case in
+// SpeculationRuleSetTest.DropUnrecognizedRules since non-http(s) speculation
+// candidates are ignored in Blink.
 // Tests that non-http(s) schemes are disallowed for prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HttpToBlobUrl) {
   base::HistogramTester histogram_tester;
@@ -499,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HttpToBlobUrl) {
 
   // Add <link rel=prerender> that will prerender the Blob page.
   test::PrerenderHostRegistryObserver observer(*web_contents_impl());
-  AddPrerenderAsync(blob_gurl);
+  AddLinkRelPrerenderAsync(blob_gurl);
   observer.WaitForTrigger(blob_gurl);
 
   // A prerender host for the URL should not be registered.
@@ -509,6 +578,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HttpToBlobUrl) {
       PrerenderHost::FinalStatus::kInvalidSchemeNavigation, 1);
 }
 
+// TODO(https://crbug.com/1214964): Test this case in
+// SpeculationRuleSetTest.DropUnrecognizedRules since non-http(s) speculation
+// candidates are ignored in Blink.
 // Tests that non-http(s) schemes are disallowed for prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, BlobUrlToBlobUrl) {
   base::HistogramTester histogram_tester;
@@ -990,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   const int host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHostImpl* prerendered_render_frame_host =
@@ -1494,14 +1566,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
 
   GURL initial_url = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  // Add CSP:prefetch-src */title1.html
-  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+  const std::string kCSPScript = R"(
     const meta = document.createElement('meta');
     meta.httpEquiv = "Content-Security-Policy";
     meta.content = "prefetch-src https://a.test:*/title1.html";
     document.getElementsByTagName('head')[0].appendChild(meta);
-  )"));
+  )";
+
+  // Add CSP:prefetch-src */title1.html
+  EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
 
   const char* kConsolePattern =
       "Refused to prefetch content from "
@@ -1528,6 +1601,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
 
+  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
+  // Now a document cannot trigger prerendering twice, even if the first started
+  // one is canceled. So we have to reload the initiator page to get a new
+  // document instance.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
+
   // Check what happens when prerendering isn't blocked.
   {
     WebContentsConsoleObserver console_observer(web_contents_impl());
@@ -1539,21 +1619,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
   }
 }
 
-// Tests that prerendering is gated behind CSP:default-src
+// Tests that prerendering is gated behind CSP:default-src.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
   base::HistogramTester histogram_tester;
 
   GURL initial_url = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  // Add CSP:prefetch-src */title1.html
-  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+  std::string kCSPScript = R"(
     const meta = document.createElement('meta');
     meta.httpEquiv = "Content-Security-Policy";
     meta.content =
-        "default-src https://a.test:*/title1.html; script-src 'unsafe-eval'";
+        "default-src https://a.test:*/title1.html; script-src 'unsafe-inline'";
     document.getElementsByTagName('head')[0].appendChild(meta);
-  )"));
+  )";
+
+  // Add CSP:prefetch-src */title1.html
+  EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
 
   const char* kConsolePattern =
       "Refused to prefetch content from "
@@ -1577,6 +1658,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
+
+  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
+  // Now a document cannot trigger prerendering twice, even if the first started
+  // one is canceled. So we have to reload the initiator page to get a new
+  // document instance.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_TRUE(ExecJs(current_frame_host(), kCSPScript));
 
   // Check what happens when prerendering isn't blocked.
   {
@@ -1796,6 +1884,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kPlugin, 1);
+
+  // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
+  // Now a document cannot trigger prerendering twice, even if the first started
+  // one is canceled. So we have to reload the initiator page to get a new
+  // document instance.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
   LoadAndWaitForPrerenderDestroyed(
       web_contents(), GetUrl("/prerender/page-with-object-plugin.html"),
       prerender_helper());
@@ -1943,7 +2037,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   const int host_id = AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2001,7 +2095,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   const int host_id = AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2057,7 +2151,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   const int host_id = AddPrerender(kPrerenderingUrl);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2096,7 +2190,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   const int host_id = AddPrerender(kPrerenderingUrl);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2156,7 +2250,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   int prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
   RenderFrameHost* child_frame = nullptr;
   {
@@ -2249,7 +2343,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DataSaver) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2269,7 +2363,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2650,7 +2744,7 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
 // speculative RFH (redirects allowing). Once that is done we should either
 // change this test (if redirects allowed) or remove it completely.
 IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
-                       LinkRelPrerender) {
+                       SpeculationRulesScript) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
@@ -2658,7 +2752,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
 
-  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -2789,59 +2882,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   }
 }
 
-// Tests for speculation rules =================================================
-
-// Tests that the new trigger of speculationrules works.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
-
-  // Add <script type="speculationrule"> that will prerender `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  const int host_id = AddSpeculationRules(kPrerenderingUrl);
-  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  // The prerender host should be consumed.
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-
-  // Activating the prerendered page should not issue a request.
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-}
-
-// Tests that the speculationrules-triggered prerender would be destroyed after
-// its initiator navigates away.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-
-  // TODO(https://crbug.com/1186893): PrerenderHost is not deleted when the
-  // page enters BackForwardCache, though it should be. While this functionality
-  // is not implemented, disable BackForwardCache for testing and wait for the
-  // old RenderFrameHost to be deleted after we navigate away from it.
-  DisableBackForwardCacheForTesting(
-      web_contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  const int host_id = AddSpeculationRules(kPrerenderingUrl);
-  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-
-  // Navigate the initiator page to a non-prerendered page. This destroys the
-  // prerendered page.
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
-  NavigatePrimaryPage(GetUrl("/empty.html?elsewhere"));
-  host_observer.WaitForDestroyed();
-
-  // The prerender host should be destroyed.
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-}
-
 class TestSpeculationHostDelegate final : public SpeculationHostDelegate {
  public:
   TestSpeculationHostDelegate() = default;
@@ -2938,7 +2978,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
   const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
 
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  const int host_id = AddSpeculationRules(kFirstPrerenderingUrl);
+  const int host_id = AddPrerender(kFirstPrerenderingUrl);
 
   // The first prerender rule should be applied, so the prerender host for
   // kFirstPrerenderingUrl should be registered.
@@ -2951,7 +2991,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
 
   // Add a new speculation rule. Since SpeculationHostImpl limits the number of
   // prerenders to one, this rule should not be applied.
-  AddSpeculationRulesAsync(kSecondPrerenderingUrl);
+  AddPrerenderAsync(kSecondPrerenderingUrl);
   delegate->WaitUntilCandidatesAreProcessed();
 
   // The kSecondPrerenderingUrl request should not be issued.
@@ -2972,7 +3012,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginSpeculationRules) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add a cross-origin prerender speculation rule, and it should be ignored.
-  AddSpeculationRulesAsync(kFirstPrerenderingUrlCrossOrigin);
+  AddPrerenderAsync(kFirstPrerenderingUrlCrossOrigin);
   test_browser_client.WaitForDelegateCreation();
   base::WeakPtr<TestSpeculationHostDelegate> delegate =
       test_browser_client.speculation_host_delegate();
@@ -2985,11 +3025,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginSpeculationRules) {
 
   // Since the first one was ignored, the second one should be processed by
   // SpeculationHostImpl and trigger prerendering.
-  const int host_id = AddSpeculationRules(kSecondPrerenderingUrlSameOrigin);
+  const int host_id = AddPrerender(kSecondPrerenderingUrlSameOrigin);
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 }
-
-// END: Tests for speculation rules ============================================
 
 }  // namespace
 }  // namespace content
