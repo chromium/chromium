@@ -582,8 +582,6 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
 }  // extern "C"
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
 #if defined(OS_APPLE)
 
 namespace base {
@@ -601,3 +599,5 @@ void InitializeDefaultAllocatorPartitionRoot() {
 }  // namespace base
 
 #endif  // defined(OS_APPLE)
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

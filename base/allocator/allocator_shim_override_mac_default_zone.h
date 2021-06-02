@@ -16,8 +16,6 @@
 namespace base {
 namespace allocator {
 
-void InitializeDefaultAllocatorPartitionRoot();
-
 namespace {
 
 // malloc_introspection_t's callback functions for our own zone
@@ -50,11 +48,15 @@ void MallocIntrospectionLog(malloc_zone_t* zone, void* address) {
 }
 
 void MallocIntrospectionForceLock(malloc_zone_t* zone) {
-  NOTREACHED();
+  // PartitionAllocMallocInitOnce() in
+  // //base/allocator/partition_allocator/partition_root.cc has already
+  // registered a set of fork handlers, so it's safe to do nothing here.
 }
 
 void MallocIntrospectionForceUnlock(malloc_zone_t* zone) {
-  NOTREACHED();
+  // PartitionAllocMallocInitOnce() in
+  // //base/allocator/partition_allocator/partition_root.cc has already
+  // registered a set of fork handlers, so it's safe to do nothing here.
 }
 
 void MallocIntrospectionStatistics(malloc_zone_t* zone,

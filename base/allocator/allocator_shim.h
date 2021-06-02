@@ -154,6 +154,9 @@ BASE_EXPORT void ConfigurePartitionAlloc();
 #endif  // defined(OS_WIN)
 
 #if defined(OS_APPLE)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void InitializeDefaultAllocatorPartitionRoot();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // On macOS, the allocator shim needs to be turned on during runtime.
 BASE_EXPORT void InitializeAllocatorShim();
 #endif  // defined(OS_APPLE)
