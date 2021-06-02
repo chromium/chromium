@@ -51,9 +51,9 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- daltonridgeapts.com-chain.pem : A long-lived (39 month), BR compliant,
-     non-EV certificate, issued by a public trust anchor, and valid for the
-     domain daltonridgeapts.com.
+- cert-manager.com-chain.pem : An OV certificate issued by a public trust
+    anchor valid for the domain ov-validation.cert-manager.com, and which
+    expires on 2022-06-22.
 
 - gms.hongleong.com.my-verisign-chain.pem: A certificate chain for
   gms.hongleong.com.my issued by VeriSign Class 3 Public Primary Certification
