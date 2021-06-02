@@ -176,6 +176,7 @@ ts_library("build") {
   ]
   definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
