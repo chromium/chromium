@@ -12,11 +12,11 @@
   <template>
     <style include="iron-flex cr-hidden-style">
       #animationContainer {
+        align-items: flex-end;
         display: flex;
         height: 216px;
         justify-content: center;
-        margin-bottom: 30px;
-        margin-top: 24px;
+        margin-bottom: 54px;
       }
 
       #simDetectError {
@@ -30,6 +30,14 @@
 
       #pageBody {
         height: 222px;
+      }
+
+      cr-lottie {
+        height: 85%;
+      }
+
+      base-page {
+        --base-page-message-height: 40px;
       }
     </style>
     <base-page title="[[loadingTitle]]" message="[[loadingMessage]]">

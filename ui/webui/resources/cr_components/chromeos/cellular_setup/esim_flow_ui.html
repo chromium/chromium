@@ -42,8 +42,9 @@
           show-error="{{showError_}}"
           show-busy="[[shouldShowSubpageBusy_(state_)]]">
       </activation-code-page>
-      <activation-verification-page id="activationVerificationPage">
-      </activation-verification-page>
+      <setup-loading-page id="activationVerificationPage"
+          loading-message="[[i18n('verifyingActivationCode')]]">
+      </setup-loading-page>
       <confirmation-code-page id="confirmationCodePage"
           confirmation-code="{{confirmationCode_}}"
           profile="[[selectedProfile_]]"
