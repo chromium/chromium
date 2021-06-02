@@ -52,6 +52,7 @@ class AutomationManagerLacros
                                base::Value optional_args) override;
   void PerformAction(const ui::AXActionData& action_data) override;
 
+  // Bound on construction given an AutomationFactory remote is available.
   mojo::Remote<crosapi::mojom::Automation> automation_remote_;
   mojo::Receiver<crosapi::mojom::AutomationClient> automation_client_receiver_{
       this};

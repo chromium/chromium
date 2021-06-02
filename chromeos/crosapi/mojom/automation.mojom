@@ -33,11 +33,15 @@ interface AutomationClient {
   // Automation interface.
   EnableTree@1(mojo_base.mojom.UnguessableToken token);
 
-  // Disables automation for the client.
+  // Disables automation in the client. This has the effect of turning off
+  // accessibility within Lacros' instance of AutomationManagerAura.  Calling
+  // this method without calling Enable or calling it multiple times has no
+  // adverse effects.
   [MinVersion=1] Disable@3();
 
-  // Forwards the action to all clients. Actions are resolved by each client
-  // based on tree id, action type and other action data fields.
+  // Forwards the action described by AXActionData to all clients. Actions are
+  // resolved by each client based on tree id, action type and other action data
+  // fields.
   [MinVersion=1] PerformAction@4(ax.mojom.AXActionData action_data);
 };
 
@@ -72,7 +76,8 @@ interface Automation {
       gfx.mojom.Point mouse_location,
       array<ax.mojom.AXEvent> events);
 
-  // Dispatches a location change for a specific node.
+  // Dispatches a location change for a specific node. Currently used by Blink
+  // in RenderAccessibilityHost::HandleAXLocationChanges.
   [MinVersion=4] DispatchAccessibilityLocationChange@5(
       mojo_base.mojom.UnguessableToken tree_id,
       int32 node_id,

@@ -38,9 +38,6 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
     std::vector<ui::AXTreeUpdate> updates,
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
-  if (!automation_remote_)
-    return;
-
   if (!tree_id.token())
     return;
 
@@ -56,19 +53,18 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
     return;
   }
 
+  DCHECK(automation_remote_);
   automation_remote_->DispatchAccessibilityEvents(*tree_id.token(), updates,
                                                   mouse_location, events);
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  if (!automation_remote_)
-    return;
-
   ui::AXTreeID tree_id = params.tree_id;
   if (!tree_id.token())
     return;
 
+  DCHECK(automation_remote_);
   automation_remote_->DispatchAccessibilityLocationChange(
       *tree_id.token(), params.id, params.new_location);
 }
@@ -79,9 +75,7 @@ void AutomationManagerLacros::DispatchTreeDestroyedEvent(
   if (!tree_id.token())
     return;
 
-  if (!automation_remote_)
-    return;
-
+  DCHECK(automation_remote_);
   automation_remote_->DispatchTreeDestroyedEvent(*(tree_id.token()));
 }
 
@@ -89,11 +83,10 @@ void AutomationManagerLacros::DispatchActionResult(
     const ui::AXActionData& data,
     bool result,
     content::BrowserContext* browser_context) {
-  if (!automation_remote_)
-    return;
-
+  DCHECK(automation_remote_);
   automation_remote_->DispatchActionResult(data, result);
 }
+
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& rect) {
