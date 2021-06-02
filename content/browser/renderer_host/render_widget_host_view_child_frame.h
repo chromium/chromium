@@ -256,8 +256,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     return weak_factory_.GetWeakPtr();
   }
 
-  ui::Compositor* GetCompositor() override;
-
  protected:
   ~RenderWidgetHostViewChildFrame() override;
 

@@ -54,7 +54,6 @@ class WebMouseWheelEvent;
 }
 
 namespace ui {
-class Compositor;
 enum class DomCode;
 class LatencyInfo;
 class TouchEvent;
@@ -544,8 +543,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   }
 
   void SetTooltipObserverForTesting(TooltipObserver* observer);
-
-  virtual ui::Compositor* GetCompositor();
 
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);

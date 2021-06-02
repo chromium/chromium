@@ -373,8 +373,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;
 
-  ui::Compositor* GetCompositor() override;
-
  protected:
   ~RenderWidgetHostViewAura() override;
 
