@@ -2115,6 +2115,7 @@ if (!is_android) {
         "//ui/file_manager/file_manager/foreground/js/ui/table:modulize_runtime_data",
         "//ui/file_manager/gallery/js/image_editor:modulize_runtime_data",
         "//ui/file_manager/image_loader:modulize_runtime_data",
+        "//ui/file_manager/video_player/js:modulize_runtime_data",
       ]
 
       if (use_dbus) {

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
-
-import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.m.js';
-import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// clang-format off
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.m.js';
+// #import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+// clang-format on
 
 /**
  * Video player with chrome's native controls.
  */
-export class NativeControlsVideoPlayer {
+/* #export */ class NativeControlsVideoPlayer {
   constructor() {
     /**
      * List of open videos.
