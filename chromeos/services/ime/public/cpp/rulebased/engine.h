@@ -40,15 +40,12 @@ class Engine {
   void Reset();
   ProcessKeyResult ProcessKey(const std::string& code, uint8_t modifier_state);
 
-  uint32_t process_key_count() const { return process_key_count_; }
-
  private:
   void ClearHistory();
   ProcessKeyResult ProcessBackspace();
 
   std::unique_ptr<const RulesData> current_data_;
   std::string current_id_;
-  uint32_t process_key_count_;
 
   // Current state.
   // The current context (composition).

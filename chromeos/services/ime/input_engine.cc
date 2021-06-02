@@ -175,11 +175,6 @@ void InputEngine::ResetForRulebased() {
   isAltRightDown_ = false;
 }
 
-void InputEngine::GetRulebasedKeypressCountForTesting(
-    GetRulebasedKeypressCountForTestingCallback callback) {
-  std::move(callback).Run(engine_ ? engine_->process_key_count() : -1);
-}
-
 void InputEngine::CommitText(const std::string& text,
                              mojom::CommitTextCursorBehavior cursor_behavior) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.

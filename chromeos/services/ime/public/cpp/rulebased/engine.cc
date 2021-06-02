@@ -11,8 +11,8 @@ namespace chromeos {
 namespace ime {
 namespace rulebased {
 
-Engine::Engine() : process_key_count_(0) {}
-Engine::~Engine() {}
+Engine::Engine() = default;
+Engine::~Engine() = default;
 
 // static
 bool Engine::IsImeSupported(const std::string& id) {
@@ -28,8 +28,6 @@ void Engine::Activate(const std::string& id) {
 }
 
 void Engine::Reset() {
-  process_key_count_ = 0;
-
   // Clears current state.
   context_ = "";
   transat_ = -1;
@@ -39,8 +37,6 @@ void Engine::Reset() {
 
 ProcessKeyResult Engine::ProcessKey(const std::string& code,
                                     uint8_t modifier_state) {
-  process_key_count_++;
-
   ProcessKeyResult res;
   // The fallback result should commit the existing composition text.
   res.commit_text = context_;

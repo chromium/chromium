@@ -144,8 +144,6 @@ class NativeInputMethodEngine
     void OnKeyEvent(ime::mojom::PhysicalKeyEventPtr event,
                     OnKeyEventCallback callback) override {}
     void ResetForRulebased() override {}
-    void GetRulebasedKeypressCountForTesting(
-        GetRulebasedKeypressCountForTestingCallback callback) override {}
     void CommitText(
         const std::string& text,
         ime::mojom::CommitTextCursorBehavior cursor_behavior) override;

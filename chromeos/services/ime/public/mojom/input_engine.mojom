@@ -284,9 +284,6 @@ interface InputChannel {
   // Resets the engine for rulebased logic.
   ResetForRulebased();
 
-  // Gets the keypress count for rulebased logic.
-  GetRulebasedKeypressCountForTesting() => (int32 count);
-
   // Asks the input field to commit `text`. If there is a composition, then that
   // composition is removed and `text` is inserted. Otherwise, `text` is
   // inserted at the current cursor position, deleting any text in the current
