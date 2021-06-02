@@ -68,7 +68,7 @@ class MockMojoWilcoDtcSupportdService
 class FakeWilcoDtcSupportdManagerDelegate final
     : public WilcoDtcSupportdManager::Delegate {
  public:
-  FakeWilcoDtcSupportdManagerDelegate(
+  explicit FakeWilcoDtcSupportdManagerDelegate(
       MockMojoWilcoDtcSupportdService* mojo_wilco_dtc_supportd_service)
       : mojo_wilco_dtc_supportd_service_(mojo_wilco_dtc_supportd_service) {}
 

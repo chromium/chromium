@@ -24,7 +24,7 @@ extern const base::TimeDelta kRebootAttemptDelay;
 class SnapshotRebootController
     : public session_manager::SessionManagerObserver {
  public:
-  SnapshotRebootController(
+  explicit SnapshotRebootController(
       std::unique_ptr<ArcSnapshotRebootNotification> notification);
   SnapshotRebootController(const SnapshotRebootController&) = delete;
   ~SnapshotRebootController() override;
