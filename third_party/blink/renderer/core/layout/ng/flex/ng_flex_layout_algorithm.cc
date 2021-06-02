@@ -1081,7 +1081,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
 
   if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
-    intrinsic_block_size += Node().GetLayoutBox()->LogicalHeightForEmptyLine();
+    intrinsic_block_size += Node().EmptyLineBlockSize();
   } else {
     intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
   }

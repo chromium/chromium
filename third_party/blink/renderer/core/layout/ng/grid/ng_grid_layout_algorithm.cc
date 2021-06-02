@@ -190,6 +190,14 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       grid_geometry.row_geometry.FinalGutterSize() +
       BorderScrollbarPadding().block_end;
 
+  // TODO(layout-dev): This isn't great but matches legacy. Ideally this would
+  // only apply when we have only flexible track(s).
+  if (grid_items.IsEmpty() && Node().HasLineIfEmpty()) {
+    intrinsic_block_size =
+        std::max(intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
+                                           Node().EmptyLineBlockSize());
+  }
+
   // TODO(layout-dev): ClampIntrinsicBlockSize might not be correct for grid.
   // Specifically do we need to run the sizing algorithm assuming no children
   // for size containment.

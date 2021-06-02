@@ -762,8 +762,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   if (container_builder_.HasSeenAllChildren() &&
       HasLineEvenIfEmpty(Node().GetLayoutBox())) {
     intrinsic_block_size_ +=
-        std::max(intrinsic_block_size_,
-                 Node().GetLayoutBox()->LogicalHeightForEmptyLine());
+        std::max(intrinsic_block_size_, Node().EmptyLineBlockSize());
     if (container_builder_.IsInitialColumnBalancingPass()) {
       container_builder_.PropagateTallestUnbreakableBlockSize(
           intrinsic_block_size_);
