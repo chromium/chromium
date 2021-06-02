@@ -89,8 +89,9 @@ class NET_EXPORT CanonicalCookie {
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
   // context of the passed URL.  Returns a null unique pointer if the inputs
-  // cannot be sanitized.  If a cookie is created, |cookie->IsCanonical()|
-  // will be true.
+  // cannot be sanitized.  If `status` is provided it will have any relevant
+  // CookieInclusionStatus rejection reasons set. If a cookie is created,
+  // `cookie->IsCanonical()` will be true.
   static std::unique_ptr<CanonicalCookie> CreateSanitizedCookie(
       const GURL& url,
       const std::string& name,
@@ -104,7 +105,8 @@ class NET_EXPORT CanonicalCookie {
       bool http_only,
       CookieSameSite same_site,
       CookiePriority priority,
-      bool same_party);
+      bool same_party,
+      CookieInclusionStatus* status = nullptr);
 
   // FromStorage is a factory method which is meant for creating a new
   // CanonicalCookie using properties of a previously existing cookie
