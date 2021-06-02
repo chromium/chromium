@@ -812,7 +812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.CommitType"
-    enum="VirtualKeyboardHandwritingCommitType" expires_after="2021-07-01">
+    enum="VirtualKeyboardHandwritingCommitType" expires_after="2022-02-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -920,7 +920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ResizableWindowInitWidth"
-    units="px" expires_after="2021-07-06">
+    units="px" expires_after="2022-02-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
