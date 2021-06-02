@@ -21,8 +21,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -258,8 +258,7 @@ class AppListItemView::IconImageView : public views::ImageView {
 
 AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
                                  AppListItem* item,
-                                 AppListViewDelegate* delegate,
-                                 bool is_in_folder)
+                                 AppListViewDelegate* delegate)
     : Button(),
       is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),
@@ -267,6 +266,7 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
       apps_grid_view_(apps_grid_view),
       is_notification_indicator_enabled_(
           features::IsNotificationIndicatorEnabled()) {
+  DCHECK(delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   auto title = std::make_unique<views::Label>();
@@ -283,7 +283,7 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
-    if (apps_grid_view_->IsTabletMode())
+    if (delegate_->IsInTabletMode())
       SetBackgroundBlurEnabled(true);
     icon_->SetExtendedState(GetAppListConfig(), false /*extended*/,
                             false /*animate*/);
@@ -592,7 +592,7 @@ void AppListItemView::OnContextMenuModelReceived(
       source_type, metric_params, AppListMenuModelAdapter::FULLSCREEN_APP_GRID,
       base::BindOnce(&AppListItemView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      apps_grid_view_->IsTabletMode());
+      delegate_->IsInTabletMode());
   context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      run_types);
   apps_grid_view_->SetSelectedView(this);

@@ -1083,10 +1083,9 @@ void AppsGridView::UpdatePulsingBlockViews() {
 }
 
 std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItem(
-    AppListItem* item,
-    bool is_in_folder) {
-  std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
-      this, item, app_list_view_delegate_, is_in_folder);
+    AppListItem* item) {
+  std::unique_ptr<AppListItemView> view =
+      std::make_unique<AppListItemView>(this, item, app_list_view_delegate_);
   view->SetCallback(base::BindRepeating(&AppsGridView::OnAppListItemViewPressed,
                                         base::Unretained(this),
                                         base::Unretained(view.get())));
@@ -1099,7 +1098,7 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   // may have one more item than |item_list_|.
   DCHECK_LE(index, item_list_->item_count());
   auto* item = item_list_->item_at(index);
-  return CreateViewForItem(item, item->IsInFolder());
+  return CreateViewForItem(item);
 }
 
 void AppsGridView::EnsureViewVisible(const GridIndex& index) {

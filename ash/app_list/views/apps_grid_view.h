@@ -461,8 +461,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // number of apps.
   void UpdatePulsingBlockViews();
 
-  std::unique_ptr<AppListItemView> CreateViewForItem(AppListItem* item,
-                                                     bool is_in_folder = false);
+  std::unique_ptr<AppListItemView> CreateViewForItem(AppListItem* item);
 
   std::unique_ptr<AppListItemView> CreateViewForItemAtIndex(size_t index);
 

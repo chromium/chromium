@@ -43,8 +43,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   AppListItemView(AppsGridView* apps_grid_view,
                   AppListItem* item,
-                  AppListViewDelegate* delegate,
-                  bool is_in_folder);
+                  AppListViewDelegate* delegate);
   AppListItemView(const AppListItemView&) = delete;
   AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
