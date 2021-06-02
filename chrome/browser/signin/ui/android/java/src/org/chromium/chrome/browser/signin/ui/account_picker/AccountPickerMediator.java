@@ -22,7 +22,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,14 +30,11 @@ import java.util.List;
  * It defines the business logic when the user selects or adds an account and updates the model.
  * This class has no visibility of the account picker view.
  */
-class AccountPickerMediator {
+class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.Observer {
     private final MVCListAdapter.ModelList mListModel;
     private final AccountPickerCoordinator.Listener mAccountPickerListener;
     private final ProfileDataCache mProfileDataCache;
-
     private final AccountManagerFacade mAccountManagerFacade;
-    private final AccountsChangeObserver mAccountsChangeObserver = this::updateAccounts;
-    private final ProfileDataCache.Observer mProfileDataObserver = this::updateProfileData;
 
     @MainThread
     AccountPickerMediator(Context context, MVCListAdapter.ModelList listModel,
@@ -48,9 +44,36 @@ class AccountPickerMediator {
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        mAccountManagerFacade.addObserver(mAccountsChangeObserver);
-        mProfileDataCache.addObserver(mProfileDataObserver);
-        updateAccounts();
+        mAccountManagerFacade.addObserver(this);
+        mProfileDataCache.addObserver(this);
+        onAccountsChanged();
+    }
+
+    /**
+     * Implements {@link AccountsChangeObserver}.
+     */
+    @Override
+    public void onAccountsChanged() {
+        mAccountManagerFacade.tryGetGoogleAccounts(this::updateAccounts);
+    }
+
+    /**
+     * Implements {@link ProfileDataCache.Observer}.
+     */
+    @Override
+    public void onProfileDataUpdated(String accountEmail) {
+        for (MVCListAdapter.ListItem item : mListModel) {
+            if (item.type == AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW) {
+                PropertyModel model = item.model;
+                boolean isProfileDataUpdated = TextUtils.equals(accountEmail,
+                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountEmail());
+                if (isProfileDataUpdated) {
+                    model.set(ExistingAccountRowProperties.PROFILE_DATA,
+                            mProfileDataCache.getProfileDataOrDefault(accountEmail));
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -58,16 +81,11 @@ class AccountPickerMediator {
      */
     @MainThread
     void destroy() {
-        mProfileDataCache.removeObserver(mProfileDataObserver);
-        mAccountManagerFacade.removeObserver(mAccountsChangeObserver);
+        mProfileDataCache.removeObserver(this);
+        mAccountManagerFacade.removeObserver(this);
     }
 
-    /**
-     * Implements {@link AccountsChangeObserver}.
-     */
-    private void updateAccounts() {
-        List<Account> accounts =
-                mAccountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
+    private void updateAccounts(List<Account> accounts) {
         mListModel.clear();
 
         // Add an "existing account" row for each account
@@ -95,23 +113,5 @@ class AccountPickerMediator {
         PropertyModel model =
                 ExistingAccountRowProperties.createModel(profileData, profileDataCallback);
         return new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model);
-    }
-
-    /**
-     * Implements {@link ProfileDataCache.Observer}
-     */
-    private void updateProfileData(String accountName) {
-        for (MVCListAdapter.ListItem item : mListModel) {
-            if (item.type == AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW) {
-                PropertyModel model = item.model;
-                boolean isProfileDataUpdated = TextUtils.equals(accountName,
-                        model.get(ExistingAccountRowProperties.PROFILE_DATA).getAccountEmail());
-                if (isProfileDataUpdated) {
-                    model.set(ExistingAccountRowProperties.PROFILE_DATA,
-                            mProfileDataCache.getProfileDataOrDefault(accountName));
-                    break;
-                }
-            }
-        }
     }
 }
