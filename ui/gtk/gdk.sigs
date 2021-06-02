@@ -33,3 +33,4 @@ GType gdk_toplevel_get_type(void);
 void gdk_set_allowed_backends(const gchar* backends);
 void gdk_display_notify_startup_complete(GdkDisplay* display, const char* startup_id);
 guint32 gdk_keyval_to_unicode(guint keyval);
+gdouble gdk_screen_get_resolution(GdkScreen *screen);
