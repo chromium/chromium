@@ -37,7 +37,8 @@ class SearchModel;
 
 class ASH_PUBLIC_EXPORT AppListViewDelegate {
  public:
-  virtual ~AppListViewDelegate() {}
+  virtual ~AppListViewDelegate() = default;
+
   // Gets the model associated with the view delegate. The model may be owned
   // by the delegate, or owned elsewhere (e.g. a profile keyed service).
   virtual AppListModel* GetModel() = 0;

@@ -3340,8 +3340,8 @@ void AppsGridView::RecordPageMetrics() {
   int page_count = 0;
   if (!folder_delegate_) {
     const auto& pages = view_structure_.pages();
-    for (size_t i = 0; i < pages.size(); ++i) {
-      if (static_cast<int>(pages[i].size()) < TilesPerPage())
+    for (const auto& page : pages) {
+      if (static_cast<int>(page.size()) < TilesPerPage())
         ++page_count;
     }
   } else {

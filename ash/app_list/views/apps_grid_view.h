@@ -20,12 +20,9 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -94,6 +91,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridView(ContentsView* contents_view,
                AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate);
+  AppsGridView(const AppsGridView&) = delete;
+  AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
 
   // Initializes the class. Calls virtual methods, so its code cannot be in the
@@ -930,8 +929,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   int bounds_animation_for_cardified_state_in_progress_ = 0;
 
   base::WeakPtrFactory<AppsGridView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppsGridView);
 };
 
 }  // namespace ash
