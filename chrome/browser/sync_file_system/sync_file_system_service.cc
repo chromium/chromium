@@ -268,10 +268,10 @@ void SyncFileSystemService::Shutdown() {
 
   remote_service_.reset();
 
-  syncer::SyncService* profile_sync_service =
+  syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  if (profile_sync_service)
-    profile_sync_service->RemoveObserver(this);
+  if (sync_service)
+    sync_service->RemoveObserver(this);
 
   ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
@@ -471,11 +471,11 @@ void SyncFileSystemService::Initialize(
   local_sync_runners_.push_back(std::move(local_syncer));
   remote_sync_runners_.push_back(std::move(remote_syncer));
 
-  syncer::SyncService* profile_sync_service =
+  syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  if (profile_sync_service) {
-    UpdateSyncEnabledStatus(profile_sync_service);
-    profile_sync_service->AddObserver(this);
+  if (sync_service) {
+    UpdateSyncEnabledStatus(sync_service);
+    sync_service->AddObserver(this);
   }
 
   ExtensionRegistry::Get(profile_)->AddObserver(this);
@@ -724,12 +724,11 @@ void SyncFileSystemService::OnFileStatusChanged(
 }
 
 void SyncFileSystemService::UpdateSyncEnabledStatus(
-    syncer::SyncService* profile_sync_service) {
-  if (!profile_sync_service->GetUserSettings()->IsFirstSetupComplete())
+    syncer::SyncService* sync_service) {
+  if (!sync_service->GetUserSettings()->IsFirstSetupComplete())
     return;
   bool old_sync_enabled = sync_enabled_;
-  sync_enabled_ = profile_sync_service->GetActiveDataTypes().Has(
-      syncer::APPS);
+  sync_enabled_ = sync_service->GetActiveDataTypes().Has(syncer::APPS);
   remote_service_->SetSyncEnabled(sync_enabled_);
   if (!old_sync_enabled && sync_enabled_)
     RunForEachSyncRunners(&SyncProcessRunner::Schedule);

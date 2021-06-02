@@ -526,7 +526,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
   void SetUp() override {
     ActiveTabTest::SetUp();
 
-    // Necessary to prevent instantiation of ProfileSyncService, which messes
+    // Necessary to prevent instantiation of SyncService, which messes
     // with our signin state below.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableSync);

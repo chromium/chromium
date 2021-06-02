@@ -146,10 +146,6 @@ void TestingFlocRemotePermissionService::QueryFlocPermissionCallback(
 }  // namespace
 
 // A test class used for testing the FlocRemotePermissionService class.
-// In order for FlocRemotePermissionService to be valid, we must have a valid
-// ProfileSyncService. Using the ProfileSyncServiceMock class allows to
-// assign specific return values as needed to make sure the floc remote
-// permission service is available.
 class FlocRemotePermissionServiceTest : public testing::Test {
  public:
   FlocRemotePermissionServiceTest()

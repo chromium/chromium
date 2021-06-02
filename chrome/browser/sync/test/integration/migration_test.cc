@@ -17,7 +17,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "content/public/test/browser_test.h"
 
@@ -92,7 +92,7 @@ class MigrationTest : public SyncTest  {
   }
 
   syncer::ModelTypeSet GetPreferredDataTypes() {
-    // ProfileSyncService must already have been created before we can call
+    // SyncServiceImpl must already have been created before we can call
     // GetPreferredDataTypes().
     DCHECK(GetSyncService(0));
     syncer::ModelTypeSet preferred_data_types =

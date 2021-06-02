@@ -163,8 +163,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             SessionSyncServiceFactory::GetForBrowserState(
                 chrome_browser_state_.get()));
 
-    // Needed by ProfileSyncService's initialization, triggered during
-    // initialization of SyncSetupServiceMock.
+    // Needed by SyncService's initialization, triggered during initialization
+    // of SyncSetupServiceMock.
     ON_CALL(*session_sync_service, GetControllerDelegate())
         .WillByDefault(Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(*session_sync_service, GetGlobalIdMapper())

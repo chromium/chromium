@@ -154,7 +154,7 @@ class SyncPrefs {
 
   // Whether Sync is forced off by enterprise policy. Note that this only covers
   // one out of two types of policy, "browser" policy. The second kind, "cloud"
-  // policy, is handled directly in ProfileSyncService.
+  // policy, is handled directly in SyncServiceImpl.
   bool IsManaged() const;
 
   // Maps |type| to its corresponding preference name.

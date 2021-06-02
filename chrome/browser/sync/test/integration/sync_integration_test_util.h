@@ -12,7 +12,7 @@
 class Profile;
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 }  // namespace syncer
 
 // Sets a custom theme and wait until the asynchronous process is done.
@@ -35,7 +35,7 @@ class ServerCountMatchStatusChecker
 // Checker to block until service is waiting for a passphrase.
 class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseRequiredChecker(syncer::ProfileSyncService* service);
+  explicit PassphraseRequiredChecker(syncer::SyncServiceImpl* service);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -44,7 +44,7 @@ class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
 // Checker to block until service has accepted a new passphrase.
 class PassphraseAcceptedChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseAcceptedChecker(syncer::ProfileSyncService* service);
+  explicit PassphraseAcceptedChecker(syncer::SyncServiceImpl* service);
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;

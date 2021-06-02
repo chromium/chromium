@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/webdata/common/web_database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

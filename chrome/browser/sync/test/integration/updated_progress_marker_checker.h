@@ -21,7 +21,7 @@
 // of this checker.  Please do not use it in new tests.
 class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit UpdatedProgressMarkerChecker(syncer::ProfileSyncService* service);
+  explicit UpdatedProgressMarkerChecker(syncer::SyncServiceImpl* service);
   ~UpdatedProgressMarkerChecker() override;
 
   // StatusChangeChecker implementation.

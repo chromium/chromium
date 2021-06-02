@@ -21,7 +21,7 @@ namespace syncer {
 
 // A fake of the SyncEngine.
 //
-// This class implements the bare minimum required for the ProfileSyncService to
+// This class implements the bare minimum required for the SyncServiceImpl to
 // get through initialization. It often returns null pointers or nonsense
 // values; it is not intended to be used in tests that depend on SyncEngine
 // behavior.

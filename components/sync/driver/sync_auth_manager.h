@@ -91,15 +91,15 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // internals UI.
   SyncTokenStatus GetSyncTokenStatus() const;
 
-  // Called by ProfileSyncService when Sync starts up and will try talking to
+  // Called by SyncServiceImpl when Sync starts up and will try talking to
   // the server soon. This initiates fetching an access token.
   void ConnectionOpened();
 
-  // Called by ProfileSyncService when the status of the connection to the Sync
+  // Called by SyncServiceImpl when the status of the connection to the Sync
   // server changed. Updates auth error state accordingly.
   void ConnectionStatusChanged(ConnectionStatus status);
 
-  // Called by ProfileSyncService when the connection to the Sync server is
+  // Called by SyncServiceImpl when the connection to the Sync server is
   // closed (due to Sync being shut down). Clears all related state (such as
   // cached access token, error from the server, etc).
   void ConnectionClosed();

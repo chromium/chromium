@@ -100,7 +100,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   void OnGotEntityCounts(
       const std::vector<syncer::TypeEntitiesCount>& entity_counts);
 
-  // Gets the ProfileSyncService of the underlying original profile. May return
+  // Gets the SyncService of the underlying original profile. May return
   // nullptr (e.g. if sync is disabled on the command line).
   syncer::SyncService* GetSyncService();
 
@@ -112,7 +112,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // machinery. Leaves notifications hooked into the UI alone.
   void UnregisterModelNotifications();
 
-  // A flag used to prevent double-registration with ProfileSyncService.
+  // A flag used to prevent double-registration with SyncService.
   bool is_registered_ = false;
 
   // Whether specifics should be included when converting protocol events to a

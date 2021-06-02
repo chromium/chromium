@@ -14,7 +14,7 @@
 class ChromeBrowserState;
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 class SyncService;
 }  // namespace syncer
 
@@ -28,11 +28,10 @@ class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
   static syncer::SyncService* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
-  static syncer::ProfileSyncService* GetAsProfileSyncServiceForBrowserState(
+  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserState(
       ChromeBrowserState* browser_state);
 
-  static syncer::ProfileSyncService*
-  GetAsProfileSyncServiceForBrowserStateIfExists(
+  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
   static SyncServiceFactory* GetInstance();

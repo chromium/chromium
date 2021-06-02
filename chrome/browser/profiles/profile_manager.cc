@@ -1630,7 +1630,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   AccountReconcilorFactory::GetForProfile(profile);
 
   // Initialization needs to happen after the browser context is available
-  // because ProfileSyncService needs the URL context getter.
+  // because SyncService needs the URL context getter.
   UnifiedConsentServiceFactory::GetForProfile(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

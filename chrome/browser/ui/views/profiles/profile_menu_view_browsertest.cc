@@ -555,8 +555,8 @@ class ProfileMenuClickTestBase : public SyncTest,
     return IdentityManagerFactory::GetForProfile(browser()->profile());
   }
 
-  syncer::ProfileSyncService* sync_service() {
-    return SyncServiceFactory::GetAsProfileSyncServiceForProfile(
+  syncer::SyncServiceImpl* sync_service() {
+    return SyncServiceFactory::GetAsSyncServiceImplForProfile(
         browser()->profile());
   }
 

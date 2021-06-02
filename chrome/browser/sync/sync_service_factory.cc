@@ -50,8 +50,8 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/network_service_instance.h"
@@ -118,9 +118,9 @@ syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
 }
 
 // static
-syncer::ProfileSyncService*
-SyncServiceFactory::GetAsProfileSyncServiceForProfile(Profile* profile) {
-  return static_cast<syncer::ProfileSyncService*>(GetForProfile(profile));
+syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
+    Profile* profile) {
+  return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
 }
 
 content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
@@ -136,7 +136,7 @@ SyncServiceFactory::SyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SyncService",
           BrowserContextDependencyManager::GetInstance()) {
-  // The ProfileSyncService depends on various SyncableServices being around
+  // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in ChromeSyncClient, which this factory constructs.
@@ -186,7 +186,7 @@ SyncServiceFactory::~SyncServiceFactory() = default;
 
 KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  syncer::ProfileSyncService::InitParams init_params;
+  syncer::SyncServiceImpl::InitParams init_params;
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -232,7 +232,7 @@ KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
     if (local_sync_backend_folder.empty())
       return nullptr;
 
-    init_params.start_behavior = syncer::ProfileSyncService::AUTO_START;
+    init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
   }
 #endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -254,7 +254,7 @@ KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
     // is set up and *not* a browser restart for a manual-start platform (where
     // sync has already been set up, and should be able to start without user
     // intervention). We can get rid of the browser_default eventually, but
-    // need to take care that ProfileSyncService doesn't get tripped up between
+    // need to take care that SyncServiceImpl doesn't get tripped up between
     // those two cases. Bug 88109.
     bool is_auto_start = browser_defaults::kSyncAutoStarts;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -272,20 +272,20 @@ KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
     }
 #endif
     init_params.start_behavior = is_auto_start
-                                     ? syncer::ProfileSyncService::AUTO_START
-                                     : syncer::ProfileSyncService::MANUAL_START;
+                                     ? syncer::SyncServiceImpl::AUTO_START
+                                     : syncer::SyncServiceImpl::MANUAL_START;
   }
 
-  auto pss =
-      std::make_unique<syncer::ProfileSyncService>(std::move(init_params));
-  pss->Initialize();
+  auto sync_service =
+      std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
+  sync_service->Initialize();
 
-  // Hook PSS into PersonalDataManager (a circular dependency).
+  // Hook |sync_service| into PersonalDataManager (a circular dependency).
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
-  pdm->OnSyncServiceInitialized(pss.get());
+  pdm->OnSyncServiceInitialized(sync_service.get());
 
-  return pss.release();
+  return sync_service.release();
 }
 
 // static
@@ -303,7 +303,7 @@ bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
         syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   }
 
-  // No ProfileSyncService created yet - we don't want to create one, so just
+  // No SyncServiceImpl created yet - we don't want to create one, so just
   // infer the accessible state by looking at prefs/command line flags.
   syncer::SyncPrefs prefs(profile->GetPrefs());
   return switches::IsSyncAllowedByFlag() &&

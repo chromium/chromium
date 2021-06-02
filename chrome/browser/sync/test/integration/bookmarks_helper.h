@@ -494,7 +494,7 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
   // will be used to decrypt the data prior to checking for equality.
   // |fake_server| must not be nullptr and must outlive this object.
   ServerBookmarksEqualityChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       fake_server::FakeServer* fake_server,
       std::vector<ExpectedBookmark> expected_bookmarks,
       syncer::Cryptographer* cryptographer);
@@ -543,7 +543,7 @@ class BookmarkModelMatchesFakeServerChecker
     : public SingleClientStatusChangeChecker {
  public:
   BookmarkModelMatchesFakeServerChecker(int profile,
-                                        syncer::ProfileSyncService* service,
+                                        syncer::SyncServiceImpl* service,
                                         fake_server::FakeServer* fake_server);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;

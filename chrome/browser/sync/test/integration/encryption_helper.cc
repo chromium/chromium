@@ -10,13 +10,13 @@
 #include "base/bind.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_client.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 ServerNigoriChecker::ServerNigoriChecker(
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     fake_server::FakeServer* fake_server,
     syncer::PassphraseType expected_passphrase_type)
     : SingleClientStatusChangeChecker(service),
@@ -38,7 +38,7 @@ bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
 
 ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
     const std::string& expected_key_name,
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     fake_server::FakeServer* fake_server)
     : SingleClientStatusChangeChecker(service),
       fake_server_(fake_server),
@@ -59,7 +59,7 @@ bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 PassphraseRequiredStateChecker::PassphraseRequiredStateChecker(
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     bool desired_state)
     : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
 
@@ -73,7 +73,7 @@ bool PassphraseRequiredStateChecker::IsExitConditionSatisfied(
 }
 
 TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     bool desired_state)
     : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
 
@@ -88,7 +88,7 @@ bool TrustedVaultKeyRequiredStateChecker::IsExitConditionSatisfied(
 }
 
 TrustedVaultKeysChangedStateChecker::TrustedVaultKeysChangedStateChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : service_(service), keys_changed_(false) {
   service->GetSyncClientForTest()->GetTrustedVaultClient()->AddObserver(this);
 }

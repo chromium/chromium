@@ -210,10 +210,6 @@ std::string TestingWebHistoryService::GetExpectedAudioHistoryValue() {
 }  // namespace
 
 // A test class used for testing the WebHistoryService class.
-// In order for WebHistoryService to be valid, we must have a valid
-// ProfileSyncService. Using the ProfileSyncServiceMock class allows to
-// assign specific return values as needed to make sure the web history
-// service is available.
 class WebHistoryServiceTest : public testing::Test {
  public:
   WebHistoryServiceTest()

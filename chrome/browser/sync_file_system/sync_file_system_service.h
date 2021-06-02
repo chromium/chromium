@@ -158,8 +158,8 @@ class SyncFileSystemService
 
   // Check the profile's sync preference settings and call
   // remote_file_service_->SetSyncEnabled() to update the status.
-  // |profile_sync_service| must be non-null.
-  void UpdateSyncEnabledStatus(syncer::SyncService* profile_sync_service);
+  // |sync_service| must be non-null.
+  void UpdateSyncEnabledStatus(syncer::SyncService* sync_service);
 
   // Runs the SyncProcessRunner method of all sync runners (e.g. for Local sync
   // and Remote sync).

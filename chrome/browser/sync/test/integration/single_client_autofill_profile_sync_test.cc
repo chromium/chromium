@@ -14,8 +14,8 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +24,7 @@ namespace {
 
 class AutofillProfileDisabledChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit AutofillProfileDisabledChecker(syncer::ProfileSyncService* service)
+  explicit AutofillProfileDisabledChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
   ~AutofillProfileDisabledChecker() override = default;
 

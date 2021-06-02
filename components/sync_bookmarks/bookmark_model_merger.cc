@@ -47,7 +47,7 @@ static const size_t kInvalidIndex = -1;
 // It is the responsibility of something upstream (at time of writing, the sync
 // server) to create these tagged nodes when initializing sync for the first
 // time for a user.  Thus, once the backend finishes initializing, the
-// ProfileSyncService can rely on the presence of tagged nodes.
+// SyncService can rely on the presence of tagged nodes.
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";

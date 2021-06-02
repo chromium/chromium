@@ -20,7 +20,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"

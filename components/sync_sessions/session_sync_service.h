@@ -39,7 +39,6 @@ class SessionSyncService : public KeyedService {
   virtual base::CallbackListSubscription SubscribeToForeignSessionsChanged(
       const base::RepeatingClosure& cb) WARN_UNUSED_RESULT = 0;
 
-  // For ProfileSyncService to initialize the controller for SESSIONS.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
 

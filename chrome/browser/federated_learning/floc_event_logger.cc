@@ -7,7 +7,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "components/federated_learning/features/features.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_thread.h"
 

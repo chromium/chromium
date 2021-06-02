@@ -15,9 +15,9 @@
 #include "components/network_time/network_time_tracker.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -94,18 +94,18 @@ syncer::SyncService* SyncServiceFactory::GetForBrowserStateIfExists(
 }
 
 // static
-syncer::ProfileSyncService*
-SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+syncer::SyncServiceImpl*
+SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<syncer::ProfileSyncService*>(
+  return static_cast<syncer::SyncServiceImpl*>(
       GetForBrowserState(browser_state));
 }
 
 // static
-syncer::ProfileSyncService*
-SyncServiceFactory::GetAsProfileSyncServiceForBrowserStateIfExists(
+syncer::SyncServiceImpl*
+SyncServiceFactory::GetAsSyncServiceImplForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
-  return static_cast<syncer::ProfileSyncService*>(
+  return static_cast<syncer::SyncServiceImpl*>(
       GetForBrowserStateIfExists(browser_state));
 }
 
@@ -153,10 +153,10 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   // startup once bug has been fixed.
   ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
 
-  syncer::ProfileSyncService::InitParams init_params;
+  syncer::SyncServiceImpl::InitParams init_params;
   init_params.identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  init_params.start_behavior = syncer::ProfileSyncService::MANUAL_START;
+  init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client =
       std::make_unique<IOSChromeSyncClient>(browser_state);
   init_params.network_time_update_callback =
@@ -170,14 +170,14 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   init_params.policy_service =
       policy_connector ? policy_connector->GetPolicyService() : nullptr;
 
-  auto pss =
-      std::make_unique<syncer::ProfileSyncService>(std::move(init_params));
-  pss->Initialize();
+  auto sync_service =
+      std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
+  sync_service->Initialize();
 
-  // Hook PSS into PersonalDataManager (a circular dependency).
+  // Hook |sync_service| into PersonalDataManager (a circular dependency).
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
-  pdm->OnSyncServiceInitialized(pss.get());
+  pdm->OnSyncServiceInitialized(sync_service.get());
 
-  return pss;
+  return sync_service;
 }

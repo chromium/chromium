@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/network_connection_change_simulator.h"
@@ -40,15 +40,15 @@ class SyncExponentialBackoffTest : public SyncTest {
 // exponential backoff after it encounters an error.
 class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit ExponentialBackoffChecker(syncer::ProfileSyncService* pss)
-      : SingleClientStatusChangeChecker(pss) {
+  explicit ExponentialBackoffChecker(syncer::SyncServiceImpl* sync_service)
+      : SingleClientStatusChangeChecker(sync_service) {
     const SyncCycleSnapshot& snap =
         service()->GetLastCycleSnapshotForDebugging();
     retry_verifier_.Initialize(snap);
   }
 
-  // Checks if backoff is complete. Called repeatedly each time PSS notifies
-  // observers of a state change.
+  // Checks if backoff is complete. Called repeatedly each time SyncServiceImpl
+  // notifies observers of a state change.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Verifying backoff intervals (" << retry_verifier_.retry_count()
         << "/" << RetryVerifier::kMaxRetry << ")";

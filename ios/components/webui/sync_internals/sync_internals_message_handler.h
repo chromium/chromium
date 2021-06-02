@@ -83,7 +83,7 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
 
   void DispatchEvent(const std::string& name, const base::Value& details_value);
 
-  // A flag used to prevent double-registration with ProfileSyncService.
+  // A flag used to prevent double-registration with SyncService.
   bool is_registered_ = false;
 
   // Whether specifics should be included when converting protocol events to a
