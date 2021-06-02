@@ -35,7 +35,11 @@ bool WebUIBubbleManager::ShowBubble() {
     bubble_view_->SetAnchorRect(*anchor_rect_);
   }
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
-  if (!disable_close_bubble_helper_) {
+  // Some bubbles can be triggered when there is no active browser (e.g. emoji
+  // picker in Chrome OS launcher). In that case, the close bubble helper isn't
+  // needed.
+  if ((!disable_close_bubble_helper_) &&
+      BrowserList::GetInstance()->GetLastActive()) {
     close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
         bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
   }
