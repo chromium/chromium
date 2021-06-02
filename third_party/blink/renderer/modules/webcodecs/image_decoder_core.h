@@ -56,6 +56,7 @@ class MODULES_EXPORT ImageDecoderCore {
     kNoImage,      // No new images or no image could currently be decoded.
     kDecodeError,  // ImageDecoder::Failed() became true.
     kIndexError,   // |frame_index| out of range when |data_complete_| is true.
+    kAborted,      // Decode was aborted by caller.
   };
 
   struct ImageDecodeResult {
@@ -76,9 +77,11 @@ class MODULES_EXPORT ImageDecoderCore {
   };
 
   // Decodes the frame at |frame_index|, returning partial frames relative to
-  // the last Decode() request if |complete_frames_only| is false.
+  // the last Decode() request if |complete_frames_only| is false. |abort_flag|
+  // may be used to cancel decoding; it must outlive this Decode() call.
   std::unique_ptr<ImageDecodeResult> Decode(uint32_t frame_index,
-                                            bool complete_frames_only);
+                                            bool complete_frames_only,
+                                            const base::AtomicFlag* abort_flag);
 
   // Calls ImageDecoder::SetData() after appending |data| to |stream_buffer_|.
   // May not be called after |data_complete| becomes true.

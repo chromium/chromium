@@ -126,6 +126,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   int pending_metadata_requests_ = 0;
 
   // The workhorse which actually does the decoding. Bound to another sequence.
+  scoped_refptr<base::SequencedTaskRunner> decode_task_runner_;
   std::unique_ptr<WTF::SequenceBound<ImageDecoderCore>> decoder_;
 
   // List of tracks in this image. Filled in during OnMetadata().
@@ -139,6 +140,7 @@ class MODULES_EXPORT ImageDecoderExternal final
     DecodeRequest(ScriptPromiseResolver* resolver,
                   uint32_t frame_index,
                   bool complete_frames_only);
+    ~DecodeRequest();
     void Trace(Visitor*) const;
     bool IsFinal() const;
 
@@ -148,6 +150,7 @@ class MODULES_EXPORT ImageDecoderExternal final
     bool pending = false;
     absl::optional<size_t> bytes_read_index;
     Member<ImageDecodeResult> result;
+    std::unique_ptr<base::AtomicFlag> abort_flag;
 
     absl::optional<String> range_error_message;
     Member<DOMException> exception;

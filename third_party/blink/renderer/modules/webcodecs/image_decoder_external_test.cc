@@ -293,6 +293,38 @@ TEST_F(ImageDecoderTest, DecodeCompleted) {
   }
 }
 
+TEST_F(ImageDecoderTest, DecodeAborted) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+
+  // Use an expensive-to-decode image to try and ensure work exists to abort.
+  auto* decoder = CreateDecoder(
+      &v8_scope,
+      "images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif",
+      kImageType);
+
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  // Setup a scenario where there should be work to abort. Since blink tests use
+  // real threads with the base::TaskEnvironment, we can't actually be sure that
+  // work hasn't completed by the time reset() is called.
+  for (int i = 0; i < 10; ++i)
+    decoder->decode();
+  decoder->reset();
+
+  // There's no way to verify work was aborted, so just ensure nothing explodes.
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(ImageDecoderTest, DecoderReset) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";

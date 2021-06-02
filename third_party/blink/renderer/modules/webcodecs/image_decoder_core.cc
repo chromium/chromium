@@ -135,11 +135,17 @@ ImageDecoderCore::ImageMetadata ImageDecoderCore::DecodeMetadata() {
 
 std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
     uint32_t frame_index,
-    bool complete_frames_only) {
+    bool complete_frames_only,
+    const base::AtomicFlag* abort_flag) {
   DCHECK(decoder_);
 
   auto result = std::make_unique<ImageDecodeResult>();
   result->frame_index = frame_index;
+
+  if (abort_flag->IsSet()) {
+    result->status = Status::kAborted;
+    return result;
+  }
 
   if (decoder_->Failed()) {
     result->status = Status::kDecodeError;
