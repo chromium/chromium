@@ -1266,14 +1266,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 class ManifestUpdateManagerCaptureLinksBrowserTest
     : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerCaptureLinksBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableLinkCapturing);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableLinkCapturing};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerCaptureLinksBrowserTest,
@@ -1455,14 +1449,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
 // available in unit tests at ManifestUpdateTaskTest.
 class ManifestUpdateManagerBrowserTestWithFileHandling
     : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerBrowserTestWithFileHandling() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFileHandlingAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -1867,14 +1855,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
 class ManifestUpdateManagerBrowserTestWithShortcutsMenu
     : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerBrowserTestWithShortcutsMenu() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenu);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsAppIconShortcutsMenu};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
@@ -2222,14 +2204,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
 
 class ManifestUpdateManagerIconUpdatingBrowserTest
     : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerIconUpdatingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestIconUpdating);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAppManifestIconUpdating};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
@@ -2366,11 +2342,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
 class ManifestUpdateManagerBrowserTest_UrlHandlers
     : public ManifestUpdateManagerBrowserTest {
  public:
-  ManifestUpdateManagerBrowserTest_UrlHandlers() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableUrlHandlers);
-  }
-
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   void SetUpUrlHandlerManager() {
@@ -2400,8 +2371,8 @@ class ManifestUpdateManagerBrowserTest_UrlHandlers
   }
 #endif
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableUrlHandlers};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
@@ -2576,14 +2547,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
 
 class ManifestUpdateManagerBrowserTestWithProtocolHandling
     : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerBrowserTestWithProtocolHandling() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableProtocolHandlers);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableProtocolHandlers};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
