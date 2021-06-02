@@ -19,7 +19,7 @@ import path_util
 # The top level comment templates that will be formatted and added to each split
 # histograms xml.
 FIRST_TOP_LEVEL_COMMENT_TEMPLATE = """
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2021 The Chromium Authors. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 """
@@ -30,10 +30,9 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please send CLs to individuals in the OWNERS file in the same directory as this
+xml file. If no OWNERS file exists, then send the CL to
+chromium-metrics-reviews@google.com.
 """
 # Number of times that splitting of histograms will be carried out.
 TARGET_DEPTH = 1
