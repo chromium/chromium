@@ -76,13 +76,18 @@ void ImeService::ConnectToImeEngine(
     ConnectToImeEngineCallback callback) {
   if (base::FeatureList::IsEnabled(
           chromeos::features::kSystemLatinPhysicalTyping)) {
-    input_engine_ = std::make_unique<SystemEngine>(this);
+    auto system_engine = std::make_unique<SystemEngine>(this);
+    bool bound = system_engine->BindRequest(
+        ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
+    input_engine_ = std::move(system_engine);
+    std::move(callback).Run(bound);
   } else {
-    input_engine_ = std::make_unique<DecoderEngine>(this);
+    auto decoder_engine = std::make_unique<DecoderEngine>(this);
+    bool bound = decoder_engine->BindRequest(
+        ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
+    input_engine_ = std::move(decoder_engine);
+    std::move(callback).Run(bound);
   }
-  bool bound = input_engine_->BindRequest(
-      ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
-  std::move(callback).Run(bound);
 }
 
 void ImeService::ConnectToInputMethod(
@@ -90,9 +95,10 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputChannel> to_engine,
     mojo::PendingRemote<mojom::InputChannel> from_engine,
     ConnectToInputMethodCallback callback) {
-  input_engine_ = std::make_unique<InputEngine>();
-  bool bound = input_engine_->BindRequest(ime_spec, std::move(to_engine),
-                                          std::move(from_engine), /*extra=*/{});
+  auto rule_based_engine = std::make_unique<InputEngine>();
+  bool bound = rule_based_engine->BindRequest(
+      ime_spec, std::move(to_engine), std::move(from_engine), /*extra=*/{});
+  input_engine_ = std::move(rule_based_engine);
   std::move(callback).Run(bound);
 }
 

@@ -93,21 +93,12 @@ bool DecoderEngine::BindRequest(
     }
     return false;
   }
-
-  // Otherwise, try the rule-based engine.
-  return InputEngine::BindRequest(ime_spec, std::move(receiver),
-                                  std::move(remote), extra);
+  return false;
 }
 
 bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  // M17N request will always fallback to built-in rulebased IMEs.
-  if (InputEngine::IsImeSupportedByRulebased(ime_spec)) {
-    return false;
-  }
-  if (decoder_entry_points_) {
-    return decoder_entry_points_->supports(ime_spec.c_str());
-  }
-  return false;
+  return decoder_entry_points_ &&
+         decoder_entry_points_->supports(ime_spec.c_str());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,

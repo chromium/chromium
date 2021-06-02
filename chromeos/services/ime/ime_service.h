@@ -80,7 +80,7 @@ class ImeService : public mojom::ImeService,
 
   // For the duration of this service lifetime, there should be only one
   // input engine instance.
-  std::unique_ptr<InputEngine> input_engine_;
+  std::unique_ptr<mojom::InputChannel> input_engine_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;

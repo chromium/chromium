@@ -29,10 +29,10 @@ class InputEngine : public mojom::InputChannel {
 
   // Binds the mojom::InputChannel interface to this object and returns true if
   // the given ime_spec is supported by the engine.
-  virtual bool BindRequest(const std::string& ime_spec,
-                           mojo::PendingReceiver<mojom::InputChannel> receiver,
-                           mojo::PendingRemote<mojom::InputChannel> remote,
-                           const std::vector<uint8_t>& extra);
+  bool BindRequest(const std::string& ime_spec,
+                   mojo::PendingReceiver<mojom::InputChannel> receiver,
+                   mojo::PendingRemote<mojom::InputChannel> remote,
+                   const std::vector<uint8_t>& extra);
 
   // mojom::InputChannel overrides:
   void ProcessMessage(const std::vector<uint8_t>& message,
