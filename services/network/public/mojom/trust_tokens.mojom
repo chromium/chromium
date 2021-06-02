@@ -15,6 +15,9 @@ import "mojo/public/mojom/base/time.mojom";
 // model; they just use different cryptosystems to generate tokens' signatures.
 // TODO(crbug/1133969): Schema versioning needs to be implemented for future
 // versions that need to clear the database on schema changes.
+//
+// NOTE: When updating this enum, you probably also need to update
+// kTrustTokensMajorVersion in trust_token_parameterization.h.
 enum TrustTokenProtocolVersion {
   kTrustTokenV3Pmb,
   kTrustTokenV3Voprf,

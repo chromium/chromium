@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
+#include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -472,6 +473,10 @@ void TrustTokenRequestSigningHelper::Begin(
     return;
   }
 
+  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
+                                       kTrustTokensMajorVersion,
+                                       /*overwrite=*/true);
+
   LogOutcome(net_log_, "Success");
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }
@@ -523,7 +528,7 @@ absl::optional<std::string> TrustTokenRequestSigningHelper::
           net::structured_headers::Item(
               signer_->GetAlgorithmIdentifier(),
               net::structured_headers::Item::ItemType::kStringType),
-              {});
+          {});
 
   std::vector<net::structured_headers::ParameterizedItem> keys_and_signatures;
   for (const auto& kv : signatures_per_issuer) {

@@ -155,6 +155,7 @@ MATCHER(
       AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord,
                     StrEq("")),
+          Not(HasHeader(network::kTrustTokensSecTrustTokenVersionHeader)),
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           Not(HasHeader(
               network::
@@ -250,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -312,6 +314,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -349,6 +352,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -436,6 +440,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));

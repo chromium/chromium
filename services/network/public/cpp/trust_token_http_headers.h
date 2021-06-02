@@ -28,6 +28,13 @@ constexpr char kTrustTokensSecTrustTokenHeader[] = "Sec-Trust-Token";
 
 // As a request header, provides the version of Trust Token being used in the
 // Sec-Trust-Token header.
+//
+// Alongside signed requests, provides the "major" Trust Tokens protocol
+// version, for instance "TrustTokenV3" for the protocol versions
+// "TrustTokenV3VOPRF" and "TrustTokenV3PMB"). This is a tentative addition to
+// make it easy to adapt to a breaking change in the signature payload's format
+// without having to feature-detect implicitly by trying detect structural
+// chracteristics of the old and new formats: see crbug.com/1209728.
 constexpr char kTrustTokensSecTrustTokenVersionHeader[] =
     "Sec-Trust-Token-Version";
 

@@ -67,6 +67,16 @@ constexpr base::Time kTrustTokenDefaultRedemptionRecordExpiry =
 // Returns the maximum number of keys supported by a protocol version.
 size_t TrustTokenMaxKeysForVersion(mojom::TrustTokenProtocolVersion version);
 
+// This is a representation of the current "major" version, a notion which is
+// not totally well-defined but roughly corresponds to each substantial
+// collection of backwards-incompatible functional changes. We send it along
+// with signed requests in the Sec-Trust-Token-Version header, because the
+// "minor" version (the specifics of the underlying issue and redemption crypto)
+// deso not affect signed request processing. As of writing in June 2021, it's
+// not for sure that the "major" version will stay around as a concept for the
+// long haul.
+constexpr char kTrustTokensMajorVersion[] = "TrustTokenV3";
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_PARAMETERIZATION_H_
