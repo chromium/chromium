@@ -959,11 +959,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "direct-manipulation-stylus",
-    "owners": [ "lanwei", "input-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb" ],
     "expiry_milestone": -1

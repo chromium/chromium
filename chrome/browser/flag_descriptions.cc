@@ -4956,10 +4956,6 @@ const char kEnableOopPrintDriversDescription[] =
     "Enables printing interactions with the operating system to be performed "
     "out-of-process.";
 
-const char kDirectManipulationStylusName[] = "Direct Manipulation Stylus";
-const char kDirectManipulationStylusDescription[] =
-    "If enabled, Chrome will scroll web pages on stylus drag.";
-
 const char kWebuiFeedbackName[] = "WebUI Feedback";
 const char kWebuiFeedbackDescription[] =
     "If enabled, Chrome will show the Feedback WebUI, as opposed to Chrome "

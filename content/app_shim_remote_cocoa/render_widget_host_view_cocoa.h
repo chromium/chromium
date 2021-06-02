@@ -192,9 +192,6 @@ struct DidOverscrollParams;
   // orientation.
   content::MouseWheelRailsFilterMac _mouseWheelFilter;
 
-  // Whether the direct manipulation feature is enabled.
-  bool _direct_manipulation_enabled;
-
   // Whether the pen's tip is in contact with the stylus digital tablet.
   bool _has_pen_contact;
 

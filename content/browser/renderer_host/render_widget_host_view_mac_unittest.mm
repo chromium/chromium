@@ -482,8 +482,6 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
     RenderViewHostImplTestHarness::SetUp();
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kDirectManipulationStylus);
 
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_host_ =
@@ -1090,78 +1088,6 @@ TEST_F(RenderWidgetHostViewMacTest, PointerEventWithMouseType) {
   ASSERT_EQ("MouseMove", GetMessageNames(events));
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,
             GetPointerType(events));
-}
-
-TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenTypeSendAsTouch) {
-  // Send a NSEvent of NSTabletProximity type which has a device type of pen.
-  NSEvent* event = MockTabletEventWithParams(kCGEventTabletProximity, true,
-                                             NSPenPointingDevice);
-  [rwhv_mac_->GetInProcessNSView() tabletEvent:event];
-  // Flush and clear other messages (e.g. begin frames) the RWHVMac also sends.
-  base::RunLoop().RunUntilIdle();
-  static_cast<RenderWidgetHostImpl*>(rwhv_mac_->GetRenderWidgetHost())
-      ->input_router()
-      ->ForceSetTouchActionAuto();
-
-  event = MockMouseEventWithParams(
-      kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
-      kCGEventMouseSubtypeTabletPoint, false, true);
-  [rwhv_mac_->GetInProcessNSView() mouseEvent:event];
-  base::RunLoop().RunUntilIdle();
-  MockWidgetInputHandler::MessageVector events =
-      host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("TouchStart", GetMessageNames(events));
-  EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
-            GetPointerType(events));
-  events.clear();
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-
-  event = MockMouseEventWithParams(
-      kCGEventLeftMouseDragged, {16, 29}, kCGMouseButtonLeft,
-      kCGEventMouseSubtypeTabletPoint, false, true);
-  [rwhv_mac_->GetInProcessNSView() mouseEvent:event];
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("TouchMove", GetMessageNames(events));
-  EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
-            GetPointerType(events));
-
-  events.clear();
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-
-  event = MockMouseEventWithParams(kCGEventLeftMouseUp, {16, 29},
-                                   kCGMouseButtonLeft,
-                                   kCGEventMouseSubtypeTabletPoint, false);
-  [rwhv_mac_->GetInProcessNSView() mouseEvent:event];
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("TouchEnd", GetMessageNames(events));
-  EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
-            static_cast<const blink::WebTouchEvent&>(
-                events[0]->ToEvent()->Event()->Event())
-                .touches[0]
-                .pointer_type);
-
-  events.clear();
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("GestureScrollEnd", GetMessageNames(events));
-
-  event =
-      MockMouseEventWithParams(kCGEventLeftMouseDown, {6, 9},
-                               kCGMouseButtonLeft, kCGEventMouseSubtypeDefault);
-  [rwhv_mac_->GetInProcessNSView() mouseEvent:event];
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
-  ASSERT_EQ("MouseDown", GetMessageNames(events));
-  EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,
-            GetPointerType(events));
-
-  events.clear();
-  base::RunLoop().RunUntilIdle();
-  events = host_->GetAndResetDispatchedMessages();
 }
 
 TEST_F(RenderWidgetHostViewMacTest, SendMouseMoveOnShowingContextMenu) {

@@ -2601,8 +2601,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 // TODO(dtapuska): Enable barrel button selection drag support on Android.
 // crbug.com/758042
 #if defined(OS_WIN)
-  prefs.barrel_button_for_drag_enabled =
-      base::FeatureList::IsEnabled(features::kDirectManipulationStylus);
+  prefs.barrel_button_for_drag_enabled = true;
 #endif  // defined(OS_WIN)
 
   prefs.enable_scroll_animator =

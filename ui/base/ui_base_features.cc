@@ -180,20 +180,6 @@ bool IsImprovedKeyboardShortcutsEnabled() {
 }
 #endif  // defined(OS_CHROMEOS)
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-// Enables stylus appearing as touch when in contact with digitizer.
-const base::Feature kDirectManipulationStylus = {
-    "DirectManipulationStylus",
-#if defined(OS_WIN)
-    base::FEATURE_ENABLED_BY_DEFAULT
-#else
-    base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
-
 // Enables forced colors mode for web content.
 const base::Feature kForcedColors{"ForcedColors",
                                   base::FEATURE_ENABLED_BY_DEFAULT};

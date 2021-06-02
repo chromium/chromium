@@ -4582,12 +4582,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-    {"direct-manipulation-stylus",
-     flag_descriptions::kDirectManipulationStylusName,
-     flag_descriptions::kDirectManipulationStylusDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kDirectManipulationStylus)},
-
     {"webui-feedback", flag_descriptions::kWebuiFeedbackName,
      flag_descriptions::kWebuiFeedbackDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUIFeedback)},
