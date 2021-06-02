@@ -85,6 +85,9 @@ public class TopToolbarOverlayMediator {
         mModel = model;
         mIsVisibilityManuallyControlled = manualVisibilityControl;
 
+        mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
+        updateVisibility();
+
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
             public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {

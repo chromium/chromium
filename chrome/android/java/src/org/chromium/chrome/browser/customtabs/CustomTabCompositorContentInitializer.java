@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -79,7 +78,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
                     if (mCompositorViewHolder.get() == null) return null;
                     return mCompositorViewHolder.get().getLayerTitleCache();
                 },
-                new OneshotSupplierImpl<>(), () -> mTopUiThemeColorProvider);
+                () -> mTopUiThemeColorProvider);
         // clang-format on
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,

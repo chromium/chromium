@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -23,11 +21,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
@@ -59,9 +55,6 @@ public class SceneOverlayTest {
     private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
 
     @Mock
-    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
-
-    @Mock
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private LayoutManagerImpl mLayoutManager;
@@ -73,11 +66,9 @@ public class SceneOverlayTest {
         when(mLayoutManagerHost.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
-        doNothing().when(mLayoutStateProviderOneshotSupplier).set(any());
 
         mLayoutManager = new LayoutManagerImpl(mLayoutManagerHost, mContainerView,
-                mTabContentManagerSupplier, null, mLayoutStateProviderOneshotSupplier,
-                () -> mTopUiThemeColorProvider);
+                mTabContentManagerSupplier, null, () -> mTopUiThemeColorProvider);
     }
 
     @Test

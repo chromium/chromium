@@ -48,6 +48,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration tests of the {@link StartSurface} for cases where there are no tabs. See {@link
@@ -112,7 +113,7 @@ public class StartSurfaceNoTabsTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    public void testShow_SingleAsHomepage_NoTabs() {
+    public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
         // clang-format on
         CriteriaHelper.pollUiThread(
                 ()
