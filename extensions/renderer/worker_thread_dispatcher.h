@@ -107,6 +107,16 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                 const GURL& scope,
                                 const std::string& event_name);
 
+  // Posts mojom::EventRouter::AddFilteredListenerForServiceWorker to the IO
+  // thread to call it with GetEventRouterOnIO().
+  void SendAddEventFilteredListener(const std::string& extension_id,
+                                    const GURL& scope,
+                                    const std::string& event_name,
+                                    int64_t service_worker_version_id,
+                                    int worker_thread_id,
+                                    base::Value filter,
+                                    bool add_lazy_listener);
+
   // Posts mojom::EventRouter::RemoveListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
   void SendRemoveEventListener(const std::string& extension_id,

@@ -360,18 +360,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 
 // Messages sent from the renderer to the browser:
 
-// Notify the browser that the given extension added a listener to instances of
-// the named event that satisfy the filter.
-// If |sw_identifier| is specified, it implies that the listener is for a
-// service worker, and the param is used to identify the worker.
-IPC_MESSAGE_CONTROL5(
-    ExtensionHostMsg_AddFilteredListener,
-    std::string /* extension_id */,
-    std::string /* name */,
-    absl::optional<ServiceWorkerIdentifier> /* sw_identifier */,
-    base::DictionaryValue /* filter */,
-    bool /* lazy */)
-
 // Notify the browser that the given extension is no longer interested in
 // instances of the named event that satisfy the filter.
 // If |sw_identifier| is specified, it implies that the listener is for a

@@ -161,6 +161,19 @@ class EventRouter : public KeyedService,
                                        const GURL& worker_scope_url,
                                        const std::string& name) override;
 
+  void AddFilteredListenerForMainThread(const std::string& extension_id,
+                                        const std::string& name,
+                                        base::Value filter,
+                                        bool add_lazy_listener) override;
+
+  void AddFilteredListenerForServiceWorker(const std::string& extension_id,
+                                           const GURL& worker_scope_url,
+                                           const std::string& name,
+                                           int64_t service_worker_version_id,
+                                           int32_t worker_thread_id,
+                                           base::Value filter,
+                                           bool add_lazy_listener) override;
+
   void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
                                    const std::string& name) override;
 

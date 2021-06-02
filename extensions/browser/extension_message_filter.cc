@@ -213,7 +213,6 @@ void ExtensionMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     BrowserThread::ID* thread) {
   switch (message.type()) {
-    case ExtensionHostMsg_AddFilteredListener::ID:
     case ExtensionHostMsg_RemoveFilteredListener::ID:
     case ExtensionHostMsg_WakeEventPage::ID:
     case ExtensionHostMsg_OpenChannelToExtension::ID:
@@ -236,8 +235,6 @@ void ExtensionMessageFilter::OnDestruct() const {
 bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddFilteredListener,
-                        OnExtensionAddFilteredListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveFilteredListener,
                         OnExtensionRemoveFilteredListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_WakeEventPage,
@@ -253,24 +250,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void ExtensionMessageFilter::OnExtensionAddFilteredListener(
-    const std::string& extension_id,
-    const std::string& event_name,
-    absl::optional<ServiceWorkerIdentifier> sw_identifier,
-    const base::DictionaryValue& filter,
-    bool lazy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  GetEventRouter()->AddFilteredEventListener(event_name, process, extension_id,
-                                             sw_identifier, filter, lazy);
 }
 
 void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(

@@ -115,8 +115,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    render_thread_->Send(new ExtensionHostMsg_AddFilteredListener(
-        context->GetExtensionID(), event_name, absl::nullopt, filter, is_lazy));
+    GetEventRouter()->AddFilteredListenerForMainThread(
+        context->GetExtensionID(), event_name, filter.Clone(), is_lazy);
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
@@ -314,12 +314,11 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
-    ServiceWorkerIdentifier sw_identifier;
-    sw_identifier.scope = context->service_worker_scope();
-    sw_identifier.thread_id = content::WorkerThread::GetCurrentId();
-    sw_identifier.version_id = context->service_worker_version_id();
-    dispatcher_->Send(new ExtensionHostMsg_AddFilteredListener(
-        context->GetExtensionID(), event_name, sw_identifier, filter, is_lazy));
+
+    dispatcher_->SendAddEventFilteredListener(
+        context->GetExtensionID(), context->service_worker_scope(), event_name,
+        context->service_worker_version_id(),
+        content::WorkerThread::GetCurrentId(), filter.Clone(), is_lazy);
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
