@@ -85,8 +85,7 @@ TCPSocket::TCPSocket(content::BrowserContext* browser_context,
     : Socket(owner_extension_id),
       browser_context_(browser_context),
       socket_mode_(UNKNOWN),
-      mojo_data_pump_(nullptr),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      mojo_data_pump_(nullptr) {}
 
 TCPSocket::TCPSocket(
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
@@ -100,7 +99,6 @@ TCPSocket::TCPSocket(
       client_socket_(std::move(socket)),
       mojo_data_pump_(std::make_unique<MojoDataPump>(std::move(receive_stream),
                                                      std::move(send_stream))),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
       peer_addr_(remote_addr) {
   is_connected_ = true;
 }
@@ -111,6 +109,7 @@ TCPSocket::~TCPSocket() {
 
 void TCPSocket::Connect(const net::AddressList& address,
                         net::CompletionOnceCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
 
   if (socket_mode_ == SERVER || connect_callback_) {
@@ -127,22 +126,19 @@ void TCPSocket::Connect(const net::AddressList& address,
   socket_mode_ = CLIENT;
   connect_callback_ = std::move(callback);
 
-  // |completion_callback| is called on current thread.
   network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
       completion_callback = base::BindOnce(&TCPSocket::OnConnectComplete,
                                            weak_factory_.GetWeakPtr());
 
-  // |completion_callback_ui| is called on the UI thread.
-  network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
-      completion_callback_ui =
-          base::BindOnce(&TCPSocket::OnConnectCompleteOnUIThread, task_runner_,
-                         std::move(completion_callback));
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&TCPSocket::ConnectOnUIThread,
-                                storage_partition_, browser_context_, address,
-                                client_socket_.BindNewPipeAndPassReceiver(),
-                                std::move(completion_callback_ui)));
+  if (!storage_partition_) {
+    storage_partition_ = browser_context_->GetDefaultStoragePartition();
+  }
+  storage_partition_->GetNetworkContext()->CreateTCPConnectedSocket(
+      absl::nullopt, address, /*options=*/nullptr,
+      net::MutableNetworkTrafficAnnotationTag(
+          Socket::GetNetworkTrafficAnnotationTag()),
+      client_socket_.BindNewPipeAndPassReceiver(),
+      /*oberserver=*/mojo::NullRemote(), std::move(completion_callback));
 }
 
 void TCPSocket::Disconnect(bool socket_destroying) {
@@ -231,6 +227,7 @@ void TCPSocket::Listen(const std::string& address,
                        uint16_t port,
                        int backlog,
                        ListenCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!server_socket_);
   DCHECK(!client_socket_);
   DCHECK(!listen_callback_);
@@ -256,18 +253,15 @@ void TCPSocket::Listen(const std::string& address,
       completion_callback = base::BindOnce(&TCPSocket::OnListenComplete,
                                            weak_factory_.GetWeakPtr());
 
-  // |completion_callback_ui| is called on the UI thread.
-  network::mojom::NetworkContext::CreateTCPServerSocketCallback
-      completion_callback_ui =
-          base::BindOnce(&TCPSocket::OnListenCompleteOnUIThread, task_runner_,
-                         std::move(completion_callback));
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TCPSocket::ListenOnUIThread, storage_partition_,
-                     browser_context_, ip_end_point, backlog,
-                     server_socket_.BindNewPipeAndPassReceiver(),
-                     std::move(completion_callback_ui)));
+  if (!storage_partition_) {
+    storage_partition_ = browser_context_->GetDefaultStoragePartition();
+  }
+  storage_partition_->GetNetworkContext()->CreateTCPServerSocket(
+      ip_end_point, backlog,
+      net::MutableNetworkTrafficAnnotationTag(
+          Socket::GetNetworkTrafficAnnotationTag()),
+      server_socket_.BindNewPipeAndPassReceiver(),
+      std::move(completion_callback));
 }
 
 void TCPSocket::Accept(AcceptCompletionCallback callback) {
@@ -325,53 +319,15 @@ int TCPSocket::WriteImpl(net::IOBuffer* io_buffer,
   return net::ERR_IO_PENDING;
 }
 
-// static
-void TCPSocket::ConnectOnUIThread(
-    content::StoragePartition* storage_partition,
-    content::BrowserContext* browser_context,
-    const net::AddressList& remote_addr_list,
-    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-    network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
-        completion_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!storage_partition) {
-    storage_partition = browser_context->GetDefaultStoragePartition();
-  }
-  storage_partition->GetNetworkContext()->CreateTCPConnectedSocket(
-      absl::nullopt, remote_addr_list, nullptr /* options */,
-      net::MutableNetworkTrafficAnnotationTag(
-          Socket::GetNetworkTrafficAnnotationTag()),
-      std::move(receiver), mojo::NullRemote() /* observer */,
-      std::move(completion_callback));
-}
-
-// static
-void TCPSocket::OnConnectCompleteOnUIThread(
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-    network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
-    int result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
-    mojo::ScopedDataPipeConsumerHandle receive_stream,
-    mojo::ScopedDataPipeProducerHandle send_stream) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  original_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), result, local_addr, peer_addr,
-                     std::move(receive_stream), std::move(send_stream)));
-}
-
 void TCPSocket::OnConnectComplete(
     int result,
     const absl::optional<net::IPEndPoint>& local_addr,
     const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_connected_);
   DCHECK(connect_callback_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (result == net::OK) {
     is_connected_ = true;
@@ -383,42 +339,10 @@ void TCPSocket::OnConnectComplete(
   std::move(connect_callback_).Run(result);
 }
 
-// static
-void TCPSocket::ListenOnUIThread(
-    content::StoragePartition* storage_partition,
-    content::BrowserContext* browser_context,
-    const net::IPEndPoint& local_addr,
-    int backlog,
-    mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
-    network::mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!storage_partition) {
-    storage_partition = browser_context->GetDefaultStoragePartition();
-  }
-  storage_partition->GetNetworkContext()->CreateTCPServerSocket(
-      local_addr, backlog,
-      net::MutableNetworkTrafficAnnotationTag(
-          Socket::GetNetworkTrafficAnnotationTag()),
-      std::move(receiver), std::move(callback));
-}
-
-// static
-void TCPSocket::OnListenCompleteOnUIThread(
-    const scoped_refptr<base::SequencedTaskRunner>& original_task_runner,
-    network::mojom::NetworkContext::CreateTCPServerSocketCallback callback,
-    int result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result, local_addr));
-}
-
 void TCPSocket::OnListenComplete(
     int result,
     const absl::optional<net::IPEndPoint>& local_addr) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(listen_callback_);
 
   if (result != net::OK) {
