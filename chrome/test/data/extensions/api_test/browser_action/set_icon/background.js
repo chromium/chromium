@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function getImageData() {
-  var canvas = document.createElement("canvas");
+  var canvas = new OffscreenCanvas(10, 100);
   var ctx = canvas.getContext("2d");
 
   ctx.fillStyle = "green";
