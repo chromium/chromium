@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_third_party_resources.h"
@@ -25,6 +27,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -78,6 +81,27 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
                                   ThemeProperties::COLOR_NTP_TEXT))
                                   ? "dark"
                                   : "");
+  source->AddBoolean(
+      "handleMostVisitedNavigationExplicitly",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
+
+  // Needed by <cr-most-visited> but not used in
+  // chrome://new-tab-page-third-party/.
+  source->AddString("addLinkTitle", "");
+  source->AddString("editLinkTitle", "");
+  source->AddString("invalidUrl", "");
+  source->AddString("linkAddedMsg", "");
+  source->AddString("linkCancel", "");
+  source->AddString("linkCantCreate", "");
+  source->AddString("linkCantEdit", "");
+  source->AddString("linkDone", "");
+  source->AddString("linkEditedMsg", "");
+  source->AddString("moreActions", "");
+  source->AddString("nameField", "");
+  source->AddString("restoreDefaultLinks", "");
+  source->AddString("shortcutAlreadyExists", "");
+  source->AddString("urlField", "");
 
   webui::SetupWebUIDataSource(
       source,
@@ -92,6 +116,7 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
 NewTabPageThirdPartyUI::NewTabPageThirdPartyUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false),
       page_factory_receiver_(this),
+      most_visited_page_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
       navigation_start_time_(base::Time::Now()) {
@@ -125,6 +150,16 @@ void NewTabPageThirdPartyUI::BindInterface(
   page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void NewTabPageThirdPartyUI::BindInterface(
+    mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandlerFactory>
+        pending_receiver) {
+  if (most_visited_page_factory_receiver_.is_bound()) {
+    most_visited_page_factory_receiver_.reset();
+  }
+
+  most_visited_page_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void NewTabPageThirdPartyUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page_third_party::mojom::Page> pending_page,
     mojo::PendingReceiver<new_tab_page_third_party::mojom::PageHandler>
@@ -133,5 +168,17 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
 
   page_handler_ = std::make_unique<NewTabPageThirdPartyHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents_, navigation_start_time_);
+      web_contents_);
+}
+
+void NewTabPageThirdPartyUI::CreatePageHandler(
+    mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
+    mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
+
+  most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
+      std::move(pending_page_handler), std::move(pending_page), profile_,
+      web_contents_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+      navigation_start_time_);
 }

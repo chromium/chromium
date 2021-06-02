@@ -7,8 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "new_tab_page_third_party.mojom" ]
   public_deps = [
-    "//mojo/public/mojom/base",
     "//skia/public/mojom",
-    "//url/mojom:url_mojom_gurl",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
   ]
 }

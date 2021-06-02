@@ -18,7 +18,7 @@ js_type_check("closure_compile") {
 js_library("new_tab_page_third_party") {
   deps = [
     ":browser_proxy",
-    ":most_visited",
+    "//ui/webui/resources/cr_components/most_visited",
   ]
 }
 
@@ -30,32 +30,9 @@ js_library("browser_proxy") {
   ]
 }
 
-js_library("most_visited") {
-  deps = [
-    ":browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [ "most_visited.js" ]
-}
-
-group("web_components") {
-  public_deps = [ ":web_components_local" ]
-}
-
 grd_prefix = "new_tab_page_third_party"
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
@@ -65,14 +42,6 @@ preprocess_if_expr("preprocess") {
     "browser_proxy.js",
     "new_tab_page_third_party.js",
   ]
-}
-
-preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [ "most_visited.js" ]
 }
 
 generate_grd("build_new_tab_page_third_party_mojo_grdp") {
@@ -95,12 +64,8 @@ generate_grd("build_grd") {
   deps = [
     ":build_new_tab_page_third_party_mojo_grdp",
     ":preprocess",
-    ":preprocess_gen",
   ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
 }
 
 grit("resources") {

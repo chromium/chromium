@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1179821): Migrate to JS module Mojo bindings.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+
+import 'chrome://resources/cr_components/most_visited/most_visited.mojom-lite.js';
 
 import './new_tab_page_third_party.mojom-lite.js';
 
@@ -24,19 +27,6 @@ export class BrowserProxy {
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
-  }
-
-  /**
-   * @param {string} query
-   * @return {!MediaQueryList}
-   */
-  matchMedia(query) {
-    return window.matchMedia(query);
-  }
-
-  /** @return {number} */
-  now() {
-    return Date.now();
   }
 }
 
