@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_root.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if PA_ALLOW_PCSCAN
+#if defined(PA_ALLOW_PCSCAN)
 
 namespace base {
 namespace internal {
@@ -608,5 +608,5 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // PA_ALLOW_PCSCAN
+#endif  // defined(PA_ALLOW_PCSCAN)
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

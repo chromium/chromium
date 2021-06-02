@@ -494,7 +494,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_DCHECK(!allow_aligned_alloc || !allow_ref_count);
 #endif
 
-#if PA_EXTRAS_REQUIRED
+#if defined(PA_EXTRAS_REQUIRED)
     extras_size = 0;
     extras_offset = 0;
 
@@ -510,7 +510,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       extras_size += internal::kPartitionRefCountSizeAdjustment;
       extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
-#endif
+#endif  //  defined(PA_EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no
     // pre-allocation extras when AlignedAlloc is allowed. Post-allocation
@@ -518,13 +518,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_CHECK(!allow_aligned_alloc || !extras_offset);
 
     quarantine_mode =
-#if PA_ALLOW_PCSCAN
+#if defined(PA_ALLOW_PCSCAN)
         (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
              : QuarantineMode::kDisabledByDefault);
 #else
         QuarantineMode::kAlwaysDisabled;
-#endif
+#endif  // defined(PA_ALLOW_PCSCAN)
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.

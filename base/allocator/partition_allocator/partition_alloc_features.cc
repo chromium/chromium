@@ -9,12 +9,12 @@
 namespace base {
 namespace features {
 
-#if PA_ALLOW_PCSCAN
+#if defined(PA_ALLOW_PCSCAN)
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
 const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
                                     FEATURE_DISABLED_BY_DEFAULT};
-#endif  // PA_ALLOW_PCSCAN
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // If enabled, PCScan is turned on only for the browser's malloc partition.

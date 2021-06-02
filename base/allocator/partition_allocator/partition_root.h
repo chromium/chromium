@@ -191,14 +191,14 @@ struct BASE_EXPORT PartitionRoot {
   static constexpr bool never_used_lazy_commit = true;
 #endif
 
-#if !PA_EXTRAS_REQUIRED
+#if !defined(PA_EXTRAS_REQUIRED)
   // Teach the compiler that code can be optimized in builds that use no extras.
   static constexpr uint32_t extras_size = 0;
   static constexpr uint32_t extras_offset = 0;
 #else
   uint32_t extras_size;
   uint32_t extras_offset;
-#endif
+#endif  // !defined(PA_EXTRAS_REQUIRED)
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
@@ -1094,7 +1094,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: ref-count and cookies can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
-#if EXPENSIVE_DCHECKS_ARE_ON() || PA_ZERO_RANDOMLY_ON_FREE
+#if EXPENSIVE_DCHECKS_ARE_ON() || defined(PA_ZERO_RANDOMLY_ON_FREE)
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
 #if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON()
@@ -1140,7 +1140,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
              - sizeof(internal::PartitionRefCount)
 #endif
   );
-#elif PA_ZERO_RANDOMLY_ON_FREE
+#elif defined(PA_ZERO_RANDOMLY_ON_FREE)
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
@@ -1152,7 +1152,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
     );
   }
-#endif
+#endif  // defined(PA_ZERO_RANDOMLY_ON_FREE)
 
   RawFreeWithThreadCache(slot_start, slot_span);
 }

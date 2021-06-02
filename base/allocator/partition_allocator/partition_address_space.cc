@@ -71,7 +71,7 @@ void PartitionAddressSpace::Init() {
   PA_DCHECK(IsInBRPPool(reinterpret_cast<void*>(current - 1)));
   PA_DCHECK(!IsInBRPPool(reinterpret_cast<void*>(current)));
 
-#if PA_ALLOW_PCSCAN
+#if defined(PA_ALLOW_PCSCAN)
   // Reserve memory for PCScan quarantine card table.
   void* requested_address = reinterpret_cast<void*>(brp_pool_base_address_);
   char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
@@ -80,7 +80,7 @@ void PartitionAddressSpace::Init() {
       << "QuarantineCardTable is required to be allocated in the beginning of "
          "the BRPPool";
   SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
-#endif
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   // Allocate the BRP pool offset table in the BRP pool.
