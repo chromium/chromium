@@ -339,4 +339,144 @@ IN_PROC_BROWSER_TEST_F(
           blink::scheduler::WebSchedulerTrackedFeature::kIsolatedWorldScript));
 }
 
+// Tests sending a message to all frames does not send it to back-forward
+// cached frames.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       MessageSentToAllFramesDoesNotSendToBackForwardCache) {
+  const Extension* extension = extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("background_page"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // Ensure that `rfh_a` is in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  std::u16string expected_title = u"foo";
+  auto title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  constexpr char kScript[] =
+      R"HTML(
+      chrome.tabs.executeScript({allFrames: true, code: "document.title='foo'"})
+    )HTML";
+  ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(extension->id(), kScript));
+
+  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+
+  // `rfh_a` should still be in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Expect the original title when going back to A.
+  expected_title = u"Title Of Awesomeness";
+  title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  // Go back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+
+  // `rfh_b` should still be in the cache.
+  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Now go forward to B, and expect that it is what was set before it
+  // went into the back forward cache.
+  expected_title = u"foo";
+  title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  web_contents->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+}
+
+// Tests sending a message to specific frame that is in the back forward cache
+// fails.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       MessageSentToCachedIdFails) {
+  const Extension* extension = extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("background_page"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/iframe_blank.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  ASSERT_EQ(2u, rfh_a->GetFramesInSubtree().size());
+
+  // Cache the iframe's frame tree node id to send it a message later.
+  int iframe_frame_tree_node_id =
+      rfh_a->GetFramesInSubtree()[1]->GetFrameTreeNodeId();
+
+  // 2) Navigate to B.
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Ensure that `rfh_a` is in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  std::u16string expected_title = u"foo";
+  auto title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  constexpr char kScript[] =
+      R"HTML(
+        chrome.tabs.executeScript({frameId: %d,
+                                   code: "document.title='foo'",
+                                   matchAboutBlank: true
+                                  }, (e) => {
+          window.domAutomationController.send(chrome.runtime.lastError ? 'false'
+        : 'true')});
+      )HTML";
+  EXPECT_EQ("false",
+            ExecuteScriptInBackgroundPage(
+                extension->id(),
+                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+  // Go back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Re-execute the script.
+  EXPECT_EQ("true",
+            ExecuteScriptInBackgroundPage(
+                extension->id(),
+                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+}
+
 }  // namespace extensions
