@@ -433,6 +433,9 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
 void RenderFrameDevToolsAgentHost::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  // If we opt for retaning self within the conditional block below, do so
+  // till the end of the function, as we require |this| after the conditional.
+  scoped_refptr<RenderFrameDevToolsAgentHost> protect;
   if (request->frame_tree_node() == frame_tree_node_) {
     navigation_requests_.erase(request);
     if (request->HasCommitted())
@@ -442,7 +445,7 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
       UpdateRawHeadersAccess(frame_tree_node_->current_frame_host());
     }
     // UpdateFrameHost may destruct |this|.
-    scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
+    protect = this;
     UpdateFrameHost(frame_tree_node_->current_frame_host());
 
     if (navigation_requests_.empty()) {
