@@ -18,6 +18,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quic/core/crypto/null_encrypter.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_spdy_client_stream.h"
 #include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
@@ -69,6 +70,8 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                              quic::StreamSendingState state,
                              quic::TransmissionType type,
                              absl::optional<quic::EncryptionLevel> level));
+  MOCK_METHOD2(WriteControlFrame,
+               bool(const quic::QuicFrame&, quic::TransmissionType));
   MOCK_METHOD4(SendRstStream,
                void(quic::QuicStreamId stream_id,
                     quic::QuicRstStreamErrorCode error,
@@ -185,6 +188,9 @@ class QuicChromiumClientStreamTest
     session_.ActivateStream(base::WrapUnique(stream_));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
+    session_.connection()->SetEncrypter(
+        quic::ENCRYPTION_FORWARD_SECURE,
+        std::make_unique<quic::NullEncrypter>(quic::Perspective::IS_CLIENT));
   }
 
   void InitializeHeaders() {
@@ -973,10 +979,6 @@ TEST_P(QuicChromiumClientStreamTest, InvalidStatus) {
                         version_.transport_version, 0),
                     quic::QUIC_BAD_APPLICATION_PAYLOAD));
 
-  EXPECT_CALL(
-      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
-      SendControlFrame(_));
-
   ProcessHeaders(headers);
   EXPECT_FALSE(handle_->IsOpen());
   EXPECT_EQ(quic::QUIC_BAD_APPLICATION_PAYLOAD, handle_->stream_error());
@@ -991,10 +993,6 @@ TEST_P(QuicChromiumClientStreamTest, SwitchingProtocolsResponse) {
       OnStreamReset(quic::test::GetNthClientInitiatedBidirectionalStreamId(
                         version_.transport_version, 0),
                     quic::QUIC_BAD_APPLICATION_PAYLOAD));
-
-  EXPECT_CALL(
-      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
-      SendControlFrame(_));
 
   ProcessHeaders(informational_headers);
   EXPECT_FALSE(handle_->IsOpen());
