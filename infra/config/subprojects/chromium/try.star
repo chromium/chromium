@@ -820,14 +820,6 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
-    name = "lacros-arm-generic-rel",
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-try_.chromium_chromiumos_builder(
     name = "linux-chromeos-compile-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
