@@ -139,15 +139,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
 }
 
 // Test content script injection disallow the back forward cache.
-// TODO(https://crbug.com/1204751): Very flaky on Windows.
-#if defined(OS_WIN)
-#define MAYBE_ScriptDisallowed DISABLED_ScriptDisallowed
-#else
-#define MAYBE_ScriptDisallowed ScriptDisallowed
-#endif
 IN_PROC_BROWSER_TEST_F(
     ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    MAYBE_ScriptDisallowed) {
+    ScriptDisallowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                                 .AppendASCII("content_script")));
 
