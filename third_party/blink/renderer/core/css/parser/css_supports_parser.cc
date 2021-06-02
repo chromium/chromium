@@ -13,16 +13,6 @@ namespace blink {
 
 namespace {
 
-// The result kUnknown must be converted to 'false' if passed to a context
-// which requires a boolean value.
-// TODO(crbug.com/1052274): This is supposed to happen at the top-level,
-// but currently happens on ConsumeGeneralEnclosed's result.
-CSSSupportsParser::Result EvalUnknown(CSSSupportsParser::Result result) {
-  return result == CSSSupportsParser::Result::kUnknown
-             ? CSSSupportsParser::Result::kUnsupported
-             : result;
-}
-
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
 bool IsNextTokenAllowedForAnyValue(CSSParserTokenRange& range) {
   switch (range.Peek().GetType()) {
@@ -168,13 +158,7 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsInParens(
   }
 
   // <general-enclosed>
-  //
-  // TODO(crbug.com/1052274): Support kUnknown beyond this point.
-  //
-  // The result kUnknown is supposed to be evaluated at the top level, but
-  // we have already shipped the behavior of evaluating it here, and Firefox
-  // does the same thing.
-  return EvalUnknown(ConsumeGeneralEnclosed(first_token, stream));
+  return ConsumeGeneralEnclosed(first_token, stream);
 }
 
 // <supports-feature> = <supports-selector-fn> | <supports-decl>
@@ -225,7 +209,7 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeGeneralEnclosed(
       return Result::kParseFailure;
 
     stream.ConsumeWhitespace();
-    return Result::kUnknown;
+    return Result::kUnsupported;
   }
   return Result::kParseFailure;
 }

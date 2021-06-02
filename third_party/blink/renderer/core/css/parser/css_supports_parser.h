@@ -24,13 +24,6 @@ class CORE_EXPORT CSSSupportsParser {
     // don't support the feature.
     kUnsupported,
     kSupported,
-    // kUnknown is a special value used for productions that only match
-    // <general-enclosed> [1]. See note regarding Kleene 3-valued logic [2]
-    // for explanation of how this is different from kUnsupported.
-    //
-    // [1] https://drafts.csswg.org/css-conditional-3/#at-supports
-    // [2] https://drafts.csswg.org/mediaqueries-4/#evaluating
-    kUnknown,
     // This is used to signal parse failure in the @supports syntax itself.
     // This means that for a production like:
     //
@@ -114,8 +107,6 @@ inline CSSSupportsParser::Result operator&(CSSSupportsParser::Result a,
   using Result = CSSSupportsParser::Result;
   if (a == Result::kParseFailure || b == Result::kParseFailure)
     return Result::kParseFailure;
-  if (a == Result::kUnknown && b == Result::kUnknown)
-    return Result::kUnknown;
   if (a != Result::kSupported || b != Result::kSupported)
     return Result::kUnsupported;
   return Result::kSupported;
@@ -128,8 +119,6 @@ inline CSSSupportsParser::Result operator|(CSSSupportsParser::Result a,
     return Result::kParseFailure;
   if (a == Result::kSupported || b == Result::kSupported)
     return Result::kSupported;
-  if (a == Result::kUnknown || b == Result::kUnknown)
-    return Result::kUnknown;
   return Result::kUnsupported;
 }
 
