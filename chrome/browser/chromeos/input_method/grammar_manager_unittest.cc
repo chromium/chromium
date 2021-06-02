@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/grammar_manager.h"
 
+#include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
-#include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "components/spellcheck/common/spellcheck_result.h"
@@ -183,13 +183,13 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
-  ui::ime::SuggestionDetails expected_details;
-  expected_details.text = u"correct";
-  expected_details.confirmed_length = 0;
-  expected_details.show_accept_annotation = false;
-  expected_details.show_setting_link = false;
+  AssistiveWindowProperties expected_properties;
+  expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  expected_properties.candidates = {u"correct"};
+  expected_properties.visible = true;
 
-  EXPECT_CALL(mock_suggestion_handler, SetSuggestion(1, expected_details, _));
+  EXPECT_CALL(mock_suggestion_handler,
+              SetAssistiveWindowProperties(1, expected_properties, _));
 
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
@@ -210,9 +210,15 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestion) {
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
-  EXPECT_CALL(mock_suggestion_handler, SetSuggestion(1, _, _));
+  EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
-  EXPECT_CALL(mock_suggestion_handler, SetButtonHighlighted(1, _, true, _));
+
+  ui::ime::AssistiveWindowButton suggestion_button{
+      .id = ui::ime::ButtonId::kSuggestion,
+      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+  };
+  EXPECT_CALL(mock_suggestion_handler,
+              SetButtonHighlighted(1, suggestion_button, true, _));
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::TAB));
   EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ENTER));
@@ -226,6 +232,46 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestion) {
 
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 1);
   EXPECT_EQ(mock_ime_input_context_handler_.last_commit_text(), u"correct");
+}
+
+TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
+  ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+
+  mock_ime_input_context_handler_.Reset();
+
+  manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 1);
+  EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
+  manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
+
+  ui::ime::AssistiveWindowButton suggestion_button{
+      .id = ui::ime::ButtonId::kSuggestion,
+      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+  };
+  ui::ime::AssistiveWindowButton ignore_button{
+      .id = ui::ime::ButtonId::kIgnoreSuggestion,
+      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+  };
+
+  EXPECT_CALL(mock_suggestion_handler,
+              SetButtonHighlighted(1, suggestion_button, true, _));
+  manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::TAB));
+  EXPECT_CALL(mock_suggestion_handler,
+              SetButtonHighlighted(1, ignore_button, true, _));
+  manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::TAB));
+  EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
+  manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ENTER));
+
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0);
+  EXPECT_EQ(
+      mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 0);
+  EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 0);
 }
 
 }  // namespace

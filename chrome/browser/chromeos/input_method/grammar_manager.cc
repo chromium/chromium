@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
@@ -31,7 +32,10 @@ GrammarManager::GrammarManager(
       suggestion_button_(ui::ime::AssistiveWindowButton{
           .id = ui::ime::ButtonId::kSuggestion,
           .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
-          .index = 0,
+      }),
+      ignore_button_(ui::ime::AssistiveWindowButton{
+          .id = ui::ime::ButtonId::kIgnoreSuggestion,
+          .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
       }) {}
 
 GrammarManager::~GrammarManager() = default;
@@ -49,7 +53,7 @@ void GrammarManager::OnFocus(int context_id) {
 }
 
 bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
-  if (!suggestion_shown_)
+  if (!suggestion_shown_ || event.type() != ui::ET_KEY_PRESSED)
     return false;
 
   if (event.code() == ui::DomCode::ESCAPE) {
@@ -57,15 +61,26 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
     return true;
   }
   if (event.code() == ui::DomCode::TAB) {
-    if (!suggestion_highlighted_) {
-      suggestion_highlighted_ = true;
+    if (highlighted_button_ == ui::ime::ButtonId::kSuggestion) {
+      highlighted_button_ = ui::ime::ButtonId::kIgnoreSuggestion;
+      SetButtonHighlighted(ignore_button_);
+    } else {
+      highlighted_button_ = ui::ime::ButtonId::kSuggestion;
       SetButtonHighlighted(suggestion_button_);
     }
     return true;
   }
-  if (event.code() == ui::DomCode::ENTER && suggestion_highlighted_) {
-    AcceptSuggestion();
-    return true;
+  if (event.code() == ui::DomCode::ENTER) {
+    switch (highlighted_button_) {
+      case ui::ime::ButtonId::kSuggestion:
+        AcceptSuggestion();
+        return true;
+      case ui::ime::ButtonId::kIgnoreSuggestion:
+        IgnoreSuggestion();
+        return true;
+      default:
+        break;
+    }
   }
   return false;
 }
@@ -101,15 +116,16 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (grammar_fragment_opt) {
     current_fragment_ = grammar_fragment_opt.value();
     std::string error;
-    ui::ime::SuggestionDetails details{
-        .text = base::UTF8ToUTF16(current_fragment_.suggestion),
-        .confirmed_length = 0,
-    };
-    suggestion_handler_->SetSuggestion(context_id_, details, &error);
+    AssistiveWindowProperties properties;
+    properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+    properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
+    properties.visible = true;
+    suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
+                                                      &error);
     if (!error.empty()) {
       LOG(ERROR) << "Fail to show suggestion. " << error;
     }
-    suggestion_highlighted_ = false;
+    highlighted_button_ = ui::ime::ButtonId::kNone;
     suggestion_shown_ = true;
   } else if (suggestion_shown_) {
     DismissSuggestion();
@@ -188,6 +204,20 @@ void GrammarManager::AcceptSuggestion() {
   input_context->CommitText(
       base::UTF8ToUTF16(current_fragment_.suggestion),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+}
+
+void GrammarManager::IgnoreSuggestion() {
+  if (!suggestion_shown_)
+    return;
+
+  DismissSuggestion();
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return;
+
+  input_context->ClearGrammarFragments(current_fragment_.range);
 }
 
 void GrammarManager::SetButtonHighlighted(

@@ -521,7 +521,9 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
       autocorrect_manager_->UndoAutocorrect();
       break;
     case ui::ime::ButtonId::kIgnoreSuggestion:
-      // TODO(crbug/1201454): To be implemented.
+      if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
+        grammar_manager_->IgnoreSuggestion();
+      }
       break;
     case ui::ime::ButtonId::kAddToDictionary:
     case ui::ime::ButtonId::kNone:

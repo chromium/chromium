@@ -48,6 +48,8 @@ class GrammarManager {
   // with the suggestion.
   void AcceptSuggestion();
 
+  void IgnoreSuggestion();
+
  private:
   void Check(const std::u16string& text);
 
@@ -68,8 +70,9 @@ class GrammarManager {
   base::OneShotTimer delay_timer_;
   ui::GrammarFragment current_fragment_;
   const ui::ime::AssistiveWindowButton suggestion_button_;
+  const ui::ime::AssistiveWindowButton ignore_button_;
   bool suggestion_shown_ = false;
-  bool suggestion_highlighted_ = false;
+  ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
 };
 
 }  // namespace chromeos

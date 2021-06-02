@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/chromeos/input_method/ui/grammar_suggestion_window.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_window_view.h"
 #include "chrome/browser/chromeos/input_method/ui/undo_window.h"
 #include "ui/base/ime/chromeos/ime_assistive_window_handler_interface.h"
@@ -63,6 +64,7 @@ class AssistiveWindowController : public views::WidgetObserver,
 
   void InitSuggestionWindow();
   void InitUndoWindow();
+  void InitGrammarSuggestionWindow();
 
   const AssistiveWindowControllerDelegate* delegate_;
   // The handler to handle Text-to-Speech (TTS) request.
@@ -70,6 +72,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   AssistiveWindowProperties window_;
   ui::ime::SuggestionWindowView* suggestion_window_view_ = nullptr;
   ui::ime::UndoWindow* undo_window_ = nullptr;
+  ui::ime::GrammarSuggestionWindow* grammar_suggestion_window_ = nullptr;
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;

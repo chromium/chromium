@@ -37,6 +37,11 @@ struct AssistiveWindowButton {
   // Currently index is only considered when ButtonId is kSuggestion.
   size_t index = -1;
   std::string announce_string;
+
+  bool operator==(const AssistiveWindowButton& other) const {
+    return id == other.id && window_type == other.window_type &&
+           index == other.index && announce_string == other.announce_string;
+  }
 };
 
 class UI_CHROMEOS_EXPORT AssistiveDelegate {
