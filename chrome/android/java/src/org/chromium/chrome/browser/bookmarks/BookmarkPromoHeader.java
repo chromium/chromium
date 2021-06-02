@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -157,17 +156,11 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
     }
 
     /**
-     * Configures the personalized signin promo and records promo impressions.
-     * @param view The view to be configured.
+     * Sets up the sync promo view.
      */
-    void setupPersonalizedSigninPromo(PersonalizedSigninPromoView view) {
-        SigninPromoUtil.setupSigninPromoViewFromCache(mSigninPromoController, mProfileDataCache,
-                view, this::setPersonalizedSigninPromoDeclined);
-    }
-
-    void setupPersonalizedSyncPromo(PersonalizedSigninPromoView view) {
-        SigninPromoUtil.setupSyncPromoViewFromCache(mSigninPromoController, mProfileDataCache, view,
-                this::setPersonalizedSigninPromoDeclined);
+    void setUpSyncPromoView(PersonalizedSigninPromoView view) {
+        mSigninPromoController.setUpSyncPromoViewIfAllowed(
+                mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }
 
     /**

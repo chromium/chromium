@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin.ui;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -14,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -22,11 +25,18 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+
+import java.util.List;
 
 /**
  * A controller for configuring the sign in promo. It sets up the sign in promo depending on the
@@ -203,9 +213,44 @@ public class SigninPromoController {
         }
     }
 
-    @AccessPoint
-    int getAccessPoint() {
-        return mAccessPoint;
+    /**
+     * Sets up the sync promo view if it is allowed.
+     *
+     * @param profileDataCache The {@link ProfileDataCache} that stores profile data.
+     * @param view The {@link PersonalizedSigninPromoView} that should be set up.
+     * @param listener The {@link SigninPromoController.OnDismissListener} to be set to the view.
+     */
+    public void setUpSyncPromoViewIfAllowed(ProfileDataCache profileDataCache,
+            PersonalizedSigninPromoView view, SigninPromoController.OnDismissListener listener) {
+        final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
+        assert identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)
+                == null : "Sync is already enabled!";
+
+        // Find the visible account on promo
+        @Nullable
+        Account visibleAccount = CoreAccountInfo.getAndroidAccountFrom(
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        final Optional<List<Account>> accounts = accountManagerFacade.getGoogleAccounts();
+        if (visibleAccount == null && accounts.isPresent() && !accounts.get().isEmpty()) {
+            visibleAccount = accounts.get().get(0);
+        }
+
+        // Set up the sync promo
+        if (visibleAccount == null) {
+            setupPromoView(view, /* profileData= */ null, listener);
+            return;
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+                && accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(false)
+                && mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+            // No promo will be visible since setupPromoView() is not invoked.
+            return;
+        }
+        setupPromoView(
+                view, profileDataCache.getProfileDataOrDefault(visibleAccount.name), listener);
     }
 
     /**
@@ -230,7 +275,7 @@ public class SigninPromoController {
      *         onDismissListener marks that the promo is not dismissible and as a result the close
      *         button is hidden.
      */
-    void setupPromoView(PersonalizedSigninPromoView view,
+    private void setupPromoView(PersonalizedSigninPromoView view,
             final @Nullable DisplayableProfileData profileData,
             final @Nullable OnDismissListener onDismissListener) {
         detach();

@@ -445,7 +445,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 convertView = layoutInflater.inflate(
                         R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
             }
-            mRecentTabsManager.setupPersonalizedSigninPromo(
+            mRecentTabsManager.setUpSyncPromoView(
                     convertView.findViewById(R.id.signin_promo_view_container));
             return convertView;
         }
@@ -469,7 +469,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 convertView = layoutInflater.inflate(
                         R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
             }
-            mRecentTabsManager.setupPersonalizedSyncPromo(
+            mRecentTabsManager.setUpSyncPromoView(
                     convertView.findViewById(R.id.signin_promo_view_container));
             return convertView;
         }

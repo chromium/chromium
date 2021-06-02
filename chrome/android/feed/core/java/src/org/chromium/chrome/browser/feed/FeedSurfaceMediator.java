@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -189,12 +188,8 @@ public class FeedSurfaceMediator
             // Only call #setupPromoViewFromCache() if SignInPromo is visible to avoid potentially
             // blocking the UI thread for several seconds if the accounts cache is not populated
             // yet.
-            if (!isVisible()) return;
-            if (isUserSignedInButNotSyncing()) {
-                SigninPromoUtil.setupSyncPromoViewFromCache(mSigninPromoController,
-                        mProfileDataCache, mCoordinator.getSigninPromoView(), null);
-            } else {
-                SigninPromoUtil.setupSigninPromoViewFromCache(mSigninPromoController,
+            if (isVisible()) {
+                mSigninPromoController.setUpSyncPromoViewIfAllowed(
                         mProfileDataCache, mCoordinator.getSigninPromoView(), null);
             }
         }

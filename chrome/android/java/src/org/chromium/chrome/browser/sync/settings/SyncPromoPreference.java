@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.ProfileSyncService.SyncStateChangedListener;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -186,16 +185,10 @@ public class SyncPromoPreference
         if (mSigninPromoController == null) {
             return;
         }
-
         PersonalizedSigninPromoView syncPromoView =
                 (PersonalizedSigninPromoView) holder.findViewById(R.id.signin_promo_view_container);
-        if (mState == State.PERSONALIZED_SIGNIN_PROMO) {
-            SigninPromoUtil.setupSigninPromoViewFromCache(mSigninPromoController, mProfileDataCache,
-                    syncPromoView, this::onPromoDismissClicked);
-        } else {
-            SigninPromoUtil.setupSyncPromoViewFromCache(mSigninPromoController, mProfileDataCache,
-                    syncPromoView, this::onPromoDismissClicked);
-        }
+        mSigninPromoController.setUpSyncPromoViewIfAllowed(
+                mProfileDataCache, syncPromoView, this::onPromoDismissClicked);
     }
 
     public void onPromoDismissClicked() {

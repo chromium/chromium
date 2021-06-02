@@ -206,12 +206,10 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (holder.getItemViewType() == ViewType.PERSONALIZED_SIGNIN_PROMO) {
+        if (holder.getItemViewType() == ViewType.PERSONALIZED_SIGNIN_PROMO
+                || holder.getItemViewType() == ViewType.PERSONALIZED_SYNC_PROMO) {
             PersonalizedSigninPromoView view = (PersonalizedSigninPromoView) holder.itemView;
-            mPromoHeaderManager.setupPersonalizedSigninPromo(view);
-        } else if (holder.getItemViewType() == ViewType.PERSONALIZED_SYNC_PROMO) {
-            PersonalizedSigninPromoView view = (PersonalizedSigninPromoView) holder.itemView;
-            mPromoHeaderManager.setupPersonalizedSyncPromo(view);
+            mPromoHeaderManager.setUpSyncPromoView(view);
         } else if (holder.getItemViewType() == ViewType.SECTION_HEADER) {
             bindSectionHeaderViewHolder(holder.itemView, getItemByPosition(position));
         } else if (BookmarkListEntry.isBookmarkEntry(holder.getItemViewType())) {

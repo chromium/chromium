@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
-import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -393,17 +392,10 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
     }
 
     /**
-     * Sets up the personalized signin promo and records user actions for promo impressions.
-     * @param view The view to be configured.
+     * Sets up the sync promo view.
      */
-    void setupPersonalizedSigninPromo(PersonalizedSigninPromoView view) {
-        SigninPromoUtil.setupSigninPromoViewFromCache(
-                mSigninPromoController, mProfileDataCache, view, null);
-    }
-
-    void setupPersonalizedSyncPromo(PersonalizedSigninPromoView view) {
-        SigninPromoUtil.setupSyncPromoViewFromCache(
-                mSigninPromoController, mProfileDataCache, view, null);
+    void setUpSyncPromoView(PersonalizedSigninPromoView view) {
+        mSigninPromoController.setUpSyncPromoViewIfAllowed(mProfileDataCache, view, null);
     }
 
     // SignInStateObserver implementation.
