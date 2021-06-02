@@ -1192,9 +1192,10 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
 
+  // This needs to be called before the
+  // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun, because the
+  // SessionControllerClientImpl is destroyed there.
   browser_manager_->RemoveObserver(SessionControllerClientImpl::Get());
-  browser_manager_.reset();
-  crosapi_manager_.reset();
 
   if (lock_screen_apps_state_controller_)
     lock_screen_apps_state_controller_->Shutdown();
@@ -1338,6 +1339,11 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   // NOTE: Closes ash and destroys ash::Shell.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+  // BrowserManager and CrosapiManager need to outlive the Profile, which
+  // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
+  browser_manager_.reset();
+  crosapi_manager_.reset();
 
   // Destroy classes that may have ash observers or dependencies.
   arc_kiosk_app_manager_.reset();

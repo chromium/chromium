@@ -25,6 +25,9 @@ class ProfileManagerObserver : public base::CheckedObserver {
   // erased. Note that the Profile object will not be destroyed until Chrome
   // shuts down. See https://crbug.com/88586
   virtual void OnProfileMarkedForPermanentDeletion(Profile* profile) {}
+
+  // Called when the profile manager is destroying.
+  virtual void OnProfileManagerDestroying() {}
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_MANAGER_OBSERVER_H_

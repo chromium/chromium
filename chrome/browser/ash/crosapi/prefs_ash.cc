@@ -46,8 +46,11 @@ PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
 }
 
 PrefsAsh::~PrefsAsh() {
-  // Remove this observer, in case Primary logged in profile is not yet created.
-  profile_manager_->RemoveObserver(this);
+  // Remove this observer, if the Primary logged in profile is not yet created.
+  // On actual shutdown, the ProfileManager will destruct before CrosapiManager.
+  if (IsInObserverList() && profile_manager_) {
+    profile_manager_->RemoveObserver(this);
+  }
 }
 
 void PrefsAsh::BindReceiver(mojo::PendingReceiver<mojom::Prefs> receiver) {
@@ -124,6 +127,10 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       LOG(WARNING) << "Unknown pref path: " << path;
       return absl::nullopt;
   }
+}
+
+void PrefsAsh::OnProfileManagerDestroying() {
+  profile_manager_ = nullptr;
 }
 
 void PrefsAsh::OnPrefChanged(mojom::PrefPath path) {

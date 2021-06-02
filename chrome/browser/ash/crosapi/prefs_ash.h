@@ -45,6 +45,7 @@ class PrefsAsh : public mojom::Prefs, public ProfileManagerObserver {
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // Used to inject |profile| as a primary profile for testing.
   void OnPrimaryProfileReadyForTesting(Profile* profile) {
@@ -67,8 +68,9 @@ class PrefsAsh : public mojom::Prefs, public ProfileManagerObserver {
   // Called when Primary logged in user profile is ready.
   void OnPrimaryProfileReady(Profile* profile);
 
-  // In production, owned by g_browser_process, which outlives this object.
-  ProfileManager* const profile_manager_;
+  // In production, owned by g_browser_process, which does not outlives this
+  // object.
+  ProfileManager* profile_manager_;
   // In production, owned by g_browser_process, which outlives this object.
   PrefService* const local_state_;
   // Owned by the primary profile. This will be set after the profile is

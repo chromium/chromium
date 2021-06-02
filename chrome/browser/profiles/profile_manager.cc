@@ -517,6 +517,9 @@ ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
 
 ProfileManager::~ProfileManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (auto& observer : observers_) {
+    observer.OnProfileManagerDestroying();
+  }
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Ideally, all the keepalives should've been cleared already. Report
     // metrics for incorrect usage of ScopedProfileKeepAlive.
