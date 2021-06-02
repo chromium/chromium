@@ -790,17 +790,13 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
       "  visit_time >= ? AND "
       // Restrict to visits that are older than the specified end time.
       "  visit_time < ? "));
-  statement.BindInt64(0,
-                      begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  statement.BindInt64(1, end_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  statement.BindTime(0, begin_time);
+  statement.BindTime(1, end_time);
   std::vector<DomainVisit> domain_visits;
   while (statement.Step()) {
     const GURL url(statement.ColumnString(1));
     if (google_util::IsGoogleSearchUrl(url)) {
-      domain_visits.emplace_back(
-          url.host(),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(0))));
+      domain_visits.emplace_back(url.host(), statement.ColumnTime(0));
     }
   }
   return domain_visits;
