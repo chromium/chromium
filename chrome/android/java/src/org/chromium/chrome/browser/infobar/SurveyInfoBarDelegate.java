@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+
 /**
  * Delegate for survey info bar actions.
  */
@@ -36,4 +38,10 @@ public interface SurveyInfoBarDelegate {
      * @return The string that will be displayed on the info bar.
      */
     String getSurveyPromptString();
+
+    /**
+     * Called to supply the survey info bar with lifecycle dispatcher used to show survey.
+     * @return The lifecycle dispatcher used to dispatch signals from the activity.
+     * */
+    ActivityLifecycleDispatcher getLifecycleDispatcher();
 }

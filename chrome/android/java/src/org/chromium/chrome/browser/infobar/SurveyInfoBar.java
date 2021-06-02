@@ -181,8 +181,9 @@ public class SurveyInfoBar extends InfoBar {
         mClicked = true;
         mDelegate.onSurveyTriggered();
 
-        SurveyController.getInstance().showSurveyIfAvailable(
-                TabUtils.getActivity(tab), mSiteId, mShowAsBottomSheet, mDisplayLogoResId);
+        // TODO(https://crbug.com/1212754): Move to ChromeSurveyController.
+        SurveyController.getInstance().showSurveyIfAvailable(TabUtils.getActivity(tab), mSiteId,
+                mShowAsBottomSheet, mDisplayLogoResId, mDelegate.getLifecycleDispatcher());
         super.onCloseButtonClicked();
     }
 

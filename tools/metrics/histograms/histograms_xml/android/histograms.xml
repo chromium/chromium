@@ -2490,11 +2490,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.Survey.DownloadResponseCode"
     enum="SurveyDownloadResponseCodes" expires_after="2021-06-01">
   <obsolete>
-    Deprecated as of 05/2021.
+    Deprecated as of 05/2021 with the old library. Replaced by
+    Android.Survey.DownloadResponseCode2.
   </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>The response code of the completed survey download request.</summary>
+</histogram>
+
+<histogram name="Android.Survey.DownloadResponseCode2"
+    enum="SurveyDownloadResponseCodes2" expires_after="2022-06-01">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    The result of the completed survey download request. A survey download is
+    initiated on ChromeTabbedActivity cold start iff the user passes a series of
+    eligibility checks. Recorded when a valid survey response is received.
+    Android only.
+  </summary>
 </histogram>
 
 <histogram name="Android.Survey.InfoBarClosingState"
@@ -2515,6 +2529,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>clank-app-team@google.com</owner>
   <summary>
     Whether or not the survey was successfully shown after its download.
+  </summary>
+</histogram>
+
+<histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
+    expires_after="2022-06-01">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Whether a user completed the survey after it was presented. This histogram
+    is agnostic to the content of the survey, which is configured server side,
+    and will be recorded for all surveys shown in Chrome. Android only.
   </summary>
 </histogram>
 

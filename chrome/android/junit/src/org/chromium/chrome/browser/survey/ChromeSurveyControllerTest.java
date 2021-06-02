@@ -249,7 +249,7 @@ public class ChromeSurveyControllerTest {
         private int mMaxNumber;
 
         RiggedSurveyController(int randomNumberToReturn, int dayOfYear, int maxNumber) {
-            super(TEST_SURVEY_TRIGGER_ID);
+            super(TEST_SURVEY_TRIGGER_ID, null);
             mRandomNumberToReturn = randomNumberToReturn;
             mDayOfYear = dayOfYear;
             mMaxNumber = maxNumber;
@@ -271,11 +271,11 @@ public class ChromeSurveyControllerTest {
         }
     }
 
-    class TestChromeSurveyController extends ChromeSurveyController {
+    static class TestChromeSurveyController extends ChromeSurveyController {
         private Tab mTab;
 
         public TestChromeSurveyController(String triggerId) {
-            super(triggerId);
+            super(triggerId, null);
         }
 
         @Override

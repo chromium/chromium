@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.infobar.SurveyInfoBar;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.survey.ChromeSurveyController.InfoBarClosingState;
@@ -182,8 +183,8 @@ public class ChromeSurveyControllerIntegrationTest {
     }
 
     private static class AlwaysSuccessfulSurveyController extends SurveyController {
-        public CallbackHelper downloadCallbackHelper = new CallbackHelper();
-        public CallbackHelper showSurveyCallbackHelper = new CallbackHelper();
+        public final CallbackHelper downloadCallbackHelper = new CallbackHelper();
+        public final CallbackHelper showSurveyCallbackHelper = new CallbackHelper();
 
         @Override
         public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
@@ -195,8 +196,9 @@ public class ChromeSurveyControllerIntegrationTest {
         }
 
         @Override
-        public void showSurveyIfAvailable(
-                Activity activity, String siteId, boolean showAsBottomSheet, int displayLogoResId) {
+        public void showSurveyIfAvailable(Activity activity, String siteId,
+                boolean showAsBottomSheet, int displayLogoResId,
+                ActivityLifecycleDispatcher lifecycleDispatcher) {
             showSurveyCallbackHelper.notifyCalled();
         }
     }
