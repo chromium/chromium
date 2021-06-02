@@ -9,9 +9,7 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {metricsBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/metrics_base.m.js';
-// clang-format on
+import {metricsBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/metrics_base.m.js';
 
 /**
  * @extends {metricsBase}
@@ -108,4 +106,4 @@ metrics.convertName_ = function(name) {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {metrics};
+export {metrics};

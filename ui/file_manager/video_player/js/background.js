@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.m.js';
-// #import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
-// #import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.m.js';
-// #import {BackgroundBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/externs/background/background_base.m.js';
-// clang-format on
+import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.m.js';
+import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.m.js';
+import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
+import {BackgroundBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/externs/background/background_base.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * Use maximum size and let ash downsample the icon.
@@ -62,7 +60,7 @@ const generateWindowId = (function() {
  *     playing.
  * @return {!Promise} Promise to be fulfilled on success, or rejected on error.
  */
-/* #export */ function openVideoPlayerWindow(urls) {
+export function openVideoPlayerWindow(urls) {
   let position = 0;
   const startUrl = (position < urls.length) ? urls[position] : '';
   let windowId = null;

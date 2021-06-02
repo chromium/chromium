@@ -6,13 +6,31 @@ import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 group("closure_compile") {
   testonly = true
   deps = [
+    ":background",
     ":closure_compile_jsmodules",
+    ":error_util",
     ":js_test_gen_html_modules_type_check_auto",
+    ":test_util",
+    ":video_player_metrics",
+    ":video_player_native_controls",
+  ]
+}
+
+group("js_modules") {
+  deps = [
+    ":background",
+    ":error_util",
+    ":main.m",
+    ":main_background.m",
+    ":test_util",
+    ":video_player",
+    ":video_player",
+    ":video_player_metrics",
+    ":video_player_native_controls",
   ]
 }
 
@@ -24,38 +42,17 @@ js_type_check("closure_compile_jsmodules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   deps = [
-    ":background.m",
-    ":error_util.m",
+    ":background",
+    ":error_util",
     ":main.m",
-    ":test_util.m",
-    ":video_player.m",
-    ":video_player_metrics.m",
-    ":video_player_native_controls.m",
-  ]
-}
-
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/media_player_private.js",
-    "$externs_path/metrics_private.js",
-    "$externs_path/picture_in_picture.js",
-    "//ui/file_manager/file_manager/externs/chrome_cast.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
+    ":test_util",
+    ":video_player",
+    ":video_player_metrics",
+    ":video_player_native_controls",
   ]
 }
 
 js_library("background") {
-  deps = [
-    ":error_util",
-    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
-    "//ui/file_manager/file_manager/background/js:background_base",
-  ]
-}
-
-js_library("background.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/background.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
     "//ui/file_manager/file_manager/background/js:background_base.m",
@@ -63,44 +60,19 @@ js_library("background.m") {
     "//ui/file_manager/file_manager/externs/background:background_base.m",
     "//ui/webui/resources/js:assert.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("error_util") {
 }
 
-js_library("error_util.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/error_util.m.js" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("test_util") {
-}
-
-js_library("test_util.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/test_util.m.js" ]
   deps = [
-    ":background.m",
+    ":background",
     "//ui/file_manager/file_manager/background/js:test_util_base.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("video_player_native_controls") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:app_util",
-    "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
-}
-
-js_library("video_player_native_controls.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/video_player_native_controls.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:app_util.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
@@ -110,13 +82,11 @@ js_library("video_player_native_controls.m") {
   ]
 
   externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_unittest("video_player_native_controls_unittest.m") {
   deps = [
-    ":video_player_native_controls.m",
+    ":video_player_native_controls",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome.m",
   ]
@@ -127,22 +97,6 @@ js_library("video_player") {
     ":error_util",
     ":video_player_metrics",
     ":video_player_native_controls",
-    "//ui/file_manager/file_manager/common/js:app_util",
-    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:metrics_base",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_item",
-  ]
-}
-
-js_library("video_player.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/video_player/js/video_player.m.js" ]
-  deps = [
-    ":error_util.m",
-    ":video_player_metrics.m",
-    ":video_player_native_controls.m",
     "//ui/file_manager/file_manager/common/js:app_util.m",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
     "//ui/file_manager/file_manager/common/js:util.m",
@@ -150,21 +104,10 @@ js_library("video_player.m") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("video_player_metrics") {
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics_base" ]
-}
-
-js_library("video_player_metrics.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/video_player/js/video_player_metrics.m.js",
-  ]
   deps = [ "//ui/file_manager/file_manager/common/js:metrics_base.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
@@ -184,29 +127,16 @@ js_test_gen_html("js_test_gen_html_modules") {
 }
 
 js_library("main.m") {
-  deps = [ ":video_player.m" ]
+  deps = [ ":video_player" ]
 }
 
 js_library("main_background.m") {
   deps = [
-    ":background.m",
-    ":error_util.m",
-    ":test_util.m",
-    ":video_player_metrics.m",
+    ":background",
+    ":error_util",
+    ":test_util",
+    ":video_player_metrics",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "video_player_native_controls.js",
-    "video_player_metrics.js",
-    "error_util.js",
-    "test_util.js",
-    "background.js",
-    "video_player.js",
-  ]
-
-  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =

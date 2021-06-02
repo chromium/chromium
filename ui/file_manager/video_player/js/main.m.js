@@ -7,7 +7,7 @@
  * video_player_scripts.js
  */
 
-import {unload} from './video_player.m.js';
+import {unload} from './video_player.js';
 
 window.unload = unload;
 
