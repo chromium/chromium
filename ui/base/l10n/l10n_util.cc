@@ -237,11 +237,7 @@ static const char* const kAcceptLanguageList[] = {
 // for on the current platform. Guaranteed to be in sorted order and guaranteed
 // to have no duplicates.
 //
-// Note that this could have false positives at runtime on Android and iOS:
-// - On Android, some locales aren't shipped (|android_apk_omitted_locales| in
-//   GN), and some locales files are dynamically shipped in app bundles
-//   (|android_bundle_only_locales|). Both of these lists are included in
-//   this variable.
+// Note that this could have false positives at runtime on iOS:
 // - On iOS, some locales aren't shipped (|ios_unsupported_locales|) as they are
 //   not supported by the operating system. These locales are included in this
 //   variable.
