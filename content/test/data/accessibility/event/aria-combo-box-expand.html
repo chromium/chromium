@@ -1,7 +1,3 @@
-<!--
-@MAC-RUN-UNTIL-EVENT:AXSelectedChildrenChanged
-@MAC-RUN-UNTIL-EVENT:AXExpandedChanged
--->
 <!DOCTYPE html>
 <html>
 <body>
@@ -13,11 +9,16 @@
 <li id="option3" role="option">Banana</li>
 </ul>
 <script>
-  document.querySelector('input').focus();
+  var go_passes = [
+    () => document.querySelector('input').focus(),
+    () => document.querySelector('input').setAttribute('aria-expanded', 'true'),
+    () => document.querySelector('input').setAttribute('aria-activedescendant', 'option1'),
+  ];
+
+  let current_pass = 0;
   function go() {
-    var combo_box = document.querySelector('input');
-    combo_box.setAttribute('aria-expanded', 'true');
-    combo_box.setAttribute('aria-activedescendant', 'option1');
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
   }
 </script>
 </body>

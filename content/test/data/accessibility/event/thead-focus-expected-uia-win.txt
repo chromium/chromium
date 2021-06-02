@@ -1,2 +1,1 @@
 AutomationFocusChanged on role=rowgroup, name=thead
-AutomationFocusChanged on role=rowgroup, name=thead
