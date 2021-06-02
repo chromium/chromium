@@ -12,6 +12,7 @@
 #include "extensions/common/extension.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-shared.h"
 
 namespace extensions {
 
@@ -477,6 +478,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
             ExecuteScriptInBackgroundPage(
                 extension->id(),
                 base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+}
+
+// Test that running extensions message dispatching via a ScriptContext::ForEach
+// for back forward cached pages causes eviction of that RenderFrameHost.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       StorageCallbackEvicts) {
+  const Extension* extension = extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script_storage"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Expect that `rfh_a` is destroyed as loading page B will causes a storage
+  // event which is sent to all listeners. Since `rfh_a` is a listener but is in
+  // the back forward cache it gets evicted.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Validate also that the eviction reason is `kJavascriptExecution` due
+  // to the extension processing a callback while in the back forward cache.
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "BackForwardCache.Eviction.Renderer",
+                   blink::mojom::RendererEvictionReason::kJavaScriptExecution));
 }
 
 }  // namespace extensions
