@@ -2707,6 +2707,16 @@
           'scripts': 'chromium_win_scripts',
         },
       },
+      'Win x64 Builder (reclient)(cross)': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
+        'additional_compile_targets': [
+          'pdf_fuzzers'
+        ],
+        'test_suites': {
+          'scripts': 'chromium_win_scripts',
+        },
+      },
       'android-backuprefptr-arm-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',

@@ -385,6 +385,17 @@
       "use_rbe": true
     }
   },
+  "Win x64 Builder (reclient)(cross)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "rbe_cfg_dir": "../../buildtools/reclient_cfgs/win-cross-experiments",
+      "symbol_level": 1,
+      "use_rbe": true
+    }
+  },
   "android-backuprefptr-arm-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

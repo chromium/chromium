@@ -308,6 +308,7 @@
       'VR Linux (reclient)': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
+      'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
@@ -2170,6 +2171,10 @@
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
     ],
 
+    'gpu_tests_release_bot_minimal_symbols_reclient_win_cross': [
+      'gpu_tests', 'release_bot_reclient_win_cross', 'minimal_symbols',
+    ],
+
     'gpu_tests_release_bot_minimal_symbols_code_coverage': [
       'gpu_tests', 'release_bot', 'minimal_symbols', 'use_clang_coverage',
       'partial_code_coverage_instrumentation',
@@ -3430,6 +3435,11 @@
       'gn_args': 'use_rbe=true',
     },
 
+    # experiment windows cross. crbug.com/1213717
+    'reclient_win_cross': {
+      'gn_args': 'use_rbe=true rbe_cfg_dir="../../buildtools/reclient_cfgs/win-cross-experiments"',
+    },
+
     'release': {
       'gn_args': 'is_debug=false',
     },
@@ -3446,6 +3456,10 @@
 
     'release_bot_reclient': {
       'mixins': ['release', 'static', 'reclient'],
+    },
+
+    'release_bot_reclient_win_cross': {
+      'mixins': ['release', 'static', 'reclient_win_cross'],
     },
 
     'release_java': {
