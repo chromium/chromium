@@ -667,10 +667,11 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
+// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
