@@ -433,13 +433,13 @@ void OnBadMessage(std::string* result) {
 class TestCacheStorageCache : public LegacyCacheStorageCache {
  public:
   TestCacheStorageCache(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& cache_name,
       const base::FilePath& path,
       LegacyCacheStorage* cache_storage,
       const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context)
-      : LegacyCacheStorageCache(origin,
+      : LegacyCacheStorageCache(storage_key,
                                 storage::mojom::CacheStorageOwner::kCacheAPI,
                                 cache_name,
                                 path,
@@ -515,7 +515,7 @@ class MockLegacyCacheStorage : public LegacyCacheStorage {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       LegacyCacheStorageManager* cache_storage_manager,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner)
       : LegacyCacheStorage(origin_path,
                            memory_only,
@@ -524,7 +524,7 @@ class MockLegacyCacheStorage : public LegacyCacheStorage {
                            std::move(quota_manager_proxy),
                            std::move(blob_storage_context),
                            cache_storage_manager,
-                           std::move(origin),
+                           storage_key,
                            owner) {}
 
   void CacheUnreferenced(LegacyCacheStorageCache* cache) override {
@@ -584,7 +584,7 @@ class CacheStorageCacheTest : public testing::Test {
         temp_dir_path_, MemoryOnly(), base::ThreadTaskRunnerHandle::Get().get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        url::Origin::Create(kTestUrl),
+        blink::StorageKey(url::Origin::Create(kTestUrl)),
         storage::mojom::CacheStorageOwner::kCacheAPI);
 
     InitCache(mock_cache_storage_.get());
@@ -613,8 +613,9 @@ class CacheStorageCacheTest : public testing::Test {
 
   void InitCache(LegacyCacheStorage* cache_storage) {
     cache_ = std::make_unique<TestCacheStorageCache>(
-        url::Origin::Create(kTestUrl), kCacheName, temp_dir_path_,
-        cache_storage, quota_manager_proxy_, blob_storage_context_);
+        blink::StorageKey(url::Origin::Create(kTestUrl)), kCacheName,
+        temp_dir_path_, cache_storage, quota_manager_proxy_,
+        blob_storage_context_);
     cache_->Init();
   }
 

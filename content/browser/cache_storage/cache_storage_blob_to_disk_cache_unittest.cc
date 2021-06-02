@@ -30,6 +30,7 @@
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -44,7 +45,7 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
  public:
   explicit TestCacheStorageBlobToDiskCache(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
-      : CacheStorageBlobToDiskCache(quota_manager_proxy, url::Origin()) {}
+      : CacheStorageBlobToDiskCache(quota_manager_proxy, blink::StorageKey()) {}
 
   ~TestCacheStorageBlobToDiskCache() override = default;
 
@@ -56,7 +57,9 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
     CacheStorageBlobToDiskCache::DidWriteDataToEntry(expected_bytes, rv);
   }
 
-  const url::Origin& origin() { return CacheStorageBlobToDiskCache::origin(); }
+  const blink::StorageKey& storage_key() {
+    return CacheStorageBlobToDiskCache::storage_key();
+  }
 
  protected:
   void ReadFromBlob() override {
@@ -246,8 +249,8 @@ TEST_F(CacheStorageBlobToDiskCacheTest, NotifyQuotaAboutWriteErrors) {
   cache_storage_blob_to_disk_cache_->DidWriteDataToEntry(5, 2);
   auto write_error_tracker = quota_manager()->write_error_tracker();
   EXPECT_EQ(1U, write_error_tracker.size());
-  auto write_error_log =
-      write_error_tracker.find(cache_storage_blob_to_disk_cache_->origin());
+  auto write_error_log = write_error_tracker.find(
+      cache_storage_blob_to_disk_cache_->storage_key().origin());
   EXPECT_NE(write_error_tracker.end(), write_error_log);
   EXPECT_EQ(1, write_error_log->second);
 }

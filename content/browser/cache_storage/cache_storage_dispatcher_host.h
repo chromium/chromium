@@ -60,7 +60,7 @@ class CacheStorageDispatcherHost {
       std::unique_ptr<CacheImpl> cache_impl,
       mojo::PendingAssociatedReceiver<blink::mojom::CacheStorageCache>
           receiver);
-  CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
+  CacheStorageHandle OpenCacheStorage(const blink::StorageKey& storage_key,
                                       storage::mojom::CacheStorageOwner owner);
 
   // `this` is owned by `context_`.

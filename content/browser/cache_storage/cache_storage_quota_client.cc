@@ -6,6 +6,7 @@
 
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
@@ -28,12 +29,14 @@ void CacheStorageQuotaClient::GetOriginUsage(const url::Origin& origin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  if (!CacheStorageManager::IsValidQuotaOrigin(origin)) {
+  blink::StorageKey key{origin};
+
+  if (!CacheStorageManager::IsValidQuotaStorageKey(key)) {
     std::move(callback).Run(0);
     return;
   }
 
-  cache_manager_->GetOriginUsage(origin, owner_, std::move(callback));
+  cache_manager_->GetStorageKeyUsage(key, owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::GetOriginsForType(
@@ -42,7 +45,7 @@ void CacheStorageQuotaClient::GetOriginsForType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  cache_manager_->GetOrigins(owner_, std::move(callback));
+  cache_manager_->GetStorageKeys(owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::GetOriginsForHost(
@@ -52,7 +55,7 @@ void CacheStorageQuotaClient::GetOriginsForHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  cache_manager_->GetOriginsForHost(host, owner_, std::move(callback));
+  cache_manager_->GetStorageKeysForHost(host, owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::DeleteOriginData(
@@ -62,12 +65,14 @@ void CacheStorageQuotaClient::DeleteOriginData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  if (!CacheStorageManager::IsValidQuotaOrigin(origin)) {
+  blink::StorageKey key{origin};
+
+  if (!CacheStorageManager::IsValidQuotaStorageKey(key)) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  cache_manager_->DeleteOriginData(origin, owner_, std::move(callback));
+  cache_manager_->DeleteStorageKeyData(key, owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::PerformStorageCleanup(

@@ -39,6 +39,9 @@ int64_t ComputeRandomResponsePadding();
 // |response_time| be the time stored in the cache and not just the current
 // time.  The |side_data_size| should only be passed if padding is being
 // computed for a side data blob.
+//
+// TODO(https://crbug.com/1199077): Replace `url::Origin` with
+// `blink::StorageKey` in the argument list.
 COMPONENT_EXPORT(STORAGE_COMMON)
 int64_t ComputeStableResponsePadding(const url::Origin& origin,
                                      const std::string& response_url,

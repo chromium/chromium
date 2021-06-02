@@ -15,12 +15,12 @@
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
-// CacheStorage holds the set of caches for a given origin. It is
+// CacheStorage holds the set of caches for a given StorageKey. It is
 // owned by the CacheStorageManager. This class expects to be run
 // on the IO thread. The asynchronous methods are executed serially.
 class CONTENT_EXPORT CacheStorage {
@@ -102,15 +102,15 @@ class CONTENT_EXPORT CacheStorage {
                             int64_t trace_id,
                             ErrorCallback callback) = 0;
 
-  // The immutable origin of the CacheStorage.
-  const url::Origin& Origin() const { return origin_; }
+  // The immutable StorageKey of the CacheStorage.
+  const blink::StorageKey storage_key() const { return storage_key_; }
 
  protected:
-  explicit CacheStorage(const url::Origin& origin);
+  explicit CacheStorage(const blink::StorageKey& storage_key);
   virtual ~CacheStorage() = default;
 
-  // The origin that this CacheStorage is associated with.
-  const url::Origin origin_;
+  // The StorageKey that this CacheStorage is associated with.
+  const blink::StorageKey storage_key_;
 };
 
 }  // namespace content

@@ -13,53 +13,53 @@
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-
-namespace url {
-class Origin;
-}
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
-// Keeps track of a CacheStorage per origin. There is one CacheStorageManager
-// per CacheStorageOwner. Created and accessed from a single sequence.
+// Keeps track of a CacheStorage per StorageKey. There is one
+// CacheStorageManager per CacheStorageOwner. Created and accessed from a single
+// sequence.
 // TODO(jkarlin): Remove CacheStorage from memory once they're no
 // longer in active use.
 class CONTENT_EXPORT CacheStorageManager
     : public base::RefCounted<CacheStorageManager> {
  public:
-  // Open the CacheStorage for the given origin and owner.  A reference counting
-  // handle is returned which can be stored and used similar to a weak pointer.
+  // Open the CacheStorage for the given `storage_key` and `owner`.  A reference
+  // counting handle is returned which can be stored and used similar to a weak
+  // pointer.
   virtual CacheStorageHandle OpenCacheStorage(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner) = 0;
 
   // QuotaClient and Browsing Data Deletion support.
-  virtual void GetAllOriginsUsage(
+  virtual void GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
           callback) = 0;
-  virtual void GetOriginUsage(
-      const url::Origin& origin_url,
+  virtual void GetStorageKeyUsage(
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginUsageCallback callback) = 0;
-  virtual void GetOrigins(
+  virtual void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) = 0;
-  virtual void GetOriginsForHost(
+  virtual void GetStorageKeysForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginsForHostCallback callback) = 0;
-  virtual void DeleteOriginData(
-      const url::Origin& origin,
+  virtual void DeleteStorageKeyData(
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteOriginDataCallback callback) = 0;
-  virtual void DeleteOriginData(const url::Origin& origin,
-                                storage::mojom::CacheStorageOwner owner) = 0;
+  virtual void DeleteStorageKeyData(
+      const blink::StorageKey& origin,
+      storage::mojom::CacheStorageOwner owner) = 0;
 
   virtual void AddObserver(
       mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) = 0;
 
-  static bool IsValidQuotaOrigin(const url::Origin& origin);
+  static bool IsValidQuotaStorageKey(const blink::StorageKey& storage_key);
 
  protected:
   friend class base::RefCounted<CacheStorageManager>;

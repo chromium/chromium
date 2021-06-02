@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "net/base/io_buffer.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 

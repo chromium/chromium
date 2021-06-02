@@ -27,7 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "storage/browser/quota/quota_client.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -56,44 +56,45 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   static scoped_refptr<LegacyCacheStorageManager> CreateForTesting(
       LegacyCacheStorageManager* old_manager);
 
-  // Map a database identifier (computed from an origin) to the path.
-  static base::FilePath ConstructOriginPath(
+  // Map a database identifier (computed from a storage key) to the path.
+  static base::FilePath ConstructStorageKeyPath(
       const base::FilePath& root_path,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
 
-  // Open the CacheStorage for the given origin and owner.  A reference counting
-  // handle is returned which can be stored and used similar to a weak pointer.
+  // Open the CacheStorage for the given storage_key and owner.  A reference
+  // counting handle is returned which can be stored and used similar to a weak
+  // pointer.
   CacheStorageHandle OpenCacheStorage(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner) override;
 
-  void GetAllOriginsUsage(
+  void GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
       override;
-  void GetOriginUsage(
-      const url::Origin& origin_url,
+  void GetStorageKeyUsage(
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginUsageCallback callback) override;
-  void GetOrigins(
+  void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) override;
-  void GetOriginsForHost(
+  void GetStorageKeysForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(
-      const url::Origin& origin,
+  void DeleteStorageKeyData(
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        storage::mojom::CacheStorageOwner owner) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            storage::mojom::CacheStorageOwner owner) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
 
-  void NotifyCacheListChanged(const url::Origin& origin);
-  void NotifyCacheContentChanged(const url::Origin& origin,
+  void NotifyCacheListChanged(const blink::StorageKey& storage_key);
+  void NotifyCacheContentChanged(const blink::StorageKey& storage_key,
                                  const std::string& name);
 
   base::FilePath root_path() const { return root_path_; }
@@ -101,15 +102,16 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   // This method is called when the last CacheStorageHandle for a particular
   // instance is destroyed and its reference count drops to zero.
   void CacheStorageUnreferenced(LegacyCacheStorage* cache_storage,
-                                const url::Origin& origin,
+                                const blink::StorageKey& storage_key,
                                 storage::mojom::CacheStorageOwner owner);
 
  private:
   friend class cache_storage_manager_unittest::CacheStorageManagerTest;
   friend class CacheStorageContextImpl;
 
-  typedef std::map<std::pair<url::Origin, storage::mojom::CacheStorageOwner>,
-                   std::unique_ptr<LegacyCacheStorage>>
+  typedef std::map<
+      std::pair<blink::StorageKey, storage::mojom::CacheStorageOwner>,
+      std::unique_ptr<LegacyCacheStorage>>
       CacheStorageMap;
 
   LegacyCacheStorageManager(
@@ -121,12 +123,12 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
 
   ~LegacyCacheStorageManager() override;
 
-  void GetAllOriginsUsageGetSizes(
+  void GetAllStorageKeysUsageGetSizes(
       storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback,
       std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
 
-  void DeleteOriginDidClose(
-      const url::Origin& origin,
+  void DeleteStorageKeyDidClose(
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
       std::unique_ptr<LegacyCacheStorage> cache_storage,

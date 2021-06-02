@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -32,9 +33,9 @@ CacheStorageContextImpl::CacheStorageContextImpl() {
 CacheStorageContextImpl::~CacheStorageContextImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& origin : origins_to_purge_on_shutdown_) {
-    cache_manager_->DeleteOriginData(
-        origin, storage::mojom::CacheStorageOwner::kCacheAPI,
+  for (const auto& storage_key : storage_keys_to_purge_on_shutdown_) {
+    cache_manager_->DeleteStorageKeyData(
+        storage_key, storage::mojom::CacheStorageOwner::kCacheAPI,
 
         // Retain a reference to the manager until the deletion is
         // complete, since it internally uses weak pointers for
@@ -110,14 +111,14 @@ void CacheStorageContextImpl::AddReceiver(
 void CacheStorageContextImpl::GetAllOriginsInfo(
     storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->GetAllOriginsUsage(
+  cache_manager_->GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
 }
 
 void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->DeleteOriginData(
-      origin, storage::mojom::CacheStorageOwner::kCacheAPI);
+  cache_manager_->DeleteStorageKeyData(
+      blink::StorageKey(origin), storage::mojom::CacheStorageOwner::kCacheAPI);
 }
 
 void CacheStorageContextImpl::AddObserver(
@@ -131,9 +132,11 @@ void CacheStorageContextImpl::ApplyPolicyUpdates(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& update : policy_updates) {
     if (!update->purge_on_shutdown)
-      origins_to_purge_on_shutdown_.erase(update->origin);
+      storage_keys_to_purge_on_shutdown_.erase(
+          blink::StorageKey(update->origin));
     else
-      origins_to_purge_on_shutdown_.insert(std::move(update->origin));
+      storage_keys_to_purge_on_shutdown_.insert(
+          blink::StorageKey(std::move(update->origin)));
   }
 }
 

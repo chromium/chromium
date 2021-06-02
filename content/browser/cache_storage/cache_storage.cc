@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/cache_storage/cache_storage.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
 constexpr int64_t CacheStorage::kSizeUnknown;
-CacheStorage::CacheStorage(const url::Origin& origin) : origin_(origin) {}
+CacheStorage::CacheStorage(const blink::StorageKey& storage_key)
+    : storage_key_(storage_key) {}
 
 }  // namespace content

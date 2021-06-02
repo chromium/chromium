@@ -398,7 +398,6 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 }
 
 blink::mojom::FetchAPIResponsePtr CreateResponse(
-    const url::Origin& origin,
     const proto::CacheMetadata& metadata,
     const std::string& cache_name) {
   // We no longer support Responses with only a single URL entry.  This field
@@ -467,7 +466,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
 }
 
 int64_t CalculateSideDataPadding(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const ::content::proto::CacheResponse* response,
     int side_data_size) {
   DCHECK(ShouldPadResourceSize(response));
@@ -486,7 +485,8 @@ int64_t CalculateSideDataPadding(
       base::Time::FromInternalValue(response->response_time());
 
   return storage::ComputeStableResponsePadding(
-      origin, url, response_time, response->request_method(), side_data_size);
+      storage_key.origin(), url, response_time, response->request_method(),
+      side_data_size);
 }
 
 net::RequestPriority GetDiskCachePriority(
@@ -546,7 +546,7 @@ struct LegacyCacheStorageCache::QueryCacheContext {
 // static
 std::unique_ptr<LegacyCacheStorageCache>
 LegacyCacheStorageCache::CreateMemoryCache(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     LegacyCacheStorage* cache_storage,
@@ -554,7 +554,7 @@ LegacyCacheStorageCache::CreateMemoryCache(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
   LegacyCacheStorageCache* cache = new LegacyCacheStorageCache(
-      origin, owner, cache_name, base::FilePath(), cache_storage,
+      storage_key, owner, cache_name, base::FilePath(), cache_storage,
       std::move(scheduler_task_runner), std::move(quota_manager_proxy),
       std::move(blob_storage_context), /*cache_size=*/0,
       /*cache_padding=*/0);
@@ -566,7 +566,7 @@ LegacyCacheStorageCache::CreateMemoryCache(
 // static
 std::unique_ptr<LegacyCacheStorageCache>
 LegacyCacheStorageCache::CreatePersistentCache(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     LegacyCacheStorage* cache_storage,
@@ -577,7 +577,7 @@ LegacyCacheStorageCache::CreatePersistentCache(
     int64_t cache_size,
     int64_t cache_padding) {
   LegacyCacheStorageCache* cache = new LegacyCacheStorageCache(
-      origin, owner, cache_name, path, cache_storage,
+      storage_key, owner, cache_name, path, cache_storage,
       std::move(scheduler_task_runner), std::move(quota_manager_proxy),
       std::move(blob_storage_context), cache_size, cache_padding);
   cache->SetObserver(cache_storage);
@@ -686,7 +686,8 @@ void LegacyCacheStorageCache::WriteSideData(ErrorCallback callback,
   // GetUsageAndQuota is called before entering a scheduled operation since it
   // can call Size, another scheduled operation.
   quota_manager_proxy_->GetUsageAndQuota(
-      origin_, blink::mojom::StorageType::kTemporary, scheduler_task_runner_,
+      storage_key_.origin(), blink::mojom::StorageType::kTemporary,
+      scheduler_task_runner_,
       base::BindOnce(&LegacyCacheStorageCache::WriteSideDataDidGetQuota,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback), url,
                      expected_response_time, trace_id, buffer, buf_len));
@@ -770,10 +771,11 @@ void LegacyCacheStorageCache::BatchOperation(
     // GetUsageAndQuota is called before entering a scheduled operation since it
     // can call Size, another scheduled operation. This is racy. The decision
     // to commit is made before the scheduled Put operation runs. By the time
-    // Put runs, the cache might already be full and the origin will be larger
+    // Put runs, the cache might already be full and the usage will be larger
     // than it's supposed to be.
     quota_manager_proxy_->GetUsageAndQuota(
-        origin_, blink::mojom::StorageType::kTemporary, scheduler_task_runner_,
+        storage_key_.origin(), blink::mojom::StorageType::kTemporary,
+        scheduler_task_runner_,
         base::BindOnce(&LegacyCacheStorageCache::BatchDidGetUsageAndQuota,
                        weak_ptr_factory_.GetWeakPtr(), std::move(operations),
                        trace_id, std::move(callback),
@@ -1004,7 +1006,7 @@ size_t LegacyCacheStorageCache::EstimatedStructSize(
 }
 
 LegacyCacheStorageCache::~LegacyCacheStorageCache() {
-  quota_manager_proxy_->NotifyOriginNoLongerInUse(origin_);
+  quota_manager_proxy_->NotifyOriginNoLongerInUse(storage_key_.origin());
 }
 
 void LegacyCacheStorageCache::SetSchedulerForTesting(
@@ -1014,7 +1016,7 @@ void LegacyCacheStorageCache::SetSchedulerForTesting(
 }
 
 LegacyCacheStorageCache::LegacyCacheStorageCache(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     const std::string& cache_name,
     const base::FilePath& path,
@@ -1024,7 +1026,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     int64_t cache_size,
     int64_t cache_padding)
-    : origin_(origin),
+    : storage_key_(storage_key),
       owner_(owner),
       cache_name_(cache_name),
       path_(path),
@@ -1042,7 +1044,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
               owner,
               std::move(blob_storage_context))),
       memory_only_(path.empty()) {
-  DCHECK(!origin_.opaque());
+  DCHECK(!storage_key_.opaque());
   DCHECK(quota_manager_proxy_.get());
 
   if (cache_size_ != CacheStorage::kSizeUnknown &&
@@ -1051,7 +1053,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     last_reported_size_ = cache_size_ + cache_padding_;
   }
 
-  quota_manager_proxy_->NotifyOriginInUse(origin_);
+  quota_manager_proxy_->NotifyOriginInUse(storage_key_.origin());
 }
 
 void LegacyCacheStorageCache::QueryCache(
@@ -1266,7 +1268,7 @@ void LegacyCacheStorageCache::QueryCacheDidReadMetadata(
       base::Time::FromInternalValue(entry_time), padding, side_data_padding));
   QueryCacheResult* match = &query_cache_context->matches->back();
   match->request = CreateRequest(*metadata, GURL(entry->GetKey()));
-  match->response = CreateResponse(origin_, *metadata, cache_name_);
+  match->response = CreateResponse(*metadata, cache_name_);
 
   if (!match->response) {
     entry->Doom();
@@ -1342,7 +1344,7 @@ void LegacyCacheStorageCache::QueryCacheUpgradePadding(
   auto* response = metadata->mutable_response();
   response->set_padding(storage::ComputeRandomResponsePadding());
   response->set_side_data_padding(CalculateSideDataPadding(
-      origin_, response, entry->GetDataSize(INDEX_SIDE_DATA)));
+      storage_key_, response, entry->GetDataSize(INDEX_SIDE_DATA)));
 
   // Get a temporary copy of the entry and metadata pointers before moving them
   // into base::BindOnce.
@@ -1687,7 +1689,7 @@ void LegacyCacheStorageCache::WriteSideDataDidWrite(
     cache_padding_ -= response->side_data_padding();
 
     response->set_side_data_padding(
-        CalculateSideDataPadding(origin_, response, rv));
+        CalculateSideDataPadding(storage_key_, response, rv));
     cache_padding_ += response->side_data_padding();
 
     // Get a temporary copy of the entry pointer before passing it in
@@ -1874,7 +1876,7 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   put_context->cache_entry.reset(result.ReleaseEntry());
 
   if (rv != net::OK) {
-    quota_manager_proxy_->NotifyWriteFailed(origin_);
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_.origin());
     PutComplete(std::move(put_context), CacheStorageError::kErrorExists);
     return;
   }
@@ -1933,7 +1935,7 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   if (ShouldPadResourceSize(*put_context->response) &&
       put_context->side_data_blob) {
     side_data_padding = CalculateSideDataPadding(
-        origin_, response_metadata, put_context->side_data_blob_size);
+        storage_key_, response_metadata, put_context->side_data_blob_size);
   }
   response_metadata->set_side_data_padding(side_data_padding);
 
@@ -1960,7 +1962,7 @@ void LegacyCacheStorageCache::PutDidWriteHeaders(
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (rv != expected_bytes) {
-    quota_manager_proxy_->NotifyWriteFailed(origin_);
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_.origin());
     PutComplete(
         std::move(put_context),
         MakeErrorStorage(ErrorStorageType::kPutDidWriteHeadersWrongBytes));
@@ -2042,7 +2044,7 @@ void LegacyCacheStorageCache::PutWriteBlobToCache(
   // We have real data, so stream it into the entry.  This will overwrite
   // any existing data.
   auto blob_to_cache = std::make_unique<CacheStorageBlobToDiskCache>(
-      quota_manager_proxy_, origin_);
+      quota_manager_proxy_, storage_key_);
   CacheStorageBlobToDiskCache* blob_to_cache_raw = blob_to_cache.get();
   BlobToDiskCacheIDMap::KeyType blob_to_cache_key =
       active_blob_to_disk_cache_writers_.Add(std::move(blob_to_cache));
@@ -2195,9 +2197,9 @@ void LegacyCacheStorageCache::UpdateCacheSizeGotSize(
   last_reported_size_ = PaddedCacheSize();
 
   quota_manager_proxy_->NotifyStorageModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), origin_,
-      blink::mojom::StorageType::kTemporary, size_delta, base::Time::Now(),
-      scheduler_task_runner_,
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
+      storage_key_.origin(), blink::mojom::StorageType::kTemporary, size_delta,
+      base::Time::Now(), scheduler_task_runner_,
       base::BindOnce(
           &LegacyCacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -2475,7 +2477,7 @@ void LegacyCacheStorageCache::CreateBackend(ErrorCallback callback) {
   net::CacheType cache_type = memory_only_ ? net::MEMORY_CACHE : net::APP_CACHE;
 
   // The maximum size of each cache. Ultimately, cache size
-  // is controlled per-origin by the QuotaManager.
+  // is controlled per storage key by the QuotaManager.
   int64_t max_bytes = memory_only_ ? std::numeric_limits<int>::max()
                                    : std::numeric_limits<int64_t>::max();
 

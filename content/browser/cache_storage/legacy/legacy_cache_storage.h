@@ -25,6 +25,7 @@
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -46,7 +47,7 @@ FORWARD_DECLARE_TEST(CacheStorageManagerTest, PutResponseWithExistingFileTest);
 FORWARD_DECLARE_TEST(CacheStorageManagerTest, TestErrorInitializingCache);
 }  // namespace cache_storage_manager_unittest
 
-// TODO(jkarlin): Constrain the total bytes used per origin.
+// TODO(jkarlin): Constrain the total bytes used per storage key.
 
 // Concrete implementation of the CacheStorage abstract class.  This is
 // the legacy implementation using LegacyCacheStorageCache objects.
@@ -65,7 +66,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       LegacyCacheStorageManager* cache_storage_manager,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
 
   // Any unfinished asynchronous operations may not complete or call their
@@ -124,8 +125,8 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
   // caches even if there are existing handles to them.
   void GetSizeThenCloseAllCaches(SizeCallback callback);
 
-  // The size of all of the origin's contents. This value should be used as an
-  // estimate only since the cache may be modified at any time.
+  // The size of all of the storage key's contents. This value should be used as
+  // an estimate only since the cache may be modified at any time.
   void Size(SizeCallback callback);
 
   // The functions below are for tests to verify that the operations run

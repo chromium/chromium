@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 
 namespace base {
@@ -93,8 +94,8 @@ class CONTENT_EXPORT CacheStorageContextImpl
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // The set of origins whose storage should be cleared on shutdown.
-  std::set<url::Origin> origins_to_purge_on_shutdown_;
+  // The set of storage keys whose storage should be cleared on shutdown.
+  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
 
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
