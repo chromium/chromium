@@ -263,7 +263,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
             DCHECK_CURRENTLY_ON(BrowserThread::UI);
             RenderFrameHostImpl* const rfhi =
                 RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-            if (!rfhi || !rfhi->IsCurrent()) {
+            if (!rfhi || !rfhi->IsActive()) {
               return;
             }
             if (rfhi != rfhi->GetMainFrame()) {

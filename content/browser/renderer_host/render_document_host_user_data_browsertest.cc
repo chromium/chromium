@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // 5) Check that the RDHUD object is not cleared after renderer process
   // crashes.
   EXPECT_EQ(top_frame_host(), rfh_a);
-  EXPECT_FALSE(pending_rfh->IsCurrent());
+  EXPECT_FALSE(pending_rfh->IsActive());
   EXPECT_FALSE(rfh_a->IsRenderFrameLive());
   EXPECT_TRUE(pending_rfh->IsRenderFrameLive());
   EXPECT_TRUE(data);
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_EQ(navigation_request->associated_site_instance_type(),
             NavigationRequest::AssociatedSiteInstanceType::CURRENT);
   EXPECT_TRUE(current_rfh);
-  EXPECT_TRUE(current_rfh->IsCurrent());
+  EXPECT_TRUE(current_rfh->IsActive());
 
   // 4) Get the RenderDocumentHostUserData associated with speculative
   // RenderFrameHost.
@@ -572,8 +572,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(data_a);
   EXPECT_TRUE(data_b);
 
-  EXPECT_FALSE(rfh_a->IsCurrent());
-  EXPECT_FALSE(rfh_b->IsCurrent());
+  EXPECT_FALSE(rfh_a->IsActive());
+  EXPECT_FALSE(rfh_b->IsActive());
 }
 
 // Tests that RenderDocumentHostUserData associated with RenderFrameHost is not

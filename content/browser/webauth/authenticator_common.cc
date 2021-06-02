@@ -851,7 +851,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
 }
 
 bool AuthenticatorCommon::IsFocused() const {
-  return GetRenderFrameHost()->IsCurrent() &&
+  return GetRenderFrameHost()->IsActive() &&
          GetWebAuthenticationDelegate()->IsFocused(
              WebContents::FromRenderFrameHost(GetRenderFrameHost()));
 }

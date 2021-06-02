@@ -69,13 +69,13 @@ UserInitiatedInfo CreateUserInitiatedInfo(
 bool ShouldProcessNavigation(content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame())
     return false;
-  // Ignore navigations not happening in the primary FrameTree. Using IsCurrent
+  // Ignore navigations not happening in the primary FrameTree. Using IsActive
   // as a proxy for "is in primary FrameTree".
   // TODO(https://crbug.com/1190112): Add proper support for prerendering when
   // there are better content APIs.
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       navigation_handle->GetPreviousRenderFrameHostId());
-  return !rfh || rfh->IsCurrent();
+  return !rfh || rfh->IsActive();
 }
 
 }  // namespace
@@ -194,7 +194,7 @@ void MetricsWebContentsObserver::MediaStartedPlaying(
   auto* render_frame_host =
       content::RenderFrameHost::FromID(id.frame_routing_id);
 
-  if (!render_frame_host || !render_frame_host->GetMainFrame()->IsCurrent()) {
+  if (!render_frame_host || !render_frame_host->GetMainFrame()->IsActive()) {
     // Ignore media that starts playing in a page that was navigated away
     // from.
     return;
@@ -349,7 +349,7 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     //
     // TODO(crbug.com/738577): use a DocumentId here instead, to eliminate this
     // race.
-    if (render_frame_host_or_null->GetMainFrame()->IsCurrent()) {
+    if (render_frame_host_or_null->GetMainFrame()->IsActive()) {
       return committed_load_.get();
     }
   }
@@ -491,7 +491,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   }
   if (!navigation_handle->IsInMainFrame()) {
     if (committed_load_ && navigation_handle->GetParentFrame() &&
-        navigation_handle->GetParentFrame()->GetMainFrame()->IsCurrent()) {
+        navigation_handle->GetParentFrame()->GetMainFrame()->IsActive()) {
       committed_load_->DidFinishSubFrameNavigation(navigation_handle);
       committed_load_->metrics_update_dispatcher()->DidFinishSubFrameNavigation(
           navigation_handle);
@@ -883,7 +883,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
   // TODO(crbug.com/1061060): We should not ignore page timings if the page is
   // in bfcache.
   // TODO(https://crbug.com/1190112): Add support for Prerender
-  if (!render_frame_host->GetMainFrame()->IsCurrent()) {
+  if (!render_frame_host->GetMainFrame()->IsActive()) {
     RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
     return;
   }
@@ -1004,10 +1004,10 @@ void MetricsWebContentsObserver::OnBrowserFeatureUsage(
   // data from frames that have already been navigated away from. However, this
   // could be false if this is called for the page that is prerendering with
   // MPArch. Therefore, ignore navigations not happening in the primary
-  // FrameTree. Using IsCurrent as a proxy for "is in primary FrameTree".
+  // FrameTree. Using IsActive as a proxy for "is in primary FrameTree".
   // TODO(https://crbug.com/1190112): Add proper support for prerendering when
   // there are better content APIs.
-  if (!render_frame_host->GetMainFrame()->IsCurrent())
+  if (!render_frame_host->GetMainFrame()->IsActive())
     return;
 
   if (!committed_load_) {

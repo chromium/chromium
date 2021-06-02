@@ -50,7 +50,7 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
       content::WebContents::FromRenderFrameHost(rfhi));
 
   // If the overlay would not be immediately used, fail the request.
-  if (!rfhi->IsCurrent() || !web_contents_impl || web_contents_impl->IsHidden())
+  if (!rfhi->IsActive() || !web_contents_impl || web_contents_impl->IsHidden())
     return 0;
 
   // Dialog-based overlays are not supported for persistent video.

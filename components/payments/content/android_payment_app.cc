@@ -60,7 +60,7 @@ void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsCurrent())
+  if (!rfh || !rfh->IsActive())
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);

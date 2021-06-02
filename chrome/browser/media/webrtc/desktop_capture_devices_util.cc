@@ -39,7 +39,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
       content::RenderFrameHost::FromID(
           captured_id.web_contents_id.render_process_id,
           captured_id.web_contents_id.main_render_frame_id);
-  if (!captured_rfh || !captured_rfh->IsCurrent()) {
+  if (!captured_rfh || !captured_rfh->IsActive()) {
     return nullptr;
   }
 

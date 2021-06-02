@@ -469,7 +469,7 @@ bool Portal::IsSameOrigin() const {
 std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
   WebContentsImpl* outer_contents = GetPortalHostContents();
 
-  DCHECK(owner_render_frame_host_->IsCurrent())
+  DCHECK(owner_render_frame_host_->IsActive())
       << "The binding should have been closed when the portal's outer "
          "FrameTreeNode was deleted due to swap out.";
 

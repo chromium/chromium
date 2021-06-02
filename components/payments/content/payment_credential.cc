@@ -26,7 +26,7 @@ namespace payments {
 // static
 bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
     content::RenderFrameHost* rfh) {
-  return rfh && rfh->IsCurrent() &&
+  return rfh && rfh->IsActive() &&
          rfh->IsFeatureEnabled(
              blink::mojom::PermissionsPolicyFeature::kPayment) &&
          base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation);

@@ -130,9 +130,9 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     EnsureStableParentValue(old_host);
     CHECK_EQ(old_host->GetParent(), new_host->GetParent());
     GlobalRoutingID routing_pair = GetRoutingPair(old_host);
-    // If the navigation requires a new RFH, IsCurrent on old host should be
+    // If the navigation requires a new RFH, IsActive on old host should be
     // false.
-    CHECK(!old_host->IsCurrent());
+    CHECK(!old_host->IsActive());
     bool old_did_exist = !!current_hosts_.erase(routing_pair);
     if (!old_did_exist) {
       CHECK(false)

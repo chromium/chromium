@@ -132,7 +132,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       base::OnceClosure finished_using_resources_callback) {
     DCHECK(!verifier_);
     DCHECK(initiator_render_frame_host);
-    DCHECK(initiator_render_frame_host->IsCurrent());
+    DCHECK(initiator_render_frame_host->IsActive());
 
     downloader_ = std::move(downloader);
 
@@ -408,7 +408,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
   DCHECK(!requested_method_data.empty());
 
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsCurrent())
+  if (!rfh || !rfh->IsActive())
     return;
 
   // Do not look up payment handlers for ignored payment methods.

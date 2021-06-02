@@ -9225,9 +9225,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
               ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 }
 
-// Navigate from A(B) to C and check IsCurrent status for RenderFrameHost A
+// Navigate from A(B) to C and check IsActive status for RenderFrameHost A
 // and B before and after entering back-forward cache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CheckIsCurrent) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CheckIsActive) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -9238,16 +9238,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CheckIsCurrent) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
 
-  EXPECT_TRUE(rfh_a->IsCurrent());
-  EXPECT_TRUE(rfh_b->IsCurrent());
+  EXPECT_TRUE(rfh_a->IsActive());
+  EXPECT_TRUE(rfh_b->IsActive());
 
   // 2) Navigate to C.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 
-  EXPECT_FALSE(rfh_a->IsCurrent());
-  EXPECT_FALSE(rfh_b->IsCurrent());
+  EXPECT_FALSE(rfh_a->IsActive());
+  EXPECT_FALSE(rfh_b->IsActive());
 }
 
 // Test that LifecycleStateImpl is updated correctly when page enters and

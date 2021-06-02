@@ -201,7 +201,7 @@ class TopControlsSlideTabObserver
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override {
-    if (render_frame_host->IsCurrent() &&
+    if (render_frame_host->IsActive() &&
         (render_frame_host == web_contents()->GetMainFrame())) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }

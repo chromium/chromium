@@ -169,7 +169,7 @@ void WebContentsTaskProvider::WebContentsEntry::RenderFrameDeleted(
 void WebContentsTaskProvider::WebContentsEntry::RenderFrameHostChanged(
     RenderFrameHost* old_host,
     RenderFrameHost* new_host) {
-  DCHECK(new_host->IsCurrent());
+  DCHECK(new_host->IsActive());
 
   // The navigating frame and its subframes are now pending deletion. Stop
   // tracking them immediately rather than when they are destroyed. The order of
@@ -188,7 +188,7 @@ void WebContentsTaskProvider::WebContentsEntry::RenderFrameCreated(
 
   // Skip pending/speculative hosts. We'll create tasks for these if the
   // navigation commits, at which point RenderFrameHostChanged() will fire.
-  if (!render_frame_host->IsCurrent())
+  if (!render_frame_host->IsActive())
     return;
 
   CreateTaskForFrame(render_frame_host);
@@ -271,7 +271,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     RenderFrameHost* render_frame_host) {
   // Currently we do not track pending hosts, or pending delete hosts.
   DCHECK(render_frame_host);
-  DCHECK(render_frame_host->IsCurrent());
+  DCHECK(render_frame_host->IsActive());
 
   // Exclude sad tabs and sad OOPIFs.
   if (!render_frame_host->IsRenderFrameLive())

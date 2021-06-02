@@ -261,7 +261,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
          mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
          content::RenderFrameHost* render_frame_host) {
         DCHECK(render_frame_host);
-        DCHECK(render_frame_host->IsCurrent());
+        DCHECK(render_frame_host->IsActive());
         auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
             render_frame_host, is_off_the_record, valid_ssl, prefs,
             twa_package_name, has_authenticator, observer_for_test);

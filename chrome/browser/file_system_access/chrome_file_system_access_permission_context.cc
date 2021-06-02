@@ -125,7 +125,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-  if (!rfh || !rfh->IsCurrent()) {
+  if (!rfh || !rfh->IsActive()) {
     // Requested from a no longer valid render frame host.
     std::move(callback).Run(ChromeFileSystemAccessPermissionContext::
                                 SensitiveDirectoryResult::kAbort);
@@ -497,7 +497,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Otherwise, perform checks and ask the user for permission.
 
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (!rfh || !rfh->IsCurrent()) {
+    if (!rfh || !rfh->IsActive()) {
       // Requested from a no longer valid render frame host.
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kInvalidFrame);

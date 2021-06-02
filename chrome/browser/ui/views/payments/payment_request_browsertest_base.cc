@@ -498,7 +498,7 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
     mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
-  DCHECK(render_frame_host->IsCurrent());
+  DCHECK(render_frame_host->IsActive());
   std::unique_ptr<TestChromePaymentRequestDelegate> delegate =
       std::make_unique<TestChromePaymentRequestDelegate>(
           render_frame_host, /*observer=*/this, &prefs_, is_incognito_,

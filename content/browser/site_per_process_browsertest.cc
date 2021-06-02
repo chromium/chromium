@@ -13078,7 +13078,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The old RFH should be pending deletion.
   EXPECT_TRUE(rfh->IsPendingDeletion());
-  EXPECT_FALSE(rfh->IsCurrent());
+  EXPECT_FALSE(rfh->IsActive());
   EXPECT_NE(rfh, web_contents()->GetMainFrame());
 
   // Check that it still has a valid last committed URL.

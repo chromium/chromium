@@ -4176,7 +4176,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(kid_url, child_rfh->GetLastCommittedURL());
   EXPECT_EQ(url, main_frame->GetLastCommittedURL());
   EXPECT_TRUE(main_frame->IsPendingDeletion());
-  EXPECT_FALSE(main_frame->IsCurrent());
+  EXPECT_FALSE(main_frame->IsActive());
   net::SiteForCookies computed_for_child = child_rfh->ComputeSiteForCookies();
   EXPECT_TRUE(
       net::SiteForCookies::FromUrl(url).IsEquivalent(computed_for_child))
@@ -4245,11 +4245,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, WebUiReloadAfterCrash) {
 }
 
 // Start with A(B), navigate A to C. By emulating a slow unload handler B, check
-// the status of IsCurrent for subframes of A i.e., B before and after
+// the status of IsActive for subframes of A i.e., B before and after
 // navigating to C.
 // Test is flaky: https://crbug.com/1114149.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       DISABLED_CheckIsCurrentBeforeAndAfterUnload) {
+                       DISABLED_CheckIsActiveBeforeAndAfterUnload) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   GURL url_ab(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -4265,9 +4265,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // 2) Leave rfh_b in pending deletion state.
   LeaveInPendingDeletionState(rfh_b);
 
-  // 3) Check the IsCurrent state of rfh_a, rfh_b before navigating to C.
-  EXPECT_TRUE(rfh_a->IsCurrent());
-  EXPECT_TRUE(rfh_b->IsCurrent());
+  // 3) Check the IsActive state of rfh_a, rfh_b before navigating to C.
+  EXPECT_TRUE(rfh_a->IsActive());
+  EXPECT_TRUE(rfh_b->IsActive());
 
   // 4) Navigate rfh_a to C.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
@@ -4282,11 +4282,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       testing::AnyOf(testing::Eq(LifecycleStateImpl::kRunningUnloadHandlers),
                      testing::Eq(LifecycleStateImpl::kInBackForwardCache)));
 
-  // 5) Check the IsCurrent state of rfh_a, rfh_b and rfh_c after navigating to
+  // 5) Check the IsActive state of rfh_a, rfh_b and rfh_c after navigating to
   // C.
-  EXPECT_FALSE(rfh_a->IsCurrent());
-  EXPECT_FALSE(rfh_b->IsCurrent());
-  EXPECT_TRUE(rfh_c->IsCurrent());
+  EXPECT_FALSE(rfh_a->IsActive());
+  EXPECT_FALSE(rfh_b->IsActive());
+  EXPECT_TRUE(rfh_c->IsActive());
 }
 
 // Test the LifecycleStateImpl is updated correctly for the main frame during

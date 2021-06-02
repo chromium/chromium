@@ -898,7 +898,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
   if (!is_active())
     return {};
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(GetMainFrame());
-  if (!rfh || !rfh->IsCurrent())
+  if (!rfh || !rfh->IsActive())
     return {};
   FrameTreeNode* root = rfh->frame_tree_node();
   FrameTree* tree = root->frame_tree();

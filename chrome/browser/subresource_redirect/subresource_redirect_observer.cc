@@ -317,7 +317,7 @@ bool SubresourceRedirectObserver::IsAllowedForCurrentLoginState(
   content::RenderFrameHost* parent_render_frame_host =
       navigation_handle->GetRenderFrameHost();
   while ((parent_render_frame_host = parent_render_frame_host->GetParent())) {
-    if (!parent_render_frame_host->IsCurrent())
+    if (!parent_render_frame_host->IsActive())
       continue;
     // Existence of ImageCompressionAppliedDocument for the parent render frame
     // indicates the parent is not logged-in and allowed fo subresource

@@ -1550,13 +1550,11 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //
   // Note that this logic is fairly subtle. It needs to include all subframes
   // and all speculative frames, but it should exclude case #1 (a main
-  // RenderFrame owned by the RenderView). It can't simply:
-  // - check |frame_tree_node_->render_manager()->speculative_frame_host()| for
-  //   equality against |this|. The speculative frame host is unset before the
-  //   speculative frame host is destroyed, so this condition would never be
-  //   matched for a speculative RFH that needs to be destroyed.
-  // - check |IsCurrent()|, because the RenderFrames in an InterstitialPageImpl
-  //   are never considered current.
+  // RenderFrame owned by the RenderView). It can't simply check
+  // |frame_tree_node_->render_manager()->speculative_frame_host()| for
+  // equality against |this|. The speculative frame host is unset before the
+  // speculative frame host is destroyed, so this condition would never be
+  // matched for a speculative RFH that needs to be destroyed.
   //
   // Directly comparing against |RenderViewHostImpl::GetMainFrame()| still has
   // one additional subtlety though: |GetMainFrame()| can sometimes return a
@@ -2503,10 +2501,9 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
 
 gfx::AcceleratedWidget
 RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
-  // Only the main frame's current frame host is connected to the native
-  // widget tree for accessibility, so return null if this is queried on
-  // any other frame.
-  if (!is_main_frame() || !IsCurrent())
+  // Only the active RenderFrameHost is connected to the native widget tree for
+  // accessibility, so return null if this is queried on any other frame.
+  if (!is_main_frame() || !IsActive())
     return gfx::kNullAcceleratedWidget;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -2943,7 +2940,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
   if (IsRenderFrameCreated()) {
     GetMojomFrameInRenderer()->Delete(intent);
 
-    if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
+    if (!frame_tree_node_->IsMainFrame() && IsActive()) {
       DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
       // Documents from the page in the BackForwardCache don't run their unload
       // handlers, even if they have one. As a result, this should never delay
@@ -5925,10 +5922,10 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool effective_transient_activation_state =
       params->allow_popup || frame_tree_node_->HasTransientUserActivation();
 
-  // Ignore window creation when sent from a frame that's not current or
+  // Ignore window creation when sent from a frame that's not active or
   // created.
   bool can_create_window =
-      IsCurrent() && is_render_frame_created() &&
+      IsActive() && is_render_frame_created() &&
       GetContentClient()->browser()->CanCreateWindow(
           this, GetLastCommittedURL(), GetMainFrame()->GetLastCommittedURL(),
           last_committed_origin_, params->window_container_type,
@@ -7073,7 +7070,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   // The renderer can exit view source mode when any error or cancellation
   // happen. When reusing the same renderer, overwrite to recover the mode.
-  if (is_view_source && IsCurrent()) {
+  if (is_view_source && IsActive()) {
     DCHECK(!GetParent());
     GetAssociatedLocalFrame()->EnableViewSourceMode();
   }
@@ -7994,20 +7991,19 @@ RenderFrameHost::LifecycleState RenderFrameHostImpl::GetLifecycleStateFromImpl(
   }
 }
 
-bool RenderFrameHostImpl::IsCurrent() {
+bool RenderFrameHostImpl::IsActive() {
   // When the document is transitioning away from kActive/kPrerendering to a
   // yet-to-be-determined state, the RenderFrameHostManager has already
-  // updated its current RenderFrameHost, and the old document is no longer
-  // the current one. In that case, return false.
+  // updated its active RenderFrameHost, and the old document is no longer
+  // the active one. In that case, return false.
   if (has_pending_lifecycle_state_update_)
     return false;
 
-  // Only documents in the LifecycleStateImpl::kActive are considered current.
   return lifecycle_state() == LifecycleStateImpl::kActive;
 }
 
 size_t RenderFrameHostImpl::GetProxyCount() {
-  if (!IsCurrent())
+  if (!IsActive())
     return 0;
   return frame_tree_node_->render_manager()->GetProxyCount();
 }
@@ -10971,10 +10967,9 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
   base::debug::SetCrashKeyString(lifecycle_state_key,
                                  LifecycleStateImplToString(lifecycle_state()));
 
-  static auto* const is_current_key = base::debug::AllocateCrashKeyString(
-      "is_current", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(is_current_key,
-                                 bool_to_crash_key(IsCurrent()));
+  static auto* const is_active_key = base::debug::AllocateCrashKeyString(
+      "is_active", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(is_active_key, bool_to_crash_key(IsActive()));
 
   static auto* const is_cross_process_subframe_key =
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",

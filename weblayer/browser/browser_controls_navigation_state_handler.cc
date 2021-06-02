@@ -88,7 +88,7 @@ void BrowserControlsNavigationStateHandler::DidFailLoad(
       render_frame_host->GetMainFrame() == render_frame_host;
   if (is_main_frame)
     ScheduleStopDelayedForceShow();
-  if (render_frame_host->IsCurrent() &&
+  if (render_frame_host->IsActive() &&
       (render_frame_host == web_contents()->GetMainFrame())) {
     UpdateState();
   }

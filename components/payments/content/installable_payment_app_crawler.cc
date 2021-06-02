@@ -427,7 +427,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
   // TODO(crbug.com/1058840): Move this sanity check to ManifestIconDownloader
   // after DownloadImage refactor is done.
   auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
-  auto* web_contents = rfh && rfh->IsCurrent()
+  auto* web_contents = rfh && rfh->IsActive()
                            ? content::WebContents::FromRenderFrameHost(rfh)
                            : nullptr;
   if (!web_contents) {

@@ -179,7 +179,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
                 frame_node->SetIsCurrent(is_current);
               },
               render_frame_host->GetLastCommittedURL(),
-              render_frame_host->IsCurrent()));
+              render_frame_host->IsActive()));
 
   frames_[render_frame_host] = std::move(frame);
 }
@@ -435,7 +435,7 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   // This favicon change might have been initiated by a different frame some
   // time ago and the main frame might have changed.
-  if (!render_frame_host->IsCurrent())
+  if (!render_frame_host->IsActive())
     return;
 
   // TODO(siggi): This logic belongs in the policy layer rather than here.

@@ -116,7 +116,7 @@ void LongScreenshotsTabService::CaptureTabInternal(
   // defunct pointer.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
-      contents->GetMainFrame() != rfh || !rfh->IsCurrent()) {
+      contents->GetMainFrame() != rfh || !rfh->IsActive()) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kWebContentsGone);

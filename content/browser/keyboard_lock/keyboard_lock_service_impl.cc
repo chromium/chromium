@@ -64,7 +64,7 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   else
     LogKeyboardLockMethodCalled(KeyboardLockMethods::kRequestSomeKeys);
 
-  if (!render_frame_host_->IsCurrent()) {
+  if (!render_frame_host_->IsActive()) {
     std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
     return;
   }

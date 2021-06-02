@@ -235,7 +235,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // NOTE: The result might be different from
   // WebContents::FromRenderFrameHost(this)->GetMainFrame().
   // This function (RenderFrameHost::GetMainFrame) is the preferred API in
-  // almost all of the cases. See RenderFrameHost::IsCurrent for the details.
+  // almost all of the cases. See RenderFrameHost::IsActive for the details.
   virtual RenderFrameHost* GetMainFrame() = 0;
 
   // Returns a vector of all RenderFrameHosts in the subtree rooted at |this|.
@@ -622,33 +622,22 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // new RenderFrameHosts when they reach the kPendingCommit state.
   virtual LifecycleState GetLifecycleState() = 0;
 
-  // Returns true if this RenderFrameHost is currently in the frame tree for its
-  // page. Specifically, this is when the RenderFrameHost and all of its
-  // ancestors are the current RenderFrameHost in their respective
-  // FrameTreeNodes.
+  // Returns true if the document hosted in this RenderFrameHost is committed
+  // and lives inside a page presented to the user for the WebContents it is in
+  // (e.g., not a prerendered or back-forward cached page). Only active RFHs
+  // should show UI elements (e.g., prompts, color picker, etc) to the user, so
+  // this method should be checked before showing some UI on behalf of a given
+  // RenderFrameHost (in particular, inside handlers for IPCs from a renderer
+  // process) or when crossing document/tab boundary in general, e.g., when
+  // using WebContents::FromRenderFrameHost.
   //
-  // For instance, during a navigation, if a new RenderFrameHost replaces this
-  // RenderFrameHost, IsCurrent() becomes false for this frame and its
-  // children even if the children haven't been replaced.
-  //
-  // After a RenderFrameHost has been replaced in its frame, it will either:
-  //  1) Enter the BackForwardCache.
-  //  2) Start running unload handlers and will be deleted after this ("pending
-  //  deletion").
-  // In both cases, IsCurrent() becomes false for this frame and all its
-  // children.
-  //
-  // This method should be called before trying to display some UI to the user
-  // on behalf of the given RenderFrameHost (or when crossing document / tab
-  // boundary in general, e.g. when using WebContents::FromRenderFrameHost) to
-  // check if the given RenderFrameHost is currently being displayed in a given
-  // tab.
-  //
-  // TODO(https://crbug.com/1184622): Rename IsCurrent to a more suitable name
-  // and update this comment accordingly considering the new feature Prerender2,
-  // where it is possible to have current RenderFrameHosts in multiple frame
-  // trees.
-  virtual bool IsCurrent() = 0;
+  // IsActive() is generally the same as GetLifecycleState() == kActive, except
+  // during a small window in RenderFrameHostManager::CommitPending which
+  // happens before updating the next LifecycleState of old RenderFrameHost. Due
+  // to this, IsActive() is preferred instead of using LifecycleState::kActive.
+  // TODO(crbug.com/1177198): Make IsActive and GetLifecycleState() == kActive
+  // always match.
+  virtual bool IsActive() = 0;
 
   // Returns true iff the RenderFrameHost is inactive, i.e., when the
   // RenderFrameHost is either in BackForwardCache, Prerendering, or pending
@@ -656,7 +645,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // RenderFrameHosts can properly handle events and events processing shouldn't
   // or can't be deferred until the RenderFrameHost becomes active again.
   // Callers that only want to check whether a RenderFrameHost is active or not
-  // should use IsCurrent() instead.
+  // should use IsActive() instead.
 
   // Additionally, this method has a side effect for back-forward cache and
   // prerendering, where the document is prevented from ever becoming active
@@ -672,11 +661,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // |IsInactiveAndDisallowActivation()| returns false along with terminating
   // the renderer process.
 
-  // Note that if |IsInactiveAndDisallowActivation()| returns true, then
-  // IsCurrent() returns false.
-  //
-  // TODO(https://crbug.com/1175866): Rename this method with a more suitable
-  // name considering all document states.
+  // The return value of IsInactiveAndDisallowActivation() is the opposite of
+  // IsActive() except in some uncommon cases:
+  // - The "small window" referred to in the IsActive() documentation.
+  // - For speculative and pending commit RenderFrameHosts, as mentioned above.
   virtual bool IsInactiveAndDisallowActivation() = 0;
 
   // Get the number of proxies to this frame, in all processes. Exposed for

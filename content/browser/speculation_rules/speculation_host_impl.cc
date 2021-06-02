@@ -48,8 +48,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Only handle messages from the main frame of the primary frame tree.
-  if (!render_frame_host()->IsCurrent())
+  // Only handle messages from an active main frame.
+  if (!render_frame_host()->IsActive())
     return;
   if (render_frame_host()->GetParent())
     return;

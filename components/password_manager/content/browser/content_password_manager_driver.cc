@@ -194,8 +194,8 @@ bool ContentPasswordManagerDriver::IsMainFrame() const {
 }
 
 bool ContentPasswordManagerDriver::CanShowAutofillUi() const {
-  // Don't show AutofillUi for non-current RenderFrameHost.
-  return render_frame_host_->IsCurrent();
+  // Don't show AutofillUi for inactive RenderFrameHost.
+  return render_frame_host_->IsActive();
 }
 
 const GURL& ContentPasswordManagerDriver::GetLastCommittedURL() const {

@@ -1425,7 +1425,7 @@ TEST_F(MetricsWebContentsObserverTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl2));
 
-  DCHECK(!old_rfh->IsCurrent());
+  DCHECK(!old_rfh->IsActive());
   observer()->ResourceLoadComplete(
       old_rfh, content::GlobalRequestID(),
       *CreateResourceLoadInfo(GURL("http://www.other.com/"),

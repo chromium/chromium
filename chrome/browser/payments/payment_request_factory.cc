@@ -33,7 +33,7 @@ PaymentRequestFactoryCallback& GetTestingFactoryCallback() {
 void CreatePaymentRequest(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver) {
-  if (!render_frame_host->IsCurrent()) {
+  if (!render_frame_host->IsActive()) {
     // This happens when the page has navigated away, which would cause the
     // blink PaymentRequest to be released shortly, or when the iframe is being
     // removed from the page, which is not a use case that we support.

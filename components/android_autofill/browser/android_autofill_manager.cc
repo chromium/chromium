@@ -144,7 +144,7 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
     return autofill_provider_for_testing_;
   if (auto* rfh =
           static_cast<ContentAutofillDriver*>(driver())->render_frame_host()) {
-    if (rfh->IsCurrent()) {
+    if (rfh->IsActive()) {
       if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
         return AutofillProvider::FromWebContents(web_contents);
       }

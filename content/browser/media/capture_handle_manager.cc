@@ -118,12 +118,12 @@ CaptureHandleManager::Observer::Create(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto* const capturer_rfhi = RenderFrameHostImpl::FromID(capturer);
-  if (!capturer_rfhi || !capturer_rfhi->IsCurrent()) {
+  if (!capturer_rfhi || !capturer_rfhi->IsActive()) {
     return nullptr;
   }
 
   auto* const captured_rfhi = RenderFrameHostImpl::FromID(captured);
-  if (!captured_rfhi || !captured_rfhi->IsCurrent()) {
+  if (!captured_rfhi || !captured_rfhi->IsActive()) {
     return nullptr;
   }
 
@@ -162,7 +162,7 @@ void CaptureHandleManager::Observer::OnCaptureHandleConfigUpdate(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto* const capturer_rfhi = RenderFrameHostImpl::FromID(capturer_);
-  if (!capturer_rfhi || !capturer_rfhi->IsCurrent()) {
+  if (!capturer_rfhi || !capturer_rfhi->IsActive()) {
     DVLOG(1) << "Invalid capturer: " << capturer_ << ".";
     return;
   }

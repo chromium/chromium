@@ -21,9 +21,9 @@ namespace content {
 void AuthenticatorImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  // Avoid creating the service if the RenderFrameHost isn't current, e.g. if a
+  // Avoid creating the service if the RenderFrameHost isn't active, e.g. if a
   // request arrives during a navigation.
-  if (!render_frame_host->IsCurrent()) {
+  if (!render_frame_host->IsActive()) {
     return;
   }
 

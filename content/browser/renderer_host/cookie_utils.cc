@@ -79,7 +79,7 @@ void EmitCookieWarningsAndMetrics(
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
   RenderFrameHostImpl* root_frame_host = rfh->GetMainFrame();
 
-  if (!root_frame_host->IsCurrent())
+  if (!root_frame_host->IsActive())
     return;
 
   bool samesite_treated_as_lax_cookies = false;

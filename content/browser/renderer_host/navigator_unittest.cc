@@ -121,7 +121,7 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
 
   // Commit the navigation.
   navigation->Commit();
-  EXPECT_TRUE(main_test_rfh()->IsCurrent());
+  EXPECT_TRUE(main_test_rfh()->IsActive());
   EXPECT_EQ(main_test_rfh()->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kActive);
   if (AreDefaultSiteInstancesEnabled()) {
@@ -191,7 +191,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
 
   // Commit the navigation.
   navigation->Commit();
-  EXPECT_TRUE(main_test_rfh()->IsCurrent());
+  EXPECT_TRUE(main_test_rfh()->IsActive());
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
@@ -246,7 +246,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
 
   // Commit the navigation.
   navigation->Commit();
-  EXPECT_TRUE(main_test_rfh()->IsCurrent());
+  EXPECT_TRUE(main_test_rfh()->IsActive());
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
 

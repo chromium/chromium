@@ -233,9 +233,8 @@ base::WeakPtr<PaymentAppServiceBridge> PaymentAppServiceBridge::GetWeakPtr() {
 
 content::WebContents* PaymentAppServiceBridge::GetWebContents() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsCurrent()
-             ? content::WebContents::FromRenderFrameHost(rfh)
-             : nullptr;
+  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
+                                : nullptr;
 }
 const GURL& PaymentAppServiceBridge::GetTopOrigin() {
   return top_origin_;
@@ -268,7 +267,7 @@ PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // displays the top-level origin in its UI before the user can click on the
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsCurrent()
+  return rfh && rfh->IsActive()
              ? std::make_unique<InternalAuthenticatorAndroid>(
                    rfh->GetMainFrame())
              : nullptr;

@@ -194,7 +194,7 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
   // picked, a specualtive RenderFrameHost might be deleted. Do not abort the
   // stream in that case.
   if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
-      !render_frame_host->IsCurrent())
+      !render_frame_host->IsActive())
     return;
 
   AbortStream();

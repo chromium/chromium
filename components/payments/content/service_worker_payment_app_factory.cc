@@ -182,7 +182,7 @@ ServiceWorkerPaymentAppFactory::~ServiceWorkerPaymentAppFactory() {}
 
 void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   auto* rfh = delegate->GetInitiatorRenderFrameHost();
-  if (!rfh || !rfh->IsCurrent() || !delegate->GetWebContents())
+  if (!rfh || !rfh->IsActive() || !delegate->GetWebContents())
     return;  // The frame or page is being unloaded.
 
   auto creator = std::make_unique<ServiceWorkerPaymentAppCreator>(

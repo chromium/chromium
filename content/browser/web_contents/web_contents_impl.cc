@@ -607,8 +607,8 @@ WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
                         rfh);
   if (!rfh)
     return nullptr;
-  if (!rfh->IsCurrent() && base::FeatureList::IsEnabled(
-                               kCheckWebContentsAccessFromNonCurrentFrame)) {
+  if (!rfh->IsActive() && base::FeatureList::IsEnabled(
+                              kCheckWebContentsAccessFromNonCurrentFrame)) {
     // TODO(crbug.com/1059903): return nullptr here eventually.
     base::debug::DumpWithoutCrashing();
   }
@@ -4434,7 +4434,7 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
   // Prevent frames that are not active (e.g. a prerendering page) from opening
   // new windows, tabs, popups, etc.
   if (params.disposition != WindowOpenDisposition::CURRENT_TAB &&
-      source_render_frame_host && !source_render_frame_host->IsCurrent()) {
+      source_render_frame_host && !source_render_frame_host->IsActive()) {
     return nullptr;
   }
 
@@ -6221,7 +6221,7 @@ void WebContentsImpl::UpdateFaviconURL(
   // navigation occurs while a page is still loading, the initial page
   // may stop loading and send us updated favicon URLs after the navigation
   // for the new page has committed.
-  if (!source->IsCurrent())
+  if (!source->IsActive())
     return;
 
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateFaviconURL, source,
@@ -6768,7 +6768,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   javascript_dialog_dismiss_notifier_ =
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
-  bool should_suppress = !render_frame_host->IsCurrent() ||
+  bool should_suppress = !render_frame_host->IsActive() ||
                          (delegate_ && delegate_->ShouldSuppressDialogs(this));
   bool has_non_devtools_handlers = delegate_ && dialog_manager_;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;

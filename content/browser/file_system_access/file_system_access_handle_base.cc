@@ -45,7 +45,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
     Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
 
     // Disable back-forward cache as File System Access's usage of
-    // RenderFrameHost::IsCurrent at the moment is not compatible with bfcache.
+    // RenderFrameHost::IsActive at the moment is not compatible with bfcache.
     BackForwardCache::DisableForRenderFrameHost(
         context_.frame_id,
         BackForwardCacheDisable::DisabledReason(

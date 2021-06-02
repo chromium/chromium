@@ -32,7 +32,7 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
 void TestSecurePaymentConfirmationPaymentRequestDelegate::ShowDialog(
     base::WeakPtr<PaymentRequest> request) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (rfh && rfh->IsCurrent()) {
+  if (rfh && rfh->IsActive()) {
     dialog_view_->ShowDialog(content::WebContents::FromRenderFrameHost(rfh),
                              model_->GetWeakPtr(), base::DoNothing(),
                              base::DoNothing());

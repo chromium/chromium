@@ -576,14 +576,14 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
 
   // If this function is called after we navigated to a new RenderFrameHost,
   // then |rfh| must already be replaced by the new RenderFrameHost. If this
-  // function is called before we navigated, then |rfh| must be a current
+  // function is called before we navigated, then |rfh| must be an active
   // RenderFrameHost.
-  bool is_current_rfh = rfh->IsCurrent();
+  bool is_active_rfh = rfh->IsActive();
 
   // Two pages in the same BrowsingInstance can script each other. When a page
   // can be scripted from outside, it can't enter the BackForwardCache.
   //
-  // If the |rfh| is not a "current" RenderFrameHost anymore, the
+  // If the |rfh| is not an "active" RenderFrameHost anymore, the
   // "RelatedActiveContentsCount" below is compared against 0, not 1. This is
   // because |rfh| is not "active" itself.
   //
@@ -593,7 +593,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   // CanPotentiallyStorePageLater instead of CanStorePageNow because it's needed
   // to determine whether to do a proactive BrowsingInstance swap or not, which
   // should not be done if the page has related active contents.
-  unsigned expected_related_active_contents_count = is_current_rfh ? 1 : 0;
+  unsigned expected_related_active_contents_count = is_active_rfh ? 1 : 0;
   // We should never have fewer than expected.
   DCHECK_GE(rfh->GetSiteInstance()->GetRelatedActiveContentsCount(),
             expected_related_active_contents_count);

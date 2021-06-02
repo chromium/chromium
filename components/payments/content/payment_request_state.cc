@@ -97,9 +97,8 @@ PaymentRequestState::~PaymentRequestState() {}
 
 content::WebContents* PaymentRequestState::GetWebContents() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsCurrent()
-             ? content::WebContents::FromRenderFrameHost(rfh)
-             : nullptr;
+  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
+                                : nullptr;
 }
 
 ContentPaymentRequestDelegate* PaymentRequestState::GetPaymentRequestDelegate()

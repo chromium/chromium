@@ -76,7 +76,7 @@ void ComputePressureHost::AddObserver(
 
   GlobalFrameRoutingId frame_id = receivers_.current_context();
   RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-  if (!rfh || !rfh->IsCurrent()) {
+  if (!rfh || !rfh->IsActive()) {
     std::move(callback).Run(
         blink::mojom::ComputePressureStatus::kSecurityError);
     return;
@@ -143,7 +143,7 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
     GlobalFrameRoutingId frame_id = observer_contexts_[observer_id];
 
     RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (!rfh || !rfh->IsCurrent()) {
+    if (!rfh || !rfh->IsActive()) {
       // TODO(oyiptong): Is it safe to disconnect observers in this state?
       continue;
     }

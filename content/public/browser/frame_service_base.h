@@ -67,8 +67,8 @@ class FrameServiceBase : public Interface, public WebContentsObserver {
   // tab-level state doesn't get queried or updated when the frame is
   // not current.
   // Use WebContents::From(render_frame_host()) instead, but please keep in mind
-  // that the render_frame_host() might not be current. See
-  // RenderFrameHost::IsCurrent for details.
+  // that the render_frame_host() might not be active. See
+  // RenderFrameHost::IsActive() for details.
   using WebContentsObserver::web_contents;
 
   // WebContentsObserver implementation.
