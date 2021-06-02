@@ -770,7 +770,6 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 #else
 
 #if defined(USE_AURA)
-  rounded_window_corners_manager_.reset();
   // Reset display change observer here to ensure it is deleted before
   // display_configurator since display_configurator is deleted when
   // `cast_browser_process_` is reset below.
@@ -780,6 +779,10 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   cast_browser_process_->cast_service()->Finalize();
   cast_browser_process_->cast_browser_metrics()->Finalize();
   cast_browser_process_.reset();
+
+#if defined(USE_AURA)
+  rounded_window_corners_manager_.reset();
+#endif
 
   window_manager_.reset();
 #if defined(USE_AURA)
