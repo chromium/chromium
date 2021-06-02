@@ -28,9 +28,9 @@
 namespace chromeos {
 namespace {
 
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 // TODO(crbug/1201529): Update this unit test to use `FakeSuggestionHandler`
 // instead.
@@ -201,15 +201,15 @@ TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestion(email_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"My email is: ");
+  suggester_->Suggest(u"My email is: ", 13, 13);
   suggestion_handler_->VerifySuggestion(email_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"hi, my email: ");
+  suggester_->Suggest(u"hi, my email: ", 14, 14);
   suggestion_handler_->VerifySuggestion(email_, 0);
 }
 
@@ -221,7 +221,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenFlagIsDisabled) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -233,10 +233,10 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenPrefixDoesNotMatch) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is John");
+  suggester_->Suggest(u"my email is John", 16, 16);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"our email is: ");
+  suggester_->Suggest(u"our email is: ", 14, 14);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -249,7 +249,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestWhenVirtualKeyboardEnabled) {
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -263,7 +263,7 @@ TEST_F(PersonalInfoSuggesterTest,
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestionDispatchedToExtension(
       std::vector<std::string>{base::UTF16ToUTF8(email_)});
 }
@@ -282,19 +282,19 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my first name is ");
+  suggester_->Suggest(u"my first name is ", 17, 17);
   suggestion_handler_->VerifySuggestion(first_name_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my last name is: ");
+  suggester_->Suggest(u"my last name is: ", 17, 17);
   suggestion_handler_->VerifySuggestion(last_name_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my name is ");
+  suggester_->Suggest(u"my name is ", 12, 12);
   suggestion_handler_->VerifySuggestion(full_name_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"Hmm... my FULL name: ");
+  suggester_->Suggest(u"Hmm... my FULL name: ", 21, 21);
   suggestion_handler_->VerifySuggestion(full_name_, 0);
 }
 
@@ -312,7 +312,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNamesButInsufficientData) {
                                       chromeos::AssistiveType::kPersonalName,
                                       0);
 
-  suggester_->Suggest(u"my name is ");
+  suggester_->Suggest(u"my name is ", 12, 12);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.InsufficientData",
                                       chromeos::AssistiveType::kPersonalName,
                                       1);
@@ -332,13 +332,13 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenFlagIsDisabled) {
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my first name is ");
+  suggester_->Suggest(u"my first name is ", 17, 17);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my last name is: ");
+  suggester_->Suggest(u"my last name is: ", 17, 17);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my name is ");
+  suggester_->Suggest(u"my name is ", 12, 12);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -356,16 +356,16 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenPrefixDoesNotMatch) {
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"our first name is ");
+  suggester_->Suggest(u"our first name is ", 18, 18);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"our last name is: ");
+  suggester_->Suggest(u"our last name is: ", 18, 18);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"our name is ");
+  suggester_->Suggest(u"our name is ", 12, 12);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"our full name: ");
+  suggester_->Suggest(u"our full name: ", 15, 15);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -390,23 +390,23 @@ TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
                               u"US");
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my address is ");
+  suggester_->Suggest(u"my address is ", 14, 14);
   suggestion_handler_->VerifySuggestion(address_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"our address is: ");
+  suggester_->Suggest(u"our address is: ", 16, 16);
   suggestion_handler_->VerifySuggestion(address_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my shipping address: ");
+  suggester_->Suggest(u"my shipping address: ", 21, 21);
   suggestion_handler_->VerifySuggestion(address_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"our billing address is ");
+  suggester_->Suggest(u"our billing address is ", 23, 23);
   suggestion_handler_->VerifySuggestion(address_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my current address: ");
+  suggester_->Suggest(u"my current address: ", 20, 20);
   suggestion_handler_->VerifySuggestion(address_, 0);
 }
 
@@ -431,7 +431,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenFlagIsDisabled) {
                               u"US");
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my address is ");
+  suggester_->Suggest(u"my address is ", 14, 14);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -456,13 +456,13 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenPrefixDoesNotMatch) {
                               u"US");
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my address ");
+  suggester_->Suggest(u"my address ", 11, 11);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my last address is: ");
+  suggester_->Suggest(u"my last address is: ", 20, 20);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"our address number is ");
+  suggester_->Suggest(u"our address number is ", 22, 22);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -478,23 +478,23 @@ TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, phone_number_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my phone number is ");
+  suggester_->Suggest(u"my phone number is ", 19, 19);
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my number is ");
+  suggester_->Suggest(u"my number is ", 13, 13);
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my mobile number is: ");
+  suggester_->Suggest(u"my mobile number is: ", 21, 21);
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my number: ");
+  suggester_->Suggest(u"my number: ", 11, 11);
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
 
-  suggester_->Suggest(u"my telephone number is ");
+  suggester_->Suggest(u"my telephone number is ", 23, 23);
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
 }
 
@@ -511,7 +511,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumberWhenFlagIsDisabled) {
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, phone_number_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my phone number is ");
+  suggester_->Suggest(u"my phone number is ", 20, 20);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -528,16 +528,16 @@ TEST_F(PersonalInfoSuggesterTest,
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, phone_number_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"our phone number is ");
+  suggester_->Suggest(u"our phone number is ", 20, 20);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my number ");
+  suggester_->Suggest(u"my number ", 10, 10);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my number phone is: ");
+  suggester_->Suggest(u"my number phone is: ", 20, 20);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 
-  suggester_->Suggest(u"my phone phone: ");
+  suggester_->Suggest(u"my phone phone: ", 16, 16);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
@@ -549,7 +549,7 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ENTER);
 
@@ -568,7 +568,7 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
   update->SetIntKey(kPersonalInfoSuggesterAcceptanceCount, 1);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   SendKeyboardEvent(ui::DomCode::ARROW_UP);
   SendKeyboardEvent(ui::DomCode::ENTER);
 
@@ -587,7 +587,7 @@ TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my name is ");
+  suggester_->Suggest(u"my name is ", 11, 11);
   SendKeyboardEvent(ui::DomCode::ESCAPE);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_FALSE(suggestion_handler_->IsSuggestionAccepted());
@@ -605,8 +605,8 @@ TEST_F(PersonalInfoSuggesterTest, SuggestWithConfirmedLength) {
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, phone_number_);
   personal_data_->AddProfile(autofill_profile);
 
-  suggester_->Suggest(u"my phone number is ");
-  suggester_->Suggest(u"my phone number is 16");
+  suggester_->Suggest(u"my phone number is ", 19, 19);
+  suggester_->Suggest(u"my phone number is 16", 21, 21);
   suggestion_handler_->VerifySuggestion(phone_number_, 2);
 }
 
@@ -621,7 +621,7 @@ TEST_F(PersonalInfoSuggesterTest,
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5000));
   tts_handler_->VerifyAnnouncement("");
 
@@ -641,7 +641,7 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(500));
   tts_handler_->VerifyAnnouncement("");
 
@@ -654,7 +654,7 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
   tts_handler_->VerifyAnnouncement("Suggestion inserted.");
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
   tts_handler_->VerifyAnnouncement(
       "Personal info suggested. Press down arrow to access; escape to ignore.");
@@ -670,12 +670,12 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
       /*disabled_features=*/{});
 
   for (int i = 0; i < kMaxAcceptanceCount; i++) {
-    suggester_->Suggest(u"my email is ");
+    suggester_->Suggest(u"my email is ", 12, 12);
     SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
     SendKeyboardEvent(ui::DomCode::ENTER);
     suggestion_handler_->VerifyShowAnnotation(true);
   }
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifyShowAnnotation(false);
 }
 
@@ -690,12 +690,12 @@ TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
   update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
   update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
   for (int i = 0; i < kMaxShowSettingCount; i++) {
-    suggester_->Suggest(u"my email is ");
+    suggester_->Suggest(u"my email is ", 12, 12);
     // Dismiss suggestion.
     SendKeyboardEvent(ui::DomCode::ESCAPE);
     suggestion_handler_->VerifyShowSettingLink(true);
   }
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifyShowSettingLink(false);
 }
 
@@ -708,12 +708,12 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->SetIntKey(kPersonalInfoSuggesterShowSettingCount, 0);
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifyShowSettingLink(true);
   // Accept suggestion.
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ENTER);
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifyShowSettingLink(false);
 }
 
@@ -729,7 +729,7 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
   update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ENTER);
@@ -750,7 +750,7 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithUpEnter) {
   update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   SendKeyboardEvent(ui::DomCode::ARROW_UP);
   SendKeyboardEvent(ui::DomCode::ENTER);
 
@@ -770,7 +770,7 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToAccept) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  EXPECT_TRUE(suggester_->Suggest(u"my email is "));
+  EXPECT_TRUE(suggester_->Suggest(u"my email is ", 12, 12));
 
   // Press ui::DomCode::ARROW_DOWN to choose and accept the suggestion.
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
@@ -791,7 +791,7 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToDismiss) {
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  EXPECT_TRUE(suggester_->Suggest(u"my email is "));
+  EXPECT_TRUE(suggester_->Suggest(u"my email is ", 12, 12));
   // Press ui::DomCode::ESCAPE to dismiss.
   SendKeyboardEvent(ui::DomCode::ESCAPE);
   histogram_tester.ExpectTotalCount(
@@ -807,7 +807,7 @@ TEST_F(PersonalInfoSuggesterTest,
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestion(email_, 0);
   EXPECT_TRUE(suggester_->HasSuggestions());
 }
@@ -821,7 +821,7 @@ TEST_F(PersonalInfoSuggesterTest,
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"");
+  suggester_->Suggest(u"", 0, 0);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_FALSE(suggester_->HasSuggestions());
 }
@@ -835,7 +835,7 @@ TEST_F(PersonalInfoSuggesterTest,
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"my email is ");
+  suggester_->Suggest(u"my email is ", 12, 12);
   suggestion_handler_->VerifySuggestion(email_, 0);
   EXPECT_EQ(suggester_->GetSuggestions(),
             (std::vector<TextSuggestion>{TextSuggestion{
@@ -853,7 +853,7 @@ TEST_F(PersonalInfoSuggesterTest,
 
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
-  suggester_->Suggest(u"");
+  suggester_->Suggest(u"", 0, 0);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_TRUE(suggester_->GetSuggestions().empty());
 }

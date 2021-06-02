@@ -24,11 +24,6 @@ class Suggester : public SuggestionsSource {
   // Called when a text field loses focus, and suggester stops working.
   virtual void OnBlur() = 0;
 
-  // Called when the surrounding text changes in the focused text field.
-  virtual void OnSurroundingTextChanged(const std::u16string& text,
-                                        int cursor_pos,
-                                        int anchor_pos) = 0;
-
   // Called when suggestions are generated outside of the assisitve framework.
   virtual void OnExternalSuggestionsUpdated(
       const std::vector<ime::TextSuggestion>& suggestions) = 0;
@@ -39,7 +34,9 @@ class Suggester : public SuggestionsSource {
 
   // Check if suggestion should be displayed according to the surrounding text
   // information.
-  virtual bool Suggest(const std::u16string& text) = 0;
+  virtual bool Suggest(const std::u16string& text,
+                       size_t cursor_pos,
+                       size_t anchor_pos) = 0;
 
   // Accepts the suggestion at a given index, index can be made default if
   // unnecessary. Returns true if suggestion is accepted successfully.

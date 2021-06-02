@@ -470,8 +470,11 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
   if (context_id_ == -1)
     return false;
 
-  // Only multi word cares about tracking the current state of the text field
-  multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+  if (IsMultiWordSuggestEnabled()) {
+    // Only multi word cares about tracking the current state of the text field
+    multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos,
+                                                   anchor_pos);
+  }
 
   if (WithinGrammarFragment(cursor_pos, anchor_pos) ||
       !Suggest(text, cursor_pos, anchor_pos)) {
@@ -487,18 +490,12 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
   if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])) &&
       (base::IsAsciiWhitespace(text[cursor_pos - 1]) || IsSuggestionShown())) {
-    // |text| could be very long, we get at most |kMaxTextBeforeCursorLength|
-    // characters before cursor.
-    int start_pos = std::max(0, cursor_pos - kMaxTextBeforeCursorLength);
-    std::u16string text_before_cursor =
-        text.substr(start_pos, cursor_pos - start_pos);
-
     if (IsSuggestionShown()) {
-      return current_suggester_->Suggest(text_before_cursor);
+      return current_suggester_->Suggest(text, cursor_pos, anchor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
         IsAllowedUrlOrAppForPersonalInfoSuggestion() &&
-        personal_info_suggester_.Suggest(text_before_cursor)) {
+        personal_info_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &personal_info_suggester_;
       if (personal_info_suggester_.IsFirstShown()) {
         RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
@@ -506,7 +503,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       return true;
     } else if (IsEmojiSuggestAdditionEnabled() &&
                IsAllowedUrlOrAppForEmojiSuggestion() &&
-               emoji_suggester_.Suggest(text_before_cursor)) {
+               emoji_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &emoji_suggester_;
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
       return true;

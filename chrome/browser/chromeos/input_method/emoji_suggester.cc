@@ -168,10 +168,6 @@ void EmojiSuggester::OnBlur() {
   context_id_ = -1;
 }
 
-void EmojiSuggester::OnSurroundingTextChanged(const std::u16string& text,
-                                              int cursor_pos,
-                                              int anchor_pos) {}
-
 void EmojiSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
   // EmojiSuggester doesn't utilize any suggestions produced externally, so
@@ -235,7 +231,9 @@ bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
   return false;
 }
 
-bool EmojiSuggester::Suggest(const std::u16string& text) {
+bool EmojiSuggester::Suggest(const std::u16string& text,
+                             size_t cursor_pos,
+                             size_t anchor_pos) {
   if (emoji_map_.empty() || text[text.length() - 1] != kSpaceChar)
     return false;
   std::string last_word =

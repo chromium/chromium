@@ -142,58 +142,58 @@ class EmojiSuggesterTest : public testing::Test {
 };
 
 TEST_F(EmojiSuggesterTest, SuggestWhenStringEndsWithSpace) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 }
 
 TEST_F(EmojiSuggesterTest, SuggestWhenStringStartsWithOpenBracket) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"(happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"(happy ", 7, 7));
 }
 
 TEST_F(EmojiSuggesterTest, SuggestWhenStringEndsWithSpaceAndIsUppercase) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"HAPPY "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"HAPPY ", 6, 6));
 }
 
 TEST_F(EmojiSuggesterTest, DoNotSuggestWhenStringEndsWithNewLine) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(u"happy\n"));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"happy\n", 6, 6));
 }
 
 TEST_F(EmojiSuggesterTest, DoNotSuggestWhenStringDoesNotEndWithSpace) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(u"happy"));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"happy", 5, 5));
 }
 
 TEST_F(EmojiSuggesterTest, DoNotSuggestWhenWordNotInMap) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy "));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy ", 5, 5));
 }
 
 TEST_F(EmojiSuggesterTest, DoNotShowSuggestionWhenVirtualKeyboardEnabled) {
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   EXPECT_FALSE(emoji_suggester_->HasSuggestions());
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkBrowsingWhenPressingDown) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   EXPECT_EQ(SuggestionStatus::kBrowsing,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkBrowsingWhenPressingUp) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ARROW_UP);
   EXPECT_EQ(SuggestionStatus::kBrowsing,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkDismissWhenPressingEsc) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ESCAPE);
   EXPECT_EQ(SuggestionStatus::kDismiss,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenValidNumber) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
   ui::KeyEvent event2 = CreateKeyEventFromCode(ui::DomCode::DIGIT1);
@@ -202,7 +202,7 @@ TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenValidNumber) {
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNotANumber) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
   ui::KeyEvent event2 = CreateKeyEventFromCode(ui::DomCode::US_A);
@@ -212,7 +212,7 @@ TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNotANumber) {
 
 TEST_F(EmojiSuggesterTest,
        ReturnkNotHandledWhenPressingEnterAndACandidateHasNotBeenChosen) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ENTER);
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event));
@@ -220,7 +220,7 @@ TEST_F(EmojiSuggesterTest,
 
 TEST_F(EmojiSuggesterTest,
        ReturnkAcceptWhenPressingEnterAndACandidateHasBeenChosenByPressingDown) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   // Press ui::DomCode::ARROW_DOWN to choose a candidate.
   ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
@@ -230,13 +230,13 @@ TEST_F(EmojiSuggesterTest,
 }
 
 TEST_F(EmojiSuggesterTest, HighlightFirstCandidateWhenPressingDown) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   Press(ui::DomCode::ARROW_DOWN);
   engine_->VerifyCandidateHighlighted(0, true);
 }
 
 TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingUp) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   // Go into the window.
   Press(ui::DomCode::ARROW_DOWN);
@@ -262,7 +262,7 @@ TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingUp) {
 }
 
 TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingDown) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   // Press ui::DomCode::ARROW_DOWN to go through candidates.
   for (size_t i = 0; i < emoji_suggester_->GetCandidatesSizeForTesting(); i++) {
@@ -288,7 +288,7 @@ TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingDown) {
 
 TEST_F(EmojiSuggesterTest,
        OpenSettingWhenPressingEnterAndLearnMoreButtonIsChosen) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   // Go into the window.
   Press(ui::DomCode::ARROW_DOWN);
@@ -300,42 +300,42 @@ TEST_F(EmojiSuggesterTest,
 }
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndicesWhenFirstSuggesting) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   engine_->VerifyShowIndices(false);
 }
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndexAfterPressingDown) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   Press(ui::DomCode::ARROW_DOWN);
 
   engine_->VerifyShowIndices(false);
 }
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndicesAfterGettingSuggestionsTwice) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   engine_->VerifyShowIndices(false);
 }
 
 TEST_F(EmojiSuggesterTest,
        DoesNotShowIndicesAfterPressingDownThenGetNewSuggestions) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   Press(ui::DomCode::ARROW_DOWN);
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
 
   engine_->VerifyShowIndices(false);
 }
 
 TEST_F(EmojiSuggesterTest, ShowSettingLinkCorrectly) {
   for (int i = 0; i < kEmojiSuggesterShowSettingMaxCount; i++) {
-    emoji_suggester_->Suggest(u"happy ");
+    emoji_suggester_->Suggest(u"happy ", 6, 6);
     // Dismiss suggestion.
     Press(ui::DomCode::ESCAPE);
     engine_->VerifyShowSettingLink(true);
   }
-  emoji_suggester_->Suggest(u"happy ");
+  emoji_suggester_->Suggest(u"happy ", 6, 6);
   engine_->VerifyShowSettingLink(false);
 }
 
@@ -343,7 +343,7 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToAccept) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToAccept.Emoji",
                                     0);
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   // Press ui::DomCode::ARROW_DOWN to choose and accept a candidate.
   Press(ui::DomCode::ARROW_DOWN);
   Press(ui::DomCode::ENTER);
@@ -355,7 +355,7 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToDismiss) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
                                     0);
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   // Press ui::DomCode::ESCAPE to dismiss.
   Press(ui::DomCode::ESCAPE);
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
@@ -363,17 +363,17 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToDismiss) {
 }
 
 TEST_F(EmojiSuggesterTest, IsShowingSuggestionTrueWhenCandidatesAvailable) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   EXPECT_TRUE(emoji_suggester_->HasSuggestions());
 }
 
 TEST_F(EmojiSuggesterTest, IsShowingSuggestionFalseWhenCandidatesUnavailable) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy"));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy", 4, 4));
   EXPECT_FALSE(emoji_suggester_->HasSuggestions());
 }
 
 TEST_F(EmojiSuggesterTest, GetSuggestionReturnsCandidatesWhenAvailable) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy "));
+  EXPECT_TRUE(emoji_suggester_->Suggest(u"happy ", 6, 6));
   EXPECT_EQ(emoji_suggester_->GetSuggestions(),
             (std::vector<TextSuggestion>{
                 TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -390,7 +390,7 @@ TEST_F(EmojiSuggesterTest, GetSuggestionReturnsCandidatesWhenAvailable) {
 
 TEST_F(EmojiSuggesterTest,
        GetSuggestionDoesNotReturnCandidatesWhenUnavailable) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy"));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"hapy", 4, 4));
   EXPECT_TRUE(emoji_suggester_->GetSuggestions().empty());
 }
 
