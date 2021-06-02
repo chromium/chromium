@@ -433,7 +433,7 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
 void TextPainterBase::PaintEmphasisMarkForCombinedText(
     const TextPaintStyle& text_style,
     const Font& emphasis_mark_font) {
-  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalAnyUpright());
+  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
   DCHECK(emphasis_mark_);
   const SimpleFontData* const font_data = font_.PrimaryFont();
   DCHECK(font_data);

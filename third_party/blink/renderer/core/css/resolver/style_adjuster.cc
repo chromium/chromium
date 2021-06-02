@@ -237,7 +237,7 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
   DCHECK_EQ(style.Display(), EDisplay::kInlineBlock);
   // Set box sizes
   const Font& font = style.GetFont();
-  DCHECK(font.GetFontDescription().IsVerticalAnyUpright());
+  DCHECK(font.GetFontDescription().IsVerticalBaseline());
   const auto one_em = style.ComputedFontSizeAsFixed();
   const auto line_height = style.GetFontHeight().LineHeight();
   const auto size =
