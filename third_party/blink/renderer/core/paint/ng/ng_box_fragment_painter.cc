@@ -348,13 +348,13 @@ bool ShouldPaintCarets(const NGPhysicalBoxFragment& fragment) {
 
 }  // anonymous namespace
 
-PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
+PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
   if (box_item_)
     return box_item_->SelfInkOverflow();
   const NGPhysicalFragment& fragment = PhysicalFragment();
   DCHECK(!fragment.IsInlineBox());
   return To<LayoutBox>(fragment.GetLayoutObject())
-      ->PhysicalSelfVisualOverflowRect();
+      ->PhysicalVisualOverflowRectIncludingFilters();
 }
 
 void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
@@ -1814,7 +1814,12 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     PhysicalRect bounds_rect(physical_offset, size);
     if (UNLIKELY(hit_test.result->GetHitTestRequest().GetType() &
                  HitTestRequest::kHitTestVisualOverflow)) {
-      bounds_rect = SelfInkOverflow();
+      // We'll include overflow from children here (in addition to self-overflow
+      // caused by filters), because we want to record a match if we hit the
+      // overflow of a child below the stop node. This matches legacy behavior
+      // in LayoutBox::NodeAtPoint(); see call to
+      // PhysicalVisualOverflowRectIncludingFilters().
+      bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
     }
     // TODO(kojii): Don't have good explanation why only inline box needs to
