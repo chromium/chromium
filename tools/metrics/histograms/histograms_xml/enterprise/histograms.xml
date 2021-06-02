@@ -164,6 +164,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode"
+    enum="NetErrorCodes" expires_after="2021-10-31">
+<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
+
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Network error code (if applicable) for auto-enrollment PSM requests.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.AutoEnrollmentPsmResult" enum="PsmResult"
     expires_after="2021-10-31">
 <!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->

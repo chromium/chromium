@@ -1578,6 +1578,14 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
                                        success_time_recorded ? 1 : 0);
   }
 
+  // Expects one sample for |kUMAPsmNetworkErrorCode| which has value of
+  // |network_error|.
+  void ExpectPsmNetworkErrorHistogram(int network_error) const {
+    histogram_tester_.ExpectBucketCount(
+        kUMAPsmNetworkErrorCode + GetAutoEnrollmentProtocolUmaSuffix(),
+        network_error, /*expected_count=*/1);
+  }
+
   // Expects a sample for kUMAPsmHashDanceComparison to be recorded once with
   // value |comparison|.
   void ExpectPsmHashDanceComparisonRecorded(
@@ -1715,6 +1723,7 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
+  ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1731,6 +1740,7 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
+  ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
 }
