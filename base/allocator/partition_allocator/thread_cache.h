@@ -21,6 +21,12 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 
+#if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+#include <algorithm>
+
+#include <emmintrin.h>
+#endif
+
 namespace base {
 
 namespace internal {
@@ -447,6 +453,52 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
 }
 
 ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
+#if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+  // We see freelist corruption crashes happening in the wild.  These are likely
+  // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
+  // somewhere in the code.
+  //
+  // The issue is that we detect the UaF far away from the place where it
+  // happens. As a consequence, we should try to make incorrect code crash as
+  // early as possible. Poisoning memory at free() time works for UaF, but it
+  // was seen in the past to incur a high performance cost.
+  //
+  // Here, only poison the current cacheline, which we are touching anyway.
+  // TODO(lizeb): Make sure this does not hurt performance.
+
+  // Everything below requires this aligment.
+  static_assert(kAlignment == 16, "");
+
+#if HAS_BUILTIN(__builtin_assume_aligned)
+  uintptr_t address = reinterpret_cast<uintptr_t>(
+      __builtin_assume_aligned(slot_start, kAlignment));
+#else
+  uintptr_t address = reinterpret_cast<uintptr_t>(slot_start);
+#endif
+
+  // We assume that the cacheline size is 64 byte, which is true on all x86_64
+  // CPUs as of 2021.
+  //
+  // The pointer is always 16 bytes aligned, so its start address is always == 0
+  // % 16. Its distance to the next cacheline is 64 - ((address & 63) / 16) *
+  // 16.
+  int distance_to_next_cacheline_in_16_bytes = 4 - (address >> 4) & 3;
+  int slot_size_remaining_in_16_bytes =
+      std::min(bucket.slot_size / 16, distance_to_next_cacheline_in_16_bytes);
+
+  __m128i* address_aligned = reinterpret_cast<__m128i*>(address);
+  // Not a random value. If set to 0, then the compiler is "smart enough" to
+  // replace the loop below with a call to memset()@plt, which is not so great
+  // when trying to zero an integer multiple of 16 bytes, aligned on a 16 byte
+  // boundary.  Various ways to defeat that are brittle, to better make sure
+  // that the loop doesn't fit memset()'s use cases.
+  __m128i value = _mm_set1_epi32(0xdeadbeef);
+  for (auto i = 0; i < slot_size_remaining_in_16_bytes; i++) {
+    _mm_store_si128(address_aligned, value);
+    address_aligned += 1;
+  }
+#endif  // defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+
   auto* entry = PartitionFreelistEntry::InitForThreadCache(
       slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
