@@ -56,6 +56,9 @@ class SystemWebAppLinkCaptureBrowserTest
  public:
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+#endif
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
@@ -504,7 +507,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
   void WaitForSystemWebAppInstall(Profile* profile) {
     base::RunLoop run_loop;
-    web_app::WebAppProvider::Get(profile)
+    web_app::WebAppProvider::GetForSystemWebApps(profile)
         ->system_web_app_manager()
         .on_apps_synchronized()
         .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -518,7 +521,8 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
   AppId GetAppId(Profile* profile) {
     SystemWebAppManager& manager =
-        web_app::WebAppProvider::Get(profile)->system_web_app_manager();
+        web_app::WebAppProvider::GetForSystemWebApps(profile)
+            ->system_web_app_manager();
 
     absl::optional<AppId> app_id =
         manager.GetAppIdForSystemApp(installation_->GetType());

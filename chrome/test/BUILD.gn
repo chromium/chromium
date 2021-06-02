@@ -7526,7 +7526,7 @@ if (!is_android) {
           "//components/media_router/browser:test_support",
         ]
       }
-      if (!is_android && !is_chromeos_lacros) {
+      if (!is_android) {
         sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
       }
 

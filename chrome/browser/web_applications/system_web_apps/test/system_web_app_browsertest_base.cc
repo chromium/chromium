@@ -18,12 +18,17 @@
 
 namespace web_app {
 
-SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {}
+SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+#endif
+}
 
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
 SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
-  return WebAppProvider::Get(browser()->profile())->system_web_app_manager();
+  return WebAppProvider::GetForSystemWebApps(browser()->profile())
+      ->system_web_app_manager();
 }
 
 SystemAppType SystemWebAppBrowserTestBase::GetMockAppType() {
@@ -110,7 +115,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(
     const apps::AppLaunchParams& params) {
   return params.override_url.is_valid()
              ? params.override_url
-             : WebAppProvider::Get(browser()->profile())
+             : WebAppProvider::GetForSystemWebApps(browser()->profile())
                    ->registrar()
                    .GetAppStartUrl(params.app_id);
 }

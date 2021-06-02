@@ -78,7 +78,7 @@ namespace web_app {
 
 absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
                                                           AppId app_id) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   return provider ? provider->system_web_app_manager().GetSystemAppTypeForAppId(
                         app_id)
                   : absl::optional<SystemAppType>();
@@ -86,7 +86,7 @@ absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
 
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
                                               SystemAppType app_type) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   return provider
              ? provider->system_web_app_manager().GetAppIdForSystemApp(app_type)
              : absl::optional<AppId>();
@@ -101,7 +101,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   if (!app_id)
     return absl::nullopt;
 
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   DCHECK(provider);
 
   DisplayMode display_mode =
@@ -215,7 +215,7 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
     return nullptr;
   }
 
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   if (!provider)
     return nullptr;
 
@@ -305,7 +305,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!app_id)
     return nullptr;
 
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   DCHECK(provider);
 
   if (!provider->registrar().IsInstalled(app_id.value()))
@@ -336,7 +336,7 @@ bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {
 
 absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
                                                           const GURL& url) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
 
   if (!provider)
     return absl::nullopt;
@@ -353,7 +353,7 @@ gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   if (!app_controller->HasAppId())
     return gfx::Size();
 
-  auto* provider = WebAppProvider::Get(browser->profile());
+  auto* provider = WebAppProvider::GetForSystemWebApps(browser->profile());
   if (!provider)
     return gfx::Size();
 
