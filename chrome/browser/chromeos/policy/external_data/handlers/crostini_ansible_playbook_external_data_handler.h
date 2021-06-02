@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/policy/external_data_handlers/cloud_external_data_policy_handler.h"
+#include "chrome/browser/chromeos/policy/external_data/handlers/cloud_external_data_policy_handler.h"
 
 namespace ash {
 class CrosSettings;

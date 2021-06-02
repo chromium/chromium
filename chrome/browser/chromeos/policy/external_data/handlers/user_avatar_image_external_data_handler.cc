@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/external_data_handlers/user_avatar_image_external_data_handler.h"
+#include "chrome/browser/chromeos/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
 
 #include <utility>
 

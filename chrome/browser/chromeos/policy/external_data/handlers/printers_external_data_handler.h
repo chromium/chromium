@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINT_SERVERS_EXTERNAL_DATA_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINT_SERVERS_EXTERNAL_DATA_HANDLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINTERS_EXTERNAL_DATA_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINTERS_EXTERNAL_DATA_HANDLER_H_
 
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/policy/external_data_handlers/cloud_external_data_policy_handler.h"
+#include "chrome/browser/chromeos/policy/external_data/handlers/cloud_external_data_policy_handler.h"
 
 namespace ash {
 class CrosSettings;
@@ -18,14 +18,15 @@ namespace policy {
 
 class DeviceLocalAccountPolicyService;
 
-// This class observes the user setting "ExternalPrintServers" and propagates
-// data loaded from this external policy to appropriate objects.
-class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
+class PrintersExternalDataHandler : public CloudExternalDataPolicyHandler {
  public:
-  PrintServersExternalDataHandler(
-      ash::CrosSettings* cros_settings,
-      DeviceLocalAccountPolicyService* policy_service);
-  ~PrintServersExternalDataHandler() override;
+  PrintersExternalDataHandler(ash::CrosSettings* cros_settings,
+                              DeviceLocalAccountPolicyService* policy_service);
+  ~PrintersExternalDataHandler() override;
+
+  PrintersExternalDataHandler(const PrintersExternalDataHandler&) = delete;
+  PrintersExternalDataHandler& operator=(const PrintersExternalDataHandler&) =
+      delete;
 
   // CloudExternalDataPolicyHandler:
   void OnExternalDataSet(const std::string& policy,
@@ -39,11 +40,9 @@ class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
   void RemoveForAccountId(const AccountId& account_id) override;
 
  private:
-  CloudExternalDataPolicyObserver print_servers_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServersExternalDataHandler);
+  CloudExternalDataPolicyObserver printers_observer_;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINT_SERVERS_EXTERNAL_DATA_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_EXTERNAL_DATA_HANDLERS_PRINTERS_EXTERNAL_DATA_HANDLER_H_

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/external_data_handlers/device_cloud_external_data_policy_handler.h"
+#include "chrome/browser/chromeos/policy/external_data/handlers/device_cloud_external_data_policy_handler.h"
 
 namespace chromeos {
 class BulkPrintersCalculator;
