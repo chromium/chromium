@@ -575,10 +575,10 @@ FileSystemURL FileSystemContext::CrackFileSystemURL(
   // top of an external filesystem). Hence cracking needs to be iterated.
   for (;;) {
     FileSystemURL cracked = current;
-    for (size_t i = 0; i < url_crackers_.size(); ++i) {
-      if (!url_crackers_[i]->HandlesFileSystemMountType(current.type()))
+    for (MountPoints* url_cracker : url_crackers_) {
+      if (!url_cracker->HandlesFileSystemMountType(current.type()))
         continue;
-      cracked = url_crackers_[i]->CrackFileSystemURL(current);
+      cracked = url_cracker->CrackFileSystemURL(current);
       if (cracked.is_valid())
         break;
     }

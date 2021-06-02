@@ -5,23 +5,22 @@
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 
-#include <set>
 #include <string>
-#include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "storage/browser/file_system/file_system_quota_util.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "storage/browser/quota/quota_client.h"
-#include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace storage {
@@ -34,6 +33,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
     : public QuotaClient {
  public:
   explicit FileSystemQuotaClient(FileSystemContext* file_system_context);
+
+  FileSystemQuotaClient(const FileSystemQuotaClient&) = delete;
+  FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
   // QuotaClient methods.
   void OnQuotaManagerDestroyed() override {}
@@ -64,9 +66,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
 
   base::SequencedTaskRunner* file_task_runner() const;
 
-  scoped_refptr<FileSystemContext> file_system_context_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(FileSystemQuotaClient);
+  const scoped_refptr<FileSystemContext> file_system_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace storage
