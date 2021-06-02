@@ -40,6 +40,7 @@ declare namespace chrome {
         void;
     export function getVariationParams(
         name: string, callback: (p1: Object|undefined) => void): void;
+    export function recordUserAction(name: string): void;
     export function recordPercentage(metricName: string, value: number): void;
     export function recordCount(metricName: string, value: number): void;
     export function recordSmallCount(metricName: string, value: number): void;
