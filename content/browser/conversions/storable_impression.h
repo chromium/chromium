@@ -93,8 +93,8 @@ class CONTENT_EXPORT StorableImpression {
   // If null, an ID has not been assigned yet.
   absl::optional<int64_t> impression_id_;
 
-  // When adding new members, the ImpressionsEqual() testing utility in
-  // conversion_test_utils.h should also be updated.
+  // When adding new members, the `ImpressionsEqual()` testing utility in
+  // `conversion_test_utils.h` should also be updated.
 };
 
 }  // namespace content

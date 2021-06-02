@@ -48,6 +48,9 @@ struct CONTENT_EXPORT ConversionReport {
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
   const absl::optional<int64_t> conversion_id;
+
+  // When adding new members, the `ReportsEqual()` testing utility in
+  // `conversion_test_utils.h` should also be updated.
 };
 
 // Only used for logging.

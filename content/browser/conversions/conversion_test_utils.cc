@@ -289,7 +289,7 @@ testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time(), impression.expiry_time(),
-        impression.priority());
+        impression.source_type(), impression.priority());
   };
 
   if (tie(expected) != tie(actual)) {
@@ -311,8 +311,10 @@ testing::AssertionResult ReportsEqual(
                            conversion.impression.reporting_origin(),
                            conversion.impression.impression_time(),
                            conversion.impression.expiry_time(),
+                           conversion.impression.source_type(),
                            conversion.impression.priority(),
-                           conversion.conversion_data, conversion.report_time);
+                           conversion.conversion_data, conversion.report_time,
+                           conversion.extra_delay);
   };
 
   if (expected.size() != actual.size())
