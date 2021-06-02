@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
-#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -205,11 +204,6 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
 
   Walk(root_frame_view, context);
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
-
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (auto* layout_view = root_frame_view.GetLayoutView())
-      CullRectUpdater(*layout_view->Layer()).Update();
-  }
 
 #if DCHECK_IS_ON()
   if (needs_tree_builder_context_update) {

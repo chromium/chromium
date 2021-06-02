@@ -288,7 +288,7 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& root_layer,
       !root_layer.NeedsCullRectUpdate() &&
       !root_layer.DescendantNeedsCullRectUpdate() &&
       cull_rect == root_layer.GetLayoutObject().FirstFragment().GetCullRect()) {
-    // The cull rects calculated during PrePaint are good.
+    // The current cull rects are good.
     return;
   }
 
