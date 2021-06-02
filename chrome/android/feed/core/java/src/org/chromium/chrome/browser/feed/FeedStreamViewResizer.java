@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -65,7 +66,8 @@ public class FeedStreamViewResizer extends ViewResizer {
     @Override
     public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         if (mUiConfig.getContext().getResources().getConfiguration().orientation
-                != Configuration.ORIENTATION_LANDSCAPE) {
+                        != Configuration.ORIENTATION_LANDSCAPE
+                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
             super.onDisplayStyleChanged(newDisplayStyle);
             return;
         }
