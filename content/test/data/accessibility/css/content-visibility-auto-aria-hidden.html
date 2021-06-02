@@ -1,0 +1,25 @@
+<!--
+@WAIT-FOR:Done
+-->
+<html>
+<head>
+<style>
+.auto {
+  content-visibility: auto;
+}
+.push-content-down {
+  height: 5000px;
+}
+</style>
+</head>
+<body>
+<div class="push-content-down" role="none"></div>
+<div class="auto"><div aria-hidden="true">aria-hidden</div><div>Not hidden</div></div>
+<script>
+function runTest() {
+  document.title = 'Done';
+}
+window.onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+</body>
+</html>

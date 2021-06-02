@@ -624,7 +624,8 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   DCHECK(!GetLayoutObject());
 
   if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
-    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+    if (IsAriaHidden() ||
+        DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
             *GetNode(), DisplayLockActivationReason::kAccessibility)) {
       if (ignored_reasons)
         ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
