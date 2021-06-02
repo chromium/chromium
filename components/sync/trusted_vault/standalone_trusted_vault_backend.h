@@ -81,8 +81,7 @@ class StandaloneTrustedVaultBackend
   // |account_info| will trigger a key download attempt.
   bool MarkKeysAsStale(const CoreAccountInfo& account_info);
 
-  // Removes all keys for all accounts from both memory and |file_path_|. Called
-  // when accounts cookie deleted by the user action.
+  // Removes all keys for all accounts from both memory and |file_path_|.
   void RemoveAllStoredKeys();
 
   // Sets/resets |primary_account_|.

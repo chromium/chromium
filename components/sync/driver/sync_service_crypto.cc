@@ -55,6 +55,11 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
     NOTREACHED();
   }
 
+  void RemoveAllStoredKeys() override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
+  }
+
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
                        base::OnceCallback<void(bool)> cb) override {
     std::move(cb).Run(false);

@@ -24,6 +24,7 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
   void StoreKeys(const std::string& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
+  void RemoveAllStoredKeys() override;
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
                        base::OnceCallback<void(bool)> callback) override;
   void GetIsRecoverabilityDegraded(

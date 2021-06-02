@@ -218,6 +218,13 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     }
   }
 
+  void RemoveAllStoredKeys() override {
+    gaia_id_to_cached_keys_.clear();
+    for (Observer& observer : observer_list_) {
+      observer.OnTrustedVaultKeysChanged();
+    }
+  }
+
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
                        base::OnceCallback<void(bool)> cb) override {
     const std::string& gaia_id = account_info.gaia;
