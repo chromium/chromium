@@ -687,6 +687,14 @@
       },
     },
   },
+  'mac_10.15_or_mac_11': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-10.15|Mac-10.16|Mac-11',
+      },
+    },
+  },
   'mac_11_beta_x64': {
     'swarming': {
       'dimensions': {
