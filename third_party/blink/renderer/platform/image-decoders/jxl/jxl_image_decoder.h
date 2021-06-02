@@ -78,6 +78,18 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   int RepetitionCount() const override;
   bool CanReusePreviousFrameBuffer(size_t) const override { return false; }
 
+  // Reads bytes from the segment reader, after releasing input from the JXL
+  // decoder, which required `remaining` previous bytes to still be available.
+  // Starts reading from *offset - remaining, and ensures more than remaining
+  // bytes are read, if possible. Returns false if not enough bytes are
+  // available or if Failed() was set.
+  bool ReadBytes(size_t remaining,
+                 size_t* offset,
+                 WTF::Vector<uint8_t>* segment,
+                 FastSharedBufferReader* reader,
+                 const uint8_t** jxl_data,
+                 size_t* jxl_size);
+
   JxlDecoderPtr dec_ = nullptr;
   size_t offset_ = 0;
 
@@ -101,6 +113,11 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   bool has_full_frame_count_ = false;
   size_t size_at_last_frame_count_ = 0;
   WTF::Vector<float> frame_durations_;
+  // Multiple concatenated segments from the FastSharedBufferReader, these are
+  // only used when a single segment did not contain enough data for the JXL
+  // parser.
+  WTF::Vector<uint8_t> segment_;
+  WTF::Vector<uint8_t> frame_count_segment_;
 };
 
 }  // namespace blink
