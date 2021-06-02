@@ -415,8 +415,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
     // We may have to update the margins on box_; we reuse the layout result
     // even if a percentage margin may have changed.
-    if (UNLIKELY(Style().MayHaveMargin() && !constraint_space.IsTableCell()))
-      box_->SetMargin(ComputePhysicalMargins(constraint_space, Style()));
+    UpdateMarginPaddingInfoIfNeeded(constraint_space);
 
     UpdateShapeOutsideInfoIfNeeded(
         *layout_result, constraint_space.PercentageResolutionInlineSize());
@@ -1110,21 +1109,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   // TODO(mstensho): This should always be done by the parent algorithm, since
   // we may have auto margins, which only the parent is able to resolve. Remove
   // the following line when all layout modes do this properly.
-  if (UNLIKELY(box_->IsTableCell())) {
-    // Table-cell margins compute to zero.
-    box_->SetMargin(NGPhysicalBoxStrut());
-  } else {
-    box_->SetMargin(ComputePhysicalMargins(constraint_space, Style()));
-  }
-
-  // We copy back the %-size so that |LayoutBoxModelObject::ComputedCSSPadding|
-  // is able to return the correct value. This isn't ideal, but eventually
-  // we'll answer these queries from the fragment.
-  const auto* containing_block = box_->ContainingBlock();
-  if (UNLIKELY(containing_block && containing_block->IsLayoutNGGrid())) {
-    box_->SetOverrideContainingBlockContentLogicalWidth(
-        constraint_space.PercentageResolutionInlineSizeForParentWritingMode());
-  }
+  UpdateMarginPaddingInfoIfNeeded(constraint_space);
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
   LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
@@ -1830,7 +1815,28 @@ LayoutUnit NGBlockNode::AtomicInlineBaselineFromLegacyLayout(
   return box_->InlineBlockBaseline(line_direction);
 }
 
-// Floats can optionally have a shape area, specifed by "shape-outside". The
+void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
+    const NGConstraintSpace& space) const {
+  // Table-cells don't have margins, and aren't grid-items.
+  if (space.IsTableCell())
+    return;
+
+  if (Style().MayHaveMargin())
+    box_->SetMargin(ComputePhysicalMargins(space, Style()));
+
+  if (Style().MayHaveMargin() || Style().MayHavePadding()) {
+    // Copy back the %-size so that |LayoutBoxModelObject::ComputedCSSPadding|
+    // is able to return the correct value. This isn't ideal, but eventually
+    // we'll answer these queries from the fragment.
+    const auto* containing_block = box_->ContainingBlock();
+    if (UNLIKELY(containing_block && containing_block->IsLayoutNGGrid())) {
+      box_->SetOverrideContainingBlockContentLogicalWidth(
+          space.PercentageResolutionInlineSizeForParentWritingMode());
+    }
+  }
+}
+
+// Floats can optionally have a shape area, specified by "shape-outside". The
 // current shape machinery requires setting the size of the float after layout
 // in the parents writing mode.
 void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(

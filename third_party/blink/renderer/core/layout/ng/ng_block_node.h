@@ -260,6 +260,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   LayoutUnit AtomicInlineBaselineFromLegacyLayout(
       const NGConstraintSpace&) const;
 
+  void UpdateMarginPaddingInfoIfNeeded(const NGConstraintSpace&) const;
+
   void UpdateShapeOutsideInfoIfNeeded(
       const NGLayoutResult&,
       LayoutUnit percentage_resolution_inline_size) const;

@@ -3923,7 +3923,6 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-a
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/percent-padding-margin-resolution-grid-item-update.html [ Failure ]
 
 ### Tests *expected* to be failing with LayoutNGGrid enabled:
 crbug.com/1108097 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-004.html [ Failure ]
