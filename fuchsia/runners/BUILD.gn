@@ -138,7 +138,6 @@ _web_instance_host_deps_files_to_exclude = [
   "lib/VkLayer_image_pipe_swapchain.so",
   "lib/libEGL.so",
   "lib/libGLESv2.so",
-  "lib/libfuchsia_egl.so",
   "lib/libtrace-engine.so",
   "lib/libvulkan.so",
   "ui/webui/resources/js/load_time_data.js",
@@ -147,6 +146,11 @@ _web_instance_host_deps_files_to_exclude = [
   "lib/libswiftshader_libEGL.so",
   "lib/libswiftshader_libGLESv2.so",
 ]
+
+# This file is still required for component builds.
+if (!is_component_build) {
+  _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
+}
 
 cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
