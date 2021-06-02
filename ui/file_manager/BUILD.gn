@@ -99,8 +99,14 @@ preprocess_if_expr("preprocess_static") {
     "image_loader/background.m.js",
 
     # Video Player:
+    "video_player/js/background.js",
+    "video_player/js/error_util.js",
     "video_player/js/main.m.js",
     "video_player/js/main_background.m.js",
+    "video_player/js/test_util.js",
+    "video_player/js/video_player.js",
+    "video_player/js/video_player_metrics.js",
+    "video_player/js/video_player_native_controls.js",
   ]
 
   deps = [
@@ -109,6 +115,7 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
     "//ui/file_manager/image_loader:background.m",
+    "//ui/file_manager/video_player/js:js_modules",
     "//ui/file_manager/video_player/js:main.m",
     "//ui/file_manager/video_player/js:main_background.m",
   ]
@@ -358,14 +365,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/metadata/mpeg_parser.m.js",
     "file_manager/foreground/js/metadata/multi_metadata_provider.m.js",
     "file_manager/foreground/js/metadata/thumbnail_model.m.js",
-
-    # Video Player:
-    "video_player/js/error_util.m.js",
-    "video_player/js/test_util.m.js",
-    "video_player/js/background.m.js",
-    "video_player/js/video_player.m.js",
-    "video_player/js/video_player_native_controls.m.js",
-    "video_player/js/video_player_metrics.m.js",
   ]
 
   deps = [
@@ -382,7 +381,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/js/ui:modulize",
     "//ui/file_manager/file_manager/foreground/js/ui/table:modulize",
     "//ui/file_manager/image_loader:modulize",
-    "//ui/file_manager/video_player/js:modulize",
   ]
 }
 

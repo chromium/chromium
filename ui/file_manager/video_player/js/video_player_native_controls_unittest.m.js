@@ -5,7 +5,7 @@
 import {MockChromeStorageAPI} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/mock_chrome.m.js';
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {NativeControlsVideoPlayer} from './video_player_native_controls.m.js';
+import {NativeControlsVideoPlayer} from './video_player_native_controls.js';
 
 /**
  * Helper function for creating an mock HTMLVideoElement.
