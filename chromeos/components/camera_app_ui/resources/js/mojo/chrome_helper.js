@@ -183,17 +183,6 @@ export class ChromeHelper {
   }
 
   /**
-   * Notifies ARC++ to cancel the intent.
-   * @param {number} intentId Intent id of the intent to be canceled.
-   * @return {!Promise}
-   */
-  async cancel(intentId) {
-    const ret = this.remote_.handleCameraResult(
-        intentId, arc.mojom.CameraIntentAction.CANCEL, []);
-    await this.checkReturn_('cancel()', ret);
-  }
-
-  /**
    * Forces casting type from Uint8Array to !Array<number>.
    * @param {!Uint8Array} data
    * @return {!Array<number>}

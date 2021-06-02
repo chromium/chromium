@@ -113,22 +113,6 @@ export class Intent {
   }
 
   /**
-   * Notifies ARC++ to cancel the intent.
-   * @return {!Promise}
-   */
-  async cancel() {
-    if (this.done) {
-      return;
-    }
-    this.done_ = true;
-    // TODO(crbug.com/1125997): We send the metrics before the actual action
-    // here to workaround the issue that codes behind "await" might not be
-    // executed when unloading window.
-    this.logResult(metrics.IntentResultType.CANCELED);
-    await this.chromeHelper_.cancel(this.intentId);
-  }
-
-  /**
    * Notifies ARC++ to append data to the intent result.
    * @param {!Uint8Array} data The data to be appended to intent result.
    * @return {!Promise}
