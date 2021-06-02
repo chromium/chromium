@@ -23,8 +23,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /**
- * ColorProvider implementation used for normal profiles, in some cases incognito
- * profiles.
+ * ColorProvider implementation used for normal profiles.
  */
 public final class CustomTabColorProviderImpl implements ColorProvider {
     private static final String TAG = "CustomTabColorPrvdr";
