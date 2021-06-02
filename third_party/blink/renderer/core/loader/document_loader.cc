@@ -2168,9 +2168,6 @@ void DocumentLoader::CommitNavigation() {
   //
   // Use response_.AddressSpace() instead of frame_->DomWindow()->AddressSpace()
   // since the latter isn't populated in unit tests.
-  //
-  // TODO(crbug.com/1171214): move RecordAddressSpaceFeature() call from
-  // StartLoadingInternal to here.
   if (frame_->IsMainFrame()) {
     auto address_space = response_.AddressSpace();
     if ((address_space == network::mojom::blink::IPAddressSpace::kPrivate ||
