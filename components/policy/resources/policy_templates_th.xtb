@@ -79,7 +79,7 @@
 <translation id="1076751984131277498">รายการที่อนุญาตของอุปกรณ์ USB ที่ถอดได้</translation>
 <translation id="1079801999187584280">ไม่อนุญาตการใช้เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="1082802595100075771">ให้ผู้ใช้เลือกที่จะใช้บริการของ Google แบบไม่ระบุตัวตนเพื่อให้คำอธิบายอัตโนมัติสำหรับรูปภาพที่ไม่มีป้ายกำกับ</translation>
-<translation id="1087437665304381368">นโยบายนี้ควบคุมโหมดนักพัฒนาซอฟต์แวร์ของ <ph name="PRODUCT_OS_NAME" /> เท่านั้น หากคุณต้องการป้องกันการเข้าถึงตัวเลือกสำหรับนักพัฒนาซอฟต์แวร์ Android ก็จะต้องตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /></translation>
+<translation id="1087437665304381368">นโยบายนี้ควบคุมโหมดนักพัฒนาซอฟต์แวร์ของ <ph name="PRODUCT_OS_NAME" /> เท่านั้น หากคุณต้องการป้องกันการเข้าถึงตัวเลือกสำหรับนักพัฒนาแอป Android ก็จะต้องตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /></translation>
 <translation id="1087707496788636333">เรากำลังย้ายรายการนโยบายของ Chrome Enterprise โปรดอัปเดตบุ๊กมาร์กเป็น <ph name="POLICY_DOCUMENTATION_URL" /></translation>
 <translation id="1095209545735032039">บล็อก Serial API ในเว็บไซต์เหล่านี้</translation>
 <translation id="1096105751829466145">ผู้ให้บริการการค้นหาเริ่มต้น</translation>

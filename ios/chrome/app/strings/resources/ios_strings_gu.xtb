@@ -492,6 +492,7 @@
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
 <translation id="6066301408025741299">રદ કરવા માટે ટેપ કરો.</translation>
 <translation id="60829778314739003">સ્વીકારો અને આગળ વધો</translation>
+<translation id="6084848228346514841">કોઈ ટૅબ પસંદ કરો</translation>
 <translation id="6108923351542677676">સેટઅપની પ્રક્રિયા ચાલુ છે...</translation>
 <translation id="6119050551270742952">વર્તમાન વેબપેજ છૂપા મોડમાં છે</translation>
 <translation id="6122191549521593678">ઓનલાઇન</translation>
@@ -782,6 +783,7 @@
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8840513115188359703">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ.</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
 <translation id="8870413625673593573">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="8876882697946675716">તમારા ડિવાઇસને સિંક કરેલું રાખો</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>

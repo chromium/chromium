@@ -734,6 +734,7 @@
 <translation id="3631244953324577188">બાયોમેટ્રિક્સ</translation>
 <translation id="3633738897356909127">Chrome અપડેટ કરો બટન, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Enter દબાવો</translation>
 <translation id="3634530185120165534">ટ્રે 5</translation>
+<translation id="3637662659967048211">Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="3640766068866876100">અનુક્રમણિકા-4x6-Ext</translation>
 <translation id="3642638418806704195">ઍપ્લિકેશન:</translation>
 <translation id="3650584904733503804">માન્યતા સફળ</translation>
@@ -1411,6 +1412,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> પરનું વેબપેજ થોડી વાર માટે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="6107012941649240045">આને રજૂ કરેલું</translation>
 <translation id="610911394827799129">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે છે</translation>
+<translation id="6113594885686374546">યાત્રા બટન ફરી શરૂ કરો, તેમજ તમારી યાત્રા ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="6116338172782435947">ક્લિપબોર્ડ પર કૉપિ કરેલ ટેક્સ્ટ અને છબીઓને જુઓ</translation>
 <translation id="6120179357481664955">તમારું UPI ID યાદ રાખીએ?</translation>
 <translation id="6123290840358279103">વર્ચ્યુઅલ કાર્ડ જુઓ</translation>
@@ -1486,6 +1488,7 @@
 <translation id="6423385022588644828">હવેથી Touch IDનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
 <translation id="6425092077175753609">સામગ્રી</translation>
 <translation id="6427730057873428458">ગેટ ફોલ્ડ</translation>
+<translation id="6428146287756735566">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, યાત્રા ફરી શરૂ કરો</translation>
 <translation id="6428450836711225518">તમારો ફોન નંબર ચકાસો</translation>
 <translation id="6433490469411711332">સંપર્ક માહિતીમાં ફેરફાર કરો</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> એ કનેક્ટ કરવાનો ઇનકાર કર્યો.</translation>
@@ -1537,6 +1540,7 @@
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645291930348198241">કુકી અને સાઇટ ડેટાનો ઍક્સેસ કરો.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{કોઈ નહિ}=1{From 1 site (you won't be signed out of your Google Account)}one{From # sites (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
+<translation id="6647197322759179819">યાત્રા ફરી શરૂ કરો</translation>
 <translation id="6648459603387803038">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝર સેટઅપને રિમોટલી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહારથી પણ મેનેજ કરી શકાય છે.</translation>
 <translation id="6648524591329069940">Serif ફૉન્ટ</translation>
 <translation id="6651270836885078973">આમના દ્વારા મેનેજ કરવામાં આવે છે:</translation>
@@ -2188,6 +2192,7 @@
 <translation id="9114524666733003316">કાર્ડ કન્ફર્મ કરી રહ્યાં છીએ...</translation>
 <translation id="9114581008513152754">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહાર મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">નવીન</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab કી દબાવો તેમજ તમારી યાત્રા ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="9119042192571987207">અપલોડ કર્યો</translation>
 <translation id="9128016270925453879">પૉલિસી લોડ કરવામાં આવી છે</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>

@@ -492,6 +492,7 @@
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="60829778314739003">स्वीकार गर्नुहोस् र जारी राख्नुहोस्</translation>
+<translation id="6084848228346514841">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
@@ -782,6 +783,7 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
 <translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> मा यो छवि खोज्नुहोस्</translation>

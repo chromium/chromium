@@ -729,6 +729,7 @@
 <translation id="3631244953324577188">बायोमेट्रिक्स</translation>
 <translation id="3633738897356909127">'Chrome अपडेट गर्नुहोस्' नामक बटन, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Enter थिच्नुहोस्</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
+<translation id="3637662659967048211">Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">एप:</translation>
 <translation id="3650584904733503804">प्रमाणीकरण सफल भयो</translation>
@@ -1403,6 +1404,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
 <translation id="610911394827799129">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा ब्राउजिङ इतिहासका अन्य ढाँचाहरू रहेका हुनसक्छन्।</translation>
+<translation id="6113594885686374546">'खोज्ने क्रम सुचारु गर्नुहोस्' बटन, Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्न Enter थिच्नुहोस्</translation>
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र छविहरू हेर्नुहोस्</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
@@ -1477,6 +1479,7 @@
 <translation id="6423385022588644828">अब उप्रान्त Touch ID प्रयोग गरेर आफ्ना कार्डहरू अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="6425092077175753609">वस्तु</translation>
 <translation id="6427730057873428458">गेट फोल्ड</translation>
+<translation id="6428146287756735566">Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6428450836711225518">आफ्नो फोन नम्बरको पुष्टि गर्नुहोस्</translation>
 <translation id="6433490469411711332">सम्पर्क सम्बन्धी जानकारीलाई सम्पादन गर्नुहोस्</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ले जडान गर्न अस्वीकार गर्यो।</translation>
@@ -1528,6 +1531,7 @@
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645291930348198241">कुकीहरू र साइटको डेटा प्रयोग गर्न।</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट (तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन)}other{# साइटहरूबाट (तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन)}}</translation>
+<translation id="6647197322759179819">खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6648459603387803038">तपाईंका एड्मिन टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्नुहुन्छ। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट पनि व्यवस्थापन गरिन सक्छ।</translation>
 <translation id="6648524591329069940">Serif फन्ट</translation>
 <translation id="6651270836885078973">व्यवस्थापक:</translation>
@@ -2175,6 +2179,7 @@
 <translation id="9114524666733003316">कार्डको पुष्टि गर्दै...</translation>
 <translation id="9114581008513152754">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">ताजा</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्न Tab थिच्नुहोस् त्यसपछि Enter थिच्नुहोस्</translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
 <translation id="9128016270925453879">नीतिहरू लोड गरिएका छन्</translation>
 <translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>

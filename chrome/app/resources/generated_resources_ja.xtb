@@ -4211,10 +4211,10 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">ユーザー名を保存しますか？</translation>
 <translation id="5584091888252706332">起動時</translation>
-<translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />これは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。このデータは Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
+<translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />送信されるのは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。この情報は Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />この機能をオフにした場合でも、システム アップデートやセキュリティなどの重要なサービスで必要となる情報は、デバイスからこれまでどおり送信されます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />これに加えて [ウェブとアプリのアクティビティ] の設定もオンにしている場合、このデータは Google アカウントにも保存される可能性があります。account.google.com でアカウント設定を閲覧、削除、変更することができます。<ph name="END_PARAGRAPH4" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />[ウェブとアプリのアクティビティ] の設定もオンにしている場合、診断と使用状況のデータは Google アカウントにも保存される可能性があります。account.google.com でアカウント設定を閲覧、削除、変更することができます。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5585019845078534178">カード</translation>
 <translation id="5585118885427931890">ブックマーク フォルダを作成できませんでした。</translation>
 <translation id="558563010977877295">特定のページまたはページセットを開く</translation>
@@ -6680,10 +6680,10 @@
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>
 <translation id="8267539814046467575">プリンタの追加</translation>
-<translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />これは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。このデータは、Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
+<translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />送信されるのは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。この情報は、Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />この機能をオフにした場合でも、システム アップデートやセキュリティなどの重要なサービスで必要となる情報は、デバイスからこれまでどおり送信されます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />これに加えて、お子様のアカウントで [ウェブとアプリのアクティビティ] の設定もオンにしている場合、このデータはお子様の Google アカウントにも保存される可能性があります。これらの設定の詳細と設定を調整する方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />お子様のアカウントで [ウェブとアプリのアクティビティ] の設定もオンにしている場合、診断と使用状況のデータはお子様の Google アカウントにも保存される可能性があります。これらの設定の詳細と設定を調整する方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">クライアント証明書が無効です</translation>
 <translation id="8270242299912238708">PDF ドキュメント</translation>
 <translation id="827097179112817503">ホームボタンを表示する</translation>
@@ -7090,7 +7090,7 @@
 <translation id="8737914367566358838">ページを翻訳する言語を選択してください</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>
-<translation id="8742998548129056176">これは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
+<translation id="8742998548129056176">送信されるのは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。この情報は Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="8746654918629346731">「<ph name="EXTENSION_NAME" />」はリクエスト済みです</translation>
 <translation id="874689135111202667">{0,plural, =1{1 個のファイルをこのサイトにアップロードしますか？}other{# 個のファイルをこのサイトにアップロードしますか？}}</translation>

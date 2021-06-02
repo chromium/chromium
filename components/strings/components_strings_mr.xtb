@@ -260,7 +260,7 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">कार्डधारकाचे नाव</translation>
 <translation id="1807246157184219062">फिकट</translation>
-<translation id="1807528111851433570">पत्रक सुरू करा</translation>
+<translation id="1807528111851433570">शीट सुरू करा</translation>
 <translation id="1812527064848182527">लॅंडस्केप</translation>
 <translation id="1814698615734239189">हे ॲप मोबाइल डिव्हाइससाठी डिझाइन केलेले आहे. ते कंपॅटिबिलिटी मोडमध्ये रन होत आहे. आकार बदलण्याला अनुमती दिल्यामुळे ॲप पुन्हा सुरू होण्याच्या समावेशासह समस्या येऊ शकतात.</translation>
 <translation id="1821930232296380041">अवैध विनंती किंवा विनंती मापदंड</translation>
@@ -636,7 +636,7 @@
 <translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3338095232262050444">सुरक्षित</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
-<translation id="3360103848165129075">पेमेंट हँडलर पत्रक</translation>
+<translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
 <translation id="3361596688432910856">Chrome पुढील माहिती <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />तुमचा ब्राउझिंग इतिहास
@@ -813,7 +813,7 @@
 <translation id="3949601375789751990">तुमचा ब्राउझिंग इतिहास येथे दिसतो</translation>
 <translation id="3949870428812919180">सेव्ह केलेल्या पेमेंट पद्धती नाहीत</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
-<translation id="3961148744525529027">पेमेंट हँडलर पत्रक अर्धे उघडलेले आहे</translation>
+<translation id="3961148744525529027">पेमेंट हँडलर शीट अर्धे उघडलेले आहे</translation>
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3963721102035795474">वाचक मोड</translation>
 <translation id="3963837677003247395">मॅन्‍युअली सुरू ठेवायचे आहे का?</translation>
@@ -1683,7 +1683,7 @@
 <translation id="7220786058474068424">प्रक्रिया करत आहे</translation>
 <translation id="7221855153210829124">सूचना दर्शवा</translation>
 <translation id="7229659723041939809">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुम्ही हा पासवर्ड आता जेथे वापरता अशा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> आणि इतर साइटसाठी तुमचे सेव्ह केलेले पासवर्ड तपासण्याची Chrome शिफारस करते.</translation>
-<translation id="7233592378249864828">खात्री केलेले पत्रक प्रिंट करा</translation>
+<translation id="7233592378249864828">खात्री केलेले शीट प्रिंट करा</translation>
 <translation id="7238585580608191973">SHA-256 बोटाचा ठसा</translation>
 <translation id="7240120331469437312">सर्टिफिकेट विषय वैकल्पिक नाव</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -1798,7 +1798,7 @@
 <translation id="7613889955535752492">कालबाह्य: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहाण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="7616645509853975347">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या ब्राउझरवर Chrome एंटरप्राइझ कनेक्टर्स सुरू केली आहेत. या कनेक्टरना तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
-<translation id="7619838219691048931">शेवटचे पत्रक</translation>
+<translation id="7619838219691048931">शेवटचे शीट</translation>
 <translation id="762844065391966283">एका वेळी एक</translation>
 <translation id="7633909222644580952">परफॉर्मंस डेटा आणि क्रॅश अहवाल</translation>
 <translation id="7637571805876720304">Chromium वरून क्रेडिट कार्ड काढून टाकायचे?</translation>
@@ -1807,7 +1807,7 @@
 <translation id="7639968568612851608">गडद राखाडी</translation>
 <translation id="7647206758853451655">प्रिंटची गुणवत्ता</translation>
 <translation id="7648992873808071793">या डिव्हाइसवर फाइल संचयित करा</translation>
-<translation id="7653957176542370971">पेमेंट हँडलर पत्रक बंद केलेले आहे</translation>
+<translation id="7653957176542370971">पेमेंट हँडलर शीट बंद केलेले आहे</translation>
 <translation id="7654909834015434372">तुम्ही भाष्ये संपादित करता तेव्हा हा दस्तऐवज त्याच्या मूळ रोटेशनवर परत येईल</translation>
 <translation id="765676359832457558">प्रगत सेटिंग्ज लपवा...</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
@@ -1977,7 +1977,7 @@
 <translation id="8267698848189296333"><ph name="USERNAME" /> म्हणून साइन इन करीत आहे</translation>
 <translation id="8269242089528251720">वेगळे दस्तऐवज/संकलित केलेल्या प्रती</translation>
 <translation id="8275952078857499577">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
-<translation id="8277900682056760511">पेमेंट हँडलर पत्रक उघडलेले आहे</translation>
+<translation id="8277900682056760511">पेमेंट हँडलर शीट उघडलेले आहे</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">तुमचा अनन्य डिव्हाइस अभिज्ञापक जाणून घ्या</translation>
 <translation id="8284769179630993263">Chrome सेटिंग्जमध्ये तुमचे सुरक्षित ब्राउझिंग आणि आणखी बरेच काही व्यवस्थापित करा</translation>
@@ -2211,7 +2211,7 @@
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ला होम स्क्रीनवर जोडा</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
 <translation id="9171296965991013597">ॲप सोडायचे?</translation>
-<translation id="9173282814238175921">एक दस्तऐवज/नवीन पत्रक</translation>
+<translation id="9173282814238175921">एक दस्तऐवज/नवीन शीट</translation>
 <translation id="9173995187295789444">ब्लूटूथ डिव्हाइससाठी स्कॅन करत आहे...</translation>
 <translation id="917450738466192189">सर्व्हरचे सर्टिफिकेट चुकीचे आहे.</translation>
 <translation id="9174917557437862841">टॅब स्विच बटण, या टॅबवर जाण्यासाठी एंटर दाबा</translation>
