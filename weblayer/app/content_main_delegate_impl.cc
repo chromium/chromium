@@ -182,8 +182,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kNotificationTriggers,
     // TODO(crbug.com/1091211): Support PeriodicBackgroundSync on WebLayer.
     ::features::kPeriodicBackgroundSync,
-    // TODO(crbug.com/1131017): Support SurfaceViews on WebLayer.
-    media::kOverlayFullscreenVideo,
     // TODO(crbug.com/1174856): Support Portals.
     blink::features::kPortals,
     // TODO(crbug.com/1174566): Enable by default after experiment.
