@@ -17,6 +17,7 @@ source_set("browser_tests") {
     ":test_support",
     "//ash:test_support",
     "//ash/public/cpp",
+    "//ash/public/cpp/holding_space:test_support",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/crosapi",

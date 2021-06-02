@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -51,25 +52,6 @@ namespace {
 // HoldingSpaceKeyedServiceBrowserTest. The tests are parameterized by this
 // enum.
 enum class FileSystemType { kDownloads, kDriveFs };
-
-// Mocks -----------------------------------------------------------------------
-
-// Mock observer which can be used to set expectations about model behavior.
-class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
- public:
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemsAdded,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemsRemoved,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemInitialized,
-              (const HoldingSpaceItem* item),
-              (override));
-};
 
 // Helpers ---------------------------------------------------------------------
 

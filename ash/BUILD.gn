@@ -2466,6 +2466,7 @@ test("ash_unittests") {
     "//ash/public/cpp:unit_tests",
     "//ash/public/cpp/external_arc:test_support",
     "//ash/public/cpp/external_arc:unit_tests",
+    "//ash/public/cpp/holding_space:test_support",
     "//ash/resources/vector_icons",
     "//ash/shortcut_viewer:unit_tests",
     "//ash/strings",

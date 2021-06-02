@@ -19,6 +19,8 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_client.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -233,82 +235,6 @@ class MockActivationChangeObserver : public wm::ActivationChangeObserver {
               (wm::ActivationChangeObserver::ActivationReason reason,
                aura::Window* gained_active,
                aura::Window* lost_active),
-              (override));
-};
-
-// TODO(crbug.com/1213686): Move to test support for reuse.
-class MockHoldingSpaceClient : public HoldingSpaceClient {
- public:
-  MOCK_METHOD(void,
-              AddScreenshot,
-              (const base::FilePath& file_path),
-              (override));
-  MOCK_METHOD(void,
-              AddScreenRecording,
-              (const base::FilePath& file_path),
-              (override));
-  MOCK_METHOD(void,
-              CancelItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              CopyImageToClipboard,
-              (const HoldingSpaceItem& item, SuccessCallback callback),
-              (override));
-  MOCK_METHOD(base::FilePath,
-              CrackFileSystemUrl,
-              (const GURL& file_system_url),
-              (const, override));
-  MOCK_METHOD(void, OpenDownloads, (SuccessCallback callback), (override));
-  MOCK_METHOD(void, OpenMyFiles, (SuccessCallback callback), (override));
-  MOCK_METHOD(void,
-              OpenItems,
-              (const std::vector<const HoldingSpaceItem*>& items,
-               SuccessCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              PauseItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              PinFiles,
-              (const std::vector<base::FilePath>& file_paths),
-              (override));
-  MOCK_METHOD(void,
-              PinItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              ResumeItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              ShowItemInFolder,
-              (const HoldingSpaceItem& item, SuccessCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              UnpinItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-};
-
-class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
- public:
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemsAdded,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemsRemoved,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemUpdated,
-              (const HoldingSpaceItem* item),
-              (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemInitialized,
-              (const HoldingSpaceItem* item),
               (override));
 };
 
