@@ -251,6 +251,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) const;
 
+  // Returns whether a custom frame should be used for windows.
+  // The default behaviour is returning what is suggested by the
+  // custom_frame_pref_default property of the platform: if the platform
+  // suggests using the custom frame, likely it lacks native decorations.
+  // See https://crbug.com/1212555
+  virtual bool ShouldUseCustomFrame();
+
   // Returns a struct that contains configuration and requirements for the
   // current platform implementation. This can be called from either host or GPU
   // process at any time.

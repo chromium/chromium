@@ -160,6 +160,10 @@ class OzonePlatformWayland : public OzonePlatform {
                                                                    usage);
   }
 
+  bool ShouldUseCustomFrame() override {
+    return connection_->xdg_decoration_manager_v1() == nullptr;
+  }
+
   void InitializeUI(const InitParams& args) override {
     // Initialize DeviceDataManager early as devices are set during
     // WaylandConnection::Initialize().
