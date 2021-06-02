@@ -248,6 +248,7 @@ bool ContentScriptTracker::DidProcessRunContentScriptFromExtension(
     const content::RenderProcessHost& process,
     const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!extension_id.empty());
 
   // Check if we've been notified about the content script injection via
   // ReadyToCommitNavigation or WillExecuteCode methods.
