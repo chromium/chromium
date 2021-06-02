@@ -99,8 +99,12 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   if (result->format() != viz::CopyOutputResult::Format::RGBA_BITMAP)
     return absl::nullopt;
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
-  if (!scoped_bitmap.bitmap().readyToDraw())
+  if (!scoped_bitmap.bitmap().readyToDraw()) {
+    // During shutdown or switching to background on Android, Chrome will
+    // release GPU context, it will release mapped GPU memory which is used
+    // in SkBitmap, in that case, a null bitmap will be sent.
     return absl::nullopt;
+  }
   return scoped_bitmap;
 }
 
@@ -180,8 +184,15 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
       absl::optional<SkBitmap> bitmap_opt;
       if (!data.ReadBitmap(&bitmap_opt))
         return false;
-      if (!bitmap_opt)
-        return false;
+      if (!bitmap_opt) {
+        // During shutdown or switching to background on Android, Chrome will
+        // release GPU context, it will release mapped GPU memory which is used
+        // in SkBitmap, in that case, the sender will send a null bitmap. So we
+        // should consider the copy output result is empty.
+        *out_p =
+            std::make_unique<viz::CopyOutputResult>(format, gfx::Rect(), false);
+        return true;
+      }
       if (!bitmap_opt->readyToDraw())
         return false;
 
