@@ -22,7 +22,7 @@
 namespace blink {
 
 using mojom::blink::ViewportStatus;
-static constexpr int kSmallFontThreshold = 12;
+static constexpr int kSmallFontThreshold = 9;
 const base::Feature kBadTapTargetsRatio{"BadTapTargetsRatio",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 static constexpr int kTimeBudgetExceeded = -2;

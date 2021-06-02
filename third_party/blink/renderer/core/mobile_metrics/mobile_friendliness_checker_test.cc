@@ -195,7 +195,7 @@ TEST_F(MobileFriendlinessCheckerTest, MostlySmallInSpan) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <div style="font-size: 12px">
   x
-  <span style="font-size:11px">
+  <span style="font-size:8px">
     This is the majority part of the document.
   </span>
   y
@@ -209,7 +209,7 @@ TEST_F(MobileFriendlinessCheckerTest, MultipleDivs) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <div style="font-size: 12px">
   x
-  <div style="font-size:11px">
+  <div style="font-size:8px">
     middle of div
     <div style="font-size:1px">
       inner of div
@@ -219,7 +219,7 @@ TEST_F(MobileFriendlinessCheckerTest, MultipleDivs) {
 </div>
 )");
   EXPECT_LT(actual_mf.small_text_ratio, 100);
-  EXPECT_GT(actual_mf.small_text_ratio, 80);
+  EXPECT_GT(actual_mf.small_text_ratio, 68);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, DontCountInvisibleSmallFontArea) {
@@ -263,8 +263,8 @@ TEST_F(MobileFriendlinessCheckerTest, ViewportZoomedOutIllegibleFont) {
   <head>
     <meta name="viewport" content="width=480, initial-scale=0.5">
   </head>
-  <body style="font-size: 22px; width: 960px">
-    Illegible text in 11px.
+  <body style="font-size: 16px; width: 960px">
+    Illegible text in 8px.
   </body>
 </html>
 )");
