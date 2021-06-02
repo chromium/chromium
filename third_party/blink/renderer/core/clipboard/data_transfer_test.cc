@@ -13,16 +13,19 @@
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
-class DataTransferTest : public RenderingTest {
+class DataTransferTest : public PaintTestConfigurations, public RenderingTest {
  protected:
   Page& GetPage() const { return *GetDocument().GetPage(); }
   LocalFrame& GetFrame() const { return *GetDocument().GetFrame(); }
 };
 
-TEST_F(DataTransferTest, NodeImage) {
+INSTANTIATE_PAINT_TEST_SUITE_P(DataTransferTest);
+
+TEST_P(DataTransferTest, NodeImage) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #sample { width: 100px; height: 100px; }
@@ -35,7 +38,7 @@ TEST_F(DataTransferTest, NodeImage) {
   EXPECT_EQ(IntSize(100, 100), image->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageWithNestedElement) {
+TEST_P(DataTransferTest, NodeImageWithNestedElement) {
   SetBodyInnerHTML(R"HTML(
     <style>
       div { -webkit-user-drag: element }
@@ -52,7 +55,7 @@ TEST_F(DataTransferTest, NodeImageWithNestedElement) {
       << "Descendants node should have :-webkit-drag.";
 }
 
-TEST_F(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
+TEST_P(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #sample { width: 100px; height: 100px; }
@@ -67,7 +70,7 @@ TEST_F(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
       << ":-webkit-drag should affect dragged image.";
 }
 
-TEST_F(DataTransferTest, NodeImageWithoutDraggedLayoutObject) {
+TEST_P(DataTransferTest, NodeImageWithoutDraggedLayoutObject) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #sample { width: 100px; height: 100px; }
@@ -81,7 +84,7 @@ TEST_F(DataTransferTest, NodeImageWithoutDraggedLayoutObject) {
   EXPECT_EQ(nullptr, image.get()) << ":-webkit-drag blows away layout object";
 }
 
-TEST_F(DataTransferTest, NodeImageWithChangingLayoutObject) {
+TEST_P(DataTransferTest, NodeImageWithChangingLayoutObject) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #sample { color: blue; }
@@ -109,7 +112,7 @@ TEST_F(DataTransferTest, NodeImageWithChangingLayoutObject) {
       << "#sample doesn't have :-webkit-drag.";
 }
 
-TEST_F(DataTransferTest, NodeImageExceedsViewportBounds) {
+TEST_P(DataTransferTest, NodeImageExceedsViewportBounds) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -122,7 +125,7 @@ TEST_F(DataTransferTest, NodeImageExceedsViewportBounds) {
   EXPECT_EQ(IntSize(800, 600), image->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageUnderScrollOffset) {
+TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -153,7 +156,7 @@ TEST_F(DataTransferTest, NodeImageUnderScrollOffset) {
             second_image->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
+TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -184,7 +187,7 @@ TEST_F(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
       image_with_offset->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
+TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -215,7 +218,7 @@ TEST_F(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
             image_with_offset->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageWithPageScaleFactor) {
+TEST_P(DataTransferTest, NodeImageWithPageScaleFactor) {
   // #bluegreen is a 2x1 rectangle where the left pixel is blue and the right
   // pixel is green. The element is offset by a margin of 1px.
   SetBodyInnerHTML(R"HTML(
@@ -254,7 +257,7 @@ TEST_F(DataTransferTest, NodeImageWithPageScaleFactor) {
       EXPECT_EQ(expected_bitmap.getColor(x, y), bitmap.getColor(x, y));
 }
 
-TEST_F(DataTransferTest, NodeImageFullyOffscreen) {
+TEST_P(DataTransferTest, NodeImageFullyOffscreen) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #target {
@@ -281,7 +284,7 @@ TEST_F(DataTransferTest, NodeImageFullyOffscreen) {
   EXPECT_EQ(IntSize(200, 100), image->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageWithScrolling) {
+TEST_P(DataTransferTest, NodeImageWithScrolling) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #target {
@@ -303,7 +306,7 @@ TEST_F(DataTransferTest, NodeImageWithScrolling) {
   EXPECT_EQ(IntSize(200, 100), image->Size());
 }
 
-TEST_F(DataTransferTest, NodeImageInOffsetStackingContext) {
+TEST_P(DataTransferTest, NodeImageInOffsetStackingContext) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -337,7 +340,7 @@ TEST_F(DataTransferTest, NodeImageInOffsetStackingContext) {
   }
 }
 
-TEST_F(DataTransferTest, NodeImageWithLargerPositionedDescendant) {
+TEST_P(DataTransferTest, NodeImageWithLargerPositionedDescendant) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -377,6 +380,24 @@ TEST_F(DataTransferTest, NodeImageWithLargerPositionedDescendant) {
   for (int x = 0; x < drag_width; ++x) {
     for (int y = 0; y < drag_height; ++y)
       EXPECT_EQ(green, bitmap.getColor(x, y));
+  }
+}
+
+TEST_P(DataTransferTest, NodeImageOutOfView) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="drag" style="position: absolute; z-index: 1; top: -200px; left: 0;
+                          width: 100px; height: 100px; background: green">
+    </div>
+  )HTML");
+
+  auto image = DataTransfer::NodeImage(GetFrame(),
+                                       *GetDocument().getElementById("drag"));
+  EXPECT_EQ(IntSize(100, 100), image->Size());
+  Color green(0, 0x80, 0);
+  const SkBitmap& bitmap = image->Bitmap();
+  for (int x = 0; x < 10; ++x) {
+    for (int y = 0; y < 10; ++y)
+      ASSERT_EQ(green, bitmap.getColor(x, y));
   }
 }
 

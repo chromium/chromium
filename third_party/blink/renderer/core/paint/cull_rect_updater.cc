@@ -54,13 +54,15 @@ CullRectUpdater::CullRectUpdater(PaintLayer& root_layer)
       root_state_(root_layer.GetLayoutObject()
                       .FirstFragment()
                       .LocalBorderBoxProperties()
-                      .Unalias()) {
-  DCHECK(root_layer.IsRootLayer());
+                      .Unalias()) {}
+
+void CullRectUpdater::Update() {
+  DCHECK(root_layer_.IsRootLayer());
+  UpdateInternal(CullRect::Infinite());
 }
 
 void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  DCHECK(root_layer_.IsRootLayer());
   if (root_layer_.GetLayoutObject().GetFrameView()->ShouldThrottleRendering())
     return;
 
@@ -276,32 +278,28 @@ bool CullRectUpdater::ShouldProactivelyUpdate(const PaintLayer& layer) const {
   return layer.SelfOrDescendantNeedsRepaint();
 }
 
-OverriddenCullRectScope::OverriddenCullRectScope(LocalFrameView& frame_view,
+OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& root_layer,
                                                  const CullRect& cull_rect)
-    : frame_view_(frame_view) {
+    : root_layer_(root_layer) {
   if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
     return;
 
-  PaintLayer* root_layer = frame_view_.GetLayoutView()->Layer();
-  DCHECK(root_layer);
-
-  if (frame_view.GetFrame().IsLocalRoot() &&
-      !root_layer->NeedsCullRectUpdate() &&
-      !root_layer->DescendantNeedsCullRectUpdate() &&
-      cull_rect ==
-          root_layer->GetLayoutObject().FirstFragment().GetCullRect()) {
+  if (root_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
+      !root_layer.NeedsCullRectUpdate() &&
+      !root_layer.DescendantNeedsCullRectUpdate() &&
+      cull_rect == root_layer.GetLayoutObject().FirstFragment().GetCullRect()) {
     // The cull rects calculated during PrePaint are good.
     return;
   }
 
   updated_ = true;
-  root_layer->SetNeedsCullRectUpdate();
-  CullRectUpdater(*root_layer).UpdateInternal(cull_rect);
+  root_layer.SetNeedsCullRectUpdate();
+  CullRectUpdater(root_layer).UpdateInternal(cull_rect);
 }
 
 OverriddenCullRectScope::~OverriddenCullRectScope() {
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled() && updated_)
-    frame_view_.GetLayoutView()->Layer()->SetNeedsCullRectUpdate();
+    root_layer_.SetNeedsCullRectUpdate();
 }
 
 }  // namespace blink

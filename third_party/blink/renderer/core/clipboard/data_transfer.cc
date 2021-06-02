@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -124,6 +125,13 @@ class DraggedNodeImageBuilder {
         layer->GetLayoutObject()
             .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
             .BoundingBox();
+    absl::optional<OverriddenCullRectScope> cull_rect_scope;
+    if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+      FloatRect cull_rect = bounding_box;
+      cull_rect.Move(
+          FloatSize(layer->GetLayoutObject().FirstFragment().PaintOffset()));
+      cull_rect_scope.emplace(*layer, CullRect(EnclosingIntRect(cull_rect)));
+    }
     PaintLayerPaintingInfo painting_info(
         layer, CullRect(EnclosingIntRect(bounding_box)),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());

@@ -4029,7 +4029,8 @@ void LocalFrameView::PaintOutsideOfLifecycle(
   });
 
   {
-    OverriddenCullRectScope force_cull_rect(*this, cull_rect);
+    OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(),
+                                            cull_rect);
     PaintInternal(context, global_paint_flags, cull_rect);
   }
 
@@ -4052,7 +4053,8 @@ void LocalFrameView::PaintContentsOutsideOfLifecycle(
   });
 
   {
-    OverriddenCullRectScope force_cull_rect(*this, cull_rect);
+    OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(),
+                                            cull_rect);
     FramePainter(*this).PaintContents(context, global_paint_flags, cull_rect);
   }
 
@@ -4064,7 +4066,7 @@ void LocalFrameView::PaintContentsOutsideOfLifecycle(
 void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   AllowThrottlingScope allow_throttling(*this);
   Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-  OverriddenCullRectScope force_cull_rect(*this, cull_rect);
+  OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(), cull_rect);
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     PaintController& paint_controller = EnsurePaintController();
     if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
