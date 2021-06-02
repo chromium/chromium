@@ -250,7 +250,7 @@ void MostVisitedSites::RefreshTiles() {
 }
 
 void MostVisitedSites::InitializeCustomLinks() {
-  if (!custom_links_ || !current_tiles_.has_value() || !custom_links_enabled_)
+  if (!custom_links_ || !current_tiles_.has_value() || !IsCustomLinksEnabled())
     return;
 
   if (custom_links_->Initialize(current_tiles_.value()))
@@ -258,7 +258,7 @@ void MostVisitedSites::InitializeCustomLinks() {
 }
 
 void MostVisitedSites::UninitializeCustomLinks() {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return;
 
   custom_links_action_count_ = -1;
@@ -267,22 +267,46 @@ void MostVisitedSites::UninitializeCustomLinks() {
 }
 
 bool MostVisitedSites::IsCustomLinksInitialized() {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return false;
 
   return custom_links_->IsInitialized();
 }
 
 void MostVisitedSites::EnableCustomLinks(bool enable) {
-  if (custom_links_enabled_ != enable) {
-    custom_links_enabled_ = enable;
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  if (IsCustomLinksEnabled() != enable) {
+    prefs_->SetBoolean(prefs::kNtpUseMostVisitedTiles, !enable);
     BuildCurrentTiles();
   }
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+}
+
+bool MostVisitedSites::IsCustomLinksEnabled() const {
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  return !prefs_->GetBoolean(prefs::kNtpUseMostVisitedTiles);
+#else
+  return false;
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+}
+
+void MostVisitedSites::SetShortcutsVisible(bool visible) {
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  prefs_->SetBoolean(prefs::kNtpShortcutsVisible, visible);
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+}
+
+bool MostVisitedSites::IsShortcutsVisible() const {
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  return prefs_->GetBoolean(prefs::kNtpShortcutsVisible);
+#else
+  return true;
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
 
 bool MostVisitedSites::AddCustomLink(const GURL& url,
                                      const std::u16string& title) {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return false;
 
   bool is_first_action = !custom_links_->IsInitialized();
@@ -305,7 +329,7 @@ bool MostVisitedSites::AddCustomLink(const GURL& url,
 bool MostVisitedSites::UpdateCustomLink(const GURL& url,
                                         const GURL& new_url,
                                         const std::u16string& new_title) {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return false;
 
   bool is_first_action = !custom_links_->IsInitialized();
@@ -326,7 +350,7 @@ bool MostVisitedSites::UpdateCustomLink(const GURL& url,
 }
 
 bool MostVisitedSites::ReorderCustomLink(const GURL& url, size_t new_pos) {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return false;
 
   bool is_first_action = !custom_links_->IsInitialized();
@@ -347,7 +371,7 @@ bool MostVisitedSites::ReorderCustomLink(const GURL& url, size_t new_pos) {
 }
 
 bool MostVisitedSites::DeleteCustomLink(const GURL& url) {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return false;
 
   bool is_first_action = !custom_links_->IsInitialized();
@@ -368,7 +392,7 @@ bool MostVisitedSites::DeleteCustomLink(const GURL& url) {
 }
 
 void MostVisitedSites::UndoCustomLinkAction() {
-  if (!custom_links_ || !custom_links_enabled_)
+  if (!custom_links_ || !IsCustomLinksEnabled())
     return;
 
   // If this is undoing the first action after initialization, uninitialize
@@ -424,10 +448,23 @@ void MostVisitedSites::OnBlockedSitesChanged() {
 void MostVisitedSites::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNumPersonalTiles, 0);
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kNtpUseMostVisitedTiles, false);
+  registry->RegisterBooleanPref(prefs::kNtpShortcutsVisible, true);
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+}
+
+// static
+void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
+  prefs->SetInteger(prefs::kNumPersonalTiles, 0);
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  prefs->SetBoolean(prefs::kNtpUseMostVisitedTiles, false);
+  prefs->SetBoolean(prefs::kNtpShortcutsVisible, true);
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
 
 size_t MostVisitedSites::GetMaxNumSites() const {
-  return max_num_sites_ + (custom_links_ && custom_links_enabled_ ? 1 : 0);
+  return max_num_sites_ + (custom_links_ && IsCustomLinksEnabled() ? 1 : 0);
 }
 
 void MostVisitedSites::InitiateTopSitesQuery() {
@@ -736,7 +773,7 @@ absl::optional<NTPTile> MostVisitedSites::CreateExploreSitesTile() {
 
 void MostVisitedSites::OnCustomLinksChanged() {
   DCHECK(custom_links_);
-  if (!custom_links_enabled_)
+  if (!IsCustomLinksEnabled())
     return;
 
   if (custom_links_->IsInitialized()) {

@@ -182,6 +182,13 @@ class MostVisitedSites : public history::TopSitesObserver,
   // when a third-party NTP is being used, or when the user switches between
   // custom links and Most Visited sites.
   void EnableCustomLinks(bool enable);
+  // Returns true if custom links have been enabled and false if custom links
+  // are disabled and Most Visited sites should be returned instead.
+  bool IsCustomLinksEnabled() const;
+  // Sets the visibility of the NTP tiles.
+  void SetShortcutsVisible(bool visible);
+  // Returns whether NTP tiles should be shown.
+  bool IsShortcutsVisible() const;
   // Adds a custom link. If the number of current links is maxed, returns false
   // and does nothing. Will initialize custom links if they have not been
   // initialized yet, unless the action fails. Custom links must be enabled.
@@ -219,6 +226,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   void OnBlockedSitesChanged() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void ResetProfilePrefs(PrefService* prefs);
 
   // Workhorse for SaveNewTilesAndNotify. Implemented as a separate static and
   // public method for ease of testing.
@@ -359,9 +367,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Do not use directly. Use GetMaxNumSites() instead.
   size_t max_num_sites_;
 
-  // False if custom links is disabled and Most Visited sites should be returned
-  // instead.
-  bool custom_links_enabled_ = true;
   // Number of actions after custom link initialization. Set to -1 and not
   // incremented if custom links was not initialized during this session.
   int custom_links_action_count_ = -1;

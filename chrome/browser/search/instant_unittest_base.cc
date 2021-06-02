@@ -51,6 +51,10 @@ void InstantUnitTestBase::TearDown() {
   BrowserWithTestWindowTest::TearDown();
 }
 
+ntp_tiles::MostVisitedSites* InstantUnitTestBase::most_visited_sites() {
+  return instant_service_->most_visited_sites_.get();
+}
+
 void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(
     const std::string& base_url) {
   TemplateURLData data;

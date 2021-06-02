@@ -112,26 +112,27 @@ TEST_F(InstantServiceTest, GetNTPTileSuggestion) {
 }
 
 TEST_F(InstantServiceTest, DoesToggleMostVisitedOrCustomLinks) {
-  sync_preferences::TestingPrefServiceSyncable* pref_service =
-      profile()->GetTestingPrefService();
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  ASSERT_FALSE(pref_service->GetBoolean(prefs::kNtpUseMostVisitedTiles));
+  ASSERT_FALSE(!most_visited_sites()->IsCustomLinksEnabled());
   ASSERT_FALSE(instant_service_->most_visited_info_->use_most_visited);
 
   // Enable most visited tiles.
   EXPECT_TRUE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpUseMostVisitedTiles));
+  EXPECT_TRUE(!most_visited_sites()->IsCustomLinksEnabled());
   EXPECT_TRUE(instant_service_->most_visited_info_->use_most_visited);
 
   // Disable most visited tiles.
   EXPECT_TRUE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kNtpUseMostVisitedTiles));
+  EXPECT_FALSE(!most_visited_sites()->IsCustomLinksEnabled());
   EXPECT_FALSE(instant_service_->most_visited_info_->use_most_visited);
 
-  // Should do nothing if this is a non-Google NTP.
   SetUserSelectedDefaultSearchProvider("https://www.search.com");
+  EXPECT_FALSE(most_visited_sites()->IsCustomLinksEnabled());
+  ASSERT_FALSE(instant_service_->most_visited_info_->use_most_visited);
+
+  // Should do nothing if this is a non-Google NTP.
   EXPECT_FALSE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kNtpUseMostVisitedTiles));
+  EXPECT_FALSE(most_visited_sites()->IsCustomLinksEnabled());
   EXPECT_FALSE(instant_service_->most_visited_info_->use_most_visited);
 }
 
@@ -139,30 +140,28 @@ TEST_F(InstantServiceTest, DoesToggleShortcutsVisibility) {
   testing::StrictMock<MockInstantServiceObserver> mock_observer;
   instant_service_->AddObserver(&mock_observer);
 
-  sync_preferences::TestingPrefServiceSyncable* pref_service =
-      profile()->GetTestingPrefService();
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  ASSERT_TRUE(pref_service->GetBoolean(prefs::kNtpShortcutsVisible));
+  ASSERT_TRUE(most_visited_sites()->IsShortcutsVisible());
   ASSERT_TRUE(instant_service_->most_visited_info_->is_visible);
 
   // Hide shortcuts.
   EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(0);
   EXPECT_TRUE(instant_service_->ToggleShortcutsVisibility(false));
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kNtpShortcutsVisible));
+  EXPECT_FALSE(most_visited_sites()->IsShortcutsVisible());
   EXPECT_FALSE(instant_service_->most_visited_info_->is_visible);
   task_environment()->RunUntilIdle();
 
   // Show shortcuts, and check that a notification was sent.
   EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(1);
   EXPECT_TRUE(instant_service_->ToggleShortcutsVisibility(true));
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpShortcutsVisible));
+  EXPECT_TRUE(most_visited_sites()->IsShortcutsVisible());
   EXPECT_TRUE(instant_service_->most_visited_info_->is_visible);
 
   // Should do nothing if this is a non-Google NTP.
   EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(0);
   SetUserSelectedDefaultSearchProvider("https://www.search.com");
   EXPECT_FALSE(instant_service_->ToggleShortcutsVisibility(false));
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpShortcutsVisible));
+  EXPECT_TRUE(most_visited_sites()->IsShortcutsVisible());
   EXPECT_TRUE(instant_service_->most_visited_info_->is_visible);
 }
 
@@ -184,19 +183,16 @@ TEST_F(InstantServiceTest, DisableResetCustomLinksForNonGoogleSearchProvider) {
 }
 
 TEST_F(InstantServiceTest, IsCustomLinksEnabled) {
-  sync_preferences::TestingPrefServiceSyncable* pref_service =
-      profile()->GetTestingPrefService();
-
   // Test that custom links are only enabled when Most Visited is toggled off
   // and this is a Google NTP.
-  pref_service->SetBoolean(prefs::kNtpUseMostVisitedTiles, false);
+  most_visited_sites()->EnableCustomLinks(true);
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
   EXPECT_TRUE(instant_service_->IsCustomLinksEnabled());
 
   // All other cases should return false.
   SetUserSelectedDefaultSearchProvider("https://www.search.com");
   EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());
-  pref_service->SetBoolean(prefs::kNtpUseMostVisitedTiles, true);
+  most_visited_sites()->EnableCustomLinks(false);
   EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
   EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());

@@ -217,11 +217,10 @@ InstantService::InstantService(Profile* profile)
     most_visited_sites_->SetMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
     most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
-  }
 
-  most_visited_info_->use_most_visited = !IsCustomLinksEnabled();
-  most_visited_info_->is_visible =
-      pref_service_->GetBoolean(prefs::kNtpShortcutsVisible);
+    most_visited_info_->use_most_visited = !IsCustomLinksEnabled();
+    most_visited_info_->is_visible = most_visited_sites_->IsShortcutsVisible();
+  }
 
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
 
@@ -354,9 +353,7 @@ bool InstantService::ToggleMostVisitedOrCustomLinks() {
       !search_provider_observer_->is_google()) {
     return false;
   }
-  bool use_most_visited =
-      !pref_service_->GetBoolean(prefs::kNtpUseMostVisitedTiles);
-  pref_service_->SetBoolean(prefs::kNtpUseMostVisitedTiles, use_most_visited);
+  bool use_most_visited = most_visited_sites_->IsCustomLinksEnabled();
   most_visited_info_->use_most_visited = use_most_visited;
   bool was_initialized = most_visited_sites_->IsCustomLinksInitialized();
 
@@ -393,8 +390,8 @@ bool InstantService::ToggleShortcutsVisibility(bool do_notify) {
       !search_provider_observer_->is_google()) {
     return false;
   }
-  bool is_visible = !pref_service_->GetBoolean(prefs::kNtpShortcutsVisible);
-  pref_service_->SetBoolean(prefs::kNtpShortcutsVisible, is_visible);
+  bool is_visible = !most_visited_sites_->IsShortcutsVisible();
+  most_visited_sites_->SetShortcutsVisible(is_visible);
   most_visited_info_->is_visible = is_visible;
 
   if (do_notify) {
@@ -623,7 +620,7 @@ void InstantService::NotifyAboutNtpTheme() {
 
 bool InstantService::IsCustomLinksEnabled() {
   return search_provider_observer_ && search_provider_observer_->is_google() &&
-         !pref_service_->GetBoolean(prefs::kNtpUseMostVisitedTiles);
+         most_visited_sites_->IsCustomLinksEnabled();
 }
 
 void InstantService::BuildNtpTheme() {
@@ -872,17 +869,15 @@ bool InstantService::AreShortcutsCustomized() {
 }
 
 std::pair<bool, bool> InstantService::GetCurrentShortcutSettings() {
-  bool using_most_visited =
-      pref_service_->GetBoolean(prefs::kNtpUseMostVisitedTiles);
-  bool is_visible = pref_service_->GetBoolean(prefs::kNtpShortcutsVisible);
+  bool using_most_visited = !most_visited_sites_->IsCustomLinksEnabled();
+  bool is_visible = most_visited_sites_->IsShortcutsVisible();
   return std::make_pair(using_most_visited, is_visible);
 }
 
 void InstantService::ResetToDefault() {
   ResetCustomLinks();
   ResetCustomBackgroundNtpTheme();
-  pref_service_->SetBoolean(prefs::kNtpUseMostVisitedTiles, false);
-  pref_service_->SetBoolean(prefs::kNtpShortcutsVisible, true);
+  ntp_tiles::MostVisitedSites::ResetProfilePrefs(pref_service_);
 }
 
 void InstantService::UpdateCustomBackgroundColorAsync(
@@ -978,8 +973,6 @@ void InstantService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
                                 false);
-  registry->RegisterBooleanPref(prefs::kNtpUseMostVisitedTiles, false);
-  registry->RegisterBooleanPref(prefs::kNtpShortcutsVisible, true);
 }
 
 // static

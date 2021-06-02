@@ -23,6 +23,11 @@ extern const char kPopularSitesVersionPref[];
 extern const char kCustomLinksList[];
 extern const char kCustomLinksInitialized[];
 
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+extern const char kNtpShortcutsVisible[];
+extern const char kNtpUseMostVisitedTiles[];
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+
 }  // namespace prefs
 }  // namespace ntp_tiles
 
