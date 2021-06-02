@@ -179,6 +179,8 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     std::string version_label = internal::ProtocolVersionToString(version);
     if (commitments_by_version.FindKey(version_label)) {
       value = commitments_by_version.FindKey(version_label);
+      if (!value->is_dict())
+        return nullptr;
       const std::string* maybe_version =
           value->FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
       if (!maybe_version || *maybe_version != version_label)
