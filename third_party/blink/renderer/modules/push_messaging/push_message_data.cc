@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_usv_string.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -31,14 +32,18 @@ PushMessageData* PushMessageData::Create(const String& message_string) {
 
 PushMessageData* PushMessageData::Create(
     const ArrayBufferOrArrayBufferViewOrUSVString& message_data) {
-  if (message_data.IsArrayBuffer() || message_data.IsArrayBufferView()) {
-    DOMArrayBuffer* buffer = message_data.IsArrayBufferView()
-                                 ? message_data.GetAsArrayBufferView()->buffer()
-                                 : message_data.GetAsArrayBuffer();
-
+  if (message_data.IsArrayBuffer()) {
+    DOMArrayBuffer* buffer = message_data.GetAsArrayBuffer();
     return MakeGarbageCollected<PushMessageData>(
         static_cast<const char*>(buffer->Data()),
         base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+  }
+
+  if (message_data.IsArrayBufferView()) {
+    DOMArrayBufferView* buffer_view = message_data.GetAsArrayBufferView().Get();
+    return MakeGarbageCollected<PushMessageData>(
+        static_cast<const char*>(buffer_view->BaseAddress()),
+        base::checked_cast<wtf_size_t>(buffer_view->byteLength()));
   }
 
   if (message_data.IsUSVString()) {
