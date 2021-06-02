@@ -156,7 +156,9 @@
                                toState:(ViewRevealState)nextViewRevealState {
   if (nextViewRevealState == ViewRevealState::Revealed) {
     self.regularOverlayPresentationContext->SetUIDisabled(true);
-    self.incognitoOverlayPresentationContext->SetUIDisabled(true);
+    if (self.incognitoOverlayPresentationContext) {
+      self.incognitoOverlayPresentationContext->SetUIDisabled(true);
+    }
   }
 }
 
@@ -168,7 +170,9 @@
   if (viewRevealState == ViewRevealState::Peeked ||
       viewRevealState == ViewRevealState::Hidden) {
     self.regularOverlayPresentationContext->SetUIDisabled(false);
-    self.incognitoOverlayPresentationContext->SetUIDisabled(false);
+    if (self.incognitoOverlayPresentationContext) {
+      self.incognitoOverlayPresentationContext->SetUIDisabled(false);
+    }
   }
 }
 

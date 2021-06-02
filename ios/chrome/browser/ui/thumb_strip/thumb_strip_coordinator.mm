@@ -117,6 +117,12 @@ const CGFloat kThumbStripHeight =
   }
   self.mediator.incognitoWebStateList =
       _incognitoBrowser ? _incognitoBrowser->GetWebStateList() : nullptr;
+
+  self.mediator.incognitoOverlayPresentationContext =
+      _incognitoBrowser
+          ? OverlayPresentationContext::FromBrowser(
+                _incognitoBrowser, OverlayModality::kInfobarBanner)
+          : nullptr;
 }
 
 #pragma mark - ThumbStripNavigationConsumer
