@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
@@ -133,7 +134,7 @@ scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
     scoped_refptr<const ComputedStyle> style) {
   DCHECK(style);
   DCHECK(GetDocument().InStyleRecalc());
-  if (const Element* body_element = GetDocument().body()) {
+  if (const Element* body_element = GetDocument().FirstBodyElement()) {
     if (const ComputedStyle* body_style = body_element->GetComputedStyle()) {
       if (NeedsLayoutStylePropagation(*style, *body_style))
         return CreateLayoutStyle(*style, *body_style);
@@ -143,25 +144,21 @@ scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
 }
 
 void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
-  // Will be propagated in HTMLHtmlElement::AttachLayoutTree().
-  if (NeedsReattachLayoutTree())
+  if (NeedsReattachLayoutTree()) {
+    // This means we are being called from RecalcStyle(). Since we need to
+    // reattach the layout tree, we will re-enter this method from
+    // RebuildLayoutTree().
     return;
-  LayoutObject* layout_object = GetLayoutObject();
-  if (!layout_object)
-    return;
-  const ComputedStyle* style = GetComputedStyle();
-  // If we have a layout object, and we are not marked for re-attachment, we are
-  // guaranteed to have a non-null ComputedStyle.
-  DCHECK(style);
-  const ComputedStyle* propagated_style = nullptr;
-  if (const Element* body = GetDocument().body())
-    propagated_style = body->GetComputedStyle();
-  if (!propagated_style)
-    propagated_style = style;
-  if (NeedsLayoutStylePropagation(layout_object->StyleRef(),
-                                  *propagated_style)) {
+  }
+  if (Element* body_element = GetDocument().FirstBodyElement()) {
+    // Same as above.
+    if (body_element->NeedsReattachLayoutTree())
+      return;
+  }
+
+  if (auto* layout_object = GetLayoutObject()) {
     scoped_refptr<const ComputedStyle> new_style =
-        CreateLayoutStyle(*style, *propagated_style);
+        LayoutStyleForElement(layout_object->Style());
     layout_object->SetStyle(new_style);
     // We need to propagate the style to text children because the used
     // writing-mode and direction affects text children. Child elements,
@@ -174,17 +171,6 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
         layout_text->SetStyle(new_style);
     }
   }
-}
-
-void HTMLHtmlElement::AttachLayoutTree(AttachContext& context) {
-  scoped_refptr<const ComputedStyle> original_style = GetComputedStyle();
-  if (original_style)
-    SetComputedStyle(LayoutStyleForElement(original_style));
-
-  Element::AttachLayoutTree(context);
-
-  if (original_style)
-    SetComputedStyle(original_style);
 }
 
 }  // namespace blink
