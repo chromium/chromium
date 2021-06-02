@@ -115,7 +115,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
   });
 
   test('toggleClass', function() {
-    assertEquals('hr', page.$$('#apiToggleButton').className);
+    assertEquals('', page.$$('#apiToggleButton').className);
   });
 });
 
@@ -224,7 +224,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
   test('toggleClass', function() {
     assertEquals(
-        'hr updated-toggle-button', page.$$('#apiToggleButton').className);
+        'updated-toggle-button', page.$$('#apiToggleButton').className);
   });
 
   test('userActions', async function() {

@@ -82,8 +82,7 @@ Polymer({
 
   /** @private */
   apiToggleButtonClass_: function() {
-    return this.privacySandboxSettings2Enabled_ ? 'hr updated-toggle-button' :
-                                                  'hr';
+    return this.privacySandboxSettings2Enabled_ ? 'updated-toggle-button' : '';
   },
 
   /** @private */
