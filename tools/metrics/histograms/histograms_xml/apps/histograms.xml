@@ -2062,6 +2062,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
+    expires_after="2021-11-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the restore apps and pages preference setting, when a profile is
+    loaded.
+  </summary>
+</histogram>
+
 <histogram name="Apps.RestoreNotification" enum="RestoreAction"
     expires_after="2021-11-01">
   <owner>nancylingwang@chromium.org</owner>
