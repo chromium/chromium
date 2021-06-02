@@ -6174,6 +6174,7 @@
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
+<translation id="9190257149451871588">通訊埠 6566 (2021 年 10 月 15 日到期)</translation>
 <translation id="9190456586252617675">這項政策可控管 Google 助理入門使用體驗的模式。
 
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。

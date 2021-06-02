@@ -166,7 +166,7 @@
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ичинен <ph name="ELAPSED_TIME" /> өттү.</translation>
 <translation id="5494752089476963479">Тажатма же адаштыруучу жарнамаларды көрсөткөн сайттан келген жарнамалар бөгөттөлсүн</translation>
 <translation id="549957179819296104">Жаңы сүрөтчө</translation>
-<translation id="5502860503640766021"><ph name="PERMISSION_1" /> дайындарына уруксат берилди, <ph name="PERMISSION_2" /> бөгөттөлдү</translation>
+<translation id="5502860503640766021">Уруксат берилген: <ph name="PERMISSION_1" />. Бөгөттөлгөн: <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Сайттар билдирмелерди жөнөтүүнү сурана алышпайт</translation>
 <translation id="5516455585884385570">Билдирменин жөндөөлөрүн ачуу</translation>
 <translation id="5527111080432883924">Алмашуу буфериндеги тексттер жана сүрөттөрдү сайттар окугусу келгенде суралсын (сунушталат)</translation>

@@ -6251,6 +6251,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
+<translation id="9190257149451871588">porta 6566 (expira em 15/10/2021)</translation>
 <translation id="9190456586252617675">Esta política controla o modo da experiência de integração do Assistente.
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.

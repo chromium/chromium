@@ -6203,6 +6203,7 @@
       นโยบายนี้เป็นมาตรการชั่วคราวและจะถูกนำออกใน<ph name="PRODUCT_NAME" /> เวอร์ชันต่อๆ ไป หลังจากนำนโยบายออกแล้ว <ph name="PRODUCT_NAME" /> จะส่งคำขอประเภท DNS เพิ่มเติมได้ทุกครั้ง</translation>
 <translation id="9167719789236691545">ปิดใช้ไดรฟ์ในแอป Files ของ <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">ปิดใช้งานการต่อเชื่อมที่จัดเก็บข้อมูลภายนอก</translation>
+<translation id="9190257149451871588">พอร์ต 6566 (หมดอายุ 2021/10/15)</translation>
 <translation id="9190456586252617675">นโยบายนี้ควบคุมโหมดของการเริ่มต้นใช้งาน Assistant
 
       หากไม่ได้ตั้งค่านโยบายหรือตั้งค่าเป็น <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> ระบบจะใช้โหมดเริ่มต้นของการเริ่มต้นใช้งาน Assistant
