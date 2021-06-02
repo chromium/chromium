@@ -12,7 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/power/ml/boot_clock.h"
+#include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/smart_charging/smart_charging_ukm_logger.h"
 #include "chrome/browser/chromeos/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/browser/profiles/profile.h"

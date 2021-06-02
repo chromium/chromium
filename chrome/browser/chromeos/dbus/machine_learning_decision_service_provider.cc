@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "chrome/browser/chromeos/power/ml/user_activity_controller.h"
+#include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

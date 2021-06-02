@@ -31,7 +31,7 @@ source_set("chromeos") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser/chromeos/power/ml:user_activity_ukm_logger_helpers",
+    "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
     "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
     "//chromeos/components/security_token_pin",
@@ -105,10 +105,10 @@ source_set("chromeos") {
     "//chrome/browser/ash/child_accounts/time_limits/web_time_limit_error_page",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+    "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/nearby:bluetooth_adapter_manager",
-    "//chrome/browser/chromeos/power/ml/smart_dim",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
@@ -1840,6 +1840,24 @@ source_set("chromeos") {
     "../ash/power/auto_screen_brightness/trainer.h",
     "../ash/power/auto_screen_brightness/utils.cc",
     "../ash/power/auto_screen_brightness/utils.h",
+    "../ash/power/ml/adaptive_screen_brightness_manager.cc",
+    "../ash/power/ml/adaptive_screen_brightness_manager.h",
+    "../ash/power/ml/adaptive_screen_brightness_ukm_logger.h",
+    "../ash/power/ml/adaptive_screen_brightness_ukm_logger_impl.cc",
+    "../ash/power/ml/adaptive_screen_brightness_ukm_logger_impl.h",
+    "../ash/power/ml/boot_clock.cc",
+    "../ash/power/ml/boot_clock.h",
+    "../ash/power/ml/idle_event_notifier.cc",
+    "../ash/power/ml/idle_event_notifier.h",
+    "../ash/power/ml/recent_events_counter.cc",
+    "../ash/power/ml/recent_events_counter.h",
+    "../ash/power/ml/user_activity_controller.cc",
+    "../ash/power/ml/user_activity_controller.h",
+    "../ash/power/ml/user_activity_manager.cc",
+    "../ash/power/ml/user_activity_manager.h",
+    "../ash/power/ml/user_activity_ukm_logger.h",
+    "../ash/power/ml/user_activity_ukm_logger_impl.cc",
+    "../ash/power/ml/user_activity_ukm_logger_impl.h",
     "../ash/profiles/profile_helper.cc",
     "../ash/profiles/profile_helper.h",
     "../ash/release_notes/release_notes_notification.cc",
@@ -2846,24 +2864,6 @@ source_set("chromeos") {
     "power/idle_action_warning_dialog_view.h",
     "power/idle_action_warning_observer.cc",
     "power/idle_action_warning_observer.h",
-    "power/ml/adaptive_screen_brightness_manager.cc",
-    "power/ml/adaptive_screen_brightness_manager.h",
-    "power/ml/adaptive_screen_brightness_ukm_logger.h",
-    "power/ml/adaptive_screen_brightness_ukm_logger_impl.cc",
-    "power/ml/adaptive_screen_brightness_ukm_logger_impl.h",
-    "power/ml/boot_clock.cc",
-    "power/ml/boot_clock.h",
-    "power/ml/idle_event_notifier.cc",
-    "power/ml/idle_event_notifier.h",
-    "power/ml/recent_events_counter.cc",
-    "power/ml/recent_events_counter.h",
-    "power/ml/user_activity_controller.cc",
-    "power/ml/user_activity_controller.h",
-    "power/ml/user_activity_manager.cc",
-    "power/ml/user_activity_manager.h",
-    "power/ml/user_activity_ukm_logger.h",
-    "power/ml/user_activity_ukm_logger_impl.cc",
-    "power/ml/user_activity_ukm_logger_impl.h",
     "power/power_data_collector.cc",
     "power/power_data_collector.h",
     "power/power_metrics_reporter.cc",
@@ -3861,6 +3861,16 @@ source_set("unit_tests") {
     "../ash/power/auto_screen_brightness/model_config_loader_impl_unittest.cc",
     "../ash/power/auto_screen_brightness/modeller_impl_unittest.cc",
     "../ash/power/auto_screen_brightness/monotone_cubic_spline_unittest.cc",
+    "../ash/power/ml/adaptive_screen_brightness_manager_unittest.cc",
+    "../ash/power/ml/adaptive_screen_brightness_ukm_logger_impl_unittest.cc",
+    "../ash/power/ml/boot_clock_unittest.cc",
+    "../ash/power/ml/idle_event_notifier_unittest.cc",
+    "../ash/power/ml/recent_events_counter_unittest.cc",
+    "../ash/power/ml/smart_dim/ml_agent_unittest.cc",
+    "../ash/power/ml/smart_dim/ml_agent_util_unittest.cc",
+    "../ash/power/ml/user_activity_manager_unittest.cc",
+    "../ash/power/ml/user_activity_ukm_logger_helpers_unittest.cc",
+    "../ash/power/ml/user_activity_ukm_logger_unittest.cc",
     "../ash/release_notes/release_notes_notification_unittest.cc",
     "../ash/release_notes/release_notes_storage_unittest.cc",
     "../ash/remote_apps/remote_apps_model_unittest.cc",
@@ -4140,16 +4150,6 @@ source_set("unit_tests") {
     "policy/user_cloud_policy_token_forwarder_unittest.cc",
     "power/cpu_data_collector_unittest.cc",
     "power/extension_event_observer_unittest.cc",
-    "power/ml/adaptive_screen_brightness_manager_unittest.cc",
-    "power/ml/adaptive_screen_brightness_ukm_logger_impl_unittest.cc",
-    "power/ml/boot_clock_unittest.cc",
-    "power/ml/idle_event_notifier_unittest.cc",
-    "power/ml/recent_events_counter_unittest.cc",
-    "power/ml/smart_dim/ml_agent_unittest.cc",
-    "power/ml/smart_dim/ml_agent_util_unittest.cc",
-    "power/ml/user_activity_manager_unittest.cc",
-    "power/ml/user_activity_ukm_logger_helpers_unittest.cc",
-    "power/ml/user_activity_ukm_logger_unittest.cc",
     "power/power_data_collector_unittest.cc",
     "power/power_metrics_reporter_unittest.cc",
     "power/process_data_collector_unittest.cc",
@@ -4437,7 +4437,7 @@ proto_library("attestation_proto") {
 }
 
 proto_library("screen_brightness_event_proto") {
-  sources = [ "power/ml/screen_brightness_event.proto" ]
+  sources = [ "../ash/power/ml/screen_brightness_event.proto" ]
 }
 
 proto_library("user_charging_event_proto") {
@@ -4445,7 +4445,7 @@ proto_library("user_charging_event_proto") {
 }
 
 proto_library("user_activity_event_proto") {
-  sources = [ "power/ml/user_activity_event.proto" ]
+  sources = [ "../ash/power/ml/user_activity_event.proto" ]
 }
 
 proto_library("backdrop_wallpaper_proto") {

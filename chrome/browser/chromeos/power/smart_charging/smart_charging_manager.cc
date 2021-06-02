@@ -18,7 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chromeos/power/ml/recent_events_counter.h"
+#include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"

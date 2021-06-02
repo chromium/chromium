@@ -8,7 +8,7 @@
 #include <array>
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger_helpers.h"
+#include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 
 namespace app_list {
 
