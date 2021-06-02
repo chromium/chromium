@@ -5532,7 +5532,6 @@ crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appear
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
-crbug.com/1204234 external/wpt/webxr/light-estimation/xrWebGLBinding_getReflectionCubeMap.https.html [ Failure ]
 
 # Upcoming DevTools change
 crbug.com/1006759 http/tests/devtools/profiler/cpu-profiler-save-load.js [ Pass Failure Timeout ]
