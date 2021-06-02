@@ -9361,6 +9361,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MachineLearningService.ReapWorkerProcessErrno"
+    enum="MachineLearningServiceReapWorkerProcessErrno"
+    expires_after="2021-11-07">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The &quot;errno&quot; of waitpid calls used by ml-service's control process
+    to reap the worker processes. This is only recorded when waitpid meets error
+    and should be rare. This is a Chrome OS only metric. And we only record the
+    corresponding enum values of &quot;ECHILD&quot;, &quot;EINTR&quot; and
+    &quot;EINVAL&quot; because according to the man page of waitpid, they are
+    the only possible errno. All the other &quot;errno&quot; are treated as
+    &quot;unknown&quot; error.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.TextSuggester.Suggest.Event"
     enum="BooleanError" expires_after="2022-05-31">
   <owner>curtismcmullan@chromium.org</owner>

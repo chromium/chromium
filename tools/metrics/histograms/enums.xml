@@ -50213,6 +50213,14 @@ from previous Chrome versions.
   <int value="1" label="kChangeEuidToMlServiceDBusFailed"/>
   <int value="2" label="kChangeEuidBackToRootFailed"/>
   <int value="3" label="kGetWorkerProcessMemoryUsageFailed"/>
+  <int value="4" label="kReapWorkerProcessMaxNumOfRetrialsExceeded"/>
+</enum>
+
+<enum name="MachineLearningServiceReapWorkerProcessErrno">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kECHILD"/>
+  <int value="2" label="kEINTR"/>
+  <int value="3" label="kEINVAL"/>
 </enum>
 
 <enum name="MachineLevelUserCloudPolicyEnrollmentResult">
