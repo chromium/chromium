@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This binary takes a list of domain names, tries to convert them to unicode
-// and prints out the result. The list can be passed as a text file or via
-// stdin. In both cases, the output is printed as (input_domain, output_domain,
-// spoof_check_result) tuples on separate lines. spoof_check_result is the
-// string representation of IDNSpoofChecker::Result enum with an additional
-// kTopDomainLookalike value.
+// This binary takes a list of domain names in ASCII or unicode, passes them
+// through the IDN decoding algorithm and prints out the result. The list can be
+// passed as a text file or via stdin. In both cases, the output is printed as
+// (input_domain, output_domain, spoof_check_result) tuples on separate lines.
+// spoof_check_result is the string representation of IDNSpoofChecker::Result
+// enum with an additional kTopDomainLookalike value.
 
 #include <cstdlib>
 #include <fstream>
@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
+#include "url/gurl.h"
 
 using url_formatter::IDNConversionResult;
 using url_formatter::IDNSpoofChecker;
@@ -31,11 +32,12 @@ void PrintUsage(const char* process_name) {
   std::cout << process_name << " <file>" << std::endl;
   std::cout << std::endl;
   std::cout << "<file> is a text file with one hostname per line." << std::endl;
-  std::cout << "Hostnames must be in ASCII. Internationalized domain names "
-               "(IDN) must be encoded in punycode."
+  std::cout << "Hostnames can be ASCII or unicode. Internationalized domain "
+               "can (IDN) be encoded in unicode or punycode."
             << std::endl;
   std::cout << "Each hostname is converted to unicode, if safe. Otherwise, "
-            << "it's printed unchanged." << std::endl;
+            << "ASCII hostnames are printed unchanged and unicode hostnames "
+            << "are printed in punycode." << std::endl;
 }
 
 std::string SpoofCheckResultToString(IDNSpoofChecker::Result result) {
@@ -93,23 +95,24 @@ std::string GetSpoofCheckResult(const std::string& ascii_domain,
 void Convert(std::istream& input) {
   base::i18n::InitializeICU();
   for (std::string line; std::getline(input, line);) {
-    CHECK(!base::StartsWith(line,
-                            "http:", base::CompareCase::INSENSITIVE_ASCII) &&
-          !base::StartsWith(line,
-                            "https:", base::CompareCase::INSENSITIVE_ASCII) &&
-          base::IsStringASCII(line))
-        << "This binary only accepts hostnames in ASCII form (punycode for "
-           "IDN): "
-        << line;
+    CHECK(
+        !base::StartsWith(line,
+                          "http:", base::CompareCase::INSENSITIVE_ASCII) &&
+        !base::StartsWith(line, "https:", base::CompareCase::INSENSITIVE_ASCII))
+        << "This binary only accepts hostnames" << line;
+
+    const std::string ascii_hostname =
+        base::IsStringASCII(line) ? line : GURL("https://" + line).host();
 
     // Convert twice, first with spoof checks on, then with spoof checks
     // ignored inside GetSpoofCheckResult(). This is because only the call to
     // UnsafeIDNToUnicodeWithDetails returns information about spoof check
     // results (a quirk of the url_formatter interface).
-    const std::u16string converted_hostname = url_formatter::IDNToUnicode(line);
+    const std::u16string converted_hostname =
+        url_formatter::IDNToUnicode(ascii_hostname);
     const std::string spoof_check_result =
-        GetSpoofCheckResult(line, converted_hostname);
-    std::cout << line << ", " << converted_hostname << ", "
+        GetSpoofCheckResult(ascii_hostname, converted_hostname);
+    std::cout << ascii_hostname << ", " << converted_hostname << ", "
               << spoof_check_result << std::endl;
   }
 }

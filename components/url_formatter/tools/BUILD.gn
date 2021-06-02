@@ -8,5 +8,6 @@ executable("format_url") {
     "//base",
     "//base:i18n",
     "//components/url_formatter:url_formatter",
+    "//url:url",
   ]
 }
