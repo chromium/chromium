@@ -7,6 +7,7 @@
 assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
+import("//build/config/chrome_build.gni")
 import("//build/util/process_version.gni")
 import("//third_party/fuchsia-sdk/sdk/build/build_id_dir.gni")
 import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
@@ -16,6 +17,12 @@ if (host_os == "mac") {
   _gn_path = "//buildtools/mac/gn"
 } else if (host_os == "linux") {
   _gn_path = "//buildtools/linux64/gn"
+}
+
+if (is_chrome_branded) {
+  package_base_path = "chrome_internal/fuchsia"
+} else {
+  package_base_path = "chromium/fuchsia"
 }
 
 # Extracts the numeric Chrome build ID and writes it to a file in the output
@@ -108,29 +115,7 @@ template("cipd_archive") {
       package_relative_path = "${package_basename}-$targetarch"
     }
 
-    package = "chromium/fuchsia/${package_relative_path}"
-
-    if (!defined(package_definition_name)) {
-      package_definition_name = "${target_name}.yaml"
-    }
-
-    # Always use absolute path.
-    use_absolute_root_path = true
-  }
-
-  # TODO (crbug.com/1169400): Remove this target when Fuchsia side is ready to
-  # transition.
-  fuchsia_cipd_package("${target_name}_google") {
-    if (!defined(package_relative_path)) {
-      if (target_cpu == "x64") {
-        targetarch = "amd64"
-      } else {
-        targetarch = "arm64"
-      }
-      package_relative_path = "${package_basename}-$targetarch"
-    }
-
-    package = "chrome_internal/fuchsia/${package_relative_path}"
+    package = "${package_base_path}/${package_relative_path}"
 
     if (!defined(package_definition_name)) {
       package_definition_name = "${target_name}.yaml"
@@ -297,23 +282,10 @@ build_id_dir(_build_ids_target) {
 
 fuchsia_cipd_package(_debug_symbols_archive_name) {
   testonly = true
-  package = "chromium/fuchsia/debug-symbols-${targetarch}"
+  package = "${package_base_path}/debug-symbols-${targetarch}"
   package_root = _debug_symbols_outdir
   package_definition_name = "${target_name}.yaml"
   package_definition_dir = "${target_gen_dir}/${target_name}"
-  description = "Debugging symbols for prebuilt binaries from Chromium."
-  use_absolute_root_path = true
-
-  directories = [ "." ]
-  deps = [ ":${_build_ids_target}" ]
-}
-
-fuchsia_cipd_package("${_debug_symbols_archive_name}_google") {
-  testonly = true
-  package = "chrome_internal/fuchsia/debug-symbols-${targetarch}"
-  package_root = _debug_symbols_outdir
-  package_definition_name = "${target_name}.yaml"
-  package_definition_dir = "${target_gen_dir}/${_debug_symbols_archive_name}"
   description = "Debugging symbols for prebuilt binaries from Chromium."
   use_absolute_root_path = true
 
@@ -337,20 +309,12 @@ group("cipd") {
   testonly = true
   deps = [
     ":castrunner",
-    ":castrunner_google",
     ":chromedriver",
-    ":chromedriver_google",
     ":clear_key_cdm",
-    ":clear_key_cdm_google",
     ":debug_symbols",
-    ":debug_symbols_google",
     ":http",
-    ":http_google",
     ":tests",
-    ":tests_google",
     ":web_engine_shell",
-    ":web_engine_shell_google",
     ":webrunner",
-    ":webrunner_google",
   ]
 }
