@@ -57,13 +57,15 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   auto theme = new_tab_page::mojom::Theme::New();
+  auto most_visited = most_visited::mojom::MostVisitedTheme::New();
   theme->is_default = ntp_theme.using_default_theme;
   theme->background_color = ntp_theme.background_color;
-  theme->shortcut_background_color = ntp_theme.shortcut_color;
-  theme->shortcut_text_color = ntp_theme.text_color;
-  theme->shortcut_use_white_add_icon =
-      color_utils::IsDark(ntp_theme.shortcut_color);
-  theme->shortcut_use_title_pill = false;
+  most_visited->background_color = ntp_theme.shortcut_color;
+  most_visited->use_white_tile_icon =
+      color_utils::IsDark(most_visited->background_color);
+  most_visited->is_dark = !color_utils::IsDark(ntp_theme.text_color);
+  most_visited->use_title_pill = false;
+  theme->text_color = ntp_theme.text_color;
   theme->is_dark = !color_utils::IsDark(ntp_theme.text_color);
   if (ntp_theme.logo_alternate) {
     theme->logo_color = ntp_theme.logo_color;
@@ -72,7 +74,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   if (!ntp_theme.custom_background_url.is_empty()) {
     background_image->url = ntp_theme.custom_background_url;
   } else if (ntp_theme.has_theme_image) {
-    theme->shortcut_use_title_pill = true;
+    most_visited->use_title_pill = true;
     background_image->url =
         GURL(base::StrCat({"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?",
                            ntp_theme.theme_id}));
@@ -152,6 +154,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
     theme->daily_refresh_collection_id = ntp_theme.collection_id;
   }
 
+  theme->most_visited = std::move(most_visited);
+
   auto search_box = realbox::mojom::SearchBoxTheme::New();
   search_box->bg = ntp_theme.search_box.bg;
   search_box->icon = ntp_theme.search_box.icon;
@@ -171,21 +175,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   theme->search_box = std::move(search_box);
 
   return theme;
-}
-
-ntp_tiles::NTPTileImpression MakeNTPTileImpression(
-    const new_tab_page::mojom::MostVisitedTile& tile,
-    uint32_t index) {
-  return ntp_tiles::NTPTileImpression(
-      /*index=*/index,
-      /*source=*/static_cast<ntp_tiles::TileSource>(tile.source),
-      /*title_source=*/
-      static_cast<ntp_tiles::TileTitleSource>(tile.title_source),
-      /*visual_type=*/
-      ntp_tiles::TileVisualType::ICON_REAL /* unused on desktop */,
-      /*icon_type=*/favicon_base::IconType::kInvalid /* unused on desktop */,
-      /*data_generation_time=*/tile.data_generation_time,
-      /*url_for_rappor=*/GURL() /* unused */);
 }
 
 SkColor ParseHexColor(const std::string& color) {
@@ -364,41 +353,6 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules, true);
 }
 
-void NewTabPageHandler::AddMostVisitedTile(
-    const GURL& url,
-    const std::string& title,
-    AddMostVisitedTileCallback callback) {
-  bool success = instant_service_->AddCustomLink(url, title);
-  std::move(callback).Run(success);
-  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD, base::TimeDelta() /* unused */);
-}
-
-void NewTabPageHandler::DeleteMostVisitedTile(const GURL& url) {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->DeleteCustomLink(url);
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
-                     base::TimeDelta() /* unused */);
-  } else {
-    instant_service_->DeleteMostVisitedItem(url);
-    last_blocklisted_ = url;
-  }
-}
-
-void NewTabPageHandler::RestoreMostVisitedDefaults() {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->ResetCustomLinks();
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
-                     base::TimeDelta() /* unused */);
-  } else {
-    instant_service_->UndoAllMostVisitedDeletions();
-  }
-}
-
-void NewTabPageHandler::ReorderMostVisitedTile(const GURL& url,
-                                               uint8_t new_pos) {
-  instant_service_->ReorderCustomLink(url, new_pos);
-}
-
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
                                                bool visible) {
   auto pair = instant_service_->GetCurrentShortcutSettings();
@@ -423,15 +377,13 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
   }
 }
 
-void NewTabPageHandler::UndoMostVisitedTileAction() {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->UndoCustomLinkAction();
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
-                     base::TimeDelta() /* unused */);
-  } else if (last_blocklisted_.is_valid()) {
-    instant_service_->UndoMostVisitedDeletion(last_blocklisted_);
-    last_blocklisted_ = GURL();
-  }
+void NewTabPageHandler::GetMostVisitedSettings(
+    GetMostVisitedSettingsCallback callback) {
+  auto pair = instant_service_->GetCurrentShortcutSettings();
+  // The first of the pair is true if most-visited tiles are being used.
+  bool custom_links_enabled = !pair.first;
+  bool visible = pair.second;
+  std::move(callback).Run(custom_links_enabled, visible);
 }
 
 void NewTabPageHandler::SetBackgroundImage(const std::string& attribution_1,
@@ -461,25 +413,6 @@ void NewTabPageHandler::SetNoBackgroundImage() {
       /* image_url */ GURL(), /* attribution_1= */ "", /* attribution_2= */ "",
       /* attribution_url= */ GURL(), /* collection_id= */ "");
   LogEvent(NTP_BACKGROUND_IMAGE_RESET);
-}
-
-void NewTabPageHandler::UpdateMostVisitedInfo() {
-  // OnNewTabPageOpened refreshes the most visited entries while
-  // UpdateMostVisitedInfo triggers a call to MostVisitedInfoChanged.
-  instant_service_->OnNewTabPageOpened();
-  instant_service_->UpdateMostVisitedInfo();
-}
-
-void NewTabPageHandler::UpdateMostVisitedTile(
-    const GURL& url,
-    const GURL& new_url,
-    const std::string& new_title,
-    UpdateMostVisitedTileCallback callback) {
-  bool success = instant_service_->UpdateCustomLink(
-      url, new_url != url ? new_url : GURL(), new_title);
-  std::move(callback).Run(success);
-  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
-                   base::TimeDelta() /* unused */);
 }
 
 void NewTabPageHandler::GetBackgroundCollections(
@@ -690,18 +623,6 @@ void NewTabPageHandler::OnAppRendered(double time) {
                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
-void NewTabPageHandler::OnMostVisitedTilesRendered(
-    std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
-    double time) {
-  for (size_t i = 0; i < tiles.size(); i++) {
-    logger_.LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
-  }
-  // This call flushes all most visited impression logs to UMA histograms.
-  // Therefore, it must come last.
-  logger_.LogEvent(NTP_ALL_TILES_LOADED,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
-}
-
 void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
   logger_.LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN,
                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
@@ -714,38 +635,6 @@ void NewTabPageHandler::OnPromoRendered(double time,
   if (log_url.has_value() && log_url->is_valid()) {
     Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
   }
-}
-
-void NewTabPageHandler::OnMostVisitedTileNavigation(
-    new_tab_page::mojom::MostVisitedTilePtr tile,
-    uint32_t index,
-    uint8_t mouse_button,
-    bool alt_key,
-    bool ctrl_key,
-    bool meta_key,
-    bool shift_key) {
-  logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
-
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpHandleMostVisitedNavigationExplicitly))
-    return;
-
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
-      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-      shift_key);
-  // Clicks on the MV tiles should be treated as if the user clicked on a
-  // bookmark. This is consistent with Android's native implementation and
-  // ensures the visit count for the MV entry is updated.
-  // Use a link transition for query tiles, e.g., repeatable queries, so that
-  // their visit count is not updated by this navigation. Otherwise duplicate
-  // query tiles could also be offered as most visited.
-  // |is_query_tile| can be true only when ntp_features::kNtpRepeatableQueries
-  // is enabled.
-  web_contents_->OpenURL(content::OpenURLParams(
-      tile->url, content::Referrer(), disposition,
-      tile->is_query_tile ? ui::PAGE_TRANSITION_LINK
-                          : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      false));
 }
 
 void NewTabPageHandler::OnCustomizeDialogAction(
@@ -890,37 +779,7 @@ void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {
 }
 
 void NewTabPageHandler::MostVisitedInfoChanged(
-    const InstantMostVisitedInfo& info) {
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  std::vector<new_tab_page::mojom::MostVisitedTilePtr> list;
-  auto result = new_tab_page::mojom::MostVisitedInfo::New();
-  for (auto& tile : info.items) {
-    auto value = new_tab_page::mojom::MostVisitedTile::New();
-    if (tile.title.empty()) {
-      value->title = tile.url.spec();
-      value->title_direction = base::i18n::LEFT_TO_RIGHT;
-    } else {
-      value->title = base::UTF16ToUTF8(tile.title);
-      value->title_direction =
-          base::i18n::GetFirstStrongCharacterDirection(tile.title);
-    }
-    value->url = tile.url;
-    value->source = static_cast<int32_t>(tile.source);
-    value->title_source = static_cast<int32_t>(tile.title_source);
-    value->data_generation_time = tile.data_generation_time;
-    value->is_query_tile =
-        base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) &&
-        template_url_service &&
-        template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-            tile.url);
-    list.push_back(std::move(value));
-  }
-  result->custom_links_enabled = !info.use_most_visited;
-  result->tiles = std::move(list);
-  result->visible = info.is_visible;
-  page_->SetMostVisitedInfo(std::move(result));
-}
+    const InstantMostVisitedInfo& info) {}
 
 void NewTabPageHandler::OnCollectionInfoAvailable() {
   if (!background_collections_callback_) {

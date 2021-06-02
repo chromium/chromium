@@ -65,19 +65,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // new_tab_page::mojom::PageHandler:
-  void AddMostVisitedTile(const GURL& url,
-                          const std::string& title,
-                          AddMostVisitedTileCallback callback) override;
-  void DeleteMostVisitedTile(const GURL& url) override;
-  void RestoreMostVisitedDefaults() override;
-  void ReorderMostVisitedTile(const GURL& url, uint8_t new_pos) override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
-  void UndoMostVisitedTileAction() override;
-  void UpdateMostVisitedInfo() override;
-  void UpdateMostVisitedTile(const GURL& url,
-                             const GURL& new_url,
-                             const std::string& new_title,
-                             UpdateMostVisitedTileCallback callback) override;
+  void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
   void SetBackgroundImage(const std::string& attribution_1,
                           const std::string& attribution_2,
                           const GURL& attribution_url,
@@ -99,19 +88,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void UpdateDisabledModules() override;
   void OnModulesLoadedWithData() override;
   void OnAppRendered(double time) override;
-  void OnMostVisitedTilesRendered(
-      std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
-      double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,
                        const absl::optional<GURL>& log_url) override;
-  void OnMostVisitedTileNavigation(new_tab_page::mojom::MostVisitedTilePtr tile,
-                                   uint32_t index,
-                                   uint8_t mouse_button,
-                                   bool alt_key,
-                                   bool ctrl_key,
-                                   bool meta_key,
-                                   bool shift_key) override;
   void OnCustomizeDialogAction(
       new_tab_page::mojom::CustomizeDialogAction action) override;
   void OnDoodleImageClicked(new_tab_page::mojom::DoodleImageType type,

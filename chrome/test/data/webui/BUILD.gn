@@ -51,6 +51,31 @@ if (include_js_tests) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
+  js2gtest("interactive_ui_tests_js_mojo_webui") {
+    test_type = "mojo_webui"
+
+    sources = [ "cr_components/cr_components_mojo_interactive_test.js" ]
+
+    gen_include_files = [
+      "polymer_browser_test_base.js",
+      "polymer_interactive_ui_test.js",
+    ]
+
+    deps = [
+      ":modulize",
+      "//chrome/browser/ui",
+    ]
+
+    data = [
+      "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
+      "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
+      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
+      "mojo_webui_test_support.js",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
   js2gtest("browser_tests_js_webui") {
     test_type = "webui"
 

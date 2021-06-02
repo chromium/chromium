@@ -40,8 +40,6 @@ class MockPage : public new_tab_page::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD1(SetMostVisitedInfo,
-               void(new_tab_page::mojom::MostVisitedInfoPtr));
   MOCK_METHOD1(SetTheme, void(new_tab_page::mojom::ThemePtr));
   MOCK_METHOD2(SetDisabledModules, void(bool, const std::vector<std::string>&));
 
@@ -83,12 +81,6 @@ class NewTabPageHandlerTest : public testing::Test {
   std::unique_ptr<NewTabPageHandler> handler_;
   InstantServiceObserver* instant_service_observer_;
 };
-
-TEST_F(NewTabPageHandlerTest, SetMostVisitedInfo) {
-  EXPECT_CALL(mock_page_, SetMostVisitedInfo(testing::_));
-  InstantMostVisitedInfo info;
-  instant_service_observer_->MostVisitedInfoChanged(info);
-}
 
 TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_CALL(mock_page_, SetTheme(testing::_));

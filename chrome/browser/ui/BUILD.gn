@@ -599,6 +599,7 @@ static_library("ui") {
     "//ui/web_dialogs",
     "//ui/webui",
     "//ui/webui/resources/cr_components/customize_themes:mojom",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
     "//v8:v8_version",
   ]
 
@@ -1341,6 +1342,8 @@ static_library("ui") {
       "webui/commander/commander_handler.h",
       "webui/commander/commander_ui.cc",
       "webui/commander/commander_ui.h",
+      "webui/cr_components/most_visited/most_visited_handler.cc",
+      "webui/cr_components/most_visited/most_visited_handler.h",
       "webui/customize_themes/chrome_customize_themes_handler.cc",
       "webui/customize_themes/chrome_customize_themes_handler.h",
       "webui/devtools_ui.cc",

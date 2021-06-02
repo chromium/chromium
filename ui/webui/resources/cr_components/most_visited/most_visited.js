@@ -10,19 +10,23 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from './i18n_setup.js';
-import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {WindowProxy} from './window_proxy.js';
+import {MostVisitedBrowserProxy} from './browser_proxy.js';
+import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
+import {MostVisitedWindowProxy} from './window_proxy.js';
 
 /**
  * @enum {number}
@@ -90,10 +94,10 @@ function normalizeUrl(urlString) {
  * @polymer
  * @extends {PolymerElement}
  */
-class MostVisitedElement extends mixinBehaviors
+export class MostVisitedElement extends mixinBehaviors
 ([I18nBehavior], PolymerElement) {
   static get is() {
-    return 'ntp-most-visited';
+    return 'cr-most-visited';
   }
 
   static get template() {
@@ -102,20 +106,29 @@ class MostVisitedElement extends mixinBehaviors
 
   static get properties() {
     return {
+      /** @type {?MostVisitedTheme} */
+      theme: Object,
+
       /**
-       * When the tile icon background is dark, the add icon color is white for
+       * When the tile icon background is dark, the icon color is white for
        * contrast. This can be used to determine the color of the tile hover as
        * well.
+       * @private
        */
-      useWhiteAddIcon: {
+      useWhiteTileIcon_: {
         type: Boolean,
         reflectToAttribute: true,
+        computed: `computeUseWhiteTileIcon_(theme)`,
       },
 
-      /* If true wraps the tile titles in white pills. */
-      useTitlePill: {
+      /**
+       * If true wraps the tile titles in white pills.
+       * @private
+       */
+      useTitlePill_: {
         type: Boolean,
         reflectToAttribute: true,
+        computed: `computeUseTitlePill_(theme)`,
       },
 
       /** @private */
@@ -131,7 +144,10 @@ class MostVisitedElement extends mixinBehaviors
       },
 
       /** @private */
-      customLinksEnabled_: Boolean,
+      customLinksEnabled_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
       /** @private */
       dialogTileTitle_: String,
@@ -171,6 +187,13 @@ class MostVisitedElement extends mixinBehaviors
             dialogShortcutAlreadyExists_)`,
       },
 
+      /** @private */
+      isDark_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: `computeIsDark_(theme)`,
+      },
+
       /**
        * Used to hide hover style and cr-icon-button of tiles while the tiles
        * are being reordered.
@@ -208,7 +231,7 @@ class MostVisitedElement extends mixinBehaviors
       /** @private {!ScreenWidth} */
       screenWidth_: Number,
 
-      /** @private {!Array<!newTabPage.mojom.MostVisitedTile>} */
+      /** @private {!Array<!MostVisitedTile>} */
       tiles_: Array,
 
       /** @private */
@@ -231,15 +254,22 @@ class MostVisitedElement extends mixinBehaviors
   constructor() {
     performance.mark('most-visited-creation-start');
     super();
+
     /** @private {boolean} */
     this.adding_ = false;
-    const {callbackRouter, handler} = NewTabPageProxy.getInstance();
-    /** @private {!newTabPage.mojom.PageCallbackRouter} */
-    this.callbackRouter_ = callbackRouter;
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = handler;
+
+    /** @private {!MostVisitedPageCallbackRouter} */
+    this.callbackRouter_ = MostVisitedBrowserProxy.getInstance().callbackRouter;
+
+    /** @private {!MostVisitedPageHandlerRemote} */
+    this.pageHandler_ = MostVisitedBrowserProxy.getInstance().handler;
+
+    /** @private {!MostVisitedWindowProxy} */
+    this.windowProxy_ = MostVisitedWindowProxy.getInstance();
+
     /** @private {?number} */
     this.setMostVisitedInfoListenerId_ = null;
+
     /** @private {number} */
     this.actionMenuTargetIndex_ = -1;
 
@@ -249,6 +279,7 @@ class MostVisitedElement extends mixinBehaviors
      * @private {(!{x: number, y: number}|null)}
      */
     this.dragOffset_ = null;
+
     /** @private {!Array<!DOMRect>} */
     this.tileRects_ = [];
   }
@@ -283,8 +314,6 @@ class MostVisitedElement extends mixinBehaviors
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        assert(this.setMostVisitedInfoListenerId_));
     this.mediaListenerWideWidth_.removeListener(
         assert(this.boundOnWidthChange_));
     this.mediaListenerMediumWidth_.removeListener(
@@ -302,11 +331,11 @@ class MostVisitedElement extends mixinBehaviors
     this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
     /** @private {!MediaQueryList} */
     this.mediaListenerWideWidth_ =
-        WindowProxy.getInstance().matchMedia('(min-width: 672px)');
+        this.windowProxy_.matchMedia('(min-width: 672px)');
     this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
     /** @private {!MediaQueryList} */
     this.mediaListenerMediumWidth_ =
-        WindowProxy.getInstance().matchMedia('(min-width: 560px)');
+        this.windowProxy_.matchMedia('(min-width: 560px)');
     this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
     this.updateScreenWidth_();
     /** @private {!function(Event)} */
@@ -316,6 +345,15 @@ class MostVisitedElement extends mixinBehaviors
         'keydown', this.boundOnDocumentKeyDown_);
 
     performance.measure('most-visited-creation', 'most-visited-creation-start');
+  }
+
+  /**
+   * @param {?SkColor} skColor
+   * @return {string}
+   * @private
+   */
+  rgbaOrInherit_(skColor) {
+    return skColor ? skColorToRgba(skColor) : 'inherit';
   }
 
   /** @private */
@@ -422,6 +460,30 @@ class MostVisitedElement extends mixinBehaviors
     return loadTimeData.getString(
         this.dialogShortcutAlreadyExists_ ? 'shortcutAlreadyExists' :
                                             'invalidUrl');
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsDark_() {
+    return this.theme ? this.theme.isDark : false;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeUseWhiteTileIcon_() {
+    return this.theme ? this.theme.useWhiteTileIcon : false;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeUseTitlePill_() {
+    return this.theme ? this.theme.useTitlePill : false;
   }
 
   /**
@@ -556,7 +618,7 @@ class MostVisitedElement extends mixinBehaviors
   }
 
   /**
-   * @param {!url.mojom.Url} url
+   * @param {!Url} url
    * @return {string}
    * @private
    */
@@ -580,14 +642,13 @@ class MostVisitedElement extends mixinBehaviors
   }
 
   /**
-   * @param {!newTabPage.mojom.MostVisitedTile} tile
+   * @param {!MostVisitedTile} tile
    * @return {string}
    * @private
    */
   getTileTitleDirectionClass_(tile) {
-    return tile.titleDirection === mojoBase.mojom.TextDirection.RIGHT_TO_LEFT ?
-        'title-rtl' :
-        'title-ltr';
+    return tile.titleDirection === TextDirection.RIGHT_TO_LEFT ? 'title-rtl' :
+                                                                 'title-ltr';
   }
 
   /**
@@ -886,7 +947,6 @@ class MostVisitedElement extends mixinBehaviors
   /**
    * @param {string} msgId
    * @param {boolean} showButtons
-   * @private
    */
   toast_(msgId, showButtons) {
     this.toastContent_ = loadTimeData.getString(msgId);
@@ -896,10 +956,9 @@ class MostVisitedElement extends mixinBehaviors
 
   /**
    * @param {number} index
-   * @return {!Promise}
    * @private
    */
-  async tileRemove_(index) {
+  tileRemove_(index) {
     const {url, isQueryTile} = this.tiles_[index];
     this.pageHandler_.deleteMostVisitedTile(url);
     // Do not show the toast buttons when a query tile is removed unless it is a
@@ -926,7 +985,7 @@ class MostVisitedElement extends mixinBehaviors
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
-        WindowProxy.getInstance().now());
+        this.windowProxy_.now());
   }
 }
 

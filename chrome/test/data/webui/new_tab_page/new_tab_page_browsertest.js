@@ -28,18 +28,6 @@ TEST_F('NewTabPageAppTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageMostVisitedTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/most_visited_test.js';
-  }
-};
-
-TEST_F('NewTabPageMostVisitedTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageCustomizeDialogTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

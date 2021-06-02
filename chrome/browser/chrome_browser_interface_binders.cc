@@ -142,6 +142,7 @@
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
@@ -656,6 +657,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
                                          MemoriesUI>(map);

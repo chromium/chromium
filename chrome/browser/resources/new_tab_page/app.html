@@ -1,6 +1,5 @@
 <style include="cr-shared-style">
   :host {
-    --ntp-theme-shortcut-background-color: rgb(229, 231, 232);
     --ntp-theme-text-color: var(--google-grey-800);
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
@@ -21,7 +20,6 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --ntp-theme-shortcut-background-color: var(--google-grey-refresh-100);
       --ntp-theme-text-color: white;
     }
   }
@@ -75,10 +73,10 @@
     visibility: visible;
   }
 
-  ntp-most-visited[dark] {
-    --icon-button-color-active: var(--google-grey-refresh-300);
-    --icon-button-color: white;
-    --tile-hover-color: rgba(255, 255, 255, .1);
+  cr-most-visited {
+    --most-visited-focus-shadow: var(--ntp-focus-shadow);
+    --most-visited-text-color: var(--ntp-theme-text-color);
+    --most-visited-text-shadow: var(--ntp-theme-text-shadow);
   }
 
   /* ~ because the dom-if results in a template between the middle-slot-promo
@@ -229,10 +227,8 @@
     position: fixed;
   }
 </style>
-<div id="content"
-    style="--ntp-theme-text-color: [[rgbaOrInherit_(theme_.shortcutTextColor)]];
-        --ntp-theme-shortcut-background-color:
-              [[rgbaOrInherit_(theme_.shortcutBackgroundColor)]];
+<div id="content" style="
+        --ntp-theme-text-color: [[rgbaOrInherit_(theme_.textColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
@@ -253,10 +249,8 @@
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
-        <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
-            use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
-            use-title-pill$="[[theme_.shortcutUseTitlePill]]">
-        </ntp-most-visited>
+        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]">
+        </cr-most-visited>
       </template>
       <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
         <ntp-middle-slot-promo

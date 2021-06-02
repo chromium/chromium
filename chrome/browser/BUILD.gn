@@ -2365,6 +2365,7 @@ static_library("browser") {
     "//ui/web_dialogs",
     "//ui/webui",
     "//ui/webui/resources/cr_components/customize_themes:mojom",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
   ]
   if (is_chromeos_ash) {
     sources += [

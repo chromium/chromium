@@ -62,9 +62,9 @@ js_library("lazy_load") {
   deps = [
     ":customize_dialog",
     ":middle_slot_promo",
-    ":most_visited",
     ":voice_search_overlay",
     "modules/dummy:module",
+    "//ui/webui/resources/cr_components/most_visited",
   ]
 }
 
@@ -104,21 +104,6 @@ js_library("middle_slot_promo") {
     ":new_tab_page_proxy",
     ":window_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("most_visited") {
-  deps = [
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
 }
 
@@ -260,7 +245,6 @@ html_to_js("web_components_local") {
     "logo.js",
     "middle_slot_promo.js",
     "mini_page.js",
-    "most_visited.js",
     "iframe.js",
     "voice_search_overlay.js",
     "customize_modules.js",
@@ -313,7 +297,6 @@ preprocess_if_expr("preprocess_gen") {
   in_files = [
     "app.js",
     "middle_slot_promo.js",
-    "most_visited.js",
     "customize_dialog.js",
     "voice_search_overlay.js",
     "customize_backgrounds.js",
@@ -491,18 +474,22 @@ if (optimize_webui) {
       "shared.rollup.js",
     ]
     excludes = [
+      "chrome://resources/cr_components/most_visited/most_visited.mojom-lite.js",
       "chrome://resources/js/cr.m.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
       "chrome://resources/mojo/url/mojom/origin.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
       "new_tab_page.mojom-lite.js",
       "realbox/realbox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",

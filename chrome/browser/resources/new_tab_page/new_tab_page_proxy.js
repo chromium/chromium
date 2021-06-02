@@ -11,6 +11,8 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
+import 'chrome://resources/cr_components/most_visited/most_visited.mojom-lite.js';
+
 import './realbox/realbox.mojom-lite.js';
 import './new_tab_page.mojom-lite.js';
 

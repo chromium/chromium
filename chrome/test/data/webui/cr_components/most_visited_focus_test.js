@@ -2,54 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://new-tab-page/lazy_load.js';
+import '../mojo_webui_test_support.js';
 
-import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertFocus, keydown} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
+import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 
-suite('NewTabPageMostVisitedFocusTest', () => {
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {eventToPromise} from '../test_util.m.js';
+
+import {$$, assertFocus, keydown} from './most_visited_test_support.js';
+
+suite('CrComponentsMostVisitedFocusTest', () => {
   /** @type {!MostVisitedElement} */
   let mostVisited;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
-  let handler;
-
-  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  /** @extends {TestBrowserProxy} */
   let callbackRouterRemote;
 
-  /**
-   * @param {string}
-   * @return {!Array<!HTMLElement>}
-   * @private
-   */
-  function queryAll(q) {
-    return Array.from(mostVisited.shadowRoot.querySelectorAll(q));
-  }
-
-  /**
-   * @return {!Array<!HTMLElement>}
-   * @private
-   */
+  /** @return {!Array<!Element>} */
   function queryTiles() {
-    return queryAll('.tile');
+    return Array.from(mostVisited.shadowRoot.querySelectorAll('.tile'));
   }
 
   /**
    * @param {number} n
-   * @return {!Promise}
-   * @private
+   * @return {!Promise<void>}
    */
   async function addTiles(n) {
     const tiles = Array(n).fill(0).map((x, i) => {
       const char = String.fromCharCode(i + /* 'a' */ 97);
       return {
         title: char,
-        titleDirection: mojoBase.mojom.TextDirection.LEFT_TO_RIGHT,
+        titleDirection: TextDirection.LEFT_TO_RIGHT,
         url: {url: `https://${char}/`},
         source: i,
         titleSource: i,
@@ -66,22 +53,16 @@ suite('NewTabPageMostVisitedFocusTest', () => {
     await tilesRendered;
   }
 
-  setup(() => {
-    PolymerTest.clearBody();
+  setup(/** @suppress {checkTypes} */ () => {
+    document.innerHTML = '';
 
-    WindowProxy.setInstance(TestBrowserProxy.fromClass(WindowProxy));
-    WindowProxy.getInstance().setResultMapperFor(
-        'matchMedia', () => ({
-                        addListener() {},
-                        removeListener() {},
-                      }));
-
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-    NewTabPageProxy.setInstance(handler, callbackRouter);
+    const handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
+    const callbackRouter = new MostVisitedPageCallbackRouter();
+    MostVisitedBrowserProxy.setInstance(
+        new MostVisitedBrowserProxy(handler, callbackRouter));
     callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-    mostVisited = document.createElement('ntp-most-visited');
+    mostVisited = new MostVisitedElement();
     document.body.appendChild(mostVisited);
   });
 
@@ -90,7 +71,7 @@ suite('NewTabPageMostVisitedFocusTest', () => {
     const [tile] = queryTiles();
     tile.focus();
     keydown(tile, 'ArrowRight');
-    assertFocus(mostVisited.$.addShortcut);
+    assertFocus($$(mostVisited, '#addShortcut'));
   });
 
   test('right focuses on addShortcut when menu button focused', async () => {
@@ -98,7 +79,7 @@ suite('NewTabPageMostVisitedFocusTest', () => {
     const [tile] = queryTiles();
     tile.querySelector('cr-icon-button').focus();
     keydown(tile, 'ArrowRight');
-    assertFocus(mostVisited.$.addShortcut);
+    assertFocus($$(mostVisited, '#addShortcut'));
   });
 
   test('right focuses next tile', async () => {
@@ -122,7 +103,7 @@ suite('NewTabPageMostVisitedFocusTest', () => {
     const [tile] = queryTiles();
     tile.focus();
     keydown(tile, 'ArrowDown');
-    assertFocus(mostVisited.$.addShortcut);
+    assertFocus($$(mostVisited, '#addShortcut'));
   });
 
   test('down focuses next tile', async () => {
@@ -135,8 +116,8 @@ suite('NewTabPageMostVisitedFocusTest', () => {
 
   test('up focuses on previous tile from addShortcut', async () => {
     await addTiles(1);
-    mostVisited.$.addShortcut.focus();
-    keydown(mostVisited.$.addShortcut, 'ArrowUp');
+    $$(mostVisited, '#addShortcut').focus();
+    keydown($$(mostVisited, '#addShortcut'), 'ArrowUp');
     assertFocus(queryTiles()[0]);
   });
 
@@ -159,10 +140,10 @@ suite('NewTabPageMostVisitedFocusTest', () => {
 
   test('up/left/right/down addShortcut and no tiles', async () => {
     await addTiles(0);
-    mostVisited.$.addShortcut.focus();
-    ['ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown'].forEach(key => {
-      keydown(mostVisited.$.addShortcut, key);
-      assertFocus(mostVisited.$.addShortcut);
-    });
+    $$(mostVisited, '#addShortcut').focus();
+    for (const key of ['ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown']) {
+      keydown($$(mostVisited, '#addShortcut'), key);
+      assertFocus($$(mostVisited, '#addShortcut'));
+    }
   });
 });

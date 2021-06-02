@@ -806,7 +806,7 @@ class AppElement extends mixinBehaviors
         case $$(this, 'ntp-realbox'):
           recordClick(NtpElement.kRealbox);
           return;
-        case $$(this, 'ntp-most-visited'):
+        case $$(this, 'cr-most-visited'):
           recordClick(NtpElement.kMostVisited);
           return;
         case $$(this, 'ntp-middle-slot-promo'):

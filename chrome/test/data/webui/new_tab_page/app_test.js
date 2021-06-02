@@ -53,6 +53,10 @@ suite('NewTabPageAppTest', () => {
 
     windowProxy = TestBrowserProxy.fromClass(WindowProxy);
     handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
+      customLinksEnabled: false,
+      shortcutsVisible: false,
+    }));
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));
@@ -124,9 +128,6 @@ suite('NewTabPageAppTest', () => {
     assertEquals(
         0xffff0000 /* red */,
         (await backgroundManager.whenCalled('setBackgroundColor')).value);
-    assertStyle(
-        $$(app, '#content'), '--ntp-theme-shortcut-background-color',
-        'rgba(0, 255, 0, 1)');
     assertStyle(
         $$(app, '#content'), '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
     assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
@@ -372,22 +373,32 @@ suite('NewTabPageAppTest', () => {
 
   test('theme updates add shortcut color', async () => {
     const theme = createTheme();
-    theme.shortcutUseWhiteAddIcon = true;
+    theme.mostVisited.useWhiteTileIcon = true;
     callbackRouterRemote.setTheme(theme);
     const mostVisited = $$(app, '#mostVisited');
-    assertFalse(mostVisited.hasAttribute('use-white-add-icon'));
+    assertFalse(mostVisited.hasAttribute('use-white-tile-icon_'));
     await callbackRouterRemote.$.flushForTesting();
-    assertTrue(mostVisited.hasAttribute('use-white-add-icon'));
+    assertTrue(mostVisited.hasAttribute('use-white-tile-icon_'));
   });
 
   test('theme updates use title pill', async () => {
     const theme = createTheme();
-    theme.shortcutUseTitlePill = true;
+    theme.mostVisited.useTitlePill = true;
     callbackRouterRemote.setTheme(theme);
     const mostVisited = $$(app, '#mostVisited');
-    assertFalse(mostVisited.hasAttribute('use-title-pill'));
+    assertFalse(mostVisited.hasAttribute('use-title-pill_'));
     await callbackRouterRemote.$.flushForTesting();
-    assertTrue(mostVisited.hasAttribute('use-title-pill'));
+    assertTrue(mostVisited.hasAttribute('use-title-pill_'));
+  });
+
+  test('theme updates is dark', async () => {
+    const theme = createTheme();
+    theme.mostVisited.isDark = true;
+    callbackRouterRemote.setTheme(theme);
+    const mostVisited = $$(app, '#mostVisited');
+    assertFalse(mostVisited.hasAttribute('is-dark_'));
+    await callbackRouterRemote.$.flushForTesting();
+    assertTrue(mostVisited.hasAttribute('is-dark_'));
   });
 
   test('can show promo with browser command', async () => {
@@ -468,7 +479,7 @@ suite('NewTabPageAppTest', () => {
     [['#content', NtpElement.kBackground],
      ['ntp-logo', NtpElement.kLogo],
      ['ntp-realbox', NtpElement.kRealbox],
-     ['ntp-most-visited', NtpElement.kMostVisited],
+     ['cr-most-visited', NtpElement.kMostVisited],
      ['ntp-middle-slot-promo', NtpElement.kMiddleSlotPromo],
      ['ntp-modules', NtpElement.kModule],
     ].forEach(([selector, element]) => {

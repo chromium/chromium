@@ -3,9 +3,22 @@
     --icon-button-color-active: var(--google-grey-refresh-700);
     --icon-button-color: var(--google-grey-600);
     --icon-size: 48px;
+    --tile-background-color: rgb(229, 231, 232);
     --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
     --tile-size: 112px;
     --title-height: 32px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --tile-background-color: var(--google-grey-refresh-100);
+    }
+  }
+
+  :host([is-dark_]) {
+    --icon-button-color-active: var(--google-grey-refresh-300);
+    --icon-button-color: white;
+    --tile-hover-color: rgba(255, 255, 255, .1);
   }
 
   #container {
@@ -44,11 +57,11 @@
     background-color: var(--google-grey-700);
   }
 
-  :host([use-white-add-icon]) #addShortcutIcon {
+  :host([use-white-tile-icon_]) #addShortcutIcon {
     background-color: white;
   }
 
-  :host([use-white-add-icon]) .query-tile-icon {
+  :host([use-white-tile-icon_]) .query-tile-icon {
     background-color: var(--google-grey-400);
   }
 
@@ -79,7 +92,7 @@
 
   :host-context(.focus-outline-visible) .tile:focus,
   :host-context(.focus-outline-visible) #addShortcut:focus {
-    box-shadow: var(--ntp-focus-shadow);
+    box-shadow: var(--most-visited-focus-shadow);
   }
 
   #addShortcut {
@@ -98,7 +111,7 @@
 
   .tile-icon {
     align-items: center;
-    background-color: var(--ntp-theme-shortcut-background-color);
+    background-color: var(--tile-background-color);
     border-radius: 50%;
     display: flex;
     flex-shrink: 0;
@@ -116,7 +129,7 @@
   .tile-title {
     align-items: center;
     border-radius: calc(var(--title-height) / 2 + 2px);
-    color: var(--ntp-theme-text-color);
+    color: var(--most-visited-text-color);
     display: flex;
     height: var(--title-height);
     line-height: calc(var(--title-height) / 2);
@@ -125,7 +138,7 @@
     width: 88px;
   }
 
-  :host([use-title-pill]) .tile-title {
+  :host([use-title-pill_]) .tile-title {
     background-color: white;
     color: var(--google-grey-800);
   }
@@ -135,7 +148,7 @@
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
-    text-shadow: var(--ntp-theme-text-shadow);
+    text-shadow: var(--most-visited-text-shadow);
     white-space: nowrap;
     width: 100%;
   }
@@ -147,7 +160,7 @@
     white-space: initial;
   }
 
-  :host([use-title-pill]) .tile-title span {
+  :host([use-title-pill_]) .tile-title span {
     text-shadow: none;
   }
 
@@ -198,7 +211,8 @@
   }
 </style>
 <div id="container" hidden$="[[!visible_]]"
-    style="--column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
+    style="--tile-background-color: [[rgbaOrInherit_(theme.backgroundColor)]];
+           --column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
       <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"

@@ -22,6 +22,10 @@ suite('NewTabPageCustomizeDialogTest', () => {
     PolymerTest.clearBody();
 
     handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
+      customLinksEnabled: false,
+      shortcutsVisible: false,
+    }));
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));

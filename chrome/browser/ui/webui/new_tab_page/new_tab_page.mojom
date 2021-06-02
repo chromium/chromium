@@ -5,33 +5,9 @@
 module new_tab_page.mojom;
 
 import "chrome/browser/ui/webui/realbox/realbox.mojom";
-import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/text_direction.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
+import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
 import "url/mojom/url.mojom";
-
-struct MostVisitedTile {
-  string title;
-  mojo_base.mojom.TextDirection title_direction;
-  url.mojom.Url url;
-  bool is_query_tile;
-
-  // ======= METRICS =======
-  // Identifier of most visited entry source (e.g. top sites).
-  int32 source;
-  // Identifier of most visited entry title source (e.g. page's title tag).
-  int32 title_source;
-  // Time the most visited entry was generated (e.g. received by a suggestion
-  // server).
-  mojo_base.mojom.Time data_generation_time;
-};
-
-struct MostVisitedInfo {
-  bool custom_links_enabled;
-  bool visible;
-  array<MostVisitedTile> tiles;
-};
 
 // A collection of background images.
 struct BackgroundCollection {
@@ -74,13 +50,8 @@ struct BackgroundImage {
 
 // A generic theme.
 struct Theme {
+  skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
-  skia.mojom.SkColor shortcut_background_color;
-  skia.mojom.SkColor shortcut_text_color;
-  // True if |shortcut_background_color| is dark.
-  bool shortcut_use_white_add_icon;
-  // True if the shortcuts titles should be wrapped in a pill.
-  bool shortcut_use_title_pill;
   // True if the theme is default.
   bool is_default;
   // True if the theme is dark (e.g. NTP background color is dark).
@@ -96,6 +67,9 @@ struct Theme {
   string? background_image_attribution_2;
   // URL associated with the background image. Used for href.
   url.mojom.Url? background_image_attribution_url;
+
+  // Theme settings for the NTP MV tiles.
+  most_visited.mojom.MostVisitedTheme most_visited;
 
   // Theme settings for the NTP realbox. Matching those of the Omnibox.
   realbox.mojom.SearchBoxTheme search_box;
@@ -238,14 +212,6 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Adds tile.
-  AddMostVisitedTile(url.mojom.Url url, string title) => (bool success);
-  // Deletes tile by |url|.
-  DeleteMostVisitedTile(url.mojom.Url url);
-  // Moves tile identified by url to a new position at index |new_pos|.
-  ReorderMostVisitedTile(url.mojom.Url url, uint8 new_pos);
-  // Replaces the custom and most-visited tiles with the default tile set.
-  RestoreMostVisitedDefaults();
   // Sets the background image and notifies all NTPs of the change.
   SetBackgroundImage(string attribution_1, string attribution_2,
       url.mojom.Url attribution_url, url.mojom.Url image_url);
@@ -254,17 +220,11 @@ interface PageHandler {
   SetDailyRefreshCollectionId(string collection_id);
   // Clears the background and daily refresh settings.
   SetNoBackgroundImage();
-  // Set the visibility and whether custom links are enabled.
-  SetMostVisitedSettings(bool customLinksEnabled, bool visible);
-  // Undoes the last action done to the tiles (add, delete, reorder, restore or
-  // update). Note that only the last action can be undone.
-  UndoMostVisitedTileAction();
-  // Called to update the tiles.
-  UpdateMostVisitedInfo();
-  // Updates a tile by url.
-  UpdateMostVisitedTile(url.mojom.Url url, url.mojom.Url new_url,
-                        string new_title)
-      => (bool success);
+  // Sets the visibility of NTP tiles and whether custom links are enabled.
+  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
+  // Returns the visibility of NTP tiles and whether custom links are enabled.
+  GetMostVisitedSettings() => (bool custom_links_enabled,
+                               bool shortcuts_visible);
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
   // Returns the images of a collection identified by |collection_id|.
@@ -289,26 +249,12 @@ interface PageHandler {
   OnModulesLoadedWithData();
 
   // ======= METRICS =======
-  // Logs that |tiles| were displayed / updated at |time|. The first instance of
-  // this event is used as a proxy for when the NTP has finished loading.
-  OnMostVisitedTilesRendered(array<MostVisitedTile> tiles, double time);
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
   // |time|.
   OnOneGoogleBarRendered(double time);
   // Logs that the promo iframe was loaded at |time| and pings |log_url| for
   // promo metrics logging.
   OnPromoRendered(double time, url.mojom.Url? log_url);
-  // Logs that |tile| at position |index| was triggered to navigate to that
-  // most visited entry.
-  // |mouse_button| indicates which mouse button was pressed on the entry. See
-  // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
-  OnMostVisitedTileNavigation(MostVisitedTile tile,
-                        uint32 index,
-                        uint8 mouse_button,
-                        bool alt_key,
-                        bool ctrl_key,
-                        bool meta_key,
-                        bool shift_key);
   // Logs an action performed in the customize dialog.
   OnCustomizeDialogAction(CustomizeDialogAction action);
   // Logs that the |type| image of an image doodle has been clicked. If set, the
@@ -337,9 +283,6 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Updates the page with most-visited info which includes whether the
-  // tiles should be shown, if links can be customized and the tiles.
-  SetMostVisitedInfo(MostVisitedInfo info);
   // Sets the current theme.
   SetTheme(Theme theme);
   // Disables the modules in |ids|. If |all|, disables all modules and passes an

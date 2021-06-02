@@ -9,8 +9,8 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings",
-    "//mojo/public/mojom/base",
     "//skia/public/mojom",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

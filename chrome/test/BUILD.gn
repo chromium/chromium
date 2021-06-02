@@ -7412,6 +7412,7 @@ if (!is_android) {
     if (include_js_tests) {
       deps += [
         "//chrome/test/data/webui:interactive_ui_tests_js_mojo_lite_webui",
+        "//chrome/test/data/webui:interactive_ui_tests_js_mojo_webui",
         "//chrome/test/data/webui:interactive_ui_tests_js_webui",
       ]
     }
@@ -7419,6 +7420,7 @@ if (!is_android) {
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
+      "//chrome/test/data:web_ui_test_mojom_js_module",
       "//ppapi:ppapi_tests",
       "//testing/buildbot/filters:interactive_ui_tests_filters",
       "//third_party/mesa_headers",

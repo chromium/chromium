@@ -93,7 +93,11 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "customize_themes/browser_proxy.js" ]
+  in_files = [
+    "customize_themes/browser_proxy.js",
+    "most_visited/browser_proxy.js",
+    "most_visited/window_proxy.js",
+  ]
 
   if (use_nss_certs) {
     in_files += [
@@ -105,12 +109,17 @@ preprocess_if_expr("preprocess_src") {
 }
 
 preprocess_if_expr("preprocess_mojom") {
-  deps =
-      [ "//ui/webui/resources/cr_components/customize_themes:mojom_webui_js" ]
+  deps = [
+    "//ui/webui/resources/cr_components/customize_themes:mojom_webui_js",
+    "//ui/webui/resources/cr_components/most_visited:mojom_webui_js",
+  ]
   in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojom_manifest"
-  in_files = [ "customize_themes/customize_themes.mojom-webui.js" ]
+  in_files = [
+    "customize_themes/customize_themes.mojom-webui.js",
+    "most_visited/most_visited.mojom-webui.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -120,6 +129,8 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "customize_themes/customize_themes.js",
+    "most_visited/most_visited.mojom-lite.js",
+    "most_visited/most_visited.js",
     "customize_themes/theme_icon.js",
     "managed_dialog/managed_dialog.js",
     "managed_footnote/managed_footnote.js",
@@ -399,6 +410,7 @@ group("closure_compile") {
     "customize_themes:closure_compile",
     "managed_dialog:closure_compile",
     "managed_footnote:closure_compile",
+    "most_visited:closure_compile",
     "omnibox:closure_compile",
   ]
 
@@ -413,6 +425,7 @@ group("polymer3_elements") {
     "customize_themes:web_components",
     "managed_dialog:web_components",
     "managed_footnote:web_components",
+    "most_visited:web_components",
     "omnibox:web_components",
   ]
   if (is_chromeos_ash) {

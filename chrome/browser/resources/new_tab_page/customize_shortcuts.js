@@ -41,37 +41,25 @@ class CustomizeShortcutsElement extends mixinBehaviors
 
   constructor() {
     super();
-    const {callbackRouter, handler} = NewTabPageProxy.getInstance();
-    /** @private {!newTabPage.mojom.PageCallbackRouter} */
-    this.callbackRouter_ = callbackRouter;
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    const {handler} = NewTabPageProxy.getInstance();
+    /** @private {!newTabPage.mojom.PageHandlerRemote} */
     this.pageHandler_ = handler;
-    /** @private {?number} */
-    this.setMostVisitedInfoListenerId_ = null;
+    this.pageHandler_.getMostVisitedSettings().then(
+        ({customLinksEnabled, shortcutsVisible}) => {
+          this.customLinksEnabled_ = customLinksEnabled;
+          this.hide_ = !shortcutsVisible;
+        });
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.setMostVisitedInfoListenerId_ =
-        this.callbackRouter_.setMostVisitedInfo.addListener(info => {
-          this.customLinksEnabled_ = info.customLinksEnabled;
-          this.hide_ = !info.visible;
-        });
-    this.pageHandler_.updateMostVisitedInfo();
     FocusOutlineManager.forDocument(document);
-  }
-
-  /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        assert(this.setMostVisitedInfoListenerId_));
   }
 
   apply() {
     this.pageHandler_.setMostVisitedSettings(
-        this.customLinksEnabled_, /* visible= */ !this.hide_);
+        this.customLinksEnabled_, /* shortcutsVisible= */ !this.hide_);
   }
 
   /**

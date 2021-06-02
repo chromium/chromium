@@ -1,0 +1,210 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
+
+#include <map>
+#include <vector>
+
+#include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/most_visited_sites.h"
+#include "components/search/ntp_features.h"
+#include "components/search_engines/template_url_service.h"
+#include "content/public/browser/web_contents.h"
+
+namespace {
+
+ntp_tiles::NTPTileImpression MakeNTPTileImpression(
+    const most_visited::mojom::MostVisitedTile& tile,
+    uint32_t index) {
+  return ntp_tiles::NTPTileImpression(
+      /*index=*/index,
+      /*source=*/static_cast<ntp_tiles::TileSource>(tile.source),
+      /*title_source=*/
+      static_cast<ntp_tiles::TileTitleSource>(tile.title_source),
+      /*visual_type=*/
+      ntp_tiles::TileVisualType::ICON_REAL /* unused on desktop */,
+      /*icon_type=*/favicon_base::IconType::kInvalid /* unused on desktop */,
+      /*data_generation_time=*/tile.data_generation_time,
+      /*url_for_rappor=*/GURL() /* unused */);
+}
+
+}  // namespace
+
+MostVisitedHandler::MostVisitedHandler(
+    mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
+        pending_page_handler,
+    mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
+    Profile* profile,
+    content::WebContents* web_contents,
+    const GURL& ntp_url,
+    const base::Time& ntp_navigation_start_time)
+    : profile_(profile),
+      instant_service_(InstantServiceFactory::GetForProfile(profile)),
+      web_contents_(web_contents),
+      logger_(profile, ntp_url),
+      ntp_navigation_start_time_(ntp_navigation_start_time),
+      page_handler_(this, std::move(pending_page_handler)),
+      page_(std::move(pending_page)) {
+  instant_service_->AddObserver(this);
+}
+
+MostVisitedHandler::~MostVisitedHandler() {
+  instant_service_->RemoveObserver(this);
+}
+
+void MostVisitedHandler::AddMostVisitedTile(
+    const GURL& url,
+    const std::string& title,
+    AddMostVisitedTileCallback callback) {
+  bool success = instant_service_->AddCustomLink(url, title);
+  std::move(callback).Run(success);
+  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD, base::TimeDelta() /* unused */);
+}
+
+void MostVisitedHandler::DeleteMostVisitedTile(const GURL& url) {
+  if (instant_service_->IsCustomLinksEnabled()) {
+    instant_service_->DeleteCustomLink(url);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
+                     base::TimeDelta() /* unused */);
+  } else {
+    instant_service_->DeleteMostVisitedItem(url);
+    last_blocklisted_ = url;
+  }
+}
+
+void MostVisitedHandler::RestoreMostVisitedDefaults() {
+  if (instant_service_->IsCustomLinksEnabled()) {
+    instant_service_->ResetCustomLinks();
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
+                     base::TimeDelta() /* unused */);
+  } else {
+    instant_service_->UndoAllMostVisitedDeletions();
+  }
+}
+
+void MostVisitedHandler::ReorderMostVisitedTile(const GURL& url,
+                                                uint8_t new_pos) {
+  instant_service_->ReorderCustomLink(url, new_pos);
+}
+
+void MostVisitedHandler::UndoMostVisitedTileAction() {
+  if (instant_service_->IsCustomLinksEnabled()) {
+    instant_service_->UndoCustomLinkAction();
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
+                     base::TimeDelta() /* unused */);
+  } else if (last_blocklisted_.is_valid()) {
+    instant_service_->UndoMostVisitedDeletion(last_blocklisted_);
+    last_blocklisted_ = GURL();
+  }
+}
+
+void MostVisitedHandler::UpdateMostVisitedInfo() {
+  // OnNewTabPageOpened refreshes the most visited entries while
+  // UpdateMostVisitedInfo triggers a call to MostVisitedInfoChanged.
+  instant_service_->OnNewTabPageOpened();
+  instant_service_->UpdateMostVisitedInfo();
+}
+
+void MostVisitedHandler::UpdateMostVisitedTile(
+    const GURL& url,
+    const GURL& new_url,
+    const std::string& new_title,
+    UpdateMostVisitedTileCallback callback) {
+  bool success = instant_service_->UpdateCustomLink(
+      url, new_url != url ? new_url : GURL(), new_title);
+  std::move(callback).Run(success);
+  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
+                   base::TimeDelta() /* unused */);
+}
+
+void MostVisitedHandler::OnMostVisitedTilesRendered(
+    std::vector<most_visited::mojom::MostVisitedTilePtr> tiles,
+    double time) {
+  for (size_t i = 0; i < tiles.size(); i++) {
+    logger_.LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
+  }
+  // This call flushes all most visited impression logs to UMA histograms.
+  // Therefore, it must come last.
+  logger_.LogEvent(NTP_ALL_TILES_LOADED,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+}
+
+void MostVisitedHandler::OnMostVisitedTileNavigation(
+    most_visited::mojom::MostVisitedTilePtr tile,
+    uint32_t index,
+    uint8_t mouse_button,
+    bool alt_key,
+    bool ctrl_key,
+    bool meta_key,
+    bool shift_key) {
+  logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
+
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpHandleMostVisitedNavigationExplicitly))
+    return;
+
+  WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  // Clicks on the MV tiles should be treated as if the user clicked on a
+  // bookmark. This is consistent with Android's native implementation and
+  // ensures the visit count for the MV entry is updated.
+  // Use a link transition for query tiles, e.g., repeatable queries, so that
+  // their visit count is not updated by this navigation. Otherwise duplicate
+  // query tiles could also be offered as most visited.
+  // |is_query_tile| can be true only when ntp_features::kNtpRepeatableQueries
+  // is enabled.
+  web_contents_->OpenURL(content::OpenURLParams(
+      tile->url, content::Referrer(), disposition,
+      tile->is_query_tile ? ui::PAGE_TRANSITION_LINK
+                          : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+      false));
+}
+
+void MostVisitedHandler::NtpThemeChanged(const NtpTheme& theme) {}
+
+void MostVisitedHandler::MostVisitedInfoChanged(
+    const InstantMostVisitedInfo& info) {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  auto result = most_visited::mojom::MostVisitedInfo::New();
+  std::vector<most_visited::mojom::MostVisitedTilePtr> tiles;
+  for (auto& tile : info.items) {
+    auto value = most_visited::mojom::MostVisitedTile::New();
+    if (tile.title.empty()) {
+      value->title = tile.url.spec();
+      value->title_direction = base::i18n::LEFT_TO_RIGHT;
+    } else {
+      value->title = base::UTF16ToUTF8(tile.title);
+      value->title_direction =
+          base::i18n::GetFirstStrongCharacterDirection(tile.title);
+    }
+    value->url = tile.url;
+    value->source = static_cast<int32_t>(tile.source);
+    value->title_source = static_cast<int32_t>(tile.title_source);
+    value->data_generation_time = tile.data_generation_time;
+    value->is_query_tile =
+        base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) &&
+        template_url_service &&
+        template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+            tile.url);
+    tiles.push_back(std::move(value));
+  }
+  result->tiles = std::move(tiles);
+  // Update the page with the up-to-date most visited settings. The most visited
+  // settings in |info| may not reflect the current default search provider.
+  auto pair = instant_service_->GetCurrentShortcutSettings();
+  result->custom_links_enabled =
+      !pair.first && search::DefaultSearchProviderIsGoogle(profile_);
+  result->visible = pair.second;
+  page_->SetMostVisitedInfo(std::move(result));
+}

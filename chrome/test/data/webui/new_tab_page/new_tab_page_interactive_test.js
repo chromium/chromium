@@ -16,18 +16,6 @@ class NewTabPageInteractiveTest extends PolymerInteractiveUITest {
 }
 
 // eslint-disable-next-line no-var
-var NewTabPageMostVisitedFocusTest = class extends NewTabPageInteractiveTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/most_visited_focus_test.js';
-  }
-};
-
-TEST_F('NewTabPageMostVisitedFocusTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageCustomizeDialogFocusTest =
     class extends NewTabPageInteractiveTest {
   /** @override */

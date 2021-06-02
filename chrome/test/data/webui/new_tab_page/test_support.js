@@ -73,6 +73,12 @@ export function createMock(clazz) {
 
 /** @return {!newTabPage.mojom.Theme} */
 export function createTheme() {
+  const mostVisited = {
+    backgroundColor: {value: 0xff00ff00},
+    isDark: false,
+    useTitlePill: false,
+    useWhiteTileIcon: false,
+  };
   const searchBox = {
     bg: {value: 0xff000000},
     icon: {value: 0xff000001},
@@ -91,18 +97,16 @@ export function createTheme() {
   };
   return {
     backgroundColor: {value: 0xffff0000},
-    shortcutBackgroundColor: {value: 0xff00ff00},
-    shortcutTextColor: {value: 0xff0000ff},
-    isDefault: true,
-    isDark: false,
-    logoColor: null,
     backgroundImage: null,
     backgroundImageAttribution1: '',
     backgroundImageAttribution2: '',
     backgroundImageAttributionUrl: null,
     dailyRefreshCollectionId: '',
+    isDark: false,
+    isDefault: true,
+    logoColor: null,
+    mostVisited: mostVisited,
     searchBox: searchBox,
-    shortcutUseWhiteAddIcon: false,
-    shortcutUseTitlePill: false,
+    textColor: {value: 0xff0000ff},
   };
 }
