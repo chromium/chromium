@@ -161,6 +161,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // Adds an observer to this app state. The observers will be notified about
 // app state changes per AppStateObserver protocol.
+// The observer will be *immediately* notified about the latest init stage
+// transition, if any such transitions happened (didTransitionFromInitStage),
+// before this method returns.
 - (void)addObserver:(id<AppStateObserver>)observer;
 // Removes the observer. It's safe to call this at any time, including from
 // AppStateObserver callbacks.

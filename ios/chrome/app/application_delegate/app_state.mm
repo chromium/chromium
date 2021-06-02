@@ -222,6 +222,15 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)setInitStage:(InitStage)newInitStage {
   DCHECK(newInitStage >= InitStageStart);
   DCHECK(newInitStage <= InitStageFinal);
+  // As of writing this, it seems reasonable for init stages to be strictly
+  // incremented by one only: if a stage needs to be skipped, it can just be a
+  // no-op, but the observers will get a chance to react to it normally. If in
+  // the future these need to be skipped, or go backwards:
+  // 1. Check that all observers will support this change
+  // 2. Keep the previous init stage and modify addObserver: code to send the
+  // previous init stage instead.
+  DCHECK(newInitStage == _initStage + 1 ||
+         (newInitStage == InitStageStart && _initStage == InitStageStart));
   // It's probably a programming error to set the same init stage twice, except
   // for InitStageStart to kick off the startup.
   DCHECK(newInitStage == InitStageStart || _initStage != newInitStage);
@@ -529,8 +538,16 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   self.shouldPerformAdditionalDelegateHandling = !URLHandled;
 }
 
-- (void)addObserver:(id<SceneStateObserver>)observer {
+- (void)addObserver:(id<AppStateObserver>)observer {
   [self.observers addObserver:observer];
+
+  if ([observer respondsToSelector:@selector(appState:
+                                       didTransitionFromInitStage:)] &&
+      self.initStage > InitStageStart) {
+    InitStage previousInitStage = static_cast<InitStage>(self.initStage - 1);
+    // Trigger an update on the newly added agent.
+    [observer appState:self didTransitionFromInitStage:previousInitStage];
+  }
 }
 
 - (void)removeObserver:(id<SceneStateObserver>)observer {
