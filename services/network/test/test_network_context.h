@@ -104,6 +104,10 @@ class TestNetworkContext : public mojom::NetworkContext {
                            ClearTrustTokenDataCallback callback) override {}
   void GetDomainReliabilityJSON(
       GetDomainReliabilityJSONCallback callback) override {}
+  void SetDocumentReportingEndpoints(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const base::flat_map<std::string, std::string>& endpoints) override {}
   void QueueReport(const std::string& type,
                    const std::string& group,
                    const GURL& url,

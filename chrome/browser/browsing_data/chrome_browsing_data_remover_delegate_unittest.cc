@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
@@ -137,6 +136,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/favicon_size.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
@@ -170,6 +171,7 @@
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_REPORTING)
+#include "base/containers/flat_map.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_policy.h"
@@ -833,6 +835,13 @@ class MockReportingService : public net::ReportingService {
 
   ~MockReportingService() override = default;
 
+  void SetDocumentReportingEndpoints(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const base::flat_map<std::string, std::string>& endpoints) override {
+    NOTREACHED();
+  }
+
   void QueueReport(const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
                    const std::string& user_agent,
@@ -845,13 +854,6 @@ class MockReportingService : public net::ReportingService {
 
   void ProcessReportToHeader(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
-      const std::string& header_value) override {
-    NOTREACHED();
-  }
-
-  void ProcessReportingEndpointsHeader(
-      const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
       const std::string& header_value) override {
     NOTREACHED();

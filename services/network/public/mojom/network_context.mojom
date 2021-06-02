@@ -885,6 +885,19 @@ interface NetworkContext {
   // Returns a JSON value containing data for displaying on a debugging page.
   GetDomainReliabilityJSON() => (mojo_base.mojom.Value data);
 
+  // Configures per-resource reporting endpoints set with the
+  // Reporting-Endpoints header.
+  // |network_isolation_key| is used when creating the endpoints in the
+  // ReportingCache, and will need to match the key sent when reports are queued
+  // in order for these reporting endpoints to be considered for delivery.
+  // |endpoints| is a mapping of endpoint name to URL (URLs here are represented
+  // as strings, and will be rejected if they fail to parse or are not secure).
+  //
+  // Spec: https://w3c.github.io/reporting/#header
+  SetDocumentReportingEndpoints(
+      url.mojom.Origin origin, NetworkIsolationKey network_isolation_key,
+      map<string,string> endpoints);
+
   // Queues a report via the Reporting API. |type| describes the type of report
   // (as well as what data will contained in |body|). |group| specifies the
   // endpoint group that the report will be delivered to. |url| indicates the

@@ -389,6 +389,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       override;
   void CreateMdnsResponder(
       mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) override;
+  void SetDocumentReportingEndpoints(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const base::flat_map<std::string, std::string>& endpoints) override;
   void QueueReport(const std::string& type,
                    const std::string& group,
                    const GURL& url,

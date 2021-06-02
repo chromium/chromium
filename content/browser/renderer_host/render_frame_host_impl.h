@@ -3718,6 +3718,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
       code_cache_host_receivers_;
 
+  // Holds the mapping of names to URLs of reporting endpoints for the current
+  // document, as parsed from the Reporting-Endpoints response header. This data
+  // comes directly from the structured header parser, and does not necessarily
+  // represent a valid reporting configuration. This is passed to the network
+  // service to set up the actual endpoint configuration once the document load
+  // commits.
+  base::flat_map<std::string, std::string> reporting_endpoints_;
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};
 

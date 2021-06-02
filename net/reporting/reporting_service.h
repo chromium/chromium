@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
@@ -71,13 +72,13 @@ class NET_EXPORT ReportingService {
       const NetworkIsolationKey& network_isolation_key,
       const std::string& header_value) = 0;
 
-  // Processes a Reporting-Endpoints header. |url| is the URL that originated
-  // the header; |header_value| is the normalized value of the
-  // Reporting-Endpoints header.
-  virtual void ProcessReportingEndpointsHeader(
+  // Configures reporting endpoints set by the Reporting-Endpoints header, once
+  // the associated document has been committed.
+  // |endpoints| is a mapping of endpoint names to URLs.
+  virtual void SetDocumentReportingEndpoints(
       const url::Origin& origin,
       const NetworkIsolationKey& network_isolation_key,
-      const std::string& header_value) = 0;
+      const base::flat_map<std::string, std::string>& endpoints) = 0;
 
   // Removes browsing data from the Reporting system. See
   // ReportingBrowsingDataRemover for more details.

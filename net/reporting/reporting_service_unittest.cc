@@ -188,8 +188,10 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader) {
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
-  service()->ProcessReportingEndpointsHeader(
-      kOrigin_, kNik_, kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(kOrigin_, kNik_, *parsed_header);
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
@@ -200,8 +202,9 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
-  service()->ProcessReportingEndpointsHeader(kOrigin_, kNik_,
-                                             kGroup_ + "=\"/path-absolute\"");
+  auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(kOrigin_, kNik_, *parsed_header);
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());

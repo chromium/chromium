@@ -334,13 +334,6 @@ void TestReportingService::ProcessReportToHeader(
   NOTREACHED();
 }
 
-void TestReportingService::ProcessReportingEndpointsHeader(
-    const url::Origin& origin,
-    const NetworkIsolationKey& network_isolation_key,
-    const std::string& header_value) {
-  NOTREACHED();
-}
-
 void TestReportingService::RemoveBrowsingData(
     uint64_t data_type_mask,
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {

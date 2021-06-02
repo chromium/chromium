@@ -1773,14 +1773,12 @@ class ReportingHeaderParserStructuredHeaderTest
   void ParseHeader(const NetworkIsolationKey& network_isolation_key,
                    const url::Origin& origin,
                    const std::string& header_string) {
-    absl::optional<Dictionary> header_dict =
-        structured_headers::ParseDictionary(header_string);
+    absl::optional<base::flat_map<std::string, std::string>> header_map =
+        ParseReportingEndpoints(header_string);
 
-    if (header_dict) {
-      std::unique_ptr<Dictionary> header_value =
-          std::make_unique<Dictionary>(std::move(*header_dict));
-      ReportingHeaderParser::ParseReportingEndpointsHeader(
-          context(), network_isolation_key, origin, std::move(header_value));
+    if (header_map) {
+      ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
+          context(), network_isolation_key, origin, *header_map);
     }
   }
 };

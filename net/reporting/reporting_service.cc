@@ -32,7 +32,6 @@ namespace {
 
 constexpr int kMaxJsonSize = 16 * 1024;
 constexpr int kMaxJsonDepth = 5;
-constexpr int kMaxSHSize = 16 * 1024;
 
 // If constructed with a PersistentReportingStore, the first call to any of
 // QueueReport(), ProcessHeader(), RemoveBrowsingData(), or
@@ -54,6 +53,16 @@ class ReportingServiceImpl : public ReportingService {
   ~ReportingServiceImpl() override {
     if (initialized_)
       context_->cache()->Flush();
+  }
+
+  void SetDocumentReportingEndpoints(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const base::flat_map<std::string, std::string>& endpoints) override {
+    DoOrBacklogTask(base::BindOnce(
+        &ReportingServiceImpl::DoSetDocumentReportingEndpoints,
+        base::Unretained(this), FixupNetworkIsolationKey(network_isolation_key),
+        origin, endpoints));
   }
 
   void QueueReport(const GURL& url,
@@ -102,31 +111,6 @@ class ReportingServiceImpl : public ReportingService {
         &ReportingServiceImpl::DoProcessReportToHeader, base::Unretained(this),
         FixupNetworkIsolationKey(network_isolation_key), url,
         std::move(header_value)));
-  }
-
-  void ProcessReportingEndpointsHeader(
-      const url::Origin& origin,
-      const NetworkIsolationKey& network_isolation_key,
-      const std::string& header_string) override {
-    if (header_string.size() == 0 || header_string.size() > kMaxSHSize)
-      return;
-
-    absl::optional<structured_headers::Dictionary> header_dict =
-        structured_headers::ParseDictionary(header_string);
-    if (!header_dict) {
-      DVLOG(1) << "Error processing Reporting-Endpoints header string: "
-               << header_string;
-      return;
-    }
-    std::unique_ptr<structured_headers::Dictionary> header_value =
-        std::make_unique<structured_headers::Dictionary>(
-            std::move(*header_dict));
-
-    DVLOG(1) << "Received Reporting-Endpoints header policy for " << origin;
-    DoOrBacklogTask(base::BindOnce(
-        &ReportingServiceImpl::DoProcessReportingEndpointsHeader,
-        base::Unretained(this), FixupNetworkIsolationKey(network_isolation_key),
-        origin, std::move(header_value)));
   }
 
   void RemoveBrowsingData(uint64_t data_type_mask,
@@ -201,12 +185,12 @@ class ReportingServiceImpl : public ReportingService {
         context_.get(), network_isolation_key, url, std::move(header_value));
   }
 
-  void DoProcessReportingEndpointsHeader(
+  void DoSetDocumentReportingEndpoints(
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
-      std::unique_ptr<structured_headers::Dictionary> header_value) {
+      base::flat_map<std::string, std::string> header_value) {
     DCHECK(initialized_);
-    ReportingHeaderParser::ParseReportingEndpointsHeader(
+    ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
         context_.get(), network_isolation_key, origin, std::move(header_value));
   }
 

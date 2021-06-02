@@ -3358,6 +3358,14 @@ void RenderFrameHostImpl::DidNavigate(
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
 
+  // Set up reporting endpoints for this document.
+  DCHECK(frame_token_.value());
+  if (!reporting_endpoints_.empty()) {
+    GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
+        params.origin, isolation_info_.network_isolation_key(),
+        reporting_endpoints_);
+  }
+
   // When the frame hosts a different document, its state must be replicated
   // via its proxies to the other processes where it appears as remote.
   //
@@ -9790,6 +9798,16 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
       navigation_request->private_network_request_policy();
   cross_origin_embedder_policy_ =
       navigation_request->cross_origin_embedder_policy();
+
+  reporting_endpoints_.clear();
+  DCHECK(navigation_request);
+
+  if (navigation_request->response() &&
+      navigation_request->response()->parsed_headers &&
+      navigation_request->response()->parsed_headers->reporting_endpoints) {
+    reporting_endpoints_ =
+        *(navigation_request->response()->parsed_headers->reporting_endpoints);
+  }
 
   // We move the PolicyContainerHost of |navigation_request| into the
   // RenderFrameHost unless this is the initial, "fake" navigation to

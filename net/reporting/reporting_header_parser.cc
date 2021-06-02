@@ -194,18 +194,15 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
 // Processes a single endpoint tuple received in a Reporting-Endpoints header.
 //
 // |group_key| is the key for the endpoint group this endpoint belongs.
-// |value| is the parsed parameterized member representing the endpoint url.
+// |endpoint_url_string| is the endpoint url as received in the header.
 //
 // |endpoint_info_out| is the endpoint info parsed out of the value.
-bool ProcessEndpointStructuredHeader(
-    ReportingDelegate* delegate,
-    const ReportingEndpointGroupKey& group_key,
-    const structured_headers::ParameterizedMember& value,
-    ReportingEndpoint::EndpointInfo& endpoint_info_out) {
-  if (value.member_is_inner_list || !value.member.front().item.is_string())
+bool ProcessEndpoint(ReportingDelegate* delegate,
+                     const ReportingEndpointGroupKey& group_key,
+                     const std::string& endpoint_url_string,
+                     ReportingEndpoint::EndpointInfo& endpoint_info_out) {
+  if (endpoint_url_string.empty())
     return false;
-  const std::string& endpoint_url_string =
-      value.member.front().item.GetString();
 
   GURL endpoint_url;
   if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin,
@@ -227,15 +224,16 @@ bool ProcessEndpointStructuredHeader(
 // the endpoint group we create here is just a wrapper for that endpoint. The
 // endpoint name will be stored in the group name here as individual endpoint
 // doesn't have names.
-bool ProcessEndpointGroupStructuredHeader(
+bool ProcessDocumentEndpoint(
     ReportingDelegate* delegate,
     ReportingCache* cache,
     const NetworkIsolationKey& network_isolation_key,
     const url::Origin& origin,
-    const structured_headers::DictionaryMember& value,
+    const std::string& endpoint_name,
+    const std::string& endpoint_url_string,
     ReportingEndpointGroup& parsed_endpoint_group_out) {
   ReportingEndpointGroupKey group_key(network_isolation_key, origin,
-                                      value.first);
+                                      endpoint_name);
   parsed_endpoint_group_out.group_key = group_key;
 
   // Default to a fixed number of days as Reporting-Endpoints doesn't have the
@@ -246,8 +244,8 @@ bool ProcessEndpointGroupStructuredHeader(
 
   ReportingEndpoint::EndpointInfo parsed_endpoint;
 
-  if (!ProcessEndpointStructuredHeader(delegate, group_key, value.second,
-                                       parsed_endpoint)) {
+  if (!ProcessEndpoint(delegate, group_key, endpoint_url_string,
+                       parsed_endpoint)) {
     // Remove the group if it does not have a proper endpoint.
     cache->RemoveEndpointGroup(group_key);
     return false;
@@ -257,6 +255,26 @@ bool ProcessEndpointGroupStructuredHeader(
 }
 
 }  // namespace
+
+absl::optional<base::flat_map<std::string, std::string>>
+ParseReportingEndpoints(const std::string& header) {
+  absl::optional<structured_headers::Dictionary> header_dict =
+      structured_headers::ParseDictionary(header);
+  if (!header_dict) {
+    return absl::nullopt;
+  }
+  base::flat_map<std::string, std::string> parsed_header;
+  for (const structured_headers::DictionaryMember& entry : *header_dict) {
+    if (entry.second.member_is_inner_list ||
+        !entry.second.member.front().item.is_string()) {
+      return absl::nullopt;
+    }
+    const std::string& endpoint_url_string =
+        entry.second.member.front().item.GetString();
+    parsed_header[entry.first] = endpoint_url_string;
+  }
+  return parsed_header;
+}
 
 // static
 void ReportingHeaderParser::RecordReportingHeaderType(
@@ -311,11 +329,11 @@ void ReportingHeaderParser::ParseReportToHeader(
 }
 
 // static
-void ReportingHeaderParser::ParseReportingEndpointsHeader(
+void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     ReportingContext* context,
     const NetworkIsolationKey& network_isolation_key,
     const url::Origin& origin,
-    std::unique_ptr<structured_headers::Dictionary> value) {
+    base::flat_map<std::string, std::string> header) {
   DCHECK(base::FeatureList::IsEnabled(net::features::kDocumentReporting));
   DCHECK(GURL::SchemeIsCryptographic(origin.scheme()));
 
@@ -324,12 +342,11 @@ void ReportingHeaderParser::ParseReportingEndpointsHeader(
 
   std::vector<ReportingEndpointGroup> parsed_header;
 
-  for (const structured_headers::DictionaryMember& member : *value) {
-    ReportingEndpointGroup parsed_endpoint_group;
-    if (ProcessEndpointGroupStructuredHeader(delegate, cache,
-                                             network_isolation_key, origin,
-                                             member, parsed_endpoint_group)) {
-      parsed_header.push_back(std::move(parsed_endpoint_group));
+  for (const auto& member : header) {
+    ReportingEndpointGroup parsed_endpoint;
+    if (ProcessDocumentEndpoint(delegate, cache, network_isolation_key, origin,
+                                member.first, member.second, parsed_endpoint)) {
+      parsed_header.push_back(std::move(parsed_endpoint));
     }
   }
 

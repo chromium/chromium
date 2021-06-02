@@ -883,6 +883,18 @@ void NetworkContext::ClearNetworkErrorLogging(
   std::move(callback).Run();
 }
 
+void NetworkContext::SetDocumentReportingEndpoints(
+    const url::Origin& origin,
+    const net::NetworkIsolationKey& network_isolation_key,
+    const base::flat_map<std::string, std::string>& endpoints) {
+  net::ReportingService* reporting_service =
+      url_request_context()->reporting_service();
+  if (reporting_service) {
+    reporting_service->SetDocumentReportingEndpoints(
+        origin, network_isolation_key, endpoints);
+  }
+}
+
 void NetworkContext::QueueReport(
     const std::string& type,
     const std::string& group,
@@ -967,6 +979,13 @@ void NetworkContext::ClearReportingCacheClients(
 void NetworkContext::ClearNetworkErrorLogging(
     mojom::ClearDataFilterPtr filter,
     ClearNetworkErrorLoggingCallback callback) {
+  NOTREACHED();
+}
+
+void NetworkContext::SetDocumentReportingEndpoints(
+    const url::Origin& origin,
+    const net::NetworkIsolationKey& network_isolation_key,
+    const base::flat_map<std::string, std::string>& endpoints) {
   NOTREACHED();
 }
 

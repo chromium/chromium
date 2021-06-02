@@ -4,7 +4,10 @@
 
 #include "services/network/public/cpp/parsed_headers.h"
 
+#include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
+#include "net/reporting/reporting_header_parser.h"
 #include "services/network/public/cpp/bfcache_opt_in_parser.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -72,6 +75,13 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     parsed_headers->bfcache_opt_in_unload =
         ParseBFCacheOptInUnload(bfcache_opt_in);
   }
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  std::string reporting_endpoints;
+  if (headers->GetNormalizedHeader("Reporting-Endpoints", &reporting_endpoints))
+    parsed_headers->reporting_endpoints =
+        net::ParseReportingEndpoints(reporting_endpoints);
+#endif
 
   return parsed_headers;
 }

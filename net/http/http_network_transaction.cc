@@ -1243,13 +1243,14 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     return rv;
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  // Note: This just handles the legacy Report-To header, which is still
+  // required for NEL. The newer Reporting-Endpoints header is processed in
+  // network::PopulateParsedHeaders().
+  ProcessReportToHeader();
+
   // Note: Unless there is a pre-existing NEL policy for this origin, any NEL
   // reports generated before the NEL header is processed here will just be
   // dropped by the NetworkErrorLoggingService.
-  ProcessReportToHeader();
-  if (base::FeatureList::IsEnabled(net::features::kDocumentReporting)) {
-    ProcessReportingEndpointsHeader();
-  }
   ProcessNetworkErrorLoggingHeader();
 
   // Generate NEL report here if we have to report an HTTP error (4xx or 5xx
@@ -1382,26 +1383,6 @@ int HttpNetworkTransaction::DoDrainBodyForAuthRestartComplete(int result) {
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
-void HttpNetworkTransaction::ProcessReportingEndpointsHeader() {
-  std::string value;
-  if (!response_.headers->GetNormalizedHeader("Reporting-Endpoints", &value))
-    return;
-
-  ReportingService* service = session_->reporting_service();
-  if (!service)
-    return;
-
-  // Only accept Reporting-Endpoints headers on HTTPS connections that have no
-  // certificate errors.
-  if (!response_.ssl_info.is_valid())
-    return;
-  if (IsCertStatusError(response_.ssl_info.cert_status))
-    return;
-
-  service->ProcessReportingEndpointsHeader(url::Origin::Create(url_),
-                                           network_isolation_key_, value);
-}
-
 void HttpNetworkTransaction::ProcessReportToHeader() {
   std::string value;
   if (!response_.headers->GetNormalizedHeader("Report-To", &value))

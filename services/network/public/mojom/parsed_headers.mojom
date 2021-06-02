@@ -77,4 +77,9 @@ struct ParsedHeaders {
   // Parsed BFCache-Opt-In value. Currently "unload" is the only possible value,
   // so record if that's present.
   bool bfcache_opt_in_unload = false;
+
+  // Parsed mapping of endpoint names to URLs from the Reporting-Endpoints
+  // header. Will be null if that header was not present in the response.
+  // URLs are represented here as strings, and have not been validated.
+  map<string,string>? reporting_endpoints;
 };

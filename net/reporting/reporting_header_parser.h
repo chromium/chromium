@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,6 +23,13 @@ namespace net {
 
 class NetworkIsolationKey;
 class ReportingContext;
+
+// Tries to parse a Reporting-Endpoints header. Returns base::nullopt if parsing
+// failed and the header should be ignored; otherwise returns a (possibly
+// empty) mapping of endpoint names to URLs.
+NET_EXPORT
+absl::optional<base::flat_map<std::string, std::string>>
+ParseReportingEndpoints(const std::string& header);
 
 class NET_EXPORT ReportingHeaderParser {
  public:
@@ -38,11 +47,11 @@ class NET_EXPORT ReportingHeaderParser {
       const GURL& url,
       std::unique_ptr<base::Value> value);
 
-  static void ParseReportingEndpointsHeader(
+  static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
-      std::unique_ptr<structured_headers::Dictionary> value);
+      base::flat_map<std::string, std::string> parsed_header);
 
   static void RecordReportingHeaderType(ReportingHeaderType header_type);
 

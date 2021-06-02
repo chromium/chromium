@@ -313,6 +313,11 @@ class TestReportingService : public ReportingService {
 
   ~TestReportingService() override;
 
+  void SetDocumentReportingEndpoints(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const base::flat_map<std::string, std::string>& endpoints) override {}
+
   void QueueReport(const GURL& url,
                    const NetworkIsolationKey& network_isolation_key,
                    const std::string& user_agent,
@@ -324,11 +329,6 @@ class TestReportingService : public ReportingService {
   void ProcessReportToHeader(const GURL& url,
                              const NetworkIsolationKey& network_isolation_key,
                              const std::string& header_value) override;
-
-  void ProcessReportingEndpointsHeader(
-      const url::Origin& origin,
-      const NetworkIsolationKey& network_isolation_key,
-      const std::string& header_value) override;
 
   void RemoveBrowsingData(
       uint64_t data_type_mask,
