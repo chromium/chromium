@@ -621,6 +621,11 @@ public class EditorDialog
             // Note that keyboard will not be shown for dropdown field since it's not necessary.
             if (getCurrentFocus() != null) {
                 KeyboardVisibilityDelegate.getInstance().showKeyboard(getCurrentFocus());
+                // Put the cursor to the end of the text.
+                if (getCurrentFocus() instanceof EditText) {
+                    EditText focusedEditText = (EditText) getCurrentFocus();
+                    focusedEditText.setSelection(focusedEditText.getText().length());
+                }
             }
             if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
         });
