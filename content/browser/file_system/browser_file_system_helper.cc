@@ -50,14 +50,6 @@ namespace content {
 
 namespace {
 
-// All FileSystemContexts currently need to share the same sequence per sharing
-// global objects: https://codereview.chromium.org/2883403002#msg14.
-base::LazyThreadPoolSequencedTaskRunner g_fileapi_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(),
-                         base::TaskPriority::USER_VISIBLE,
-                         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN));
-
 FileSystemOptions CreateBrowserFileSystemOptions(bool is_incognito) {
   FileSystemOptions::ProfileMode profile_mode =
       is_incognito ? FileSystemOptions::PROFILE_MODE_INCOGNITO
@@ -136,7 +128,10 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
   auto options = CreateBrowserFileSystemOptions(
       browser_context->CanUseDiskWhenOffTheRecord() ? false : is_incognito);
   auto file_system_context = base::MakeRefCounted<storage::FileSystemContext>(
-      GetIOThreadTaskRunner({}), g_fileapi_task_runner.Get(),
+      GetIOThreadTaskRunner({}),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
       browser_context->GetMountPoints(),
       browser_context->GetSpecialStoragePolicy(),
       std::move(quota_manager_proxy), std::move(additional_backends),
