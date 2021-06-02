@@ -190,6 +190,8 @@ void TaskModuleService::GetPrimaryTask(
                      weak_ptr_factory_.GetWeakPtr(), task_module_type,
                      loaders_.back().get(), std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                           base::PersistentHash(GetTasksKey(task_module_type)));
 }
 
 void TaskModuleService::DismissTask(
