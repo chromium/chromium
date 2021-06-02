@@ -7,7 +7,9 @@
 namespace ash {
 
 ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
-    : id_(base::UnguessableToken::Create()), data_(std::move(data)) {}
+    : id_(base::UnguessableToken::Create()),
+      data_(std::move(data)),
+      time_copied_(base::Time::Now()) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
     default;

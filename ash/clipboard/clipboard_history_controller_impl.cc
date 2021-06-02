@@ -359,6 +359,8 @@ base::Value ClipboardHistoryControllerImpl::GetHistoryValues(
       }
     }
     item_value.SetKey("id", base::Value(item.id().ToString()));
+    item_value.SetKey("timeCopied",
+                      base::Value(item.time_copied().ToJsTimeIgnoringNull()));
     item_results.Append(std::move(item_value));
   }
 

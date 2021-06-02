@@ -117,6 +117,10 @@
             "$ref": "DisplayFormat",
             "name": "displayFormat",
             "description": "The display format associated with this item."
+          },
+          "timeCopied": {
+            "type": "number",
+            "description": "The time that this item was added to the clipboard, in milliseconds since the epoch."
           }
         }
       }
