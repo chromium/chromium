@@ -94,10 +94,6 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProvider();
 
-// MeasureTPMAvailability records UMA metrics of TPM availability.
-// TODO: remove by 2021-04-01.
-CRYPTO_EXPORT void MeasureTPMAvailability();
-
 namespace internal {
 
 CRYPTO_EXPORT void SetUnexportableKeyProviderForTesting(

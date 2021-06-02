@@ -3840,6 +3840,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Crypto.TPMSupport" enum="TPMSupport"
     expires_after="2021-07-01">
+  <obsolete>
+    Measured on stable M91 but ongoing measurement was not worthwhile.
+  </obsolete>
   <owner>agl@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <summary>
