@@ -6,12 +6,15 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERF_TEST_H_
 
 #include <string>
+#include <vector>
 
 #include "base/timer/lap_timer.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
+
+struct FrameData;
 
 // Reads the specified JSON file and parses a CompositorRenderPassList from it,
 // storing the result in |render_pass_list|.
@@ -22,7 +25,15 @@ bool CompositorRenderPassListFromJSON(
     size_t frame_index,
     CompositorRenderPassList* render_pass_list);
 
-// Viz perf test base class that sets up a lap timer with a specified duration.
+// Reads the specified JSON file and stores the compositor frame data in the
+// output parameter `frame_data_list`.
+bool FrameDataFromJson(const std::string& group,
+                       const std::string& name,
+                       size_t frame_index,
+                       std::vector<FrameData>* frame_data_list);
+
+// Viz perf test base class that sets up a lap timer with a specified
+// duration.
 class VizPerfTest : public testing::Test {
  public:
   VizPerfTest();

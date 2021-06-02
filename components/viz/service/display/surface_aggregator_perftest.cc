@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <unordered_map>
+
 #include "cc/test/fake_output_surface_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/render_pass_io.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
@@ -193,6 +198,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   }
 
   void SetUpRenderPassListResources(
+      FrameSinkId frame_sink_id,
       CompositorRenderPassList* render_pass_list) {
     std::set<ResourceId> created_resources;
     for (auto& render_pass : *render_pass_list) {
@@ -202,13 +208,34 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
           if (created_resources.find(resource_id) != created_resources.end()) {
             continue;
           }
-          resource_list_.push_back(TransferableResource::MakeSoftware(
-              SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888));
-          resource_list_.back().id = resource_id;
+          resource_list_map_[frame_sink_id].push_back(
+              TransferableResource::MakeSoftware(SharedBitmap::GenerateId(),
+                                                 quad->rect.size(), RGBA_8888));
+          resource_list_map_[frame_sink_id].back().id = resource_id;
           created_resources.insert(resource_id);
         }
       }
     }
+  }
+
+  void SubmitCompositorFrame(CompositorFrameSinkSupport* frame_sink,
+                             SurfaceId surface_id,
+                             const CompositorRenderPassList& render_pass_list,
+                             std::vector<SurfaceRange> referenced_surfaces) {
+    CompositorRenderPassList local_list;
+    CompositorRenderPass::CopyAllForTest(render_pass_list, &local_list);
+    // Ensure damage encompasses the entire output_rect so everything is
+    // aggregated.
+    auto& last_render_pass = *local_list.back();
+    last_render_pass.damage_rect = last_render_pass.output_rect;
+
+    CompositorFrameBuilder frame_builder;
+    frame_builder.SetRenderPassList(std::move(local_list))
+        .SetTransferableResources(
+            resource_list_map_[surface_id.frame_sink_id()])
+        .SetReferencedSurfaces(std::move(referenced_surfaces));
+    frame_sink->SubmitCompositorFrame(surface_id.local_surface_id(),
+                                      frame_builder.Build());
   }
 
   void RunSingleSurfaceRenderPassListFromJson(const std::string& tag,
@@ -219,13 +246,14 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     ASSERT_TRUE(CompositorRenderPassListFromJSON(tag, site, year, index,
                                                  &render_pass_list));
     ASSERT_FALSE(render_pass_list.empty());
-    this->SetUpRenderPassListResources(&render_pass_list);
+
+    constexpr FrameSinkId root_frame_sink_id(1, 1);
+    TestSurfaceIdAllocator root_surface_id(root_frame_sink_id);
+    this->SetUpRenderPassListResources(root_frame_sink_id, &render_pass_list);
 
     aggregator_ = std::make_unique<SurfaceAggregator>(
         manager_.surface_manager(), resource_provider_.get(), true, true);
 
-    constexpr FrameSinkId root_frame_sink_id(1, 1);
-    TestSurfaceIdAllocator root_surface_id(root_frame_sink_id);
     auto root_support = std::make_unique<CompositorFrameSinkSupport>(
         nullptr, &manager_, root_frame_sink_id, /*is_root=*/true);
 
@@ -234,19 +262,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
 
     timer_.Reset();
     do {
-      CompositorRenderPassList local_list;
-      CompositorRenderPass::CopyAllForTest(render_pass_list, &local_list);
-      // Ensure damage encompasses the entire output_rect so everything is
-      // aggregated.
-      auto& last_render_pass = *local_list.back();
-      last_render_pass.damage_rect = last_render_pass.output_rect;
-
-      CompositorFrame frame = CompositorFrameBuilder()
-                                  .SetRenderPassList(std::move(local_list))
-                                  .SetTransferableResources(resource_list_)
-                                  .Build();
-      root_support->SubmitCompositorFrame(root_surface_id.local_surface_id(),
-                                          std::move(frame));
+      SubmitCompositorFrame(root_support.get(), root_surface_id,
+                            render_pass_list,
+                            /*referenced_surfaces=*/{});
       auto aggregated = aggregator_->Aggregate(
           root_surface_id, next_fake_display_time, gfx::OVERLAY_TRANSFORM_NONE);
 
@@ -258,12 +276,77 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     reporter.AddResult(kMetricSpeedRunsPerS, timer_.LapsPerSecond());
   }
 
+  void RunMultiSurfacePerfTestFromJson(const std::string& name, size_t index) {
+    std::vector<FrameData> frame_data_list;
+    ASSERT_TRUE(
+        FrameDataFromJson("multi_surface_test", name, index, &frame_data_list));
+    ASSERT_FALSE(frame_data_list.empty());
+
+    const int num_surfaces = frame_data_list.size();
+    std::vector<std::unique_ptr<CompositorFrameSinkSupport>> frame_sinks(
+        num_surfaces);
+    for (int i = 0; i < num_surfaces; i++) {
+      auto frame_sink_id = frame_data_list[i].surface_id.frame_sink_id();
+      // The first surface represents the root frame sink.
+      frame_sinks[i] = std::make_unique<CompositorFrameSinkSupport>(
+          nullptr, &manager_, frame_sink_id,
+          /*is_root=*/i == 0);
+      auto& render_pass_list =
+          frame_data_list[i].compositor_frame.render_pass_list;
+      this->SetUpRenderPassListResources(frame_sink_id, &render_pass_list);
+    }
+    // We only need to submit the non-root surfaces (i = [1, N-1]) once, but
+    // we'll submit the root surface every lap.
+    // Loop in reverse order so surfaces are always submitted before their
+    // parents are.
+    for (int i = frame_data_list.size() - 1; i >= 1; --i) {
+      auto surface_id = frame_data_list[i].surface_id;
+      auto& render_pass_list =
+          frame_data_list[i].compositor_frame.render_pass_list;
+      auto& referenced_surfaces =
+          frame_data_list[i].compositor_frame.metadata.referenced_surfaces;
+      SubmitCompositorFrame(frame_sinks[i].get(), surface_id, render_pass_list,
+                            referenced_surfaces);
+    }
+
+    aggregator_ = std::make_unique<SurfaceAggregator>(
+        manager_.surface_manager(), resource_provider_.get(), true, true);
+
+    base::TimeTicks next_fake_display_time =
+        base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+    timer_.Reset();
+    do {
+      // For a single frame test we only need to submit a CompositorFrame for
+      // the root surface.
+      const auto& root_surface_data = frame_data_list[0];
+      auto surface_id = root_surface_data.surface_id;
+      auto& render_pass_list =
+          root_surface_data.compositor_frame.render_pass_list;
+      auto& referenced_surfaces =
+          root_surface_data.compositor_frame.metadata.referenced_surfaces;
+      SubmitCompositorFrame(frame_sinks[0].get(), surface_id, render_pass_list,
+                            referenced_surfaces);
+
+      auto aggregated = aggregator_->Aggregate(root_surface_data.surface_id,
+                                               next_fake_display_time,
+                                               gfx::OVERLAY_TRANSFORM_NONE);
+
+      next_fake_display_time += BeginFrameArgs::DefaultInterval();
+      timer_.NextLap();
+    } while (!timer_.HasTimeLimitExpired());
+
+    auto reporter =
+        SetUpSurfaceAggregatorReporter(name + "_multi_surface_json");
+    reporter.AddResult(kMetricSpeedRunsPerS, timer_.LapsPerSecond());
+  }
+
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
-  std::vector<TransferableResource> resource_list_;
+  // List of resources for each client_id.
+  std::map<FrameSinkId, std::vector<TransferableResource>> resource_list_map_;
 };
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque) {
@@ -347,6 +430,14 @@ TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(wikipedia, 48)
 TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(wordpress, 75)
 TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_answers, 74)
 TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_sports, 269)
+
+#define MULTI_SURFACE_PERF_TEST(NAME, FRAME)                      \
+  TEST_F(SurfaceAggregatorPerfTest, NAME##_MultiSurfaceTest) {    \
+    this->RunMultiSurfacePerfTestFromJson(/*name=*/#NAME,         \
+                                          /*frame_index=*/FRAME); \
+  }
+
+MULTI_SURFACE_PERF_TEST(youtube, 358)
 
 #undef TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST
 
