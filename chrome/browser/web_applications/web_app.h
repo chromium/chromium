@@ -245,8 +245,8 @@ class WebApp {
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
-  void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
@@ -305,13 +305,13 @@ class WebApp {
   absl::optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  apps::UrlHandlers url_handlers_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   SyncFallbackData sync_fallback_data_;
-  apps::UrlHandlers url_handlers_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;

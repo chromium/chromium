@@ -51,6 +51,7 @@
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -84,8 +85,6 @@ bool LooksLikeAndroidPackageName(const std::string& app_id) {
 const web_app::WebApp* GetWebApp(const std::string& app_id, Profile* profile) {
   web_app::WebAppRegistrar* web_app_registrar =
       web_app::WebAppProvider::Get(profile)->registrar().AsWebAppRegistrar();
-
-  DCHECK(web_app_registrar);
   return web_app_registrar->GetAppById(app_id);
 }
 
@@ -197,14 +196,15 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(
       app_id, web_app::ConvertDisplayModeToAppLaunchContainer(display_mode),
       WindowOpenDisposition::UNKNOWN,
       apps::mojom::AppLaunchSource::kSourceSystemTray);
-  // TODO(crbug.com/1185678): Remove special cases (i.e.
-  // `kNoteTakingWebAppIdTest` and `kNoteTakingWebAppIdDev`) once new-note URL
-  // is parsed from the manifest.
+  // TODO(crbug.com/1185678): Remove hard-coded override URL once new-note URL
+  // is parsed from the manifest (|kWebAppNoteTaking| is always enabled).
   if (app_id == NoteTakingHelper::kNoteTakingWebAppIdTest ||
       app_id == NoteTakingHelper::kNoteTakingWebAppIdDev ||
       app_id == web_app::kA4AppId) {
     launch_params.override_url = web_app->start_url().Resolve("/new");
-  } else if (web_app->note_taking_new_note_url().is_valid()) {
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking) &&
+      web_app->note_taking_new_note_url().is_valid()) {
     launch_params.override_url = web_app->note_taking_new_note_url();
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -570,8 +570,20 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     }
   }
 
-  // TODO (crbug.com/1185678): Add any installed web apps that have a valid
-  // |note_taking_new_note_url|.
+  auto* web_app_provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppRegistrar* web_app_registrar =
+      web_app_provider->registrar().AsWebAppRegistrar();
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
+    for (const web_app::WebApp& web_app : web_app_registrar->GetApps()) {
+      if (base::Contains(app_ids, web_app.app_id()))
+        continue;
+
+      if (web_app.is_locally_installed() &&
+          web_app.note_taking_new_note_url().is_valid()) {
+        app_ids.push_back(web_app.app_id());
+      }
+    }
+  }
 
   return app_ids;
 }
@@ -716,6 +728,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   return LaunchResult::CHROME_SUCCESS;
 }
 
+// TODO (crbug.com/1185678): Listen for Web App installs/uninstalls too.
 void NoteTakingHelper::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {

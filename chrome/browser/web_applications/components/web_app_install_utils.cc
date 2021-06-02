@@ -20,9 +20,9 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
-#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -288,6 +288,11 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
   web_app_info->protocol_handlers = manifest.protocol_handlers;
 
   web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking) &&
+      manifest.note_taking && manifest.note_taking->new_note_url.is_valid()) {
+    web_app_info->note_taking_new_note_url = manifest.note_taking->new_note_url;
+  }
 
   // If any shortcuts are specified in the manifest, they take precedence over
   // any we picked up from the web_app stuff.

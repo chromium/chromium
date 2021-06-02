@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,6 +39,9 @@ constexpr unsigned int kNumTestIcons = 30;
 }  // namespace
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kWebAppNoteTaking);
+
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
   web_app_info.start_url = GURL("http://www.notchromium.org");
@@ -76,6 +79,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     manifest.url_handlers.push_back(url_handler);
   }
 
+  {
+    // Ensure an empty NoteTaking struct is ignored.
+    blink::Manifest::NoteTaking note_taking;
+    manifest.note_taking = note_taking;
+  }
+
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(kAppShortName, web_app_info.title);
@@ -84,6 +93,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
   EXPECT_TRUE(web_app_info.display_override.empty());
   EXPECT_EQ(kAppManifestUrl, web_app_info.manifest_url);
+  EXPECT_TRUE(web_app_info.note_taking_new_note_url.is_empty());
 
   // The icon info from |web_app_info| should be left as is, since the manifest
   // doesn't have any icon information.
@@ -113,6 +123,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   manifest.display_override.push_back(DisplayMode::kMinimalUi);
   manifest.display_override.push_back(DisplayMode::kStandalone);
+
+  {
+    // Update with a valid new_note_url.
+    blink::Manifest::NoteTaking note_taking;
+    note_taking.new_note_url = GURL("http://example.com/new-note-url");
+    manifest.note_taking = note_taking;
+  }
 
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(kAppTitle, web_app_info.title);
@@ -148,6 +165,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
   EXPECT_FALSE(url_handler.has_origin_wildcard);
+  EXPECT_EQ(GURL("http://example.com/new-note-url"),
+            web_app_info.note_taking_new_note_url);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {

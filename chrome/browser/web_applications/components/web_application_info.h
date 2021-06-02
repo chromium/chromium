@@ -261,14 +261,13 @@ struct WebApplicationInfo {
   // The URL protocols/schemes that the app can handle.
   std::vector<blink::Manifest::ProtocolHandler> protocol_handlers;
 
-  // URL within scope to launch for a "new note" action. Valid iff this is
-  // considered a note-taking app.
-  // TODO(crbug.com/1185678): Parse this from the manifest.
-  GURL note_taking_new_note_url;
-
   // The app intends to act as a URL handler for URLs described by this
   // information.
   apps::UrlHandlers url_handlers;
+
+  // URL within scope to launch for a "new note" action. Valid iff this is
+  // considered a note-taking app.
+  GURL note_taking_new_note_url;
 
   // User preference as to whether to auto run the app on OS login.
   // Currently only supported in Windows platform.

@@ -139,12 +139,6 @@ void WebApp::SetScope(const GURL& scope) {
   scope_ = scope;
 }
 
-void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
-  DCHECK(note_taking_new_note_url.is_empty() ||
-         note_taking_new_note_url.is_valid());
-  note_taking_new_note_url_ = note_taking_new_note_url;
-}
-
 void WebApp::SetThemeColor(absl::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
 }
@@ -247,6 +241,12 @@ void WebApp::SetProtocolHandlers(
 
 void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
   url_handlers_ = std::move(url_handlers);
+}
+
+void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
+  DCHECK(note_taking_new_note_url.is_empty() ||
+         note_taking_new_note_url.is_valid());
+  note_taking_new_note_url_ = note_taking_new_note_url;
 }
 
 void WebApp::SetShortcutsMenuItemInfos(
@@ -479,12 +479,12 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
     out << "  " << protocol_handler << std::endl;
   }
 
-  out << "note_taking_new_note_url: " << app.note_taking_new_note_url_
-      << std::endl;
-
   out << "url_handlers:" << std::endl;
   for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
     out << Indent(url_handler) << std::endl;
+
+  out << "note_taking_new_note_url: " << app.note_taking_new_note_url_
+      << std::endl;
 
   out << "capture_links: " << app.capture_links_ << std::endl;
 
@@ -547,13 +547,13 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
+        app.url_handlers_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
         app.last_launch_time_,
         app.install_time_,
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
-        app.url_handlers_,
         app.capture_links_,
         app.manifest_url_,
         app.manifest_id_,

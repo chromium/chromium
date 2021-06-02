@@ -15,10 +15,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/note_taking_controller_client.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -55,6 +53,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/value_builder.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -722,9 +721,12 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
                    NoteTakingLockScreenSupport::kNotSupported}}));
 }
 
-// Web apps with or without a note_taking_new_note_url are not yet supported.
-TEST_F(NoteTakingHelperTest, CustomWebApps) {
+// Web apps with or without a note_taking_new_note_url are not listed when
+// `kWebAppNoteTaking` is disabled.
+TEST_F(NoteTakingHelperTest, CustomWebApps_FlagDisabled) {
   Init(ENABLE_PALETTE);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kWebAppNoteTaking);
 
   {
     auto app_info = std::make_unique<WebApplicationInfo>();
@@ -748,6 +750,39 @@ TEST_F(NoteTakingHelperTest, CustomWebApps) {
 
   // Apps with note_taking_new_note_url are not yet supported.
   EXPECT_TRUE(AvailableAppsMatch(profile(), {}));
+}
+
+// Web apps with a note_taking_new_note_url show as available note-taking apps
+// when `kWebAppNoteTaking` is enabled.
+TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
+  Init(ENABLE_PALETTE);
+  base::test::ScopedFeatureList features(blink::features::kWebAppNoteTaking);
+
+  {
+    auto app_info = std::make_unique<WebApplicationInfo>();
+    app_info->start_url = GURL("http://some1.url");
+    app_info->scope = GURL("http://some1.url");
+    app_info->title = u"Web App 1";
+    web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  std::string app2_id;
+  {
+    auto app_info = std::make_unique<WebApplicationInfo>();
+    app_info->start_url = GURL("http://some2.url");
+    app_info->scope = GURL("http://some2.url");
+    app_info->title = u"Web App 2";
+    // Set a note_taking_new_note_url on one app.
+    app_info->note_taking_new_note_url = GURL("http://some2.url/new-note");
+    app2_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  // Check apps were installed.
+  auto* provider = web_app::WebAppProvider::Get(profile());
+  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+
+  // Apps with note_taking_new_note_url are listed.
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(), {{"Web App 2", app2_id, false /*preferred*/,
+                   NoteTakingLockScreenSupport::kNotSupported}}));
 }
 
 // Verify that non-allowlisted apps cannot be enabled on lock screen.

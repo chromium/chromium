@@ -208,4 +208,7 @@ message WebAppProto {
   repeated int32 downloaded_icon_sizes_purpose_monochrome = 33;
 
   optional bool window_controls_overlay_enabled = 34;
+
+  // If present, the URL to use to create a new note in the app.
+  optional string note_taking_new_note_url = 35;
 }

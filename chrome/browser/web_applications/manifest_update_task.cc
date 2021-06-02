@@ -268,6 +268,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
 
 bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   DCHECK(web_application_info_.has_value());
+  const WebApp* app = registrar_.AsWebAppRegistrar()->GetAppById(app_id_);
+  DCHECK(app);
 
   if (web_application_info_->theme_color !=
       registrar_.GetAppThemeColor(app_id_))
@@ -318,13 +320,18 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (web_application_info_->capture_links !=
-      registrar_.GetAppCaptureLinks(app_id_)) {
+  if (web_application_info_->url_handlers !=
+      registrar_.GetAppUrlHandlers(app_id_)) {
     return true;
   }
 
-  if (web_application_info_->url_handlers !=
-      registrar_.GetAppUrlHandlers(app_id_)) {
+  if (web_application_info_->note_taking_new_note_url !=
+      app->note_taking_new_note_url()) {
+    return true;
+  }
+
+  if (web_application_info_->capture_links !=
+      registrar_.GetAppCaptureLinks(app_id_)) {
     return true;
   }
 

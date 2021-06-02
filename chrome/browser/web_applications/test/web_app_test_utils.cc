@@ -328,6 +328,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
+  if (random.next_bool()) {
+    app->SetNoteTakingNewNoteUrl(
+        scope.Resolve("new_note" + base::NumberToString(random.next_uint())));
+  }
   app->SetCaptureLinks(CreateRandomCaptureLinks(random.next_uint()));
 
   const int num_additional_search_terms = random.next_uint(8);
