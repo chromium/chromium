@@ -84,6 +84,16 @@ just a part of a larger "core".
 
 All of the above applies to `bindings/modules` and `modules/`.
 
+### `extensions/`
+
+The `extensions/` directory contains embedder-specific, not-web-exposed APIs (e.g., not-web-exposed APIs for Chromium OS etc).
+The directory is useful to implement embedder-specific, not-web-exposed APIs
+using Blink technologies for web-exposed APIs like WebIDL, V8 bindings and Oilpan.
+
+Remember that you should not implement web-exposed APIs in `extensions/`. Web-exposed APIs should go through the standardization process and be implemented in `core/` or `modules/`. Also, per [the Chromium contributor guideline](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md#code-guidelines), code that is not used by Chromium should not be added to `extensions/`.
+
+In terms of dependencies, `extensions/` can depend on `modules/`, `core/` and `platform/`, but not vice versa.
+
 ### `controller/`
 
 The `controller/` directory contains the system infrastructure
@@ -96,8 +106,7 @@ or to implement API for the embedder, it goes to `controller/`,
 however most of the features should go to other directories.
 Consult `controller/` OWNERS when in doubt.
 
-In terms of dependencies, `controller/` can depend on `core/`, `platform/` and `modules/`,
-but not vice versa.
+In terms of dependencies, `controller/` can depend on `extensions/`, `modules/`, `core/` and `platform/`, but not vice versa.
 
 ### `build/`
 
@@ -111,6 +120,7 @@ Dependencies only flow in the following order:
 
 - `public/web`
 - `controller/`
+- `extensions/`
 - `modules/` and `bindings/modules`
 - `core/` and `bindings/core`
 - `platform/`
@@ -158,8 +168,7 @@ script](../tools/blinkpy/presubmit/audit_non_blink_usage.py).
 
 ### Mojo
 
-`core/`, `modules/`, `bindings/`, `platform/` and `controller/` can use Mojo and
-directly talk to the browser process. This allows removal of unnecessary
+Blink can use Mojo and directly talk to the browser process. This allows removal of unnecessary
 public APIs and abstraction layers and it is highly recommended.
 
 ## Contact
