@@ -87,15 +87,15 @@ id GetScriptMessageMock(WKFrameInfo* frame_info,
 // Test fixture for CRWWKScriptMessageRouter.
 class CRWWKScriptMessageRouterTest : public web::WebTest {
  public:
-  CRWWKScriptMessageRouterTest()
-      : web_client_(base::WrapUnique(new web::WebClient())) {}
+  CRWWKScriptMessageRouterTest() = default;
 
  protected:
   void SetUp() override {
     web::WebTest::SetUp();
 
     web::WKWebViewConfigurationProvider& configuration_provider =
-        web::WKWebViewConfigurationProvider::FromBrowserState(&browser_state_);
+        web::WKWebViewConfigurationProvider::FromBrowserState(
+            GetBrowserState());
     WKWebViewConfiguration* configuration =
         configuration_provider.GetWebViewConfiguration();
     // Mock WKUserContentController object.
@@ -117,9 +117,9 @@ class CRWWKScriptMessageRouterTest : public web::WebTest {
     name1_ = [@"name1" copy];
     name2_ = [@"name2" copy];
     name3_ = [@"name3" copy];
-    web_view1_ = web::BuildWKWebView(CGRectZero, &browser_state_);
-    web_view2_ = web::BuildWKWebView(CGRectZero, &browser_state_);
-    web_view3_ = web::BuildWKWebView(CGRectZero, &browser_state_);
+    web_view1_ = web::BuildWKWebView(CGRectZero, GetBrowserState());
+    web_view2_ = web::BuildWKWebView(CGRectZero, GetBrowserState());
+    web_view3_ = web::BuildWKWebView(CGRectZero, GetBrowserState());
   }
   void TearDown() override {
     [user_content_controller_ checkExpectations];
@@ -143,11 +143,6 @@ class CRWWKScriptMessageRouterTest : public web::WebTest {
   WKWebView* web_view1_;
   WKWebView* web_view2_;
   WKWebView* web_view3_;
-
- private:
-  // WebClient and BrowserState for testing.
-  web::ScopedTestingWebClient web_client_;
-  web::FakeBrowserState browser_state_;
 };
 
 // Tests CRWWKScriptMessageRouter designated initializer.

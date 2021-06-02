@@ -857,10 +857,13 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
     return policy_match;
   }
 
-  // Return an owned BrowserState in order to set off the record state.
-  BrowserState* GetBrowserState() override { return &browser_state_; }
+  std::unique_ptr<BrowserState> CreateBrowserState() override {
+    return std::make_unique<FakeBrowserState>();
+  }
 
-  FakeBrowserState browser_state_;
+  FakeBrowserState* GetFakeBrowserState() {
+    return static_cast<FakeBrowserState*>(GetBrowserState());
+  }
 };
 
 // Tests that App specific URLs in iframes are allowed if the main frame is App
@@ -880,7 +883,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
 // Tests that URL is allowed in OffTheRecord mode when the
 // |kBlockUniversalLinksInOffTheRecordMode| feature is disabled.
 TEST_F(CRWWebControllerPolicyDeciderTest, AllowOffTheRecordNavigation) {
-  browser_state_.SetOffTheRecord(true);
+  GetFakeBrowserState()->SetOffTheRecord(true);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       web::features::kBlockUniversalLinksInOffTheRecordMode);
@@ -897,7 +900,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest, AllowOffTheRecordNavigation) {
 // and the BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE buildflag is set.
 TEST_F(CRWWebControllerPolicyDeciderTest,
        AllowOffTheRecordNavigationBlockUniversalLinks) {
-  browser_state_.SetOffTheRecord(true);
+  GetFakeBrowserState()->SetOffTheRecord(true);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       web::features::kBlockUniversalLinksInOffTheRecordMode);
@@ -1301,7 +1304,7 @@ class CRWWebControllerWebViewTest : public WebTestWithWebController {
  protected:
   void SetUp() override {
     WebTestWithWebController::SetUp();
-    FakeBrowserState browser_state;
+
     web_view_ = [[CRWFakeWKWebViewObserverCount alloc] init];
     CRWFakeWebViewContentView* webViewContentView =
         [[CRWFakeWebViewContentView alloc]
