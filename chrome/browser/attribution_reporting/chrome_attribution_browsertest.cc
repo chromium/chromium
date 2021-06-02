@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -20,11 +21,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Tests UseCounters recorded for the Conversion Measurement API. This is tested
-// in the Chrome layer, as UseCounter recording is not used with content shell.
-class ConversionsUseCounterBrowsertest : public InProcessBrowserTest {
+// Tests for the Conversion Measurement API that rely on chrome/ layer features.
+// UseCounter recording and multiple browser window behavior is not available
+// content shell.
+class ChromeAttributionBrowserTest : public InProcessBrowserTest {
  public:
-  ConversionsUseCounterBrowsertest() {
+  ChromeAttributionBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
   }
 
@@ -50,7 +52,7 @@ class ConversionsUseCounterBrowsertest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ConversionsUseCounterBrowsertest,
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        ImpressionClicked_FeatureRecorded) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
@@ -95,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsUseCounterBrowsertest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionsUseCounterBrowsertest,
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        ConversionPing_FeatureRecorded) {
   base::HistogramTester histogram_tester;
 
@@ -126,4 +128,45 @@ IN_PROC_BROWSER_TEST_F(ConversionsUseCounterBrowsertest,
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features", blink::mojom::WebFeature::kConversionAPIAll,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
+                       WindowOpenWithOnlyAttributionFeatures_LinkOpenedInTab) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+    blink::mojom::WebFeature::kImpressionRegistration);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("a.test",
+                     "/conversions/page_with_impression_creator.html")));
+
+  // Create an observer to catch the opened WebContents.
+  content::WebContentsAddedObserver window_observer;
+
+  GURL link_url = server_.GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+  // Navigate the page using window.open and set an attribution source.
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+    window.open($1, "_blank",
+    "attributionsourceeventid=1,attributiondestination=https://b.test,\
+    attributionreportto=https://report.com,attributionexpiry=1000,\
+    attributionsourcepriority=10");)",
+                                                      link_url)));
+
+  content::WebContents* new_contents = window_observer.GetWebContents();
+  WaitForLoadStop(new_contents);
+
+  // Verify that the impression registration is observed.
+  waiter.Wait();
+
+  // Ensure the window was opened in a new tab. If the window is in a new popup
+  // the web contents would not belong to the tab strip.
+  EXPECT_EQ(1,
+            browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }

@@ -158,7 +158,13 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
-        key_string != "noreferrer") {
+        key_string != "noreferrer" &&
+        (!conversion_measurement_enabled ||
+         (key_string != "attributionsourceeventid" &&
+          key_string != "attributiondestination" &&
+          key_string != "attributionreportto" &&
+          key_string != "attributionexpiry" &&
+          key_string != "attributionsourcepriority"))) {
       ui_features_were_disabled = true;
       window_features.menu_bar_visible = false;
       window_features.status_bar_visible = false;
