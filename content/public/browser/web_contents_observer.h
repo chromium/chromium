@@ -18,7 +18,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/visibility.h"
-#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
@@ -77,7 +76,7 @@ struct Referrer;
 //
 // TODO(creis, jochen): Hide the fact that there are several RenderViewHosts
 // from the WebContentsObserver API. http://crbug.com/173325
-class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
+class CONTENT_EXPORT WebContentsObserver {
  public:
   // Frames and Views ----------------------------------------------------------
 
@@ -703,13 +702,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
                                        const GURL& scope,
                                        AllowServiceWorkerResult allowed) {}
-  // IPC::Listener implementation.
-  // DEPRECATED: Use (i.e. override) the other overload instead:
-  //     virtual bool OnMessageReceived(const IPC::Message& message,
-  //                                    RenderFrameHost* render_frame_host);
-  // TODO(https://crbug.com/758026): Delete this overload when possible.
-  bool OnMessageReceived(const IPC::Message& message) override;
-
   WebContents* web_contents() const;
 
  protected:
@@ -722,7 +714,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // observing.
   WebContentsObserver();
 
-  ~WebContentsObserver() override;
+  virtual ~WebContentsObserver();
 
   // Start observing a different WebContents; used with the default constructor.
   void Observe(WebContents* web_contents);

@@ -771,11 +771,7 @@ bool RenderViewHostImpl::SuddenTerminationAllowed() {
 // RenderViewHostImpl, IPC message handlers:
 
 bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
-  // Crash reports trigerred by the IPC messages below should be associated
-  // with URL of the main frame.
-  ScopedActiveURL scoped_active_url(this);
-
-  return delegate_->OnMessageReceived(this, msg);
+  return false;
 }
 
 void RenderViewHostImpl::OnDidContentsPreferredSizeChange(

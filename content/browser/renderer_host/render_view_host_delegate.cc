@@ -10,12 +10,6 @@ RenderViewHostDelegateView* RenderViewHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-bool RenderViewHostDelegate::OnMessageReceived(
-    RenderViewHostImpl* render_view_host,
-    const IPC::Message& message) {
-  return false;
-}
-
 WebContents* RenderViewHostDelegate::GetAsWebContents() {
   return nullptr;
 }

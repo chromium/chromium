@@ -43,10 +43,6 @@ bool WebContentsObserver::OnMessageReceived(
   return false;
 }
 
-bool WebContentsObserver::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
 void WebContentsObserver::ResetWebContents() {
   static_cast<WebContentsImpl*>(web_contents_)->RemoveObserver(this);
   web_contents_ = nullptr;

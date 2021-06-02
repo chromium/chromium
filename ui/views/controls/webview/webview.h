@@ -144,11 +144,6 @@ class WEBVIEW_EXPORT WebView : public View,
                               content::RenderFrameHost* new_host) override;
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
-  // Workaround for MSVC++ linker bug/feature that requires
-  // instantiation of the inline IPC::Listener methods in all translation units.
-  void OnChannelConnected(int32_t peer_id) override {}
-  void OnChannelError() override {}
-  void OnBadMessageReceived(const IPC::Message& message) override {}
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void AXTreeIDForMainFrameHasChanged() override;

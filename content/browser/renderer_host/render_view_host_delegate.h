@@ -14,10 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 
-namespace IPC {
-class Message;
-}
-
 namespace blink {
 namespace web_pref {
 struct WebPreferences;
@@ -52,10 +48,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // Returns the current delegate associated with a feature. May return NULL if
   // there is no corresponding delegate.
   virtual RenderViewHostDelegateView* GetDelegateView();
-
-  // This is used to give the delegate a chance to filter IPC messages.
-  virtual bool OnMessageReceived(RenderViewHostImpl* render_view_host,
-                                 const IPC::Message& message);
 
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns NULL. DEPRECATED: Be sure to include brettw or
