@@ -27,11 +27,13 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -89,9 +91,10 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public static void showDefaultShareUi(ShareParams params, boolean saveLastUsed) {
+    public static void showDefaultShareUi(
+            ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
         if (saveLastUsed) {
-            params.setCallback(new SaveComponentCallback(params.getCallback()));
+            params.setCallback(new SaveComponentCallback(profile, params.getCallback()));
         }
 
         ShareHelper.shareWithUi(params);
@@ -103,13 +106,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param name The component name of the activity to share the image with.
      * @param imageUri The url to share with the external activity.
      */
-    public static void shareImage(
-            final WindowAndroid window, final ComponentName name, Uri imageUri) {
+    public static void shareImage(final WindowAndroid window, final Profile profile,
+            final ComponentName name, Uri imageUri) {
         Intent shareIntent = getShareImageIntent(imageUri);
         if (name == null) {
             if (TargetChosenReceiver.isSupported()) {
                 TargetChosenReceiver.sendChooserIntent(
-                        window, shareIntent, new SaveComponentCallback(null));
+                        window, shareIntent, new SaveComponentCallback(profile, null));
             } else {
                 Intent chooserIntent = Intent.createChooser(shareIntent,
                         window.getActivity().get().getString(R.string.share_link_chooser_title));
@@ -229,10 +232,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param component The {@link ComponentName} of the app selected for sharing.
      */
     @VisibleForTesting
-    public static void setLastShareComponentName(ComponentName component) {
+    public static void setLastShareComponentName(Profile profile, ComponentName component) {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
                 component.flattenToString());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING) && profile != null) {
+            ShareHistoryBridge.addShareEntry(profile, component.flattenToString());
+        }
     }
 
     /**
@@ -241,14 +247,17 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     static class SaveComponentCallback implements TargetChosenCallback {
         private TargetChosenCallback mOriginalCallback;
+        private Profile mProfile;
 
-        public SaveComponentCallback(@Nullable TargetChosenCallback originalCallback) {
+        public SaveComponentCallback(
+                @Nullable Profile profile, @Nullable TargetChosenCallback originalCallback) {
             mOriginalCallback = originalCallback;
+            mProfile = profile;
         }
 
         @Override
         public void onTargetChosen(ComponentName chosenComponent) {
-            setLastShareComponentName(chosenComponent);
+            setLastShareComponentName(mProfile, chosenComponent);
             if (mOriginalCallback != null) mOriginalCallback.onTargetChosen(chosenComponent);
         }
 

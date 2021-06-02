@@ -4,14 +4,20 @@
 
 #include "chrome/browser/share/share_history.h"
 
+#include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
+
+#include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"
+
+using base::android::JavaParamRef;
 
 namespace sharing {
 
@@ -43,15 +49,22 @@ std::unique_ptr<ShareHistory::BackingDb> MakeDefaultDbForProfile(
 
 // static
 void ShareHistory::CreateForProfile(Profile* profile) {
+  CHECK(!profile->IsOffTheRecord());
   auto instance = std::make_unique<ShareHistory>(profile);
   profile->SetUserData(kShareHistoryKey, base::WrapUnique(instance.release()));
 }
 
 // static
 ShareHistory* ShareHistory::Get(Profile* profile) {
+  if (profile->IsOffTheRecord())
+    return nullptr;
+
   base::SupportsUserData::Data* instance =
       profile->GetUserData(kShareHistoryKey);
-  DCHECK(instance);
+  if (!instance) {
+    CreateForProfile(profile);
+    instance = profile->GetUserData(kShareHistoryKey);
+  }
   return static_cast<ShareHistory*>(instance);
 }
 
@@ -194,3 +207,12 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 }
 
 }  // namespace sharing
+
+void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
+                                          const JavaParamRef<jobject>& jprofile,
+                                          const JavaParamRef<jstring>& name) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  auto* instance = sharing::ShareHistory::Get(profile);
+  if (instance)
+    instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
+}

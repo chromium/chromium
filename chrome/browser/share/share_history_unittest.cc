@@ -110,6 +110,7 @@ class ShareHistoryTest : public testing::Test {
     return result;
   }
 
+  TestingProfile* profile() { return &profile_; }
   ShareHistory* db() { return db_.get(); }
 
   leveldb_proto::test::FakeDB<mojom::ShareHistory>* backing_db() {
@@ -196,6 +197,13 @@ TEST_F(ShareHistoryTest, BackingDbInitFailureStillRunsCallbacks) {
 
   auto result = GetFlatShareHistory();
   EXPECT_EQ(result.size(), 0U);
+}
+
+TEST_F(ShareHistoryTest, OffTheRecordProfileHasNoInstance) {
+  Profile* otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(), true);
+  ShareHistory* db = ShareHistory::Get(otr_profile);
+  ASSERT_FALSE(db);
 }
 
 }  // namespace sharing

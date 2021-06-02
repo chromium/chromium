@@ -875,6 +875,11 @@ const base::Feature kChromeOSSharingHub{"ChromeOSSharingHub",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+const base::Feature kShareUsageRanking{"ShareUsageRanking",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_MAC)
 // Enables the "this OS is obsolete" infobar on Mac 10.10.
 // TODO(ellyjones): Remove this after the last 10.10 release.

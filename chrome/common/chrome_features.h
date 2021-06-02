@@ -587,6 +587,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChromeOSSharingHub;
 #endif
 
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kShareUsageRanking;
+#endif
+
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kShow10_10ObsoleteInfobar;

@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
@@ -89,12 +90,14 @@ public class ShareSheetPropertyModelBuilder {
 
     private final BottomSheetController mBottomSheetController;
     private final PackageManager mPackageManager;
+    private final Profile mProfile;
 
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public ShareSheetPropertyModelBuilder(
-            BottomSheetController bottomSheetController, PackageManager packageManager) {
+    public ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
+            PackageManager packageManager, Profile profile) {
         mBottomSheetController = bottomSheetController;
         mPackageManager = packageManager;
+        mProfile = profile;
     }
 
     /**
@@ -214,7 +217,7 @@ public class ShareSheetPropertyModelBuilder {
             callback.onTargetChosen(component);
         }
         if (saveLastUsed) {
-            ShareHelper.setLastShareComponentName(component);
+            ShareHelper.setLastShareComponentName(mProfile, component);
         }
         mBottomSheetController.hideContent(bottomSheet, true);
         // Fire intent through ShareHelper.

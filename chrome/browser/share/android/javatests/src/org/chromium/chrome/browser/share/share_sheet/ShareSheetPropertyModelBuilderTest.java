@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
@@ -65,6 +66,8 @@ public final class ShareSheetPropertyModelBuilderTest {
     @Mock
     private PackageManager mPackageManager;
     @Mock
+    private Profile mProfile;
+    @Mock
     private ShareParams mParams;
     @Mock
     private ResolveInfo mTextResolveInfo1;
@@ -93,7 +96,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
-        mPropertyModelBuilder = new ShareSheetPropertyModelBuilder(null, mPackageManager);
+        mPropertyModelBuilder = new ShareSheetPropertyModelBuilder(null, mPackageManager, mProfile);
 
         setUpResolveInfo(mTextResolveInfo1, "textPackage1", sTextModelLabel1);
         setUpResolveInfo(mTextResolveInfo2, "textPackage2", sTextModelLabel2);

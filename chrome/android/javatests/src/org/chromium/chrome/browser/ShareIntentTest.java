@@ -197,7 +197,8 @@ public class ShareIntentTest {
                             mockActivity, BrowserControlsManager.ControlsPosition.TOP),
                     mActivityTestRule.getActivity().getWindowAndroid());
         });
-        ShareHelper.setLastShareComponentName(new ComponentName("test.package", "test.activity"));
+        ShareHelper.setLastShareComponentName(
+                null, new ComponentName("test.package", "test.activity"));
         // Skips the capture of screenshot and notifies with an empty file.
         ShareDelegateImpl.setScreenshotCaptureSkippedForTesting(true);
 
@@ -219,7 +220,7 @@ public class ShareIntentTest {
 
         mockActivity.waitForFileCheck();
 
-        ShareHelper.setLastShareComponentName(new ComponentName("", ""));
+        ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mockActivity.getActivityTab().updateAttachment(null, null);
             window.destroy();

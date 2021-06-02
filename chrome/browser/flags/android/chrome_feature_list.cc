@@ -112,6 +112,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kQuietNotificationPrompts,
     &features::kRequestDesktopSiteForTablets,
     &features::kSearchHistoryLink,
+    &features::kShareUsageRanking,
     &features::kToolbarUseHardwareBitmapDraw,
     &features::kUseNotificationCompatBuilder,
     &features::kWebNfc,

@@ -810,7 +810,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_direct_share_image) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
             mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-                ShareHelper.shareImage(getWindow(), ShareHelper.getLastShareComponentName(), uri);
+                ShareHelper.shareImage(getWindow(),
+                        Profile.fromWebContents(mItemDelegate.getWebContents()),
+                        ShareHelper.getLastShareComponentName(), uri);
             });
         } else if (itemId == R.id.contextmenu_open_in_chrome) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_CHROME);
@@ -893,7 +895,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private void shareImage() {
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri imageUri) -> {
             if (!mShareDelegateSupplier.get().isSharingHubEnabled()) {
-                ShareHelper.shareImage(getWindow(), null, imageUri);
+                ShareHelper.shareImage(getWindow(),
+                        Profile.fromWebContents(mItemDelegate.getWebContents()), null, imageUri);
                 return;
             }
             ContentResolver contentResolver =
