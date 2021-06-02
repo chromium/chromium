@@ -146,7 +146,8 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
   //   implemented.
   z_order_ = z_order_set_ ? z_order_ : plane_z_order;
   if (widget_ != widget || z_order_ != plane_z_order) {
-    buffer_manager_->DestroyBuffer(widget_, buffer_id_);
+    if (widget_ != gfx::kNullAcceleratedWidget)
+      buffer_manager_->DestroyBuffer(widget_, buffer_id_);
     CreateDmabufBasedBuffer();
     widget_ = widget;
     z_order_ = plane_z_order;
