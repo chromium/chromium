@@ -306,6 +306,18 @@ void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {
     downloads_delegate_->Cancel(item);
 }
 
+void HoldingSpaceKeyedService::PauseItem(const HoldingSpaceItem* item) {
+  // Currently it is only possible to pause download type items.
+  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
+    downloads_delegate_->Pause(item);
+}
+
+void HoldingSpaceKeyedService::ResumeItem(const HoldingSpaceItem* item) {
+  // Currently it is only possible to resume download type items.
+  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
+    downloads_delegate_->Resume(item);
+}
+
 void HoldingSpaceKeyedService::Shutdown() {
   ShutdownDelegates();
 }

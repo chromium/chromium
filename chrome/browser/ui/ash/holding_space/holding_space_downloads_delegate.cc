@@ -62,8 +62,16 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   ~InProgressDownload() override = default;
 
   // Cancels the underlying `download_item_`. NOTE: This is expected to be
-  // invoked in direct response to an explicit user action.
+  // invoked in direct response to an explicit user action and will result in
+  // the destruction of `this`.
   void Cancel() { download_item_->Cancel(/*from_user=*/true); }
+
+  // Pauses the underlying `download_item_`.
+  void Pause() { download_item_->Pause(); }
+
+  // Resumes the underlying `download_item_`. NOTE: This is expected to be
+  // invoked in direct response to an explicit user action.
+  void Resume() { download_item_->Resume(/*from_user=*/true); }
 
   // Returns the file path associated with the underlying `download_item_`.
   // NOTE: The file path may be empty before a target file path has been picked.
@@ -86,6 +94,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
     }
     return progress;
   }
+
+  // Returns whether the underlying `download_item_` is paused.
+  bool IsPaused() const { return download_item_->IsPaused(); }
 
   // Associates this in-progress download with the specified in-progress
   // `holding_space_item`. NOTE: This association may be performed only once.
@@ -171,6 +182,28 @@ void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       in_progress_download->Cancel();
+      return;
+    }
+  }
+}
+
+// TODO(crbug.com/1184438): Handle Lacros downloads.
+void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      in_progress_download->Pause();
+      return;
+    }
+  }
+}
+
+// TODO(crbug.com/1184438): Handle Lacros downloads.
+void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      in_progress_download->Resume();
       return;
     }
   }
@@ -348,11 +381,14 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   }
 
   // Update.
+  // TODO(crbug.com/1213274): Perform a single atomic update of all attributes.
   model()->UpdateBackingFileForItem(
       in_progress_download->GetHoldingSpaceItem()->id(),
       in_progress_download->GetFilePath(),
       holding_space_util::ResolveFileSystemUrl(
           profile(), in_progress_download->GetFilePath()));
+  model()->UpdatePauseForItem(in_progress_download->GetHoldingSpaceItem()->id(),
+                              in_progress_download->IsPaused());
   model()->UpdateProgressForItem(
       in_progress_download->GetHoldingSpaceItem()->id(),
       in_progress_download->GetProgress());

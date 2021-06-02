@@ -120,8 +120,10 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
                      const base::FilePath& file_path,
                      const absl::optional<float>& progress = 1.f);
 
-  // Attempts to cancel the specified holding space `item`.
+  // Attempts to cancel/pause/resume the specified holding space `item`.
   void CancelItem(const HoldingSpaceItem* item);
+  void PauseItem(const HoldingSpaceItem* item);
+  void ResumeItem(const HoldingSpaceItem* item);
 
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }

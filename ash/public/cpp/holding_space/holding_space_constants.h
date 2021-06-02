@@ -37,6 +37,8 @@ enum class HoldingSpaceCommandId {
   kCopyImageToClipboard,
   kHidePreviews,
   kRemoveItem,
+  kResumeItem,
+  kPauseItem,
   kPinItem,
   kShowInFolder,
   kShowPreviews,

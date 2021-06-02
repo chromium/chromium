@@ -479,45 +479,46 @@ void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
 }
 
 void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
-  std::vector<const HoldingSpaceItemView*> selection = GetSelection();
-  DCHECK_GE(selection.size(), 1u);
+  const std::vector<const HoldingSpaceItem*> items(GetItems(GetSelection()));
+  DCHECK_GE(items.size(), 1u);
 
+  HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
   switch (static_cast<HoldingSpaceCommandId>(command_id)) {
     case HoldingSpaceCommandId::kCancelItem:
-      HoldingSpaceController::Get()->client()->CancelItems(GetItems(selection));
+      client->CancelItems(items);
       break;
     case HoldingSpaceCommandId::kCopyImageToClipboard:
-      DCHECK_EQ(selection.size(), 1u);
-      HoldingSpaceController::Get()->client()->CopyImageToClipboard(
-          *selection.front()->item(), base::DoNothing());
+      DCHECK_EQ(items.size(), 1u);
+      client->CopyImageToClipboard(*items.front(), base::DoNothing());
+      break;
+    case HoldingSpaceCommandId::kPauseItem:
+      client->PauseItems(items);
+      break;
+    case HoldingSpaceCommandId::kPinItem:
+      client->PinItems(items);
       break;
     case HoldingSpaceCommandId::kRemoveItem:
       HoldingSpaceController::Get()->model()->RemoveIf(base::BindRepeating(
-          [](const std::vector<const HoldingSpaceItemView*>& selection,
+          [](const std::vector<const HoldingSpaceItem*>& items,
              const HoldingSpaceItem* item) {
-            const bool remove =
-                std::any_of(selection.begin(), selection.end(),
-                            [item](const HoldingSpaceItemView* view) {
-                              return view->item() == item;
-                            });
+            const bool remove = base::Contains(items, item);
             if (remove) {
               holding_space_metrics::RecordItemAction(
                   {item}, holding_space_metrics::ItemAction::kRemove);
             }
             return remove;
           },
-          std::cref(selection)));
+          std::cref(items)));
       break;
-    case HoldingSpaceCommandId::kPinItem:
-      HoldingSpaceController::Get()->client()->PinItems(GetItems(selection));
+    case HoldingSpaceCommandId::kResumeItem:
+      client->ResumeItems(items);
       break;
     case HoldingSpaceCommandId::kShowInFolder:
-      DCHECK_EQ(selection.size(), 1u);
-      HoldingSpaceController::Get()->client()->ShowItemInFolder(
-          *selection.front()->item(), base::DoNothing());
+      DCHECK_EQ(items.size(), 1u);
+      client->ShowItemInFolder(*items.front(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      HoldingSpaceController::Get()->client()->UnpinItems(GetItems(selection));
+      client->UnpinItems(items);
       break;
     default:
       NOTREACHED();
@@ -540,20 +541,57 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
-  const bool is_cancelable = std::all_of(selection.begin(), selection.end(),
-                                         [](const HoldingSpaceItemView* view) {
-                                           return view->item()->IsInProgress();
-                                         });
+  bool is_pausable = true;
+  bool is_resumable = true;
+  bool is_cancelable = true;
+  bool is_pinnable = false;
+  bool is_removable = true;
 
-  if (is_cancelable) {
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  for (const HoldingSpaceItemView* view : selection) {
+    const HoldingSpaceItem* item = view->item();
+
+    // The "Pause" command should only be present if *all* of the selected
+    // holding space items are pausable.
+    is_pausable &= item->IsInProgress() && !item->IsPaused();
+
+    // The "Resume" command should only be present if *all* of the selected
+    // holding space items are resumable.
+    is_resumable &= item->IsPaused();
+
     // The "Cancel" command should only be present if *all* of the selected
     // holding space items are cancelable.
+    is_cancelable &= item->IsInProgress();
+
+    // The "Pin" command should be present if *any* selected holding space item
+    // is unpinned. When executing this command, any holding space items that
+    // are already pinned will be ignored.
+    is_pinnable |= !model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+                                        item->file_path());
+
+    // The "Remove" command should only be present if *all* of the selected
+    // holding space items are removable.
+    is_removable &= item->type() != HoldingSpaceItem::Type::kPinnedFile;
+  }
+
+  if (is_pausable) {
+    context_menu_model_->AddItem(
+        static_cast<int>(HoldingSpaceCommandId::kPauseItem), u"[I18N] Pause");
+  }
+
+  if (is_resumable) {
+    context_menu_model_->AddItem(
+        static_cast<int>(HoldingSpaceCommandId::kResumeItem), u"[I18N] Resume");
+  }
+
+  if (is_cancelable) {
     context_menu_model_->AddItem(
         static_cast<int>(HoldingSpaceCommandId::kCancelItem), u"[I18N] Cancel");
-
-    // NOTE: The "Cancel" command is separated from all other commands.
-    context_menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   }
+
+  // The "Pause"/"Resume"/"Cancel" commands are separated from other commands.
+  if (context_menu_model_->GetItemCount())
+    context_menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   if (selection.size() == 1u) {
     // The "Show in folder" command should only be present if there is only one
@@ -583,35 +621,19 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     }
   }
 
-  const bool is_any_unpinned = std::any_of(
-      selection.begin(), selection.end(), [](const HoldingSpaceItemView* view) {
-        return !HoldingSpaceController::Get()->model()->ContainsItem(
-            HoldingSpaceItem::Type::kPinnedFile, view->item()->file_path());
-      });
-
-  if (is_any_unpinned) {
-    // The "Pin" command should be present if any selected holding space item is
-    // unpinned. When executing this command, any holding space items that are
-    // already pinned will be ignored.
+  if (is_pinnable) {
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kPinItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
         ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
                                        kHoldingSpaceIconSize));
   } else {
-    // The "Unpin" command should be present only if all selected holding space
-    // items are already pinned.
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
         ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
                                        kHoldingSpaceIconSize));
   }
-
-  const bool is_removable = std::all_of(
-      selection.begin(), selection.end(), [](const HoldingSpaceItemView* view) {
-        return view->item()->type() != HoldingSpaceItem::Type::kPinnedFile;
-      });
 
   if (is_removable) {
     context_menu_model_->AddItemWithIcon(

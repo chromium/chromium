@@ -129,6 +129,7 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
 
 // Mocks -----------------------------------------------------------------------
 
+// TODO(crbug.com/1213686): Move to test support for reuse.
 class MockHoldingSpaceClient : public HoldingSpaceClient {
  public:
   // HoldingSpaceClient:
@@ -160,8 +161,8 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
                SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
-              ShowItemInFolder,
-              (const HoldingSpaceItem& item, SuccessCallback callback),
+              PauseItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
               PinFiles,
@@ -170,6 +171,14 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
   MOCK_METHOD(void,
               PinItems,
               (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+  MOCK_METHOD(void,
+              ResumeItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+  MOCK_METHOD(void,
+              ShowItemInFolder,
+              (const HoldingSpaceItem& item, SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
               UnpinItems,
