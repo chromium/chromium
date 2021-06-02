@@ -290,7 +290,8 @@ public class ToolbarTablet extends ToolbarLayout
         if (tab == null || tab.getWebContents() == null) return;
         mNavigationPopup = new NavigationPopup(Profile.fromWebContents(tab.getWebContents()),
                 getContext(), tab.getWebContents().getNavigationController(),
-                isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK);
+                isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK,
+                getToolbarDataProvider()::getTab);
         mNavigationPopup.show(anchorView);
     }
 

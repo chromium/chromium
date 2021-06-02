@@ -145,7 +145,8 @@ public class NavigationPopupTest {
     private ListPopupWindow showPopup(NavigationController controller) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             NavigationPopup popup = new NavigationPopup(mProfile, mActivityTestRule.getActivity(),
-                    controller, NavigationPopup.Type.TABLET_FORWARD);
+                    controller, NavigationPopup.Type.TABLET_FORWARD,
+                    mActivityTestRule.getActivity().getActivityTabProvider());
             popup.show(mActivityTestRule.getActivity()
                                .getToolbarManager()
                                .getToolbarLayoutForTesting());

@@ -28,10 +28,12 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -72,6 +74,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private final int mFaviconSize;
     @Nullable
     private final OnLayoutChangeListener mAnchorViewLayoutChangeListener;
+    private final Supplier<Tab> mCurrentTabSupplier;
 
     private DefaultFaviconHelper mDefaultFaviconHelper;
 
@@ -90,14 +93,17 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
      * @param context The context used for building the popup.
      * @param navigationController The controller which takes care of page navigations.
      * @param type The type of navigation popup being triggered.
+     * @param currentTabSupplier Supplies the current tab.
      */
     public NavigationPopup(Profile profile, Context context,
-            NavigationController navigationController, @Type int type) {
+            NavigationController navigationController, @Type int type,
+            Supplier<Tab> currentTabSupplier) {
         mProfile = profile;
         mContext = context;
         Resources resources = mContext.getResources();
         mNavigationController = navigationController;
         mType = type;
+        mCurrentTabSupplier = currentTabSupplier;
 
         boolean isForward = type == Type.TABLET_FORWARD;
         boolean anchorToBottom = type == Type.ANDROID_SYSTEM_BACK;
@@ -245,10 +251,10 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         NavigationEntry entry = (NavigationEntry) parent.getItemAtPosition(position);
         if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
-            assert mContext instanceof ChromeActivity;
-            ChromeActivity activity = (ChromeActivity) mContext;
-            HistoryManagerUtils.showHistoryManager(activity, activity.getActivityTab(),
-                    activity.getTabModelSelector().isIncognitoSelected());
+            Tab currentTab = mCurrentTabSupplier.get();
+            HistoryManagerUtils.showHistoryManager(TabUtils.getActivity(currentTab), currentTab,
+                    /* isIncognitoSelected= */ currentTab == null ? false
+                                                                  : currentTab.isIncognito());
         } else {
             // 1-based index to keep in line with Desktop implementation.
             RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));
