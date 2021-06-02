@@ -669,7 +669,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
-  if (appInitStage < InitStageFirstRun) {
+  if (appInitStage < InitStageNormalUI) {
     // Nothing per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main BrowserState.
     return;
@@ -960,18 +960,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
+  [self maybeShowDefaultBrowserPromo];
+}
 
-  // If this is first run, show the first run UI on top of the new tab.
-  // If this isn't first run, check if the sign-in promo needs to display.
-  if (firstRun &&
-      !self.sceneState.appState.startupInformation.isPresentingFirstRunUI) {
-    if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-      [self showFirstRunUI];
-    } else {
-      [self showLegacyFirstRunUI];
-    }
-    // Do not ever show the 'restore' infobar during first run.
-    self.sceneState.appState.startupInformation.restoreHelper = nil;
+- (void)maybeShowDefaultBrowserPromo {
+  if (self.sceneState.appState.startupInformation.isFirstRun) {
+    return;
   }
 
   // If skipping first run, not in Safe Mode, no post opening action and the
@@ -981,8 +975,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.startupParameters) {
     postOpeningAction = self.startupParameters.postOpeningAction;
   }
-  if (!firstRun && self.sceneState.appState.initStage > InitStageSafeMode &&
-      postOpeningAction == NO_ACTION &&
+  if (postOpeningAction == NO_ACTION &&
       !self.sceneState.appState.postCrashLaunch &&
       !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown()) {
     // Show the Default Browser promo UI if the user's past behavior fits

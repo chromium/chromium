@@ -15,9 +15,8 @@ class TimeTicks;
 // Contains information about the startup.
 @protocol StartupInformation<NSObject>
 
-// Whether First Run UI (terms of service & sync sign-in) is being presented
-// in a modal dialog.
-@property(nonatomic, readonly) BOOL isPresentingFirstRunUI;
+// Whether the app is starting in first run.
+@property(nonatomic, assign) BOOL isFirstRun;
 // Whether the current session began from a cold start. NO if the app has
 // entered the background at least once since start up.
 @property(nonatomic) BOOL isColdStart;

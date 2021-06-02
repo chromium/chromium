@@ -98,6 +98,9 @@
     case InitStageBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
       break;
+    case InitStageNormalUI:
+      [appState queueTransitionToNextInitStage];
+      break;
     case InitStageFirstRun:
       [appState queueTransitionToNextInitStage];
       break;

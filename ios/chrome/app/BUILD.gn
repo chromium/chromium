@@ -182,6 +182,24 @@ source_set("safe_mode_app_state_agent") {
   ]
 }
 
+source_set("first_run_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_app_state_agent.h",
+    "first_run_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/main:main",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/main:scene",
+  ]
+}
+
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -204,6 +222,7 @@ source_set("app_internal") {
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":content_suggestions_scheduler_app_state_agent",
+    ":first_run_app_state_agent",
     ":mode",
     ":safe_mode_app_state_agent",
     ":tests_hook",

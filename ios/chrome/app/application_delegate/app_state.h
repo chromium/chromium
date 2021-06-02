@@ -97,6 +97,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // The initialization stage the app is currently at.
 @property(nonatomic, readonly) InitStage initStage;
 
+// This flag is set when the first scene has initialized its UI and never
+// resets.
+@property(nonatomic, readonly) BOOL firstSceneHasInitializedUI;
+
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
 // the browser.

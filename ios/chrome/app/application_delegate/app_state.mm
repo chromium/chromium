@@ -129,7 +129,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // never reset.
 @property(nonatomic, assign) BOOL firstSceneHasActivated;
 
-// This flag is set when the first scene has initialized its UI and never reset.
+// Redefined as readwrite.
 @property(nonatomic, assign) BOOL firstSceneHasInitializedUI;
 
 // The current blocker target if any.

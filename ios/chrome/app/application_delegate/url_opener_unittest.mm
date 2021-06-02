@@ -40,7 +40,7 @@ enum class ExternalFilesLoadedInWebStateFeature {
 @interface StubStartupInformation : NSObject <StartupInformation>
 @end
 @implementation StubStartupInformation
-@synthesize isPresentingFirstRunUI = _isPresentingFirstRunUI;
+@synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize restoreHelper = _restoreHelper;

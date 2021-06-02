@@ -36,6 +36,7 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/first_run_app_state_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
@@ -94,7 +95,6 @@
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
@@ -364,6 +364,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // - StartupInformation
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize isFirstRun = _isFirstRun;
 
 #pragma mark - Application lifecycle
 
@@ -588,11 +589,24 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState {
   DCHECK(self.appState.initStage > InitStageSafeMode);
+
+  if (self.appState.initStage <= InitStageNormalUI) {
+    return;
+  }
+
+  // TODO(crbug.com/1213955): Pass the scene to this method to make sure that
+  // the chosen scene is initialized.
   [self startUpAfterFirstWindowCreated];
 }
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
+  // TODO(crbug.com/1213955): Remove this once the bug fixed.
+  if (previousInitStage == InitStageNormalUI &&
+      appState.firstSceneHasInitializedUI) {
+    [self startUpAfterFirstWindowCreated];
+  }
+
   switch (appState.initStage) {
     case InitStageStart:
       [appState queueTransitionToNextInitStage];
@@ -614,11 +628,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       [self startUpBrowserForegroundInitialization];
       [appState queueTransitionToNextInitStage];
       break;
+    case InitStageNormalUI:
+      // Scene controllers use this stage to create the normal UI if needed.
+      // There is no specific agent (other than SceneController) handling
+      // this stage.
+      [appState queueTransitionToNextInitStage];
+      break;
     case InitStageFirstRun:
-      // TODO(crbug.com/1178821): Move this to the FRE agent.
-      if (!ShouldPresentFirstRunExperience()) {
-        [appState queueTransitionToNextInitStage];
-      }
       break;
     case InitStageFinal:
       break;
@@ -628,6 +644,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)addPostSafeModeAgents {
   [self.appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
+  [self.appState addAgent:[[FirstRunAppAgent alloc] init]];
 }
 
 #pragma mark - Property implementation.
@@ -664,14 +681,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #pragma mark - StartupInformation implementation.
 
-- (BOOL)isPresentingFirstRunUI {
-  BOOL isPresentingFirstRunUI = NO;
-  for (SceneState* scene in self.appState.connectedScenes) {
-    isPresentingFirstRunUI |= scene.presentingFirstRunUI;
-  }
-
-  return isPresentingFirstRunUI;
-}
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return _firstUserActionRecorder.get();
