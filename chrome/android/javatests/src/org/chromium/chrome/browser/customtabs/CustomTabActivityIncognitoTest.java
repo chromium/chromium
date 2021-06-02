@@ -373,7 +373,7 @@ public class CustomTabActivityIncognitoTest {
     public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
-        IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                 intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);

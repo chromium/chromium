@@ -177,7 +177,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
 
-  // Do not show the incognito authentication setting when Incongito mode is
+  // Do not show the incognito authentication setting when Incognito mode is
   // disabled.
   if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
       !IsIncognitoModeDisabled(_browserState->GetPrefs())) {

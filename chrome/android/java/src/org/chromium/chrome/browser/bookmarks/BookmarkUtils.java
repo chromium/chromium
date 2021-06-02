@@ -481,7 +481,7 @@ public class BookmarkUtils {
 
         // Extras for incognito CCT.
         if (isOffTheRecord) {
-            IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+            IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCCTCallerId.READ_LATER);
         }
 

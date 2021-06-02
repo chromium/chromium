@@ -64,7 +64,7 @@ class CookieControlsService : public KeyedService,
 
   Profile* profile_;
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_registrar_;
-  scoped_refptr<content_settings::CookieSettings> incongito_cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> incognito_cookie_settings_;
   scoped_refptr<content_settings::CookieSettings> regular_cookie_settings_;
   base::ScopedMultiSourceObservation<content_settings::CookieSettings,
                                      content_settings::CookieSettings::Observer>

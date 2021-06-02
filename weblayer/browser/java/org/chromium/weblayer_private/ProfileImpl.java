@@ -78,7 +78,7 @@ public final class ProfileImpl
         // Normal profiles have restrictions on the name.
         if (!isIncognito && !name.matches("^\\w+$")) {
             throw new IllegalArgumentException(
-                    "Non-incongito profiles names can only contain words: " + name);
+                    "Non-incognito profiles names can only contain words: " + name);
         }
         mIsIncognito = isIncognito;
         mName = name;

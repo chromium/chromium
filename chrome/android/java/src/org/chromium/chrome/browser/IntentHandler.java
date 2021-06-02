@@ -288,7 +288,7 @@ public class IntentHandler {
         int GOOGLE_APPS = 1;
         // This should not be used, it's a fallback for Chrome features that didn't identify
         // themselves. Please see {@link
-        // IncognitoCustomTabIntentDataProvider#addIncongitoExtrasForChromeFeatures}
+        // IncognitoCustomTabIntentDataProvider#addIncognitoExtrasForChromeFeatures}
         int OTHER_CHROME_FEATURES = 2;
 
         // Chrome Features

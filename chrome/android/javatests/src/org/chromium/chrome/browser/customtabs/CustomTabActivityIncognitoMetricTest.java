@@ -85,7 +85,7 @@ public class CustomTabActivityIncognitoMetricTest {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
-        IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                 intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

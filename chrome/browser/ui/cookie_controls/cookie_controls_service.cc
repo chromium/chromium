@@ -32,8 +32,8 @@ CookieControlsService::CookieControlsService(Profile* profile)
 CookieControlsService::~CookieControlsService() = default;
 
 void CookieControlsService::Init() {
-  incongito_cookie_settings_ = CookieSettingsFactory::GetForProfile(profile_);
-  cookie_observations_.AddObservation(incongito_cookie_settings_.get());
+  incognito_cookie_settings_ = CookieSettingsFactory::GetForProfile(profile_);
+  cookie_observations_.AddObservation(incognito_cookie_settings_.get());
   regular_cookie_settings_ =
       CookieSettingsFactory::GetForProfile(profile_->GetOriginalProfile());
   cookie_observations_.AddObservation(regular_cookie_settings_.get());
@@ -84,7 +84,7 @@ CookieControlsService::GetCookieControlsEnforcement() {
 }
 
 bool CookieControlsService::GetToggleCheckedValue() {
-  return incongito_cookie_settings_->ShouldBlockThirdPartyCookies();
+  return incognito_cookie_settings_->ShouldBlockThirdPartyCookies();
 }
 
 void CookieControlsService::OnThirdPartyCookieBlockingChanged(

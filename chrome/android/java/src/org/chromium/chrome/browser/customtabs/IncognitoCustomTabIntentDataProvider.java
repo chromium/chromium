@@ -159,7 +159,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
     }
 
-    public static void addIncongitoExtrasForChromeFeatures(
+    public static void addIncognitoExtrasForChromeFeatures(
             Intent intent, @IntentHandler.IncognitoCCTCallerId int chromeCallerId) {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, chromeCallerId);

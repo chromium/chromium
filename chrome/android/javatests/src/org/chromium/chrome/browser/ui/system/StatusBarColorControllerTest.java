@@ -75,7 +75,7 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testColorToggleIncongitoInOverview() throws Exception {
+    public void testColorToggleIncognitoInOverview() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         Resources resources = activity.getResources();
         final int expectedOverviewStandardColor = defaultColorFallbackToBlack(
@@ -87,13 +87,13 @@ public class StatusBarColorControllerTest {
                 "about:blank", true /* incognito */, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tabModelSelector.selectModel(true /* incongito */); });
+                () -> { tabModelSelector.selectModel(true /* incognito */); });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity.getLayoutManager().showOverview(false /* animate */); });
 
         waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tabModelSelector.selectModel(false /* incongito */); });
+                () -> { tabModelSelector.selectModel(false /* incognito */); });
         ThemeTestUtils.assertStatusBarColor(activity, expectedOverviewStandardColor);
     }
 

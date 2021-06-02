@@ -514,7 +514,7 @@ public class WebLayer {
     /**
      * Creates a new WebLayer Fragment using the incognito profile with the specified name.
      *
-     * @param profileName The name of the incongito profile, null is mapped to an empty string.
+     * @param profileName The name of the incognito profile, null is mapped to an empty string.
      * @param persistenceId If non-null and not empty uniquely identifies the Browser for saving
      * state.
      *
