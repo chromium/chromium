@@ -3820,8 +3820,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
-    enum="NetErrorCodes" expires_after="2021-06-01">
+    enum="NetErrorCodes" expires_after="2021-12-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Network error codes for WebRTC text log upload failures. Recorded when an
@@ -3830,8 +3831,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureReason"
-    enum="WebRtcLoggingUploadFailureReason" expires_after="2021-10-10">
+    enum="WebRtcLoggingUploadFailureReason" expires_after="2021-12-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts upload failures for WebRTC text log. Error codes for network errors
@@ -3841,8 +3843,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcTextLogging{WebRtcLoggingEvent}"
-    enum="WebRtcLoggingWebAppIdHash" expires_after="2021-06-01">
+    enum="WebRtcLoggingWebAppIdHash" expires_after="2021-12-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts the number of WebRTC text log events per web application. Suffixed by
