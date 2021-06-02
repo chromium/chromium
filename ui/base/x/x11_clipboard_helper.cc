@@ -225,6 +225,8 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     available_types.push_back(kMimeTypePNG);
   if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()))
     available_types.push_back(kMimeTypeURIList);
+  if (target_list.ContainsFormat(ClipboardFormatType::GetWebCustomDataType()))
+    available_types.push_back(kMimeTypeWebCustomData);
 
   return available_types;
 }
