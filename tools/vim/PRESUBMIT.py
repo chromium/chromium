@@ -6,6 +6,8 @@
 Runs Python unit tests in /tools/vim/tests on upload.
 """
 
+USE_PYTHON3 = True
+
 
 def CheckChangeOnUpload(input_api, output_api):
   results = []
