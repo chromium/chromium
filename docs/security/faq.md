@@ -677,6 +677,11 @@ vulnerability in the relevant feature, not Safe Browsing itself.
 See our dedicated [Service Worker Security
 FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service-worker-security-faq.md).
 
+<a name="TOC-What-is-the-security-story-for-Extensions-"></a>
+## What is the security story for Extensions?
+
+See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
+
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ## What about URL spoofs using Internationalized Domain Names (IDN)?
 
@@ -692,30 +697,7 @@ describes Chrome's IDN policy in detail.
 <a name="TOC-Chrome-silently-syncs-extensions-across-devices.-Is-this-a-security-vulnerability-"></a>
 ## Chrome silently syncs extensions across devices. Is this a security vulnerability?
 
-If an attacker has access to one of a victim's devices, the attacker can install
-an extension which will be synced to the victim's other sync-enabled
-devices. Similarly, an attacker who phishes a victim's Google credentials can
-sign in to Chrome as the victim and install an extension, which will be synced
-to the victim's other sync-enabled devices. Sync thereby enables an attacker to
-elevate phished credentials or physical access to persistent access on all of a
-victim's sync-enabled devices.
-
-To mitigate this issue, Chrome only syncs extensions that have been installed
-from the Chrome Web Store. Extensions in the Chrome Web Store are monitored for
-abusive behavior.
-
-In the future, we may pursue further mitigations. However, because an attacker
-must already have the victim's Google credentials and/or [physical access to a
-device](#TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-), we
-don't consider this attack a security vulnerability.
-
-We **do** consider it a vulnerability if an attacker can get an extension to
-sync to a victim's device without either of the above preconditions. For
-example, we consider it a vulnerability if an attacker could craft a request to
-Google's sync servers that causes an extension to be installed to a user's
-device, or if an attacker could entice a victim to visit a webpage that causes
-an extension to be installed on their device(s). Please report such bugs via
-https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug.
+This topic has been moved to the [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
 
 <a name="TOC-Are-PDF-files-static-content-in-Chromium-"></a>
 ## Are PDF files static content in Chromium?
