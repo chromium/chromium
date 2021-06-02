@@ -1643,7 +1643,7 @@ String XMLHttpRequest::statusText() const {
   return String();
 }
 
-void XMLHttpRequest::DidFail(const ResourceError& error) {
+void XMLHttpRequest::DidFail(uint64_t, const ResourceError& error) {
   DVLOG(1) << this << " didFail()";
   ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
@@ -1676,7 +1676,7 @@ void XMLHttpRequest::DidFail(const ResourceError& error) {
   HandleNetworkError();
 }
 
-void XMLHttpRequest::DidFailRedirectCheck() {
+void XMLHttpRequest::DidFailRedirectCheck(uint64_t) {
   DVLOG(1) << this << " didFailRedirectCheck()";
   ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 

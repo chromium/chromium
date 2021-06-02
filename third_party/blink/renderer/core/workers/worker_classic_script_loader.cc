@@ -282,13 +282,13 @@ void WorkerClassicScriptLoader::DidFinishLoading(uint64_t identifier) {
   NotifyFinished();
 }
 
-void WorkerClassicScriptLoader::DidFail(const ResourceError& error) {
+void WorkerClassicScriptLoader::DidFail(uint64_t, const ResourceError& error) {
   need_to_cancel_ = false;
   canceled_ = error.IsCancellation();
   NotifyError();
 }
 
-void WorkerClassicScriptLoader::DidFailRedirectCheck() {
+void WorkerClassicScriptLoader::DidFailRedirectCheck(uint64_t) {
   // When didFailRedirectCheck() is called, the ResourceLoader for the script
   // is not canceled yet. So we don't reset |m_needToCancel| here.
   NotifyError();

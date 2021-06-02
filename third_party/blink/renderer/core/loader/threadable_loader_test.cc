@@ -63,8 +63,8 @@ class MockThreadableLoaderClient final
   MOCK_METHOD2(DidReceiveData, void(const char*, unsigned));
   MOCK_METHOD1(DidReceiveCachedMetadata, void(mojo_base::BigBuffer));
   MOCK_METHOD1(DidFinishLoading, void(uint64_t));
-  MOCK_METHOD1(DidFail, void(const ResourceError&));
-  MOCK_METHOD0(DidFailRedirectCheck, void());
+  MOCK_METHOD2(DidFail, void(uint64_t, const ResourceError&));
+  MOCK_METHOD1(DidFailRedirectCheck, void(uint64_t));
   MOCK_METHOD1(DidDownloadData, void(uint64_t));
 };
 
@@ -232,7 +232,7 @@ TEST_F(ThreadableLoaderTest, CancelAfterStart) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
   EXPECT_CALL(GetCheckpoint(), Call(3));
 
   StartLoader(SuccessURL());
@@ -250,7 +250,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearAfterStart) {
   EXPECT_CALL(GetCheckpoint(), Call(2))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
   EXPECT_CALL(GetCheckpoint(), Call(3));
 
   StartLoader(SuccessURL());
@@ -268,7 +268,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidReceiveResponse) {
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -285,7 +285,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearInDidReceiveResponse) {
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -302,7 +302,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidReceiveData) {
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
   EXPECT_CALL(*Client(), DidReceiveData(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -320,7 +320,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearInDidReceiveData) {
   EXPECT_CALL(*Client(), DidReceiveData(_, _))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -384,7 +384,7 @@ TEST_F(ThreadableLoaderTest, DidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsNotCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsNotCancellation)));
 
   StartLoader(ErrorURL());
   CallCheckpoint(2);
@@ -398,7 +398,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(_))
+  EXPECT_CALL(*Client(), DidFail(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
 
   StartLoader(ErrorURL());
@@ -413,7 +413,7 @@ TEST_F(ThreadableLoaderTest, ClearInDidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(_))
+  EXPECT_CALL(*Client(), DidFail(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
 
   StartLoader(ErrorURL());

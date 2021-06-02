@@ -291,7 +291,7 @@ void EventSource::DidFinishLoading(uint64_t) {
   NetworkRequestEnded();
 }
 
-void EventSource::DidFail(const ResourceError& error) {
+void EventSource::DidFail(uint64_t, const ResourceError& error) {
   DCHECK(loader_);
   if (error.IsCancellation() && state_ == kClosed) {
     NetworkRequestEnded();
@@ -314,7 +314,7 @@ void EventSource::DidFail(const ResourceError& error) {
   NetworkRequestEnded();
 }
 
-void EventSource::DidFailRedirectCheck() {
+void EventSource::DidFailRedirectCheck(uint64_t) {
   DCHECK(loader_);
 
   AbortConnectionAttempt();

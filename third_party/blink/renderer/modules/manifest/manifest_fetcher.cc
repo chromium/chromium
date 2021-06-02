@@ -78,7 +78,7 @@ void ManifestFetcher::DidFinishLoading(uint64_t) {
   data_.Clear();
 }
 
-void ManifestFetcher::DidFail(const ResourceError& error) {
+void ManifestFetcher::DidFail(uint64_t, const ResourceError& error) {
   if (!callback_)
     return;
 
@@ -87,8 +87,8 @@ void ManifestFetcher::DidFail(const ResourceError& error) {
   std::move(callback_).Run(response_, String());
 }
 
-void ManifestFetcher::DidFailRedirectCheck() {
-  DidFail(ResourceError::Failure(NullURL()));
+void ManifestFetcher::DidFailRedirectCheck(uint64_t identifier) {
+  DidFail(identifier, ResourceError::Failure(NullURL()));
 }
 
 void ManifestFetcher::Trace(Visitor* visitor) const {

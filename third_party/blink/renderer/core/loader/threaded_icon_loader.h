@@ -46,8 +46,8 @@ class CORE_EXPORT ThreadedIconLoader final
   // ThreadableLoaderClient interface.
   void DidReceiveData(const char* data, unsigned length) override;
   void DidFinishLoading(uint64_t resource_identifier) override;
-  void DidFail(const ResourceError& error) override;
-  void DidFailRedirectCheck() override;
+  void DidFail(uint64_t, const ResourceError& error) override;
+  void DidFailRedirectCheck(uint64_t) override;
 
   void Trace(Visitor* visitor) const override;
 

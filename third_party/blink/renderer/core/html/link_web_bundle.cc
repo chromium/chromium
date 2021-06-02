@@ -100,8 +100,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     // Drain |consumer| so that DidFinishLoading is surely called later.
     consumer.DrainAsDataPipe();
   }
-  void DidFail(const ResourceError&) override { DidFailInternal(); }
-  void DidFailRedirectCheck() override { DidFailInternal(); }
+  void DidFail(uint64_t, const ResourceError&) override { DidFailInternal(); }
+  void DidFailRedirectCheck(uint64_t) override { DidFailInternal(); }
 
   // network::mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)

@@ -50,7 +50,8 @@ class CORE_EXPORT ThreadableLoaderClient : public GarbageCollectedMixin {
                            uint64_t /*totalBytesToBeSent*/) {}
   // Note that redirects for redirect modes kError and kManual are still
   // notified here. A client must return false in such cases.
-  virtual bool WillFollowRedirect(const KURL& new_url,
+  virtual bool WillFollowRedirect(uint64_t /*identifier*/,
+                                  const KURL& new_url,
                                   const ResourceResponse&) {
     return true;
   }
@@ -60,8 +61,8 @@ class CORE_EXPORT ThreadableLoaderClient : public GarbageCollectedMixin {
   virtual void DidReceiveData(const char*, unsigned /*dataLength*/) {}
   virtual void DidReceiveCachedMetadata(mojo_base::BigBuffer) {}
   virtual void DidFinishLoading(uint64_t /*identifier*/) {}
-  virtual void DidFail(const ResourceError&) {}
-  virtual void DidFailRedirectCheck() {}
+  virtual void DidFail(uint64_t /*identifier*/, const ResourceError&) {}
+  virtual void DidFailRedirectCheck(uint64_t /*identifier*/) {}
 
   virtual void DidDownloadData(uint64_t /*dataLength*/) {}
   // Called for requests that had DownloadToBlob set to true. Can be called with

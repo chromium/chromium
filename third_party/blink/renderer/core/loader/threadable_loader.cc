@@ -74,8 +74,12 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   void DidFinishLoading(uint64_t identifier) override {
     self_keep_alive_.Clear();
   }
-  void DidFail(const ResourceError&) override { self_keep_alive_.Clear(); }
-  void DidFailRedirectCheck() override { self_keep_alive_.Clear(); }
+  void DidFail(uint64_t identifier, const ResourceError&) override {
+    self_keep_alive_.Clear();
+  }
+  void DidFailRedirectCheck(uint64_t identifier) override {
+    self_keep_alive_.Clear();
+  }
   void Trace(Visitor* visitor) const override {
     visitor->Trace(loader_);
     ThreadableLoaderClient::Trace(visitor);
@@ -237,7 +241,8 @@ bool ThreadableLoader::RedirectReceived(
   DCHECK_EQ(resource, GetResource());
   checker_.RedirectReceived();
 
-  return client_->WillFollowRedirect(new_request.Url(), redirect_response);
+  return client_->WillFollowRedirect(resource->InspectorId(), new_request.Url(),
+                                     redirect_response);
 }
 
 void ThreadableLoader::RedirectBlocked() {
@@ -248,7 +253,8 @@ void ThreadableLoader::RedirectBlocked() {
   // unknown reason).
   ThreadableLoaderClient* client = client_;
   Clear();
-  client->DidFailRedirectCheck();
+  uint64_t identifier = 0;  // We don't have an inspector id here.
+  client->DidFailRedirectCheck(identifier);
 }
 
 void ThreadableLoader::DataSent(Resource* resource,
@@ -376,7 +382,7 @@ void ThreadableLoader::DispatchDidFail(const ResourceError& error) {
     resource->SetResponseType(network::mojom::FetchResponseType::kError);
   ThreadableLoaderClient* client = client_;
   Clear();
-  client->DidFail(error);
+  client->DidFail(resource->InspectorId(), error);
 }
 
 void ThreadableLoader::Trace(Visitor* visitor) const {

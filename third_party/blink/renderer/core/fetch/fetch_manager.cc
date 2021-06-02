@@ -135,13 +135,15 @@ class FetchManager::Loader final
   void Trace(Visitor*) const override;
 
   // ThreadableLoaderClient implementation.
-  bool WillFollowRedirect(const KURL&, const ResourceResponse&) override;
+  bool WillFollowRedirect(uint64_t,
+                          const KURL&,
+                          const ResourceResponse&) override;
   void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
   void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidStartLoadingResponseBody(BytesConsumer&) override;
   void DidFinishLoading(uint64_t) override;
-  void DidFail(const ResourceError&) override;
-  void DidFailRedirectCheck() override;
+  void DidFail(uint64_t, const ResourceError&) override;
+  void DidFailRedirectCheck(uint64_t) override;
 
   void Start();
   void Dispose();
@@ -321,11 +323,12 @@ void FetchManager::Loader::Trace(Visitor* visitor) const {
 }
 
 bool FetchManager::Loader::WillFollowRedirect(
+    uint64_t identifier,
     const KURL& url,
     const ResourceResponse& response) {
   const auto redirect_mode = fetch_request_data_->Redirect();
   if (redirect_mode == network::mojom::RedirectMode::kError) {
-    DidFailRedirectCheck();
+    DidFailRedirectCheck(identifier);
     Dispose();
     return false;
   }
@@ -487,7 +490,8 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
   NotifyFinished();
 }
 
-void FetchManager::Loader::DidFail(const ResourceError& error) {
+void FetchManager::Loader::DidFail(uint64_t identifier,
+                                   const ResourceError& error) {
   if (fetch_request_data_ && fetch_request_data_->TrustTokenParams()) {
     HistogramNetErrorForTrustTokensOperation(
         fetch_request_data_->TrustTokenParams()->type, error.ErrorCode());
@@ -503,7 +507,7 @@ void FetchManager::Loader::DidFail(const ResourceError& error) {
   Failed(String(), nullptr);
 }
 
-void FetchManager::Loader::DidFailRedirectCheck() {
+void FetchManager::Loader::DidFailRedirectCheck(uint64_t identifier) {
   Failed(String(), nullptr);
 }
 

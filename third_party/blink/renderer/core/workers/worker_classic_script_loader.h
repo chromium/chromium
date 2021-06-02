@@ -137,8 +137,8 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void DidReceiveData(const char* data, unsigned data_length) override;
   void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidFinishLoading(uint64_t identifier) override;
-  void DidFail(const ResourceError&) override;
-  void DidFailRedirectCheck() override;
+  void DidFail(uint64_t, const ResourceError&) override;
+  void DidFailRedirectCheck(uint64_t) override;
 
   // WorkerMainScriptLoaderClient
   // These will be called for dedicated workers (when PlzDedicatedWorker is

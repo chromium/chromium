@@ -166,13 +166,13 @@ void ThreadedIconLoader::OnBackgroundTaskComplete(double resize_scale) {
   std::move(icon_callback_).Run(std::move(decoded_icon_), resize_scale);
 }
 
-void ThreadedIconLoader::DidFail(const ResourceError& error) {
+void ThreadedIconLoader::DidFail(uint64_t, const ResourceError& error) {
   if (stopped_)
     return;
   std::move(icon_callback_).Run(SkBitmap(), -1);
 }
 
-void ThreadedIconLoader::DidFailRedirectCheck() {
+void ThreadedIconLoader::DidFailRedirectCheck(uint64_t) {
   if (stopped_)
     return;
   std::move(icon_callback_).Run(SkBitmap(), -1);

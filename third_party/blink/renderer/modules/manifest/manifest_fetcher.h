@@ -48,8 +48,8 @@ class ManifestFetcher final : public GarbageCollected<ManifestFetcher>,
   void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
   void DidReceiveData(const char*, unsigned) override;
   void DidFinishLoading(uint64_t) override;
-  void DidFail(const ResourceError&) override;
-  void DidFailRedirectCheck() override;
+  void DidFail(uint64_t, const ResourceError&) override;
+  void DidFailRedirectCheck(uint64_t) override;
 
   void Trace(Visitor* visitor) const override;
 
