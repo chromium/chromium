@@ -10,7 +10,7 @@
 namespace blink {
 
 // Test when a constructed StorageKey object should be considered valid/opaque.
-TEST(BlinkStorageKeyTest, ConstructionValidity) {
+TEST(StorageKeyTest, ConstructionValidity) {
   StorageKey empty = StorageKey();
   EXPECT_TRUE(empty.opaque());
 
@@ -25,7 +25,7 @@ TEST(BlinkStorageKeyTest, ConstructionValidity) {
 }
 
 // Test that StorageKeys are/aren't equivalent as expected.
-TEST(BlinkStorageKeyTest, Equivalance) {
+TEST(StorageKeyTest, Equivalance) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
   url::Origin origin3 = url::Origin();
@@ -61,7 +61,7 @@ TEST(BlinkStorageKeyTest, Equivalance) {
 }
 
 // Test that StorageKeys Serialize to the expected value.
-TEST(BlinkStorageKeyTest, Serialize) {
+TEST(StorageKeyTest, Serialize) {
   std::string example = "https://example.com/";
   std::string example_no_trailing_slash = "https://example.com";
   std::string test = "https://test.example/";
@@ -77,7 +77,7 @@ TEST(BlinkStorageKeyTest, Serialize) {
 }
 
 // Test that deserialized StorageKeys are valid/opaque as expected.
-TEST(BlinkStorageKeyTest, Deserialize) {
+TEST(StorageKeyTest, Deserialize) {
   std::string example = "https://example.com/";
   std::string test = "https://test.example/";
   std::string wrong = "I'm not a valid URL.";
@@ -94,7 +94,7 @@ TEST(BlinkStorageKeyTest, Deserialize) {
 }
 
 // Test that string -> StorageKey test function performs as expected.
-TEST(BlinkStorageKeyTest, CreateFromStringForTesting) {
+TEST(StorageKeyTest, CreateFromStringForTesting) {
   std::string example = "https://example.com/";
   std::string wrong = "I'm not a valid URL.";
 
@@ -110,7 +110,7 @@ TEST(BlinkStorageKeyTest, CreateFromStringForTesting) {
 
 // Test that a StorageKey, constructed by deserializing another serialized
 // StorageKey, is equivalent to the original.
-TEST(BlinkStorageKeyTest, SerializeDeserialize) {
+TEST(StorageKeyTest, SerializeDeserialize) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
