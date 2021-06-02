@@ -585,15 +585,9 @@ TEST_F(EditableComboboxTest, ClickOnMenuItemSelectsItAndClosesMenu) {
   EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
-// This is failing on Linux (Ozone Wayland). https://crbug.com/1204302.
-#if defined(OS_LINUX)
-#define MAYBE_SpaceIsReflectedInTextfield DISABLED_SpaceIsReflectedInTextfield
-#else
-#define MAYBE_SpaceIsReflectedInTextfield SpaceIsReflectedInTextfield
-#endif
 // This is different from the regular read-only Combobox, where SPACE
 // opens/closes the menu.
-TEST_F(EditableComboboxTest, MAYBE_SpaceIsReflectedInTextfield) {
+TEST_F(EditableComboboxTest, SpaceIsReflectedInTextfield) {
   InitEditableCombobox();
   combobox_->GetTextfieldForTest()->RequestFocus();
   SendKeyEvent(ui::VKEY_A);
