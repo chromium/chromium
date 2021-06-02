@@ -279,7 +279,9 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
     bool accepted,
     const PasswordForm& pending) {
   weak_factory_.InvalidateWeakPtrs();
-  if (accepted) {
+  if (driver && accepted) {
+    // See https://crbug.com/1210341 for when `driver` might be null due to a
+    // compromised renderer.
     driver->GeneratedPasswordAccepted(pending.password_value);
   }
 }
