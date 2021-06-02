@@ -241,6 +241,7 @@ test("components_unittests") {
     ]
   } else {  # !is_ios
     deps += [
+      "//components/accuracy_tips:unit_tests",
       "//components/android_autofill/browser:unit_tests",
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/content/renderer:unit_tests",

@@ -400,6 +400,7 @@ static_library("ui") {
     "//chrome/services/qrcode_generator/public/mojom",
     "//components/about_ui",
     "//components/account_id",
+    "//components/accuracy_tips",
     "//components/autofill/content/browser:risk_proto",
     "//components/autofill/core/browser",
     "//components/autofill_assistant/browser/public:public",

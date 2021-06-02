@@ -40,6 +40,7 @@ include_rules = [
   "+components/account_id",
   "+components/federated_learning",
   "+components/arc",
+  "+components/accuracy_tips",
   "+components/account_manager_core",
   "+components/assist_ranker",
   "+components/autofill_assistant/browser",

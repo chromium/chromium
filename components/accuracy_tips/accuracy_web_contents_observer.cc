@@ -1,0 +1,72 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/accuracy_tips/accuracy_web_contents_observer.h"
+
+#include "components/accuracy_tips/accuracy_service.h"
+#include "components/accuracy_tips/accuracy_tip_status.h"
+#include "components/accuracy_tips/features.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/common/page_visibility_state.h"
+#include "url/gurl.h"
+
+namespace accuracy_tips {
+
+// static
+bool AccuracyWebContentsObserver::IsEnabled(
+    content::WebContents* web_contents) {
+  return base::FeatureList::IsEnabled(kAccuracyTipsFeature) &&
+         !web_contents->GetBrowserContext()->IsOffTheRecord();
+}
+
+AccuracyWebContentsObserver::~AccuracyWebContentsObserver() = default;
+
+AccuracyWebContentsObserver::AccuracyWebContentsObserver(
+    content::WebContents* web_contents,
+    AccuracyService* accuracy_service)
+    : WebContentsObserver(web_contents), accuracy_service_(accuracy_service) {
+  DCHECK(web_contents);
+  DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
+  DCHECK(accuracy_service);
+}
+
+void AccuracyWebContentsObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation) {
+  if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument() ||
+      !navigation->HasCommitted() || navigation->IsErrorPage()) {
+    return;
+  }
+
+  if (web_contents()->GetMainFrame()->GetVisibilityState() !=
+      content::PageVisibilityState::kVisible) {
+    return;
+  }
+
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  accuracy_service_->CheckAccuracyStatus(
+      url,
+      base::BindOnce(&AccuracyWebContentsObserver::OnAccuracyStatusObtained,
+                     weak_factory_.GetWeakPtr(), url));
+}
+
+void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
+    const GURL& url,
+    AccuracyTipStatus result) {
+  if (result == AccuracyTipStatus::kNone)
+    return;
+
+  // We are not on this site anymore.
+  if (url != web_contents()->GetLastCommittedURL())
+    return;
+
+  accuracy_service_->MaybeShowAccuracyTip(web_contents());
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AccuracyWebContentsObserver)
+}  // namespace accuracy_tips
