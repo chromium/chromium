@@ -26,8 +26,11 @@ class CORE_EXPORT ContainerQuery final
  private:
   friend class ContainerQueryTest;
   friend class ContainerQueryEvaluator;
+  friend class CSSContainerRule;
 
-  // TODO(crbug.com/1145970): Refactor to avoid internal MediaQuerySet.
+  scoped_refptr<MediaQuerySet> MediaQueries() const { return media_queries_; }
+
+  // TODO(crbug.com/1214810): Refactor to avoid internal MediaQuerySet.
   scoped_refptr<MediaQuerySet> media_queries_;
   PhysicalAxes queried_axes_{kPhysicalAxisNone};
 };

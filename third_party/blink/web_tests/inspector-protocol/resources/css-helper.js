@@ -72,6 +72,14 @@
       this._indentLog(baseIndent, '@media ' + mediaLine);
       baseIndent += 4;
     }
+
+    const containerQueries = rule.containerQueries || [];
+    const containerQueriesLine = containerQueries.map(cq => cq.text).join(' ');
+    if (containerQueriesLine.length) {
+      this._indentLog(baseIndent, '@container ' + containerQueriesLine);
+      baseIndent += 4;
+    }
+
     var selectorLine = '';
     var selectors = rule.selectorList.selectors;
     for (var i = 0; i < selectors.length; ++i) {

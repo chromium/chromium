@@ -38,6 +38,10 @@ Dumping matched rules:
         padding-left: 10px;
         margin-top: 15px !important;
     }
+@container (min-width: 50px)
+    *#inspected* {    regular
+        padding-right: 10px;
+    }
 Dumping inherited rules: 
     padding-top: 20px;
 *#parent-div* {    regular

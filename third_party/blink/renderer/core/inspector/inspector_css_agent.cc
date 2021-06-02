@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
@@ -1802,6 +1803,62 @@ InspectorCSSAgent::BuildMediaListChain(CSSRule* rule) {
   return media_array;
 }
 
+std::unique_ptr<protocol::CSS::CSSContainerQuery>
+InspectorCSSAgent::BuildContainerQueryObject(
+    const MediaList* media,
+    CSSStyleSheet* parent_style_sheet) {
+  // The |mediaText()| getter does not require an ExecutionContext as it is
+  // only used for setting/parsing new media queries and features.
+  std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
+      protocol::CSS::CSSContainerQuery::create()
+          .setText(media->mediaText(/*execution_context=*/nullptr))
+          .build();
+
+  InspectorStyleSheet* inspector_style_sheet =
+      parent_style_sheet
+          ? css_style_sheet_to_inspector_style_sheet_.at(parent_style_sheet)
+          : nullptr;
+  if (inspector_style_sheet)
+    container_query_object->setStyleSheetId(inspector_style_sheet->Id());
+
+  CSSRule* parent_rule = media->ParentRule();
+  if (!parent_rule)
+    return container_query_object;
+
+  inspector_style_sheet = BindStyleSheet(parent_rule->parentStyleSheet());
+  container_query_object->setRange(
+      inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
+
+  return container_query_object;
+}
+
+void InspectorCSSAgent::CollectContainerQueriesFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries) {
+  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule)) {
+    MediaList* media_list = container_rule->container();
+    if (!media_list || !media_list->length())
+      return;
+
+    container_queries->emplace_back(BuildContainerQueryObject(
+        media_list, container_rule->parentStyleSheet()));
+  }
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
+InspectorCSSAgent::BuildContainerQueries(CSSRule* rule) {
+  if (!rule)
+    return nullptr;
+  auto container_queries =
+      std::make_unique<protocol::Array<protocol::CSS::CSSContainerQuery>>();
+  CSSRule* parent_rule = rule;
+  while (parent_rule) {
+    CollectContainerQueriesFromRule(parent_rule, container_queries.get());
+    parent_rule = parent_rule->parentRule();
+  }
+  return container_queries;
+}
+
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(
     Element* element) {
   NodeToInspectorStyleSheet::iterator it =
@@ -1975,6 +2032,8 @@ std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
   std::unique_ptr<protocol::CSS::CSSRule> result =
       inspector_style_sheet->BuildObjectForRuleWithoutMedia(rule);
   result->setMedia(BuildMediaListChain(rule));
+  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    result->setContainerQueries(BuildContainerQueries(rule));
   return result;
 }
 

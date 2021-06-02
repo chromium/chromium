@@ -321,6 +321,16 @@ class CORE_EXPORT InspectorCSSAgent final
   std::unique_ptr<protocol::Array<int>>
   BuildArrayForComputedStyleUpdatedNodes();
 
+  // Container Queries implementation
+  std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(
+      const MediaList*,
+      CSSStyleSheet*);
+  void CollectContainerQueriesFromRule(
+      CSSRule*,
+      protocol::Array<protocol::CSS::CSSContainerQuery>*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
+  BuildContainerQueries(CSSRule*);
+
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;
   void WillRemoveDOMNode(Node*) override;

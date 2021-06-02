@@ -1315,6 +1315,9 @@ experimental domain CSS
       # Media list array (for rules involving media queries). The array enumerates media queries
       # starting with the innermost one, going outwards.
       optional array of CSSMedia media
+      # Container query list array (for rules involving container queries).
+      # The array enumerates container queries starting with the innermost one, going outwards.
+      experimental optional array of CSSContainerQuery containerQueries
 
   # CSS coverage information.
   type RuleUsage extends object
@@ -1437,6 +1440,17 @@ experimental domain CSS
       optional SourceRange valueRange
       # Computed length of media query expression (if applicable).
       optional number computedLength
+
+  # CSS container query rule descriptor.
+  experimental type CSSContainerQuery extends object
+    properties
+      # Container query text.
+      string text
+      # The associated rule header range in the enclosing stylesheet (if
+      # available).
+      optional SourceRange range
+      # Identifier of the stylesheet containing this object (if exists).
+      optional StyleSheetId styleSheetId
 
   # Information about amount of glyphs that were rendered with given font.
   type PlatformFontUsage extends object

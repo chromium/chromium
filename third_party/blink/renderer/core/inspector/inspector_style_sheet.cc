@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -499,6 +500,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kMedia:
       case StyleRule::kSupports:
       case StyleRule::kKeyframes:
+      case StyleRule::kContainer:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -520,6 +522,9 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
 
   if (auto* keyframes_rule = DynamicTo<CSSKeyframesRule>(rule))
     return keyframes_rule->cssRules();
+
+  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule))
+    return container_rule->cssRules();
 
   return nullptr;
 }
@@ -547,6 +552,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kMediaRule:
       case CSSRule::kSupportsRule:
       case CSSRule::kKeyframesRule:
+      case CSSRule::kContainerRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;

@@ -21,8 +21,19 @@ class CSSContainerRule final : public CSSConditionRule {
 
   String cssText() const override;
 
+  void Trace(Visitor*) const override;
+
  private:
+  // TODO(crbug.com/1214810): Don't lean on MediaList.
+  friend class InspectorCSSAgent;
+
   CSSRule::Type GetType() const override { return kContainerRule; }
+
+  scoped_refptr<MediaQuerySet> ContainerQueries() const;
+
+  MediaList* container() const;
+
+  mutable Member<MediaList> media_cssom_wrapper_;
 };
 
 template <>

@@ -21,4 +21,24 @@ String CSSContainerRule::cssText() const {
   return "";
 }
 
+scoped_refptr<MediaQuerySet> CSSContainerRule::ContainerQueries() const {
+  return To<StyleRuleContainer>(group_rule_.Get())
+      ->GetContainerQuery()
+      .MediaQueries();
+}
+
+MediaList* CSSContainerRule::container() const {
+  if (!ContainerQueries())
+    return nullptr;
+  if (!media_cssom_wrapper_) {
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
+        ContainerQueries(), const_cast<CSSContainerRule*>(this));
+  }
+  return media_cssom_wrapper_.Get();
+}
+
+void CSSContainerRule::Trace(Visitor* visitor) const {
+  visitor->Trace(media_cssom_wrapper_);
+  CSSConditionRule::Trace(visitor);
+}
 }  // namespace blink
