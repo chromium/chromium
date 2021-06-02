@@ -717,6 +717,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextCssBeforeInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-css-before-in-label.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextDynamicLabelledby) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-dynamic-labelledby.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextInputInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-input-in-label.html"));
 }
