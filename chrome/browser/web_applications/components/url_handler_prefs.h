@@ -78,7 +78,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 void AddWebApp(PrefService* local_state,
                const AppId& app_id,
                const base::FilePath& profile_path,
-               const apps::UrlHandlers& url_handlers);
+               const apps::UrlHandlers& url_handlers,
+               const base::Time& time = base::Time::Now());
 
 void UpdateWebApp(PrefService* local_state,
                   const AppId& app_id,
@@ -95,12 +96,12 @@ void RemoveProfile(PrefService* local_state,
 void Clear(PrefService* local_state);
 
 // Search for all (app, profile) combinations that have active URL handlers
-// which matches |url|.
-// If there are results with saved_choice == kInApp, only the one with the most
-// recent timestamp is returned. Otherwise, if there results with saved_choice
-// == kNone, all of those will be returned. No results with saved_choiced ==
-// kInBrowser will be returned in any case.
-// |url| is a fully specified URL, eg. "https://contoso.com/abc/def".
+// which matches `url`.
+// `url` is a fully specified URL, eg. "https://contoso.com/abc/def".
+// If the most recent match is saved as kInApp, only it will be returned;
+// If saved as kNone, all the matches regardless of saved_choice value are
+// returned; If saved as kInBrowser, the return value is empty as the preferred
+// choice is the browser.
 std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
     PrefService* local_state,
     const GURL& url);

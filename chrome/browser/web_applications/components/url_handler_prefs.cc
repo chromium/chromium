@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -210,45 +212,35 @@ void FilterAndAddMatches(const base::Value& all_handlers,
     if (exclude_paths_exist && ExcludePathMatches(url_path, *exclude_paths))
       continue;
 
-    // Do not include a match if it should open in a normal browser tab.
-    if (best_choice == UrlHandlerSavedChoice::kInBrowser)
-      continue;
-
     matches.emplace_back(*profile_path, *app_id, url, best_choice,
                          latest_timestamp);
   }
 }
 
-// If one or more match should open in app, keep the most recent one and remove
-// the others. Also remove matches with no saved choice.
-// Otherwise, any remaining matches should all have no saved choice.
-// Any match that should open in browser have already been removed and should
-// not be found in |matches|.
+// Find the most recent match. If it is saved as kInBrowser, preferred choice
+// is the browser so no matches should be returned; If saved as kNone, all the
+// matches should be returned so the user can make a new saved choice; If
+// kInApp, only returned the app match as it is the saved choice.
 void FilterBySavedChoice(std::vector<UrlHandlerLaunchParams>& matches) {
-  for (const UrlHandlerLaunchParams& params : matches)
-    DCHECK(params.saved_choice != UrlHandlerSavedChoice::kInBrowser);
+  if (matches.empty())
+    return;
 
-  // Are there matches that open in app? Which is the most recently saved?
-  bool has_in_app = false;
-  base::Time most_recent_time = base::Time::Min();
-  size_t most_recent_pos = 0;
-  for (size_t i = 0; i < matches.size(); i++) {
-    const UrlHandlerLaunchParams& params = matches[i];
-    if (params.saved_choice == UrlHandlerSavedChoice::kInApp) {
-      has_in_app = true;
-      if (params.saved_choice_timestamp > most_recent_time) {
-        most_recent_time = params.saved_choice_timestamp;
-        most_recent_pos = i;
-      }
-    }
+  // Record the most recent match.
+  auto most_recent_match_iterator = base::ranges::max_element(
+      matches, base::ranges::less(),
+      &UrlHandlerLaunchParams::saved_choice_timestamp);
+
+  switch (most_recent_match_iterator->saved_choice) {
+    case UrlHandlerSavedChoice::kInApp:
+      matches = {std::move(*most_recent_match_iterator)};
+      break;
+    case UrlHandlerSavedChoice::kInBrowser:
+      matches = {};
+      break;
+    case UrlHandlerSavedChoice::kNone:
+      // `matches` already contain all matches. Do not modify.
+      break;
   }
-
-  // Only keep the most recently saved match that opens in app.
-  if (has_in_app)
-    matches = {std::move(matches[most_recent_pos])};
-
-  // Since no matches opened in browser to begin with and now no matches open in
-  // app, any remaining matches must have no saved choice.
 }
 
 void FindMatchesImpl(const base::Value& pref_value,
@@ -315,8 +307,8 @@ std::vector<UrlHandlerLaunchParams> FindMatches(const base::Value& pref_value,
   return matches;
 }
 
-base::Value GetIncludePathsValue(
-    const std::vector<std::string>& include_paths) {
+base::Value GetIncludePathsValue(const std::vector<std::string>& include_paths,
+                                 const base::Time& time) {
   base::Value value(base::Value::Type::LIST);
   // When no "paths" are specified in web-app-origin-association, all include
   // paths are allowed.
@@ -327,7 +319,7 @@ base::Value GetIncludePathsValue(
     path_dict.SetStringKey(kPath, include_path);
     path_dict.SetIntKey(kChoice,
                         static_cast<int>(UrlHandlerSavedChoice::kNone));
-    path_dict.SetKey(kTimestamp, util::TimeToValue(base::Time::Min()));
+    path_dict.SetKey(kTimestamp, util::TimeToValue(time));
     value.Append(std::move(path_dict));
   }
   return value;
@@ -344,13 +336,14 @@ base::Value GetExcludePathsValue(
 
 base::Value NewHandler(const AppId& app_id,
                        const base::FilePath& profile_path,
-                       const apps::UrlHandlerInfo& info) {
+                       const apps::UrlHandlerInfo& info,
+                       const base::Time& time) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(kAppId, app_id);
   value.SetKey(kProfilePath, util::FilePathToValue(profile_path));
   value.SetBoolKey(kHasOriginWildcard, info.has_origin_wildcard);
   // Set include_paths and exclude paths from associated app.
-  value.SetKey(kIncludePaths, GetIncludePathsValue(info.paths));
+  value.SetKey(kIncludePaths, GetIncludePathsValue(info.paths, time));
   value.SetKey(kExcludePaths, GetExcludePathsValue(info.exclude_paths));
   return value;
 }
@@ -520,7 +513,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void AddWebApp(PrefService* local_state,
                const AppId& app_id,
                const base::FilePath& profile_path,
-               const apps::UrlHandlers& url_handlers) {
+               const apps::UrlHandlers& url_handlers,
+               const base::Time& time) {
   if (profile_path.empty() || url_handlers.empty())
     return;
 
@@ -534,7 +528,8 @@ void AddWebApp(PrefService* local_state,
     if (origin.opaque())
       continue;
 
-    base::Value new_handler(NewHandler(app_id, profile_path, handler_info));
+    base::Value new_handler(
+        NewHandler(app_id, profile_path, handler_info, time));
     base::Value* const handlers_mutable =
         pref_value->FindListKey(origin.Serialize());
     // One or more apps are already associated with this origin.
