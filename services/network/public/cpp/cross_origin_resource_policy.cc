@@ -226,11 +226,8 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
   constexpr auto kBlockedDueToCoep = mojom::BlockedByResponseReason::
       kCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
-  if ((embedder_policy.report_only_value ==
-           mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
-       (embedder_policy.report_only_value ==
-            mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
-        request_mode == mojom::RequestMode::kNavigate)) &&
+  if (embedder_policy.report_only_value ==
+          mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
       reporter) {
     const auto result = IsBlockedInternal(
         policy, request_url, request_initiator, request_mode,

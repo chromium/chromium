@@ -16,9 +16,6 @@ const FRAME_URL = `${ORIGIN}/common/blank.html` +
 const WORKER_URL = `${ORIGIN}${BASE}/reporting-worker.js` +
   '?pipe=header(cross-origin-embedder-policy,require-corp)' +
   `|header(cross-origin-embedder-policy-report-only,require-corp)`;
-const REPORTING_FRAME_URL = `${ORIGIN}${BASE}/reporting-empty-frame.html` +
-  '?pipe=header(cross-origin-embedder-policy,require-corp)' +
-  `|header(cross-origin-embedder-policy-report-only,require-corp)`;
 
 function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
@@ -120,17 +117,18 @@ const ENVIRONMENTS = [{
   },
 }, {
   tag: 'between service worker and page',
-  contextUrl: REPORTING_FRAME_URL,
+  contextUrl: `${ORIGIN}${BASE}/reporting-empty-frame.html`,
   run: async (test, url) => {
+    const SCOPE = `${BASE}/reporting-empty-frame.html`;
     // Here we use a Service Worker without COEP.
     const WORKER_URL = `${ORIGIN}${BASE}/sw.js`;
-    const reg = await service_worker_unregister_and_register(
-      test, WORKER_URL, REPORTING_FRAME_URL);
+    const reg =
+      await service_worker_unregister_and_register(test, WORKER_URL, SCOPE);
     test.add_cleanup(() => reg.unregister());
     const worker = reg.installing || reg.waiting || reg.active;
     worker.addEventListener('error', test.unreached_func('Worker.onerror'));
     return await fetchInFrame(
-      test, REPORTING_FRAME_URL, url);
+      test, `${ORIGIN}${BASE}/reporting-empty-frame.html`, url);
   },
 }];
 
