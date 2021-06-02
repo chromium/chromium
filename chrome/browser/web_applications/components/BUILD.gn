@@ -107,11 +107,11 @@ source_set("components") {
     "web_app_icon_downloader.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [ "web_app_shortcut_chromeos.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux.cc",
@@ -252,7 +252,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux_unittest.cc",
@@ -314,7 +314,7 @@ source_set("browser_tests") {
     "web_app_url_loader_browsertest.cc",
   ]
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
   }
 

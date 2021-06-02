@@ -13,7 +13,7 @@ namespace web_app {
 // This block defines stub implementations of OS specific methods for
 // FileHandling. Currently, Windows, MacOSX and Desktop Linux (but not Chrome
 // OS) have their own implementations.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldRegisterFileHandlersWithOs() {
   return false;
 }
