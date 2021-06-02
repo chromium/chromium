@@ -868,7 +868,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
                    .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
+// TODO(michaelludwig): crbug.com/1143929 disable this test for skia roll and
+// then rebase expected image.
+TEST_P(LayerTreeHostFiltersPixelTest, DISABLED_RotatedDropShadowFilter) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 

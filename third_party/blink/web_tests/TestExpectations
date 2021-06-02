@@ -5232,8 +5232,9 @@ crbug.com/1090660 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/re
 crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Pass Failure ]
 
 #Sherrif 2019-08-16
-crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
-crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
+#TODO(michaelludwig): Uncomment after more general suppression is rebased.
+#crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
+#crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
 
 crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
 
@@ -5365,6 +5366,36 @@ crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origi
 crbug.com/1029489 http/tests/devtools/elements/elements-linkify-attributes.js [ Pass Failure Timeout ]
 crbug.com/1030258 http/tests/devtools/network/network-cookies-pane.js [ Pass Failure ]
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Pass Failure ]
+
+# TODO(michaelludwig): Rebaseline these after Skia roll lands making changes to
+# image filters. See crbug.com/1143929
+crbug.com/1143929 compositing/reflections/animation-inside-reflection.html [ Pass Failure ]
+crbug.com/1143929 compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
+crbug.com/1143929 compositing/reflections/nested-reflection-animated.html [ Pass Failure ]
+crbug.com/1143929 compositing/reflections/nested-reflection-transformed.html [ Pass Failure ]
+crbug.com/1143929 compositing/reflections/nested-reflection-transformed2.html [ Pass Failure ]
+crbug.com/1143929 compositing/reflections/reflection-in-composited.html [ Pass Failure ]
+crbug.com/1143929 css3/filters/effect-combined-hw.html [ Pass Failure ]
+crbug.com/1143929 css3/filters/effect-combined.html [ Pass Failure ]
+crbug.com/1143929 css3/filters/regions-expanding.html [ Pass Failure ]
+crbug.com/1143929 external/wpt/css/css-transforms/preserve3d-and-filter-with-perspective.html [ Pass Failure ]
+crbug.com/1143929 external/wpt/html/canvas/element/manual/filters/canvas-filter-object-convolve-matrix.html [ Pass Failure ]
+crbug.com/1143929 fast/css/transformed-mask.html [ Pass Failure ]
+crbug.com/1143929 fast/reflections/opacity-reflection-transform.html [ Pass Failure ]
+crbug.com/1143929 images/color-profile-image-filter-all.html [ Pass Failure ]
+crbug.com/1143929 paint/invalidation/reflection/reflection-with-rotation.html [ Pass Failure ]
+crbug.com/1143929 svg/W3C-SVG-1.1/filters-blend-01-b.svg [ Pass Failure ]
+crbug.com/1143929 svg/W3C-SVG-1.1/filters-example-01-b.svg [ Pass Failure ]
+crbug.com/1143929 svg/W3C-SVG-1.1/filters-turb-02-f.svg [ Pass Failure ]
+crbug.com/1143929 svg/batik/filters/feTile.svg [ Pass Failure ]
+crbug.com/1143929 svg/batik/text/smallFonts.svg [ Pass Failure ]
+crbug.com/1143929 svg/batik/text/textFeatures.svg [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-dom-in-attr.html [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-dom-in2-attr.html [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-dom-mode-attr.html [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-svgdom-in-prop.html [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-svgdom-in2-prop.html [ Pass Failure ]
+crbug.com/1143929 svg/dynamic-updates/SVGFEBlendElement-svgdom-mode-prop.html [ Pass Failure ]
 
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
