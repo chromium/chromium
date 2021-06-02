@@ -8,31 +8,56 @@
     width: 100%;
   }
 
-  h1 {
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 22px;
-    margin: 12px 16px 14px 12px;
+  header {
+    border-bottom: solid 1px var(--google-grey-refresh-300);
+    display: flex;
+    padding-block-start: 4px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    header {
+      border-bottom: solid 1px var(--google-grey-refresh-700);
+    }
   }
 
   cr-tabs {
     --cr-tabs-height: 40px;
     --cr-tabs-font-size: 13px;
+    flex: 1;
+  }
+
+  #closeButtonContainer {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    width: 48px;
+  }
+
+  #closeButton {
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-icon-size: 16px;
+    margin: 0;
   }
 
   #content {
     flex: 1;
     overflow: auto;
+    padding: 8px 0;
   }
 </style>
 
 <header>
-  <h1>Lists</h1>
   <cr-tabs
       tab-names="[[getTabNames_(tabs_)]]"
       selected="{{selectedTab_}}"
       on-selected-changed="onSelectedTabChanged_">
   </cr-tabs>
+  <div id="closeButtonContainer">
+    <cr-icon-button
+        id="closeButton" iron-icon="cr:close" on-click="onCloseClick_">
+    </cr-icon-button>
+  </div>
 </header>
 
 <div id="content">
