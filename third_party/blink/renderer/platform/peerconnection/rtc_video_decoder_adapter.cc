@@ -21,6 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_log.h"
@@ -207,6 +208,7 @@ RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
 
 bool RTCVideoDecoderAdapter::InitializeSync(
     const media::VideoDecoderConfig& config) {
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderAdapter::InitializeSync");
   DVLOG(3) << __func__;
   // Can be called on |worker_thread_| or |decoding_thread_|.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());

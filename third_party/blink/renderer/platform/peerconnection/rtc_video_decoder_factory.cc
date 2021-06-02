@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_util.h"
@@ -342,6 +343,7 @@ RTCVideoDecoderFactory::~RTCVideoDecoderFactory() {
 std::unique_ptr<webrtc::VideoDecoder>
 RTCVideoDecoderFactory::CreateVideoDecoder(
     const webrtc::SdpVideoFormat& format) {
+  TRACE_EVENT0("webrtc", "RTCVideoDecoderFactory::CreateVideoDecoder");
   DVLOG(2) << __func__;
   CheckAndWaitDecoderSupportStatusIfNeeded();
 
