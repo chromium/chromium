@@ -271,12 +271,13 @@ StorableImpression ImpressionBuilder::Build() const {
                             source_type_, priority_, impression_id_);
 }
 
-StorableConversion DefaultConversion() {
+StorableConversion DefaultConversion(uint64_t event_source_trigger_data) {
   StorableConversion conversion(
       /*conversion_data=*/111,
       /*conversion_destination=*/
       net::SchemefulSite(GURL(kDefaultConversionDestination)),
-      /*reporting_origin=*/url::Origin::Create(GURL(kDefaultReportOrigin)));
+      /*reporting_origin=*/url::Origin::Create(GURL(kDefaultReportOrigin)),
+      event_source_trigger_data);
   return conversion;
 }
 

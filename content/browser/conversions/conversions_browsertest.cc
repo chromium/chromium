@@ -575,4 +575,101 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
+IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
+                       EventSourceImpressionConversion_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  // 123 in the `registerConversionForOrigin` call below is sanitized to 1 in
+  // the report's `trigger_data`.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/R"({"source_event_id":"7","trigger_data":"1"})", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  // Create an anchor tag with impression attributes.
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTagWithRegisterAttributionSource("link" /* id */,
+                        $1 /* url */,
+                        "7" /* impression data */,
+                        $2 /* conversion_destination */);)",
+                       conversion_url, url::Origin::Create(conversion_url))));
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  // Register a conversion with the original page as the reporting origin.
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(registerConversionForOrigin(0 /* conversion_data */,
+                                       $1,
+                                       123 /* event_source_trigger_data */);)",
+                       url::Origin::Create(impression_url))));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
+                       EventSourceImpressionTwoConversions_OneReportSent) {
+  // Expected reports must be registered before the server starts.
+  // 123 in the `registerConversionForOrigin` call below is sanitized to 1 in
+  // the report's `trigger_data`.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/R"({"source_event_id":"7","trigger_data":"1"})", https_server());
+  ExpectedReportWaiter expected_report_not_sent(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/"", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  // Create an anchor tag with impression attributes.
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTagWithRegisterAttributionSource("link" /* id */,
+                        $1 /* url */,
+                        "7" /* impression data */,
+                        $2 /* conversion_destination */);)",
+                       conversion_url, url::Origin::Create(conversion_url))));
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  // Register two conversions with the original page as the reporting origin.
+  for (int i = 0; i < 2; i++) {
+    EXPECT_TRUE(
+        ExecJs(web_contents(),
+               JsReplace(R"(registerConversionForOrigin(0 /* conversion_data */,
+                                       $1,
+                                       123 /* event_source_trigger_data */);)",
+                         url::Origin::Create(impression_url))));
+  }
+
+  expected_report.WaitForReport();
+
+  // Since we want to verify that a report _isn't_ sent, we can't really wait on
+  // any event here. The best thing we can do is just impose a short delay and
+  // verify the browser didn't send anything. Worst case, this should start
+  // flakily failing if the logic breaks.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(100));
+  run_loop.Run();
+  EXPECT_FALSE(expected_report_not_sent.HasRequest());
+}
+
 }  // namespace content

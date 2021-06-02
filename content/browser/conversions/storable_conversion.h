@@ -23,7 +23,8 @@ class CONTENT_EXPORT StorableConversion {
   // navigation origin known by the browser process.
   StorableConversion(uint64_t conversion_data,
                      net::SchemefulSite conversion_destination,
-                     url::Origin reporting_origin);
+                     url::Origin reporting_origin,
+                     uint64_t event_source_trigger_data);
   StorableConversion(const StorableConversion& other);
   StorableConversion& operator=(const StorableConversion& other) = delete;
   ~StorableConversion();
@@ -36,6 +37,10 @@ class CONTENT_EXPORT StorableConversion {
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
+  uint64_t event_source_trigger_data() const {
+    return event_source_trigger_data_;
+  }
+
  private:
   // Conversion data associated with conversion registration event.
   uint64_t conversion_data_;
@@ -46,6 +51,10 @@ class CONTENT_EXPORT StorableConversion {
   // Origin of the conversion redirect url, and the origin that will receive any
   // reports.
   url::Origin reporting_origin_;
+
+  // Event source trigger data specified in conversion redirect. Defaults to 0
+  // if not provided.
+  uint64_t event_source_trigger_data_;
 };
 
 }  // namespace content

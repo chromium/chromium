@@ -155,8 +155,25 @@ TEST_F(ConversionStorageTest,
           .Build();
   storage()->StoreImpression(impression);
   StorableConversion conversion(1, net::SchemefulSite(GURL("https://a.test")),
-                                impression.reporting_origin());
+                                impression.reporting_origin(),
+                                /*event_source_trigger_data=*/0);
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+}
+
+TEST_F(ConversionStorageTest, EventSourceImpressionsForConversion_Converts) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetSourceType(StorableImpression::SourceType::kEvent)
+          .Build());
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      DefaultConversion(/*event_source_trigger_data=*/456)));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(456u, actual_reports[0].conversion_data);
 }
 
 TEST_F(ConversionStorageTest, ImpressionExpired_NoConversionsStored) {
@@ -602,14 +619,16 @@ TEST_F(ConversionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion(1, net::SchemefulSite(origin), origin);
+    StorableConversion conversion(1, net::SchemefulSite(origin), origin,
+                                  /*event_source_trigger_data=*/0);
     EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   }
   clock()->Advance(base::TimeDelta::FromDays(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion(1, net::SchemefulSite(origin), origin);
+    StorableConversion conversion(1, net::SchemefulSite(origin), origin,
+                                  /*event_source_trigger_data=*/0);
     EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   }
 

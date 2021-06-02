@@ -32,7 +32,8 @@ struct CONTENT_EXPORT ConversionReport {
   // Impression associated with this conversion report.
   const StorableImpression impression;
 
-  // Data provided at reporting time by the reporting origin.
+  // Data provided at reporting time by the reporting origin. Depending on the
+  // source type, this contains the associated data in the trigger redirect.
   uint64_t conversion_data;
 
   // The time the conversion occurred.

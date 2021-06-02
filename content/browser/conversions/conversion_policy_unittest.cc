@@ -21,6 +21,11 @@ class EmptyNoiseProvider : public ConversionPolicy::NoiseProvider {
   uint64_t GetNoisedConversionData(uint64_t conversion_data) const override {
     return conversion_data;
   }
+
+  uint64_t GetNoisedEventSourceTriggerData(
+      uint64_t event_source_trigger_data) const override {
+    return event_source_trigger_data;
+  }
 };
 
 // Mock ConversionNoiseProvider that always noises values by +1.
@@ -28,6 +33,11 @@ class IncrementingNoiseProvider : public ConversionPolicy::NoiseProvider {
  public:
   uint64_t GetNoisedConversionData(uint64_t conversion_data) const override {
     return conversion_data + 1;
+  }
+
+  uint64_t GetNoisedEventSourceTriggerData(
+      uint64_t event_source_trigger_data) const override {
+    return event_source_trigger_data + 1;
   }
 };
 
@@ -65,7 +75,7 @@ TEST_F(ConversionPolicyTest, ThreeBitConversionData_Unchanged) {
   }
 }
 
-TEST_F(ConversionPolicyTest, SantizizeConversionData_OutputHasNoise) {
+TEST_F(ConversionPolicyTest, SanitizeConversionData_OutputHasNoise) {
   // The policy should include noise when sanitizing data.
   EXPECT_EQ(5LU, ConversionPolicy::CreateForTesting(
                      std::make_unique<IncrementingNoiseProvider>())
@@ -79,6 +89,46 @@ TEST_F(ConversionPolicyTest, DebugMode_ConversionDataNotNoised) {
     EXPECT_EQ(conversion_data,
               ConversionPolicy(/*debug_mode=*/true)
                   .GetSanitizedConversionData(conversion_data));
+  }
+}
+
+TEST_F(ConversionPolicyTest,
+       HighEntropyEventSourceTriggerData_StrippedToLowerBits) {
+  uint64_t event_source_trigger_data = 4LU;
+
+  // The policy should strip the data to the lower 1 bit.
+  EXPECT_EQ(
+      0LU,
+      ConversionPolicy::CreateForTesting(std::make_unique<EmptyNoiseProvider>())
+          ->GetSanitizedEventSourceTriggerData(event_source_trigger_data));
+}
+
+TEST_F(ConversionPolicyTest, OneBitEventSourceTriggerData_Unchanged) {
+  std::unique_ptr<ConversionPolicy> policy = ConversionPolicy::CreateForTesting(
+      std::make_unique<EmptyNoiseProvider>());
+  for (uint64_t event_source_trigger_data = 0; event_source_trigger_data < 2;
+       event_source_trigger_data++) {
+    EXPECT_EQ(
+        event_source_trigger_data,
+        policy->GetSanitizedEventSourceTriggerData(event_source_trigger_data));
+  }
+}
+
+TEST_F(ConversionPolicyTest, SanitizeEventSourceTriggerData_OutputHasNoise) {
+  // The policy should include noise when sanitizing data.
+  EXPECT_EQ(0LU, ConversionPolicy::CreateForTesting(
+                     std::make_unique<IncrementingNoiseProvider>())
+                     ->GetSanitizedEventSourceTriggerData(1UL));
+}
+
+// This test will fail flakily if noise is used.
+TEST_F(ConversionPolicyTest, DebugMode_EventSourceTriggerDataNotNoised) {
+  uint64_t event_source_trigger_data = 0UL;
+  for (int i = 0; i < 100; i++) {
+    EXPECT_EQ(
+        event_source_trigger_data,
+        ConversionPolicy(/*debug_mode=*/true)
+            .GetSanitizedEventSourceTriggerData(event_source_trigger_data));
   }
 }
 

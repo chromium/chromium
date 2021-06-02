@@ -27,10 +27,16 @@ class CONTENT_EXPORT ConversionPolicy {
     NoiseProvider() = default;
     virtual ~NoiseProvider() = default;
 
-    // Returns a noise value of |conversion_data|. By default, this reports
+    // Returns a noised value of |conversion_data|. By default, this reports
     // completely random data for 5% of conversions, and sends the real data for
     // 95%. Virtual for testing.
     virtual uint64_t GetNoisedConversionData(uint64_t conversion_data) const;
+
+    // Returns a noised value of |event_source_trigger_data|. By default, this
+    // reports completely random data for 5% of conversions, and sends the real
+    // data for 95%. Virtual for testing.
+    virtual uint64_t GetNoisedEventSourceTriggerData(
+        uint64_t event_source_trigger_data) const;
   };
 
   static std::unique_ptr<ConversionPolicy> CreateForTesting(
@@ -46,6 +52,10 @@ class CONTENT_EXPORT ConversionPolicy {
   // Gets the sanitized conversion data for a conversion. This strips entropy
   // from the provided to data to at most 3 bits of information.
   virtual uint64_t GetSanitizedConversionData(uint64_t conversion_data) const;
+
+  // Gets the sanitized event source trigger data for a conversion.
+  virtual uint64_t GetSanitizedEventSourceTriggerData(
+      uint64_t event_source_trigger_data) const;
 
   // Gets the sanitized impression data for an impression.
   virtual uint64_t GetSanitizedImpressionData(uint64_t impression_data) const;

@@ -57,6 +57,8 @@ class CONTENT_EXPORT ConversionHost
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidConversion_NoBadMessage);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            Conversion_AssociatedWithConversionSite);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
+                           Conversion_EventSourceTriggerDataPropagated);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, PerPageConversionMetrics);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            NoManager_NoPerPageConversionMetrics);

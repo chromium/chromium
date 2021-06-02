@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_CONVERSION_TEST_UTILS_H_
 #define CONTENT_BROWSER_CONVERSIONS_CONVERSION_TEST_UTILS_H_
 
+#include <stdint.h>
+
 #include <list>
-#include <string>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -250,7 +251,7 @@ class ImpressionBuilder {
 
 // Returns a StorableConversion with default data which matches the default
 // impressions created by ImpressionBuilder.
-StorableConversion DefaultConversion();
+StorableConversion DefaultConversion(uint64_t event_source_trigger_data = 0);
 
 testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
                                           const StorableImpression& actual);

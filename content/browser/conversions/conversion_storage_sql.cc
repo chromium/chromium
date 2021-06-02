@@ -211,20 +211,16 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   base::Time current_time = clock_->Now();
 
-  // TODO(apaseltiner): Support kEvent as well as kNavigation.
-  const StorableImpression::SourceType kSourceType =
-      StorableImpression::SourceType::kNavigation;
-
   // Get all impressions that match this <reporting_origin,
   // conversion_destination> pair. Only get impressions that are active and not
   // past their expiry time.
   const char kGetMatchingImpressionsSql[] =
       "SELECT impression_id, impression_data, impression_origin, "
       "conversion_origin, impression_time, expiry_time, priority, "
-      "attributed_truthfully "
+      "attributed_truthfully, source_type "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
-      "AND active = 1 AND expiry_time > ? AND source_type = ?"
+      "AND active = 1 AND expiry_time > ? "
       "ORDER BY impression_time DESC";
 
   sql::Statement statement(
@@ -232,7 +228,6 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   statement.BindString(0, serialized_conversion_destination);
   statement.BindString(1, SerializeOrigin(reporting_origin));
   statement.BindTime(2, current_time);
-  statement.BindInt(3, static_cast<int>(kSourceType));
 
   std::vector<StorableImpression> impressions;
 
@@ -259,10 +254,12 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     StorableImpression::AttributionLogic attribution_logic =
         static_cast<StorableImpression::AttributionLogic>(
             statement.ColumnInt(7));
+    StorableImpression::SourceType source_type =
+        static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
 
     StorableImpression impression(impression_data, impression_origin,
                                   conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, kSourceType,
+                                  impression_time, expiry_time, source_type,
                                   attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
     attribution_logics.insert_or_assign(impression_id, attribution_logic);
@@ -275,7 +272,13 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   const StorableImpression& impression_to_attribute =
       delegate_->GetImpressionToAttribute(impressions);
 
-  ConversionReport report(impression_to_attribute, conversion.conversion_data(),
+  const uint64_t conversion_data =
+      impression_to_attribute.source_type() ==
+              StorableImpression::SourceType::kEvent
+          ? conversion.event_source_trigger_data()
+          : conversion.conversion_data();
+
+  ConversionReport report(impression_to_attribute, conversion_data,
                           /*conversion_time=*/current_time,
                           /*report_time=*/current_time,
                           /*conversion_id=*/absl::nullopt);
@@ -332,7 +335,9 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // provide the max number of conversions prior to this new conversion being
   // logged.
   int max_prior_conversions_before_inactive =
-      delegate_->GetMaxConversionsPerImpression(kSourceType) - 1;
+      delegate_->GetMaxConversionsPerImpression(
+          report.impression.source_type()) -
+      1;
 
   // Update the attributed impression.
   impression_update_statement.BindInt(0, max_prior_conversions_before_inactive);

@@ -261,7 +261,10 @@ void ConversionHost::RegisterConversion(
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
           conversion->conversion_data),
-      conversion_destination, conversion->reporting_origin);
+      conversion_destination, conversion->reporting_origin,
+      conversion_manager->GetConversionPolicy()
+          .GetSanitizedEventSourceTriggerData(
+              conversion->event_source_trigger_data));
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(storable_conversion);
