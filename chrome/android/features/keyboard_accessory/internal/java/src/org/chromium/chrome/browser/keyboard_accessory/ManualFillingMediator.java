@@ -282,8 +282,7 @@ class ManualFillingMediator extends EmptyTabObserver
     void dismiss() {
         if (!isInitialized()) return;
         pause();
-        ViewGroup contentView = getContentView();
-        if (contentView != null) mSoftKeyboardDelegate.hideSoftKeyboardOnly(contentView);
+        hideSoftKeyboard();
     }
 
     void notifyPopupOpened(DropdownPopupWindow popup) {
@@ -300,6 +299,13 @@ class ManualFillingMediator extends EmptyTabObserver
         mModel.set(SHOW_WHEN_VISIBLE, false);
         if (!isInitialized()) return;
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+    }
+
+    void showAccessorySheetTab(@AccessoryTabType int tabType) {
+        if (!isInitialized()) return;
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        if (is(HIDDEN)) mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        mKeyboardAccessory.setActiveTab(tabType);
     }
 
     void pause() {
@@ -588,7 +594,7 @@ class ManualFillingMediator extends EmptyTabObserver
         int newSheetHeight = insetObserver != null
                 ? insetObserver.getSystemWindowInsetsBottom()
                 : mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView);
-        newSheetHeight = Math.max(minimalSheetHeight, newSheetHeight);
+        newSheetHeight = Math.max(newSheetHeight, minimalSheetHeight);
         return newSheetHeight;
     }
 

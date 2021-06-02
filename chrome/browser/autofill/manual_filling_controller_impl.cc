@@ -157,6 +157,18 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   UpdateVisibility();
 }
 
+void ManualFillingControllerImpl::ShowAccessorySheetTab(
+    const autofill::AccessoryTabType& tab_type) {
+  if (tab_type == autofill::AccessoryTabType::CREDIT_CARDS) {
+    cc_controller_->RefreshSuggestions();
+  } else {
+    NOTIMPLEMENTED()
+        << "ShowAccessorySheetTab does not support the given TabType yet "
+        << tab_type;
+  }
+  view_->ShowAccessorySheetTab(tab_type);
+}
+
 void ManualFillingControllerImpl::UpdateSourceAvailability(
     FillingSource source,
     bool has_suggestions) {

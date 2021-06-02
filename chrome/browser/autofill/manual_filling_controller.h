@@ -98,6 +98,11 @@ class ManualFillingController {
   // action (given by an enum param) is available.
   virtual void OnAutomaticGenerationStatusChanged(bool available) = 0;
 
+  // Instructs the view to show the manual filling sheet for the given
+  // |tab_type|.
+  virtual void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) = 0;
+
   // --------------------------
   // Methods called by UI code:
   // --------------------------

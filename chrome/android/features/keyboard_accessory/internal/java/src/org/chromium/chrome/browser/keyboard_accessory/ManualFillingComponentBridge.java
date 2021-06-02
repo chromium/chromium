@@ -1,3 +1,4 @@
+
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -143,6 +144,13 @@ class ManualFillingComponentBridge {
     private static Object createAccessorySheetData(
             @AccessoryTabType int type, String title, String warning) {
         return new AccessorySheetData(type, title, warning);
+    }
+
+    @CalledByNative
+    private void showAccessorySheetTab(int tabType) {
+        if (getManualFillingComponent() != null) {
+            getManualFillingComponent().showAccessorySheetTab(tabType);
+        }
     }
 
     @CalledByNative

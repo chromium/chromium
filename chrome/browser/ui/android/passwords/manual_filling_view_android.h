@@ -39,6 +39,8 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void SwapSheetWithKeyboard() override;
   void ShowWhenKeyboardIsVisible() override;
   void Hide() override;
+  void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) override;
 
   // Called from Java via JNI:
   void OnFaviconRequested(

@@ -24,6 +24,7 @@ class MockManualFillingController
                void(ManualFillingController::FillingSource, bool));
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(OnAutomaticGenerationStatusChanged, void(bool));
+  MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
   MOCK_METHOD2(OnFillingTriggered,
                void(autofill::AccessoryTabType type,
                     const autofill::UserInfo::Field&));

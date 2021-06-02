@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -92,6 +93,12 @@ public class KeyboardAccessoryCoordinator {
         void closeActiveTab();
 
         /**
+         * Set the currently active tab to the given tabType.
+         * @param tabType The type of the tab that should be selected.
+         */
+        void setActiveTab(@AccessoryTabType int tabType);
+
+        /**
          * Returns whether active tab or null if no tab is currently active. The returned property
          * reflects the latest change while the view might still be in progress of being updated.
          * @return The active {@link KeyboardAccessoryData.Tab}, null otherwise.
@@ -167,6 +174,10 @@ public class KeyboardAccessoryCoordinator {
 
     public void setTabs(KeyboardAccessoryData.Tab[] tabs) {
         mTabLayout.getTabSwitchingDelegate().setTabs(tabs);
+    }
+
+    public void setActiveTab(@AccessoryTabType int tabType) {
+        mTabLayout.getTabSwitchingDelegate().setActiveTab(tabType);
     }
 
     /**

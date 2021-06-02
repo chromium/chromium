@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "url/gurl.h"
 
 class ManualFillingController;
@@ -74,6 +75,10 @@ class ManualFillingViewInterface {
 
   // Hides the accessory bar and the accessory sheet (if open).
   virtual void Hide() = 0;
+
+  // Shows the accessory sheet for the given |tab_type|.
+  virtual void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) = 0;
 
  private:
   friend class ManualFillingControllerImpl;

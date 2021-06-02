@@ -44,6 +44,8 @@ class ManualFillingControllerImpl
                                 bool has_suggestions) override;
   void Hide() override;
   void OnAutomaticGenerationStatusChanged(bool available) override;
+  void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) override;
   void OnFillingTriggered(autofill::AccessoryTabType type,
                           const autofill::UserInfo::Field& selection) override;
   void OnOptionSelected(

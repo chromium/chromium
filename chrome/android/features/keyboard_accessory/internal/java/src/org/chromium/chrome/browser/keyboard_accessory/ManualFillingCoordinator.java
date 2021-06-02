@@ -127,6 +127,11 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
+    public void showAccessorySheetTab(@AccessoryTabType int tabType) {
+        mMediator.showAccessorySheetTab(tabType);
+    }
+
+    @Override
     public void onResume() {
         mMediator.resume();
     }

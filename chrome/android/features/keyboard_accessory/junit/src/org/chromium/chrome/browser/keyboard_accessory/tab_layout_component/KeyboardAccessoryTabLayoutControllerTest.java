@@ -151,4 +151,27 @@ public class KeyboardAccessoryTabLayoutControllerTest {
         verifyNoMoreInteractions(
                 mMockPropertyObserver, mMockTabListObserver, mMockAccessoryTabObserver);
     }
+
+    @Test
+    public void testSetActiveTab() {
+        mModel.addObserver(mMockPropertyObserver);
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+        mCoordinator.getTabSwitchingDelegate().addTab(mTestTab);
+
+        // Set the active tab type to 0 which is the recording_type of |mTestTab|.
+        mCoordinator.getTabSwitchingDelegate().setActiveTab(0);
+
+        verify(mMockPropertyObserver).onPropertyChanged(mModel, ACTIVE_TAB);
+        assertThat(mModel.get(ACTIVE_TAB), is(0));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSetActiveTab_tabTypeNotFound_throwsException() {
+        mModel.addObserver(mMockPropertyObserver);
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+        mCoordinator.getTabSwitchingDelegate().addTab(mTestTab);
+
+        // Set the active tab type to 1 which is different from the recording_type of |mTestTab|.
+        mCoordinator.getTabSwitchingDelegate().setActiveTab(1);
+    }
 }

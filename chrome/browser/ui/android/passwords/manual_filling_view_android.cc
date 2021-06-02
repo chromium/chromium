@@ -94,6 +94,14 @@ void ManualFillingViewAndroid::Hide() {
   }
 }
 
+void ManualFillingViewAndroid::ShowAccessorySheetTab(
+    const autofill::AccessoryTabType& tab_type) {
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_showAccessorySheetTab(
+        base::android::AttachCurrentThread(), obj, static_cast<int>(tab_type));
+  }
+}
+
 void ManualFillingViewAndroid::OnAutomaticGenerationStatusChanged(
     bool available) {
   if (!available && java_object_internal_.is_null())

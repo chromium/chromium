@@ -1085,6 +1085,30 @@ public class ManualFillingControllerTest {
                 .showConfirmation("Suggestion", "Delete it?", R.string.ok, testRunnable);
     }
 
+    @Test
+    public void testShowAccessorySheetTab() {
+        // Prepare a tab and register a new tab, so there is a reason to display the bar.
+        addBrowserTab(mMediator, 1111, null);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
+        assertThat(mModel.get(SHOW_WHEN_VISIBLE), is(false));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+
+        mController.showAccessorySheetTab(AccessoryTabType.PASSWORDS);
+
+        // Verify that the states are updated correctly and the active tab is set.
+        assertThat(mModel.get(SHOW_WHEN_VISIBLE), is(true));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+        verify(mMockKeyboardAccessory, times(1)).setActiveTab(AccessoryTabType.PASSWORDS);
+
+        // Simulate the callback once active tab is set.
+        mMediator.onChangeAccessorySheet(0);
+
+        // Assert tha the keyboard extension state continues to be REPLACING_KEYBOARD as we're
+        // showing the sheet.
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+    }
+
     /**
      * Creates a tab and calls the observer events as if it was just created and switched to.
      * @param mediator The {@link ManualFillingMediator} whose observers should be triggered.

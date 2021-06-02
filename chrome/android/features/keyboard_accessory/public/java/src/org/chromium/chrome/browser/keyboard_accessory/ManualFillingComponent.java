@@ -178,6 +178,12 @@ public interface ManualFillingComponent {
     void hide();
 
     /**
+     * Commands the accessory to show and set the currently active tab to the given |tabType|.
+     * @param tabType the tab that should be selected by default.
+     */
+    void showAccessorySheetTab(@AccessoryTabType int tabType);
+
+    /**
      * Notifies the component that the activity it's living in was resumed.
      */
     void onResume();

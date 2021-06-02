@@ -72,7 +72,7 @@ since these untethered states either:
 
 |   ID   | State              | Accessory Bar            | Fallback Sheet                          | Floats  | Transition into*
 |--------|--------------------|--------------------------|-----------------------------------------|---------|-
-| 0x0100 | HIDDEN             | Hidden                   | Hidden                                  | N/A     | FLOATING_BAR
+| 0x0100 | HIDDEN             | Hidden                   | Hidden                                  | N/A     | FLOATING_BAR, REPLACING_KEYBOARD
 | 0x0101 | EXTENDING_KEYBOARD | **Visible**              | Hidden                                  | No      | WAITING_TO_REPLACE
 | 0x0001 | WAITING_TO_REPLACE | **Visible**              | N/A — waits for keyboard to (dis)appear | No      | REPLACING_KEYBOARD
 | 0x0011 | REPLACING_KEYBOARD | **Visible** as title bar | **Visible**                             | No      | FLOATING_SHEET

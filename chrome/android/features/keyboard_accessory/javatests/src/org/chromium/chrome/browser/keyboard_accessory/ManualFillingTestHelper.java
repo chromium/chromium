@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
@@ -509,5 +510,11 @@ public class ManualFillingTestHelper {
             ManualFillingComponentBridge.signalAutoGenerationStatus(
                     mActivityTestRule.getWebContents(), available);
         });
+    }
+
+    public void registerSheetDataProvider(@AccessoryTabType int tabType) {
+        PropertyProvider<AccessorySheetData> sheetDataProvider = new PropertyProvider<>();
+        getManualFillingCoordinator().registerSheetDataProvider(
+                mWebContentsRef.get(), tabType, sheetDataProvider);
     }
 }
