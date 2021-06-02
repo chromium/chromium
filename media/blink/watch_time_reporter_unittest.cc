@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -236,7 +235,7 @@ class WatchTimeReporterTest
     }
 
    private:
-    CheckedPtr<WatchTimeReporterTest> parent_;
+    WatchTimeReporterTest* parent_;
 
     DISALLOW_COPY_AND_ASSIGN(WatchTimeInterceptor);
   };
@@ -287,7 +286,7 @@ class WatchTimeReporterTest
     void SetAudioPipelineInfo(const AudioDecoderInfo& info) override {}
 
    private:
-    CheckedPtr<WatchTimeReporterTest> parent_;
+    WatchTimeReporterTest* parent_;
   };
 
   WatchTimeReporterTest()
@@ -633,7 +632,7 @@ class WatchTimeReporterTest
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
   MOCK_METHOD1(OnCurrentTimestampChanged, void(base::TimeDelta));
 
-  CheckedPtr<base::test::TaskEnvironment> task_environment_ =
+  base::test::TaskEnvironment* task_environment_ =
       BlinkPlatformWithTaskEnvironment::GetTaskEnvironment();
   const bool has_video_;
   const bool has_audio_;

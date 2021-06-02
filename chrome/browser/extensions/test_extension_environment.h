@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -112,7 +111,7 @@ class TestExtensionEnvironment {
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<ExtensionService> extension_service_ = nullptr;
+  ExtensionService* extension_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestExtensionEnvironment);
 };

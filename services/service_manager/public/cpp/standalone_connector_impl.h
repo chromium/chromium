@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -68,7 +67,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) StandaloneConnectorImpl
       RegisterServiceInstanceCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Connector> receiver) override;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   mojo::ReceiverSet<mojom::Connector> receivers_;
 

@@ -104,7 +104,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     // container, but its unlikely that the user will notice, since other
     // things are changing too.
     if (certificate_button_) {
-      RemoveChildViewT(certificate_button_.get());
+      RemoveChildViewT(certificate_button_);
     }
     // TODO(olesiamarukhno): Add shared enum for views ID, instead of using one
     // declared in `PageInfoMainView`.

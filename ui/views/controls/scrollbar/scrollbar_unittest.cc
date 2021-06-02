@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -47,7 +46,7 @@ class TestScrollBarController : public views::ScrollBarController {
 
   // We save the last values in order to assert the correctness of the scroll
   // operation.
-  CheckedPtr<views::ScrollBar> last_source;
+  views::ScrollBar* last_source;
   bool last_is_positive;
   bool last_is_page;
   int last_position;
@@ -104,7 +103,7 @@ class ScrollBarViewsTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // This is the Views scrollbar.
-  CheckedPtr<ScrollBar> scrollbar_ = nullptr;
+  ScrollBar* scrollbar_ = nullptr;
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace views {
@@ -63,11 +62,11 @@ class VIEWS_EXPORT ExternalFocusTracker : public FocusChangeListener {
   void StartTracking();
 
   // Focus manager which we are a listener for.
-  CheckedPtr<FocusManager> focus_manager_;
+  FocusManager* focus_manager_;
 
   // The parent view of views which we should not track focus changes to. We
   // also do not track changes to parent_view_ itself.
-  CheckedPtr<View> parent_view_;
+  View* parent_view_;
 
   // Holds the last focused view.
   std::unique_ptr<ViewTracker> last_focused_view_tracker_;

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/extensions/api/sessions.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -101,10 +100,10 @@ class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // TabRestoreService that we are observing.
-  CheckedPtr<sessions::TabRestoreService> tab_restore_service_;
+  sessions::TabRestoreService* tab_restore_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionsEventRouter);
 };
@@ -127,7 +126,7 @@ class SessionsAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<SessionsAPI>;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

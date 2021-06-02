@@ -6,7 +6,6 @@
 #define EXTENSIONS_TEST_EXTENSION_STATE_TESTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension_id.h"
 
@@ -91,8 +90,8 @@ class ExtensionStateTester {
   bool ExpectOnlyInSet(const ExtensionId& extension_id,
                        const char* set_name) WARN_UNUSED_RESULT;
 
-  const CheckedPtr<ExtensionRegistry> registry_;
-  const CheckedPtr<ExtensionPrefs> prefs_;
+  ExtensionRegistry* const registry_;
+  ExtensionPrefs* const prefs_;
 };
 
 }  // namespace extensions

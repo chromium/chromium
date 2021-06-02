@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
@@ -133,10 +132,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   std::vector<std::string> requestable_schemes_;
 
   // RenderFrameHost associated with |this|.
-  CheckedPtr<RenderFrameHostImpl> frame_host_;
+  RenderFrameHostImpl* frame_host_;
 
   // Non-owning pointer to the WebContentsImpl this WebUI is associated with.
-  CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* web_contents_;
 
   // The WebUIMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;

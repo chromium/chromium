@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/invalidation/public/identity_provider.h"
 
 class DeviceOAuth2TokenService;
@@ -31,7 +30,7 @@ class DeviceIdentityProvider : public invalidation::IdentityProvider {
  private:
   void OnRefreshTokenAvailable();
 
-  CheckedPtr<DeviceOAuth2TokenService> token_service_;
+  DeviceOAuth2TokenService* token_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceIdentityProvider);
 };

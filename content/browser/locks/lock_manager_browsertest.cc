@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -46,7 +45,7 @@ class TestBrowserClient : public ContentBrowserClient {
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
 
  private:
-  CheckedPtr<FeatureObserverClient> feature_observer_client_;
+  FeatureObserverClient* feature_observer_client_;
 };
 
 class MockObserverClient : public FeatureObserverClient {
@@ -129,7 +128,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
 
  private:
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
 };
 

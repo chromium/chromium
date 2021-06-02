@@ -5,7 +5,6 @@
 #include "extensions/browser/renderer_startup_helper.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -157,7 +156,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   size_t num_loaded_extensions_;
   size_t num_loaded_extensions_in_incognito_;
   std::vector<std::string> unloaded_extensions_;
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 
@@ -267,7 +266,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   std::unique_ptr<RendererStartupHelperInterceptor> helper_;
-  CheckedPtr<ExtensionRegistry> registry_;  // Weak.
+  ExtensionRegistry* registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
       incognito_render_process_host_;

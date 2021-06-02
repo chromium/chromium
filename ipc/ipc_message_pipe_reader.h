@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_checker.h"
 #include "ipc/ipc.mojom.h"
@@ -104,7 +103,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
       override;
 
   // |delegate_| is null once the message pipe is closed.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   mojo::AssociatedRemote<mojom::Channel> sender_;
   mojo::AssociatedReceiver<mojom::Channel> receiver_;
   base::ThreadChecker thread_checker_;

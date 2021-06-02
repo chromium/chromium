@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_EPHEMERAL_GUEST_SIGNIN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_EPHEMERAL_GUEST_SIGNIN_HANDLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -34,7 +33,7 @@ class EphemeralGuestSigninHandler : public content::WebUIMessageHandler {
   void SignOutAsGuest();
   bool IsSignedIn();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(EphemeralGuestSigninHandler);
 };

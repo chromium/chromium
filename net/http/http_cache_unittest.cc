@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -187,7 +186,7 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  CheckedPtr<MockHttpCache> cache_;
+  MockHttpCache* cache_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteCacheCompletionCallback);
 };

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_BROWSER_DM_TOKEN_STORAGE_ANDROID_H_
 #define CHROME_BROWSER_POLICY_BROWSER_DM_TOKEN_STORAGE_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 #include <string>
@@ -42,7 +41,7 @@ class BrowserDMTokenStorageAndroid : public BrowserDMTokenStorage::Delegate {
       const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
-  CheckedPtr<PrefService> local_state_ = nullptr;
+  PrefService* local_state_ = nullptr;
   scoped_refptr<base::TaskRunner> task_runner_;
 
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageAndroidTest, InitClientId);

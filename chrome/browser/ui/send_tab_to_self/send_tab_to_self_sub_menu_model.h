@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
@@ -50,7 +49,7 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
                        const std::string& guid,
                        int index);
 
-  CheckedPtr<content::WebContents> tab_;
+  content::WebContents* tab_;
   SendTabToSelfMenuType menu_type_;
   GURL link_url_;
   std::vector<ValidDeviceItem> valid_device_items_;

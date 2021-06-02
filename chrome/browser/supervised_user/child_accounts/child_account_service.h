@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -107,7 +106,7 @@ class ChildAccountService : public KeyedService,
   void ClearSecondCustodianPrefs();
 
   // Owns us via the KeyedService mechanism.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   bool active_;
 
@@ -116,7 +115,7 @@ class ChildAccountService : public KeyedService,
   base::OneShotTimer family_fetch_timer_;
   net::BackoffEntry family_fetch_backoff_;
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   base::RepeatingClosureList google_auth_state_observers_;
 

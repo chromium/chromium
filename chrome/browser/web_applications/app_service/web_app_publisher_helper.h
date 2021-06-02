@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
@@ -119,15 +118,15 @@ class WebAppPublisherHelper {
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
-  const CheckedPtr<WebAppProvider> provider_;
+  WebAppProvider* const provider_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

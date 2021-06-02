@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -733,7 +732,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   void ResetWebContents();
 
-  CheckedPtr<WebContents> web_contents_ = nullptr;
+  WebContents* web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };

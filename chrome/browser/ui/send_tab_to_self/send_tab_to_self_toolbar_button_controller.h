@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUTTON_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 
 class Profile;
@@ -48,9 +47,9 @@ class SendTabToSelfToolbarButtonController
 
   void UpdateToolbarButtonState();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
-  CheckedPtr<SendTabToSelfToolbarButtonControllerDelegate> delegate_;
+  SendTabToSelfToolbarButtonControllerDelegate* delegate_;
 
   // The delegate starts hidden and isn't shown until a STTS
   // notification is received.

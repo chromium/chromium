@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "content/public/browser/web_contents.h"
@@ -39,7 +38,7 @@ class ExtensionInstallPromptShowParams::WebContentsDestructionObserver
 
  private:
   // Not owned.
-  CheckedPtr<ExtensionInstallPromptShowParams> params_;
+  ExtensionInstallPromptShowParams* params_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsDestructionObserver);
 };

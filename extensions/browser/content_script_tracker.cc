@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -136,7 +135,7 @@ class RenderFrameHostAdapter
   uintptr_t GetId() const override { return frame_->GetRoutingID(); }
 
  private:
-  const CheckedPtr<content::RenderFrameHost> frame_;
+  content::RenderFrameHost* const frame_;
 };
 
 // This function approximates ScriptContext::GetEffectiveDocumentURLForInjection

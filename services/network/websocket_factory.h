@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
@@ -78,7 +77,7 @@ class WebSocketFactory final {
   WebSocketThrottler throttler_;
 
   // |context_| outlives this object.
-  const CheckedPtr<NetworkContext> context_;
+  NetworkContext* const context_;
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketFactory);
 };

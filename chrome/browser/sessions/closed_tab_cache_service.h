@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ClosedTabCache;
@@ -26,7 +25,7 @@ class ClosedTabCacheService : public KeyedService {
   void Shutdown() override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   std::unique_ptr<ClosedTabCache> cache_;
 };

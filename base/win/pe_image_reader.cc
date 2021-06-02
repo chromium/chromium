@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_math.h"
 
 namespace base {
@@ -59,7 +58,7 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
   DWORD GetSizeOfImage() override { return optional_header_->SizeOfImage; }
 
  private:
-  CheckedPtr<const OPTIONAL_HEADER_TYPE> optional_header_;
+  const OPTIONAL_HEADER_TYPE* optional_header_;
   DISALLOW_COPY_AND_ASSIGN(OptionalHeaderImpl);
 };
 

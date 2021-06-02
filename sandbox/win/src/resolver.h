@@ -12,7 +12,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -98,7 +97,7 @@ class ResolverThunk {
   // Holds the resolved interception target.
   void* target_;
   // Holds the resolved interception interceptor.
-  CheckedPtr<const void> interceptor_;
+  const void* interceptor_;
 
   DISALLOW_COPY_AND_ASSIGN(ResolverThunk);
 };

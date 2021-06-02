@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/base/cdm_factory.h"
 
 namespace media {
@@ -30,7 +29,7 @@ class MojoCdmFactory final : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
-  CheckedPtr<media::mojom::InterfaceFactory> interface_factory_;
+  media::mojom::InterfaceFactory* interface_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmFactory);
 };

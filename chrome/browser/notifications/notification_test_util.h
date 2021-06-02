@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -77,7 +76,7 @@ class FullscreenStateWaiter {
   void Wait();
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
   bool desired_state_;
 };
 #endif

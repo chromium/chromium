@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
@@ -218,9 +217,9 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   const GURL url_;
 
   // Unowned. The helper must outlive this request.
-  CheckedPtr<Helper> helper_;
+  Helper* helper_;
 
-  const CheckedPtr<WebSocketHandshakeStreamBase::CreateHelper>
+  WebSocketHandshakeStreamBase::CreateHelper* const
       websocket_handshake_stream_create_helper_;
   const NetLogWithSource net_log_;
 

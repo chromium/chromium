@@ -4,7 +4,6 @@
 
 #include <windows.h>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "chrome/browser/ui/views/color_chooser_dialog.h"
@@ -38,7 +37,7 @@ class ColorChooserWin : public content::ColorChooser,
 
   // The web contents invoking the color chooser.  No ownership. because it will
   // outlive this class.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // The color chooser dialog which maintains the native color chooser UI.
   scoped_refptr<ColorChooserDialog> color_chooser_dialog_;

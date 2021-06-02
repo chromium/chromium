@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/extensions/api/cookies.h"
@@ -57,7 +56,7 @@ class CookiesEventRouter : public BrowserListObserver {
     void OnCookieChange(const net::CookieChangeInfo& change) override;
 
    private:
-    CheckedPtr<CookiesEventRouter> router_;
+    CookiesEventRouter* router_;
     bool otr_;
 
     DISALLOW_COPY_AND_ASSIGN(CookieChangeListener);
@@ -78,7 +77,7 @@ class CookiesEventRouter : public BrowserListObserver {
                      std::unique_ptr<base::ListValue> event_args,
                      const GURL& cookie_domain);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // To listen to cookie changes in both the original and the off the record
   // profiles, we need a pair of bindings, as well as a pair of
@@ -217,7 +216,7 @@ class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
  private:
   friend class BrowserContextKeyedAPIFactory<CookiesAPI>;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

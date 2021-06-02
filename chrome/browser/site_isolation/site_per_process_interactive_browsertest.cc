@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1154,7 +1153,7 @@ class SitePerProcessInteractivePDFTest
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  CheckedPtr<guest_view::TestGuestViewManager> test_guest_view_manager_;
+  guest_view::TestGuestViewManager* test_guest_view_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(SitePerProcessInteractivePDFTest);
 };

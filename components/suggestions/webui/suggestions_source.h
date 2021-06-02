@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "components/suggestions/suggestions_service.h"
@@ -33,7 +32,7 @@ class SuggestionsSource {
 
  private:
   // Only used when servicing requests on the UI thread.
-  CheckedPtr<SuggestionsService> suggestions_service_;
+  SuggestionsService* suggestions_service_;
 
   // The base URL at which which the Suggestions WebUI lives in the context of
   // the embedder.

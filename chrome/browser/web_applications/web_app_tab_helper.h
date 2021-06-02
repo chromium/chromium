@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -94,7 +93,8 @@ class WebAppTabHelper : public WebAppTabHelperBase,
 
   base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
       this};
-  CheckedPtr<WebAppProviderBase> provider_ = nullptr;
+  WebAppProviderBase* provider_ = nullptr;
+
 };
 
 }  // namespace web_app

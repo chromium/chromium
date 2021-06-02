@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -53,7 +52,7 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
 
   void UpdateReconcilorStatus();
 
-  CheckedPtr<IdentityManager> identity_manager_;
+  IdentityManager* identity_manager_;
   bool reconcile_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(MirrorAccountReconcilorDelegate);

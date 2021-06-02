@@ -7,7 +7,6 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -160,7 +159,7 @@ TEST_P(GLVirtualContextsTest, Basic) {
   struct TestInfo {
     int size;
     uint8_t color[4];
-    CheckedPtr<GLManager> manager;
+    GLManager* manager;
   };
   const int kNumTests = 3;
   TestInfo tests[] = {

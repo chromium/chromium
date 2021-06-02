@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -108,7 +107,7 @@ class MediaController : public mojom::MediaController,
       session_images_;
 
   // Raw pointer to the media session we are controlling.
-  CheckedPtr<AudioFocusRequest> session_ = nullptr;
+  AudioFocusRequest* session_ = nullptr;
 
   // Observers that are observing |this|.
   mojo::RemoteSet<mojom::MediaControllerObserver> observers_;

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -71,7 +70,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  CheckedPtr<ui::TestClipboard> test_clipboard_;
+  ui::TestClipboard* test_clipboard_;
 };
 
 TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {

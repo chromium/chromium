@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/non_ui_syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -36,7 +35,7 @@ class ExtensionSettingModelTypeController
                   const ModelLoadCallback& model_load_callback) override;
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionSettingModelTypeController);
 };

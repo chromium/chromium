@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 
@@ -32,12 +31,11 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
     D3D11_VIDEO_DECODER_BUFFER_TYPE BufferType;
     UINT DataOffset;
     UINT DataSize;
-    CheckedPtr<void> pIV;
+    void* pIV;
     UINT IVSize;
 
     // DESC1-specific fields
-    CheckedPtr<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
-        pSubSampleMappingBlock;
+    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK* pSubSampleMappingBlock;
     UINT SubSampleMappingCount;
   };
 

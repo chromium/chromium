@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/background_sync_controller.h"
 
 #include <stdint.h>
@@ -122,7 +121,7 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // KeyedService implementation.
   void Shutdown() override;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;

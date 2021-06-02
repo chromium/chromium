@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
@@ -104,7 +103,7 @@ class MEDIA_EXPORT AudioFileReader {
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
 
   int stream_index_;
-  CheckedPtr<FFmpegURLProtocol> protocol_;
+  FFmpegURLProtocol* protocol_;
   AudioCodec audio_codec_;
   int channels_;
   int sample_rate_;

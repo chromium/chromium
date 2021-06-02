@@ -24,7 +24,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -243,7 +242,7 @@ class CreatedObserver : public content::DownloadManager::Observer {
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
-  CheckedPtr<content::DownloadManager> manager_;
+  content::DownloadManager* manager_;
   bool waiting_;
 
   DISALLOW_COPY_AND_ASSIGN(CreatedObserver);
@@ -328,7 +327,7 @@ class PercentWaiter : public download::DownloadItem::Observer {
     item_ = nullptr;
   }
 
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   bool waiting_ = false;
   bool error_ = false;
   int prev_percent_ = -1;
@@ -399,7 +398,7 @@ class DownloadsHistoryDataCollector {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsHistoryDataCollector);
 };
@@ -481,7 +480,7 @@ class SimpleDownloadManagerCoordinatorWaiter
     coordinator_ = nullptr;
   }
 
-  CheckedPtr<download::SimpleDownloadManagerCoordinator> coordinator_;
+  download::SimpleDownloadManagerCoordinator* coordinator_;
   base::OnceClosure completion_closure_;
   base::OnceClosure download_creation_closure_;
   int num_download_created_ = 0;
@@ -566,7 +565,7 @@ class HistoryObserver : public DownloadHistory::Observer {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool waiting_ = false;
   bool seen_stored_ = false;
 
@@ -4684,8 +4683,7 @@ class InProgressDownloadTest : public DownloadTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<download::InProgressDownloadManager> in_progress_manager_ =
-      nullptr;
+  download::InProgressDownloadManager* in_progress_manager_ = nullptr;
 };
 
 // Check that if a download exists in both in-progress and history DB,
@@ -4894,7 +4892,7 @@ class DisableSafeBrowsingOnInProgressDownload
   }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   bool final_state_seen_;
 };
 

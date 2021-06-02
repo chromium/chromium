@@ -12,7 +12,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -2487,7 +2486,7 @@ class ScopedRegisterInternalPlugin {
   const base::FilePath& path() { return plugin_path_; }
 
  private:
-  CheckedPtr<content::PluginService> plugin_service_;
+  content::PluginService* plugin_service_;
   base::FilePath plugin_path_;
 };
 
@@ -2517,7 +2516,7 @@ class DownloadTargetDeterminerTestWithPlugin
   }
 
  protected:
-  CheckedPtr<content::PluginServiceFilter> old_plugin_service_filter_;
+  content::PluginServiceFilter* old_plugin_service_filter_;
   testing::StrictMock<MockPluginServiceFilter> mock_plugin_filter_;
 };
 

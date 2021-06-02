@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/models/table_model.h"
 
 class TestTableModel : public ui::TableModel {
@@ -23,7 +22,7 @@ class TestTableModel : public ui::TableModel {
 
  private:
   int row_count_;
-  CheckedPtr<ui::TableModelObserver> observer_;
+  ui::TableModelObserver* observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTableModel);
 };
