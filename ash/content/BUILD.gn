@@ -17,10 +17,12 @@ test("ash_content_unittests") {
   ]
 
   deps = [
+    "//ash/content/help_app_ui:unit_tests",
     "//ash/content/scanning:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
     "//ui/base:base",
   ]
 
@@ -33,6 +35,7 @@ test("ash_content_unittests") {
 group("closure_compile") {
   testonly = true
   deps = [
+    "//ash/content/help_app_ui:closure_compile",
     "//ash/content/scanning:closure_compile",
     "//ash/content/shimless_rma:closure_compile",
     "//ash/content/shortcut_customization_ui:closure_compile",

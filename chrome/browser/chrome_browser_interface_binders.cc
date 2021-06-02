@@ -159,6 +159,9 @@
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/content/help_app_ui/help_app_ui.h"
+#include "ash/content/help_app_ui/help_app_ui.mojom.h"
+#include "ash/content/help_app_ui/search/search.mojom.h"
 #include "ash/content/scanning/mojom/scanning.mojom.h"
 #include "ash/content/scanning/scanning_ui.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
@@ -199,9 +202,6 @@
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/components/eche_app_ui/eche_app_ui.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
-#include "chromeos/components/help_app_ui/help_app_ui.h"
-#include "chromeos/components/help_app_ui/help_app_ui.mojom.h"
-#include "chromeos/components/help_app_ui/search/search.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/media_app_ui.mojom.h"

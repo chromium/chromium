@@ -101,6 +101,9 @@ specific_include_rules = {
   "root_window_controller\.*": [
     "+ash/host"
   ],
+  ".*run_all_unittests.cc": [
+    "+mojo/core/embedder",
+  ],
   "shell.cc": [
     "+ash/host/ash_window_tree_host_init_params.h"
   ],

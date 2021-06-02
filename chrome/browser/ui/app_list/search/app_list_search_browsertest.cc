@@ -6,6 +6,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/content/help_app_ui/help_app_manager.h"
+#include "ash/content/help_app_ui/help_app_manager_factory.h"
+#include "ash/content/help_app_ui/search/search.mojom.h"
+#include "ash/content/help_app_ui/search/search_handler.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -37,10 +41,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/components/help_app_ui/help_app_manager.h"
-#include "chromeos/components/help_app_ui/help_app_manager_factory.h"
-#include "chromeos/components/help_app_ui/search/search.mojom.h"
-#include "chromeos/components/help_app_ui/search/search_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
