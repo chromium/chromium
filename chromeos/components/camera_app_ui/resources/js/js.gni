@@ -19,6 +19,7 @@ compile_js_files = [
   "focus_ring.js",
   "gallerybutton.js",
   "h264.js",
+  "i18n_string.js",
   "init.js",
   "intent.js",
   "lib/comlink.js",

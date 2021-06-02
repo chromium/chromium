@@ -15,6 +15,8 @@ import {
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import * as h264 from '../../../h264.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as loadTimeData from '../../../models/load_time_data.js';
 import {
@@ -359,7 +361,7 @@ export class Video extends ModeBase {
       }
       this.mediaRecorder_ = new MediaRecorder(this.stream_, option);
     } catch (e) {
-      toast.show('error_msg_record_start_failed');
+      toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
       throw e;
     }
 
@@ -380,13 +382,13 @@ export class Video extends ModeBase {
       // Tolerates the error if it is due to the very short duration. Reports
       // for other errors.
       if (!(e instanceof NoChunkError && isVideoTooShort())) {
-        toast.show('error_msg_empty_recording');
+        toast.show(I18nString.ERROR_MSG_EMPTY_RECORDING);
         throw e;
       }
     }
 
     if (isVideoTooShort()) {
-      toast.show('error_msg_video_too_short');
+      toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
       if (videoSaver !== null) {
         await videoSaver.cancel();
       }

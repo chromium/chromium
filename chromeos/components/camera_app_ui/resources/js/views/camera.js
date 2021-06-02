@@ -16,6 +16,8 @@ import {
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
@@ -286,14 +288,14 @@ export class Camera extends View {
     util.bindElementAriaLabelWithState({
       element: videoShutter,
       state: state.State.TAKING,
-      onLabel: 'record_video_stop_button',
-      offLabel: 'record_video_start_button',
+      onLabel: I18nString.RECORD_VIDEO_STOP_BUTTON,
+      offLabel: I18nString.RECORD_VIDEO_START_BUTTON,
     });
     util.bindElementAriaLabelWithState({
       element: pauseShutter,
       state: state.State.RECORDING_PAUSED,
-      onLabel: 'record_video_resume_button',
-      offLabel: 'record_video_pause_button',
+      onLabel: I18nString.RECORD_VIDEO_RESUME_BUTTON,
+      offLabel: I18nString.RECORD_VIDEO_PAUSE_BUTTON,
     });
 
     dom.get('#banner-close', HTMLButtonElement)
@@ -571,7 +573,7 @@ export class Camera extends View {
     try {
       await this.resultSaver_.savePhoto(blob, name);
     } catch (e) {
-      toast.show('error_msg_save_file_failed');
+      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
   }
@@ -612,7 +614,7 @@ export class Camera extends View {
     try {
       await this.resultSaver_.finishSaveVideo(videoSaver);
     } catch (e) {
-      toast.show('error_msg_save_file_failed');
+      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
   }
@@ -804,7 +806,7 @@ export class Camera extends View {
               this.activeDeviceId_ = currentId;
               const info = await this.infoUpdater_.getDeviceInfo(currentId);
               if (info !== null) {
-                toast.speak('status_msg_camera_switched', info.label);
+                toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
               }
               return;
             }

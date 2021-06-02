@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assertInstanceof, assertString} from '../../../chrome_util.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as filesystem from '../../../models/file_system.js';
 import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
@@ -138,7 +140,7 @@ export class Photo extends ModeBase {
       state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {hasError: true});
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
-      toast.show('error_msg_take_photo_failed');
+      toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
       throw e;
     }
   }

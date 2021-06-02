@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import * as state from '../../../state.js';
@@ -74,7 +76,7 @@ export class Portrait extends Photo {
           photoSettings, [cros.mojom.Effect.PORTRAIT_MODE]);
       this.handler_.playShutterEffect();
     } catch (e) {
-      toast.show('error_msg_take_photo_failed');
+      toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
       throw e;
     }
 
@@ -94,8 +96,8 @@ export class Portrait extends Photo {
       } catch (e) {
         hasError = true;
         toast.show(
-            isPortrait ? 'error_msg_take_portrait_bokeh_photo_failed' :
-                         'error_msg_take_photo_failed');
+            isPortrait ? I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED :
+                         I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
         throw e;
       }
       const {width, height} = await util.blobToImage(blob);

@@ -8,6 +8,8 @@ import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../../i18n_string.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
@@ -109,8 +111,8 @@ export class Options {
     util.bindElementAriaLabelWithState({
       element: dom.get('#toggle-timer', Element),
       state: state.State.TIMER_3SEC,
-      onLabel: 'toggle_timer_3s_button',
-      offLabel: 'toggle_timer_10s_button',
+      onLabel: I18nString.TOGGLE_TIMER_3S_BUTTON,
+      offLabel: I18nString.TOGGLE_TIMER_10S_BUTTON,
     });
 
     // Restore saved mirroring states per video device.

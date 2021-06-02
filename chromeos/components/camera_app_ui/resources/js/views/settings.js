@@ -11,6 +11,8 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import * as nav from '../nav.js';
@@ -135,7 +137,8 @@ export class PrimarySettings extends BaseSettings {
         // feedback screenshot b/155938542.
         this.leave();
         ChromeHelper.getInstance().openFeedbackDialog(
-            loadTimeData.getI18nMessage('feedback_description_placeholder'));
+            loadTimeData.getI18nMessage(
+                I18nString.FEEDBACK_DESCRIPTION_PLACEHOLDER));
       },
       'settings-help': () => util.openHelp(),
     });
@@ -373,11 +376,12 @@ export class ResolutionSettings extends BaseSettings {
             (findR) => !findR.equals(r) && r.aspectRatioEquals(findR) &&
                 toMegapixel(r) === toMegapixel(findR))) {
       return loadTimeData.getI18nMessage(
-          'label_detail_photo_resolution', r.width / d, r.height / d, r.width,
-          r.height, toMegapixel(r));
+          I18nString.LABEL_DETAIL_PHOTO_RESOLUTION, r.width / d, r.height / d,
+          r.width, r.height, toMegapixel(r));
     } else {
       return loadTimeData.getI18nMessage(
-          'label_photo_resolution', r.width / d, r.height / d, toMegapixel(r));
+          I18nString.LABEL_PHOTO_RESOLUTION, r.width / d, r.height / d,
+          toMegapixel(r));
     }
   }
 
@@ -389,7 +393,7 @@ export class ResolutionSettings extends BaseSettings {
    */
   videoOptTextTempl_(r) {
     return loadTimeData.getI18nMessage(
-        'label_video_resolution', r.height, r.width);
+        I18nString.LABEL_VIDEO_RESOLUTION, r.height, r.width);
   }
 
   /**
@@ -644,7 +648,7 @@ export class ResolutionSettings extends BaseSettings {
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       dom.getFrom(item, 'span', HTMLSpanElement).textContent =
           optTextTempl(r, resolutions);
-      input.name = menu.dataset['name'];
+      input.name = menu.dataset[I18nString.NAME];
       input.dataset['width'] = r.width.toString();
       input.dataset['height'] = r.height.toString();
       if (r.equals(selectedR)) {

@@ -4,6 +4,8 @@
 
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from './i18n_string.js';
 import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as snackbar from './snackbar.js';
@@ -81,8 +83,8 @@ function isSafeUrl(s) {
  * Setups the copy button.
  * @param {!HTMLElement} container The container for the button.
  * @param {string} content The content to be copied.
- * @param {string} snackbarLabel The label to be displayed on snackbar when the
- *     content is copied.
+ * @param {!I18nString} snackbarLabel The label to be displayed on snackbar when
+ *     the content is copied.
  * @return {!HTMLElement} The copy button element.
  */
 function setupCopyButton(container, content, snackbarLabel) {
@@ -109,12 +111,13 @@ function showUrl(url) {
     textContent: url,
   });
   const hostname = new URL(url).hostname;
-  const label = loadTimeData.getI18nMessage('barcode_link_detected', hostname);
+  const label =
+      loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_DETECTED, hostname);
   anchor.setAttribute('aria-label', label);
   anchor.setAttribute('aria-description', url);
   anchor.focus();
 
-  setupCopyButton(container, url, 'snackbar_link_copied');
+  setupCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
 }
 
 /**
@@ -138,7 +141,8 @@ function showText(text) {
     expandEl.setAttribute('aria-expanded', expanded.toString());
   };
 
-  const copyButton = setupCopyButton(container, text, 'snackbar_text_copied');
+  const copyButton =
+      setupCopyButton(container, text, I18nString.SNACKBAR_TEXT_COPIED);
 
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.

@@ -4,6 +4,8 @@
 
 import {assert, assertString} from '../chrome_util.js';
 import {reportError} from '../error.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as toast from '../toast.js';
@@ -246,11 +248,11 @@ export class StreamManager {
 
     let isRealDeviceChange = false;
     for (const added of this.getDifference_(realDevices, this.realDevices_)) {
-      toast.speak('status_msg_camera_plugged', added.v1Info.label);
+      toast.speak(I18nString.STATUS_MSG_CAMERA_PLUGGED, added.v1Info.label);
       isRealDeviceChange = true;
     }
     for (const removed of this.getDifference_(this.realDevices_, realDevices)) {
-      toast.speak('status_msg_camera_unplugged', removed.v1Info.label);
+      toast.speak(I18nString.STATUS_MSG_CAMERA_UNPLUGGED, removed.v1Info.label);
       isRealDeviceChange = true;
     }
     if (isRealDeviceChange) {

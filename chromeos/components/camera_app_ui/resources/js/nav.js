@@ -4,6 +4,8 @@
 
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
+// eslint-disable-next-line no-unused-vars
+import {I18nString} from './i18n_string.js';
 import * as localStorage from './models/local_storage.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import * as state from './state.js';
@@ -206,7 +208,7 @@ export function onKeyPressed(event) {
     case 'Ctrl-Shift-E':
       (async () => {
         if (!await DeviceOperator.isSupported()) {
-          toast.show('error_msg_expert_mode_not_supported');
+          toast.show(I18nString.ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED);
           return;
         }
         const newState = !state.get(state.State.EXPERT);
