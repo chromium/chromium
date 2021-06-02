@@ -63,8 +63,8 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
@@ -107,7 +107,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #endif
 
-using syncer::SyncServiceImpl;
+using syncer::ProfileSyncService;
 
 namespace {
 
@@ -587,8 +587,9 @@ std::vector<ProfileSyncServiceHarness*> SyncTest::GetSyncClients() {
   return clients;
 }
 
-SyncServiceImpl* SyncTest::GetSyncService(int index) {
-  return SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
+ProfileSyncService* SyncTest::GetSyncService(int index) {
+  return SyncServiceFactory::GetAsProfileSyncServiceForProfile(
+      GetProfile(index));
 }
 
 syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
@@ -598,8 +599,8 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
       ->GetRegisteredSelectableTypes();
 }
 
-std::vector<SyncServiceImpl*> SyncTest::GetSyncServices() {
-  std::vector<SyncServiceImpl*> services;
+std::vector<ProfileSyncService*> SyncTest::GetSyncServices() {
+  std::vector<ProfileSyncService*> services;
   for (int i = 0; i < num_clients(); ++i) {
     services.push_back(GetSyncService(i));
   }
@@ -730,14 +731,14 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
 #endif
 
-  // Make sure the SyncServiceImpl has been created before creating the
-  // ProfileSyncServiceHarness - some tests expect the SyncServiceImpl to
+  // Make sure the ProfileSyncService has been created before creating the
+  // ProfileSyncServiceHarness - some tests expect the ProfileSyncService to
   // already exist.
-  SyncServiceImpl* sync_service_impl =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
+  ProfileSyncService* profile_sync_service =
+      SyncServiceFactory::GetAsProfileSyncServiceForProfile(GetProfile(index));
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_service_impl->OverrideNetworkForTest(
+    profile_sync_service->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
             GetFakeServer()->AsWeakPtr()));
   }

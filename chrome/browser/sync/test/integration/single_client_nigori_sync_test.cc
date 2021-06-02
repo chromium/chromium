@@ -189,7 +189,7 @@ class TrustedVaultRecoverabilityNotDegradedChecker
     : public SingleClientStatusChangeChecker {
  public:
   explicit TrustedVaultRecoverabilityNotDegradedChecker(
-      syncer::SyncServiceImpl* service)
+      syncer::ProfileSyncService* service)
       : SingleClientStatusChangeChecker(service) {}
   ~TrustedVaultRecoverabilityNotDegradedChecker() override = default;
 

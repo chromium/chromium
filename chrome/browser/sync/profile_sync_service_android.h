@@ -12,11 +12,11 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
 namespace syncer {
-class SyncServiceImpl;
+class ProfileSyncService;
 class SyncSetupInProgressHandle;
 }
 
-// Android wrapper of the SyncServiceImpl which provides access from the Java
+// Android wrapper of the ProfileSyncService which provides access from the Java
 // layer. Note that on Android, there's only a single profile, and therefore
 // a single instance of this wrapper. The name of the Java class is
 // ProfileSyncService.
@@ -25,7 +25,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
  public:
   // |sync_service| must not be null.
   ProfileSyncServiceAndroid(JNIEnv* env,
-                            syncer::SyncServiceImpl* sync_service,
+                            syncer::ProfileSyncService* sync_service,
                             jobject java_profile_sync_service);
   ~ProfileSyncServiceAndroid() override;
 
@@ -36,7 +36,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Pure SyncServiceImpl calls.
+  // Pure ProfileSyncService calls.
   jboolean IsSyncRequested(JNIEnv* env);
   void SetSyncRequested(JNIEnv* env,
                         jboolean requested);
@@ -104,7 +104,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
 
   // Functionality only available for testing purposes.
 
-  jlong GetSyncServiceImplForTest(JNIEnv* env);
+  jlong GetProfileSyncServiceForTest(JNIEnv* env);
 
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
@@ -117,7 +117,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
 
  private:
   // A reference to the sync service for this profile.
-  syncer::SyncServiceImpl* const native_sync_service_;
+  syncer::ProfileSyncService* const native_sync_service_;
 
   // Java-side ProfileSyncService object.
   const JavaObjectWeakGlobalRef java_sync_service_;

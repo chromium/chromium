@@ -15,7 +15,7 @@ class SessionHierarchyMatchChecker : public SingleClientStatusChangeChecker {
  public:
   SessionHierarchyMatchChecker(
       const fake_server::SessionsHierarchy& sessions_hierarchy,
-      syncer::SyncServiceImpl* service,
+      syncer::ProfileSyncService* service,
       fake_server::FakeServer* fake_server);
 
   // StatusChangeChecker implementation.

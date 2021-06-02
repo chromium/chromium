@@ -48,7 +48,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   gfx::Image GetIcon() const override;
   bool Accept() override;
 
-  // syncer::SyncServiceObserver implementation.
+  // ProfileSyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:

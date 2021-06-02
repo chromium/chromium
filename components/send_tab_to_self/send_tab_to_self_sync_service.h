@@ -38,6 +38,7 @@ class SendTabToSelfSyncService : public KeyedService {
 
   virtual SendTabToSelfModel* GetSendTabToSelfModel();
 
+  // For ProfileSyncService to initialize the controller.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate();
 

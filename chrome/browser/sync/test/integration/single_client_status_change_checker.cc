@@ -7,11 +7,11 @@
 #include <vector>
 
 SingleClientStatusChangeChecker::SingleClientStatusChangeChecker(
-    syncer::SyncServiceImpl* service)
+    syncer::ProfileSyncService* service)
     : MultiClientStatusChangeChecker({service}) {}
 
 SingleClientStatusChangeChecker::~SingleClientStatusChangeChecker() {}
 
-syncer::SyncServiceImpl* SingleClientStatusChangeChecker::service() {
+syncer::ProfileSyncService* SingleClientStatusChangeChecker::service() {
   return services()[0];
 }

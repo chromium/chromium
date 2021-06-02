@@ -26,7 +26,7 @@ UserEventSpecifics CreateTestEvent(base::Time time) {
 }  // namespace user_events_helper
 
 UserEventEqualityChecker::UserEventEqualityChecker(
-    syncer::SyncServiceImpl* service,
+    syncer::ProfileSyncService* service,
     FakeServer* fake_server,
     std::vector<UserEventSpecifics> expected_specifics)
     : SingleClientStatusChangeChecker(service),

@@ -35,6 +35,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
       const base::RepeatingClosure& cb) override WARN_UNUSED_RESULT;
 
+  // For ProfileSyncService to initialize the controller for SESSIONS.
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
 

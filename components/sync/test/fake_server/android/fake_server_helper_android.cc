@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/android/jni_array.h"
@@ -17,7 +16,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
@@ -46,10 +45,10 @@ static jlong JNI_FakeServerHelper_Init(JNIEnv* env,
 jlong FakeServerHelperAndroid::CreateFakeServer(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jlong sync_service_impl) {
+    jlong profile_sync_service) {
   fake_server::FakeServer* fake_server = new fake_server::FakeServer();
-  syncer::SyncServiceImpl* sync_service =
-      reinterpret_cast<syncer::SyncServiceImpl*>(sync_service_impl);
+  syncer::ProfileSyncService* sync_service =
+      reinterpret_cast<syncer::ProfileSyncService*>(profile_sync_service);
   sync_service->OverrideNetworkForTest(
       fake_server::CreateFakeServerHttpPostProviderFactory(
           fake_server->AsWeakPtr()));
@@ -59,10 +58,10 @@ jlong FakeServerHelperAndroid::CreateFakeServer(
 void FakeServerHelperAndroid::DeleteFakeServer(JNIEnv* env,
                                                const JavaParamRef<jobject>& obj,
                                                jlong fake_server,
-                                               jlong sync_service_impl) {
+                                               jlong profile_sync_service) {
   base::ScopedAllowBlockingForTesting scoped_allow;
-  syncer::SyncServiceImpl* sync_service =
-      reinterpret_cast<syncer::SyncServiceImpl*>(sync_service_impl);
+  syncer::ProfileSyncService* sync_service =
+      reinterpret_cast<syncer::ProfileSyncService*>(profile_sync_service);
   sync_service->OverrideNetworkForTest(syncer::CreateHttpPostProviderFactory());
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);

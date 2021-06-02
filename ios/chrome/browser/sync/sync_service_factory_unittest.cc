@@ -14,8 +14,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/data_type_controller.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -120,8 +120,8 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 // Verify that a normal (no command line flags) PSS can be created and
 // properly initialized.
 TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
+  syncer::ProfileSyncService* sync_service =
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount(), types.Size());
@@ -133,8 +133,8 @@ TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
 TEST_F(SyncServiceFactoryTest, CreatePSSDisableOne) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
   SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
+  syncer::ProfileSyncService* sync_service =
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
@@ -147,8 +147,8 @@ TEST_F(SyncServiceFactoryTest, CreatePSSDisableMultiple) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
                                       syncer::BOOKMARKS);
   SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
+  syncer::ProfileSyncService* sync_service =
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());

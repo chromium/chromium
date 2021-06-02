@@ -12,7 +12,7 @@
 // Sync-the-transport might still run.
 class SyncDisabledChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit SyncDisabledChecker(syncer::SyncServiceImpl* service);
+  explicit SyncDisabledChecker(syncer::ProfileSyncService* service);
 
   ~SyncDisabledChecker() override;
 

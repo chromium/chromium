@@ -20,7 +20,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -30,7 +30,7 @@
 using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::SetTitle;
-using syncer::SyncServiceImpl;
+using syncer::ProfileSyncService;
 using user_events_helper::CreateTestEvent;
 
 namespace {
@@ -38,7 +38,7 @@ namespace {
 constexpr int64_t kUserEventTimeUsec = 123456;
 
 syncer::ModelTypeSet GetThrottledDataTypes(
-    syncer::SyncServiceImpl* sync_service) {
+    syncer::ProfileSyncService* sync_service) {
   base::RunLoop loop;
   syncer::ModelTypeSet throttled_types;
   sync_service->GetThrottledDataTypesForTest(
@@ -52,7 +52,7 @@ syncer::ModelTypeSet GetThrottledDataTypes(
 
 class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit SyncEngineStoppedChecker(SyncServiceImpl* service)
+  explicit SyncEngineStoppedChecker(ProfileSyncService* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -64,7 +64,8 @@ class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
 
 class TypeDisabledChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit TypeDisabledChecker(SyncServiceImpl* service, syncer::ModelType type)
+  explicit TypeDisabledChecker(ProfileSyncService* service,
+                               syncer::ModelType type)
       : SingleClientStatusChangeChecker(service), type_(type) {}
 
   // StatusChangeChecker implementation.
@@ -82,7 +83,7 @@ class TypeDisabledChecker : public SingleClientStatusChangeChecker {
 // commit request fails).
 class UserEventCommitChecker : public SingleClientStatusChangeChecker {
  public:
-  UserEventCommitChecker(SyncServiceImpl* service,
+  UserEventCommitChecker(ProfileSyncService* service,
                          fake_server::FakeServer* fake_server,
                          int64_t expected_event_time_usec)
       : SingleClientStatusChangeChecker(service),
@@ -120,7 +121,7 @@ class SyncErrorTest : public SyncTest {
 // Helper class that waits until the sync engine has hit an actionable error.
 class ActionableErrorChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit ActionableErrorChecker(SyncServiceImpl* service)
+  explicit ActionableErrorChecker(ProfileSyncService* service)
       : SingleClientStatusChangeChecker(service) {}
 
   ~ActionableErrorChecker() override {}

@@ -10,19 +10,19 @@
 #include "components/sync/driver/sync_service_observer.h"
 
 namespace syncer {
-class SyncServiceImpl;
+class ProfileSyncService;
 }  // namespace syncer
 
 // This class provides some common functionality for StatusChangeCheckers that
-// observe only one SyncServiceImpl.  This class is abstract.  Its
+// observe only one ProfileSyncService.  This class is abstract.  Its
 // descendants are expected to provide additional functionality.
 class SingleClientStatusChangeChecker
   : public MultiClientStatusChangeChecker {
  public:
-  explicit SingleClientStatusChangeChecker(syncer::SyncServiceImpl* service);
+  explicit SingleClientStatusChangeChecker(syncer::ProfileSyncService* service);
   ~SingleClientStatusChangeChecker() override;
 
-  syncer::SyncServiceImpl* service();
+  syncer::ProfileSyncService* service();
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SINGLE_CLIENT_STATUS_CHANGE_CHECKER_H_

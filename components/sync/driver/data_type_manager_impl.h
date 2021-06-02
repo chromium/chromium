@@ -207,7 +207,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // The manager that loads the local models of the data types.
   ModelLoadManager model_load_manager_;
 
-  // DataTypeManager must have only one observer -- the SyncServiceImpl that
+  // DataTypeManager must have only one observer -- the ProfileSyncService that
   // created it and manages its lifetime.
   DataTypeManagerObserver* const observer_;
 

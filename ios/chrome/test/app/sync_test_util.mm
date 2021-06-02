@@ -19,8 +19,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori_test_utils.h"
@@ -53,15 +53,15 @@ fake_server::FakeServer* gSyncFakeServer = nullptr;
 
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 
-// Overrides the network callback of the current SyncServiceImpl with
+// Overrides the network callback of the current ProfileSyncService with
 // |create_http_post_provider_factory_cb|.
 void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
                              create_http_post_provider_factory_cb) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
-  syncer::SyncServiceImpl* service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(browser_state);
+  syncer::ProfileSyncService* service =
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(browser_state);
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
@@ -104,8 +104,8 @@ void StartSync() {
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   sync_setup_service->SetSyncEnabled(true);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(browser_state);
+  syncer::ProfileSyncService* sync_service =
+      SyncServiceFactory::GetAsProfileSyncServiceForBrowserState(browser_state);
   sync_service->TriggerPoliciesLoadedForTest();
 }
 

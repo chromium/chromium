@@ -19,7 +19,7 @@
 // available on the server.
 class ServerNigoriChecker : public SingleClientStatusChangeChecker {
  public:
-  ServerNigoriChecker(syncer::SyncServiceImpl* service,
+  ServerNigoriChecker(syncer::ProfileSyncService* service,
                       fake_server::FakeServer* fake_server,
                       syncer::PassphraseType expected_passphrase_type);
 
@@ -35,7 +35,7 @@ class ServerNigoriChecker : public SingleClientStatusChangeChecker {
 class ServerNigoriKeyNameChecker : public SingleClientStatusChangeChecker {
  public:
   ServerNigoriKeyNameChecker(const std::string& expected_key_name,
-                             syncer::SyncServiceImpl* service,
+                             syncer::ProfileSyncService* service,
                              fake_server::FakeServer* fake_server);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -48,7 +48,7 @@ class ServerNigoriKeyNameChecker : public SingleClientStatusChangeChecker {
 // Checker used to block until Sync requires or stops requiring a passphrase.
 class PassphraseRequiredStateChecker : public SingleClientStatusChangeChecker {
  public:
-  PassphraseRequiredStateChecker(syncer::SyncServiceImpl* service,
+  PassphraseRequiredStateChecker(syncer::ProfileSyncService* service,
                                  bool desired_state);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -62,7 +62,7 @@ class PassphraseRequiredStateChecker : public SingleClientStatusChangeChecker {
 class TrustedVaultKeyRequiredStateChecker
     : public SingleClientStatusChangeChecker {
  public:
-  TrustedVaultKeyRequiredStateChecker(syncer::SyncServiceImpl* service,
+  TrustedVaultKeyRequiredStateChecker(syncer::ProfileSyncService* service,
                                       bool desired_state);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -77,7 +77,7 @@ class TrustedVaultKeysChangedStateChecker
       syncer::TrustedVaultClient::Observer {
  public:
   explicit TrustedVaultKeysChangedStateChecker(
-      syncer::SyncServiceImpl* service);
+      syncer::ProfileSyncService* service);
   ~TrustedVaultKeysChangedStateChecker() override;
 
   // StatusChangeChecker overrides.
@@ -88,7 +88,7 @@ class TrustedVaultKeysChangedStateChecker
   void OnTrustedVaultRecoverabilityChanged() override;
 
  private:
-  syncer::SyncServiceImpl* const service_;
+  syncer::ProfileSyncService* const service_;
   bool keys_changed_;
 };
 

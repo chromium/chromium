@@ -39,10 +39,10 @@ ProfileSyncServiceBundle::CreateSyncClientMock() {
   return std::move(sync_client);
 }
 
-SyncServiceImpl::InitParams ProfileSyncServiceBundle::CreateBasicInitParams(
-    SyncServiceImpl::StartBehavior start_behavior,
+ProfileSyncService::InitParams ProfileSyncServiceBundle::CreateBasicInitParams(
+    ProfileSyncService::StartBehavior start_behavior,
     std::unique_ptr<SyncClient> sync_client) {
-  SyncServiceImpl::InitParams init_params;
+  ProfileSyncService::InitParams init_params;
 
   init_params.start_behavior = start_behavior;
   init_params.sync_client = std::move(sync_client);

@@ -91,8 +91,8 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
 
  protected:
   void SetupSyncForAccount(Profile* profile) {
-    syncer::SyncServiceImpl* sync_service =
-        SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
+    syncer::ProfileSyncService* sync_service =
+        SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
 
     sync_service->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(

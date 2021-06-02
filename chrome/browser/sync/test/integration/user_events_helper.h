@@ -25,7 +25,7 @@ sync_pb::UserEventSpecifics CreateTestEvent(base::Time time);
 class UserEventEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   UserEventEqualityChecker(
-      syncer::SyncServiceImpl* service,
+      syncer::ProfileSyncService* service,
       fake_server::FakeServer* fake_server,
       std::vector<sync_pb::UserEventSpecifics> expected_specifics);
   ~UserEventEqualityChecker() override;

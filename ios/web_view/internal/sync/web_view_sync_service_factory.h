@@ -18,7 +18,7 @@ class SyncService;
 namespace ios_web_view {
 class WebViewBrowserState;
 
-// Singleton that owns all SyncService and associates them with
+// Singleton that owns all ProfileSyncService and associates them with
 // WebViewBrowserState.
 class WebViewSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
