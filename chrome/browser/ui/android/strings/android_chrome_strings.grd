@@ -2154,6 +2154,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CONTEXTMENU_OPEN_IN_OTHER_WINDOW" desc="Context sensitive menu item to open the selected link in the other window. [CHAR_LIMIT=30]">
         Open in other window
       </message>
+      <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_WINDOW" desc="Context sensitive menu item to open the selected link in a new window. [CHAR_LIMIT=30]">
+        Open in new window
+      </message>
       <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_TAB" desc="Context sensitive menu item to open the selected link in a new tab. [CHAR_LIMIT=30]">
         Open in new tab
       </message>
@@ -3023,7 +3026,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ADAPTIVE_TOOLBAR_MENU_EDIT_SHORTCUT" desc="The menu option for opening adaptive toolbar settings.">
         Edit shortcut
       </message>
-    
+
       <!-- Main menu items -->
       <message name="IDS_MENU_UPDATE" desc="Menu item for updating chrome. [CHAR_LIMIT=24]">
         Update Chrome
