@@ -162,9 +162,9 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
     : enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
+      options_(std::move(options)),
       client_remote_(std::move(remote)),
-      config_path_(config_path),
-      options_(std::move(options)) {
+      config_path_(config_path) {
   recognition_event_callback_ = media::BindToCurrentLoop(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));

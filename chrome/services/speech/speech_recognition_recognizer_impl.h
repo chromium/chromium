@@ -84,6 +84,7 @@ class SpeechRecognitionRecognizerImpl
       const media::mojom::ConfidenceLevel confidence_level);
 
   const bool enable_soda_;
+  media::mojom::SpeechRecognitionOptionsPtr options_;
 
  private:
   void OnLanguageChanged(const std::string& language) final;
@@ -120,7 +121,6 @@ class SpeechRecognitionRecognizerImpl
   int sample_rate_ = 0;
   int channel_count_ = 0;
   LanguageCode language_ = LanguageCode::kNone;
-  media::mojom::SpeechRecognitionOptionsPtr options_;
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;
