@@ -61,11 +61,6 @@ void IOSTrustedVaultClient::StoreKeys(
   NOTREACHED();
 }
 
-void IOSTrustedVaultClient::RemoveAllStoredKeys() {
-  // Not used on iOS.
-  NOTREACHED();
-}
-
 void IOSTrustedVaultClient::MarkKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {

@@ -184,7 +184,6 @@ class ProfileSyncService : public SyncService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
-  void OnAccountsCookieDeletedByUserAction() override;
 
   // Similar to above but with a callback that will be invoked on completion.
   void OnAccountsInCookieUpdatedWithCallback(

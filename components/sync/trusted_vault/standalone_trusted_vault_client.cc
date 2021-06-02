@@ -42,20 +42,21 @@ GURL ExtractTrustedVaultServiceURLFromCommandLine() {
   return GURL(string_url);
 }
 
-class PrimaryAccountObserver : public signin::IdentityManager::Observer {
+class IdentityManagerObserver : public signin::IdentityManager::Observer {
  public:
-  PrimaryAccountObserver(
+  IdentityManagerObserver(
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
       scoped_refptr<StandaloneTrustedVaultBackend> backend,
       signin::IdentityManager* identity_manager);
-  PrimaryAccountObserver(const PrimaryAccountObserver& other) = delete;
-  PrimaryAccountObserver& operator=(const PrimaryAccountObserver& other) =
+  IdentityManagerObserver(const IdentityManagerObserver& other) = delete;
+  IdentityManagerObserver& operator=(const IdentityManagerObserver& other) =
       delete;
-  ~PrimaryAccountObserver() override;
+  ~IdentityManagerObserver() override;
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnAccountsCookieDeletedByUserAction() override;
 
  private:
   void UpdatePrimaryAccountIfNeeded();
@@ -66,7 +67,7 @@ class PrimaryAccountObserver : public signin::IdentityManager::Observer {
   CoreAccountInfo primary_account_;
 };
 
-PrimaryAccountObserver::PrimaryAccountObserver(
+IdentityManagerObserver::IdentityManagerObserver(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
     scoped_refptr<StandaloneTrustedVaultBackend> backend,
     signin::IdentityManager* identity_manager)
@@ -81,16 +82,23 @@ PrimaryAccountObserver::PrimaryAccountObserver(
   UpdatePrimaryAccountIfNeeded();
 }
 
-PrimaryAccountObserver::~PrimaryAccountObserver() {
+IdentityManagerObserver::~IdentityManagerObserver() {
   identity_manager_->RemoveObserver(this);
 }
 
-void PrimaryAccountObserver::OnPrimaryAccountChanged(
+void IdentityManagerObserver::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   UpdatePrimaryAccountIfNeeded();
 }
 
-void PrimaryAccountObserver::UpdatePrimaryAccountIfNeeded() {
+void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::RemoveAllStoredKeys,
+                     backend_));
+}
+
+void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account == primary_account_) {
@@ -162,15 +170,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,
                      backend_));
-  primary_account_observer_ = std::make_unique<PrimaryAccountObserver>(
+  identity_manager_observer_ = std::make_unique<IdentityManagerObserver>(
       backend_task_runner_, backend_, identity_manager);
 }
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
   // |backend_| needs to be destroyed inside backend sequence, not the current
-  // one. Destroy |primary_account_observer_| that owns pointer to |backend_|
+  // one. Destroy |identity_manager_observer_| that owns pointer to |backend_|
   // as well and release |backend_| in |backend_task_runner_|.
-  primary_account_observer_.reset();
+  identity_manager_observer_.reset();
   backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 }
 
@@ -204,18 +212,6 @@ void StandaloneTrustedVaultClient::StoreKeys(
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
                                 backend_, gaia_id, keys, last_key_version));
-  for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
-  }
-}
-
-void StandaloneTrustedVaultClient::RemoveAllStoredKeys() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::RemoveAllStoredKeys,
-                     backend_));
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged();
   }

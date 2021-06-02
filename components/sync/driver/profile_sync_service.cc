@@ -1472,10 +1472,6 @@ void ProfileSyncService::OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info.signed_in_accounts, base::NullCallback());
 }
 
-void ProfileSyncService::OnAccountsCookieDeletedByUserAction() {
-  sync_client_->GetTrustedVaultClient()->RemoveAllStoredKeys();
-}
-
 void ProfileSyncService::OnAccountsInCookieUpdatedWithCallback(
     const std::vector<gaia::ListedAccount>& signed_in_accounts,
     base::OnceClosure callback) {
