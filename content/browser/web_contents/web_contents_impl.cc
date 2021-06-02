@@ -494,6 +494,24 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
 bool IsWindowPlacementGranted(RenderFrameHost* host) {
   auto* controller =
       PermissionControllerImpl::FromBrowserContext(host->GetBrowserContext());
+
+  // If the frame's URL is about:blank, its origin may have been inherited.
+  // Unfortunately, many PermissionControllerDelegate implementations of
+  // `GetPermissionStatusForFrame()` use `GetLastCommittedURL()` which does not
+  // consider origin inheritance. In case the URL is about:blank, manually check
+  // the permission status ourselves by deriving a GURL from the Origin.
+  // TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage and
+  // remove this workaround without regressing crbug.com/1210669.
+  if (host->GetLastCommittedURL().IsAboutBlank()) {
+    return controller &&
+           controller->GetPermissionStatus(
+               PermissionType::WINDOW_PLACEMENT,
+               host->GetLastCommittedOrigin().GetURL(),
+               host->GetMainFrame()->GetLastCommittedOrigin().GetURL()) ==
+               blink::mojom::PermissionStatus::GRANTED;
+  }
+
+  // TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
   return controller && controller->GetPermissionStatusForFrame(
                            PermissionType::WINDOW_PLACEMENT, host,
                            host->GetLastCommittedURL()) ==
