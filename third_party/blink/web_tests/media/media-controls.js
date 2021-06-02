@@ -489,8 +489,16 @@ function playbackSpeedListItemAtPlaybackRate(video, playbackRate) {
           return playbackSpeedItem;
   }
 }
+
 function clickPlaybackSpeedButton(video, callback) {
-  openOverflowAndClickButton(video, playbackSpeedOverflowItem(video), callback);
+  openOverflowAndClickButton(video, playbackSpeedOverflowItem(video), function() {
+    var playbackSpeed = playbackSpeedListItemAtPlaybackRate(video, video.playbackRate);
+    var playbackSpeedsList = playbackSpeedMenu(video);
+    assert_between_inclusive(playbackSpeedsList.scrollTop,
+        playbackSpeed.offsetTop + playbackSpeed.offsetHeight - playbackSpeedsList.offsetHeight,
+        playbackSpeed.offsetTop);
+    callback();
+  });
 }
 
 function clickPlaybackSpeedAtPlaybackRate(video, playbackRate, callback) {

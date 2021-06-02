@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_list_element.h"
 
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
@@ -44,6 +47,28 @@ const QualifiedName& PlaybackRateAttrName() {
 }
 
 }  // anonymous namespace
+
+class MediaControlPlaybackSpeedListElement::RequestAnimationFrameCallback final
+    : public FrameCallback {
+ public:
+  explicit RequestAnimationFrameCallback(
+      MediaControlPlaybackSpeedListElement* list)
+      : list_(list) {}
+
+  RequestAnimationFrameCallback(const RequestAnimationFrameCallback&) = delete;
+  RequestAnimationFrameCallback& operator=(
+      const RequestAnimationFrameCallback&) = delete;
+
+  void Invoke(double) override { list_->CenterCheckedItem(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(list_);
+    FrameCallback::Trace(visitor);
+  }
+
+ private:
+  Member<MediaControlPlaybackSpeedListElement> list_;
+};
 
 MediaControlPlaybackSpeedListElement::MediaControlPlaybackSpeedListElement(
     MediaControlsImpl& media_controls)
@@ -111,6 +136,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   if (playback_rate == MediaElement().playbackRate()) {
     playback_speed_item_input->setChecked(true);
     playback_speed_item->setAttribute(html_names::kAriaCheckedAttr, "true");
+    checked_item_ = playback_speed_item;
   }
   // Allows to focus the list entry instead of the button.
   playback_speed_item->setTabIndex(0);
@@ -154,6 +180,8 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
 
   ParserAppendChild(CreatePlaybackSpeedHeaderItem());
 
+  checked_item_ = nullptr;
+
   // Construct a menu for playback speeds.
   for (unsigned i = 0; i < base::size(kPlaybackSpeeds); i++) {
     auto& playback_speed = kPlaybackSpeeds[i];
@@ -168,6 +196,24 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
                                       "menuitemcheckbox");
     ParserAppendChild(playback_speed_item);
   }
+  RequestAnimationFrameCallback* callback =
+      MakeGarbageCollected<RequestAnimationFrameCallback>(this);
+  GetDocument().RequestAnimationFrame(callback);
+}
+
+void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
+  if (!checked_item_)
+    return;
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+  options->setBlock("center");
+  auto* arg =
+      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
+  checked_item_->scrollIntoView(arg);
+}
+
+void MediaControlPlaybackSpeedListElement::Trace(Visitor* visitor) const {
+  visitor->Trace(checked_item_);
+  MediaControlPopupMenuElement::Trace(visitor);
 }
 
 }  // namespace blink
