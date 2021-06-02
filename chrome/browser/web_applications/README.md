@@ -125,9 +125,20 @@ This was done because on non-ChromeOS devices it was considered a bad user exper
 
 ## What makes up Chromium's implementation?
 
-The task of turning web sites into "apps" in the user's OS environment has
-surprisingly many parts to it. Here are some (but not all) of the key ones.
+The task of turning web sites into "apps" in the user's OS environment has many parts to it. Before going into the parts, here is where they live:
 
+[![](docs/webappprovider_component_ownership.jpg)](https://docs.google.com/drawings/d/1TqUF2Pqh2S5qPGyA6njQWxOgSgKQBPePKPIH_srGeRk/edit?usp=sharing)
+
+* The `WebAppProvider` core system lives on the `Profile` object.
+* The `WebAppUiManagerImpl` also lives on the `Profile` object (to avoid deps issues).
+* The `AppBrowserController` (typically `WebAppBrowserController` for our interests) lives on the `Browser` object.
+* The `WebAppTabHelperBase` lives on the `WebContents` object.
+
+While most on-disk storage is done in the [`WebAppSyncBridge`](#webappsyncbridge), the system also sometimes uses the `PrefService`. Most of these prefs live on the `Profile` (`profile->GetPrefs()`), but some prefs are in the global browser prefs (`g_browser_process->local_state()`). See the [storage](#storage) section below for more info.
+
+There is a presentation that also goes over the class structure and dependency diagram [here](https://docs.google.com/presentation/d/1bJfUFPMh7J_Avw3J4HBvAN2RWnV4T9LOXr0JSAgQAvg/pub), but it may be out of date.
+
+Here is more info for some (but not all) of the key parts:
 
 ### [`WebAppProvider`](web_app_provider.h)
 
@@ -154,6 +165,20 @@ returning a `WebApp` reference? Because web apps used to be backed by
 `Extension`s and in that mode there were no `WebApp`s; instead everything was
 stored on an `Extension`.
 
+### [`WebAppSyncBridge`](web_app_sync_bridge.h)
+
+This is "bridge" between the WebAppProvider system's in-memory representation of web apps and the sync system's database representation (along with sync system functionality like add/remove/modify operations). This integration is a little complex and deserves it's own document, but it basically:
+* Stores all WebApps into a database and updates the database if any fields change.
+* Updates the system when there are changes from the sync system.
+  * Installs new apps, uninstalls apps the user uninstalled elsewhere, updates metadata like user display mode preference, etc.
+* Tells the sync system if there are local changes (installs, uninstalls, etc).
+
+There is also a slide in a presentation [here](https://docs.google.com/presentation/d/e/2PACX-1vQxYZoCyhZ4xHS4pVuBC9YoE0O-QpW2Wj3scl6jtr3TEYheeod5Ch4b7OVEQEj_Hc6PM1RBGzovug3C/pub?start=false&loop=false&delayms=3000&slide=id.g59d9cb05b6_6_5) which illustrates how this system works, but it may be out of date.
+
+Note: This only stores per-web-app data, and that data will be deleted if the web app is uninstalled. To store data that persists after uninstall, or applies to a more general scope than a single web app, then the `PrefService` can be used, either on the `Profile` object (per-profile data, `profile->GetPrefs()`) or on the browser process (`g_browser_process->local_state()`). Example of needing prefs:
+* Storing if an app was previously installed as a preinstalled app in the past.
+* Information is needed during chrome startup before profiles are loaded.
+* A feature needs to store global data - e.g. "When was the last time we showed the in-product-help banner for any webapp?"
 
 ### [`WebAppInstallManager`](web_app_install_manager.h)
 
@@ -196,6 +221,10 @@ our BUILD.gn targets disallow this as it would be a circular dependency. This
 injects the dependency at link time (see
 [`WebAppUiManager::Create()`](https://source.chromium.org/search?q=WebAppUiManager::Create)'s
 declaration and definition locations).
+
+## Storage
+
+TODO
 
 ## Deep Dives
 
