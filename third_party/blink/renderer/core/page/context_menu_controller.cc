@@ -788,7 +788,7 @@ void ContextMenuController::UpdateTextFragmentHandler(
   VisibleSelectionInFlatTree selection =
       selected_frame->Selection().ComputeVisibleSelectionInFlatTree();
   EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
-  selected_frame->GetTextFragmentSelectorGenerator()->UpdateSelection(
+  selected_frame->GetTextFragmentHandler()->MainFrameDidUpdateSelection(
       selection_range);
 }
 

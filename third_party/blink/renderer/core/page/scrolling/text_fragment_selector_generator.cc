@@ -6,9 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
-#include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -16,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
@@ -192,46 +191,15 @@ TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
   DCHECK(main_frame->IsMainFrame());
 }
 
-void TextFragmentSelectorGenerator::UpdateSelection(
-    const EphemeralRangeInFlatTree& selection_range) {
-  selection_range_ = MakeGarbageCollected<Range>(
-      selection_range.GetDocument(),
-      ToPositionInDOMTree(selection_range.StartPosition()),
-      ToPositionInDOMTree(selection_range.EndPosition()));
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration) &&
-      shared_highlighting::ShouldOfferLinkToText(
-          frame_->GetDocument()->Url())) {
-    Reset();
-    GenerateSelector();
-  }
-}
-
-void TextFragmentSelectorGenerator::RequestSelector(
-    RequestSelectorCallback callback) {
+void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
+                                             GenerateCallback callback) {
   DCHECK(callback);
-  if (!base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration)) {
-    Reset();
-    pending_generate_selector_callback_ = std::move(callback);
-    GenerateSelector();
-  } else {
-    base::UmaHistogramEnumeration(
-        "SharedHighlights.LinkGenerated.StateAtRequest", state_);
-    pending_generate_selector_callback_ = std::move(callback);
-    DCHECK_NE(state_, kNotStarted);
-    if (state_ == kFailure || state_ == kSuccess) {
-      selector_requested_before_ready_ = false;
-      if (state_ == kFailure) {
-        NotifyClientSelectorReady(
-            TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
-      } else {
-        NotifyClientSelectorReady(*selector_);
-      }
-      return;
-    }
-    selector_requested_before_ready_ = true;
-  }
+  Reset();
+  range_ = MakeGarbageCollected<RangeInFlatTree>(range.StartPosition(),
+                                                 range.EndPosition());
+  pending_generate_selector_callback_ = std::move(callback);
+
+  StartGeneration();
 }
 
 void TextFragmentSelectorGenerator::Reset() {
@@ -250,36 +218,28 @@ void TextFragmentSelectorGenerator::Reset() {
   num_range_words_ = 0;
   iteration_ = 0;
   selector_ = nullptr;
-  selector_requested_before_ready_.reset();
+  range_ = nullptr;
   pending_generate_selector_callback_.Reset();
-}
-
-void TextFragmentSelectorGenerator::ClearSelection() {
-  if (selection_range_) {
-    selection_range_->Dispose();
-    selection_range_ = nullptr;
-  }
-}
-
-void TextFragmentSelectorGenerator::Detach() {
-  Reset();
-  frame_ = nullptr;
 }
 
 void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
-  visitor->Trace(selection_range_);
+  visitor->Trace(range_);
   visitor->Trace(finder_);
+}
+
+void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
+  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.StateAtRequest",
+                                state_);
 }
 
 void TextFragmentSelectorGenerator::DidFindMatch(
     const EphemeralRangeInFlatTree& match,
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
-  if (is_unique && PlainText(match).StripWhiteSpace().length() ==
-                       PlainText(EphemeralRangeInFlatTree(selection_range_))
-                           .StripWhiteSpace()
-                           .length()) {
+  if (is_unique &&
+      PlainText(match).StripWhiteSpace().length() ==
+          PlainText(range_->ToEphemeralRange()).StripWhiteSpace().length()) {
     state_ = kSuccess;
     ResolveSelectorState();
   } else {
@@ -299,10 +259,10 @@ void TextFragmentSelectorGenerator::NoMatchFound() {
 }
 
 void TextFragmentSelectorGenerator::AdjustSelection() {
-  if (!selection_range_)
+  if (!range_)
     return;
 
-  EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+  EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
   Node* start_container =
       ephemeral_range.StartPosition().ComputeContainerNode();
   Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
@@ -372,21 +332,20 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
       corrected_end != end_container ||
       corrected_end_offset !=
           ephemeral_range.EndPosition().ComputeOffsetInContainerNode()) {
-    selection_range_ = MakeGarbageCollected<Range>(
-        selection_range_->OwnerDocument(),
-        Position(corrected_start, corrected_start_offset),
-        Position(corrected_end, corrected_end_offset));
+    range_ = MakeGarbageCollected<RangeInFlatTree>(
+        PositionInFlatTree(corrected_start, corrected_start_offset),
+        PositionInFlatTree(corrected_end, corrected_end_offset));
   }
 }
 
-void TextFragmentSelectorGenerator::GenerateSelector() {
-  DCHECK(selection_range_);
+void TextFragmentSelectorGenerator::StartGeneration() {
+  DCHECK(range_);
 
-  selection_range_->OwnerDocument().UpdateStyleAndLayout(
+  range_->StartPosition().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
 
   // Shouldn't continue if selection is empty.
-  EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+  EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
     state_ = kFailure;
@@ -396,9 +355,8 @@ void TextFragmentSelectorGenerator::GenerateSelector() {
   }
 
   AdjustSelection();
-  UMA_HISTOGRAM_COUNTS_1000(
-      "SharedHighlights.LinkGenerated.SelectionLength",
-      PlainText(EphemeralRange(selection_range_)).length());
+  UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.SelectionLength",
+                            PlainText(range_->ToEphemeralRange()).length());
   state_ = kNeedsNewCandidate;
   GenerateSelectorCandidate();
 }
@@ -504,7 +462,7 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
 void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kExact, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
-  EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+  EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
 
   // If not in same block, should use ranges.
   if (!TextFragmentFinder::IsInSameUninterruptedBlock(
@@ -543,7 +501,7 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
   // Initialize range start/end and word min count, if needed.
   if (max_available_range_start_.IsEmpty() &&
       max_available_range_end_.IsEmpty()) {
-    EphemeralRangeInFlatTree ephemeral_range(selection_range_);
+    EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
 
     // If selection starts and ends in the same block, then split selected text
     // roughly in the middle.
@@ -571,9 +529,9 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       // If not the same node, then we use first and last block of the selection
       // range.
       max_available_range_start_ =
-          GetNextTextBlock(selection_range_->StartPosition());
+          GetNextTextBlock(ToPositionInDOMTree(range_->StartPosition()));
       max_available_range_end_ =
-          GetPreviousTextBlock(selection_range_->EndPosition());
+          GetPreviousTextBlock(ToPositionInDOMTree(range_->EndPosition()));
     }
 
     // Use at least 3 words from both sides for more robust link to text.
@@ -611,8 +569,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   // Try initiating properties necessary for calculating prefix and suffix.
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
     max_available_prefix_ =
-        GetPreviousTextBlock(selection_range_->StartPosition());
-    max_available_suffix_ = GetNextTextBlock(selection_range_->EndPosition());
+        GetPreviousTextBlock(ToPositionInDOMTree(range_->StartPosition()));
+    max_available_suffix_ =
+        GetNextTextBlock(ToPositionInDOMTree(range_->EndPosition()));
 
     // Use at least 3 words from both sides for more robust link to text.
     num_context_words_ = kMinWordCount_;
@@ -679,29 +638,6 @@ void TextFragmentSelectorGenerator::RecordAllMetrics(
   }
 }
 
-void TextFragmentSelectorGenerator::RecordPreemptiveGenerationMetrics(
-    const TextFragmentSelector& selector) {
-  DCHECK(selector_requested_before_ready_.has_value());
-
-  bool success =
-      selector.Type() != TextFragmentSelector::SelectorType::kInvalid;
-
-  std::string uma_prefix = "SharedHighlights.LinkGenerated";
-  if (selector_requested_before_ready_.value()) {
-    uma_prefix = base::StrCat({uma_prefix, ".RequestedBeforeReady"});
-  } else {
-    uma_prefix = base::StrCat({uma_prefix, ".RequestedAfterReady"});
-  }
-  base::UmaHistogramBoolean(uma_prefix, success);
-
-  if (!success) {
-    LinkGenerationError error =
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
-    base::UmaHistogramEnumeration(
-        "SharedHighlights.LinkGenerated.Error.Requested", error);
-  }
-}
-
 void TextFragmentSelectorGenerator::OnSelectorReady(
     const TextFragmentSelector& selector) {
   // Check that frame is not deattched and generator is still valid.
@@ -716,10 +652,7 @@ void TextFragmentSelectorGenerator::OnSelectorReady(
 void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
     const TextFragmentSelector& selector) {
   DCHECK(pending_generate_selector_callback_);
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration))
-    RecordPreemptiveGenerationMetrics(selector);
-  std::move(pending_generate_selector_callback_).Run(selector.ToString());
+  std::move(pending_generate_selector_callback_).Run(selector);
 }
 
 }  // namespace blink

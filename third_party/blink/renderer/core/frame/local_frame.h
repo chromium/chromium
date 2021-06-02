@@ -131,7 +131,6 @@ class SystemClipboard;
 class SmoothScrollSequencer;
 class SpellChecker;
 class TextFragmentHandler;
-class TextFragmentSelectorGenerator;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
 class WebContentSettingsClient;
@@ -805,8 +804,6 @@ class CORE_EXPORT LocalFrame final
     // otherwise.
     return text_fragment_handler_;
   }
-
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const;
 
   LoaderFreezeMode GetLoaderFreezeMode();
 

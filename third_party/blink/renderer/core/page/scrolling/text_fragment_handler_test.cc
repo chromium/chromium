@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,14 +29,25 @@ namespace {
 
 using test::RunPendingTasks;
 
-class TextFragmentHandlerTest : public SimTest {
+class TextFragmentHandlerTest : public SimTest,
+                                public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
-    feature_list_.InitAndEnableFeature(
-        shared_highlighting::kSharedHighlightingV2);
+    std::vector<base::Feature> enabled;
+    std::vector<base::Feature> disabled;
+
+    enabled.push_back(shared_highlighting::kSharedHighlightingV2);
+
+    preemptive_generation_enabled_ = GetParam();
+    if (preemptive_generation_enabled_)
+      enabled.push_back(shared_highlighting::kPreemptiveLinkToTextGeneration);
+    else
+      disabled.push_back(shared_highlighting::kPreemptiveLinkToTextGeneration);
+
+    feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   void RunAsyncMatchingTasks() {
@@ -43,6 +56,26 @@ class TextFragmentHandlerTest : public SimTest {
     blink::scheduler::RunIdleTasksForTesting(scheduler,
                                              base::BindOnce([]() {}));
     RunPendingTasks();
+  }
+
+  String SelectThenRequestSelector(const Position& start, const Position& end) {
+    GetTextFragmentHandler().MainFrameDidUpdateSelection(
+        ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
+
+    bool callback_called = false;
+    String selector;
+    auto lambda = [](bool& callback_called, String& selector,
+                     const String& generated_selector) {
+      selector = generated_selector;
+      callback_called = true;
+    };
+    auto callback =
+        WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
+    GetTextFragmentHandler().RequestSelector(std::move(callback));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(callback_called);
+    return selector;
   }
 
   Vector<String> ExtractTextFragmentsMatches() {
@@ -56,10 +89,7 @@ class TextFragmentHandlerTest : public SimTest {
     auto callback =
         WTF::Bind(lambda, std::ref(callback_called), std::ref(target_texts));
 
-    GetDocument()
-        .GetFrame()
-        ->GetTextFragmentHandler()
-        ->ExtractTextFragmentsMatches(std::move(callback));
+    GetTextFragmentHandler().ExtractTextFragmentsMatches(std::move(callback));
 
     EXPECT_TRUE(callback_called);
     return target_texts;
@@ -76,10 +106,7 @@ class TextFragmentHandlerTest : public SimTest {
     auto callback = WTF::Bind(lambda, std::ref(callback_called),
                               std::ref(text_fragment_rect));
 
-    GetDocument()
-        .GetFrame()
-        ->GetTextFragmentHandler()
-        ->ExtractFirstFragmentRect(std::move(callback));
+    GetTextFragmentHandler().ExtractFirstFragmentRect(std::move(callback));
 
     EXPECT_TRUE(callback_called);
     return text_fragment_rect;
@@ -102,11 +129,55 @@ class TextFragmentHandlerTest : public SimTest {
         ->addForBinding(script_state, ahem, exception_state);
   }
 
- private:
+  void VerifyPreemptiveGenerationMetrics(bool success) {
+    if (!preemptive_generation_enabled_) {
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.Error.Requested", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
+    } else {
+      EXPECT_EQ(
+          1u, histogram_tester_
+                      .GetAllSamples(
+                          "SharedHighlights.LinkGenerated.RequestedAfterReady")
+                      .size() +
+                  histogram_tester_
+                      .GetAllSamples(
+                          "SharedHighlights.LinkGenerated.RequestedBeforeReady")
+                      .size());
+
+      if (!success) {
+        histogram_tester_.ExpectTotalCount(
+            "SharedHighlights.LinkGenerated.Error.Requested", 1);
+      } else {
+        histogram_tester_.ExpectTotalCount(
+            "SharedHighlights.LinkGenerated.Error.Requested", 0);
+      }
+    }
+
+    // Check async task metrics.
+    EXPECT_LT(0u, histogram_tester_
+                      .GetAllSamples("SharedHighlights.AsyncTask.Iterations")
+                      .size());
+    EXPECT_LT(0u,
+              histogram_tester_
+                  .GetAllSamples("SharedHighlights.AsyncTask.SearchDuration")
+                  .size());
+  }
+
+  TextFragmentHandler& GetTextFragmentHandler() {
+    return *GetDocument().GetFrame()->GetTextFragmentHandler();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
+  bool preemptive_generation_enabled_;
 };
 
-TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
+TEST_P(TextFragmentHandlerTest, RemoveTextFragments) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -140,7 +211,7 @@ TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  GetDocument().GetFrame()->GetTextFragmentHandler()->RemoveFragments();
+  GetTextFragmentHandler().RemoveFragments();
 
   EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
 
@@ -148,7 +219,7 @@ TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 }
 
-TEST_F(TextFragmentHandlerTest,
+TEST_P(TextFragmentHandlerTest,
        ExtractTextFragmentWithWithMultipleTextFragments) {
   SimRequest request(
       "https://example.com/"
@@ -188,7 +259,7 @@ TEST_F(TextFragmentHandlerTest,
   EXPECT_EQ("more text", target_texts[1]);
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
+TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",
@@ -224,7 +295,7 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
   EXPECT_EQ(0u, target_texts.size());
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
+TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,text",
@@ -261,7 +332,7 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
   EXPECT_EQ("This is a test page, with some more text", target_texts[0]);
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
+TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=this,is&text=a-,test,page&text=with,some,-content&"
@@ -292,7 +363,7 @@ TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
   EXPECT_EQ("nothing at", target_texts[3]);
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
+TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,page",
@@ -330,7 +401,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
+TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   // Android settings to correctly extract the rect when the page is loaded
   // zoomed in
   WebView().GetPage()->GetSettings().SetViewportEnabled(true);
@@ -379,7 +450,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
+TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -428,7 +499,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_F(TextFragmentHandlerTest,
+TEST_P(TextFragmentHandlerTest,
        ExtractFirstTextFragmentRectMultipleHighlightWithNoFoundText) {
   SimRequest request(
       "https://example.com/"
@@ -477,7 +548,7 @@ TEST_F(TextFragmentHandlerTest,
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
+TEST_P(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",
@@ -514,6 +585,171 @@ TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
 
   EXPECT_TRUE(text_fragment_rect.IsEmpty());
 }
+
+// Checks that the selector is preemptively generated.
+TEST_P(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
+  if (!preemptive_generation_enabled_)
+    return;
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id='first'>First paragraph</p>
+    )HTML");
+
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 5);
+  ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GetTextFragmentHandler().MainFrameDidUpdateSelection(
+      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 0);
+}
+
+// When URL is blocklisted, the selector shouldn't be preemptively generated.
+TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
+  if (!preemptive_generation_enabled_)
+    return;
+
+  SimRequest request("https://instagram.com/test.html", "text/html");
+  LoadURL("https://instagram.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id='first'>First paragraph</p>
+    )HTML");
+
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 5);
+  ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GetTextFragmentHandler().MainFrameDidUpdateSelection(
+      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 0);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 0);
+}
+
+// Check that selector is not generated for editable text.
+TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
+  if (!preemptive_generation_enabled_)
+    return;
+
+  SimRequest request("https://instagram.com/test.html", "text/html");
+  LoadURL("https://instagram.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <input type="text" id="input" value="default text in input">
+    )HTML");
+
+  Node* input_text =
+      FlatTreeTraversal::Next(*GetDocument().getElementById("input"))
+          ->firstChild();
+  const auto& selected_start = Position(input_text, 0);
+  const auto& selected_end = Position(input_text, 12);
+  ASSERT_EQ("default text",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GetTextFragmentHandler().MainFrameDidUpdateSelection(
+      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 0);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 0);
+}
+
+// TODO(crbug.com/1192047): Update the test to better reflect the real repro
+// steps. Test case for crash in crbug.com/1190137. When selector is requested
+// after callback is set and unused.
+TEST_P(TextFragmentHandlerTest, SecondGenerationCrash) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p id='p'>First paragraph text</p>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* p = GetDocument().getElementById("p");
+  const auto& start = Position(p->lastChild(), 0);
+  const auto& end = Position(p->lastChild(), 15);
+  ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
+
+  auto callback = WTF::Bind([](const TextFragmentSelector& selector) {});
+  GetDocument()
+      .GetFrame()
+      ->GetTextFragmentHandler()
+      ->GetTextFragmentSelectorGenerator()
+      ->SetCallbackForTesting(std::move(callback));
+
+  // This shouldn't crash.
+  GetTextFragmentHandler().MainFrameDidUpdateSelection(
+      ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verifies metrics for preemptive generation are correctly recorded when the
+// selector is successfully generated.
+TEST_P(TextFragmentHandlerTest, CheckMetrics_Success) {
+  base::test::ScopedFeatureList feature_list;
+  // Basic exact selector case.
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 28);
+  ASSERT_EQ("First paragraph text that is",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  String selector = SelectThenRequestSelector(selected_start, selected_end);
+  EXPECT_EQ(selector, "First%20paragraph%20text%20that%20is");
+  VerifyPreemptiveGenerationMetrics(true);
+}
+
+// Verifies metrics for preemptive generation are correctly recorded when the
+// selector request fails, in this case, because the context limit is reached.
+TEST_P(TextFragmentHandlerTest, CheckMetrics_Failure) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph prefix one two three four five six seven
+     eight nine ten to not unique snippet of text followed by suffix</p>
+    <p id='second'>Second paragraph prefix one two three four five six seven
+     eight nine ten to not unique snippet of text followed by suffix</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 80);
+  const auto& selected_end = Position(first_paragraph, 106);
+  ASSERT_EQ("not unique snippet of text",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+  String selector = SelectThenRequestSelector(selected_start, selected_end);
+  EXPECT_EQ(selector, "");
+  VerifyPreemptiveGenerationMetrics(false);
+}
+
+struct PreemptiveLinkGenerationTestPassToString {
+  std::string operator()(const testing::TestParamInfo<bool> b) const {
+    return b.param ? "Preemptive" : "NonPreemptive";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TextFragmentHandlerTest,
+                         ::testing::Bool(),
+                         PreemptiveLinkGenerationTestPassToString());
 
 }  // namespace
 

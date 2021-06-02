@@ -822,9 +822,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
     content_capture_manager_ = nullptr;
   }
 
-  if (text_fragment_handler_) {
-    text_fragment_handler_->GetTextFragmentSelectorGenerator()->Detach();
-  }
+  if (text_fragment_handler_)
+    text_fragment_handler_->DidDetachDocumentOrFrame();
 
   GetBackForwardCacheBufferLimitTracker().DidRemoveFrameFromBackForwardCache(
       total_bytes_buffered_while_in_back_forward_cache_);
@@ -4091,13 +4090,6 @@ InputMethodController& LocalFrame::GetInputMethodController() const {
 TextSuggestionController& LocalFrame::GetTextSuggestionController() const {
   DCHECK(DomWindow());
   return DomWindow()->GetTextSuggestionController();
-}
-
-TextFragmentSelectorGenerator* LocalFrame::GetTextFragmentSelectorGenerator()
-    const {
-  if (!text_fragment_handler_)
-    return nullptr;
-  return text_fragment_handler_->GetTextFragmentSelectorGenerator();
 }
 
 }  // namespace blink

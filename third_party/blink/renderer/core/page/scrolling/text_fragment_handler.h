@@ -12,52 +12,91 @@
 namespace blink {
 
 class LocalFrame;
+class RangeInFlatTree;
 class TextFragmentAnchor;
 
-// TextFragmentHandler is responsible for handling text fragment operations
-// on a LocalFrame. Generating text fragment selectors for a selection is
-// delegated to TextFragmentSelectorGenerator.
+// TextFragmentHandler is responsible for handling requests from the
+// browser-side link-to-text/shared-highlighting feature. It is responsible for
+// generating a text fragment URL based on the current selection as well as
+// collecting information about and modifying text fragments on the current
+// page. This class is registered on and owned by the main frame of a page.
 class CORE_EXPORT TextFragmentHandler final
     : public GarbageCollected<TextFragmentHandler>,
       public blink::mojom::blink::TextFragmentReceiver {
  public:
   explicit TextFragmentHandler(LocalFrame* main_frame);
 
-  void BindTextFragmentReceiver(
-      mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer);
-
-  // Cancel any pending selector requests.
-  void Cancel() override;
-
-  // Requests selector for current selection.
-  void RequestSelector(RequestSelectorCallback callback) override;
-
-  // Requests selectors for all existing highlights on the page.
-  void GetExistingSelectors(GetExistingSelectorsCallback callback) override;
-
-  // Remove all text fragments from the current frame.
-  void RemoveFragments() override;
-
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
 
-  // Retrieves the text fragments matches from the fragment directive.
+  // mojom::blink::TextFragmentReceiver interface
+  void Cancel() override;
+  void RequestSelector(RequestSelectorCallback callback) override;
+  void GetExistingSelectors(GetExistingSelectorsCallback callback) override;
+  void RemoveFragments() override;
   void ExtractTextFragmentsMatches(
       ExtractTextFragmentsMatchesCallback callback) override;
-
-  // Request the bounding rectangle, relative to the viewport, of the first
-  // found match. It will accept an empty rectangle if no matches are found.
   void ExtractFirstFragmentRect(
       ExtractFirstFragmentRectCallback callback) override;
 
+  // Called by Blink when the selection in the main frame changes.
+  void MainFrameDidUpdateSelection(
+      const EphemeralRangeInFlatTree& selection_range);
+
+  void BindTextFragmentReceiver(
+      mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer);
+
   void Trace(Visitor*) const;
 
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator();
+  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
+    return text_fragment_selector_generator_;
+  }
+
+  void DidDetachDocumentOrFrame();
 
  private:
+  // The callback passed to TextFragmentSelectorGenerator that will receive the
+  // result.
+  void DidFinishSelectorGeneration(const TextFragmentSelector& selector);
+
+  // This starts running the generator over the selection in
+  // |current_selection_range_|. The result will be returned by invoking
+  // DidFinishSelectorGeneration().
+  void StartGeneratingForCurrentSelection();
+
+  void RecordPreemptiveGenerationMetrics(const TextFragmentSelector& selector);
+
+  // Called to reply to the client's RequestSelector call with the result.
+  void InvokeReplyCallback(const TextFragmentSelector& selector);
+
+  TextFragmentAnchor* GetTextFragmentAnchor();
+
+  LocalFrame* GetFrame() {
+    return GetTextFragmentSelectorGenerator()->GetFrame();
+  }
+
   // Class responsible for generating text fragment selectors for the current
   // selection.
   Member<TextFragmentSelectorGenerator> text_fragment_selector_generator_;
+
+  // The Range of DOM currently selected by the user in the main frame. This
+  // class may preemptively start generating a selector based on this
+  // selection.
+  Member<RangeInFlatTree> current_selection_range_;
+
+  // The result of preemptively generating on selection changes will be stored
+  // in this member when completed. Used only in preemptive link generation
+  // mode.
+  absl::optional<TextFragmentSelector> preemptive_generation_result_;
+
+  // Reports whether |RequestSelector| was called before or after selector was
+  // ready. Used only in preemptive link generation mode.
+  absl::optional<bool> selector_requested_before_ready_;
+
+  // This will hold the reply callback to the RequestSelector mojo call. This
+  // will be invoked in InvokeReplyCallback to send the reply back to the
+  // browser.
+  RequestSelectorCallback response_callback_;
 
   // Used for communication between |TextFragmentHandler| in renderer
   // and |TextFragmentSelectorClientImpl| in browser.
@@ -66,8 +105,6 @@ class CORE_EXPORT TextFragmentHandler final
       selector_producer_{this, nullptr};
 
   DISALLOW_COPY_AND_ASSIGN(TextFragmentHandler);
-
-  TextFragmentAnchor* GetTextFragmentAnchor();
 };
 
 }  // namespace blink
