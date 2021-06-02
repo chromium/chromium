@@ -809,6 +809,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Columns don't apply to svg text elements.
     if (IsA<SVGTextElement>(*element))
       style.ClearMultiCol();
+
+    // TODO(crbug.com/1179585): Copy DominantBaseline to CssDominantBaseline
+    // with some adjustments.
   } else if (element && element->IsMathMLElement()) {
     if (style.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml

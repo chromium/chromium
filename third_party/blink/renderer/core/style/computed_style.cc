@@ -1688,8 +1688,32 @@ CSSTransitionData& ComputedStyle::AccessTransitions() {
 }
 
 FontBaseline ComputedStyle::GetFontBaseline() const {
-  // TODO(kojii): Incorporate 'dominant-baseline' when we support it.
-  // https://www.w3.org/TR/css-inline-3/#dominant-baseline-property
+  switch (CssDominantBaseline()) {
+    case EDominantBaseline::kAuto:
+      break;
+    case EDominantBaseline::kMiddle:
+      return kXMiddleBaseline;
+    case EDominantBaseline::kAlphabetic:
+      return kAlphabeticBaseline;
+    case EDominantBaseline::kHanging:
+      return kHangingBaseline;
+    case EDominantBaseline::kCentral:
+      return kCentralBaseline;
+    case EDominantBaseline::kTextBeforeEdge:
+      return kTextOverBaseline;
+    case EDominantBaseline::kTextAfterEdge:
+      return kTextUnderBaseline;
+    case EDominantBaseline::kIdeographic:
+      return kIdeographicUnderBaseline;
+    case EDominantBaseline::kMathematical:
+      return kMathBaseline;
+
+    case EDominantBaseline::kUseScript:
+    case EDominantBaseline::kNoChange:
+    case EDominantBaseline::kResetSize:
+      NOTREACHED();
+      break;
+  }
 
   // Vertical flow (except 'text-orientation: sideways') uses ideographic
   // central baseline.

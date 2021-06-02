@@ -104,7 +104,8 @@
                 "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
                 "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
-                "BaselineShiftType", "baseline-shift", "dominant-baseline", "text-anchor",
+                "BaselineShiftType", "baseline-shift", "dominant-baseline",
+                "CssDominantBaseline", "text-anchor",
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
                 "marker-end", "marker-mid", "marker-start", "scrollbar-width"],
         methods_to_diff: [

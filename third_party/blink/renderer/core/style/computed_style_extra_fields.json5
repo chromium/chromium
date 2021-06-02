@@ -1077,6 +1077,19 @@
       default_value: "EBaselineShiftType::kLength",
     },
     {
+      // Represents 'dominant-baseline' defined in the css-inline specification,
+      // not in SVG 1.1 specification.
+      // This doesn't have 'use-script', 'no-change', and 'reset-size'.
+      // For now ComputedStyle for non-SVG elemnts always have the initial value
+      // in order to disable the feature.
+      name: "CssDominantBaseline",
+      field_group: "svg->misc",
+      field_template: "primitive",
+      field_size: 4,
+      type_name: "EDominantBaseline",
+      default_value: "EDominantBaseline::kAuto",
+    },
+    {
       name: "DependsOnContainerQueries",
       field_template: "primitive",
       type_name: "bool",
