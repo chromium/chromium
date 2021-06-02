@@ -124,9 +124,6 @@ MouseEvent* CreateMouseOrPointerEvent(
   // any event attributes not initialized in the |PointerEventInit| below get
   // their default values, all of which are appropriate for a simulated
   // |PointerEvent|.
-  //
-  // TODO(mustaq): Set |pointerId| to -1 after we have a spec change to fix the
-  // issue https://github.com/w3c/pointerevents/issues/343.
   PointerEventInit* initializer = PointerEventInit::Create();
   PopulateSimulatedMouseEventInit(event_type, node, underlying_event,
                                   initializer, creation_scope);
@@ -160,6 +157,8 @@ MouseEvent* CreateMouseOrPointerEvent(
       initializer->setPointerId(PointerEventFactory::kMouseId);
       initializer->setPointerType(pointer_type_names::kMouse);
       initializer->setIsPrimary(true);
+    } else {
+      initializer->setPointerId(PointerEventFactory::kReservedNonPointerId);
     }
     created_event = MakeGarbageCollected<PointerEvent>(
         event_type, initializer, timestamp, synthetic_type);

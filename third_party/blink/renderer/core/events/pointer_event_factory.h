@@ -85,6 +85,7 @@ class CORE_EXPORT PointerEventFactory {
 
   static const PointerId kMouseId;
   static const PointerId kInvalidId;
+  static const PointerId kReservedNonPointerId;
 
   // Removes pointer_id from the map.
   void RemoveLastPosition(const PointerId pointer_id);

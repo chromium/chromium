@@ -217,6 +217,7 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
   return result;
 }
 
+const PointerId PointerEventFactory::kReservedNonPointerId = -1;
 const PointerId PointerEventFactory::kInvalidId = 0;
 
 // Mouse id is 1 to behave the same as MS Edge for compatibility reasons.
