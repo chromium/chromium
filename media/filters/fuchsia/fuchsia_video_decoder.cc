@@ -82,10 +82,9 @@ class OutputMailbox {
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       std::unique_ptr<gfx::GpuMemoryBuffer> gmb)
       : raster_context_provider_(raster_context_provider), weak_factory_(this) {
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-                     gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                     gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                     gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                     gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
     mailbox_ =
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
             gmb.get(), nullptr, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,

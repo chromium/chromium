@@ -135,18 +135,6 @@ void PresenterImageFuchsia::TakeSemaphores(
 
 }  // namespace
 
-OutputPresenterFuchsia::PendingOverlay::PendingOverlay(
-    OverlayCandidate candidate,
-    std::vector<gfx::GpuFence> release_fences)
-    : candidate(std::move(candidate)),
-      release_fences(std::move(release_fences)) {}
-OutputPresenterFuchsia::PendingOverlay::~PendingOverlay() = default;
-
-OutputPresenterFuchsia::PendingOverlay::PendingOverlay(PendingOverlay&&) =
-    default;
-OutputPresenterFuchsia::PendingOverlay&
-OutputPresenterFuchsia::PendingOverlay::operator=(PendingOverlay&&) = default;
-
 OutputPresenterFuchsia::PendingFrame::PendingFrame(uint32_t ordinal)
     : ordinal(ordinal) {}
 OutputPresenterFuchsia::PendingFrame::~PendingFrame() = default;
@@ -302,8 +290,9 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   }
 
   // Create PresenterImageFuchsia for each buffer in the collection.
-  uint32_t image_usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  uint32_t image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                         gpu::SHARED_IMAGE_USAGE_RASTER |
+                         gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   std::vector<std::unique_ptr<OutputPresenter::Image>> images;
   images.reserve(num_images);
@@ -419,25 +408,8 @@ void OutputPresenterFuchsia::ScheduleOverlays(
   if (!next_frame_)
     next_frame_ = PendingFrame(next_frame_ordinal_++);
 
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    auto semaphore = dependency_->GetSharedContextState()
-                         ->external_semaphore_pool()
-                         ->GetOrCreateSemaphore();
-    gfx::GpuFenceHandle fence_handle;
-    fence_handle.owned_event = semaphore.handle().TakeHandle();
-
-    accesses[i]->SetReleaseFence(fence_handle.Clone());
-    std::vector<gfx::GpuFence> release_fences;
-    release_fences.emplace_back(std::move(fence_handle));
-    next_frame_->overlays.emplace_back(std::move(overlays[i]),
-                                       std::move(release_fences));
-    // TODO(crbug.com/1144890): Enqueue overlay plane's acquire fences
-    // after |supports_commit_overlay_planes| is supported. Overlay plane might
-    // display the same Image more than once, which can create a fence
-    // dependency that can be broken by a later Image. However, primary plane
-    // implementation allows only one present at a time. In this scenario,
-    // merging fences might cause hangs, see crbug.com/1151042.
-  }
+  DCHECK(next_frame_->overlays.empty());
+  next_frame_->overlays = std::move(overlays);
 }
 
 void OutputPresenterFuchsia::PresentNextFrame() {
@@ -455,7 +427,7 @@ void OutputPresenterFuchsia::PresentNextFrame() {
       "image_id", frame.image_id);
 
   for (size_t i = 0; i < frame.overlays.size(); ++i) {
-    auto& overlay = frame.overlays[i].candidate;
+    auto& overlay = frame.overlays[i];
     DCHECK(overlay.mailbox.IsSharedImage());
     auto pixmap =
         dependency_->GetSharedImageManager()->GetNativePixmap(overlay.mailbox);
@@ -468,7 +440,7 @@ void OutputPresenterFuchsia::PresentNextFrame() {
                                  gfx::ToRoundedRect(overlay.display_rect),
                                  overlay.uv_rect, !overlay.is_opaque,
                                  ZxEventsToGpuFences(frame.acquire_fences),
-                                 std::move(frame.overlays[i].release_fences));
+                                 /*release_fences=*/{});
   }
 
   auto now = base::TimeTicks::Now();
