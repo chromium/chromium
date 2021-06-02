@@ -6,11 +6,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/help_app_ui/help_app_manager.h"
-#include "ash/content/help_app_ui/help_app_manager_factory.h"
-#include "ash/content/help_app_ui/search/search.mojom.h"
-#include "ash/content/help_app_ui/search/search_handler.h"
-#include "ash/content/help_app_ui/url_constants.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -43,6 +38,11 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/help_app_ui/help_app_manager.h"
+#include "chromeos/components/help_app_ui/help_app_manager_factory.h"
+#include "chromeos/components/help_app_ui/search/search.mojom.h"
+#include "chromeos/components/help_app_ui/search/search_handler.h"
+#include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/user_manager/user_names.h"

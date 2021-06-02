@@ -7,10 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/help_app_ui/help_app_manager.h"
-#include "ash/content/help_app_ui/help_app_manager_factory.h"
-#include "ash/content/help_app_ui/search/search_handler.h"
-#include "ash/content/help_app_ui/url_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -32,6 +28,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/help_app_ui/help_app_manager.h"
+#include "chromeos/components/help_app_ui/help_app_manager_factory.h"
+#include "chromeos/components/help_app_ui/search/search_handler.h"
+#include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"

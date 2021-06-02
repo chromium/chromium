@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/content/help_app_ui/url_constants.h"
-#include "ash/grit/ash_help_app_resources.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chromeos/components/help_app_ui/url_constants.h"
+#include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"

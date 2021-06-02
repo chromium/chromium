@@ -1,0 +1,52 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/components/web_applications/system_apps.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Help App is Chrome OS only")
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_app",
+    ":closure_compile_index",
+  ]
+}
+
+js_type_check("closure_compile_index") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":browser_proxy" ]
+}
+
+js_type_check("closure_compile_app") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":receiver" ]
+}
+
+js_library("browser_proxy") {
+  externs_list = [
+    # The privileged context can't access the app, but shares struct definitions
+    # passed over postMessage.
+    "help_app.externs.js",
+    "//third_party/closure_compiler/externs/metrics_private.js",
+  ]
+  deps = [
+    ":message_types",
+    "//chromeos/components/help_app_ui:mojo_bindings_js_library_for_compile",
+    "//chromeos/components/help_app_ui/search:mojo_bindings_js_library_for_compile",
+    "//chromeos/components/local_search_service/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/components/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("message_types") {
+}
+
+js_library("receiver") {
+  externs_list = [ "help_app.externs.js" ]
+  deps = [
+    ":message_types",
+    "//chromeos/components/system_apps/public/js:message_pipe",
+  ]
+}
