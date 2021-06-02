@@ -4,14 +4,10 @@
 
 #include "fuchsia/runners/common/web_component.h"
 
-#include <fuchsia/logger/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
-#include <lib/fidl/cpp/binding_set.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <utility>
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"

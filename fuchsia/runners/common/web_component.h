@@ -10,7 +10,6 @@
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
-#include <lib/fidl/cpp/binding_set.h>
 #include <memory>
 #include <string>
 #include <utility>
