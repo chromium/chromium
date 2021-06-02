@@ -34,7 +34,7 @@ class SharingIconView : public PageActionIconView {
   SharingIconView& operator=(const SharingIconView&) = delete;
   ~SharingIconView() override;
 
-  void StartLoadingAnimation();
+  void StartLoadingAnimation(int icon_label_id);
   void StopLoadingAnimation();
 
  protected:

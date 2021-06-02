@@ -52,6 +52,7 @@ class SmsRemoteFetcherUiController
   void OnAppChosen(const SharingApp& app) override;
   std::u16string GetContentType() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  bool ShouldShowLoadingIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
   SharingFeatureName GetFeatureMetricsPrefix() const override;
 

@@ -42,12 +42,12 @@ SharingUiController* SharingIconView::GetController() const {
   return web_contents ? get_controller_callback_.Run(web_contents) : nullptr;
 }
 
-void SharingIconView::StartLoadingAnimation() {
+void SharingIconView::StartLoadingAnimation(int icon_label_id) {
   if (loading_animation_)
     return;
 
   loading_animation_ = true;
-  AnimateIn(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL);
+  AnimateIn(icon_label_id);
   SchedulePaint();
 }
 
@@ -75,7 +75,7 @@ void SharingIconView::UpdateImpl() {
   }
 
   if (controller->is_loading())
-    StartLoadingAnimation();
+    StartLoadingAnimation(controller->GetIconLabelId());
   else
     StopLoadingAnimation();
 
