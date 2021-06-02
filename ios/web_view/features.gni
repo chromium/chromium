@@ -4,7 +4,7 @@
 
 declare_args() {
   # Controls if cronet is included.
-  ios_web_view_include_cronet = true
+  ios_web_view_include_cronet = false
 
   # Controls the output name of the built framework.
   ios_web_view_output_name = "ChromeWebView"
