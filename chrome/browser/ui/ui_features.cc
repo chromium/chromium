@@ -112,16 +112,7 @@ const base::Feature kTabGroupsFeedback{"TabGroupsFeedback",
 const base::Feature kTabGroupsNewBadgePromo{"TabGroupsNewBadgePromo",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables popup cards containing tab information when hovering over a tab.
-// https://crbug.com/910739
-const base::Feature kTabHoverCards{"TabHoverCards",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Parameter name used for tab hover cards user study.
-// TODO(corising): Removed this after tab hover cards user study.
-const char kTabHoverCardsFeatureParameterName[] = "setting";
-
-// Enables preview images in hover cards. See kTabHoverCards.
+// Enables preview images in tab-hover cards.
 // https://crbug.com/928954
 const base::Feature kTabHoverCardImages{"TabHoverCardImages",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
