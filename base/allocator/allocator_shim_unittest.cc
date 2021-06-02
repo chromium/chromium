@@ -451,7 +451,8 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   free(non_hooked_ptr);
 }
 
-#if defined(OS_APPLE)
+// PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST_F(AllocatorShimTest, InterceptLibcSymbolsBatchMallocFree) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -490,7 +491,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbolsFreeDefiniteSize) {
   ASSERT_GE(free_definite_sizes_intercepted_by_size[19], 1u);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if defined(OS_WIN)
 TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {

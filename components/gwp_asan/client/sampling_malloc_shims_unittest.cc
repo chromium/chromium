@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/allocator/allocator_shim.h"
+#include "base/allocator/buildflags.h"
 #include "base/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
@@ -295,7 +296,8 @@ TEST_F(SamplingMallocShimsTest, AlignedRealloc) {
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_APPLE)
+// PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     BatchFree,
     SamplingMallocShimsTest::multiprocessTestSetup) {
@@ -323,7 +325,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 TEST_F(SamplingMallocShimsTest, BatchFree) {
   runTest("BatchFree");
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
 
