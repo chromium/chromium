@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 
 declare_args() {
@@ -10,7 +11,12 @@ declare_args() {
   # library shipped with the system. In release builds of Chrome OS we
   # use the system version, but when building on dev workstations we
   # bundle it because Ubuntu doesn't ship a usable version.
-  use_system_libsync = is_chromeos_device
+  #
+  # system_libsync is not used for Lacros build. Instead, We build Lacros on
+  # target device with toolchan's sysroot.
+  # TODO(crbug.com/1215012): Investigate if Lacros can be build with
+  # system_libsync.
+  use_system_libsync = is_chromeos_device && is_chromeos_ash
 }
 
 if (!use_system_libsync) {
