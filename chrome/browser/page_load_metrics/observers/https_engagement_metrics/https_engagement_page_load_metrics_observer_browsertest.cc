@@ -466,8 +466,15 @@ IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
   EXPECT_EQ(0, ratio_bucket);
 }
 
+
+// Flaky on linux-chromeos-rel. crbug/1215539
+#if defined(NDEBUG) && defined(OS_CHROMEOS)
+#define MAYBE_AlwaysInBackground DISABLED_AlwaysInBackground
+#else
+#define MAYBE_AlwaysInBackground AlwaysInBackground
+#endif
 IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
-                       AlwaysInBackground) {
+                       MAYBE_AlwaysInBackground) {
   StartHttpsServer(false);
   StartHttpServer();
   NavigateInBackgroundAndClose(https_test_server_->GetURL("/simple.html"));
