@@ -279,4 +279,33 @@ public class AutocompleteResultUnitTest {
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
     }
+
+    @Test
+    @SmallTest
+    public void resultCreatedFromCacheIsIdentifiedAsCached() {
+        AutocompleteResult res = new AutocompleteResult(0, null, null);
+        Assert.assertTrue(res.isFromCachedResult());
+        res.notifyNativeDestroyed();
+        Assert.assertTrue(res.isFromCachedResult());
+
+        res = AutocompleteResult.fromCache(new ArrayList<>(), new SparseArray<>());
+        Assert.assertTrue(res.isFromCachedResult());
+        res.notifyNativeDestroyed();
+        Assert.assertTrue(res.isFromCachedResult());
+    }
+
+    @Test
+    @SmallTest
+    public void resultCreatedFromNativeAreNotIdentifiedAsCached() {
+        AutocompleteResult res = new AutocompleteResult(0x12345678, null, null);
+        Assert.assertFalse(res.isFromCachedResult());
+        res.notifyNativeDestroyed();
+        Assert.assertFalse(res.isFromCachedResult());
+
+        res = AutocompleteResult.fromNative(
+                0xfedcba98, new AutocompleteMatch[0], new int[0], new String[0], new boolean[0]);
+        Assert.assertFalse(res.isFromCachedResult());
+        res.notifyNativeDestroyed();
+        Assert.assertFalse(res.isFromCachedResult());
+    }
 }

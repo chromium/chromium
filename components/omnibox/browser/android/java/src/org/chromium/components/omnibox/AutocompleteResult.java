@@ -9,6 +9,7 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -70,7 +71,8 @@ public class AutocompleteResult {
      * @param suggestions List of AutocompleteMatch objects.
      * @param groupsDetails Additional information about the AutocompleteMatch groups.
      */
-    private AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
             @Nullable SparseArray<GroupDetails> groupsDetails) {
         // Consider all locally constructed AutocompleteResult objects as coming from Cache.
         // These results do not have a native counterpart, meaning there's no corresponding C++
@@ -99,8 +101,25 @@ public class AutocompleteResult {
         return new AutocompleteResult(0, suggestions, groupsDetails);
     }
 
+    /**
+     * Create AutocompleteResult object from native object.
+     *
+     * Newly created AutocompleteResult object is associated with its Native counterpart.
+     *
+     * @param nativeAutocompleteResult Corresponding Native object.
+     * @param suggestions Array of encompassed, associated AutocompleteMatch objects.
+     *         These suggestions must be exact same and in same order as the ones held by
+     *         Native AutocompleteResult content.
+     * @param groupIds An array of known group identifiers (used for matching group headers).
+     * @param groupNames An array of group names for each of the identifiers. The length and
+     *         the content of this array must match the length and IDs of the |groupIds|.
+     * @param groupCollapsedStates An array of group default collapsed states. The length and
+     *         the content of this array must match the length and IDs of the |groupIds|.
+     * @return AutocompleteResult object encompassing supplied information.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private static AutocompleteResult build(long nativeAutocompleteResult,
+    static AutocompleteResult fromNative(long nativeAutocompleteResult,
             @NonNull AutocompleteMatch[] suggestions, @NonNull int[] groupIds,
             @NonNull String[] groupNames, @NonNull boolean[] groupCollapsedStates) {
         assert groupIds.length == groupNames.length;
@@ -124,8 +143,9 @@ public class AutocompleteResult {
         Collections.addAll(mSuggestions, suggestions);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private void destroy() {
+    void notifyNativeDestroyed() {
         mNativeAutocompleteResult = 0;
     }
 
