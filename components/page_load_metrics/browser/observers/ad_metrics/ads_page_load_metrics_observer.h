@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
@@ -276,9 +276,9 @@ class AdsPageLoadMetricsObserver
   // the frame elements are being destroyed in the renderer.
   bool process_display_state_updates_ = true;
 
-  ScopedObserver<subresource_filter::SubresourceFilterObserverManager,
-                 subresource_filter::SubresourceFilterObserver>
-      subresource_observer_;
+  base::ScopedObservation<subresource_filter::SubresourceFilterObserverManager,
+                          subresource_filter::SubresourceFilterObserver>
+      subresource_observation_{this};
 
   // The tick clock used to get the current time. Can be replaced by tests.
   const base::TickClock* clock_;

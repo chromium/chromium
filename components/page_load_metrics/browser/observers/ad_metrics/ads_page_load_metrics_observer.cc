@@ -227,8 +227,7 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     const ApplicationLocaleGetter& application_locale_getter,
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
-    : subresource_observer_(this),
-      clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
+    : clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
       restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
           features::kRestrictedNavigationAdTagging)),
       heavy_ad_service_(heavy_ad_service),
@@ -257,7 +256,7 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
   // |observer_manager| isn't constructed if the feature for subresource
   // filtering isn't enabled.
   if (observer_manager)
-    subresource_observer_.Add(observer_manager);
+    subresource_observation_.Observe(observer_manager);
   aggregate_frame_data_ = std::make_unique<AggregateFrameData>();
   return CONTINUE_OBSERVING;
 }
@@ -697,7 +696,7 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
 }
 
 void AdsPageLoadMetricsObserver::OnSubresourceFilterGoingAway() {
-  subresource_observer_.RemoveAll();
+  subresource_observation_.Reset();
 }
 
 void AdsPageLoadMetricsObserver::OnPageActivationComputed(
