@@ -20,17 +20,14 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -82,7 +79,6 @@ struct ASH_EXPORT GridIndex {
 // - The grid of apps in a folder
 class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemListObserver,
-                                public PaginationModelObserver,
                                 public AppListModelObserver,
                                 public ui::ImplicitAnimationObserver,
                                 public views::BoundsAnimatorObserver {
@@ -151,7 +147,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   void ClearAnySelectedView();
   bool IsSelectedView(const AppListItemView* view) const;
   bool has_selected_view() const { return selected_view_ != nullptr; }
-  views::View* GetSelectedView() const;
+  AppListItemView* GetSelectedView() const;
 
   void InitiateDrag(AppListItemView* view,
                     Pointer pointer,
@@ -363,6 +359,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
 
  protected:
+  class FadeoutLayerDelegate;
+
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
@@ -376,6 +374,29 @@ class ASH_EXPORT AppsGridView : public views::View,
   // page/slot info.
   gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
 
+  GridIndex GetIndexOfView(const AppListItemView* view) const;
+  AppListItemView* GetViewAtIndex(const GridIndex& index) const;
+
+  // Returns the number of existing items in specified page. Returns 0 if |page|
+  // is out of range.
+  int GetItemsNumOfPage(int page) const;
+
+  // Updates |drop_target_| and |drop_target_region_| based on |drag_view_|'s
+  // position.
+  void UpdateDropTargetRegion();
+
+  // Cancels any context menus showing for app items on the current page.
+  void CancelContextMenusOnCurrentPage();
+
+  // Starts the page flip timer if |drag_point| is in left/right side page flip
+  // zone or is over page switcher.
+  void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
+
+  // Creates a layer mask for gradient alpha when the feature is enabled.
+  // TODO(crbug.com/1211608): Move to PagedAppsGridView when
+  // `fadeout_layer_delegate_` moves.
+  void MaybeCreateGradientMask();
+
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
   views::View* items_container() { return items_container_; }
@@ -385,6 +406,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
   int vertical_tile_padding() const { return vertical_tile_padding_; }
   int horizontal_tile_padding() const { return horizontal_tile_padding_; }
+  const gfx::Point& last_drag_point() const { return last_drag_point_; }
+  bool handling_keyboard_move() const { return handling_keyboard_move_; }
 
   // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
@@ -400,8 +423,15 @@ class ASH_EXPORT AppsGridView : public views::View,
   // drag state is cleared complete.
   bool items_need_layer_for_drag_ = false;
 
+  // Subclasses need non-const access.
+  AppListItemView* drag_view_ = nullptr;
+
+  // The location of |drag_view_| when the drag started.
+  gfx::Point drag_view_start_;
+
+  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
+
  private:
-  class FadeoutLayerDelegate;
   friend class test::AppsGridViewTestApi;
   friend class test::AppsGridViewTest;
   friend class PagedViewStructure;
@@ -438,9 +468,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   void SetSelectedItemByIndex(const GridIndex& index);
 
-  GridIndex GetIndexOfView(const AppListItemView* view) const;
-  AppListItemView* GetViewAtIndex(const GridIndex& index) const;
-
   // Calculates the offset for |page_of_view| based on current page and
   // transition target page.
   const gfx::Vector2d CalculateTransitionOffset(int page_of_view) const;
@@ -464,10 +491,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void ExtractDragLocation(const gfx::Point& root_location,
                            gfx::Point* drag_point);
 
-  // Updates |drop_target_| and |drop_target_region_|
-  // based on |drag_view_|'s position.
-  void UpdateDropTargetRegion();
-
   bool DropTargetIsValidFolder();
 
   // Updates |drop_target_| as a location for potential reordering after the
@@ -487,10 +510,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Dispatch the drag and drop update event to the dnd host (if needed).
   void DispatchDragEventToDragAndDropHost(
       const gfx::Point& location_in_screen_coordinates);
-
-  // Starts the page flip timer if |drag_point| is in left/right side page flip
-  // zone or is over page switcher.
-  void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
 
   // Invoked when |page_flip_timer_| fires.
   void OnPageFlipTimer();
@@ -529,9 +548,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void RemoveLastItemFromReparentItemFolderIfNecessary(
       const std::string& source_folder_id);
 
-  // Cancels any context menus showing for app items on the current page.
-  void CancelContextMenusOnCurrentPage();
-
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
   // view structure as well and deletes it. Sanitizes the view structure if
   // |sanitize| if true. (|sanitize| should be true when moving an item outside
@@ -562,16 +578,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnListItemMoved(size_t from_index,
                        size_t to_index,
                        AppListItem* item) override;
-
-  // Overridden from PaginationModelObserver:
-  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
-  void SelectedPageChanged(int old_selected, int new_selected) override;
-  void TransitionStarting() override;
-  void TransitionStarted() override;
-  void TransitionChanged() override;
-  void TransitionEnded() override;
-  void ScrollStarted() override;
-  void ScrollEnded() override;
 
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;
@@ -727,10 +733,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Update the padding of tile view based on the contents bounds.
   void UpdateTilePadding();
 
-  // Returns the number of existing items in specified page. Returns 0 if |page|
-  // is out of range.
-  int GetItemsNumOfPage(int page) const;
-
   // Starts the animation to transition the |drag_item| from |source_bounds| to
   // the target bounds in the |folder_item_view|. Note that this animation
   // should run only after |drag_item| is added to the folder.
@@ -780,9 +782,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
-  // Create a layer mask for graident alpha when the feature is enabled.
-  void MaybeCreateGradientMask();
-
   // Obtains the target page to flip for |drag_point|.
   int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
 
@@ -815,8 +814,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListItemView* selected_view_ = nullptr;
 
-  AppListItemView* drag_view_ = nullptr;
-
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
 
@@ -825,9 +822,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // The point where the drag started in GridView coordinates.
   gfx::Point drag_start_grid_view_;
-
-  // The location of |drag_view_| when the drag started.
-  gfx::Point drag_view_start_;
 
   // Page the drag started on.
   int drag_start_page_ = -1;
@@ -892,8 +886,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
 
-  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
-
   // Delay for when |page_flip_timer_| should fire after user drags an item near
   // the edge.
   base::TimeDelta page_flip_delay_;
@@ -927,24 +919,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // True if the AppList is in cardified state.
   bool cardified_state_ = false;
-
-  // Records smoothness of pagination animation.
-  absl::optional<ui::ThroughputTracker> pagination_metrics_tracker_;
-
-  // Records the presentation time for apps grid dragging.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
-
-  // Indicates whether the AppsGridView is in mouse drag.
-  bool is_in_mouse_drag_ = false;
-
-  // The initial mouse drag location in root window coordinate. Updates when
-  // drag on AppsGridView starts.
-  gfx::PointF mouse_drag_start_point_;
-
-  // The last mouse drag location in root window coordinate. Different from
-  // |last_drag_point_|, |last_mouse_drag_point_| is the location of the most
-  // recent drag on AppsGridView instead of the app icon.
-  gfx::PointF last_mouse_drag_point_;
 
   // The highlighted page during cardified state.
   int highlighted_page_ = -1;

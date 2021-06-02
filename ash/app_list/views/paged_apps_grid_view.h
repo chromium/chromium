@@ -5,8 +5,13 @@
 #ifndef ASH_APP_LIST_VIEWS_PAGED_APPS_GRID_VIEW_H_
 #define ASH_APP_LIST_VIEWS_PAGED_APPS_GRID_VIEW_H_
 
+#include <memory>
+
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -21,7 +26,8 @@ class ContentsView;
 // An apps grid that shows the apps on a series of fixed-size pages.
 // Used for the peeking/fullscreen launcher, home launcher and folders.
 // Created by and is a child of AppsContainerView.
-class ASH_EXPORT PagedAppsGridView : public AppsGridView {
+class ASH_EXPORT PagedAppsGridView : public AppsGridView,
+                                     public PaginationModelObserver {
  public:
   PagedAppsGridView(ContentsView* contents_view,
                     AppsGridViewFolderDelegate* folder_delegate);
@@ -47,6 +53,16 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView {
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
 
+  // PaginationModelObserver:
+  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
+  void SelectedPageChanged(int old_selected, int new_selected) override;
+  void TransitionStarting() override;
+  void TransitionStarted() override;
+  void TransitionChanged() override;
+  void TransitionEnded() override;
+  void ScrollStarted() override;
+  void ScrollEnded() override;
+
  private:
   // Indicates whether the drag event (from the gesture or mouse) should be
   // handled by PagedAppsGridView.
@@ -67,6 +83,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView {
   // The last mouse drag location in root window coordinate. Used for
   // between-item drags that move the entire grid, not for app icon drags.
   gfx::PointF last_mouse_drag_point_;
+
+  // Records smoothness of pagination animation.
+  absl::optional<ui::ThroughputTracker> pagination_metrics_tracker_;
+
+  // Records the presentation time for apps grid dragging.
+  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 };
 
 }  // namespace ash

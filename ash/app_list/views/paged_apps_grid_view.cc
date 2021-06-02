@@ -13,16 +13,35 @@
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/transform.h"
 #include "ui/views/view.h"
 
 namespace ash {
+namespace {
+
+// Presentation time histogram for apps grid scroll by dragging.
+constexpr char kPageDragScrollInClamshellHistogram[] =
+    "Apps.PaginationTransition.DragScroll.PresentationTime.ClamshellMode";
+constexpr char kPageDragScrollInClamshellMaxLatencyHistogram[] =
+    "Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency."
+    "ClamshellMode";
+constexpr char kPageDragScrollInTabletHistogram[] =
+    "Apps.PaginationTransition.DragScroll.PresentationTime.TabletMode";
+constexpr char kPageDragScrollInTabletMaxLatencyHistogram[] =
+    "Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency."
+    "TabletMode";
+
+}  // namespace
 
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
@@ -32,9 +51,12 @@ PagedAppsGridView::PagedAppsGridView(
                    folder_delegate),
       contents_view_(contents_view) {
   DCHECK(contents_view_);
+  pagination_model_.AddObserver(this);
 }
 
-PagedAppsGridView::~PagedAppsGridView() = default;
+PagedAppsGridView::~PagedAppsGridView() {
+  pagination_model_.RemoveObserver(this);
+}
 
 void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
                                                     ui::EventType type) {
@@ -258,6 +280,156 @@ gfx::Size PagedAppsGridView::GetTileGridSize() const {
       gfx::Size(rect.width() * cols(), rect.height() * rows_per_page()));
   rect.Inset(-GetTilePadding());
   return rect.size();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PaginationModelObserver:
+
+void PagedAppsGridView::TotalPagesChanged(int previous_page_count,
+                                          int new_page_count) {
+  // Don't record from folder.
+  if (is_in_folder())
+    return;
+
+  // Initial setup for the AppList starts with -1 pages. Ignore the page count
+  // change resulting from the initialization of the view.
+  if (previous_page_count == -1)
+    return;
+
+  if (previous_page_count < new_page_count) {
+    AppListPageCreationType type = AppListPageCreationType::kSyncOrInstall;
+    if (handling_keyboard_move())
+      type = AppListPageCreationType::kMovingAppWithKeyboard;
+    else if (dragging())
+      type = AppListPageCreationType::kDraggingApp;
+    UMA_HISTOGRAM_ENUMERATION("Apps.AppList.AppsGridAddPage", type);
+  }
+}
+
+void PagedAppsGridView::SelectedPageChanged(int old_selected,
+                                            int new_selected) {
+  items_container()->layer()->SetTransform(gfx::Transform());
+  if (dragging()) {
+    drag_view_->layer()->SetTransform(gfx::Transform());
+
+    // Sets the transform to locate the scrolled content.
+    gfx::Size grid_size = GetTileGridSize();
+    gfx::Vector2d update;
+    if (pagination_controller_->scroll_axis() ==
+        PaginationController::SCROLL_AXIS_HORIZONTAL) {
+      const int page_width = grid_size.width() + GetPaddingBetweenPages();
+      update.set_x(page_width * (new_selected - old_selected));
+    } else {
+      const int page_height = grid_size.height() + GetPaddingBetweenPages();
+      update.set_y(page_height * (new_selected - old_selected));
+    }
+    drag_view_start_ += update;
+    drag_view_->SetPosition(drag_view_->origin() + update);
+    UpdateDropTargetRegion();
+    Layout();
+    MaybeStartPageFlipTimer(last_drag_point());
+  } else {
+    AppListItemView* selected_view = GetSelectedView();
+    // If |selected_view| is no longer on the page, select the first item in
+    // the page relative to the page swap in order to keep keyboard focus
+    // movement predictable.
+    if (selected_view && GetIndexOfView(selected_view).page != new_selected) {
+      GetViewAtIndex(
+          GridIndex(new_selected, (old_selected < new_selected)
+                                      ? 0
+                                      : (GetItemsNumOfPage(new_selected) - 1)))
+          ->RequestFocus();
+    } else {
+      ClearSelectedView(selected_view);
+    }
+    Layout();
+  }
+}
+
+void PagedAppsGridView::TransitionStarting() {
+  // Drag ends and animation starts.
+  presentation_time_recorder_.reset();
+
+  MaybeCreateGradientMask();
+  CancelContextMenusOnCurrentPage();
+}
+
+void PagedAppsGridView::TransitionStarted() {
+  if (abs(pagination_model_.transition().target_page -
+          pagination_model_.selected_page()) > 1) {
+    Layout();
+  }
+
+  pagination_metrics_tracker_ =
+      GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+  pagination_metrics_tracker_->Start(metrics_util::ForSmoothness(
+      base::BindRepeating(&ReportPaginationSmoothness, IsTabletMode())));
+}
+
+void PagedAppsGridView::TransitionChanged() {
+  const PaginationModel::Transition& transition =
+      pagination_model_.transition();
+  if (!pagination_model_.is_valid_page(transition.target_page))
+    return;
+
+  // Sets the transform to locate the scrolled content.
+  gfx::Size grid_size = GetTileGridSize();
+  gfx::Vector2dF translate;
+  const int dir =
+      transition.target_page > pagination_model_.selected_page() ? -1 : 1;
+  if (pagination_controller_->scroll_axis() ==
+      PaginationController::SCROLL_AXIS_HORIZONTAL) {
+    const int page_width = grid_size.width() + GetPaddingBetweenPages();
+    translate.set_x(page_width * transition.progress * dir);
+  } else {
+    const int page_height = grid_size.height() + GetPaddingBetweenPages();
+    translate.set_y(page_height * transition.progress * dir);
+  }
+  gfx::Transform transform;
+  transform.Translate(translate);
+  items_container()->layer()->SetTransform(transform);
+
+  // |drag_view_| should stay in the same location in the screen, so makes
+  // the opposite effect of the transform.
+  if (drag_view_) {
+    gfx::Transform drag_view_transform;
+    drag_view_transform.Translate(-translate);
+    drag_view_->layer()->SetTransform(drag_view_transform);
+  }
+
+  if (presentation_time_recorder_)
+    presentation_time_recorder_->RequestNext();
+}
+
+void PagedAppsGridView::TransitionEnded() {
+  pagination_metrics_tracker_->Stop();
+
+  // Gradient mask is no longer necessary once transition is finished.
+  if (layer()->layer_mask_layer())
+    layer()->SetMaskLayer(nullptr);
+}
+
+void PagedAppsGridView::ScrollStarted() {
+  DCHECK(!presentation_time_recorder_);
+
+  MaybeCreateGradientMask();
+  if (IsTabletMode()) {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        GetWidget()->GetCompositor(), kPageDragScrollInTabletHistogram,
+        kPageDragScrollInTabletMaxLatencyHistogram);
+  } else {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        GetWidget()->GetCompositor(), kPageDragScrollInClamshellHistogram,
+        kPageDragScrollInClamshellMaxLatencyHistogram);
+  }
+}
+
+void PagedAppsGridView::ScrollEnded() {
+  // Scroll can end without triggering state animation.
+  presentation_time_recorder_.reset();
+  // Need to reset the mask because transition will not happen in some
+  // cases. (See https://crbug.com/1049275)
+  layer()->SetMaskLayer(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
