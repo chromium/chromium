@@ -28,6 +28,8 @@ export class EmojiGroupButton extends PolymerElement {
       groupId: {type: String, readonly: true},
       /** @type {!boolean} */
       active: {type: Boolean, value: false},
+      /** @type {!boolean} */
+      disabled: {type: Boolean, value: false},
     };
   }
 
