@@ -1777,37 +1777,32 @@ class OopTextBlobPixelTest
     const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
     if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
       error_pixels_percentage = 10.f;
-      max_abs_error = 16;
+      max_abs_error = 20;
     } else {
       // Newer OSes occasionally have smaller flakes when using the real GPU
       error_pixels_percentage = 1.5f;
       max_abs_error = 2;
     }
-#elif defined(OS_MAC) || defined(OS_WIN)
-    // Mac and Windows need very small tolerances only under complex transforms
-    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex) {
-      error_pixels_percentage = 0.2f;
-      max_abs_error = 2;
-    }
 #endif
-    // Regardless of OS, perspective triggers path rendering for each glyph,
-    // which produces its own set of pixel differences.
-    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
-      error_pixels_percentage = 4.f;
-      max_abs_error = 36;
-    }
+    // Many platforms need very small tolerances under complex transforms,
+    // and higher tolerances for perspective, since it triggers path rendering
+    // for each glyph. Additionally, record filters require higher tolerance
+    // because oop-r converts raster-at-scale to fixed-scale.
     float avg_error = max_abs_error;
-    // And if the text is stored in a PaintFilter, allow for more differences
-    // since OOP-R converts to a fixed scale image before the transform. We
-    // could convert GPU-raster to fixed scale for direct comparison, but this
-    // ensures that both scaling modes produce approximately the same image.
-    if (GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter &&
-        (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective ||
-         GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex)) {
-      error_pixels_percentage = 12.f;
-      max_abs_error = 220;
-      avg_error = 50.f;
+    const bool is_record_filter =
+        GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter;
+    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex) {
+      error_pixels_percentage =
+          std::max(is_record_filter ? 12.f : 0.2f, error_pixels_percentage);
+      max_abs_error = std::max(is_record_filter ? 220 : 2, max_abs_error);
+      avg_error = std::max(is_record_filter ? 50.f : 2.f, avg_error);
+    } else if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
+      error_pixels_percentage =
+          std::max(is_record_filter ? 12.f : 4.f, error_pixels_percentage);
+      max_abs_error = std::max(is_record_filter ? 255 : 36, max_abs_error);
+      avg_error = std::max(is_record_filter ? 60.f : 36.f, avg_error);
     }
+
     FuzzyPixelComparator comparator(
         /*discard_alpha=*/false,
         /*error_pixels_percentage_limit=*/error_pixels_percentage,
@@ -1995,12 +1990,7 @@ class OopTextBlobPixelTest
 };
 
 TEST_P(OopTextBlobPixelTest, Config) {
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-  // Broken on emulators: https://crbug.com/1189284
-  GTEST_SKIP();
-#else
   RunTest();
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
