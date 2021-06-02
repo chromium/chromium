@@ -260,65 +260,30 @@ class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
     callback_info_ = std::make_unique<WINHTTP_ASYNC_RESULT>();
     callback_info_->dwError = info_error;
   }
-  void AddToProxyResults(const ProxyServer& proxy_server,
-                         bool bypass = false,
-                         bool skip_port = false) {
+  void AddBypassToProxyResults() {
     EXPECT_LT(proxy_result_.cEntries, kMaxProxyEntryLimit - 1);
+    AllocateProxyResultEntriesIfNeeded();
+    proxy_result_.pEntries[proxy_result_.cEntries].fBypass = TRUE;
+    proxy_result_.cEntries++;
+  }
+  void AddDirectToProxyResults() {
+    EXPECT_LT(proxy_result_.cEntries, kMaxProxyEntryLimit - 1);
+    AllocateProxyResultEntriesIfNeeded();
+    proxy_result_.cEntries++;
+  }
+  void AddToProxyResults(INTERNET_SCHEME scheme,
+                         std::wstring proxy_host,
+                         INTERNET_PORT port) {
+    EXPECT_LT(proxy_result_.cEntries, kMaxProxyEntryLimit - 1);
+    AllocateProxyResultEntriesIfNeeded();
 
-    // Assign memory as needed.
-    if (proxy_result_.cEntries == 0) {
-      proxy_result_.pEntries =
-          new WINHTTP_PROXY_RESULT_ENTRY[kMaxProxyEntryLimit];
-      std::memset(proxy_result_.pEntries, 0,
-                  kMaxProxyEntryLimit * sizeof(WINHTTP_PROXY_RESULT_ENTRY));
+    proxy_list_.push_back(std::move(proxy_host));
+    wchar_t* proxy_host_raw = const_cast<wchar_t*>(proxy_list_.back().data());
 
-      // The memory of the strings above will be backed by a vector of strings.
-      proxy_list_.reserve(kMaxProxyEntryLimit);
-    }
-
-    if (bypass) {
-      proxy_result_.pEntries[proxy_result_.cEntries].fBypass = TRUE;
-    } else if (!proxy_server.is_direct()) {
-      // Now translate the ProxyServer into a WINHTTP_PROXY_RESULT_ENTRY and
-      // assign.
-      proxy_result_.pEntries[proxy_result_.cEntries].fProxy = TRUE;
-
-      switch (proxy_server.scheme()) {
-        case ProxyServer::Scheme::SCHEME_HTTP:
-          proxy_result_.pEntries[proxy_result_.cEntries].ProxyScheme =
-              INTERNET_SCHEME_HTTP;
-          break;
-        case ProxyServer::Scheme::SCHEME_HTTPS:
-          proxy_result_.pEntries[proxy_result_.cEntries].ProxyScheme =
-              INTERNET_SCHEME_HTTPS;
-          break;
-        case ProxyServer::Scheme::SCHEME_SOCKS4:
-          proxy_result_.pEntries[proxy_result_.cEntries].ProxyScheme =
-              INTERNET_SCHEME_SOCKS;
-          break;
-        default:
-          ADD_FAILURE()
-              << "Of the possible proxy schemes returned by WinHttp, Chrome "
-                 "supports HTTP(S) and SOCKS4. The ProxyServer::Scheme that "
-                 "triggered this message is: "
-              << proxy_server.scheme();
-          break;
-      }
-
-      std::wstring proxy_host(proxy_server.host_port_pair().host().begin(),
-                              proxy_server.host_port_pair().host().end());
-      proxy_list_.push_back(proxy_host);
-
-      wchar_t* proxy_host_raw = const_cast<wchar_t*>(proxy_list_.back().data());
-      proxy_result_.pEntries[proxy_result_.cEntries].pwszProxy = proxy_host_raw;
-
-      if (skip_port)
-        proxy_result_.pEntries[proxy_result_.cEntries].ProxyPort =
-            INTERNET_DEFAULT_PORT;
-      else
-        proxy_result_.pEntries[proxy_result_.cEntries].ProxyPort =
-            proxy_server.host_port_pair().port();
-    }
+    proxy_result_.pEntries[proxy_result_.cEntries].fProxy = TRUE;
+    proxy_result_.pEntries[proxy_result_.cEntries].ProxyScheme = scheme;
+    proxy_result_.pEntries[proxy_result_.cEntries].pwszProxy = proxy_host_raw;
+    proxy_result_.pEntries[proxy_result_.cEntries].ProxyPort = port;
 
     proxy_result_.cEntries++;
   }
@@ -370,6 +335,19 @@ class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
     // As soon as the callback resolves, WinHttp may choose to delete the memory
     // contained by |callback_info_|. This is simulated here.
     callback_info_.reset();
+  }
+
+  void AllocateProxyResultEntriesIfNeeded() {
+    if (proxy_result_.cEntries != 0)
+      return;
+
+    proxy_result_.pEntries =
+        new WINHTTP_PROXY_RESULT_ENTRY[kMaxProxyEntryLimit];
+    std::memset(proxy_result_.pEntries, 0,
+                kMaxProxyEntryLimit * sizeof(WINHTTP_PROXY_RESULT_ENTRY));
+
+    // The memory of the strings above will be backed by a vector of strings.
+    proxy_list_.reserve(kMaxProxyEntryLimit);
   }
 
   // Data configurable by tests to simulate errors and results from WinHttp.
@@ -442,55 +420,6 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
 
   bool InitializeResolver() { return proxy_resolver_->Initialize(); }
 
-  void AddNoPortProxyToResults() {
-    const ProxyServer proxy_result =
-        ProxyServer::FromPacString("PROXY foopy:8080");
-    winhttp_api_wrapper_->AddToProxyResults(proxy_result, /*bypass=*/false,
-                                            /*skip_port=*/true);
-  }
-
-  void AddDirectProxyToResults(ProxyList* out_proxy_list) {
-    winhttp_api_wrapper_->AddToProxyResults(ProxyServer::Direct());
-    out_proxy_list->AddProxyServer(ProxyServer::Direct());
-  }
-
-  void AddBypassedProxyToResults(ProxyList* out_proxy_list) {
-    winhttp_api_wrapper_->AddToProxyResults(ProxyServer::Direct(),
-                                            /*bypass=*/true);
-    out_proxy_list->AddProxyServer(ProxyServer::Direct());
-  }
-
-  void AddHTTPProxyToResults(ProxyList* out_proxy_list) {
-    const ProxyServer proxy_result =
-        ProxyServer::FromPacString("PROXY foopy:8080");
-    winhttp_api_wrapper_->AddToProxyResults(proxy_result);
-    out_proxy_list->AddProxyServer(proxy_result);
-  }
-
-  void AddHTTPSProxyToResults(ProxyList* out_proxy_list) {
-    const ProxyServer proxy_result =
-        ProxyServer::FromPacString("HTTPS foopy:8443");
-    winhttp_api_wrapper_->AddToProxyResults(proxy_result);
-    out_proxy_list->AddProxyServer(proxy_result);
-  }
-
-  void AddSOCKSProxyToResults(ProxyList* out_proxy_list) {
-    const ProxyServer proxy_result =
-        ProxyServer::FromPacString("SOCKS4 foopy:8080");
-    winhttp_api_wrapper_->AddToProxyResults(proxy_result);
-    out_proxy_list->AddProxyServer(proxy_result);
-  }
-
-  void AddIDNProxyToResults(ProxyList* out_proxy_list) {
-    const ProxyServer proxy_result =
-        ProxyServer::FromPacString("HTTPS föopy:8080");
-    winhttp_api_wrapper_->AddToProxyResults(proxy_result);
-
-    const ProxyServer expected_proxy_result =
-        ProxyServer::FromPacString("HTTPS xn--fopy-5jr83a:8080");
-    out_proxy_list->AddProxyServer(expected_proxy_result);
-  }
-
   void PerformGetProxyForUrlAndValidateResult(const ProxyList& proxy_list,
                                               int net_error,
                                               int windows_error) {
@@ -517,8 +446,10 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
   }
 
   void DoProxyConfigTest(const ProxyConfig& proxy_config) {
+    winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                             8443);
     ProxyList proxy_list;
-    AddHTTPSProxyToResults(&proxy_list);
+    proxy_list.AddProxyServer(ProxyServer::FromPacString("HTTPS foopy:8443"));
 
     std::wstring pac_url;
     if (proxy_config.has_pac_url())
@@ -626,7 +557,8 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlFailOnGetProxyResult) {
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlFailOnDefaultPort) {
-  AddNoPortProxyToResults();
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTP, L"foopy",
+                                           INTERNET_DEFAULT_PORT);
   DoFailedGetProxyForUrlTest(ERR_FAILED, 0);
 }
 
@@ -660,8 +592,11 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlCancellation) {
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlCancelAndRestart) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                           8443);
   ProxyList expected_proxy_list;
-  AddHTTPSProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS foopy:8443"));
 
   ASSERT_TRUE(InitializeResolver());
   TestCompletionCallback unused_callback;
@@ -738,52 +673,81 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlConfigMultipleSettings) {
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlDirect) {
+  winhttp_api_wrapper()->AddDirectToProxyResults();
   ProxyList expected_proxy_list;
-  AddDirectProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(ProxyServer::Direct());
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlBypass) {
+  winhttp_api_wrapper()->AddBypassToProxyResults();
   ProxyList expected_proxy_list;
-  AddBypassedProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(ProxyServer::Direct());
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlHTTP) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTP, L"foopy",
+                                           8080);
   ProxyList expected_proxy_list;
-  AddHTTPProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("PROXY foopy:8080"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlHTTPS) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                           8443);
   ProxyList expected_proxy_list;
-  AddHTTPSProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS foopy:8443"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlSOCKS) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_SOCKS, L"foopy",
+                                           8080);
   ProxyList expected_proxy_list;
-  AddSOCKSProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("SOCKS4 foopy:8080"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlIDNProxy) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"föopy",
+                                           8080);
+
+  // Expect L"föopy" to be ascii-encoded as "xn--fopy-5qa".
   ProxyList expected_proxy_list;
-  AddIDNProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS xn--fopy-5qa:8080"));
+
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlMultipleResults) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                           8443);
+  winhttp_api_wrapper()->AddDirectToProxyResults();
+
   ProxyList expected_proxy_list;
-  AddHTTPSProxyToResults(&expected_proxy_list);
-  AddDirectProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS foopy:8443"));
+  expected_proxy_list.AddProxyServer(ProxyServer::Direct());
+
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverTest, MultipleCallsToGetProxyForUrl) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                           8443);
+  winhttp_api_wrapper()->AddDirectToProxyResults();
+
   ProxyList expected_proxy_list;
-  AddHTTPSProxyToResults(&expected_proxy_list);
-  AddDirectProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS foopy:8443"));
+  expected_proxy_list.AddProxyServer(ProxyServer::Direct());
+
   ASSERT_TRUE(InitializeResolver());
 
   TestCompletionCallback unused_callback;
@@ -818,9 +782,15 @@ TEST_F(WindowsSystemProxyResolverTest, MultipleCallsToGetProxyForUrl) {
 
 TEST_F(WindowsSystemProxyResolverTest,
        MultipleCallsToGetProxyForUrlWithOneCancellation) {
+  winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
+                                           8443);
+  winhttp_api_wrapper()->AddDirectToProxyResults();
+
   ProxyList expected_proxy_list;
-  AddHTTPSProxyToResults(&expected_proxy_list);
-  AddDirectProxyToResults(&expected_proxy_list);
+  expected_proxy_list.AddProxyServer(
+      ProxyServer::FromPacString("HTTPS foopy:8443"));
+  expected_proxy_list.AddProxyServer(ProxyServer::Direct());
+
   ASSERT_TRUE(InitializeResolver());
 
   // This extra scope is needed so that the MockProxyResolutionRequests destruct
