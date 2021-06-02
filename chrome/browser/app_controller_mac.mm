@@ -1767,8 +1767,12 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   }
 
   _lastProfile = profile;
-  _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
-      _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
+  if (profile->IsOffTheRecord()) {
+    _lastProfileKeepAlive.reset();
+  } else {
+    _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
+        _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
+  }
 }
 
 - (void)windowChangedToProfile:(Profile*)profile {
