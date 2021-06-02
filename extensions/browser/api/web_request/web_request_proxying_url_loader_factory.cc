@@ -667,7 +667,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   }
 
   // From here the lifecycle of this request is driven by subsequent events on
-  // either |proxy_loader_binding_|, |proxy_client_binding_|, or
+  // either |proxied_loader_receiver_|, |proxied_client_receiver_|, or
   // |header_client_receiver_|.
 }
 
