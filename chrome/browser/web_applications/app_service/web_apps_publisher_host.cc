@@ -120,6 +120,37 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
+content::WebContents* WebAppsPublisherHost::Launch(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  return publisher_helper().Launch(
+      app_id, event_flags, std::move(launch_source), std::move(window_info));
+}
+
+content::WebContents* WebAppsPublisherHost::LaunchAppWithFiles(
+    const std::string& app_id,
+    apps::mojom::LaunchContainer container,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::FilePathsPtr file_paths) {
+  return publisher_helper().LaunchAppWithFiles(
+      app_id, std::move(container), event_flags, std::move(launch_source),
+      std::move(file_paths));
+}
+
+content::WebContents* WebAppsPublisherHost::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  return publisher_helper().LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), std::move(launch_source),
+      std::move(window_info));
+}
+
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {

@@ -74,6 +74,22 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 LoadIconCallback callback);
+  content::WebContents* Launch(const std::string& app_id,
+                               int32_t event_flags,
+                               apps::mojom::LaunchSource launch_source,
+                               apps::mojom::WindowInfoPtr window_info);
+  content::WebContents* LaunchAppWithFiles(
+      const std::string& app_id,
+      apps::mojom::LaunchContainer container,
+      int32_t event_flags,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::FilePathsPtr file_paths);
+  content::WebContents* LaunchAppWithIntent(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info);
 
  private:
   void OnReady();

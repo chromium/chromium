@@ -45,6 +45,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
@@ -360,6 +361,24 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
   EXPECT_EQ(
       mock_app_publisher.get_capability_access_deltas().back()->microphone,
       apps::mojom::OptionalBool::kFalse);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Launch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+
+  content::TestNavigationObserver navigation_observer(app_url);
+  navigation_observer.StartWatchingNewWebContents();
+  web_apps_publisher_host.Launch(app_id, 0,
+                                 apps::mojom::LaunchSource::kFromTest, nullptr);
+  navigation_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PauseUnpause) {

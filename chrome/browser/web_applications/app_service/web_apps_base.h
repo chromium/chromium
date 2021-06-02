@@ -26,14 +26,6 @@
 
 class Profile;
 
-namespace apps {
-struct AppLaunchParams;
-}  // namespace apps
-
-namespace content {
-class WebContents;
-}
-
 namespace webapps {
 enum class WebappUninstallSource;
 }  // namespace webapps
@@ -41,7 +33,6 @@ enum class WebappUninstallSource;
 namespace web_app {
 
 class WebApp;
-class WebAppLaunchManager;
 class WebAppProvider;
 class WebAppRegistrar;
 
@@ -69,18 +60,6 @@ class WebAppsBase : public apps::PublisherBase,
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;
-
-  apps::IconEffects GetIconEffects(const WebApp* web_app);
-
-  content::WebContents* LaunchAppWithIntentImpl(
-      const std::string& app_id,
-      int32_t event_flags,
-      apps::mojom::IntentPtr intent,
-      apps::mojom::LaunchSource launch_source,
-      int64_t display_id);
-
-  virtual content::WebContents* LaunchAppWithParams(
-      apps::AppLaunchParams params);
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
@@ -161,8 +140,6 @@ class WebAppsBase : public apps::PublisherBase,
       content_settings_observation_{this};
 
   WebAppProvider* provider_ = nullptr;
-
-  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;

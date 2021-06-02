@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -33,7 +32,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -53,11 +51,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
-#include "components/sessions/core/session_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -149,25 +144,6 @@ void WebAppsChromeOs::Initialize() {
         std::make_unique<WebAppsChromeOs::BadgeManagerDelegate>(
             weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void WebAppsChromeOs::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  auto* tab = WebAppsChromeOs::LaunchAppWithIntentImpl(
-      app_id, event_flags, std::move(intent), launch_source,
-      window_info ? window_info->display_id : display::kInvalidDisplayId);
-
-  if (launch_source != apps::mojom::LaunchSource::kFromArc || !tab) {
-    return;
-  }
-
-  // Add a flag to remember this tab originated in the ARC context.
-  tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                   std::make_unique<arc::ArcWebContentsData>());
 }
 
 void WebAppsChromeOs::Uninstall(const std::string& app_id,
@@ -364,7 +340,7 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
         web_app->shortcuts_menu_item_infos()[menu_item_index].url;
   }
 
-  LaunchAppWithParams(std::move(params));
+  publisher_helper().LaunchAppWithParams(std::move(params));
 }
 
 void WebAppsChromeOs::OnWebAppInstalled(const AppId& app_id) {
@@ -695,36 +671,6 @@ void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {
       publisher_helper().SetIconEffect(app_id);
     }
   }
-}
-
-content::WebContents* WebAppsChromeOs::LaunchAppWithParams(
-    apps::AppLaunchParams params) {
-  apps::AppLaunchParams params_for_restore(
-      params.app_id, params.container, params.disposition, params.source,
-      params.display_id, params.launch_files, params.intent);
-
-  auto* web_contents = WebAppsBase::LaunchAppWithParams(std::move(params));
-
-  int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
-  if (!SessionID::IsValidValue(session_id)) {
-    return web_contents;
-  }
-
-  const WebApp* web_app = GetWebApp(params_for_restore.app_id);
-  std::unique_ptr<full_restore::AppLaunchInfo> launch_info;
-  if (web_app && web_app->IsSystemApp()) {
-    // Save all launch information for system web apps, because the browser
-    // session restore can't restore system web apps.
-    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
-        params_for_restore.app_id, session_id, params_for_restore.container,
-        params_for_restore.disposition, params_for_restore.display_id,
-        std::move(params_for_restore.launch_files),
-        std::move(params_for_restore.intent));
-    full_restore::SaveAppLaunchInfo(profile()->GetPath(),
-                                    std::move(launch_info));
-  }
-
-  return web_contents;
 }
 
 bool WebAppsChromeOs::Accepts(const std::string& app_id) {

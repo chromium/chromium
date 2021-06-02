@@ -25,6 +25,7 @@ source_set("app_service") {
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/services/app_service/public/cpp:publisher",
+    "//components/sessions",
     "//components/webapps/browser",
     "//url",
   ]
@@ -42,7 +43,6 @@ source_set("app_service") {
       "//components/arc:arc_base",
       "//components/full_restore",
       "//components/services/app_service/public/cpp:instance_update",
-      "//components/sessions:session_id",
     ]
   }
 

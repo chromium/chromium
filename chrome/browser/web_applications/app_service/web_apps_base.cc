@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -29,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -102,52 +99,6 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const AppId& app_id) {
   Publish(publisher_helper().ConvertUninstalledWebApp(web_app), subscribers_);
 }
 
-IconEffects WebAppsBase::GetIconEffects(const WebApp* web_app) {
-  IconEffects icon_effects = IconEffects::kNone;
-  if (!web_app->is_locally_installed()) {
-    icon_effects =
-        static_cast<IconEffects>(icon_effects | IconEffects::kBlocked);
-  }
-  icon_effects =
-      static_cast<IconEffects>(icon_effects | IconEffects::kRoundCorners);
-  return icon_effects;
-}
-
-content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
-  if (!profile_) {
-    return nullptr;
-  }
-
-  const WebAppRegistrar& registrar = *WebAppsBase::GetRegistrar();
-  if (registrar.GetAppById(app_id)->capture_links() ==
-      blink::mojom::CaptureLinks::kExistingClientNavigate) {
-    content::WebContents* web_contents =
-        provider()->ui_manager().NavigateExistingWindow(
-            app_id, intent->url ? intent->url.value()
-                                : registrar.GetAppLaunchUrl(app_id));
-    if (web_contents) {
-      return web_contents;
-    }
-  }
-
-  auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags, apps::GetAppLaunchSource(launch_source), display_id,
-      ConvertDisplayModeToAppLaunchContainer(
-          registrar.GetAppEffectiveDisplayMode(app_id)),
-      std::move(intent));
-  return LaunchAppWithParams(std::move(params));
-}
-
-content::WebContents* WebAppsBase::LaunchAppWithParams(
-    apps::AppLaunchParams params) {
-  return web_app_launch_manager_->OpenApplication(std::move(params));
-}
-
 void WebAppsBase::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
   DCHECK(profile_);
@@ -161,8 +112,6 @@ void WebAppsBase::Initialize(
   registrar_observation_.Observe(&provider_->registrar());
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
-
-  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
 
   PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
@@ -198,62 +147,8 @@ void WebAppsBase::Launch(const std::string& app_id,
                          int32_t event_flags,
                          apps::mojom::LaunchSource launch_source,
                          apps::mojom::WindowInfoPtr window_info) {
-  if (!profile_) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  switch (launch_source) {
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromParentalControls:
-      break;
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_MAIN,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-
-      break;
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_SEARCH,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-      break;
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
-    case apps::mojom::LaunchSource::kFromShelf:
-    case apps::mojom::LaunchSource::kFromFileManager:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromKeyboard:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
-    case apps::mojom::LaunchSource::kFromTest:
-    case apps::mojom::LaunchSource::kFromArc:
-    case apps::mojom::LaunchSource::kFromSharesheet:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
-      break;
-  }
-
-  DisplayMode display_mode = GetRegistrar()->GetAppEffectiveDisplayMode(app_id);
-
-  apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      web_app->app_id(), event_flags, apps::GetAppLaunchSource(launch_source),
-      window_info ? window_info->display_id : display::kInvalidDisplayId,
-      /*fallback_container=*/
-      ConvertDisplayModeToAppLaunchContainer(display_mode));
-
-  // The app will be launched for the currently active profile.
-  LaunchAppWithParams(std::move(params));
+  publisher_helper().Launch(app_id, event_flags, std::move(launch_source),
+                            std::move(window_info));
 }
 
 void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
@@ -261,15 +156,9 @@ void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
                                      int32_t event_flags,
                                      apps::mojom::LaunchSource launch_source,
                                      apps::mojom::FilePathsPtr file_paths) {
-  apps::AppLaunchParams params(
-      app_id, container, ui::DispositionFromEventFlags(event_flags),
-      apps::GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
-  for (const auto& file_path : file_paths->file_paths) {
-    params.launch_files.push_back(file_path);
-  }
-
-  // The app will be launched for the currently active profile.
-  LaunchAppWithParams(std::move(params));
+  publisher_helper().LaunchAppWithFiles(app_id, std::move(container),
+                                        event_flags, std::move(launch_source),
+                                        std::move(file_paths));
 }
 
 void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,
@@ -277,9 +166,9 @@ void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,
                                       apps::mojom::IntentPtr intent,
                                       apps::mojom::LaunchSource launch_source,
                                       apps::mojom::WindowInfoPtr window_info) {
-  LaunchAppWithIntentImpl(
-      app_id, event_flags, std::move(intent), launch_source,
-      window_info ? window_info->display_id : display::kInvalidDisplayId);
+  publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
+                                         std::move(launch_source),
+                                         std::move(window_info));
 }
 
 void WebAppsBase::SetPermission(const std::string& app_id,

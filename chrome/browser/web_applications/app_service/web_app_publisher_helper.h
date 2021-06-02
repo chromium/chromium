@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -17,11 +19,16 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace web_app {
 
 class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
+class WebAppLaunchManager;
 
 class WebAppPublisherHelper {
  public:
@@ -106,6 +113,27 @@ class WebAppPublisherHelper {
                 bool allow_placeholder_icon,
                 LoadIconCallback callback);
 
+  content::WebContents* Launch(const std::string& app_id,
+                               int32_t event_flags,
+                               apps::mojom::LaunchSource launch_source,
+                               apps::mojom::WindowInfoPtr window_info);
+
+  content::WebContents* LaunchAppWithFiles(
+      const std::string& app_id,
+      apps::mojom::LaunchContainer container,
+      int32_t event_flags,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::FilePathsPtr file_paths);
+
+  content::WebContents* LaunchAppWithIntent(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info);
+
+  content::WebContents* LaunchAppWithParams(apps::AppLaunchParams params);
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }
@@ -118,6 +146,13 @@ class WebAppPublisherHelper {
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
+  content::WebContents* LaunchAppWithIntentImpl(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      int64_t display_id);
+
   Profile* const profile_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
@@ -127,6 +162,8 @@ class WebAppPublisherHelper {
   Delegate* const delegate_;
 
   WebAppProvider* const provider_;
+
+  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

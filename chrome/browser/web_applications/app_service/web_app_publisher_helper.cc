@@ -8,27 +8,40 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
+#include "components/sessions/core/session_id.h"
 #endif
 
 using apps::IconEffects;
@@ -73,7 +86,9 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
     : profile_(profile),
       app_type_(app_type),
       delegate_(delegate),
-      provider_(WebAppProvider::Get(profile)) {}
+      provider_(WebAppProvider::Get(profile)) {
+  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
+}
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
 
@@ -370,12 +385,173 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
   std::move(callback).Run(apps::mojom::IconValue::New());
 }
 
+content::WebContents* WebAppPublisherHelper::Launch(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  if (!profile_) {
+    return nullptr;
+  }
+
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return nullptr;
+  }
+
+  switch (launch_source) {
+    case apps::mojom::LaunchSource::kUnknown:
+    case apps::mojom::LaunchSource::kFromParentalControls:
+      break;
+    case apps::mojom::LaunchSource::kFromAppListGrid:
+    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
+                                extension_misc::APP_LAUNCH_APP_LIST_MAIN,
+                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
+
+      break;
+    case apps::mojom::LaunchSource::kFromAppListQuery:
+    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
+      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
+                                extension_misc::APP_LAUNCH_APP_LIST_SEARCH,
+                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
+      break;
+    case apps::mojom::LaunchSource::kFromAppListRecommendation:
+    case apps::mojom::LaunchSource::kFromShelf:
+    case apps::mojom::LaunchSource::kFromFileManager:
+    case apps::mojom::LaunchSource::kFromLink:
+    case apps::mojom::LaunchSource::kFromOmnibox:
+    case apps::mojom::LaunchSource::kFromChromeInternal:
+    case apps::mojom::LaunchSource::kFromKeyboard:
+    case apps::mojom::LaunchSource::kFromOtherApp:
+    case apps::mojom::LaunchSource::kFromMenu:
+    case apps::mojom::LaunchSource::kFromInstalledNotification:
+    case apps::mojom::LaunchSource::kFromTest:
+    case apps::mojom::LaunchSource::kFromArc:
+    case apps::mojom::LaunchSource::kFromSharesheet:
+    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
+    case apps::mojom::LaunchSource::kFromFullRestore:
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+      break;
+  }
+
+  DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
+
+  apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
+      web_app->app_id(), event_flags, apps::GetAppLaunchSource(launch_source),
+      window_info ? window_info->display_id : display::kInvalidDisplayId,
+      /*fallback_container=*/
+      ConvertDisplayModeToAppLaunchContainer(display_mode));
+
+  // The app will be launched for the currently active profile.
+  return LaunchAppWithParams(std::move(params));
+}
+
+content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
+    const std::string& app_id,
+    apps::mojom::LaunchContainer container,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::FilePathsPtr file_paths) {
+  apps::AppLaunchParams params(
+      app_id, container, ui::DispositionFromEventFlags(event_flags),
+      apps::GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
+  for (const auto& file_path : file_paths->file_paths) {
+    params.launch_files.push_back(file_path);
+  }
+
+  // The app will be launched for the currently active profile.
+  return LaunchAppWithParams(std::move(params));
+}
+
+content::WebContents* WebAppPublisherHelper::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  content::WebContents* web_contents = LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+
+// TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
+    // Add a flag to remember this tab originated in the ARC context.
+    web_contents->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
+                              std::make_unique<arc::ArcWebContentsData>());
+  }
+#endif
+
+  return web_contents;
+}
+
+content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
+    apps::AppLaunchParams params) {
+  apps::AppLaunchParams params_for_restore(
+      params.app_id, params.container, params.disposition, params.source,
+      params.display_id, params.launch_files, params.intent);
+
+  content::WebContents* const web_contents =
+      web_app_launch_manager_->OpenApplication(std::move(params));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Save all launch information for system web apps, because the browser
+  // session restore can't restore system web apps.
+  const WebApp* web_app = GetWebApp(params_for_restore.app_id);
+  const bool is_system_web_app = web_app && web_app->IsSystemApp();
+  int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
+  if (is_system_web_app && SessionID::IsValidValue(session_id)) {
+    std::unique_ptr<full_restore::AppLaunchInfo> launch_info =
+        std::make_unique<full_restore::AppLaunchInfo>(
+            params_for_restore.app_id, session_id, params_for_restore.container,
+            params_for_restore.disposition, params_for_restore.display_id,
+            std::move(params_for_restore.launch_files),
+            std::move(params_for_restore.intent));
+    full_restore::SaveAppLaunchInfo(profile()->GetPath(),
+                                    std::move(launch_info));
+  }
+#endif
+
+  return web_contents;
+}
+
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
 }
 
 const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
+}
+
+content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    int64_t display_id) {
+  if (!profile_) {
+    return nullptr;
+  }
+
+  if (registrar().GetAppById(app_id)->capture_links() ==
+      blink::mojom::CaptureLinks::kExistingClientNavigate) {
+    content::WebContents* web_contents =
+        provider_->ui_manager().NavigateExistingWindow(
+            app_id, intent->url ? intent->url.value()
+                                : registrar().GetAppLaunchUrl(app_id));
+    if (web_contents) {
+      return web_contents;
+    }
+  }
+
+  auto params = apps::CreateAppLaunchParamsForIntent(
+      app_id, event_flags, apps::GetAppLaunchSource(launch_source), display_id,
+      ConvertDisplayModeToAppLaunchContainer(
+          registrar().GetAppEffectiveDisplayMode(app_id)),
+      std::move(intent));
+  return LaunchAppWithParams(std::move(params));
 }
 
 }  // namespace web_app
