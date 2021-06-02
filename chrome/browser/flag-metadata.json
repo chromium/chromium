@@ -1193,7 +1193,7 @@
   {
     "name": "enable-accelerated-video-decode",
     "owners": [ "media-dev@chromium.org" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "enable-accessibility-live-caption",
