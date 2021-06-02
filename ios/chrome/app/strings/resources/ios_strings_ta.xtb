@@ -492,6 +492,7 @@
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
 <translation id="6066301408025741299">ரத்துசெய்ய தட்டவும்.</translation>
 <translation id="60829778314739003">ஏற்றுக்கொண்டு, தொடர்க</translation>
+<translation id="6084848228346514841">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6108923351542677676">அமைவு செயலிலுள்ளது...</translation>
 <translation id="6119050551270742952">இந்த இணையப் பக்கம் மறைநிலையில் உள்ளது</translation>
 <translation id="6122191549521593678">ஆன்லைன்</translation>
@@ -782,6 +783,7 @@
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="8840513115188359703">உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்.</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} தாவல்}other{{count} தாவல்கள்}}</translation>
 <translation id="8870413625673593573">சமீபத்தில் மூடியவை</translation>
 <translation id="8876882697946675716">சாதனங்களை ஒத்திசைவிலேயே வைத்திருங்கள்</translation>
 <translation id="8881801611828450202">இந்தப் படத்தை <ph name="SEARCH_ENGINE" /> இல் தேடு</translation>
