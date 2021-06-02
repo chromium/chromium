@@ -59,8 +59,10 @@ class CableAuthenticator {
     private static final int SIGN_REQUEST_CODE = 2;
 
     private static final int CTAP2_OK = 0;
+    private static final int CTAP2_ERR_CREDENTIAL_EXCLUDED = 0x19;
     private static final int CTAP2_ERR_OPERATION_DENIED = 0x27;
     private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2D;
+    private static final int CTAP2_ERR_NO_CREDENTIALS = 0x2E;
     private static final int CTAP2_ERR_OTHER = 0x7F;
 
     // sOwnBluetooth is true if this class owns the fact that Bluetooth is enabled and needs to
@@ -316,7 +318,6 @@ class CableAuthenticator {
         Log.e(TAG, "OK.");
 
         if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            Log.e(TAG, "error extra");
             AuthenticatorErrorResponse error = AuthenticatorErrorResponse.deserializeFromBytes(
                     data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA));
             Log.i(TAG,
@@ -324,9 +325,14 @@ class CableAuthenticator {
                             + String.valueOf(error.getErrorCodeAsInt()));
 
             // ErrorCode represents DOMErrors not CTAP status codes.
-            // TODO: figure out translation of the remaining codes
             int ctap_status;
             switch (error.getErrorCode()) {
+                case INVALID_STATE_ERR:
+                    // Assumed to be caused by a matching excluded credential.
+                    // (It's possible to match the error string to be sure,
+                    // but that's fragile.)
+                    ctap_status = CTAP2_ERR_CREDENTIAL_EXCLUDED;
+                    break;
                 case NOT_ALLOWED_ERR:
                     ctap_status = CTAP2_ERR_OPERATION_DENIED;
                     break;
@@ -364,7 +370,6 @@ class CableAuthenticator {
         Log.e(TAG, "OK.");
 
         if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            Log.e(TAG, "error extra");
             AuthenticatorErrorResponse error = AuthenticatorErrorResponse.deserializeFromBytes(
                     data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA));
             Log.i(TAG,
@@ -372,9 +377,14 @@ class CableAuthenticator {
                             + String.valueOf(error.getErrorCodeAsInt()));
 
             // ErrorCode represents DOMErrors not CTAP status codes.
-            // TODO: figure out translation of the remaining codes
             int ctap_status;
             switch (error.getErrorCode()) {
+                case INVALID_STATE_ERR:
+                    // Assumed to be because none of the credentials were
+                    // recognised. (It's possible to match the error string to
+                    // be sure, but that's fragile.)
+                    ctap_status = CTAP2_ERR_NO_CREDENTIALS;
+                    break;
                 case NOT_ALLOWED_ERR:
                     ctap_status = CTAP2_ERR_OPERATION_DENIED;
                     break;
