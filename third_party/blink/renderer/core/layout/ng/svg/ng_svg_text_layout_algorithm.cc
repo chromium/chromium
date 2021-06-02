@@ -448,6 +448,14 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
 
 void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+  // This function moves characters to
+  //   <position specified by x/y attributes>
+  //   + <shift specified by dx/dy attributes>
+  //   + <baseline-shift done in the inline layout>
+  // css_positions_[i].Y() for horizontal_ or css_positions_[i].X() for
+  // !horizontal_ represents baseline-shift because the block offsets of the
+  // normal baseline is 0.
+
   // 1. Let shift be the current adjustment due to the ‘x’ and ‘y’ attributes,
   // initialized to (0,0).
   FloatPoint shift;
@@ -461,13 +469,21 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
     // 3.1. If resolved_x[index] is set, then let
     // shift.x = resolved_x[index] − result.x[index].
     // https://github.com/w3c/svgwg/issues/845
-    if (resolve.HasX())
+    if (resolve.HasX()) {
       shift.SetX(resolve.x * scaling_factor - css_positions_[i].X());
+      // Take into account of baseline-shift.
+      if (!horizontal_)
+        shift.SetX(shift.X() + css_positions_[i].X());
+    }
     // 3.2. If resolved_y[index] is set, then let
     // shift.y = resolved_y[index] − result.y[index].
     // https://github.com/w3c/svgwg/issues/845
-    if (resolve.HasY())
+    if (resolve.HasY()) {
       shift.SetY(resolve.y * scaling_factor - css_positions_[i].Y());
+      // Take into account of baseline-shift.
+      if (horizontal_)
+        shift.SetY(shift.Y() + css_positions_[i].Y());
+    }
 
     // If this character is the first one in a <textPath>, reset the
     // block-direction shift.
