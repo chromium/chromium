@@ -15,10 +15,13 @@ Testing expression 1 + 1 with timeout: undefined
         _customPreview : null
         _description : "2"
         _hasChildren : false
+        _objectId : undefined
+        _preview : undefined
         _runtimeAgent : <object>
         _runtimeModel : <object>
         _subtype : undefined
         _type : "number"
+        _unserializableValue : undefined
         _value : 2
     }
 }
@@ -43,10 +46,13 @@ Testing expression 1 + 1 with timeout: undefined
         _customPreview : null
         _description : "2"
         _hasChildren : false
+        _objectId : undefined
+        _preview : undefined
         _runtimeAgent : <object>
         _runtimeModel : <object>
         _subtype : undefined
         _type : "number"
+        _unserializableValue : undefined
         _value : 2
     }
 }
