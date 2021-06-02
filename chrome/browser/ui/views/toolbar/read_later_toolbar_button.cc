@@ -65,7 +65,7 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
   contents_wrapper_->ReloadWebContents();
 
   SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
 ReadLaterToolbarButton::~ReadLaterToolbarButton() = default;
@@ -84,6 +84,7 @@ void ReadLaterToolbarButton::ButtonPressed() {
         browser_view->right_aligned_side_panel()->AddChildView(
             std::move(webview));
     SetHighlighted(true);
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
   } else {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
         side_panel_webview_);
@@ -91,5 +92,6 @@ void ReadLaterToolbarButton::ButtonPressed() {
     // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
     // SetHighlighted(false) here.
     SetHighlighted(false);
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
 }

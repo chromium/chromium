@@ -5954,6 +5954,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON" desc="The tooltip for the extensions button">
         Extensions
       </message>
+      <message name="IDS_TOOLTIP_SIDE_PANEL_SHOW" desc="The tooltip for the side panel button, when closed">
+        Show side panel
+      </message>
+      <message name="IDS_TOOLTIP_SIDE_PANEL_HIDE" desc="The tooltip for the side panel button, when open">
+        Hide side panel
+      </message>
       <if expr="is_macosx">
         <message name="IDS_TOOLTIP_CLOSE_TAB" desc="The tooltip for the close tab button">
           Close
