@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/power/smart_charging/smart_charging_manager.h"
+#include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/power/smart_charging/user_charging_event.pb.h"
+#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"

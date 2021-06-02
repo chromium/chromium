@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
+#define CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -13,8 +13,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
-#include "chrome/browser/chromeos/power/smart_charging/smart_charging_ukm_logger.h"
-#include "chrome/browser/chromeos/power/smart_charging/user_charging_event.pb.h"
+#include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
+#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -189,4 +189,4 @@ class SmartChargingManager : public ui::UserActivityObserver,
 }  // namespace power
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_

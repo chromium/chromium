@@ -8,7 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/power/cpu_data_collector.h"
+#include "chrome/browser/ash/power/cpu_data_collector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::TimeDelta;

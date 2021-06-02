@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_
+#define CHROME_BROWSER_ASH_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
-#include "chrome/browser/chromeos/power/renderer_freezer.h"
+#include "chrome/browser/ash/power/renderer_freezer.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -43,4 +43,4 @@ class FreezerCgroupProcessManager : public RendererFreezer::Delegate {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_POWER_FREEZER_CGROUP_PROCESS_MANAGER_H_

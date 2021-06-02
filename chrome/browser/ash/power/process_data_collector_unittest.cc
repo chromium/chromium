@@ -28,7 +28,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/power/process_data_collector.h"
+#include "chrome/browser/ash/power/process_data_collector.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

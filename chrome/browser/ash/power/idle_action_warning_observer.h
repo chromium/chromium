@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POWER_IDLE_ACTION_WARNING_OBSERVER_H_
-#define CHROME_BROWSER_CHROMEOS_POWER_IDLE_ACTION_WARNING_OBSERVER_H_
+#ifndef CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_OBSERVER_H_
+#define CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_OBSERVER_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -43,4 +43,4 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POWER_IDLE_ACTION_WARNING_OBSERVER_H_
+#endif  // CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_OBSERVER_H_

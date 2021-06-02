@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/power/cpu_data_collector.h"
+#include "chrome/browser/ash/power/cpu_data_collector.h"
 
 #include <stddef.h>
 
@@ -17,7 +17,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/power/power_data_collector.h"
+#include "chrome/browser/ash/power/power_data_collector.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {

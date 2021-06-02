@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_
-#define CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_
+#ifndef CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_
+#define CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -23,4 +23,4 @@ class SmartChargingUkmLogger {
 }  // namespace power
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_
+#endif  // CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_UKM_LOGGER_H_

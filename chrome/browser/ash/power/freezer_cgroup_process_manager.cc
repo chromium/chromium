@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/power/freezer_cgroup_process_manager.h"
+#include "chrome/browser/ash/power/freezer_cgroup_process_manager.h"
 
 #include <string>
 

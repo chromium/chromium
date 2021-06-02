@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/power/smart_charging/smart_charging_manager.h"
+#include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 
 #include <memory>
 
