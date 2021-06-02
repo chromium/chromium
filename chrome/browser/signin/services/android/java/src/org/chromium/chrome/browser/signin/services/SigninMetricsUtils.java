@@ -20,7 +20,6 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,28 +114,28 @@ public class SigninMetricsUtils {
      * Polls the native side every 15 seconds for web signin events for 2 minutes.
      */
     public static void logWebSignin() {
-        new AsyncTask<List<String>>() {
-            @Override
-            protected List<String> doInBackground() {
-                AccountManagerFacade accountManagerFacade =
-                        AccountManagerFacadeProvider.getInstance();
-                List<Account> accounts =
-                        accountManagerFacade.getGoogleAccounts().or(Collections.emptyList());
-                List<String> gaiaIds = new ArrayList<>();
-                for (Account account : accounts) {
-                    String gaiaId = accountManagerFacade.getAccountGaiaId(account.name);
-                    if (gaiaId != null) {
-                        gaiaIds.add(gaiaId);
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        accountManagerFacade.tryGetGoogleAccounts(accounts -> {
+            new AsyncTask<List<String>>() {
+                @Override
+                protected List<String> doInBackground() {
+                    List<String> gaiaIds = new ArrayList<>();
+                    for (Account account : accounts) {
+                        String gaiaId = accountManagerFacade.getAccountGaiaId(account.name);
+                        if (gaiaId != null) {
+                            gaiaIds.add(gaiaId);
+                        }
                     }
+                    return gaiaIds;
                 }
-                return gaiaIds;
-            }
 
-            @Override
-            protected void onPostExecute(List<String> gaiaIds) {
-                Scheduler.logWebSignin(gaiaIds.toArray(new String[0]));
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                @Override
+                protected void onPostExecute(List<String> gaiaIds) {
+                    Scheduler.logWebSignin(gaiaIds.toArray(new String[0]));
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
     }
 
     @VisibleForTesting
