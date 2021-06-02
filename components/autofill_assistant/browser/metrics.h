@@ -120,6 +120,7 @@ class Metrics {
   // at the end and update kMaxValue. Also remember to update the
   // AutofillAssistantPaymentRequestMandatoryPostalCode enum listing
   // in tools/metrics/histograms/enums.xml.
+  // Note: This is deprecated and no longer logged.
   enum class PaymentRequestMandatoryPostalCode {
     REQUIRED_INITIALLY_WRONG_SUCCESS = 0,
     REQUIRED_INITIALLY_WRONG_FAILURE = 1,
@@ -370,9 +371,6 @@ class Metrics {
                                                    bool success);
   static void RecordPaymentRequestAutofillChanged(bool changed, bool success);
   static void RecordPaymentRequestFirstNameOnly(bool first_name_only);
-  static void RecordPaymentRequestMandatoryPostalCode(bool required,
-                                                      bool initially_right,
-                                                      bool success);
   static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
                                          ukm::SourceId source_id,
                                          TriggerScriptStarted event);

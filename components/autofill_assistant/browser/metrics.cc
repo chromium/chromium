@@ -29,8 +29,6 @@ const char kPaymentRequestAutofillInfoChangedName[] =
     "Android.AutofillAssistant.PaymentRequest.AutofillChanged";
 const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
-const char kPaymentRequestMandatoryPostalCode[] =
-    "Android.AutofillAssistant.PaymentRequest.MandatoryPostalCode";
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
@@ -118,34 +116,6 @@ void Metrics::RecordPaymentRequestAutofillChanged(bool changed, bool success) {
 // static
 void Metrics::RecordPaymentRequestFirstNameOnly(bool first_name_only) {
   base::UmaHistogramBoolean(kPaymentRequestFirstNameOnly, first_name_only);
-}
-
-// static
-void Metrics::RecordPaymentRequestMandatoryPostalCode(bool required,
-                                                      bool initially_right,
-                                                      bool success) {
-  PaymentRequestMandatoryPostalCode mandatory_postal_code;
-  if (!required) {
-    mandatory_postal_code = PaymentRequestMandatoryPostalCode::NOT_REQUIRED;
-  } else if (initially_right && success) {
-    mandatory_postal_code =
-        PaymentRequestMandatoryPostalCode::REQUIRED_INITIALLY_RIGHT_SUCCESS;
-  } else if (initially_right && !success) {
-    mandatory_postal_code =
-        PaymentRequestMandatoryPostalCode::REQUIRED_INITIALLY_RIGHT_FAILURE;
-  } else if (!initially_right && success) {
-    mandatory_postal_code =
-        PaymentRequestMandatoryPostalCode::REQUIRED_INITIALLY_WRONG_SUCCESS;
-  } else if (!initially_right && !success) {
-    mandatory_postal_code =
-        PaymentRequestMandatoryPostalCode::REQUIRED_INITIALLY_WRONG_FAILURE;
-  } else {
-    DCHECK(false) << "Not reached";
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kPaymentRequestMandatoryPostalCode,
-                                mandatory_postal_code);
 }
 
 // static

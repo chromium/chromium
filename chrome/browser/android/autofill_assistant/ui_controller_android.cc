@@ -1199,16 +1199,6 @@ void UiControllerAndroid::OnInputTextFocusChanged(bool is_text_focused) {
       base::TimeDelta::FromMilliseconds(50));
 }
 
-bool UiControllerAndroid::IsPaymentInstrumentComplete(
-    autofill::CreditCard* card,
-    autofill::AutofillProfile* address) {
-  auto* options = ui_delegate_->GetCollectUserDataOptions();
-  if (options == nullptr) {
-    return false;
-  }
-  return IsCompleteCreditCard(card, address, *options);
-}
-
 void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {
   Java_AutofillAssistantUiController_hideKeyboardIfFocusNotOnText(
       AttachCurrentThread(), java_object_);
@@ -1272,16 +1262,6 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
           env, collect_user_data_options->accept_terms_and_conditions_text));
   Java_AssistantCollectUserDataModel_setShowTermsAsCheckbox(
       env, jmodel, collect_user_data_options->show_terms_as_checkbox);
-  Java_AssistantCollectUserDataModel_setRequireBillingPostalCode(
-      env, jmodel, collect_user_data_options->require_billing_postal_code);
-  Java_AssistantCollectUserDataModel_setBillingPostalCodeMissingText(
-      env, jmodel,
-      ConvertUTF8ToJavaString(
-          env, collect_user_data_options->billing_postal_code_missing_text));
-  Java_AssistantCollectUserDataModel_setCreditCardExpiredText(
-      env, jmodel,
-      ConvertUTF8ToJavaString(
-          env, collect_user_data_options->credit_card_expired_text));
   Java_AssistantCollectUserDataModel_setSupportedBasicCardNetworks(
       env, jmodel,
       base::android::ToJavaArrayOfStrings(
@@ -1530,16 +1510,36 @@ void UiControllerAndroid::OnUserDataChanged(
                                             selected_shipping_address_errors));
   }
 
+  const autofill::CreditCard* selected_card = state->selected_card();
+  const autofill::AutofillProfile* selected_billing_address =
+      state->selected_address(collect_user_data_options->billing_address_name);
+  auto jselected_card =
+      selected_card == nullptr
+          ? nullptr
+          : autofill::PersonalDataManagerAndroid::
+                CreateJavaCreditCardFromNative(env, *selected_card);
+  auto jselected_billing_address =
+      selected_billing_address == nullptr
+          ? nullptr
+          : autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
+                env, *selected_billing_address);
+  const auto& selected_payment_instrument_errors =
+      user_data::GetPaymentInstrumentValidationErrors(
+          selected_card, selected_billing_address, *collect_user_data_options);
+
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS) {
     auto jlist =
         Java_AssistantCollectUserDataModel_createAutofillPaymentInstrumentList(
             env);
     auto sorted_payment_instrument_indices =
-        SortPaymentInstrumentsByCompleteness(
+        user_data::SortPaymentInstrumentsByCompleteness(
             *collect_user_data_options, state->available_payment_instruments_);
     for (int index : sorted_payment_instrument_indices) {
       const auto& instrument = state->available_payment_instruments_[index];
+      const auto& errors = user_data::GetPaymentInstrumentValidationErrors(
+          instrument->card.get(), instrument->billing_address.get(),
+          *collect_user_data_options);
       Java_AssistantCollectUserDataModel_addAutofillPaymentInstrument(
           env, jlist, web_contents,
           instrument->card == nullptr
@@ -1549,26 +1549,26 @@ void UiControllerAndroid::OnUserDataChanged(
           instrument->billing_address == nullptr
               ? nullptr
               : autofill::PersonalDataManagerAndroid::
-                    CreateJavaProfileFromNative(
-                        env, *(instrument->billing_address)));
+                    CreateJavaProfileFromNative(env,
+                                                *(instrument->billing_address)),
+          base::android::ToJavaArrayOfStrings(env, errors));
     }
     Java_AssistantCollectUserDataModel_setAvailablePaymentInstruments(
         env, jmodel, jlist);
-
-    // Ignore changes to FieldChange::CARD, this is already coming from the
-    // view.
-    const autofill::CreditCard* card = state->selected_card();
-    const autofill::AutofillProfile* billing_address = state->selected_address(
-        collect_user_data_options->billing_address_name);
     Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(
-        env, jmodel, web_contents,
-        card == nullptr ? nullptr
-                        : autofill::PersonalDataManagerAndroid::
-                              CreateJavaCreditCardFromNative(env, *card),
-        billing_address == nullptr
-            ? nullptr
-            : autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-                  env, *billing_address));
+        env, jmodel, web_contents, jselected_card, jselected_billing_address,
+        base::android::ToJavaArrayOfStrings(
+            env, selected_payment_instrument_errors));
+  }
+  if (field_change == UserData::FieldChange::CARD) {
+    // Note: Ignore UserData::FieldChange::BILLING_ADDRESS, they are sent in
+    // tandem.
+    // The selection is already known in Java, but it has no errors. The PDM
+    // off case does not set updated payment instruments.
+    Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(
+        env, jmodel, web_contents, jselected_card, jselected_billing_address,
+        base::android::ToJavaArrayOfStrings(
+            env, selected_payment_instrument_errors));
   }
 
   if (field_change == UserData::FieldChange::ALL ||

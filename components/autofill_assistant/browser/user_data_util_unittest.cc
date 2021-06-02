@@ -322,14 +322,19 @@ TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
   payment_instruments.emplace_back(std::move(complete_instrument));
 
   CollectUserDataOptions options;
+  options.required_credit_card_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  options.required_credit_card_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH));
 
   std::vector<int> sorted_indices =
-      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
+      user_data::SortPaymentInstrumentsByCompleteness(options,
+                                                      payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
 
-TEST(UserDataUtilTest, SortsCompleteCardsByName) {
+TEST(UserDataUtilTest, SortsEquallyValidCardsByName) {
   auto a_card = std::make_unique<autofill::CreditCard>();
   autofill::test::SetCreditCardInfo(a_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
@@ -352,7 +357,66 @@ TEST(UserDataUtilTest, SortsCompleteCardsByName) {
   CollectUserDataOptions options;
 
   std::vector<int> sorted_indices =
-      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
+      user_data::SortPaymentInstrumentsByCompleteness(options,
+                                                      payment_instruments);
+  EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
+  EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
+}
+
+TEST(UserDataUtilTest, SortsEquallyCompleteCardsByExpirationValidity) {
+  auto invalid_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(invalid_card.get(), "Adam West",
+                                    "4111111111111111", "1", "2000",
+                                    /* billing_address_id= */ "");
+  auto invalid_instrument =
+      std::make_unique<PaymentInstrument>(std::move(invalid_card), nullptr);
+
+  auto valid_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(valid_card.get(), "Adam West",
+                                    "4111111111111111", "1", "2050",
+                                    /* billing_address_id= */ "");
+  auto valid_instrument =
+      std::make_unique<PaymentInstrument>(std::move(valid_card), nullptr);
+
+  // Specify payment instruments in reverse order to force sorting.
+  std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
+  payment_instruments.emplace_back(std::move(invalid_instrument));
+  payment_instruments.emplace_back(std::move(valid_instrument));
+
+  CollectUserDataOptions options;
+
+  std::vector<int> sorted_indices =
+      user_data::SortPaymentInstrumentsByCompleteness(options,
+                                                      payment_instruments);
+  EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
+  EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
+}
+
+TEST(UserDataUtilTest, SortsEquallyCompleteCardsByNumberValidity) {
+  auto invalid_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(invalid_card.get(), "Adam West", "41111",
+                                    "1", "2050",
+                                    /* billing_address_id= */ "");
+  auto invalid_instrument =
+      std::make_unique<PaymentInstrument>(std::move(invalid_card), nullptr);
+
+  auto valid_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(valid_card.get(), "Berta West",
+                                    "4111111111111111", "1", "2050",
+                                    /* billing_address_id= */ "");
+  auto valid_instrument =
+      std::make_unique<PaymentInstrument>(std::move(valid_card), nullptr);
+
+  // Specify payment instruments in reverse order to force sorting.
+  std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
+  payment_instruments.emplace_back(std::move(invalid_instrument));
+  payment_instruments.emplace_back(std::move(valid_instrument));
+
+  CollectUserDataOptions options;
+
+  std::vector<int> sorted_indices =
+      user_data::SortPaymentInstrumentsByCompleteness(options,
+                                                      payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
@@ -402,10 +466,12 @@ TEST(UserDataUtilTest, SortsCreditCardsByAddressCompleteness) {
   payment_instruments.emplace_back(std::move(instrument_with_complete_address));
 
   CollectUserDataOptions options;
-  options.require_billing_postal_code = true;
+  options.required_billing_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
 
   std::vector<int> sorted_indices =
-      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
+      user_data::SortPaymentInstrumentsByCompleteness(options,
+                                                      payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(2, 1, 0));
 }
@@ -414,7 +480,8 @@ TEST(UserDataUtilTest, GetDefaultSelectionForEmptyPaymentInstruments) {
   std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(GetDefaultPaymentInstrument(options, payment_instruments), -1);
+  EXPECT_THAT(
+      user_data::GetDefaultPaymentInstrument(options, payment_instruments), -1);
 }
 
 TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
@@ -438,10 +505,9 @@ TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
   payment_instruments.emplace_back(std::move(a_instrument));
 
   CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
 
-  EXPECT_THAT(GetDefaultPaymentInstrument(options, payment_instruments), 1);
+  EXPECT_THAT(
+      user_data::GetDefaultPaymentInstrument(options, payment_instruments), 1);
 }
 
 TEST(UserDataUtilTest, CompareContactDetailsMatch) {
@@ -727,13 +793,14 @@ TEST(UserDataUtilTest, CompleteCreditCardNotRequired) {
   CollectUserDataOptions not_required_options;
   not_required_options.request_payment_method = false;
 
-  EXPECT_TRUE(IsCompleteCreditCard(nullptr, nullptr, not_required_options));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
+                  nullptr, nullptr, not_required_options),
+              IsEmpty());
 }
 
-TEST(UserDataUtilTest, CompleteCreditCardZipNotRequired) {
+TEST(UserDataUtilTest, CompleteCreditCardAddressValidation) {
   CollectUserDataOptions payment_options;
   payment_options.request_payment_method = true;
-  payment_options.require_billing_postal_code = false;
 
   autofill::AutofillProfile address;
   autofill::CreditCard card;
@@ -741,53 +808,43 @@ TEST(UserDataUtilTest, CompleteCreditCardZipNotRequired) {
                                     "2050",
                                     /* billing_address_id= */ "id");
 
-  EXPECT_FALSE(IsCompleteCreditCard(nullptr, nullptr, payment_options));
-  EXPECT_FALSE(IsCompleteCreditCard(&card, nullptr, payment_options));
-  EXPECT_FALSE(IsCompleteCreditCard(&card, &address, payment_options));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(nullptr, nullptr,
+                                                              payment_options),
+              ElementsAre(_));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, nullptr,
+                                                              payment_options),
+              ElementsAre(_));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              ElementsAre(_));
+  // CH addresses require a zip code to be complete. This check outranks the
+  // our validation.
+  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
+                                 /* email= */ "", "", "Brandschenkestrasse 110",
+                                 "", "Zurich", "Zurich",
+                                 /* zipcode= */ "", "CH", /* phone= */ "");
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              ElementsAre(_));
   // UK addresses do not require a zip code, they are complete without it.
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Baker Street 221b", "",
                                  "London", /* state= */ "",
                                  /* zipcode= */ "", "UK", /* phone= */ "");
-  EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options));
-  // CH addresses require a zip code to be complete. This check outranks the
-  // |require_billing_postal_code| flag.
-  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
-                                 /* email= */ "", "", "Brandschenkestrasse 110",
-                                 "", "Zurich", "Zurich",
-                                 /* zipcode= */ "", "CH", /* phone= */ "");
-  EXPECT_FALSE(IsCompleteCreditCard(&card, &address, payment_options));
-}
-
-TEST(UserDataUtilTest, CompleteCreditCardZipRequired) {
-  CollectUserDataOptions payment_options;
-  payment_options.request_payment_method = true;
-  payment_options.require_billing_postal_code = true;
-
-  autofill::AutofillProfile address;
-  autofill::CreditCard card;
-  autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
-                                    "2050",
-                                    /* billing_address_id= */ "id");
-
-  EXPECT_FALSE(IsCompleteCreditCard(nullptr, nullptr, payment_options));
-  EXPECT_FALSE(IsCompleteCreditCard(&card, nullptr, payment_options));
-  EXPECT_FALSE(IsCompleteCreditCard(&card, &address, payment_options));
-  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
-                                 /* email= */ "", "", "Baker Street 221b", "",
-                                 "London", /* state= */ "",
-                                 /* zipcode= */ "", "UK", /* phone= */ "");
-  EXPECT_FALSE(IsCompleteCreditCard(&card, &address, payment_options));
-  autofill::test::SetProfileInfo(&address, "John", "", "Doe",
-                                 /* email= */ "", "", "Baker Street 221b", "",
-                                 "London", /* state=  */ "", "WC2N 5DU", "UK",
-                                 /* phone= */ "");
-  EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              IsEmpty());
+  payment_options.required_billing_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              ElementsAre("35"));
 }
 
 TEST(UserDataUtilTest, CompleteExpiredCreditCard) {
   CollectUserDataOptions payment_options;
   payment_options.request_payment_method = true;
+  payment_options.credit_card_expired_text = "expired";
 
   autofill::AutofillProfile address;
   autofill::test::SetProfileInfo(
@@ -798,11 +855,15 @@ TEST(UserDataUtilTest, CompleteExpiredCreditCard) {
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
                                     "2000",
                                     /* billing_address_id= */ "id");
-  EXPECT_FALSE(IsCompleteCreditCard(&card, &address, payment_options));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              ElementsAre("expired"));
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
                                     "2050",
                                     /* billing_address_id= */ "id");
-  EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
@@ -815,17 +876,58 @@ TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
                                     "2050",
                                     /* billing_address_id= */ "id");
 
+  RequiredDataPiece required_data_piece;
+  required_data_piece.set_error_message("network");
+  required_data_piece.mutable_condition()->set_key(
+      static_cast<int>(AutofillFormatProto::CREDIT_CARD_NETWORK));
+  required_data_piece.mutable_condition()
+      ->mutable_regexp()
+      ->mutable_text_filter()
+      ->set_re2("^(mastercard)$");
   CollectUserDataOptions payment_options_mastercard;
   payment_options_mastercard.request_payment_method = true;
+  payment_options_mastercard.required_credit_card_data_pieces.push_back(
+      required_data_piece);
   payment_options_mastercard.supported_basic_card_networks.emplace_back(
       "mastercard");
-  EXPECT_FALSE(
-      IsCompleteCreditCard(&card, &address, payment_options_mastercard));
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
+                  &card, &address, payment_options_mastercard),
+              ElementsAre("network"));
 
+  required_data_piece.mutable_condition()
+      ->mutable_regexp()
+      ->mutable_text_filter()
+      ->set_re2("^(mastercard|visa)$");
   CollectUserDataOptions payment_options_visa;
   payment_options_visa.request_payment_method = true;
-  payment_options_visa.supported_basic_card_networks.emplace_back("visa");
-  EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options_visa));
+  payment_options_visa.required_credit_card_data_pieces.push_back(
+      required_data_piece);
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
+                  &card, &address, payment_options_visa),
+              IsEmpty());
+}
+
+TEST(UserDataUtilTest, CompleteCreditCardWithInvalidNumber) {
+  CollectUserDataOptions payment_options;
+  payment_options.request_payment_method = true;
+
+  autofill::AutofillProfile address;
+  autofill::test::SetProfileInfo(
+      &address, "John", "", "Doe", "john.doe@gmail.com", "",
+      "Brandschenkestrasse 110", "", "Zurich", "Zurich", "8002", "CH", "+41");
+  autofill::CreditCard card;
+
+  autofill::test::SetCreditCardInfo(&card, "Adam West", "4111", "1", "2050",
+                                    /* billing_address_id= */ "id");
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              ElementsAre(_));
+  autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
+                                    "2050",
+                                    /* billing_address_id= */ "id");
+  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
+                                                              payment_options),
+              IsEmpty());
 }
 
 class UserDataUtilTextValueTest : public testing::Test {

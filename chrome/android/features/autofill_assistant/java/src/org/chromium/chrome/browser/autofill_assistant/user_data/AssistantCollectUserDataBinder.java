@@ -17,9 +17,9 @@ import org.chromium.chrome.browser.autofill.settings.CardEditor;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
@@ -174,12 +174,9 @@ class AssistantCollectUserDataBinder
             view.mContactDetailsSection.setListener(collectUserDataDelegate == null
                             ? null
                             : m -> collectUserDataDelegate.onContactInfoChanged(m.mOption));
-            view.mPaymentMethodSection.setListener(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::onPaymentMethodChanged
-                            : null);
-            view.mPaymentMethodSection.setCompletenessDelegate(collectUserDataDelegate != null
-                            ? collectUserDataDelegate::isPaymentInstrumentComplete
-                            : null);
+            view.mPaymentMethodSection.setListener(collectUserDataDelegate == null
+                            ? null
+                            : m -> collectUserDataDelegate.onPaymentMethodChanged(m.mOption));
             view.mShippingAddressSection.setListener(collectUserDataDelegate == null
                             ? null
                             : m -> collectUserDataDelegate.onShippingAddressChanged(m.mOption));
@@ -263,7 +260,7 @@ class AssistantCollectUserDataBinder
         if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS
                 || propertyKey == AssistantCollectUserDataModel.WEB_CONTENTS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
-                List<AutofillPaymentInstrument> paymentInstruments;
+                List<PaymentInstrumentModel> paymentInstruments;
                 if (model.get(AssistantCollectUserDataModel.WEB_CONTENTS) == null) {
                     paymentInstruments = Collections.emptyList();
                 } else {
@@ -290,17 +287,6 @@ class AssistantCollectUserDataBinder
                 view.mPaymentMethodSection.onAddressesChanged(
                         model.get(AssistantCollectUserDataModel.AVAILABLE_BILLING_ADDRESSES));
             }
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUIRE_BILLING_POSTAL_CODE
-                || propertyKey == AssistantCollectUserDataModel.BILLING_POSTAL_CODE_MISSING_TEXT) {
-            view.mPaymentMethodSection.setRequiresBillingPostalCode(
-                    model.get(AssistantCollectUserDataModel.REQUIRE_BILLING_POSTAL_CODE));
-            view.mPaymentMethodSection.setBillingPostalCodeMissingText(
-                    model.get(AssistantCollectUserDataModel.BILLING_POSTAL_CODE_MISSING_TEXT));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.CREDIT_CARD_EXPIRED_TEXT) {
-            view.mPaymentMethodSection.setCreditCardExpiredText(
-                    model.get(AssistantCollectUserDataModel.CREDIT_CARD_EXPIRED_TEXT));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_LOGINS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE)) {
@@ -486,7 +472,7 @@ class AssistantCollectUserDataBinder
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
-                AutofillPaymentInstrument paymentInstrument =
+                PaymentInstrumentModel paymentInstrument =
                         model.get(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT);
                 if (paymentInstrument != null) {
                     view.mPaymentMethodSection.addOrUpdateItem(

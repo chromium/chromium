@@ -57,10 +57,10 @@ int GetDefaultShippingAddressProfile(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
 
-}  // namespace user_data
-
-std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
-    const autofill::AutofillProfile& profile);
+std::vector<std::string> GetPaymentInstrumentValidationErrors(
+    const autofill::CreditCard* credit_card,
+    const autofill::AutofillProfile* billing_address,
+    const CollectUserDataOptions& collect_user_data_options);
 
 // Sorts the given payment instruments by completeness, and returns a vector
 // of payment instrument indices in sorted order. Full payment instruments will
@@ -76,6 +76,11 @@ int GetDefaultPaymentInstrument(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<PaymentInstrument>>& payment_instruments);
 
+}  // namespace user_data
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile);
+
 // Compare contact fields only. This comparison checks a subset of
 // AutofillProfile::Compare. Falls back to comparing the GUIDs if nothing else
 // is to be compared.
@@ -83,11 +88,6 @@ bool CompareContactDetails(
     const CollectUserDataOptions& collect_user_data_options,
     const autofill::AutofillProfile* a,
     const autofill::AutofillProfile* b);
-
-bool IsCompleteCreditCard(
-    const autofill::CreditCard* credit_card,
-    const autofill::AutofillProfile* billing_profile,
-    const CollectUserDataOptions& collect_user_data_options);
 
 // Get a formatted autofill value. The replacement is treated as strict,
 // meaning a missing value will lead to a failed ClientStatus.

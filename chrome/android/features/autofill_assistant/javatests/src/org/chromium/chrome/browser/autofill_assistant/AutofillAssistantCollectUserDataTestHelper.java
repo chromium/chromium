@@ -178,12 +178,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
 
         @Override
         public void onInputTextFocusChanged(boolean isFocused) {}
-
-        @Override
-        public boolean isPaymentInstrumentComplete(
-                @Nullable AutofillPaymentInstrument paymentInstrument) {
-            return paymentInstrument != null && paymentInstrument.isComplete();
-        }
     }
 
     public AutofillAssistantCollectUserDataTestHelper() throws TimeoutException {

@@ -188,12 +188,14 @@ struct CollectUserDataOptions {
   std::vector<AutofillContactField> contact_full_fields;
   int contact_full_max_lines;
 
-  bool require_billing_postal_code = false;
-  std::string billing_postal_code_missing_text;
+  // TODO(b/180705720): Eventually remove |credit_card_expired_text| and
+  // place it into |required_credit_card_pieces|.
   std::string credit_card_expired_text;
 
   std::vector<RequiredDataPiece> required_contact_data_pieces;
   std::vector<RequiredDataPiece> required_shipping_address_data_pieces;
+  std::vector<RequiredDataPiece> required_credit_card_data_pieces;
+  std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;

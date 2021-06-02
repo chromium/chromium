@@ -436,9 +436,6 @@ CollectUserDataAction::~CollectUserDataAction() {
                                                   action_successful_);
     Metrics::RecordPaymentRequestAutofillChanged(personal_data_changed_,
                                                  action_successful_);
-    Metrics::RecordPaymentRequestMandatoryPostalCode(
-        proto_.collect_user_data().require_billing_postal_code(),
-        initial_card_has_billing_postal_code_, action_successful_);
   }
 }
 
@@ -764,15 +761,6 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
                 collect_user_data_options_->supported_basic_card_networks));
   collect_user_data_options_->request_payment_method =
       collect_user_data.request_payment_method();
-  collect_user_data_options_->require_billing_postal_code =
-      collect_user_data.require_billing_postal_code();
-  collect_user_data_options_->billing_postal_code_missing_text =
-      collect_user_data.billing_postal_code_missing_text();
-  if (collect_user_data_options_->require_billing_postal_code &&
-      collect_user_data_options_->billing_postal_code_missing_text.empty()) {
-    VLOG(1) << "Required postal code without error text";
-    return false;
-  }
   collect_user_data_options_->billing_address_name =
       collect_user_data.billing_address_name();
   if (collect_user_data_options_->request_payment_method &&
@@ -787,6 +775,16 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
     collect_user_data_options_->credit_card_expired_text =
         l10n_util::GetStringUTF8(
             IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED);
+  }
+  if (collect_user_data_options_->request_payment_method) {
+    collect_user_data_options_->required_credit_card_data_pieces =
+        std::vector<RequiredDataPiece>(
+            collect_user_data.required_credit_card_data_piece().begin(),
+            collect_user_data.required_credit_card_data_piece().end());
+    collect_user_data_options_->required_billing_address_data_pieces =
+        std::vector<RequiredDataPiece>(
+            collect_user_data.required_billing_address_data_piece().begin(),
+            collect_user_data.required_billing_address_data_piece().end());
   }
 
   collect_user_data_options_->shipping_address_name =
@@ -1002,23 +1000,23 @@ bool CollectUserDataAction::CheckInitialAutofillDataComplete(
 
   if (collect_user_data_options_->request_payment_method) {
     auto credit_cards = personal_data_manager->GetCreditCards();
-    auto completeCardIter = std::find_if(
-        credit_cards.begin(), credit_cards.end(),
-        [this, personal_data_manager](const auto* credit_card) {
-          // TODO(b/142630213): Figure out how to retrieve billing profile if
-          // user has turned off addresses in Chrome settings.
-          return IsCompleteCreditCard(
-              credit_card,
-              credit_card != nullptr
-                  ? personal_data_manager->GetProfileByGUID(credit_card->guid())
-                  : nullptr,
-              *this->collect_user_data_options_.get());
-        });
+    auto completeCardIter =
+        std::find_if(credit_cards.begin(), credit_cards.end(),
+                     [this, personal_data_manager](const auto* credit_card) {
+                       // TODO(b/142630213): Figure out how to retrieve billing
+                       // profile if user has turned off addresses in Chrome
+                       // settings.
+                       return user_data::GetPaymentInstrumentValidationErrors(
+                                  credit_card,
+                                  credit_card != nullptr
+                                      ? personal_data_manager->GetProfileByGUID(
+                                            credit_card->guid())
+                                      : nullptr,
+                                  *this->collect_user_data_options_.get())
+                           .empty();
+                     });
     if (completeCardIter == credit_cards.end()) {
       return false;
-    }
-    if (collect_user_data_options_->require_billing_postal_code) {
-      initial_card_has_billing_postal_code_ = true;
     }
   }
   return true;
@@ -1041,8 +1039,9 @@ bool CollectUserDataAction::IsUserDataComplete(
          user_data::GetShippingAddressValidationErrors(shipping_address,
                                                        options)
              .empty() &&
-         IsCompleteCreditCard(user_data.selected_card(), billing_address,
-                              options) &&
+         user_data::GetPaymentInstrumentValidationErrors(
+             user_data.selected_card(), billing_address, options)
+             .empty() &&
          IsValidLoginChoice(user_data.login_choice_identifier_, options) &&
          IsValidTermsChoice(user_data.terms_and_conditions_, options) &&
          IsValidDateTimeRange(user_data.date_time_range_start_date_,
@@ -1390,7 +1389,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
   }
   if (user_data->selected_card() == nullptr &&
       collect_user_data_options_->request_payment_method) {
-    int default_selection = GetDefaultPaymentInstrument(
+    int default_selection = user_data::GetDefaultPaymentInstrument(
         *collect_user_data_options_, user_data->available_payment_instruments_);
     if (default_selection != -1) {
       const auto& default_payment_instrument =

@@ -35,73 +35,6 @@ std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
       profile.GetRawInfo(autofill::NAME_LAST));
 }
 
-int CountCompletePaymentInstrumentFields(const CollectUserDataOptions& options,
-                                         const PaymentInstrument& instrument) {
-  int complete_fields = 0;
-  if (!instrument.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL).empty()) {
-    ++complete_fields;
-  }
-  if (!instrument.card->GetRawInfo(autofill::CREDIT_CARD_NUMBER).empty()) {
-    ++complete_fields;
-  }
-  if (!instrument.card->GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH).empty()) {
-    ++complete_fields;
-  }
-  if (!instrument.card->GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)
-           .empty()) {
-    ++complete_fields;
-  }
-  if (instrument.billing_address != nullptr) {
-    ++complete_fields;
-
-    if (options.require_billing_postal_code &&
-        !instrument.billing_address->GetRawInfo(autofill::ADDRESS_HOME_ZIP)
-             .empty()) {
-      ++complete_fields;
-    }
-  }
-  return complete_fields;
-}
-
-// Helper function that compares instances of PaymentInstrument by completeness
-// in regards to the current options. Full payment instruments should be
-// ordered before empty ones and fall back to compare the full name on the
-// credit card in case of equality.
-bool CompletenessComparePaymentInstruments(
-    const CollectUserDataOptions& options,
-    const PaymentInstrument& a,
-    const PaymentInstrument& b) {
-  int complete_fields_a = CountCompletePaymentInstrumentFields(options, a);
-  int complete_fields_b = CountCompletePaymentInstrumentFields(options, b);
-  if (complete_fields_a == complete_fields_b) {
-    return base::i18n::ToLower(
-               a.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
-               .compare(base::i18n::ToLower(
-                   b.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))) < 0;
-  }
-  return complete_fields_a > complete_fields_b;
-}
-
-bool IsCompleteAddress(const autofill::AutofillProfile* profile,
-                       bool require_postal_code) {
-  if (!profile) {
-    return false;
-  }
-  // We use a hard coded locale here since we are only interested in whether
-  // fields are empty or not.
-  auto address_data = autofill::i18n::CreateAddressDataFromAutofillProfile(
-      *profile, kDefaultLocale);
-  if (!autofill::addressinput::HasAllRequiredFields(*address_data)) {
-    return false;
-  }
-
-  if (require_postal_code && address_data->postal_code.empty()) {
-    return false;
-  }
-
-  return true;
-}
-
 ClientStatus ExtractProfileAndFormatAutofillValue(
     const AutofillProfile& profile,
     const ValueExpression& value_expression,
@@ -215,36 +148,109 @@ int GetAddressEditorCompletenessRating(
   return problems.size();
 }
 
+int CompletenessCompareAddresses(
+    const std::vector<RequiredDataPiece>& required_data_pieces,
+    const autofill::AutofillProfile& a,
+    const autofill::AutofillProfile& b) {
+  // Compare by editor completeness first. This is done because the
+  // AddressEditor only allows storing addresses it considers complete.
+  int incomplete_fields_a = GetAddressEditorCompletenessRating(a);
+  int incomplete_fields_b = GetAddressEditorCompletenessRating(b);
+  if (incomplete_fields_a != incomplete_fields_b) {
+    return incomplete_fields_b - incomplete_fields_a;
+  }
+
+  incomplete_fields_a =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
+          required_data_pieces)
+          .size();
+  incomplete_fields_b =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
+          required_data_pieces)
+          .size();
+  return incomplete_fields_b - incomplete_fields_a;
+}
+
 // Helper function that compares instances of AutofillProfile by completeness
 // in regards to the current options. Full profiles should be ordered before
 // empty ones and fall back to compare the profile's name in case of equality.
 bool CompletenessCompareShippingAddresses(const CollectUserDataOptions& options,
                                           const autofill::AutofillProfile& a,
                                           const autofill::AutofillProfile& b) {
-  // Compare by editor completeness first. This is done because the
-  // AddressEditor only allows storing addresses it considers complete.
-  int incomplete_fields_a = GetAddressEditorCompletenessRating(a);
-  int incomplete_fields_b = GetAddressEditorCompletenessRating(b);
-  if (incomplete_fields_a != incomplete_fields_b) {
-    return incomplete_fields_a <= incomplete_fields_b;
-  }
-
-  incomplete_fields_a =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(a, kDefaultLocale),
-          options.required_shipping_address_data_pieces)
-          .size();
-  incomplete_fields_b =
-      GetValidationErrors(
-          field_formatter::CreateAutofillMappings(b, kDefaultLocale),
-          options.required_shipping_address_data_pieces)
-          .size();
-  if (incomplete_fields_a != incomplete_fields_b) {
-    return incomplete_fields_a <= incomplete_fields_b;
+  int address_compare = CompletenessCompareAddresses(
+      options.required_shipping_address_data_pieces, a, b);
+  if (address_compare != 0) {
+    return address_compare > 0;
   }
 
   return base::i18n::ToLower(GetProfileFullName(a))
              .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+}
+
+// Helper function that compares instances of PaymentInstrument by completeness
+// in regards to the current options. Full payment instruments should be
+// ordered before empty ones and fall back to compare the full name on the
+// credit card in case of equality.
+bool CompletenessComparePaymentInstruments(
+    const CollectUserDataOptions& options,
+    const PaymentInstrument& a,
+    const PaymentInstrument& b) {
+  DCHECK(a.card);
+  DCHECK(b.card);
+  int incomplete_fields_a =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(*a.card, kDefaultLocale),
+          options.required_credit_card_data_pieces)
+          .size();
+  int incomplete_fields_b =
+      GetValidationErrors(
+          field_formatter::CreateAutofillMappings(*b.card, kDefaultLocale),
+          options.required_credit_card_data_pieces)
+          .size();
+  if (incomplete_fields_a != incomplete_fields_b) {
+    return incomplete_fields_a <= incomplete_fields_b;
+  }
+
+  bool a_has_valid_expiration = a.card->HasValidExpirationDate();
+  bool b_has_valid_expiration = b.card->HasValidExpirationDate();
+  if (a_has_valid_expiration != b_has_valid_expiration) {
+    return !b_has_valid_expiration;
+  }
+
+  bool a_has_valid_number =
+      (a.card->record_type() != autofill::CreditCard::MASKED_SERVER_CARD &&
+       a.card->HasValidCardNumber()) ||
+      (a.card->record_type() == autofill::CreditCard::MASKED_SERVER_CARD &&
+       !a.card->GetRawInfo(autofill::CREDIT_CARD_NUMBER).empty());
+  bool b_has_valid_number =
+      (b.card->record_type() != autofill::CreditCard::MASKED_SERVER_CARD &&
+       b.card->HasValidCardNumber()) ||
+      (b.card->record_type() == autofill::CreditCard::MASKED_SERVER_CARD &&
+       !b.card->GetRawInfo(autofill::CREDIT_CARD_NUMBER).empty());
+  if (a_has_valid_number != b_has_valid_number) {
+    return !b_has_valid_number;
+  }
+
+  bool a_has_address = a.billing_address != nullptr;
+  bool b_has_address = b.billing_address != nullptr;
+  if (a_has_address != b_has_address) {
+    return !b_has_address;
+  }
+  if (a_has_address && b_has_address) {
+    int address_compare = CompletenessCompareAddresses(
+        options.required_billing_address_data_pieces, *a.billing_address,
+        *b.billing_address);
+    if (address_compare != 0) {
+      return address_compare > 0;
+    }
+  }
+
+  return base::i18n::ToLower(
+             a.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+             .compare(base::i18n::ToLower(
+                 b.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))) < 0;
 }
 
 }  // namespace
@@ -350,15 +356,58 @@ int GetDefaultShippingAddressProfile(
   return sorted_indices[0];
 }
 
-}  // namespace user_data
+std::vector<std::string> GetPaymentInstrumentValidationErrors(
+    const autofill::CreditCard* credit_card,
+    const autofill::AutofillProfile* billing_address,
+    const CollectUserDataOptions& collect_user_data_options) {
+  std::vector<std::string> errors;
+  if (!collect_user_data_options.request_payment_method) {
+    return errors;
+  }
 
-std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
-    const autofill::AutofillProfile& profile) {
-  auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
-  // Temporary workaround so that fields like first/last name a properly
-  // populated.
-  unique_profile->FinalizeAfterImport();
-  return unique_profile;
+  if (!collect_user_data_options.required_credit_card_data_pieces.empty()) {
+    const auto& card_errors = GetValidationErrors(
+        credit_card ? field_formatter::CreateAutofillMappings(*credit_card,
+                                                              kDefaultLocale)
+                    : std::map<std::string, std::string>(),
+        collect_user_data_options.required_credit_card_data_pieces);
+    errors.insert(errors.end(), card_errors.begin(), card_errors.end());
+  }
+  if (credit_card && !credit_card->HasValidExpirationDate()) {
+    errors.push_back(collect_user_data_options.credit_card_expired_text);
+  }
+
+  if (!collect_user_data_options.required_billing_address_data_pieces.empty()) {
+    const auto& address_errors = GetValidationErrors(
+        billing_address ? field_formatter::CreateAutofillMappings(
+                              *billing_address, kDefaultLocale)
+                        : std::map<std::string, std::string>(),
+        collect_user_data_options.required_billing_address_data_pieces);
+    errors.insert(errors.end(), address_errors.begin(), address_errors.end());
+  }
+
+  // Require card editor completeness if Assistant validation succeeds. If
+  // Assistant validation fails, the editor has to be opened and requires
+  // completeness to save the change, do not append the (potentially duplicate)
+  // error in this case.
+  if (errors.empty()) {
+    if (credit_card &&
+        credit_card->record_type() !=
+            autofill::CreditCard::MASKED_SERVER_CARD &&
+        !credit_card->HasValidCardNumber()) {
+      // Can't check validity of masked server card numbers, because they are
+      // incomplete until decrypted.
+      errors.push_back(l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
+    } else if (!credit_card || !billing_address ||
+               credit_card->billing_address_id().empty() ||
+               GetAddressEditorCompletenessRating(*billing_address) != 0) {
+      errors.push_back(l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
+    }
+  }
+
+  return errors;
 }
 
 std::vector<int> SortPaymentInstrumentsByCompleteness(
@@ -390,6 +439,17 @@ int GetDefaultPaymentInstrument(
   return sorted_indices[0];
 }
 
+}  // namespace user_data
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile) {
+  auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
+  // Temporary workaround so that fields like first/last name a properly
+  // populated.
+  unique_profile->FinalizeAfterImport();
+  return unique_profile;
+}
+
 bool CompareContactDetails(
     const CollectUserDataOptions& collect_user_data_options,
     const autofill::AutofillProfile* a,
@@ -416,50 +476,6 @@ bool CompareContactDetails(
     if (comparison != 0) {
       return false;
     }
-  }
-
-  return true;
-}
-
-bool IsCompleteCreditCard(
-    const autofill::CreditCard* credit_card,
-    const autofill::AutofillProfile* billing_profile,
-    const CollectUserDataOptions& collect_user_data_options) {
-  if (!collect_user_data_options.request_payment_method) {
-    return true;
-  }
-
-  if (!credit_card || !billing_profile ||
-      credit_card->billing_address_id().empty()) {
-    return false;
-  }
-
-  if (!IsCompleteAddress(
-          billing_profile,
-          collect_user_data_options.require_billing_postal_code)) {
-    return false;
-  }
-
-  if (credit_card->record_type() != autofill::CreditCard::MASKED_SERVER_CARD &&
-      !credit_card->HasValidCardNumber()) {
-    // Can't check validity of masked server card numbers because they are
-    // incomplete until decrypted.
-    return false;
-  }
-
-  if (!credit_card->HasValidExpirationDate()) {
-    return false;
-  }
-
-  std::string basic_card_network =
-      autofill::data_util::GetPaymentRequestData(credit_card->network())
-          .basic_card_issuer_network;
-  if (!collect_user_data_options.supported_basic_card_networks.empty() &&
-      std::find(collect_user_data_options.supported_basic_card_networks.begin(),
-                collect_user_data_options.supported_basic_card_networks.end(),
-                basic_card_network) ==
-          collect_user_data_options.supported_basic_card_networks.end()) {
-    return false;
   }
 
   return true;

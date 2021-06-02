@@ -867,19 +867,6 @@ TEST_F(CollectUserDataActionTest, SelectShippingAddress) {
       0);
 }
 
-TEST_F(CollectUserDataActionTest, MandatoryPostalCodeWithoutErrorMessageFails) {
-  ActionProto action_proto;
-  action_proto.mutable_collect_user_data()->set_request_payment_method(true);
-  action_proto.mutable_collect_user_data()->set_require_billing_postal_code(
-      true);
-
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
-  CollectUserDataAction action(&mock_action_delegate_, action_proto);
-  action.ProcessAction(callback_.Get());
-}
-
 TEST_F(CollectUserDataActionTest, ContactDetailsCanHandleUtf8) {
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
@@ -1029,7 +1016,8 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
-  options.require_billing_postal_code = true;
+  options.required_billing_address_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 

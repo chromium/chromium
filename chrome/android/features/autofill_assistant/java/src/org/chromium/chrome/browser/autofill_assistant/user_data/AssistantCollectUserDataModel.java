@@ -53,9 +53,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
      * @param <T> The type of |EditableOption| that a concrete instance of this class is created
      * for, such as |AutofillContact|, |AutofillPaymentMethod|, etc.
      */
-    // TODO(b/180705720): Drop the "extends EditableOption" once AutofillAddress and
-    //  AutofillPaymentInstrument have been transferred. Then change
-    //  AssistantCollectUserDataSection to <T extends OptionModel>.
+    // TODO(b/180705720): Drop the "extends EditableOption" once AssistantLoginChoice has been
+    //  transitioned. Change AssistantCollectUserDataSection to <T extends OptionModel>. Remove
+    //  isComplete from this class.
     public static class OptionModel<T extends EditableOption> extends EditableOption {
         public T mOption;
         public List<String> mErrors;
@@ -101,6 +101,18 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         }
     }
 
+    /** Model wrapper for an {@code AutofillPaymentInstrument}. */
+    public static class PaymentInstrumentModel extends OptionModel<AutofillPaymentInstrument> {
+        public PaymentInstrumentModel(
+                AutofillPaymentInstrument paymentInstrument, List<String> errors) {
+            super(paymentInstrument, errors);
+        }
+
+        public PaymentInstrumentModel(AutofillPaymentInstrument paymentInstrument) {
+            super(paymentInstrument);
+        }
+    }
+
     public static final WritableObjectPropertyKey<AssistantCollectUserDataDelegate> DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -115,7 +127,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
             new WritableObjectPropertyKey<>();
 
     /** The chosen payment method (including billing address). */
-    public static final WritableObjectPropertyKey<AutofillPaymentInstrument>
+    public static final WritableObjectPropertyKey<PaymentInstrumentModel>
             SELECTED_PAYMENT_INSTRUMENT = new WritableObjectPropertyKey<>();
 
     /** The chosen contact details. */
@@ -164,7 +176,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<List<AddressModel>> AVAILABLE_SHIPPING_ADDRESSES =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<AutofillPaymentInstrument>>
+    public static final WritableObjectPropertyKey<List<PaymentInstrumentModel>>
             AVAILABLE_PAYMENT_INSTRUMENTS = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<String>> SUPPORTED_BASIC_CARD_NETWORKS =
@@ -176,15 +188,6 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     /** The currently expanded section (may be null). */
     public static final WritableObjectPropertyKey<AssistantVerticalExpander> EXPANDED_SECTION =
-            new WritableObjectPropertyKey<>();
-
-    public static final WritableBooleanPropertyKey REQUIRE_BILLING_POSTAL_CODE =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableObjectPropertyKey<String> BILLING_POSTAL_CODE_MISSING_TEXT =
-            new WritableObjectPropertyKey<>();
-
-    public static final WritableObjectPropertyKey<String> CREDIT_CARD_EXPIRED_TEXT =
             new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey REQUEST_DATE_RANGE =
@@ -264,18 +267,17 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 REQUEST_LOGIN_CHOICE, AVAILABLE_BILLING_ADDRESSES, AVAILABLE_CONTACTS,
                 AVAILABLE_SHIPPING_ADDRESSES, AVAILABLE_PAYMENT_INSTRUMENTS,
                 SUPPORTED_BASIC_CARD_NETWORKS, AVAILABLE_LOGINS, EXPANDED_SECTION,
-                REQUIRE_BILLING_POSTAL_CODE, BILLING_POSTAL_CODE_MISSING_TEXT,
-                CREDIT_CARD_EXPIRED_TEXT, REQUEST_DATE_RANGE, DATE_RANGE_START_OPTIONS,
-                DATE_RANGE_START_DATE, DATE_RANGE_START_TIMESLOT, DATE_RANGE_START_DATE_LABEL,
-                DATE_RANGE_START_TIME_LABEL, DATE_RANGE_END_OPTIONS, DATE_RANGE_END_DATE,
-                DATE_RANGE_END_TIMESLOT, DATE_RANGE_END_DATE_LABEL, DATE_RANGE_END_TIME_LABEL,
+                REQUEST_DATE_RANGE, DATE_RANGE_START_OPTIONS, DATE_RANGE_START_DATE,
+                DATE_RANGE_START_TIMESLOT, DATE_RANGE_START_DATE_LABEL, DATE_RANGE_START_TIME_LABEL,
+                DATE_RANGE_END_OPTIONS, DATE_RANGE_END_DATE, DATE_RANGE_END_TIMESLOT,
+                DATE_RANGE_END_DATE_LABEL, DATE_RANGE_END_TIME_LABEL,
                 DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE, DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE,
                 PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
                 PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS);
 
-        /**
+        /*
          * Set initial state for basic type properties (others are implicitly null).
          * This is necessary to ensure that the initial UI state is consistent with the model.
          */
@@ -287,7 +289,6 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(REQUEST_PAYMENT, false);
         set(REQUEST_SHIPPING_ADDRESS, false);
         set(REQUEST_LOGIN_CHOICE, false);
-        set(REQUIRE_BILLING_POSTAL_CODE, false);
         set(PREPENDED_SECTIONS, Collections.emptyList());
         set(APPENDED_SECTIONS, Collections.emptyList());
         set(AVAILABLE_PAYMENT_INSTRUMENTS, Collections.emptyList());
@@ -330,21 +331,6 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setShowTermsAsCheckbox(boolean showTermsAsCheckbox) {
         set(SHOW_TERMS_AS_CHECKBOX, showTermsAsCheckbox);
-    }
-
-    @CalledByNative
-    private void setRequireBillingPostalCode(boolean requireBillingPostalCode) {
-        set(REQUIRE_BILLING_POSTAL_CODE, requireBillingPostalCode);
-    }
-
-    @CalledByNative
-    private void setBillingPostalCodeMissingText(String text) {
-        set(BILLING_POSTAL_CODE_MISSING_TEXT, text);
-    }
-
-    @CalledByNative
-    private void setCreditCardExpiredText(String text) {
-        set(CREDIT_CARD_EXPIRED_TEXT, text);
     }
 
     @CalledByNative
@@ -409,9 +395,13 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setSelectedPaymentInstrument(WebContents webContents,
             @Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingProfile) {
+            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
+        AutofillPaymentInstrument paymentInstrument =
+                createAutofillPaymentInstrument(webContents, card, billingProfile);
         set(SELECTED_PAYMENT_INSTRUMENT,
-                createAutofillPaymentInstrument(webContents, card, billingProfile));
+                paymentInstrument == null
+                        ? null
+                        : new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
     }
 
     /** Creates an empty list of login options. */
@@ -678,19 +668,20 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static List<AutofillPaymentInstrument> createAutofillPaymentInstrumentList() {
+    private static List<PaymentInstrumentModel> createAutofillPaymentInstrumentList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
     private static void addAutofillPaymentInstrument(
-            List<AutofillPaymentInstrument> paymentInstruments, WebContents webContents,
+            List<PaymentInstrumentModel> paymentInstruments, WebContents webContents,
             @Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingProfile) {
+            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
         AutofillPaymentInstrument paymentInstrument =
                 createAutofillPaymentInstrument(webContents, card, billingProfile);
         if (paymentInstrument != null) {
-            paymentInstruments.add(paymentInstrument);
+            paymentInstruments.add(
+                    new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
         }
     }
 
@@ -711,8 +702,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setAvailablePaymentInstruments(
-            List<AutofillPaymentInstrument> paymentInstruments) {
+    private void setAvailablePaymentInstruments(List<PaymentInstrumentModel> paymentInstruments) {
         set(AVAILABLE_PAYMENT_INSTRUMENTS, paymentInstruments);
     }
 

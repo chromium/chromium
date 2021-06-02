@@ -192,28 +192,4 @@ AssistantCollectUserDataDelegate::GetJavaObject() {
   return java_assistant_collect_user_data_delegate_;
 }
 
-bool AssistantCollectUserDataDelegate::IsPaymentInstrumentComplete(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jcard,
-    const base::android::JavaParamRef<jobject>& jaddress) {
-  if (!jcard) {
-    return ui_controller_->IsPaymentInstrumentComplete(nullptr, nullptr);
-  }
-
-  autofill::CreditCard card;
-  autofill::PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
-      jcard, env, &card);
-
-  if (jaddress) {
-    autofill::AutofillProfile address;
-    autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-        jaddress, env, &address);
-
-    return ui_controller_->IsPaymentInstrumentComplete(&card, &address);
-  }
-
-  return ui_controller_->IsPaymentInstrumentComplete(&card, nullptr);
-}
-
 }  // namespace autofill_assistant

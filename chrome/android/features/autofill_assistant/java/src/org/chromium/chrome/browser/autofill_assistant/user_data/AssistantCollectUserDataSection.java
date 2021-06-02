@@ -32,10 +32,6 @@ import java.util.List;
  * such as |AutofillContact|, |AutofillPaymentMethod|, etc.
  */
 public abstract class AssistantCollectUserDataSection<T extends EditableOption> {
-    interface Delegate<T> {
-        boolean isComplete(T element);
-    }
-
     private class Item {
         View mFullView;
         T mOption;
@@ -61,7 +57,6 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
     private Callback<T> mListener;
     private int mTopPadding;
     private int mBottomPadding;
-    private Delegate<T> mCompletenessDelegate;
 
     /**
      *
@@ -136,14 +131,6 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
 
     void setListener(@Nullable Callback<T> listener) {
         mListener = listener;
-    }
-
-    void setCompletenessDelegate(@Nullable Delegate<T> completenessDelegate) {
-        mCompletenessDelegate = completenessDelegate;
-    }
-
-    boolean isComplete(T element) {
-        return mCompletenessDelegate != null && mCompletenessDelegate.isComplete(element);
     }
 
     void setTitle(String title) {

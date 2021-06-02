@@ -95,12 +95,6 @@ class AssistantCollectUserDataDelegate {
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jis_focused);
 
-  bool IsPaymentInstrumentComplete(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& jcard,
-      const base::android::JavaParamRef<jobject>& jaddress);
-
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 
  private:

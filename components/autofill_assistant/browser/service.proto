@@ -2296,12 +2296,6 @@ message CollectUserDataProto {
   // display a "Show terms" button that will navigate the user to the terms and
   // conditions page when clicked.
   repeated UserActionProto additional_actions = 11;
-  // Optionally requests a payment method with a billing address that has a
-  // postcode value.
-  optional bool require_billing_postal_code = 14;
-  // The error message to display when the billing address is missing the
-  // postal code. This field is mandatory if |require_postal_code| is true.
-  optional string billing_postal_code_missing_text = 15;
   // The error message to display when the selected credit card is expired.
   optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
@@ -2339,8 +2333,10 @@ message CollectUserDataProto {
   repeated string clear_previous_profile_selection = 30;
   // Defines how to evaluate validitiy of an address or credit card.
   repeated RequiredDataPiece required_shipping_address_data_piece = 34;
+  repeated RequiredDataPiece required_credit_card_data_piece = 35;
+  repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
-  reserved 7, 26, 35 to 36;
+  reserved 7, 14, 15, 26;
 }
 
 // Stop Autofill Assistant.

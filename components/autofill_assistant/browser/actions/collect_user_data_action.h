@@ -112,7 +112,6 @@ class CollectUserDataAction : public Action,
   bool initially_prefilled = false;
   bool personal_data_changed_ = false;
   bool action_successful_ = false;
-  bool initial_card_has_billing_postal_code_ = false;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;
 

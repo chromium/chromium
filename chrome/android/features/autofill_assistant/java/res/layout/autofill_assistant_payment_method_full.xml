@@ -45,8 +45,6 @@
         android:id="@+id/incomplete_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
         android:textAppearance="@style/TextAppearance.ErrorCaption"
         android:visibility="gone"/>
 </LinearLayout>

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 
@@ -29,12 +30,9 @@ import java.util.List;
  * The payment method section of the Autofill Assistant payment request.
  */
 public class AssistantPaymentMethodSection
-        extends AssistantCollectUserDataSection<AutofillPaymentInstrument> {
+        extends AssistantCollectUserDataSection<PaymentInstrumentModel> {
     private CardEditor mEditor;
     private boolean mIgnorePaymentMethodsChangeNotifications;
-    private boolean mRequiresBillingPostalCode;
-    private String mBillingPostalCodeMissingText;
-    private String mCreditCardExpiredText;
 
     AssistantPaymentMethodSection(Context context, ViewGroup parent) {
         super(context, parent, R.layout.autofill_assistant_payment_method_summary,
@@ -53,8 +51,8 @@ public class AssistantPaymentMethodSection
         }
 
         PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
-        for (AutofillPaymentInstrument method : getItems()) {
-            String guid = method.getCard().getBillingAddressId();
+        for (PaymentInstrumentModel item : getItems()) {
+            String guid = item.mOption.getCard().getBillingAddressId();
             PersonalDataManager.AutofillProfile profile = personalDataManager.getProfile(guid);
             if (profile != null) {
                 addAutocompleteInformationToEditor(new AutofillAddress(mContext, profile));
@@ -63,41 +61,55 @@ public class AssistantPaymentMethodSection
     }
 
     @Override
-    protected void createOrEditItem(@Nullable AutofillPaymentInstrument oldItem) {
+    protected void createOrEditItem(@Nullable PaymentInstrumentModel oldItem) {
         if (mEditor == null) {
             return;
         }
-        mEditor.edit(oldItem, newItem -> {
-            assert (newItem != null && newItem.isComplete());
+        mEditor.edit(oldItem == null ? null : oldItem.mOption, paymentInstrument -> {
+            assert (paymentInstrument != null && paymentInstrument.isComplete());
             mIgnorePaymentMethodsChangeNotifications = true;
-            addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
+            addOrUpdateItem(new PaymentInstrumentModel(paymentInstrument), /* select= */ true,
+                    /* notify= */ true);
             mIgnorePaymentMethodsChangeNotifications = false;
         }, cancel -> {});
     }
 
     @Override
-    protected void updateFullView(View fullView, AutofillPaymentInstrument method) {
-        if (method == null) {
+    protected void updateFullView(View fullView, PaymentInstrumentModel model) {
+        if (model == null) {
             return;
         }
 
-        updateView(fullView, method);
+        updateView(fullView, model);
 
         TextView cardNameView = fullView.findViewById(R.id.credit_card_name);
-        cardNameView.setText(method.getCard().getName());
+        cardNameView.setText(model.mOption.getCard().getName());
         hideIfEmpty(cardNameView);
+
+        TextView errorView = fullView.findViewById(R.id.incomplete_error);
+        if (model.mErrors.isEmpty()) {
+            errorView.setText("");
+            errorView.setVisibility(View.GONE);
+        } else {
+            errorView.setText(TextUtils.join("\n", model.mErrors));
+            errorView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    protected void updateSummaryView(View summaryView, AutofillPaymentInstrument method) {
-        if (method == null) {
+    protected void updateSummaryView(View summaryView, PaymentInstrumentModel model) {
+        if (model == null) {
             return;
         }
 
-        updateView(summaryView, method);
+        updateView(summaryView, model);
+
+        TextView errorView = summaryView.findViewById(R.id.incomplete_error);
+        errorView.setVisibility(model.mErrors.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private void updateView(View view, AutofillPaymentInstrument method) {
+    private void updateView(View view, PaymentInstrumentModel model) {
+        AutofillPaymentInstrument method = model.mOption;
         ImageView cardIssuerImageView = view.findViewById(R.id.credit_card_issuer_icon);
         try {
             cardIssuerImageView.setImageDrawable(view.getContext().getResources().getDrawable(
@@ -120,33 +132,31 @@ public class AssistantPaymentMethodSection
         TextView cardExpirationView = view.findViewById(R.id.credit_card_expiration);
         cardExpirationView.setText(method.getCard().getFormattedExpirationDate(view.getContext()));
         hideIfEmpty(cardExpirationView);
-
-        TextView errorMessageView = view.findViewById(R.id.incomplete_error);
-        setErrorMessage(errorMessageView, method);
-        hideIfEmpty(errorMessageView);
     }
 
     @Override
-    protected boolean canEditOption(AutofillPaymentInstrument method) {
+    protected boolean canEditOption(PaymentInstrumentModel model) {
         return true;
     }
 
     @Override
-    protected @DrawableRes int getEditButtonDrawable(AutofillPaymentInstrument method) {
+    protected @DrawableRes int getEditButtonDrawable(PaymentInstrumentModel model) {
         return R.drawable.ic_edit_24dp;
     }
 
     @Override
-    protected String getEditButtonContentDescription(AutofillPaymentInstrument method) {
+    protected String getEditButtonContentDescription(PaymentInstrumentModel model) {
         return mContext.getString(R.string.autofill_edit_credit_card);
     }
 
     @Override
-    protected boolean areEqual(@Nullable AutofillPaymentInstrument optionA,
-            @Nullable AutofillPaymentInstrument optionB) {
-        if (optionA == null || optionB == null) {
-            return optionA == optionB;
+    protected boolean areEqual(
+            @Nullable PaymentInstrumentModel modelA, @Nullable PaymentInstrumentModel modelB) {
+        if (modelA == null || modelB == null) {
+            return modelA == modelB;
         }
+        AutofillPaymentInstrument optionA = modelA.mOption;
+        AutofillPaymentInstrument optionB = modelB.mOption;
         if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
             return true;
         }
@@ -180,7 +190,7 @@ public class AssistantPaymentMethodSection
      * The set of available payment methods has changed externally. This will rebuild the UI with
      * the new/changed set of payment methods, while keeping the selected item if possible.
      */
-    void onAvailablePaymentMethodsChanged(List<AutofillPaymentInstrument> paymentMethods) {
+    void onAvailablePaymentMethodsChanged(List<PaymentInstrumentModel> paymentMethods) {
         if (mIgnorePaymentMethodsChangeNotifications) {
             return;
         }
@@ -199,18 +209,6 @@ public class AssistantPaymentMethodSection
         setItems(paymentMethods, selectedMethodIndex);
     }
 
-    void setRequiresBillingPostalCode(boolean requiresBillingPostalCode) {
-        mRequiresBillingPostalCode = requiresBillingPostalCode;
-    }
-
-    void setBillingPostalCodeMissingText(String text) {
-        mBillingPostalCodeMissingText = text;
-    }
-
-    void setCreditCardExpiredText(String text) {
-        mCreditCardExpiredText = text;
-    }
-
     private void addAutocompleteInformationToEditor(AutofillAddress address) {
         if (mEditor == null) {
             return;
@@ -221,38 +219,5 @@ public class AssistantPaymentMethodSection
                             address.getProfile()));
         }
         mEditor.updateBillingAddressIfComplete(address);
-    }
-
-    private void setErrorMessage(TextView errorMessageView, AutofillPaymentInstrument method) {
-        // TODO(b/154068342): Remove these granular checks and send the error message directly
-        //  from |Controller|.
-        if (!method.isComplete() || method.getBillingProfile() == null
-                || AutofillAddress.checkAddressCompletionStatus(method.getBillingProfile(),
-                           AutofillAddress.CompletenessCheckType.IGNORE_PHONE)
-                        != AutofillAddress.CompletionStatus.COMPLETE) {
-            errorMessageView.setText(R.string.autofill_assistant_payment_information_missing);
-            return;
-        }
-
-        if (mRequiresBillingPostalCode
-                && TextUtils.isEmpty(method.getBillingProfile().getPostalCode())) {
-            errorMessageView.setText(mBillingPostalCodeMissingText);
-            return;
-        }
-
-        if ((method.getMissingFields()
-                    & AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED)
-                == 1) {
-            errorMessageView.setText(mCreditCardExpiredText);
-            return;
-        }
-
-        // Final check to catch things we might have missed above.
-        if (!isComplete(method)) {
-            errorMessageView.setText(R.string.autofill_assistant_payment_information_missing);
-            return;
-        }
-
-        errorMessageView.setText("");
     }
 }

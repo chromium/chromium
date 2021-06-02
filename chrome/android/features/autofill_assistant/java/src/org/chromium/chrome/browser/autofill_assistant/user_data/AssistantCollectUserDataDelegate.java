@@ -53,10 +53,4 @@ public interface AssistantCollectUserDataDelegate {
 
     /** The focus on an input text field has changed */
     void onInputTextFocusChanged(boolean isFocused);
-
-    /**
-     * Returns true if the payment instrument is complete.
-     * TODO(b/154068342): Remove this method and send the error message from |Controller|.
-     */
-    boolean isPaymentInstrumentComplete(@Nullable AutofillPaymentInstrument paymentInstrument);
 }
