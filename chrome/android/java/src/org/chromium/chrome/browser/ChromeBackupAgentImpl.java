@@ -151,15 +151,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         }
     }
 
-    @VisibleForTesting
-    protected boolean accountExistsOnDevice(String userName) {
-        return AccountUtils.findAccountByName(
-                       AccountManagerFacadeProvider.getInstance().getGoogleAccounts().or(
-                               Collections.emptyList()),
-                       userName)
-                != null;
-    }
-
     // TODO (aberent) Refactor the tests to use a mocked ChromeBrowserInitializer, and make this
     // private again.
     @VisibleForTesting
@@ -356,7 +347,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         }
 
         // If the user hasn't signed in, or can't sign in, then don't restore anything.
-        if (restoredUserName == null || !accountExistsOnDevice(restoredUserName)) {
+        boolean accountExistsOnDevice = restoredUserName != null
+                && AccountUtils.findAccountByName(
+                           AccountManagerFacadeProvider.getInstance().getGoogleAccounts().or(
+                                   Collections.emptyList()),
+                           restoredUserName)
+                        != null;
+        if (!accountExistsOnDevice) {
             setRestoreStatus(RestoreStatus.NOT_SIGNED_IN);
             Log.i(TAG, "Chrome was not signed in with a known account name, not restoring");
             return;
