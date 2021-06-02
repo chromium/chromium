@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"

@@ -6,7 +6,6 @@
 
 #import "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -30,7 +29,7 @@ namespace {
 class TabRemovedWaiter : public TabStripModelObserver {
  public:
   explicit TabRemovedWaiter(Browser* browser) {
-    observation_.Observe(browser->tab_strip_model());
+    browser->tab_strip_model()->AddObserver(this);
   }
   TabRemovedWaiter(const TabRemovedWaiter&) = delete;
   TabRemovedWaiter& operator=(const TabRemovedWaiter&) = delete;
@@ -49,9 +48,6 @@ class TabRemovedWaiter : public TabStripModelObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  base::ScopedObservation<TabStripModel, TabStripModelObserver> observation_{
-      this};
 };
 
 }  // namespace

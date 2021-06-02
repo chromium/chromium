@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

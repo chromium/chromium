@@ -18,7 +18,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"

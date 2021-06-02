@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_types.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

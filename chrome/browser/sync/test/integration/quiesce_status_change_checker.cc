@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/format_macros.h"
-#include "base/scoped_observer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/driver/profile_sync_service.h"

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"

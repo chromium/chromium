@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
 #define CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
 
-#include "base/scoped_observer.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"

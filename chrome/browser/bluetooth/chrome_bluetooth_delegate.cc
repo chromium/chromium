@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"

@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"

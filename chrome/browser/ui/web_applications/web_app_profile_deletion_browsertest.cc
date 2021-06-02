@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
