@@ -265,6 +265,13 @@ void PagedAppsGridView::OnMouseEvent(ui::MouseEvent* event) {
 ////////////////////////////////////////////////////////////////////////////////
 // AppsGridView:
 
+gfx::Size PagedAppsGridView::GetTileViewSize() const {
+  const AppListConfig& config = GetAppListConfig();
+  return gfx::ScaleToRoundedSize(
+      gfx::Size(config.grid_tile_width(), config.grid_tile_height()),
+      (cardified_state() ? kCardifiedScale : 1.0f));
+}
+
 gfx::Insets PagedAppsGridView::GetTilePadding() const {
   if (is_in_folder()) {
     const int tile_padding_in_folder =

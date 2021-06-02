@@ -109,9 +109,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of a tile view including its padding.
   gfx::Size GetTotalTileSize() const;
 
-  // Returns the padding around a tile view.
-  virtual gfx::Insets GetTilePadding() const = 0;
-
   // Returns the size of the entire tile grid with padding between tiles.
   gfx::Size GetTileGridSizeWithPadding() const;
 
@@ -360,6 +357,15 @@ class ASH_EXPORT AppsGridView : public views::View,
  protected:
   class FadeoutLayerDelegate;
 
+  // The cardified apps grid should be scaled down by this factor.
+  static constexpr float kCardifiedScale = 0.84f;
+
+  // Returns the size of a tile view excluding its padding.
+  virtual gfx::Size GetTileViewSize() const = 0;
+
+  // Returns the padding around a tile view.
+  virtual gfx::Insets GetTilePadding() const = 0;
+
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
@@ -407,6 +413,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   int horizontal_tile_padding() const { return horizontal_tile_padding_; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }
+  bool cardified_state() const { return cardified_state_; }
 
   // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
@@ -917,6 +924,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool ignore_layout_ = false;
 
   // True if the AppList is in cardified state.
+  // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
   bool cardified_state_ = false;
 
   // The highlighted page during cardified state.

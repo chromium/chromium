@@ -50,6 +50,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // AppsGridView:
+  gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
 

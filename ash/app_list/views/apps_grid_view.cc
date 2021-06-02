@@ -93,9 +93,6 @@ constexpr base::TimeDelta kPageFlipDelay =
 // The drag and drop proxy should get scaled by this factor.
 constexpr float kDragAndDropProxyScale = 1.2f;
 
-// The apps grid should be scaled down by this factor.
-constexpr float kCardifiedScale = 0.84f;
-
 // Vertical padding between the apps grid pages in cardified state.
 constexpr int kCardifiedPaddingBetweenPages = 12;
 
@@ -132,13 +129,6 @@ constexpr gfx::Tween::Type kFolderFadeOutTweenType =
 // Animation curve used for entering and exiting cardified state.
 constexpr gfx::Tween::Type kCardifiedStateTweenType =
     gfx::Tween::LINEAR_OUT_SLOW_IN;
-
-// Returns the size of a tile view excluding its padding.
-gfx::Size GetTileViewSize(const AppListConfig& config, bool cardified_state) {
-  return gfx::ScaleToRoundedSize(
-      gfx::Size(config.grid_tile_width(), config.grid_tile_height()),
-      (cardified_state ? kCardifiedScale : 1.0f));
-}
 
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
@@ -325,6 +315,9 @@ std::string GridIndex::ToString() const {
   return ss.str();
 }
 
+// static
+constexpr float AppsGridView::kCardifiedScale;
+
 // A layer delegate used for AppsGridView's mask layer, with top and bottom
 // gradient fading out zones.
 class AppsGridView::FadeoutLayerDelegate : public ui::LayerDelegate {
@@ -460,13 +453,13 @@ void AppsGridView::SetLayout(int cols, int rows_per_page) {
 }
 
 gfx::Size AppsGridView::GetTotalTileSize() const {
-  gfx::Rect rect(GetTileViewSize(GetAppListConfig(), cardified_state_));
+  gfx::Rect rect(GetTileViewSize());
   rect.Inset(GetTilePadding());
   return rect.size();
 }
 
 gfx::Size AppsGridView::GetTileGridSizeWithPadding() const {
-  gfx::Size size(GetTileViewSize(GetAppListConfig(), cardified_state_));
+  gfx::Size size(GetTileViewSize());
   size.SetSize(size.width() * cols_, size.height() * rows_per_page_);
 
   int horizontal_padding = horizontal_tile_padding_ * 2;
@@ -486,16 +479,14 @@ gfx::Size AppsGridView::GetTileGridSizeWithPadding() const {
 
 gfx::Size AppsGridView::GetMinimumTileGridSize(int cols,
                                                int rows_per_page) const {
-  const gfx::Size tile_size =
-      GetTileViewSize(GetAppListConfig(), cardified_state_);
+  const gfx::Size tile_size = GetTileViewSize();
   return gfx::Size(tile_size.width() * cols,
                    tile_size.height() * rows_per_page);
 }
 
 gfx::Size AppsGridView::GetMaximumTileGridSize(int cols,
                                                int rows_per_page) const {
-  const gfx::Size tile_size =
-      GetTileViewSize(GetAppListConfig(), cardified_state_);
+  const gfx::Size tile_size = GetTileViewSize();
   return gfx::Size(tile_size.width() * cols + kMaximumTileSpacing * (cols - 1),
                    tile_size.height() * rows_per_page +
                        kMaximumTileSpacing * (rows_per_page - 1));
@@ -1110,8 +1101,7 @@ void AppsGridView::Layout() {
     } else {
       // If the drag view size changes, make sure it has the same center.
       gfx::Rect bounds = view->bounds();
-      bounds.ClampToCenteredSize(
-          GetTileViewSize(GetAppListConfig(), cardified_state_));
+      bounds.ClampToCenteredSize(GetTileViewSize());
       view->SetBoundsRect(bounds);
     }
   }
@@ -3362,8 +3352,7 @@ void AppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
 // TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::UpdateTilePadding() {
   gfx::Size content_size = GetContentsBounds().size();
-  const gfx::Size tile_size =
-      GetTileViewSize(GetAppListConfig(), cardified_state_);
+  const gfx::Size tile_size = GetTileViewSize();
   if (cardified_state_)
     content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale);
 

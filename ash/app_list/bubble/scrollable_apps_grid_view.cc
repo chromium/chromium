@@ -17,10 +17,6 @@ namespace {
 // TODO(crbug.com/1211608): Add this to AppListConfig.
 const int kVerticalTilePadding = 8;
 
-gfx::Size GetTileViewSize(const AppListConfig& config) {
-  return gfx::Size(config.grid_tile_width(), config.grid_tile_height());
-}
-
 }  // namespace
 
 ScrollableAppsGridView::ScrollableAppsGridView(
@@ -56,11 +52,16 @@ void ScrollableAppsGridView::Layout() {
     } else {
       // If the drag view size changes, make sure it has the same center.
       gfx::Rect bounds = view->bounds();
-      bounds.ClampToCenteredSize(GetTileViewSize(GetAppListConfig()));
+      bounds.ClampToCenteredSize(GetTileViewSize());
       view->SetBoundsRect(bounds);
     }
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
+}
+
+gfx::Size ScrollableAppsGridView::GetTileViewSize() const {
+  const AppListConfig& config = GetAppListConfig();
+  return gfx::Size(config.grid_tile_width(), config.grid_tile_height());
 }
 
 gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
