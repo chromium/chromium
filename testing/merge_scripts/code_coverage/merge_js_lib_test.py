@@ -3,8 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import unittest
 import mock
+import os
+import shutil
+import tempfile
+import unittest
+
 import merge_js_lib as merger
 
 
@@ -427,6 +431,58 @@ class MergeJSLibTest(unittest.TestCase):
 
     output_segments = merger._merge_segments(segment_a, segment_b)
     self.assertListEqual(output_segments, expected_output_segments)
+
+  def test_write_parsed_scripts(self):
+    test_files = [{
+      'url': '//a/b/c/1.js',
+      'location': ['a', 'b', 'c', '1.js'],
+      'exists': True
+    }, {
+      'url': '//d/e/f/5.js',
+      'location': ['d', 'e', 'f', '5.js'],
+      'exists': True
+    }, {
+      'url': '//a/b/d/7.js',
+      'location': ['a', 'b', 'd', '7.js'],
+      'exists': True
+    }, {
+      'url': 'chrome://test_webui/file.js',
+      'exists': False
+    }, {
+      'url': 'file://testing/file.js',
+      'exists': False
+    }]
+
+    test_script_file = """{
+"text": "test\\ncontents\\n%d",
+"url": "%s"
+}"""
+
+    scripts_dir = None
+    expected_files = []
+
+    try:
+      scripts_dir = tempfile.mkdtemp()
+      for i, test_script in enumerate(test_files):
+        file_path = os.path.join(scripts_dir, '%d.js.json' % i)
+        with open(file_path, 'w') as f:
+          f.write(test_script_file % (i, test_script['url']))
+
+        expected_files.append(file_path)
+        if test_script['exists']:
+          expected_files.append(os.path.join(scripts_dir,
+              'parsed', *test_script['location']))
+
+      merger.write_parsed_scripts(scripts_dir)
+      actual_files = []
+
+      for root, _, files in os.walk(scripts_dir):
+        for file_name in files:
+          actual_files.append(os.path.join(root, file_name))
+
+      self.assertItemsEqual(expected_files, actual_files)
+    finally:
+      shutil.rmtree(scripts_dir)
 
 if __name__ == '__main__':
   unittest.main()
