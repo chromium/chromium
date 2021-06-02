@@ -12,11 +12,11 @@
 namespace policy {
 namespace android {
 
-// Saves the device management token to Shared Preferences. Ignored if
-// |dm_token| is empty.
+// Saves the device management token to Shared Preferences.
 void SaveDmTokenInSharedPreferences(const std::string& dm_token);
 
-// Returns the DM token available from Shared Preferences, or
+// Returns the DM token available from Shared Preferences or empty if the
+// preference is not set.
 std::string ReadDmTokenFromSharedPreferences();
 
 }  // namespace android

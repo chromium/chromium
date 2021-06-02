@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 @Config(manifest = Config.NONE)
 public class CloudManagementSharedPreferencesTest {
     private static final String DM_TOKEN = "fake-dm-token";
+    private static final String CLIENT_ID = "fake-client-id";
 
     @Test
     @SmallTest
@@ -40,5 +41,24 @@ public class CloudManagementSharedPreferencesTest {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, DM_TOKEN);
         Assert.assertEquals(CloudManagementSharedPreferences.readDmToken(), DM_TOKEN);
+    }
+
+    @Test
+    @SmallTest
+    public void testSaveClientId() {
+        CloudManagementSharedPreferences.saveClientId(CLIENT_ID);
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_CLIENT_ID, ""),
+                CLIENT_ID);
+    }
+
+    @Test
+    @SmallTest
+    public void testReadClientId() {
+        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), "");
+
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.CLOUD_MANAGEMENT_CLIENT_ID, CLIENT_ID);
+        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), CLIENT_ID);
     }
 }

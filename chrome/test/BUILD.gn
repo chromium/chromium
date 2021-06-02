@@ -4591,13 +4591,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_android) {
-    sources += [
-      "../browser/enterprise/util/android_enterprise_info_unittest.cc",
-      "../browser/policy/browser_dm_token_storage_android_unittest.cc",
-    ]
-  }
-
   if (!is_android) {
     sources += [
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
@@ -4957,6 +4950,7 @@ test("unit_tests") {
       "../browser/autofill/autofill_save_card_infobar_delegate_mobile_unittest.cc",
       "../browser/autofill/credit_card_accessory_controller_impl_unittest.cc",
       "../browser/autofill/manual_filling_controller_impl_unittest.cc",
+      "../browser/enterprise/util/android_enterprise_info_unittest.cc",
       "../browser/long_screenshots/long_screenshots_tab_service_unittest.cc",
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
       "../browser/metrics/chrome_android_metrics_provider_unittest.cc",
@@ -4975,6 +4969,7 @@ test("unit_tests") {
       "../browser/password_manager/android/save_password_message_delegate_unittest.cc",
       "../browser/password_manager/android/update_password_infobar_delegate_android_unittest.cc",
       "../browser/permissions/permission_prompt_android_unittest.cc",
+      "../browser/policy/browser_dm_token_storage_android_unittest.cc",
       "../browser/profiles/android/profile_resolver_unittest.cc",
       "../browser/reputation/safety_tip_message_delegate_unittest.cc",
       "../browser/sharing/click_to_call/click_to_call_message_handler_android_unittest.cc",

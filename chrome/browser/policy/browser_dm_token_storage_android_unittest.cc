@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task_runner_util.h"
+#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,13 +26,18 @@ const char kDMToken[] = "fake-dm-token";
 }  // namespace
 
 class BrowserDMTokenStorageAndroidTest : public testing::Test {
+ public:
+  void TearDown() override {
+    android::SaveDmTokenInSharedPreferences(std::string());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(BrowserDMTokenStorageAndroidTest, InitClientId) {
   BrowserDMTokenStorageAndroid storage;
-  EXPECT_THAT(storage.InitClientId(), IsEmpty());
+  EXPECT_FALSE(storage.InitClientId().empty());
 }
 
 TEST_F(BrowserDMTokenStorageAndroidTest, InitEnrollmentToken) {

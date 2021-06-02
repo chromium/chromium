@@ -6,9 +6,12 @@
 
 #include <string>
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
+#include "chrome/browser/policy/android/jni_headers/CloudManagementAndroidConnection_jni.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -29,7 +32,10 @@ BrowserDMTokenStorageAndroid::BrowserDMTokenStorageAndroid()
 BrowserDMTokenStorageAndroid::~BrowserDMTokenStorageAndroid() {}
 
 std::string BrowserDMTokenStorageAndroid::InitClientId() {
-  return std::string();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::android::ConvertJavaStringToUTF8(
+      env, Java_CloudManagementAndroidConnection_getClientId(
+               env, Java_CloudManagementAndroidConnection_getInstance(env)));
 }
 
 std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
