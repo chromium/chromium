@@ -5720,34 +5720,57 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
     }
   }
 
+  void VerifyOverscroll(const gfx::Vector2dF& stretch_amount,
+                        const gfx::Transform& transform) {
+#if defined(OS_ANDROID)
+    gfx::Vector2dF scale = transform.Scale2d();
+    // On android, overscroll stretches the content. We don't assert the amount
+    // of stretch but there should be some stretch for overscroll and no stretch
+    // without it.
+    if (stretch_amount.x() == 0.f)
+      EXPECT_EQ(1.f, scale.x());
+    else
+      EXPECT_GT(scale.x(), 1.f);
+    if (stretch_amount.y() == 0.f)
+      EXPECT_EQ(1.f, scale.y());
+    else
+      EXPECT_GT(scale.y(), 1.f);
+#else   // defined(OS_ANDROID)
+    gfx::Transform expected_draw_transform;
+    expected_draw_transform.Translate(-stretch_amount);
+    EXPECT_EQ(expected_draw_transform, transform);
+#endif  // defined(OS_ANDROID)
+  }
+
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     num_draws_++;
     LayerImpl* content_layer_impl =
         host_impl->active_tree()->LayerById(content_layer_id_);
-    gfx::Transform expected_draw_transform;
     switch (num_draws_) {
       case 1:
         // Initially, there's no overscroll.
-        EXPECT_EQ(expected_draw_transform, content_layer_impl->DrawTransform());
+        VerifyOverscroll(gfx::Vector2dF(), content_layer_impl->DrawTransform());
 
         // Begin overscrolling. This should be reflected in the draw transform
         // the next time we draw.
         scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(5.f, 6.f));
         break;
       case 2:
-        expected_draw_transform.Translate(-5.0, -6.0);
-        EXPECT_EQ(expected_draw_transform, content_layer_impl->DrawTransform());
+        // We should have some overscroll.
+        VerifyOverscroll(gfx::Vector2dF(5.f, 6.f),
+                         content_layer_impl->DrawTransform());
 
         scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(3.f, 2.f));
         break;
       case 3:
-        expected_draw_transform.Translate(-3.0, -2.0);
-        EXPECT_EQ(expected_draw_transform, content_layer_impl->DrawTransform());
+        VerifyOverscroll(gfx::Vector2dF(3.f, 2.f),
+                         content_layer_impl->DrawTransform());
 
         scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF());
         break;
       case 4:
-        EXPECT_EQ(expected_draw_transform, content_layer_impl->DrawTransform());
+        // In the final frame there is no more overscroll.
+        VerifyOverscroll(gfx::Vector2dF(), content_layer_impl->DrawTransform());
         EndTest();
         break;
       default:

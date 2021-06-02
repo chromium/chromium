@@ -3667,11 +3667,6 @@ const char kD3D11VideoDecoderName[] = "D3D11 Video Decoder";
 const char kD3D11VideoDecoderDescription[] =
     "Enables D3D11VideoDecoder for hardware accelerated video decoding.";
 
-const char kElasticOverscrollWinName[] = "Elastic Overscroll for Windows";
-const char kElasticOverscrollWinDescription[] =
-    "Enables Elastic Overscrolling for Windows on touchscreens and precision "
-    "touchpads.";
-
 const char kEnableIncognitoShortcutOnDesktopName[] =
     "Enable Incognito Desktop Shortcut";
 const char kEnableIncognitoShortcutOnDesktopDescription[] =
@@ -5129,6 +5124,12 @@ const char kSendWebUIJavaScriptErrorReportsDescription[] =
     "then when the JavaScript has an error on a WebUI page, an error report "
     "will be sent to Google.";
 #endif
+
+#if defined(OS_WIN) || defined(OS_ANDROID)
+const char kElasticOverscrollName[] = "Elastic Overscroll";
+const char kElasticOverscrollDescription[] =
+    "Enables Elastic Overscrolling on touchscreens and precision touchpads.";
+#endif  // defined(OS_WIN) || defined(OS_ANDROID)
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     defined(OS_MAC)

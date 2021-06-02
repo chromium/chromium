@@ -44,11 +44,14 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsNotificationIndicatorEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUiGpuRasterizationEnabled();
 
+#if defined(OS_WIN) || defined(OS_ANDROID)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kElasticOverscroll;
+#endif  // defined(OS_WIN) || defined(OS_ANDROID)
+
 #if defined(OS_WIN)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCalculateNativeWinOcclusion;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kElasticOverscrollWin;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputPaneOnScreenKeyboard;
 COMPONENT_EXPORT(UI_BASE_FEATURES)

@@ -2106,9 +2106,6 @@ extern const char kCloudPrintXpsDescription[];
 extern const char kD3D11VideoDecoderName[];
 extern const char kD3D11VideoDecoderDescription[];
 
-extern const char kElasticOverscrollWinName[];
-extern const char kElasticOverscrollWinDescription[];
-
 extern const char kEnableIncognitoShortcutOnDesktopName[];
 extern const char kEnableIncognitoShortcutOnDesktopDescription[];
 
@@ -3010,6 +3007,11 @@ extern const char kAutofillCreditCardUploadDescription[];
 extern const char kSendWebUIJavaScriptErrorReportsName[];
 extern const char kSendWebUIJavaScriptErrorReportsDescription[];
 #endif
+
+#if defined(OS_WIN) || defined(OS_ANDROID)
+extern const char kElasticOverscrollName[];
+extern const char kElasticOverscrollDescription[];
+#endif  // defined(OS_WIN) || defined(OS_ANDROID)
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     defined(OS_MAC)

@@ -58,7 +58,7 @@ ElasticOverscrollController::ElasticOverscrollController(
 std::unique_ptr<ElasticOverscrollController>
 ElasticOverscrollController::Create(cc::ScrollElasticityHelper* helper) {
 #if defined(OS_WIN)
-  return base::FeatureList::IsEnabled(features::kElasticOverscrollWin)
+  return base::FeatureList::IsEnabled(features::kElasticOverscroll)
              ? std::make_unique<ElasticOverscrollControllerBezier>(helper)
              : nullptr;
 #endif

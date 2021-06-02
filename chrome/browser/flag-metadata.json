@@ -1186,9 +1186,9 @@
     "expiry_milestone": 93
   },
   {
-    "name": "elastic-overscroll-win",
-    "owners": [ "arakeri@microsoft.com" ],
-    "expiry_milestone": 90
+    "name": "elastic-overscroll",
+    "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
+    "expiry_milestone": 99
   },
   {
     "name": "enable-accelerated-video-decode",

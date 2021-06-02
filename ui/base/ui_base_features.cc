@@ -142,9 +142,12 @@ const base::Feature kExperimentalFlingAnimation {
 #endif
 };
 
+#if defined(OS_WIN) || defined(OS_ANDROID)
+const base::Feature kElasticOverscroll = {"ElasticOverscroll",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_WIN) || defined(OS_ANDROID)
+
 #if defined(OS_WIN)
-const base::Feature kElasticOverscrollWin = {"ElasticOverscrollWin",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables InputPane API for controlling on screen keyboard.
 const base::Feature kInputPaneOnScreenKeyboard = {

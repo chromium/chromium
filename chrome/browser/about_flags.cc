@@ -5971,10 +5971,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollUnificationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kScrollUnification)},
 
-#if defined(OS_WIN)
-    {"elastic-overscroll-win", flag_descriptions::kElasticOverscrollWinName,
-     flag_descriptions::kElasticOverscrollWinDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kElasticOverscrollWin)},
+#if defined(OS_WIN) || defined(OS_ANDROID)
+    {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
+     flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kElasticOverscroll)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
