@@ -2227,11 +2227,15 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
     observer->Wait();
   }
 
+  void NavigateToTestPageWithoutWaiting() {
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
+  }
+
   void NavigateToTestPage() {
     const std::u16string title = u"Title was changed by the script.";
     TitleWatcher title_watcher(shell()->web_contents(), title);
-    EXPECT_TRUE(
-        NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
+    NavigateToTestPageWithoutWaiting();
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   }
 
@@ -2474,7 +2478,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
 
   // Second load: This will send an invalid origin for the code cache host and
   // should trigger a process crash.
-  NavigateToTestPage();
+  NavigateToTestPageWithoutWaiting();
 
   EXPECT_EQ("Received bad user message: Bad cache_storage origin.",
             rph_kill_waiter.Wait());
