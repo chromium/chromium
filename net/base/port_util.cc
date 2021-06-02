@@ -158,6 +158,8 @@ base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
 constexpr int kAllowablePorts[] = {
     // TODO(https://crbug.com/1199642) Remove port 554 around 2021/10/15.
     554,
+    // TODO(https://crbig.com/1210779) Remove port 6566 around 2021/08/12.
+    6566,
     // TODO(https://crbug.com/1196846) Remove port 10080 around 2022/04/01.
     10080,
 };

@@ -25776,6 +25776,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           'enum': [
             '554',
             '10080',
+            '6566',
           ],
         },
       },
@@ -25801,7 +25802,18 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
             'chrome_os:91-99',
             'webview_android:91-99'
           ],
-        }
+        },
+        {
+          'name': '6566',
+          'value': '6566',
+          'caption': '''port 6566 (expires 2021/10/15)''',
+          'supported_on': [
+            'chrome.*:91-94',
+            'android:91-94',
+            'chrome_os:91-94',
+            'webview_android:91-94'
+          ],
+        },
       ],
       'supported_on': ['chrome.*:91-', 'android:91-', 'chrome_os:91-', 'webview_android:91-'],
       'features': {
