@@ -122,7 +122,8 @@ class FileSystemQuotaClientTest : public testing::Test {
   bool CreateFileSystemDirectory(const base::FilePath& file_path,
                                  const std::string& origin_url,
                                  StorageType storage_type) {
-    FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
+    FileSystemType type =
+        FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
         url::Origin::Create(GURL(origin_url)), type, file_path);
 
@@ -138,7 +139,8 @@ class FileSystemQuotaClientTest : public testing::Test {
     if (file_path.empty())
       return false;
 
-    FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
+    FileSystemType type =
+        FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
         url::Origin::Create(GURL(origin_url)), type, file_path);
 

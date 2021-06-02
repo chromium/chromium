@@ -32,7 +32,8 @@ namespace {
 std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
     FileSystemContext* context,
     StorageType storage_type) {
-  FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
+  FileSystemType type =
+      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
   DCHECK(type != kFileSystemTypeUnknown);
 
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
@@ -45,7 +46,8 @@ std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
     FileSystemContext* context,
     StorageType storage_type,
     const std::string& host) {
-  FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
+  FileSystemType type =
+      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
   DCHECK(type != kFileSystemTypeUnknown);
 
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
@@ -91,7 +93,8 @@ void FileSystemQuotaClient::GetOriginUsage(const url::Origin& origin,
                                            GetOriginUsageCallback callback) {
   DCHECK(!callback.is_null());
 
-  FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
+  FileSystemType type =
+      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
   DCHECK(type != kFileSystemTypeUnknown);
 
   FileSystemQuotaUtil* quota_util = file_system_context_->GetQuotaUtil(type);
@@ -159,6 +162,23 @@ void FileSystemQuotaClient::PerformStorageCleanup(
       base::BindOnce(&PerformStorageCleanupOnFileTaskRunner,
                      base::RetainedRef(file_system_context_), fs_type),
       std::move(callback));
+}
+
+// static
+FileSystemType FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(
+    blink::mojom::StorageType storage_type) {
+  switch (storage_type) {
+    case blink::mojom::StorageType::kTemporary:
+      return kFileSystemTypeTemporary;
+    case blink::mojom::StorageType::kPersistent:
+      return kFileSystemTypePersistent;
+    case blink::mojom::StorageType::kSyncable:
+      return kFileSystemTypeSyncable;
+    case blink::mojom::StorageType::kQuotaNotManaged:
+    case blink::mojom::StorageType::kUnknown:
+      return kFileSystemTypeUnknown;
+  }
+  return kFileSystemTypeUnknown;
 }
 
 base::SequencedTaskRunner* FileSystemQuotaClient::file_task_runner() const {
