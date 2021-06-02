@@ -2089,6 +2089,7 @@ void LocalFrameView::SendResizeEventIfNeeded(
   last_viewport_size_ = GetLayoutSize();
   last_zoom_factor_ = layout_view->StyleRef().Zoom();
 
+  frame_->GetDocument()->EnqueueVisualViewportResizeEvent();
   frame_->GetDocument()->EnqueueResizeEvent();
 
   if (frame_->IsMainFrame())
