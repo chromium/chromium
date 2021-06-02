@@ -171,8 +171,11 @@
     elif name in ("grpc", "grpc_unsecure"):
       deps.add("//third_party/zlib")
     add_absl = False
+    add_boring_ssl = False
     for d in target_dict.get("deps", []):
-      if d.startswith('absl'):
+      if d.startswith('libssl'):
+        add_boring_ssl = True
+      elif d.startswith('absl'):
         add_absl = True
       elif d.startswith(("//", ":")):
         deps.add(d)
@@ -180,6 +183,8 @@
         deps.add(":%s" % d)
     if add_absl:
       deps.add("//third_party/abseil-cpp:absl")
+    if add_boring_ssl:
+      deps.add("//third_party/boringssl",)
     return list(deps)
 
   # Get dependencies for a list of sources.
@@ -237,7 +242,7 @@
     return ["src/" + f for f in sources]
 
   def get_sources(target):
-    sources = ((target.public_headers or []) +
+    sources = (([] if not hasattr(target, "public_headers") else target.public_headers or []) +
             (target.headers or []) +
             (target.src or []))
     return adjust_srcs(sources)
