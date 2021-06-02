@@ -161,6 +161,11 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
 
   bool visible_ = false;
 
+  // Tracks if the View was previously hidden due to having a size of zero.
+  // If the View was previously zero sized, then we need to re-attach it to
+  // its parent before we change its size to non-zero; and vice versa.
+  bool previous_view_is_zero_sized_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(ScenicWindow);
 };
 
