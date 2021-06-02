@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -56,16 +54,9 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
   extension_items_ = std::make_unique<extensions::ContextMenuMatcher>(
       profile, this, menu_model.get(),
       base::BindRepeating(MenuItemHasLauncherContext));
-  // V1 apps can be started from the menu - but V2 apps and system web apps
-  // should not.
-  bool is_system_web_app = web_app::WebAppProvider::Get(profile)
-                               ->system_web_app_manager()
-                               .IsSystemWebApp(app_id);
-  const bool is_platform_app = controller()->IsPlatformApp(item().id);
 
   if (item().type == ash::TYPE_PINNED_APP || item().type == ash::TYPE_APP) {
-    if (!is_platform_app && !is_system_web_app)
-      CreateOpenNewSubmenu(menu_model.get());
+    CreateOpenNewSubmenu(menu_model.get());
     AddPinMenu(menu_model.get());
 
     if (controller()->IsOpen(item().id)) {
@@ -91,8 +82,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
   }
   if (app_id != extension_misc::kChromeAppId) {
     AddContextMenuOption(menu_model.get(), ash::UNINSTALL,
-                         is_platform_app ? IDS_APP_LIST_UNINSTALL_ITEM
-                                         : IDS_APP_LIST_EXTENSIONS_UNINSTALL);
+                         IDS_APP_LIST_EXTENSIONS_UNINSTALL);
   }
 
   if (controller()->CanDoShowAppInfoFlow(profile, app_id)) {
