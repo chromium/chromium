@@ -2280,7 +2280,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CopyLinkToText"
+                        "CopyLinkToText",
+                        "PreemptiveLinkToTextGeneration",
+                        "SharedHighlightingV2"
                     ]
                 }
             ]
