@@ -137,7 +137,7 @@
       'linux-angle-builder': 'angle_specific_release_trybot',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot',
       'mac-angle-builder': 'angle_specific_release_trybot',
-      'mac-angle-chromium-builder': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-angle-chromium-builder': 'gpu_tests_release_trybot',
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot',
       'win-angle-chromium-x86-builder': 'gpu_tests_release_trybot_x86',
       'win-angle-x64-builder': 'angle_specific_release_trybot',
@@ -291,8 +291,8 @@
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
-      'Mac deterministic': 'release_bot_mac_strip_minimal_symbols_deterministic',
-      'Mac deterministic (dbg)': 'debug_bot_deterministic',
+      'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
+      'Mac deterministic (dbg)': 'debug_bot',
 
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'TSAN Debug (reclient)': 'tsan_disable_nacl_debug_bot_reclient',
@@ -432,7 +432,7 @@
 
     'chromium.gpu': {
       # These all use the 'trybot' mixins to ensure that dcheck is on.
-      'GPU Mac Builder': 'gpu_tests_release_trybot_deterministic_mac',
+      'GPU Mac Builder': 'gpu_tests_release_trybot',
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Linux Builder': 'gpu_tests_release_trybot',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot',
@@ -594,7 +594,7 @@
       'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
       'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot',
       'linux-swangle-x64': 'angle_deqp_release_trybot',
-      'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-swangle-chromium-x64': 'gpu_tests_release_trybot',
       'win-swangle-chromium-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
       'win-swangle-tot-angle-x86': 'angle_deqp_release_trybot_x86',
@@ -866,7 +866,7 @@
       'linux-angle-chromium-try': 'gpu_tests_release_trybot',
       'linux_angle_deqp_rel_ng': 'angle_deqp_release_trybot',
       'linux-angle-try': 'angle_specific_release_trybot',
-      'mac-angle-chromium-try': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-angle-chromium-try': 'gpu_tests_release_trybot',
       'mac-angle-try': 'angle_specific_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
@@ -1090,9 +1090,9 @@
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-rts': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
-      'mac-osxbeta-rel': 'gpu_tests_release_trybot_deterministic_mac',
-      'mac_chromium_10.11_rel_ng': 'gpu_tests_release_trybot_deterministic_mac',
-      'mac_chromium_10.12_rel_ng': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-osxbeta-rel': 'gpu_tests_release_trybot',
+      'mac_chromium_10.11_rel_ng': 'gpu_tests_release_trybot',
+      'mac_chromium_10.12_rel_ng': 'gpu_tests_release_trybot',
       'mac_chromium_10.13_rel_ng': 'release_trybot',
       'mac_chromium_10.14_rel_ng': 'release_trybot',
       'mac_chromium_10.15_rel_ng': 'release_trybot_no_nacl',
@@ -1100,14 +1100,14 @@
       'mac_chromium_archive_rel_ng': 'release_bot_mac_strip_minimal_symbols',
       'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot',
       'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot',
-      'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot',
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
-      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials',
-      'mac-rel': 'gpu_tests_release_trybot_deterministic_mac',
-      'mac-rel-rts': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
+      'mac-rel': 'gpu_tests_release_trybot',
+      'mac-rel-rts': 'gpu_tests_release_trybot',
       'mac-arm64-rel': 'mac_arm64_release_trybot',
     },
 
@@ -1128,7 +1128,7 @@
       'linux-swangle-try-tot-angle-x64': 'angle_deqp_release_trybot',
       'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
       'linux-swangle-try-x64': 'angle_deqp_release_trybot',
-      'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot_deterministic_mac',
+      'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
       'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-try-tot-angle-x64': 'angle_deqp_release_trybot',
       'win-swangle-try-tot-angle-x86': 'angle_deqp_release_trybot_x86',
@@ -1995,10 +1995,6 @@
       'debug_bot_blink',
     ],
 
-    'debug_bot_deterministic': [
-      'debug_bot', 'mac_deterministic_build',
-    ],
-
     'debug_bot_local_build': [
       'debug_bot_local_build',
     ],
@@ -2199,22 +2195,16 @@
       'gpu_tests', 'release_trybot',
     ],
 
+    'gpu_tests_release_trybot_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'invert_fieldtrials',
+    ],
+
     'gpu_tests_release_trybot_mbi_mode_per_render_process_host': [
       'gpu_tests', 'release_trybot', 'mbi_mode_per_render_process_host'
     ],
 
     'gpu_tests_release_trybot_mbi_mode_per_site_instance': [
       'gpu_tests', 'release_trybot', 'mbi_mode_per_site_instance'
-    ],
-
-    # TODO(https://crbug.com/330262): Once deterministic builds are default on
-    # macOS, remove this special case of gpu_tests_release_trybot.
-    'gpu_tests_release_trybot_deterministic_mac': [
-      'gpu_tests', 'release_trybot', 'mac_deterministic_build',
-    ],
-
-    'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'mac_deterministic_build', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting': [
@@ -2638,10 +2628,6 @@
 
     'release_bot_mac_strip_minimal_symbols_arm64': [
       'release_bot', 'mac_strip', 'minimal_symbols', 'arm64',
-    ],
-
-    'release_bot_mac_strip_minimal_symbols_deterministic': [
-      'release_bot', 'mac_strip', 'minimal_symbols', 'mac_deterministic_build'
     ],
 
     'release_bot_minimal_symbols': [
@@ -3298,10 +3284,6 @@
 
     'lsan': {
       'gn_args': 'is_lsan=true',
-    },
-
-    'mac_deterministic_build': {
-      'gn_args': 'mac_deterministic_build=true',
     },
 
     'mac_strip': {

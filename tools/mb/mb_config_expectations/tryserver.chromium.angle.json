@@ -194,7 +194,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "mac_deterministic_build": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true

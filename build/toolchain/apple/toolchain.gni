@@ -17,12 +17,6 @@ import("//build/toolchain/toolchain.gni")
 assert((target_os == "ios" && host_os == "mac") || host_os != "win")
 
 declare_args() {
-  # This makes the linker set timestamps in Mach-O files to 0. This isn't
-  # enabled by default because this breaks Xcode's lldb. This has been fixed in
-  # https://reviews.llvm.org/rL368199 but that has not yet made it into a public
-  # lldb release.
-  mac_deterministic_build = false
-
   # This controls whether whole module optimization is enabled when building
   # Swift modules. If enabled, the compiler will compile the module as one
   # unit, generating just one single object file. Otherwise, it will generate
@@ -156,9 +150,8 @@ template("apple_toolchain") {
     _strippath = invoker.bin_path + "strip"
     linker_driver += " -Wcrl,strippath," + _strippath
 
-    if (mac_deterministic_build) {
-      linker_driver += " --deterministic"
-    }
+    # This makes the linker set timestamps in Mach-O files to 0.
+    linker_driver += " --deterministic"
 
     # On iOS, the final applications are assembled using lipo (to support fat
     # builds). The correct flags are passed to the linker_driver.py script

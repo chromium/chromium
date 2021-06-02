@@ -242,7 +242,6 @@
       "enable_stripping": true,
       "is_component_build": false,
       "is_debug": false,
-      "mac_deterministic_build": true,
       "symbol_level": 1,
       "use_goma": true
     }
@@ -251,7 +250,6 @@
     "gn_args": {
       "is_component_build": true,
       "is_debug": true,
-      "mac_deterministic_build": true,
       "symbol_level": 1,
       "use_goma": true
     }
