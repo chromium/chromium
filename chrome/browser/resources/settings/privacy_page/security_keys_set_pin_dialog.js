@@ -500,7 +500,8 @@ Polymer({
    */
   newMinPinLengthChanged_() {
     PluralStringProxyImpl.getInstance()
-        .getPluralString('securityKeysNewPIN', this.newMinPinLength_)
+        .getPluralString('securityKeysNewPIN',
+                         /** @type {number} */ (this.newMinPinLength_))
         .then(string => this.newPINDialogDescription_ = string);
   },
 

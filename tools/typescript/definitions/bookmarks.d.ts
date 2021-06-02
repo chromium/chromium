@@ -24,7 +24,7 @@ declare namespace chrome {
     }
 
     export interface CreateDetails {
-      parentId?: string;
+      parentId?: string|null;
       index?: number;
       title?: string;
       url?: string;

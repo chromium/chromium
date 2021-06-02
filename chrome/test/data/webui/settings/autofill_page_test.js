@@ -307,7 +307,7 @@ suite('PasswordsUITest', function() {
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.instance_ = passwordManager;
     pluralString = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.instance_ = pluralString;
+    SettingsPluralStringProxyImpl.setInstance(pluralString);
 
     autofillPage = createAutofillPageSection();
   });

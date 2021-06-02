@@ -12,28 +12,25 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
  */
 
 export class Debouncer {
-  /** @param {!function()} callback */
-  constructor(callback) {
-    /** @private {!function()} */
+  private callback_: () => void;
+  private timer_: number|null = null;
+  private timerProxy_: Window;
+  private boundTimerCallback_: () => void;
+  private isDone_: boolean = false;
+  private promiseResolver_: PromiseResolver<void>;
+
+  constructor(callback: () => void) {
     this.callback_ = callback;
-    /** @private {!Object} */
     this.timerProxy_ = window;
-    /** @private {?number} */
-    this.timer_ = null;
-    /** @private {!function()} */
     this.boundTimerCallback_ = this.timerCallback_.bind(this);
-    /** @private {boolean} */
-    this.isDone_ = false;
-    /** @private {!PromiseResolver} */
     this.promiseResolver_ = new PromiseResolver();
   }
 
   /**
    * Starts the timer for the callback, cancelling the old timer if there is
    * one.
-   * @param {number=} delay
    */
-  restartTimeout(delay) {
+  restartTimeout(delay?: number) {
     assert(!this.isDone_);
 
     this.cancelTimeout_();
@@ -41,17 +38,11 @@ export class Debouncer {
         this.timerProxy_.setTimeout(this.boundTimerCallback_, delay || 0);
   }
 
-  /**
-   * @return {boolean} True if the Debouncer has finished processing.
-   */
-  done() {
+  done(): boolean {
     return this.isDone_;
   }
 
-  /**
-   * @return {!Promise} Promise which resolves immediately after the callback.
-   */
-  get promise() {
+  get promise(): Promise<void> {
     return this.promiseResolver_.promise;
   }
 
@@ -67,18 +58,16 @@ export class Debouncer {
   /**
    * Cancel the timer callback, which can be restarted by calling
    * restartTimeout().
-   * @private
    */
-  cancelTimeout_() {
+  private cancelTimeout_() {
     if (this.timer_) {
       this.timerProxy_.clearTimeout(this.timer_);
     }
   }
 
-  /** @private */
-  timerCallback_() {
+  private timerCallback_() {
     this.isDone_ = true;
-    this.callback_.call();
+    this.callback_.call(this);
     this.promiseResolver_.resolve();
   }
 }
