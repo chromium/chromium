@@ -5744,6 +5744,29 @@
             ]
         }
     ],
+    "PageInfoIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": ">=14",
+                        "event_1": "name:permission_request_shown;comparator:>=3;window:90;storage:90",
+                        "event_trigger": "name:page_info_iph_triggered;comparator:==0;window:90;storage:90",
+                        "event_used": "name:page_info_opened;comparator:==0;window:90;storage:90",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_PageInfo"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "PageLoadMetricsBufferTimer": [
         {
             "platforms": [
