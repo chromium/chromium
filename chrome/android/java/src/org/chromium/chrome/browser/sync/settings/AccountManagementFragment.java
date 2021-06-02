@@ -272,10 +272,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     }
 
     private void updateAccountsList(List<Account> accounts) {
-        PreferenceCategory accountsCategory =
-                (PreferenceCategory) findPreference(PREF_ACCOUNTS_CATEGORY);
-        if (accountsCategory == null) return;
-
+        PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         accountsCategory.removeAll();
 
         accountsCategory.addPreference(
