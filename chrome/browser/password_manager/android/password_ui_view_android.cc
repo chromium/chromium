@@ -235,8 +235,7 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
       password_manager_presenter_.GetPasswordException(index);
   if (form && !credential_edit_bridge_) {
     credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        *form, IsInsecureCredential(false),
-        password_manager_presenter_.GetUsernamesForRealm(index),
+        *form, IsInsecureCredential(false), std::vector<std::u16string>(),
         &saved_passwords_presenter_, &password_manager_presenter_,
         base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                        base::Unretained(this)),
