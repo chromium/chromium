@@ -467,7 +467,7 @@ If your feedback is about image or video quality, please attach a sample photo o
         Paused
       </message>
       <message desc="Error message shown when users capture a video which is too short." name="IDS_ERROR_MSG_VIDEO_TOO_SHORT">
-        The video is not saved since it is too short.
+        Video isn't saved since it's too short
       </message>
     </messages>
   </release>
