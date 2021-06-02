@@ -102,7 +102,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2022-04-22">
+    enum="NetworkLocationRequestEvent" expires_after="2022-05-22">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -114,21 +114,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.NetError"
-    enum="NetErrorCodes" expires_after="2022-04-22">
+    enum="NetErrorCodes" expires_after="2022-05-22">
   <owner>JamesHollyer@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>Network errors in NetworkLocationRequest.</summary>
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    units="HTTP response code" expires_after="M85">
+    enum="HttpResponseCode" expires_after="2022-05-22">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
-  <summary>Http response codes in NetworkLocationRequest.</summary>
+  <summary>
+    HTTP response codes in NetworkLocationRequest.
+
+    Warning: this histogram was expired after M85 and brought back 2021-05-21;
+    data may be missing.
+  </summary>
 </histogram>
 
-<histogram name="Geolocation.PositionCache.CacheHit" units="BooleanCacheHit"
-    expires_after="2021-10-25">
+<histogram name="Geolocation.PositionCache.CacheHit" enum="BooleanCacheHit"
+    expires_after="2022-05-22">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -138,12 +143,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Geolocation.PositionCache.CacheSize" units="count"
-    expires_after="2021-03-10">
+    expires_after="2022-05-22">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     For each query into the position cache used by the network location
     provider, records the number of items in the cache.
+
+    Warning: this histogram was expired after 2021-03-10 and brought back
+    2021-05-21; data may be missing.
   </summary>
 </histogram>
 
