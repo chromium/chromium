@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                                    /*open_as_window=*/false));
 }
 
-// Tests that desktop PWAs open links in the browser.
+// Tests that desktop PWAs open out-of-scope links with a custom toolbar.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInApp) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);

@@ -74,6 +74,8 @@ class PWAMixedContentBrowserTest : public WebAppControllerBrowserTest {
                                   "/ssl/page_displays_insecure_content.html");
   }
 
+  // This URL is on app.com, and the page contains a secure iframe that points
+  // to foo.com/simple.html.
   GURL GetSecureIFrameAppURL() {
     net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
         https_server()->GetURL("foo.com", "/simple.html"));
@@ -140,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL());
 
-  // The WebContents is just reparented, so mixed content is still not loaded.
+  // The WebContents is just reparented, so mixed content is still loaded.
   CheckMixedContentLoaded(browser());
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
@@ -223,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetActiveWebContents(), app_id);
   CheckMixedContentFailedToLoad(app_browser);
 
+  // Change the mixed content to be acceptable.
   content::RenderFrameHost* main_frame =
       app_browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);

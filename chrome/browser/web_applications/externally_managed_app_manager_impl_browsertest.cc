@@ -218,6 +218,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        ForceReinstall) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  absl::optional<AppId> app_id;
   {
     GURL url(embedded_test_server()->GetURL(
         "/banners/"
@@ -226,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
+    app_id = registrar().FindAppWithUrlInScope(url);
     EXPECT_TRUE(app_id.has_value());
     EXPECT_EQ("Manifest", registrar().GetAppShortName(app_id.value()));
   }
@@ -237,9 +238,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
-    EXPECT_TRUE(app_id.has_value());
-    EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
+    absl::optional<AppId> new_app_id = registrar().FindAppWithUrlInScope(url);
+    EXPECT_TRUE(new_app_id.has_value());
+    EXPECT_EQ(new_app_id, app_id);
+    EXPECT_EQ("Manifest test app",
+              registrar().GetAppShortName(new_app_id.value()));
   }
 }
 

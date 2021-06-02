@@ -215,6 +215,9 @@ base::FilePath NewTestFilePath(const base::StringPiece extension) {
   return new_file_path;
 }
 
+// // Launches the |app_id| web app with |files| handles, awaits for
+// |expected_launch_url| to load and stashes any launch params on
+// "window.launchParams" for further inspection.
 content::WebContents* LaunchApplication(
     Profile* profile,
     const std::string& app_id,

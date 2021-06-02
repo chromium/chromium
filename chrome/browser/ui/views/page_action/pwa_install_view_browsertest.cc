@@ -92,6 +92,8 @@ void PwaInstallIconChangeWaiter::VerifyIconVisibility(views::View* iconView,
 
 }  // namespace
 
+// Tests various cases that effect the visibility of the install icon in the
+// omnibox.
 class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   PwaInstallViewBrowserTest()
