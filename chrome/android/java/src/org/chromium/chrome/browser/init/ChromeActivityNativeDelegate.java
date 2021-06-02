@@ -43,7 +43,8 @@ public interface ChromeActivityNativeDelegate {
     void onStopWithNative();
 
     /**
-     * @return Whether the activity linked to the delegate has been destroyed or is finishing.
+     * @return Whether the activity linked to the delegate has been destroyed or is finishing. The
+     *         majority of clients should prefer the method in {@link ActivityUtils}.
      */
     boolean isActivityFinishingOrDestroyed();
 

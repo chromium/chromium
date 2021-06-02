@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.explore_sites;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -28,11 +30,10 @@ import org.chromium.ui.widget.ViewRectProvider;
 public class ExploreSitesIPH {
     public static void configureIPH(TileView tileView, Profile profile) {
         Context context = tileView.getContext();
-        if (!(context instanceof ChromeActivity)) {
-            return;
-        }
+        if (context == null) return;
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) return;
 
-        ChromeActivity activity = (ChromeActivity) context;
         if (tileView.isAttachedToWindow()) {
             maybeShowIPH(tileView, profile, activity);
         } else {
@@ -48,8 +49,8 @@ public class ExploreSitesIPH {
         }
     }
 
-    private static void maybeShowIPH(TileView tileView, Profile profile, ChromeActivity activity) {
-        if (activity.isActivityFinishingOrDestroyed()) return;
+    private static void maybeShowIPH(TileView tileView, Profile profile, Activity activity) {
+        if (ActivityUtils.isActivityFinishingOrDestroyed(activity)) return;
 
         final String contentString =
                 tileView.getContext().getString(org.chromium.chrome.R.string.explore_sites_iph);

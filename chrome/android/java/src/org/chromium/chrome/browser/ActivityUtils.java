@@ -44,4 +44,15 @@ public final class ActivityUtils {
         return (useLowEndTheme ? R.style.Theme_Chromium_WithWindowAnimation_LowEnd
                                : R.style.Theme_Chromium_WithWindowAnimation);
     }
+
+    /**
+     * Returns whether the activity is finishing or destroyed.
+     * @param activity The activity to check.
+     * @return Whether the activity is finishing or destroyed. Also returns true if the activity is
+     *         null.
+     */
+    public static boolean isActivityFinishingOrDestroyed(Activity activity) {
+        if (activity == null) return true;
+        return activity.isDestroyed() || activity.isFinishing();
+    }
 }
