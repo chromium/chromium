@@ -13,21 +13,12 @@
 #include "components/services/filesystem/directory_impl.h"
 #include "components/services/filesystem/lock_table.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace {
 
 // Creates the destination zip file only if it does not already exist.
 base::File OpenFileHandleAsync(const base::FilePath& zip_path) {
   return base::File(zip_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-}
-
-void BindDirectoryInBackground(
-    const base::FilePath& src_dir,
-    mojo::PendingReceiver<filesystem::mojom::Directory> receiver) {
-  auto directory_impl = std::make_unique<filesystem::DirectoryImpl>(
-      src_dir, /*temp_dir=*/nullptr, /*lock_table=*/nullptr);
-  mojo::MakeSelfOwnedReceiver(std::move(directory_impl), std::move(receiver));
 }
 
 }  // namespace
@@ -63,7 +54,11 @@ void ZipFileCreator::Start(
 
 void ZipFileCreator::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ReportDone(false);
+  directory_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&ZipFileCreator::CloseDirectory, base::Unretained(this)),
+      base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this),
+                     false));
 }
 
 void ZipFileCreator::CreateZipFile(
@@ -86,8 +81,9 @@ void ZipFileCreator::CreateZipFile(
 
   mojo::PendingRemote<filesystem::mojom::Directory> directory;
   directory_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BindDirectoryInBackground, src_dir_,
-                                directory.InitWithNewPipeAndPassReceiver()));
+      FROM_HERE,
+      base::BindOnce(&ZipFileCreator::BindDirectory, base::Unretained(this),
+                     directory.InitWithNewPipeAndPassReceiver()));
 
   service_.Bind(std::move(service));
   service_->BindZipFileCreator(
@@ -99,6 +95,19 @@ void ZipFileCreator::CreateZipFile(
   remote_zip_file_creator_->CreateZipFile(
       std::move(directory), src_relative_paths_, std::move(file),
       base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this)));
+}
+
+void ZipFileCreator::BindDirectory(
+    mojo::PendingReceiver<filesystem::mojom::Directory> receiver) {
+  src_dir_ref_ = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<filesystem::DirectoryImpl>(
+          src_dir_, /*temp_dir=*/nullptr, /*lock_table=*/nullptr),
+      std::move(receiver));
+}
+
+void ZipFileCreator::CloseDirectory() {
+  if (src_dir_ref_)
+    src_dir_ref_->Close();
 }
 
 void ZipFileCreator::ReportDone(bool success) {

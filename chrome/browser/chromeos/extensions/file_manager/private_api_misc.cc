@@ -407,7 +407,6 @@ FileManagerPrivateInternalCancelZipFunction::Run() {
 
   // Tell the ZipFileCreator to stop.
   creator->Stop();
-  DCHECK_EQ(zip_creators->count(dest_file), 0);
 
   return RespondNow(NoArguments());
 }

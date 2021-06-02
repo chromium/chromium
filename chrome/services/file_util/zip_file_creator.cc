@@ -32,6 +32,8 @@ class MojoFileAccessor : public zip::FileAccessor {
 
   bool Open(const zip::Paths paths,
             std::vector<base::File>* const files) override {
+    DCHECK(!paths.empty());
+
     std::vector<filesystem::mojom::FileOpenDetailsPtr> details;
     details.reserve(paths.size());
 
@@ -46,8 +48,11 @@ class MojoFileAccessor : public zip::FileAccessor {
     }
 
     std::vector<filesystem::mojom::FileOpenResultPtr> results;
-    if (!source_dir_remote_->OpenFileHandles(std::move(details), &results))
+    if (!source_dir_remote_->OpenFileHandles(std::move(details), &results)) {
+      LOG(ERROR) << "Cannot open '" << paths.front() << "' and "
+                 << (paths.size() - 1) << " other files";
       return false;
+    }
 
     files->reserve(files->size() + results.size());
     for (const filesystem::mojom::FileOpenResultPtr& result : results)

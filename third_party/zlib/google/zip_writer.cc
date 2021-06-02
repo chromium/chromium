@@ -230,10 +230,8 @@ bool ZipWriter::AddFileEntries(Paths paths) {
     DCHECK_EQ(relative_paths.size(), n);
 
     files.clear();
-    if (!file_accessor_->Open(relative_paths, &files) || files.size() != n) {
-      LOG(ERROR) << "Cannot open " << n << " files";
+    if (!file_accessor_->Open(relative_paths, &files) || files.size() != n)
       return false;
-    }
 
     for (size_t i = 0; i < n; i++) {
       const base::FilePath& relative_path = relative_paths[i];
