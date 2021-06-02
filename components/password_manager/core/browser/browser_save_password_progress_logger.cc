@@ -333,6 +333,22 @@ void BrowserSavePasswordProgressLogger::LogPasswordForm(
   LogValue(label, log);
 }
 
+void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
+    const GURL& origin,
+    autofill::FormSignature form_signature,
+    autofill::FieldSignature field_signature,
+    const autofill::PasswordRequirementsSpec& spec) {
+  std::ostringstream s;
+  s << "Joint password requirements: {\n"
+    << GetStringFromID(STRING_ORIGIN) << ": " << ScrubURL(origin) << "\n"
+    << GetStringFromID(STRING_FORM_SIGNATURE) << ": "
+    << FormSignatureToDebugString(form_signature) << "\n"
+    << "Field signature: " << NumberToString(field_signature.value()) << "\n"
+    << "Requirements:" << spec << "\n"
+    << "}";
+  SendLog(s.str());
+}
+
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
   log_manager_->LogTextMessage(log);
 }

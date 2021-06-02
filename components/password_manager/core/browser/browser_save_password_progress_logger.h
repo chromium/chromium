@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "url/gurl.h"
@@ -49,6 +50,12 @@ class BrowserSavePasswordProgressLogger
       autofill::mojom::SubmissionIndicatorEvent event);
 
   void LogPasswordForm(StringID label, const PasswordForm& form);
+
+  // Log password requirements.
+  void LogPasswordRequirements(const GURL& origin,
+                               autofill::FormSignature form_signature,
+                               autofill::FieldSignature field_signature,
+                               const autofill::PasswordRequirementsSpec& spec);
 
  protected:
   // autofill::SavePasswordProgressLogger:
