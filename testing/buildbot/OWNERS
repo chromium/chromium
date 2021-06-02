@@ -28,6 +28,7 @@ per-file chromium.webrtc.fyi.json=mbonadei@chromium.org
 per-file *oobe*=file://chrome/browser/ui/webui/chromeos/login/OWNERS
 
 # iOS Owners
+per-file chromium.clang.json=file://infra/config/groups/ios/OWNERS
 per-file chromium.fyi.json=file://infra/config/groups/ios/OWNERS
 per-file chromium.mac.json=file://infra/config/groups/ios/OWNERS
 per-file *.pyl=file://infra/config/groups/ios/OWNERS
