@@ -722,7 +722,9 @@ message GetUpdatesMessage {
   reserved "requested_types";
 }
 
-// Message from a client asking the server to clear its data.
+// Message from a client asking the server to clear its data. This causes the
+// server to generate a new store birthday, which allows dealing reliably with
+// in-flight requests (in particular commits) from other clients.
 message ClearServerDataMessage {
   // No arguments needed as the store birthday and user identifier are part of
   // an enclosing message.
@@ -806,7 +808,13 @@ message ClientToServerMessage {
 
   reserved 9;
 
-  optional string store_birthday = 7;  // Opaque store ID; if it changes, duck!
+  // Opaque server-provided ID representing an "epoch" of the server-side data.
+  // Clients must hand this opaque ID back to the server as part of all requests
+  // within the same sync session (i.e. for all requests to the server except
+  // the very first GetUpdates request). See analogous field
+  // ClientToServerResponse.store_birthday for more details about its lifetime.
+  optional string store_birthday = 7;
+
   // The client sets this if it detects a sync issue. The server will tell it
   // if it should perform a refresh.
   optional bool sync_problem_detected = 8 [default = false];
@@ -969,10 +977,16 @@ message ClientToServerResponse {
   optional SyncEnums.ErrorType error_code = 4 [default = UNKNOWN];
   optional string error_message = 5;
 
-  // Opaque store ID; if it changes, the contents of the client's cache
-  // is meaningless to this server.  This happens most typically when
-  // you switch from one storage backend instance (say, a test instance)
-  // to another (say, the official instance).
+  // Opaque server-provided ID representing an "epoch" of the server-side data,
+  // referred to as "birthday" or "store birthday". This ID remains fixed until
+  // server-side data gets cleared/reset (e.g. via ClearServerDataMessage),
+  // which clients experience as NOT_MY_BIRTHDAY error, and involves clearing
+  // all local sync metadata including the cached store birthday.
+  //
+  // This mechanism allows the server to deal reliably with in-flight changes
+  // from other clients upon ClearServerDataMessage (or equivalent triggers),
+  // because all writes issued with an outdated birthday (which in-flight writes
+  // would use) can be detected by the server.
   optional string store_birthday = 6;
 
   optional ClientCommand client_command = 7;

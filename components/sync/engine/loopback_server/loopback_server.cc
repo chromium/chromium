@@ -320,6 +320,10 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
 
   if (message.has_store_birthday() &&
       message.store_birthday() != GetStoreBirthday()) {
+    // The birthday provided by the client does not match the authoritative
+    // value server-side, which in the absence of client-side bugs means that
+    // the birthday was reset (e.g. via ClearServerDataMessage) since the last
+    // time the client interacted with the server.
     response->set_error_code(sync_pb::SyncEnums::NOT_MY_BIRTHDAY);
   } else {
     bool success = false;

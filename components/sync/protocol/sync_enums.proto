@@ -89,7 +89,9 @@ message SyncEnums {
   enum ErrorType {
     SUCCESS = 0;
     // DEPRECATED_ACCESS_DENIED = 1;
-    // Returned when the server and client disagree on the store birthday.
+    // Returned when the server and client disagree on the store birthday. This
+    // should be interpreted as all local sync metadata requiring cleanup,
+    // obviously including the locally-cached store birthday.
     NOT_MY_BIRTHDAY = 2;
     // Returned when the store has exceeded the allowed bandwidth utilization.
     THROTTLED = 3;
