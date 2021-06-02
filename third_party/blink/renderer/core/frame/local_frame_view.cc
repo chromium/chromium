@@ -2332,7 +2332,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // in preparation for a hit test.
   if (reason == DocumentUpdateReason::kHitTest) {
     LocalFrameUkmAggregator& aggregator = EnsureUkmAggregator();
-    aggregator.RecordSample(
+    aggregator.RecordTimerSample(
         static_cast<size_t>(LocalFrameUkmAggregator::kHitTestDocumentUpdate),
         lifecycle_data_.start_time, base::TimeTicks::Now());
   }

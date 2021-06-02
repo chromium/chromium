@@ -204,9 +204,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
   bool SampleMatchesIteration(int64_t iteration_count) {
-    return aggregator()
-               .current_sample_.sub_metrics_durations[0]
-               .InMilliseconds() == iteration_count;
+    return aggregator().current_sample_.sub_metrics_counts[0] / 1000 ==
+           iteration_count;
   }
 
  private:

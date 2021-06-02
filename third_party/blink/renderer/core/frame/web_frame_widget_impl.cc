@@ -2081,9 +2081,13 @@ void WebFrameWidgetImpl::RecordManipulationTypeCounts(
 void WebFrameWidgetImpl::RecordDispatchRafAlignedInputTime(
     base::TimeTicks raf_aligned_input_start_time) {
   if (LocalRootImpl()) {
-    LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().RecordSample(
-        LocalFrameUkmAggregator::kHandleInputEvents,
-        raf_aligned_input_start_time, base::TimeTicks::Now());
+    LocalRootImpl()
+        ->GetFrame()
+        ->View()
+        ->EnsureUkmAggregator()
+        .RecordTimerSample(LocalFrameUkmAggregator::kHandleInputEvents,
+                           raf_aligned_input_start_time,
+                           base::TimeTicks::Now());
   }
 }
 
@@ -2171,9 +2175,13 @@ void WebFrameWidgetImpl::BeginUpdateLayers() {
 void WebFrameWidgetImpl::EndUpdateLayers() {
   if (LocalRootImpl()) {
     DCHECK(update_layers_start_time_);
-    LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().RecordSample(
-        LocalFrameUkmAggregator::kUpdateLayers,
-        update_layers_start_time_.value(), base::TimeTicks::Now());
+    LocalRootImpl()
+        ->GetFrame()
+        ->View()
+        ->EnsureUkmAggregator()
+        .RecordTimerSample(LocalFrameUkmAggregator::kUpdateLayers,
+                           update_layers_start_time_.value(),
+                           base::TimeTicks::Now());
     probe::LayerTreeDidChange(LocalRootImpl()->GetFrame());
   }
   update_layers_start_time_.reset();

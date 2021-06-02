@@ -242,9 +242,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Record a sample for a sub-metric. This should only be used when
   // a ScopedUkmHierarchicalTimer cannot be used (such as when the timed
   // interval does not fall inside a single calling function).
-  void RecordSample(size_t metric_index,
-                    base::TimeTicks start,
-                    base::TimeTicks end);
+  void RecordTimerSample(size_t metric_index,
+                         base::TimeTicks start,
+                         base::TimeTicks end);
+
+  // Record a sample for a count-based sub-metric.
+  void RecordCountSample(size_t metric_index, int64_t count);
 
   // Record a ForcedLayout sample. The reason will determine which, if any,
   // additional metrics are reported in order to diagnose the cause of
@@ -287,22 +290,22 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
     // Accumulated at each sample, then reset with a call to
     // RecordEndOfFrameMetrics.
-    base::TimeDelta interval_duration;
+    int64_t interval_count = 0;
 
     // Accumulated at each sample when within a BeginMainFrame,
     // reset with a call to RecordEndOfFrameMetrics.
-    base::TimeDelta main_frame_duration;
+    int64_t main_frame_count = 0;
 
     // Accumulated at each sample up to the time of First Contentful Paint.
-    base::TimeDelta pre_fcp_aggregate;
+    int64_t pre_fcp_aggregate = 0;
 
     void reset();
   };
 
   struct SampleToRecord {
-    base::TimeDelta primary_metric_duration;
-    std::array<base::TimeDelta, kCount> sub_metrics_durations;
-    std::array<base::TimeDelta, kCount> sub_main_frame_durations;
+    int64_t primary_metric_count;
+    std::array<int64_t, kCount> sub_metrics_counts;
+    std::array<int64_t, kCount> sub_main_frame_counts;
     cc::ActiveFrameSequenceTrackers trackers;
   };
 
