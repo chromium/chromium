@@ -124,17 +124,7 @@ TEST_F(ConversionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   EXPECT_EQ(1u, stored_impressions.size());
 
   // Verify that each field was stored as expected.
-  EXPECT_EQ(impression.impression_data(),
-            stored_impressions[0].impression_data());
-  EXPECT_EQ(impression.impression_origin(),
-            stored_impressions[0].impression_origin());
-  EXPECT_EQ(impression.conversion_origin(),
-            stored_impressions[0].conversion_origin());
-  EXPECT_EQ(impression.reporting_origin(),
-            stored_impressions[0].reporting_origin());
-  EXPECT_EQ(impression.impression_time(),
-            stored_impressions[0].impression_time());
-  EXPECT_EQ(impression.expiry_time(), stored_impressions[0].expiry_time());
+  EXPECT_TRUE(ImpressionsEqual(impression, stored_impressions[0]));
 }
 
 TEST_F(ConversionStorageTest,
