@@ -175,7 +175,7 @@ class TestSuggestedSearchResult : public TestSearchResult {
     set_display_type(ash::SearchResultDisplayType::kChip);
     set_is_recommendation(true);
   }
-  ~TestSuggestedSearchResult() override {}
+  ~TestSuggestedSearchResult() override = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestSuggestedSearchResult);
@@ -412,10 +412,10 @@ class AppsGridViewTest : public views::ViewsTestBase {
     apps_grid_view_->MoveItemInModel(item_view, target);
   }
 
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
-  AppListView* app_list_view_ = nullptr;     // Owned by native widget.
-  AppsGridView* apps_grid_view_ = nullptr;   // Owned by |app_list_view_|.
-  ContentsView* contents_view_ = nullptr;    // Owned by |app_list_view_|.
+  TestAppListColorProvider color_provider_;      // Needed by AppListView.
+  AppListView* app_list_view_ = nullptr;         // Owned by native widget.
+  PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
+  ContentsView* contents_view_ = nullptr;        // Owned by |app_list_view_|.
   SearchResultContainerView* suggestions_container_ =
       nullptr;                                    // Owned by |apps_grid_view_|.
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.

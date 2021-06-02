@@ -6,10 +6,12 @@
 #define ASH_APP_LIST_VIEWS_PAGED_APPS_GRID_VIEW_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/ref_counted.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
@@ -18,6 +20,10 @@
 namespace gfx {
 class Vector2d;
 }  // namespace gfx
+
+namespace ui {
+class Layer;
+}  // namespace ui
 
 namespace ash {
 
@@ -56,7 +62,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
-  void MaybeCreateGradientMask() override;
+  int GetPaddingBetweenPages() const override;
+  void MaybeStartCardifiedView() override;
+  void MaybeEndCardifiedView() override;
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
@@ -68,12 +76,51 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void ScrollStarted() override;
   void ScrollEnded() override;
 
+  bool cardified_state_for_testing() const { return cardified_state_; }
+  int BackgroundCardCountForTesting() const { return background_cards_.size(); }
+
  private:
   class FadeoutLayerDelegate;
 
   // Indicates whether the drag event (from the gesture or mouse) should be
   // handled by PagedAppsGridView.
   bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
+
+  // Creates a layer mask for gradient alpha when the feature is enabled. The
+  // gradient appears at the top and bottom of the apps grid to create a
+  // "fade out" effect when
+  void MaybeCreateGradientMask();
+
+  // Helper functions to start the Apps Grid Cardified state.
+  // The cardified state scales down apps and is shown when the user drags an
+  // app in the AppList.
+  void StartAppsGridCardifiedView();
+  // Ends the Apps Grid Cardified state and sets it to normal.
+  void EndAppsGridCardifiedView();
+  // Animates individual elements of the apps grid to and from cardified state.
+  void AnimateCardifiedState();
+  // Call OnBoundsAnimatorDone when all layer animations finish.
+  void MaybeCallOnBoundsAnimatorDone();
+  // Translates the items container view to center the current page in the apps
+  // grid.
+  void RecenterItemsContainer();
+  // Calculates the background bounds for the grid depending on the value of
+  // |cardified_state_|
+  gfx::Rect BackgroundCardBounds(int new_page_index);
+  // Appends a background card to the back of |background_cards_|.
+  void AppendBackgroundCard();
+  // Removes the background card at the end of |background_cards_|.
+  void RemoveBackgroundCard();
+  // Masks the apps grid container to background cards bounds.
+  // TODO(crbug.com/1211608): Remove "override" from these methods.
+  void MaskContainerToBackgroundBounds() override;
+  // Removes all background cards from |background_cards_|.
+  void RemoveAllBackgroundCards() override;
+  // Updates the highlighted background card. Used only for cardified state.
+  void SetHighlightedBackgroundCard(int new_highlighted_page) override;
+
+  // Update the padding of tile view based on the contents bounds.
+  void UpdateTilePadding();
 
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* const contents_view_;
@@ -100,6 +147,15 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Records the presentation time for apps grid dragging.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+
+  // The highlighted page during cardified state.
+  int highlighted_page_ = -1;
+
+  // Layer array for apps grid background cards. Used to display the background
+  // card during cardified state.
+  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
+
+  base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

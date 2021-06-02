@@ -20,7 +20,6 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"
@@ -117,9 +116,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the maximum size of the entire tile grid.
   gfx::Size GetMaximumTileGridSize(int cols, int rows_per_page) const;
-
-  // Returns the padding between each page of the apps grid.
-  int GetPaddingBetweenPages() const;
 
   // This resets the grid view to a fresh state for showing the app list.
   void ResetForShowApps();
@@ -288,29 +284,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // view hierarchy.
   const AppListConfig& GetAppListConfig() const;
 
-  // Helper functions to start the Apps Grid Cardified state.
-  // The cardified state scales down apps and is shown when the user drags an
-  // app in the AppList.
-  void StartAppsGridCardifiedView();
-  // Ends the Apps Grid Cardified state and sets it to normal.
-  void EndAppsGridCardifiedView();
-  // Animates individual elements of the apps grid to and from cardified state.
-  void AnimateCardifiedState();
-  // Translates the items container view to center the current page in the apps
-  // grid.
-  void RecenterItemsContainer();
-  // Calculates the background bounds for the grid depending on the value of
-  // |cardified_state_|
-  gfx::Rect BackgroundCardBounds(int new_page_index);
-  // Appends a background card to the back of |background_cards_|.
-  void AppendBackgroundCard();
-  // Removes the background card at the end of |background_cards_|.
-  void RemoveBackgroundCard();
-  // Masks the apps grid container to background cards bounds.
-  void MaskContainerToBackgroundBounds();
-  // Removes all background cards from |background_cards_|.
-  void RemoveAllBackgroundCards();
-
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
 
@@ -349,13 +322,12 @@ class ASH_EXPORT AppsGridView : public views::View,
     return bounds_animator_.get();
   }
 
-  bool cardified_state_for_testing() const { return cardified_state_; }
-
-  int BackgroundCardCountForTesting() const { return background_cards_.size(); }
-
  protected:
   // The cardified apps grid should be scaled down by this factor.
   static constexpr float kCardifiedScale = 0.84f;
+
+  // The duration in ms for most of the apps grid view animations.
+  static constexpr int kDefaultAnimationDuration = 200;
 
   // Returns the size of a tile view excluding its padding.
   virtual gfx::Size GetTileViewSize() const = 0;
@@ -366,21 +338,28 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
-  // Creates a layer mask for gradient alpha when the feature is enabled. The
-  // gradient appears at the top and bottom of the apps grid to create a
-  // "fade out" effect when
-  // TODO(crbug.com/1211608): Move to PagedAppsGridView when cardified view
-  // methods move.
-  virtual void MaybeCreateGradientMask() = 0;
+  // Returns the padding between each page of the apps grid, or zero if the grid
+  // does not use pages.
+  virtual int GetPaddingBetweenPages() const = 0;
+
+  // Starts the "cardified" state if the subclass supports it.
+  virtual void MaybeStartCardifiedView() {}
+
+  // Ends the "cardified" state if the subclass supports it.
+  virtual void MaybeEndCardifiedView() {}
+
+  // TODO(crbug.com/1211608): Remove these methods. They exist to allow this
+  // class to call into PagedAppsGridView from UpdateDrag() and
+  // OnImplicitAnimationsCompleted().
+  virtual void SetHighlightedBackgroundCard(int new_highlighted_page) {}
+  virtual void MaskContainerToBackgroundBounds() {}
+  virtual void RemoveAllBackgroundCards() {}
 
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
 
   // Calculates the item views' bounds for folder.
   void CalculateIdealBoundsForFolder();
-
-  // Update the padding of tile view based on the contents bounds.
-  void UpdateTilePadding();
 
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
@@ -400,9 +379,16 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Cancels any context menus showing for app items on the current page.
   void CancelContextMenusOnCurrentPage();
 
+  // Returns true if the page is the right target to flip to.
+  bool IsValidPageFlipTarget(int page) const;
+
   // Starts the page flip timer if |drag_point| is in left/right side page flip
   // zone or is over page switcher.
   void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
+
+  // views::BoundsAnimatorObserver:
+  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
+  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
@@ -411,8 +397,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     return pulsing_blocks_model_;
   }
   int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
-  int vertical_tile_padding() const { return vertical_tile_padding_; }
-  int horizontal_tile_padding() const { return horizontal_tile_padding_; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }
 
@@ -436,13 +420,20 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The location of |drag_view_| when the drag started.
   gfx::Point drag_view_start_;
 
-  // True if the AppList is in cardified state.
+  // If true, Layout() does nothing. See where set for details.
+  bool ignore_layout_ = false;
+
+  // True if the AppList is in cardified state. "Cardified" means showing a
+  // rounded rectangle background "card" behind each page during a drag. The
+  // grid icons are reduced in size in this state.
   // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
   bool cardified_state_ = false;
 
-  // Layer array for apps grid background cards. Used to display the background
-  // card during cardified state.
-  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
+  int bounds_animation_for_cardified_state_in_progress_ = 0;
+
+  // Tile spacing between the tile views.
+  int horizontal_tile_padding_ = 0;
+  int vertical_tile_padding_ = 0;
 
  private:
   friend class test::AppsGridViewTestApi;
@@ -598,13 +589,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // ui::ImplicitAnimationObserver overrides:
   void OnImplicitAnimationsCompleted() override;
 
-  // views::BoundsAnimatorObserver:
-  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
-  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
-
-  // Call OnBoundsAnimatorDone when all layer animations finish.
-  void MaybeCallOnBoundsAnimatorDone();
-
   // Hide a given view temporarily without losing (mouse) events and / or
   // changing the size of it. If |immediate| is set the change will be
   // immediately applied - otherwise it will change gradually.
@@ -712,9 +696,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // can be moved.
   bool IsValidReorderTargetIndex(const GridIndex& index) const;
 
-  // Returns true if the page is the right target to flip to.
-  bool IsValidPageFlipTarget(int page) const;
-
   // Returns model index of the item view of the specified item.
   int GetModelIndexOfItem(const AppListItem* item) const;
 
@@ -794,9 +775,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Obtains the target page to flip for |drag_point|.
   int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
-
-  // Updates the highlighted background card. Used only for cardified state.
-  void SetHighlightedBackgroundCard(int new_highlighted_page);
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
   AppListItemList* item_list_ = nullptr;  // Not owned.
@@ -908,10 +886,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // non-folder.
   bool extra_page_opened_ = false;
 
-  // Tile spacing between the tile views.
-  int horizontal_tile_padding_ = 0;
-  int vertical_tile_padding_ = 0;
-
   // The drop location of the most recent reorder related accessibility event.
   GridIndex last_reorder_a11y_event_location_;
 
@@ -923,16 +897,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   GhostImageView* current_ghost_view_ = nullptr;
   GhostImageView* last_ghost_view_ = nullptr;
-
-  // If true, Layout() does nothing. See where set for details.
-  bool ignore_layout_ = false;
-
-  // The highlighted page during cardified state.
-  int highlighted_page_ = -1;
-
-  int bounds_animation_for_cardified_state_in_progress_ = 0;
-
-  base::WeakPtrFactory<AppsGridView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
