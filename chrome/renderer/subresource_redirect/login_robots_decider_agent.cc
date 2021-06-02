@@ -24,10 +24,6 @@ SubresourceRedirectResult ConvertToRedirectResult(
     RobotsRulesParser::CheckResult check_result) {
   switch (check_result) {
     case RobotsRulesParser::CheckResult::kAllowed:
-      if (ShouldEnableLoginRobotsCheckedImageCompression() &&
-          !ShouldCompressRedirectSubresource()) {
-        return SubresourceRedirectResult::kIneligibleCompressionDisabled;
-      }
       return SubresourceRedirectResult::kRedirectable;
     case RobotsRulesParser::CheckResult::kDisallowed:
     case RobotsRulesParser::CheckResult::kInvalidated:

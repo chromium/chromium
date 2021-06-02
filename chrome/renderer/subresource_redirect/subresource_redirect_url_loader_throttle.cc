@@ -150,6 +150,9 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   if (IsCompressionServerOrigin(request->url))
     return;
 
+  if (!ShouldCompressRedirectSubresource())
+    return;
+
   if (login_robots_compression_metrics_)
     login_robots_compression_metrics_->NotifyRequestStart();
 

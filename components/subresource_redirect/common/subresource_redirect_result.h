@@ -65,11 +65,8 @@ enum class SubresourceRedirectResult {
   // got disabled.
   kIneligibleFirstKDisableSubresourceRedirect = 12,
 
-  // Because the subresource redirection was disabled, where only metrics are
-  // recorded and the actual subresource redirection does not happen.
-  kIneligibleCompressionDisabled = 13,
-
-  kMaxValue = SubresourceRedirectResult::kIneligibleCompressionDisabled
+  kMaxValue =
+      SubresourceRedirectResult::kIneligibleFirstKDisableSubresourceRedirect
 };
 
 }  // namespace subresource_redirect
