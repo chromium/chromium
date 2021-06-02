@@ -14,9 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -342,13 +340,6 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->GetInstalledExtensionInfo(id));
 
-  // Make sure RegisterClient calls for storage are finished to avoid flaky
-  // crashes in QuotaManagerImpl::RegisterClient due to its getting called
-  // after LazyInitialize.
-  // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
-  util::GetStoragePartitionForExtensionId(id, profile());
-  task_environment()->RunUntilIdle();
-
   // We make a copy of the extension's id since the extension can be deleted
   // once it's uninstalled.
   std::string extension_id = id;
@@ -432,11 +423,6 @@ void ExtensionServiceTestWithInstall::InstallCRXInternal(
   // did so a bunch of stuff fails. Migrate this over.
   extension_loader.set_ignore_manifest_warnings(true);
   extension_loader.LoadExtension(crx_path);
-
-  // Make sure RegisterClient calls for storage are finished to avoid flaky
-  // crashes in QuotaManagerImpl::RegisterClient on test shutdown.
-  // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
-  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace extensions
