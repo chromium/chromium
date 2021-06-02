@@ -307,9 +307,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // The elements that currently are being previewed.
   std::vector<blink::WebFormControlElement> previewed_elements_;
 
-  // The form element currently requesting an interactive autocomplete.
-  blink::WebFormElement in_flight_request_form_;
-
   // Last form which was interacted with by the user.
   blink::WebFormElement last_interacted_form_;
 
