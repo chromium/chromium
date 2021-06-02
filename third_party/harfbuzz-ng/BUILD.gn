@@ -122,6 +122,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-cff2-table.hh",
       "src/src/hb-ot-color-cbdt-table.hh",
       "src/src/hb-ot-color-colr-table.hh",
+      "src/src/hb-ot-color-colrv1-closure.hh",
       "src/src/hb-ot-color-cpal-table.hh",
       "src/src/hb-ot-face-table-list.hh",
       "src/src/hb-ot-face.cc",
