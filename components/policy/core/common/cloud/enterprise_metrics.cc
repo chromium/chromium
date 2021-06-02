@@ -192,6 +192,8 @@ const char kUMAPsmSuccessTime[] =
 const char kUMAPsmResult[] = "Enterprise.AutoEnrollmentPsmResult";
 const char kUMAPsmNetworkErrorCode[] =
     "Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode";
+const char kUMAPsmDmServerRequestStatus[] =
+    "Enterprise.AutoEnrollmentPsmDmServerRequestStatus";
 
 const char kUMAHashDanceSuccessTime[] =
     "Enterprise.AutoEnrollmentHashDanceSuccessTime";
