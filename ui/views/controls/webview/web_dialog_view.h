@@ -18,8 +18,8 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/controls/webview/webview_export.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
@@ -74,7 +74,7 @@ class ObservableWebView : public WebView {
 class WEBVIEW_EXPORT WebDialogView : public ClientView,
                                      public ui::WebDialogWebContentsDelegate,
                                      public ui::WebDialogDelegate,
-                                     public WidgetDelegate {
+                                     public DialogDelegate {
  public:
   METADATA_HEADER(WebDialogView);
 
@@ -91,6 +91,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   content::WebContents* web_contents();
 
   // ClientView:
+  void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

@@ -32,7 +32,7 @@ class WebDialogView : public views::WebDialogView,
   METADATA_HEADER(WebDialogView);
   explicit WebDialogView(
       content::BrowserContext* context,
-      DialogDelegate* delegate,
+      chromeos::login_screen_extension_ui::DialogDelegate* delegate,
       std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
           handler);
   WebDialogView(const WebDialogView&) = delete;
@@ -46,7 +46,9 @@ class WebDialogView : public views::WebDialogView,
   void OnFocusLeavingSystemTray(bool reverse) override;
 
  private:
-  DialogDelegate* delegate_ = nullptr;
+  // views::WebDialogView extends views::DialogDelegate, so fully qualified name
+  // is needed.
+  chromeos::login_screen_extension_ui::DialogDelegate* delegate_ = nullptr;
 };
 
 }  // namespace login_screen_extension_ui

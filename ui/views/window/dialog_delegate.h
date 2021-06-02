@@ -45,6 +45,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     ~Params();
     absl::optional<int> default_button = absl::nullopt;
     bool round_corners = true;
+    absl::optional<int> corner_radius = absl::nullopt;
+
     bool draggable = false;
 
     // Whether to use the Views-styled frame (if true) or a platform-native
@@ -203,6 +205,12 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void DialogModelChanged();
 
   void set_use_round_corners(bool round) { params_.round_corners = round; }
+  void set_corner_radius(int corner_radius) {
+    params_.corner_radius = corner_radius;
+  }
+  const absl::optional<int> corner_radius() const {
+    return params_.corner_radius;
+  }
   void set_draggable(bool draggable) { params_.draggable = draggable; }
   bool draggable() const { return params_.draggable; }
   void set_use_custom_frame(bool use) { params_.custom_frame = use; }

@@ -110,6 +110,15 @@ content::WebContents* WebDialogView::web_contents() {
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, views::View implementation:
 
+void WebDialogView::AddedToWidget() {
+  gfx::RoundedCornersF corner_radii(
+      delegate_ && delegate_->GetWebDialogFrameKind() ==
+                       WebDialogDelegate::FrameKind::kDialog
+          ? GetCornerRadius()
+          : 0);
+  web_view_->holder()->SetCornerRadii(corner_radii);
+}
+
 gfx::Size WebDialogView::CalculatePreferredSize() const {
   gfx::Size out;
   if (delegate_)

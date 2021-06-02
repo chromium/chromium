@@ -420,6 +420,8 @@ int DialogDelegate::GetCornerRadius() const {
   if (GetModalType() == ui::MODAL_TYPE_WINDOW)
     return 2;
 #endif
+  if (params_.corner_radius)
+    return *params_.corner_radius;
   return LayoutProvider::Get()->GetCornerRadiusMetric(views::Emphasis::kMedium);
 }
 

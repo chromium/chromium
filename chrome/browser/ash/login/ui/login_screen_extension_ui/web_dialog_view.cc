@@ -16,7 +16,7 @@ namespace login_screen_extension_ui {
 
 WebDialogView::WebDialogView(
     content::BrowserContext* context,
-    DialogDelegate* delegate,
+    chromeos::login_screen_extension_ui::DialogDelegate* delegate,
     std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
         handler)
     : views::WebDialogView(context, delegate, std::move(handler)),

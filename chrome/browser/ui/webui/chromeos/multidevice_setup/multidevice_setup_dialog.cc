@@ -62,9 +62,10 @@ void MultiDeviceSetupDialog::Show() {
   }
 
   current_instance_ = new MultiDeviceSetupDialog();
-  containing_window_ = chrome::ShowWebDialog(
-      nullptr /* parent */, ProfileManager::GetActiveUserProfile(),
-      current_instance_);
+  current_instance_->ShowSystemDialogForBrowserContext(
+      ProfileManager::GetActiveUserProfile(), nullptr);
+
+  containing_window_ = current_instance_->dialog_window();
 
   // Remove the black backdrop behind the dialog window which appears in tablet
   // and full-screen mode.
