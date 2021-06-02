@@ -189,14 +189,15 @@ void MediaInspectorContextImpl::SetPlayerProperties(
     WebString playerId,
     const InspectorPlayerProperties& props) {
   const auto& player = players_.find(playerId);
+  Vector<InspectorPlayerProperty> properties;
   if (player != players_.end()) {
     for (const auto& property : props)
-      player->value->properties.insert(property.name, property);
-  }
+      player->value->properties.Set(property.name, property);
 
-  Vector<InspectorPlayerProperty> vector =
-      Iter2Vector<InspectorPlayerProperty>(props);
-  probe::PlayerPropertiesChanged(GetSupplementable(), playerId, vector);
+    properties.AppendRange(player->value->properties.Values().begin(),
+                           player->value->properties.Values().end());
+  }
+  probe::PlayerPropertiesChanged(GetSupplementable(), playerId, properties);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerMessages(
