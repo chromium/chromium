@@ -275,6 +275,32 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
+  test('SetRsuDisableWriteProtectCodeOk', () => {
+    let states = [
+      {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.setRsuDisableWriteProtectCode('ignored').then((state) => {
+      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('SetRsuDisableWriteProtectCodeWrongStateFails', () => {
+    let states = [
+      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.setRsuDisableWriteProtectCode('ignored').then((state) => {
+      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
+  });
+
   test('GetComponentListDefaultEmpty', () => {
     return service.getComponentList().then((components) => {
       assertDeepEquals(components.components, []);
