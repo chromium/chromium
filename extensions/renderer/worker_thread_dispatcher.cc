@@ -103,6 +103,21 @@ void AddEventFilteredListenerOnIO(const std::string& extension_id,
       worker_thread_id, std::move(filter), add_lazy_listener);
 }
 
+// Calls mojom::EventRouter::RemoveFilteredListenerForServiceWorker(). It should
+// be called on the IO thread.
+void RemoveEventFilteredListenerOnIO(const std::string& extension_id,
+                                     const GURL& scope,
+                                     const std::string& event_name,
+                                     int64_t service_worker_version_id,
+                                     int worker_thread_id,
+                                     base::Value filter,
+                                     bool remove_lazy_listener) {
+  auto* dispatcher = WorkerThreadDispatcher::Get();
+  dispatcher->GetEventRouterOnIO()->RemoveFilteredListenerForServiceWorker(
+      extension_id, scope, event_name, service_worker_version_id,
+      worker_thread_id, std::move(filter), remove_lazy_listener);
+}
+
 }  // namespace
 
 WorkerThreadDispatcher::WorkerThreadDispatcher() {}
@@ -257,6 +272,21 @@ void WorkerThreadDispatcher::SendRemoveEventLazyListener(
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&RemoveEventLazyListenerOnIO, extension_id,
                                 scope, event_name));
+}
+
+void WorkerThreadDispatcher::SendRemoveEventFilteredListener(
+    const std::string& extension_id,
+    const GURL& scope,
+    const std::string& event_name,
+    int64_t service_worker_version_id,
+    int worker_thread_id,
+    base::Value filter,
+    bool remove_lazy_listener) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoveEventFilteredListenerOnIO, extension_id, scope,
+                     event_name, service_worker_version_id, worker_thread_id,
+                     std::move(filter), remove_lazy_listener));
 }
 
 void WorkerThreadDispatcher::OnMessageReceivedOnWorkerThread(

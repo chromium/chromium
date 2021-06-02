@@ -275,14 +275,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::EventFilteringInfo)
   IPC_STRUCT_TRAITS_MEMBER(window_exposed_by_default)
 IPC_STRUCT_TRAITS_END()
 
-// Identifier containing info about a service worker, used in event listener
-// IPCs.
-IPC_STRUCT_BEGIN(ServiceWorkerIdentifier)
-  IPC_STRUCT_MEMBER(GURL, scope)
-  IPC_STRUCT_MEMBER(int64_t, version_id)
-  IPC_STRUCT_MEMBER(int, thread_id)
-IPC_STRUCT_END()
-
 // Singly-included section for custom IPC traits.
 #ifndef INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 #define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
@@ -359,18 +351,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
                     std::string /* error_message */)
 
 // Messages sent from the renderer to the browser:
-
-// Notify the browser that the given extension is no longer interested in
-// instances of the named event that satisfy the filter.
-// If |sw_identifier| is specified, it implies that the listener is for a
-// service worker, and the param is used to identify the worker.
-IPC_MESSAGE_CONTROL5(
-    ExtensionHostMsg_RemoveFilteredListener,
-    std::string /* extension_id */,
-    std::string /* name */,
-    absl::optional<ServiceWorkerIdentifier> /* sw_identifier */,
-    base::DictionaryValue /* filter */,
-    bool /* lazy */)
 
 // Notify the browser that an event has finished being dispatched.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_EventAck, int /* message_id */)

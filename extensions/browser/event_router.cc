@@ -387,6 +387,44 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
                               RegisteredEventType::kServiceWorker);
 }
 
+void EventRouter::RemoveFilteredListenerForMainThread(
+    const std::string& extension_id,
+    const std::string& event_name,
+    base::Value filter,
+    bool remove_lazy_listener) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  if (!process)
+    return;
+
+  RemoveFilteredEventListener(event_name, process, extension_id, absl::nullopt,
+                              base::Value::AsDictionaryValue(filter),
+                              remove_lazy_listener);
+}
+
+void EventRouter::RemoveFilteredListenerForServiceWorker(
+    const std::string& extension_id,
+    const GURL& worker_scope_url,
+    const std::string& event_name,
+    int64_t service_worker_version_id,
+    int32_t worker_thread_id,
+    base::Value filter,
+    bool remove_lazy_listener) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  if (!process)
+    return;
+
+  ServiceWorkerIdentifier sw_identifier;
+  sw_identifier.scope = worker_scope_url;
+  sw_identifier.thread_id = worker_thread_id;
+  sw_identifier.version_id = service_worker_version_id;
+
+  RemoveFilteredEventListener(event_name, process, extension_id, sw_identifier,
+                              base::Value::AsDictionaryValue(filter),
+                              remove_lazy_listener);
+}
+
 void EventRouter::AddEventListener(const std::string& event_name,
                                    RenderProcessHost* process,
                                    const std::string& extension_id) {
