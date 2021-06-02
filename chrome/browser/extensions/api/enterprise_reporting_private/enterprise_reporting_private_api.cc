@@ -43,23 +43,6 @@ api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
       return api::enterprise_reporting_private::SETTING_VALUE_ENABLED;
   }
 }
-
-api::enterprise_reporting_private::DeviceInfo ToDeviceInfo(
-    const enterprise_signals::DeviceInfo& device_signals) {
-  api::enterprise_reporting_private::DeviceInfo device_info;
-
-  device_info.os_name = device_signals.os_name;
-  device_info.os_version = device_signals.os_version;
-  device_info.device_host_name = device_signals.device_host_name;
-  device_info.device_model = device_signals.device_model;
-  device_info.serial_number = device_signals.serial_number;
-  device_info.screen_lock_secured =
-      ToInfoSettingValue(device_signals.screen_lock_secured);
-  device_info.disk_encrypted =
-      ToInfoSettingValue(device_signals.disk_encrypted);
-
-  return device_info;
-}
 #endif  // !defined(OS_CHROMEOS)
 
 api::enterprise_reporting_private::ContextInfo ToContextInfo(
@@ -271,6 +254,26 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::
 EnterpriseReportingPrivateGetDeviceInfoFunction::
     ~EnterpriseReportingPrivateGetDeviceInfoFunction() = default;
 
+// static
+api::enterprise_reporting_private::DeviceInfo
+EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
+    enterprise_signals::DeviceInfo device_signals) {
+  api::enterprise_reporting_private::DeviceInfo device_info;
+
+  device_info.os_name = device_signals.os_name;
+  device_info.os_version = device_signals.os_version;
+  device_info.device_host_name = device_signals.device_host_name;
+  device_info.device_model = device_signals.device_model;
+  device_info.serial_number = device_signals.serial_number;
+  device_info.screen_lock_secured =
+      ToInfoSettingValue(device_signals.screen_lock_secured);
+  device_info.disk_encrypted =
+      ToInfoSettingValue(device_signals.disk_encrypted);
+  device_info.mac_addresses = device_signals.mac_addresses;
+
+  return device_info;
+}
+
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 #if defined(OS_WIN)
@@ -295,9 +298,9 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 }
 
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
-    const enterprise_signals::DeviceInfo& device_signals) {
-  Respond(OneArgument(
-      base::Value::FromUniquePtrValue(ToDeviceInfo(device_signals).ToValue())));
+    enterprise_signals::DeviceInfo device_signals) {
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      ToDeviceInfo(std::move(device_signals)).ToValue())));
 }
 
 #endif  // !defined(OS_CHROMEOS)

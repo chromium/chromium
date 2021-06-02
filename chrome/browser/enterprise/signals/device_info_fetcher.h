@@ -49,6 +49,10 @@ class DeviceInfoFetcher {
   // Returns a platform specific instance of DeviceInfoFetcher.
   static std::unique_ptr<DeviceInfoFetcher> CreateInstance();
 
+  // Returns a stub instance so tests can validate attributes independently of
+  // the platform.
+  static std::unique_ptr<DeviceInfoFetcher> CreateStubInstanceForTesting();
+
   // Fetches the device information for the current platform.
   virtual DeviceInfo Fetch() = 0;
 };

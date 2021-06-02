@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include "base/command_line.h"
@@ -310,9 +311,31 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
             info.screen_lock_secured);
   EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_DISABLED,
             info.disk_encrypted);
-  ASSERT_EQ(1, info.mac_addresses.size());
+  ASSERT_EQ(1u, info.mac_addresses.size());
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
 #endif
+}
+
+TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
+  // Verify that the conversion from a DeviceInfoFetcher result works,
+  // regardless of platform.
+  auto device_info_fetcher =
+      enterprise_signals::DeviceInfoFetcher::CreateStubInstanceForTesting();
+
+  enterprise_reporting_private::DeviceInfo info =
+      EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
+          device_info_fetcher->Fetch());
+  EXPECT_EQ("stubOS", info.os_name);
+  EXPECT_EQ("0.0.0.0", info.os_version);
+  EXPECT_EQ("midnightshift", info.device_host_name);
+  EXPECT_EQ("topshot", info.device_model);
+  EXPECT_EQ("twirlchange", info.serial_number);
+  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_ENABLED,
+            info.screen_lock_secured);
+  EXPECT_EQ(enterprise_reporting_private::SETTING_VALUE_DISABLED,
+            info.disk_encrypted);
+  ASSERT_EQ(1u, info.mac_addresses.size());
+  EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
 }
 
 #endif  // !defined(OS_CHROMEOS)
