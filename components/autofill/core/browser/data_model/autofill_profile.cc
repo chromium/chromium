@@ -455,6 +455,13 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
   }
 
   for (ServerFieldType type : types) {
+    // If the value is empty, the verification status can be ambiguous because
+    // the value could be either build from its empty child nodes or parsed
+    // from its parent. Therefore, it should not be considered when evaluating
+    // the similarity of two profiles.
+    if (profile.GetRawInfo(type).empty())
+      continue;
+
     if (structured_address::IsLessSignificantVerificationStatus(
             GetVerificationStatus(type), profile.GetVerificationStatus(type))) {
       return -1;
@@ -485,6 +492,13 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     }
 
     for (ServerFieldType type : types) {
+      // If the value is empty, the verification status can be ambiguous because
+      // the value could be either build from its empty child nodes or parsed
+      // from its parent. Therefore, it should not be considered when evaluating
+      // the similarity of two profiles.
+      if (profile.GetRawInfo(type).empty())
+        continue;
+
       if (structured_address::IsLessSignificantVerificationStatus(
               GetVerificationStatus(type),
               profile.GetVerificationStatus(type))) {
