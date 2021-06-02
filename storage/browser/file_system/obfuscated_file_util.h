@@ -215,8 +215,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // Helper method to create an obfuscated file util for regular
   // (temporary, persistent) file systems. Used only for testing.
   // Note: this is implemented in sandbox_file_system_backend_delegate.cc.
-  static ObfuscatedFileUtil* CreateForTesting(
-      SpecialStoragePolicy* special_storage_policy,
+  static std::unique_ptr<ObfuscatedFileUtil> CreateForTesting(
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
       const base::FilePath& file_system_directory,
       leveldb::Env* env_override,
       bool is_incognito);

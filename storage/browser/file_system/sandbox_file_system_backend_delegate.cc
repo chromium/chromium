@@ -705,15 +705,15 @@ SandboxFileSystemBackendDelegate::memory_file_util_delegate() {
 
 // Declared in obfuscated_file_util.h.
 // static
-ObfuscatedFileUtil* ObfuscatedFileUtil::CreateForTesting(
-    SpecialStoragePolicy* special_storage_policy,
+std::unique_ptr<ObfuscatedFileUtil> ObfuscatedFileUtil::CreateForTesting(
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const base::FilePath& file_system_directory,
     leveldb::Env* env_override,
     bool is_incognito) {
-  return new ObfuscatedFileUtil(special_storage_policy, file_system_directory,
-                                env_override,
-                                base::BindRepeating(&GetTypeStringForURL),
-                                GetKnownTypeStrings(), nullptr, is_incognito);
+  return std::make_unique<ObfuscatedFileUtil>(
+      std::move(special_storage_policy), file_system_directory, env_override,
+      base::BindRepeating(&GetTypeStringForURL), GetKnownTypeStrings(),
+      /*sandbox_delegate=*/nullptr, is_incognito);
 }
 
 }  // namespace storage

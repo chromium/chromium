@@ -255,12 +255,11 @@ class ObfuscatedFileUtilTest : public testing::Test,
   }
 
   std::unique_ptr<ObfuscatedFileUtil> CreateObfuscatedFileUtil(
-      SpecialStoragePolicy* storage_policy) {
-    return std::unique_ptr<ObfuscatedFileUtil>(
-        ObfuscatedFileUtil::CreateForTesting(
-            storage_policy, data_dir_path(),
-            is_incognito() ? incognito_leveldb_environment_.get() : nullptr,
-            is_incognito()));
+      scoped_refptr<SpecialStoragePolicy> storage_policy) {
+    return ObfuscatedFileUtil::CreateForTesting(
+        std::move(storage_policy), data_dir_path(),
+        is_incognito() ? incognito_leveldb_environment_.get() : nullptr,
+        is_incognito());
   }
 
   ObfuscatedFileUtil* ofu() {
@@ -698,7 +697,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   void MaybeDropDatabasesAliveCaseTestBody() {
     std::unique_ptr<ObfuscatedFileUtil> file_util =
-        CreateObfuscatedFileUtil(nullptr);
+        CreateObfuscatedFileUtil(/*storage_policy=*/nullptr);
     file_util->InitOriginDatabase(Origin(), true /*create*/);
     ASSERT_TRUE(file_util->origin_database_ != nullptr);
 
@@ -716,7 +715,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
     // doesn't cause a crash for use after free.
     {
       std::unique_ptr<ObfuscatedFileUtil> file_util =
-          CreateObfuscatedFileUtil(nullptr);
+          CreateObfuscatedFileUtil(/*storage_policy=*/nullptr);
       file_util->InitOriginDatabase(Origin(), true /*create*/);
       file_util->db_flush_delay_seconds_ = 0;
       file_util->MarkUsed();
@@ -729,7 +728,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   void DestroyDirectoryDatabase_IsolatedTestBody() {
     storage_policy_->AddIsolated(origin_.GetURL());
     std::unique_ptr<ObfuscatedFileUtil> file_util =
-        CreateObfuscatedFileUtil(storage_policy_.get());
+        CreateObfuscatedFileUtil(/*storage_policy=*/storage_policy_);
     const FileSystemURL url = FileSystemURL::CreateForTest(
         origin_, kFileSystemTypePersistent, base::FilePath());
 
@@ -747,7 +746,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   void GetDirectoryDatabase_IsolatedTestBody() {
     storage_policy_->AddIsolated(origin_.GetURL());
     std::unique_ptr<ObfuscatedFileUtil> file_util =
-        CreateObfuscatedFileUtil(storage_policy_.get());
+        CreateObfuscatedFileUtil(storage_policy_);
     const FileSystemURL url = FileSystemURL::CreateForTest(
         origin_, kFileSystemTypePersistent, base::FilePath());
 
