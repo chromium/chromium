@@ -13,10 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -148,8 +150,7 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
           ContentSettingsType::SERIAL_GUARD,
           ContentSettingsType::SERIAL_CHOOSER_DATA,
           HostContentSettingsMapFactory::GetForProfile(profile)),
-      is_incognito_(profile->IsOffTheRecord()),
-      policy_(profile->GetPrefs()) {}
+      is_incognito_(profile->IsOffTheRecord()) {}
 
 SerialChooserContext::~SerialChooserContext() = default;
 
@@ -206,7 +207,8 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
   }
 
-  for (const auto& entry : policy_.usb_device_policy()) {
+  auto* policy = g_browser_process->serial_policy_allowed_ports();
+  for (const auto& entry : policy->usb_device_policy()) {
     if (!base::Contains(entry.second, origin)) {
       continue;
     }
@@ -218,7 +220,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
         is_incognito_));
   }
 
-  for (const auto& entry : policy_.usb_vendor_policy()) {
+  for (const auto& entry : policy->usb_vendor_policy()) {
     if (!base::Contains(entry.second, origin)) {
       continue;
     }
@@ -229,7 +231,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
         is_incognito_));
   }
 
-  if (base::Contains(policy_.all_ports_policy(), origin)) {
+  if (base::Contains(policy->all_ports_policy(), origin)) {
     base::Value object(base::Value::Type::DICTIONARY);
     object.SetStringKey(
         kPortNameKey,
@@ -263,7 +265,8 @@ SerialChooserContext::GetAllGrantedObjects() {
     }
   }
 
-  for (const auto& entry : policy_.usb_device_policy()) {
+  auto* policy = g_browser_process->serial_policy_allowed_ports();
+  for (const auto& entry : policy->usb_device_policy()) {
     base::Value object =
         VendorAndProductIdsToValue(entry.first.first, entry.first.second);
 
@@ -274,7 +277,7 @@ SerialChooserContext::GetAllGrantedObjects() {
     }
   }
 
-  for (const auto& entry : policy_.usb_vendor_policy()) {
+  for (const auto& entry : policy->usb_vendor_policy()) {
     base::Value object = VendorIdToValue(entry.first);
 
     for (const auto& origin : entry.second) {
@@ -288,7 +291,7 @@ SerialChooserContext::GetAllGrantedObjects() {
   object.SetStringKey(
       kPortNameKey,
       l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
-  for (const auto& origin : policy_.all_ports_policy()) {
+  for (const auto& origin : policy->all_ports_policy()) {
     objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
         origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
         is_incognito_));
@@ -339,7 +342,8 @@ bool SerialChooserContext::HasPortPermission(
     return false;
   }
 
-  if (policy_.HasPortPermission(origin, port)) {
+  if (g_browser_process->serial_policy_allowed_ports()->HasPortPermission(
+          origin, port)) {
     return true;
   }
 

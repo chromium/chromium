@@ -112,12 +112,11 @@ const char kURLsToRestoreOnStartup[] = "session.startup_urls";
 const char kUserFeedbackAllowed[] = "feedback_allowed";
 
 #if !defined(OS_ANDROID)
-// Used to store the value of the SerialAllowAllPortsForUrls policy.
-const char kManagedSerialAllowAllPortsForUrls[] =
+// Replaced by kManagedSerialAllowAllPortsForUrls in M-93.
+const char kManagedProfileSerialAllowAllPortsForUrlsDeprecated[] =
     "profile.managed.serial_allow_all_ports_for_urls";
-
-// Used to store the value of the SerialAllowUsbDevicesForUrls policy.
-const char kManagedSerialAllowUsbDevicesForUrls[] =
+// Replaced by kManagedSerialAllowUsbDevicesForUrls in M-93.
+const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[] =
     "profile.managed.serial_allow_usb_devices_for_urls";
 #endif  // !defined(OS_ANDROID)
 
@@ -1609,6 +1608,16 @@ const char kSuppressDifferentOriginSubframeJSDialogs[] =
 
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
+
+#if !defined(OS_ANDROID)
+// Used to store the value of the SerialAllowAllPortsForUrls policy.
+const char kManagedSerialAllowAllPortsForUrls[] =
+    "managed.serial_allow_all_ports_for_urls";
+
+// Used to store the value of the SerialAllowUsbDevicesForUrls policy.
+const char kManagedSerialAllowUsbDevicesForUrls[] =
+    "managed.serial_allow_usb_devices_for_urls";
+#endif  // !defined(OS_ANDROID)
 
 // Directory of the last profile used.
 const char kProfileLastUsed[] = "profile.last_used";

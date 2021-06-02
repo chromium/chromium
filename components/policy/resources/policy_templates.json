@@ -6392,7 +6392,7 @@
       'future_on': ['chrome_os', 'chrome.*'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True,
+        'per_profile': False,
       },
       'example_value': ['https://www.example.com'],
       'id': 837,
@@ -6435,7 +6435,7 @@
       'future_on': ['chrome_os', 'chrome.*'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True,
+        'per_profile': False,
       },
       'example_value': [
         {

@@ -6,9 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,21 +48,23 @@ device::mojom::SerialPortInfoPtr CreatePlatformPort() {
 
 class SerialPolicyAllowedPortsTest : public testing::Test {
  public:
-  SerialPolicyAllowedPortsTest() = default;
+  SerialPolicyAllowedPortsTest() {
+    RegisterLocalState(local_state_.registry());
+  }
+
   ~SerialPolicyAllowedPortsTest() override = default;
 
   void SetAllowAllPortsForUrlsPrefValue(const base::Value& value) {
-    profile_.GetPrefs()->Set(prefs::kManagedSerialAllowAllPortsForUrls, value);
+    local_state_.Set(prefs::kManagedSerialAllowAllPortsForUrls, value);
   }
 
   void SetAllowUsbDevicesForUrlsPrefValue(const base::Value& value) {
-    profile_.GetPrefs()->Set(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                             value);
+    local_state_.Set(prefs::kManagedSerialAllowUsbDevicesForUrls, value);
   }
 
   void InitializePolicy() {
     EXPECT_FALSE(policy_);
-    policy_ = std::make_unique<SerialPolicyAllowedPorts>(profile_.GetPrefs());
+    policy_ = std::make_unique<SerialPolicyAllowedPorts>(&local_state_);
   }
 
  protected:
@@ -70,7 +72,7 @@ class SerialPolicyAllowedPortsTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<SerialPolicyAllowedPorts> policy_;
 };
 

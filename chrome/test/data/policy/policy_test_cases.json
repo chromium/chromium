@@ -2609,7 +2609,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"SerialAllowAllPortsForUrls": ["https://www.google.com"]},
-        "prefs": { "profile.managed.serial_allow_all_ports_for_urls": {} }
+        "prefs": { "managed.serial_allow_all_ports_for_urls": { "location": "local_state" } }
       }
     ]
   },
@@ -2628,7 +2628,7 @@
             "urls": ["https://www.google.com"]
           }
         ]},
-        "prefs": { "profile.managed.serial_allow_usb_devices_for_urls": {} }
+        "prefs": { "managed.serial_allow_usb_devices_for_urls": { "location": "local_state" } }
       }
     ]
   },

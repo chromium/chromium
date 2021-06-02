@@ -47,8 +47,7 @@ SerialPolicyAllowedPorts::SerialPolicyAllowedPorts(PrefService* pref_service) {
 SerialPolicyAllowedPorts::~SerialPolicyAllowedPorts() = default;
 
 // static
-void SerialPolicyAllowedPorts::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
+void SerialPolicyAllowedPorts::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kManagedSerialAllowAllPortsForUrls);
   registry->RegisterListPref(prefs::kManagedSerialAllowUsbDevicesForUrls);
 }

@@ -200,6 +200,10 @@ class BrowserProcessImpl : public BrowserProcess,
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
 
+#if !defined(OS_ANDROID)
+  SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+#endif
+
   BuildState* GetBuildState() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -402,6 +406,8 @@ class BrowserProcessImpl : public BrowserProcess,
 #if !defined(OS_ANDROID)
   // Called to signal the process' main message loop to exit.
   base::OnceClosure quit_closure_;
+
+  std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
 
   BuildState build_state_;
 #endif

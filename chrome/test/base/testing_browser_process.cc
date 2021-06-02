@@ -64,6 +64,7 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
 
@@ -431,6 +432,16 @@ TestingBrowserProcess::resource_coordinator_parts() {
   return resource_coordinator_parts_.get();
 }
 
+#if !defined(OS_ANDROID)
+SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
+  if (!serial_policy_allowed_ports_) {
+    serial_policy_allowed_ports_ =
+        std::make_unique<SerialPolicyAllowedPorts>(local_state());
+  }
+  return serial_policy_allowed_ports_.get();
+}
+#endif
+
 BuildState* TestingBrowserProcess::GetBuildState() {
 #if !defined(OS_ANDROID)
   return &build_state_;
@@ -476,6 +487,9 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
     // are also freed.
     network_time_tracker_.reset();
     notification_ui_manager_.reset();
+#if !defined(OS_ANDROID)
+    serial_policy_allowed_ports_.reset();
+#endif
     ShutdownBrowserPolicyConnector();
     created_browser_policy_connector_ = false;
   }

@@ -144,6 +144,9 @@ class TestingBrowserProcess : public BrowserProcess {
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
+#if !defined(OS_ANDROID)
+  SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+#endif
   BuildState* GetBuildState() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
@@ -228,6 +231,7 @@ class TestingBrowserProcess : public BrowserProcess {
       resource_coordinator_parts_;
 
 #if !defined(OS_ANDROID)
+  std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
   BuildState build_state_;
 #endif
 };

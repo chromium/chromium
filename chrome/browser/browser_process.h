@@ -35,11 +35,12 @@ class NotificationPlatformBridge;
 class NotificationUIManager;
 class PrefService;
 class ProfileManager;
+class SerialPolicyAllowedPorts;
+class StartupData;
 class StatusTray;
 class SystemNetworkContextManager;
 class WatchDogThread;
 class WebRtcLogUploader;
-class StartupData;
 
 #if !defined(OS_ANDROID)
 class IntranetRedirectDetector;
@@ -259,6 +260,12 @@ class BrowserProcess {
 
   virtual resource_coordinator::ResourceCoordinatorParts*
   resource_coordinator_parts() = 0;
+
+#if !defined(OS_ANDROID)
+  // Returns the object which keeps track of serial port permissions configured
+  // through the policy engine.
+  virtual SerialPolicyAllowedPorts* serial_policy_allowed_ports() = 0;
+#endif
 
   virtual BuildState* GetBuildState() = 0;
 

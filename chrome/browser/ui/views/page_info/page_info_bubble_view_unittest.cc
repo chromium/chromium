@@ -20,6 +20,8 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -201,7 +203,8 @@ class ScopedWebContentsTestHelper {
 
 class PageInfoBubbleViewTest : public testing::Test {
  public:
-  PageInfoBubbleViewTest() {}
+  PageInfoBubbleViewTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   // testing::Test:
   void SetUp() override {
@@ -225,6 +228,7 @@ class PageInfoBubbleViewTest : public testing::Test {
   }
 
  protected:
+  ScopedTestingLocalState testing_local_state_;
   ScopedWebContentsTestHelper web_contents_helper_;
   views::ScopedViewsTestHelper views_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
@@ -569,9 +573,8 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
 
   // Add the policy setting to prefs.
-  Profile* profile = web_contents_helper_.profile();
-  profile->GetPrefs()->Set(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                           ReadJson(R"([
+  testing_local_state_.Get()->Set(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                                  ReadJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
                  "urls": [ "http://www.example.com" ]

@@ -15,6 +15,8 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -71,7 +73,15 @@ std::unique_ptr<base::Value> ReadJson(base::StringPiece json) {
 
 class SerialChooserContextTest : public testing::Test {
  public:
-  SerialChooserContextTest() {
+  SerialChooserContextTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  ~SerialChooserContextTest() override = default;
+
+  // Disallow copy and assignment.
+  SerialChooserContextTest(SerialChooserContextTest&) = delete;
+  SerialChooserContextTest& operator=(SerialChooserContextTest&) = delete;
+
+  void SetUp() override {
     mojo::PendingRemote<device::mojom::SerialPortManager> port_manager;
     port_manager_.AddReceiver(port_manager.InitWithNewPipeAndPassReceiver());
 
@@ -83,12 +93,6 @@ class SerialChooserContextTest : public testing::Test {
     // Ensure |context_| is ready to receive SerialPortManagerClient messages.
     context_->FlushPortManagerConnectionForTesting();
   }
-
-  ~SerialChooserContextTest() override = default;
-
-  // Disallow copy and assignment.
-  SerialChooserContextTest(SerialChooserContextTest&) = delete;
-  SerialChooserContextTest& operator=(SerialChooserContextTest&) = delete;
 
   void TearDown() override {
     // Because SerialBlocklist is a singleton it must be cleared after tests run
@@ -110,6 +114,7 @@ class SerialChooserContextTest : public testing::Test {
 
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   TestingProfile* profile() { return &profile_; }
+  TestingPrefServiceSimple* local_state() { return testing_local_state_.Get(); }
   SerialChooserContext* context() { return context_; }
   permissions::MockPermissionObserver& permission_observer() {
     return permission_observer_;
@@ -120,6 +125,7 @@ class SerialChooserContextTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
+  ScopedTestingLocalState testing_local_state_;
   TestingProfile profile_;
   SerialChooserContext* context_;
   permissions::MockPermissionObserver permission_observer_;
@@ -388,9 +394,10 @@ TEST_F(SerialChooserContextTest, PolicyGuardPermission) {
   port->token = base::UnguessableToken::Create();
   context()->GrantPortPermission(origin, *port);
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(
+      prefs::kManagedDefaultSerialGuardSetting,
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(context()->CanRequestObjectPermission(origin));
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
@@ -413,11 +420,12 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
   context()->GrantPortPermission(kBarOrigin, *port);
 
   // Set the default to "ask" so that the policy being tested overrides it.
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  prefs->SetManagedPref(prefs::kManagedSerialAskForUrls,
-                        ReadJson(R"([ "https://foo.origin" ])"));
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(
+      prefs::kManagedDefaultSerialGuardSetting,
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  profile_prefs->SetManagedPref(prefs::kManagedSerialAskForUrls,
+                                ReadJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
@@ -444,9 +452,9 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
   context()->GrantPortPermission(kFooOrigin, *port);
   context()->GrantPortPermission(kBarOrigin, *port);
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
-                        ReadJson(R"([ "https://foo.origin" ])"));
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
+                                ReadJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, *port));
@@ -468,11 +476,10 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                        ReadJson(R"([ "https://foo.origin" ])"));
-  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                        ReadJson(R"([
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                                ReadJson(R"([ "https://foo.origin" ])"));
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                                ReadJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 19985 }],
                  "urls": [ "https://bar.origin" ]
@@ -507,7 +514,7 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *usb_port2));
 
   auto foo_objects = context()->GetGrantedObjects(kFooOrigin);
-  EXPECT_EQ(1u, foo_objects.size());
+  ASSERT_EQ(1u, foo_objects.size());
   const auto& foo_object = foo_objects.front();
   EXPECT_EQ(kFooOrigin.GetURL(), foo_object->origin);
   EXPECT_EQ(u"Any serial port",
@@ -516,7 +523,7 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   EXPECT_FALSE(foo_object->incognito);
 
   auto bar_objects = context()->GetGrantedObjects(kBarOrigin);
-  EXPECT_EQ(1u, bar_objects.size());
+  ASSERT_EQ(1u, bar_objects.size());
   const auto& bar_object = bar_objects.front();
   EXPECT_EQ(kBarOrigin.GetURL(), bar_object->origin);
   EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(bar_object->value));
@@ -548,9 +555,8 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrlsDescriptionStrings) {
   const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                        ReadJson(R"([
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                                ReadJson(R"([
                {
                  "devices": [{ "vendor_id": 6353 }],
                  "urls": [ "https://google.com" ]
@@ -599,11 +605,12 @@ TEST_F(SerialChooserContextTest, PolicyAllowOverridesGuard) {
   const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                        ReadJson(R"([ "https://foo.origin" ])"));
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(
+      prefs::kManagedDefaultSerialGuardSetting,
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                                ReadJson(R"([ "https://foo.origin" ])"));
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -618,12 +625,12 @@ TEST_F(SerialChooserContextTest, PolicyAllowOverridesBlocked) {
   const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(
       prefs::kManagedSerialBlockedForUrls,
       ReadJson(R"([ "https://foo.origin", "https://bar.origin" ])"));
-  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                        ReadJson(R"([ "https://foo.origin" ])"));
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                                ReadJson(R"([ "https://foo.origin" ])"));
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -667,9 +674,8 @@ TEST_F(SerialChooserContextTest, Blocklist) {
 TEST_F(SerialChooserContextTest, BlocklistOverridesPolicy) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
-  auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                        ReadJson(R"([
+  local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                                ReadJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 22768 }],
                  "urls": [ "https://google.com" ]

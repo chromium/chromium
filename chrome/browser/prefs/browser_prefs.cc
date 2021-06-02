@@ -719,6 +719,13 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterListPref(kSpellCheckBlacklistedDictionaries);
+
+#if !defined(OS_ANDROID)
+  registry->RegisterListPref(
+      prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
+  registry->RegisterListPref(
+      prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
+#endif
 }
 
 }  // namespace
@@ -759,6 +766,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   RegisterScreenshotPrefs(registry);
   safe_browsing::RegisterLocalStatePrefs(registry);
   secure_origin_allowlist::RegisterPrefs(registry);
+#if !defined(OS_ANDROID)
+  SerialPolicyAllowedPorts::RegisterPrefs(registry);
+#endif
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(registry);
@@ -1007,9 +1017,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   security_interstitials::InsecureFormBlockingPage::RegisterProfilePrefs(
       registry);
-#if !defined(OS_ANDROID)
-  SerialPolicyAllowedPorts::RegisterProfilePrefs(registry);
-#endif
   SessionStartupPref::RegisterProfilePrefs(registry);
   SharingSyncPreference::RegisterProfilePrefs(registry);
   site_engagement::SiteEngagementService::RegisterProfilePrefs(registry);
@@ -1445,6 +1452,14 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 05/2021
   profile_prefs->ClearPref(kSpellCheckBlacklistedDictionaries);
+
+#if !defined(OS_ANDROID)
+  // Added 05/2021
+  profile_prefs->ClearPref(
+      prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
+  profile_prefs->ClearPref(
+      prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

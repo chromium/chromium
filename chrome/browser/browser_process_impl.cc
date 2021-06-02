@@ -157,6 +157,7 @@
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -894,6 +895,17 @@ BrowserProcessImpl::resource_coordinator_parts() {
   }
   return resource_coordinator_parts_.get();
 }
+
+#if !defined(OS_ANDROID)
+SerialPolicyAllowedPorts* BrowserProcessImpl::serial_policy_allowed_ports() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!serial_policy_allowed_ports_) {
+    serial_policy_allowed_ports_ =
+        std::make_unique<SerialPolicyAllowedPorts>(local_state());
+  }
+  return serial_policy_allowed_ports_.get();
+}
+#endif
 
 BuildState* BrowserProcessImpl::GetBuildState() {
 #if !defined(OS_ANDROID)
