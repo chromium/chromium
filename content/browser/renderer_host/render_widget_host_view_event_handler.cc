@@ -364,69 +364,6 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
   }
 }
 
-bool IsMoveEvent(ui::EventType type) {
-  return type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED ||
-         type == ui::ET_TOUCH_MOVED;
-}
-
-void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
-    ui::LocatedEvent* event,
-    bool hovering,
-    int32_t pointer_id) {
-  const cc::RenderFrameMetadata& last_metadata =
-      host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  if (IsMoveEvent(event->type()) &&
-      last_metadata.delegated_ink_metadata.has_value() &&
-      hovering == last_metadata.delegated_ink_metadata.value()
-                      .delegated_ink_is_hovering) {
-    if (!delegated_ink_point_renderer_.is_bound()) {
-      ui::Compositor* compositor = window_ && window_->layer()
-                                       ? window_->layer()->GetCompositor()
-                                       : nullptr;
-
-      // The remote can't be bound if the compositor is null, so bail if that
-      // is the case so we don't crash by trying to use an unbound remote.
-      if (!compositor)
-        return;
-
-      TRACE_EVENT_INSTANT0("input",
-                           "Binding mojo interface for delegated ink points.",
-                           TRACE_EVENT_SCOPE_THREAD);
-      compositor->SetDelegatedInkPointRenderer(
-          delegated_ink_point_renderer_.BindNewPipeAndPassReceiver());
-      delegated_ink_point_renderer_.reset_on_disconnect();
-    }
-
-    gfx::PointF point = event->root_location_f();
-    point.Scale(host_view_->GetDeviceScaleFactor());
-    gfx::DelegatedInkPoint delegated_ink_point(point, event->time_stamp(),
-                                               pointer_id);
-    TRACE_EVENT_INSTANT1("input",
-                         "Forwarding delegated ink point from browser.",
-                         TRACE_EVENT_SCOPE_THREAD, "delegated point",
-                         delegated_ink_point.ToString());
-
-    // Calling this will result in IPC calls to get |delegated_ink_point| to
-    // viz. The decision to do this here was made with the understanding that
-    // the IPC overhead will result in a minor increase in latency for getting
-    // this event to the renderer. However, by sending it here, the event is
-    // given the greatest possible chance to make it to viz before
-    // DrawAndSwap() is called, allowing more points to be drawn as part of
-    // the delegated ink trail, and thus reducing user perceived latency.
-    delegated_ink_point_renderer_->StoreDelegatedInkPoint(delegated_ink_point);
-    ended_delegated_ink_trail_ = false;
-  } else if (delegated_ink_point_renderer_.is_bound() &&
-             !ended_delegated_ink_trail_) {
-    // Let viz know that the most recent point it received from us is probably
-    // the last point the user is inking, so it shouldn't predict anything
-    // beyond it.
-    TRACE_EVENT_INSTANT0("input", "Delegated ink trail ended",
-                         TRACE_EVENT_SCOPE_THREAD);
-    delegated_ink_point_renderer_->ResetPrediction();
-    ended_delegated_ink_trail_ = true;
-  }
-}
-
 void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnMouseEvent");
 
@@ -470,9 +407,6 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
     if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
         !(event->flags() & ui::EF_FROM_TOUCH)) {
-      bool hovering = (event->type() ^ ui::ET_MOUSE_DRAGGED) &&
-                      (event->type() ^ ui::ET_MOUSE_PRESSED);
-      ForwardDelegatedInkPoint(event, hovering, event->pointer_details().id);
 
       // Confirm existing composition text on mouse press, to make sure
       // the input caret won't be moved with an ongoing composition text.
@@ -596,9 +530,6 @@ void RenderWidgetHostViewEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
   if (handled)
     return;
-
-  ForwardDelegatedInkPoint(event, event->hovering(),
-                           event->pointer_details().id);
 
   if (had_no_pointer)
     delegate_->selection_controller_client()->OnTouchDown();

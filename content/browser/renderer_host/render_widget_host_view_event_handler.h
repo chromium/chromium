@@ -12,14 +12,12 @@
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/motion_event_aura.h"
-#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/latency/latency_info.h"
 
 namespace aura {
@@ -254,15 +252,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
 
   void HandleMouseWheelEvent(ui::MouseEvent* event);
 
-  // Forward the location and timestamp of the event to viz if a delegated ink
-  // trail is requested.
-  void ForwardDelegatedInkPoint(ui::LocatedEvent* event,
-                                bool hovering,
-                                int32_t pointer_id);
-
-  // Flush the remote for testing purposes.
-  void FlushForTest() { delegated_ink_point_renderer_.FlushForTesting(); }
-
   // Whether return characters should be passed on to the RenderWidgetHostImpl.
   bool accept_return_character_ = false;
 
@@ -324,18 +313,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
 
   std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;
-
-  // Remote end of the connection for sending delegated ink points to viz to
-  // support the delegated ink trails feature.
-  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
-      delegated_ink_point_renderer_;
-  // Used to know if we have already told viz to reset prediction because the
-  // final point of the delegated ink trail has been sent. True when prediction
-  // has already been reset for the most recent trail, false otherwise. This
-  // flag helps make sure that we don't send more IPCs than necessary to viz to
-  // reset prediction. Sending extra IPCs wouldn't impact correctness, but can
-  // impact performance due to the IPC overhead.
-  bool ended_delegated_ink_trail_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewEventHandler);
 };

@@ -1003,4 +1003,10 @@ void RenderWidgetHostViewChildFrame::DidNavigate() {
   host()->SynchronizeVisualProperties();
 }
 
+ui::Compositor* RenderWidgetHostViewChildFrame::GetCompositor() {
+  if (!GetRootView())
+    return nullptr;
+  return GetRootView()->GetCompositor();
+}
+
 }  // namespace content

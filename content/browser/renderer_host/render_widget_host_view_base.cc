@@ -988,4 +988,8 @@ bool RenderWidgetHostViewBase::TransformPointToLocalCoordSpace(
       transformed_point);
 }
 
+ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
+  return nullptr;
+}
+
 }  // namespace content
