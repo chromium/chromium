@@ -231,8 +231,8 @@ bool ParseServerResponse(const GURL& server_url,
     }
 
     // Ignore result (code defaults to zero).
-    error_object->GetIntegerWithoutPathExpansion(kCodeString,
-                                                 &(position->error_code));
+    position->error_code =
+        error_object->FindIntKey(kCodeString).value_or(position->error_code);
   } else {
     position->error_message.erase();
   }

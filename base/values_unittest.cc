@@ -2423,14 +2423,14 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetBooleanWithoutPathExpansion("list", nullptr));
   EXPECT_FALSE(main_dict.GetBooleanWithoutPathExpansion("DNE", nullptr));
 
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("bool", nullptr));
-  EXPECT_TRUE(main_dict.GetIntegerWithoutPathExpansion("int", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("double", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("string", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("list", nullptr));
-  EXPECT_FALSE(main_dict.GetIntegerWithoutPathExpansion("DNE", nullptr));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("bool"));
+  EXPECT_NE(absl::nullopt, main_dict.FindIntKey("int"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("double"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("string"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("binary"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("dict"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("list"));
+  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("DNE"));
 
   EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("bool", nullptr));
   EXPECT_TRUE(main_dict.GetDoubleWithoutPathExpansion("int", nullptr));

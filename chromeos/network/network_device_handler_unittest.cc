@@ -20,6 +20,7 @@
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -161,10 +162,10 @@ TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
   // GetDeviceProperties should return the value set by SetDeviceProperty.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  int interval = 0;
-  EXPECT_TRUE(properties_->GetIntegerWithoutPathExpansion(
-      shill::kScanIntervalProperty, &interval));
-  EXPECT_EQ(1, interval);
+  absl::optional<int> interval =
+      properties_->FindIntKey(shill::kScanIntervalProperty);
+  EXPECT_TRUE(interval.has_value());
+  EXPECT_EQ(1, interval.value());
 
   // Repeat the same with value false.
   network_device_handler_->SetDeviceProperty(
@@ -175,9 +176,9 @@ TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
 
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  EXPECT_TRUE(properties_->GetIntegerWithoutPathExpansion(
-      shill::kScanIntervalProperty, &interval));
-  EXPECT_EQ(2, interval);
+  interval = properties_->FindIntKey(shill::kScanIntervalProperty);
+  EXPECT_TRUE(interval.has_value());
+  EXPECT_EQ(2, interval.value());
 
   // Set property on an invalid path.
   network_device_handler_->SetDeviceProperty(

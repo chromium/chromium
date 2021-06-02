@@ -67,6 +67,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -347,15 +348,18 @@ class OAuth2Test : public OobeBaseTest {
     PrefService* local_state = g_browser_process->local_state();
     const base::DictionaryValue* prefs_oauth_status =
         local_state->GetDictionary("OAuthTokenStatus");
-    int oauth_token_status = user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
-    if (prefs_oauth_status &&
-        prefs_oauth_status->GetIntegerWithoutPathExpansion(
-            email, &oauth_token_status)) {
-      user_manager::User::OAuthTokenStatus result =
-          static_cast<user_manager::User::OAuthTokenStatus>(oauth_token_status);
-      return result;
-    }
-    return user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
+    if (!prefs_oauth_status)
+      return user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
+
+    absl::optional<int> oauth_token_status =
+        prefs_oauth_status->FindIntKey(email);
+    if (!oauth_token_status.has_value())
+      return user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
+
+    user_manager::User::OAuthTokenStatus result =
+        static_cast<user_manager::User::OAuthTokenStatus>(
+            oauth_token_status.value());
+    return result;
   }
 
   signin::IdentityManager* identity_manager() {

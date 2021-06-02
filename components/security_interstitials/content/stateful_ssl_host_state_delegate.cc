@@ -44,6 +44,7 @@
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -322,7 +323,6 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
     return DENIED;
 
   base::DictionaryValue* dict;  // Owned by value
-  int policy_decision;
   bool success = value->GetAsDictionary(&dict);
   DCHECK(success);
 
@@ -336,12 +336,12 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
     return DENIED;
   }
 
-  success = cert_error_dict->GetIntegerWithoutPathExpansion(GetKey(cert, error),
-                                                            &policy_decision);
+  absl::optional<int> policy_decision =
+      cert_error_dict->FindIntKey(GetKey(cert, error));
 
   // If a policy decision was successfully retrieved and it's a valid value of
   // ALLOWED, return the valid value. Otherwise, return DENIED.
-  if (success && policy_decision == ALLOWED)
+  if (policy_decision.has_value() && policy_decision.value() == ALLOWED)
     return ALLOWED;
 
   return DENIED;

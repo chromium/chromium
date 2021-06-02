@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/dom_action_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace constants = activity_log_constants;
@@ -202,10 +203,9 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
     std::string extra;
     if (other()->GetStringWithoutPathExpansion(constants::kActionExtra, &extra))
       other_field->extra = std::make_unique<std::string>(extra);
-    int dom_verb;
-    if (other()->GetIntegerWithoutPathExpansion(constants::kActionDomVerb,
-                                                &dom_verb)) {
-      switch (static_cast<DomActionType::Type>(dom_verb)) {
+    if (absl::optional<int> dom_verb =
+            other()->FindIntKey(constants::kActionDomVerb)) {
+      switch (static_cast<DomActionType::Type>(dom_verb.value())) {
         case DomActionType::GETTER:
           other_field->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_GETTER;

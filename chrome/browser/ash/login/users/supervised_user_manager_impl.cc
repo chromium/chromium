@@ -22,6 +22,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -160,11 +161,16 @@ void SupervisedUserManagerImpl::GetPasswordInformation(
 void SupervisedUserManagerImpl::SetPasswordInformation(
     const std::string& user_id,
     const base::DictionaryValue* password_info) {
-  int value;
-  if (password_info->GetIntegerWithoutPathExpansion(kSchemaVersion, &value))
-    SetUserIntegerValue(user_id, kSupervisedUserPasswordSchema, value);
-  if (password_info->GetIntegerWithoutPathExpansion(kPasswordRevision, &value))
-    SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision, value);
+  absl::optional<int> schema_version =
+      password_info->FindIntKey(kSchemaVersion);
+  if (schema_version.has_value())
+    SetUserIntegerValue(user_id, kSupervisedUserPasswordSchema,
+                        schema_version.value());
+  absl::optional<int> password_revision =
+      password_info->FindIntKey(kPasswordRevision);
+  if (password_revision.has_value())
+    SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision,
+                        password_revision.value());
 
   bool flag;
   if (password_info->GetBooleanWithoutPathExpansion(kRequirePasswordUpdate,
@@ -194,7 +200,12 @@ bool SupervisedUserManagerImpl::GetUserIntegerValue(const std::string& user_id,
                                                     int* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetIntegerWithoutPathExpansion(user_id, out_value);
+  absl::optional<int> value = dictionary->FindIntKey(user_id);
+  if (!value)
+    return false;
+
+  *out_value = value.value();
+  return true;
 }
 
 bool SupervisedUserManagerImpl::GetUserBooleanValue(const std::string& user_id,

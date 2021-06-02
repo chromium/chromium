@@ -34,6 +34,7 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "dbus/values_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -741,10 +742,10 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   properties->GetStringWithoutPathExpansion(cros_disks::kFileSystemType,
                                             &file_system_type_);
 
-  properties->GetIntegerWithoutPathExpansion(cros_disks::kBusNumber,
-                                             &bus_number_);
-  properties->GetIntegerWithoutPathExpansion(cros_disks::kDeviceNumber,
-                                             &device_number_);
+  bus_number_ =
+      properties->FindIntKey(cros_disks::kBusNumber).value_or(bus_number_);
+  device_number_ = properties->FindIntKey(cros_disks::kDeviceNumber)
+                       .value_or(device_number_);
 
   // dbus::PopDataAsValue() pops uint64_t as double.
   // The top 11 bits of uint64_t are dropped by the use of double. But, this

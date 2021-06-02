@@ -21,6 +21,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace file_system_provider {
@@ -212,10 +213,10 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
       kPrefKeySupportsNotifyTag, &supports_notify_tag));
   EXPECT_TRUE(supports_notify_tag);
 
-  int opened_files_limit = 0;
-  EXPECT_TRUE(file_system->GetIntegerWithoutPathExpansion(
-      kPrefKeyOpenedFilesLimit, &opened_files_limit));
-  EXPECT_EQ(kOpenedFilesLimit, opened_files_limit);
+  absl::optional<int> opened_files_limit =
+      file_system->FindIntKey(kPrefKeyOpenedFilesLimit);
+  EXPECT_TRUE(opened_files_limit.has_value());
+  EXPECT_EQ(kOpenedFilesLimit, opened_files_limit.value());
 
   const base::DictionaryValue* watchers_value = NULL;
   ASSERT_TRUE(file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,

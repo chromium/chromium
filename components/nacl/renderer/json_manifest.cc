@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "components/nacl/common/nacl_types.h"
 #include "components/nacl/renderer/nexe_load_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace nacl {
@@ -381,12 +382,10 @@ void GrabUrlAndPnaclOptions(const base::DictionaryValue& url_spec,
   DCHECK(get_url_success);
   pnacl_options->translate = PP_TRUE;
   if (url_spec.HasKey(kOptLevelKey)) {
-    int32_t opt_raw = 0;
-    bool get_opt_success =
-        url_spec.GetIntegerWithoutPathExpansion(kOptLevelKey, &opt_raw);
-    DCHECK(get_opt_success);
+    absl::optional<int32_t> opt_raw = url_spec.FindIntKey(kOptLevelKey);
+    DCHECK(opt_raw.has_value());
     // Currently only allow 0 or 2, since that is what we test.
-    if (opt_raw <= 0)
+    if (opt_raw.value() <= 0)
       pnacl_options->opt_level = 0;
     else
       pnacl_options->opt_level = 2;

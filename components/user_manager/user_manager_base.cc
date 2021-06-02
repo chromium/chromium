@@ -30,6 +30,7 @@
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
@@ -954,15 +955,15 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
 
   const base::DictionaryValue* prefs_oauth_status =
       GetLocalState()->GetDictionary(kUserOAuthTokenStatus);
-  int oauth_token_status = User::OAUTH_TOKEN_STATUS_UNKNOWN;
-  if (prefs_oauth_status &&
-      prefs_oauth_status->GetIntegerWithoutPathExpansion(
-          account_id.GetUserEmail(), &oauth_token_status)) {
-    User::OAuthTokenStatus status =
-        static_cast<User::OAuthTokenStatus>(oauth_token_status);
-    return status;
-  }
-  return User::OAUTH_TOKEN_STATUS_UNKNOWN;
+  if (!prefs_oauth_status)
+    return User::OAUTH_TOKEN_STATUS_UNKNOWN;
+
+  absl::optional<int> oauth_token_status =
+      prefs_oauth_status->FindIntKey(account_id.GetUserEmail());
+  if (!oauth_token_status.has_value())
+    return User::OAUTH_TOKEN_STATUS_UNKNOWN;
+
+  return static_cast<User::OAuthTokenStatus>(oauth_token_status.value());
 }
 
 bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {

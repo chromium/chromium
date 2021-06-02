@@ -18,6 +18,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/tether_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -345,15 +346,15 @@ TEST_F(NetworkStateTest, TetherProperties) {
   base::DictionaryValue dictionary;
   network_state_.GetStateProperties(&dictionary);
 
-  int signal_strength;
-  EXPECT_TRUE(dictionary.GetIntegerWithoutPathExpansion(kTetherSignalStrength,
-                                                        &signal_strength));
-  EXPECT_EQ(75, signal_strength);
+  absl::optional<int> signal_strength =
+      dictionary.FindIntKey(kTetherSignalStrength);
+  EXPECT_TRUE(signal_strength.has_value());
+  EXPECT_EQ(75, signal_strength.value());
 
-  int battery_percentage;
-  EXPECT_TRUE(dictionary.GetIntegerWithoutPathExpansion(
-      kTetherBatteryPercentage, &battery_percentage));
-  EXPECT_EQ(85, battery_percentage);
+  absl::optional<int> battery_percentage =
+      dictionary.FindIntKey(kTetherBatteryPercentage);
+  EXPECT_TRUE(battery_percentage.has_value());
+  EXPECT_EQ(85, battery_percentage.value());
 
   bool tether_has_connected_to_host;
   EXPECT_TRUE(dictionary.GetBooleanWithoutPathExpansion(

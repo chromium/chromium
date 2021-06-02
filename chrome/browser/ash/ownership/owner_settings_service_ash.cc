@@ -46,6 +46,7 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/signature_creator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -497,12 +498,12 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
                   kAccountsPrefDeviceLocalAccountsKeyId, &account_id)) {
             account->set_account_id(account_id);
           }
-          int type;
-          if (entry_dict->GetIntegerWithoutPathExpansion(
-                  kAccountsPrefDeviceLocalAccountsKeyType, &type)) {
+          absl::optional<int> type =
+              entry_dict->FindIntKey(kAccountsPrefDeviceLocalAccountsKeyType);
+          if (type.has_value()) {
             account->set_type(
                 static_cast<em::DeviceLocalAccountInfoProto::AccountType>(
-                    type));
+                    type.value()));
           }
           std::string kiosk_app_id;
           if (entry_dict->GetStringWithoutPathExpansion(

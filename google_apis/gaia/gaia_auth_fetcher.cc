@@ -36,6 +36,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -60,10 +61,10 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
   std::string refresh_token;
   std::string access_token;
   std::string id_token;
-  int expires_in_secs;
+  absl::optional<int> expires_in_secs = dict->FindIntKey("expires_in");
   if (!dict->GetStringWithoutPathExpansion("refresh_token", &refresh_token) ||
       !dict->GetStringWithoutPathExpansion("access_token", &access_token) ||
-      !dict->GetIntegerWithoutPathExpansion("expires_in", &expires_in_secs)) {
+      !expires_in_secs.has_value()) {
     return nullptr;
   }
 
@@ -75,7 +76,7 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
   gaia::TokenServiceFlags service_flags = gaia::ParseServiceFlags(id_token);
 
   return std::make_unique<const GaiaAuthConsumer::ClientOAuthResult>(
-      refresh_token, access_token, expires_in_secs,
+      refresh_token, access_token, expires_in_secs.value(),
       service_flags.is_child_account,
       service_flags.is_under_advanced_protection);
 }

@@ -27,6 +27,7 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -111,14 +112,12 @@ bool MatchesDevicePermissionEntry(const base::DictionaryValue* value,
       type != TypeToString(entry->type())) {
     return false;
   }
-  int vendor_id;
-  if (!value->GetIntegerWithoutPathExpansion(kDeviceVendorId, &vendor_id) ||
-      vendor_id != entry->vendor_id()) {
+  absl::optional<int> vendor_id = value->FindIntKey(kDeviceVendorId);
+  if (!vendor_id || vendor_id.value() != entry->vendor_id()) {
     return false;
   }
-  int product_id;
-  if (!value->GetIntegerWithoutPathExpansion(kDeviceProductId, &product_id) ||
-      product_id != entry->product_id()) {
+  absl::optional<int> product_id = value->FindIntKey(kDeviceProductId);
+  if (!product_id || product_id.value() != entry->product_id()) {
     return false;
   }
   std::u16string serial_number;
@@ -187,15 +186,14 @@ void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
 
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
     const base::DictionaryValue* entry) {
-  int vendor_id;
-  if (!entry->GetIntegerWithoutPathExpansion(kDeviceVendorId, &vendor_id) ||
-      vendor_id < 0 || vendor_id > UINT16_MAX) {
+  absl::optional<int> vendor_id = entry->FindIntKey(kDeviceVendorId);
+  if (!vendor_id || vendor_id.value() < 0 || vendor_id.value() > UINT16_MAX) {
     return nullptr;
   }
 
-  int product_id;
-  if (!entry->GetIntegerWithoutPathExpansion(kDeviceProductId, &product_id) ||
-      product_id < 0 || product_id > UINT16_MAX) {
+  absl::optional<int> product_id = entry->FindIntKey(kDeviceProductId);
+  if (!product_id || product_id.value() < 0 ||
+      product_id.value() > UINT16_MAX) {
     return nullptr;
   }
 
@@ -231,12 +229,12 @@ scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
 
   if (type == kDeviceTypeUsb) {
     return base::MakeRefCounted<DevicePermissionEntry>(
-        DevicePermissionEntry::Type::USB, vendor_id, product_id, serial_number,
-        manufacturer_string, product_string, last_used);
+        DevicePermissionEntry::Type::USB, vendor_id.value(), product_id.value(),
+        serial_number, manufacturer_string, product_string, last_used);
   } else if (type == kDeviceTypeHid) {
     return base::MakeRefCounted<DevicePermissionEntry>(
-        DevicePermissionEntry::Type::HID, vendor_id, product_id, serial_number,
-        std::u16string(), product_string, last_used);
+        DevicePermissionEntry::Type::HID, vendor_id.value(), product_id.value(),
+        serial_number, std::u16string(), product_string, last_used);
   }
   return nullptr;
 }

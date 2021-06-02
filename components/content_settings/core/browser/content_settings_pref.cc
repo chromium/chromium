@@ -27,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -81,8 +82,7 @@ base::Time GetExpiration(const base::DictionaryValue* dictionary) {
 // SessionModel::Durable if no model exists.
 content_settings::SessionModel GetSessionModel(
     const base::DictionaryValue* dictionary) {
-  int model_int = 0;
-  dictionary->GetIntegerWithoutPathExpansion(kSessionModelPath, &model_int);
+  int model_int = dictionary->FindIntKey(kSessionModelPath).value_or(0);
   if ((model_int >
        static_cast<int>(content_settings::SessionModel::kMaxValue)) ||
       (model_int < 0)) {

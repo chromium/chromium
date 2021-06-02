@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace file_system_provider {
@@ -149,16 +150,22 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         file_systems_per_extension->FindKey(it.key());
     DCHECK(file_system_value);
 
+    if (!file_system_value->GetAsDictionary(&file_system)) {
+      LOG(ERROR)
+          << "Malformed provided file system information in preferences.";
+      continue;
+    }
+
     std::string file_system_id;
     std::string display_name;
     bool writable = false;
     bool supports_notify_tag = false;
-    int opened_files_limit = 0;
+    absl::optional<int> opened_files_limit =
+        file_system->FindIntKey(kPrefKeyOpenedFilesLimit);
 
     // TODO(mtomasz): Move opened files limit to the mandatory list above in
     // M42.
-    if ((!file_system_value->GetAsDictionary(&file_system) ||
-         !file_system->GetStringWithoutPathExpansion(kPrefKeyFileSystemId,
+    if ((!file_system->GetStringWithoutPathExpansion(kPrefKeyFileSystemId,
                                                      &file_system_id) ||
          !file_system->GetStringWithoutPathExpansion(kPrefKeyDisplayName,
                                                      &display_name) ||
@@ -168,9 +175,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
                                                       &supports_notify_tag) ||
          file_system_id.empty() || display_name.empty()) ||
         // Optional fields.
-        (file_system->GetIntegerWithoutPathExpansion(kPrefKeyOpenedFilesLimit,
-                                                     &opened_files_limit) &&
-         opened_files_limit < 0)) {
+        (opened_files_limit.has_value() && opened_files_limit.value() < 0)) {
       LOG(ERROR)
           << "Malformed provided file system information in preferences.";
       continue;
@@ -181,7 +186,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     options.display_name = display_name;
     options.writable = writable;
     options.supports_notify_tag = supports_notify_tag;
-    options.opened_files_limit = opened_files_limit;
+    options.opened_files_limit = opened_files_limit.value_or(0);
 
     RestoredFileSystem restored_file_system;
     restored_file_system.provider_id = provider_id;

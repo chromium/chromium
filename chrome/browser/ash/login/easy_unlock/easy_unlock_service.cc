@@ -48,6 +48,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -216,15 +217,16 @@ bool EasyUnlockService::GetPersistedHardlockState(
 
   const base::DictionaryValue* dict =
       local_state->GetDictionary(prefs::kEasyUnlockHardlockState);
-  int state_int;
-  if (dict && dict->GetIntegerWithoutPathExpansion(account_id.GetUserEmail(),
-                                                   &state_int)) {
-    *state =
-        static_cast<EasyUnlockScreenlockStateHandler::HardlockState>(state_int);
-    return true;
-  }
+  if (!dict)
+    return false;
 
-  return false;
+  absl::optional<int> state_int = dict->FindIntKey(account_id.GetUserEmail());
+  if (!state_int.has_value())
+    return false;
+
+  *state = static_cast<EasyUnlockScreenlockStateHandler::HardlockState>(
+      state_int.value());
+  return true;
 }
 
 EasyUnlockScreenlockStateHandler*
