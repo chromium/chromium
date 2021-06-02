@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
@@ -1273,6 +1274,46 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebApplicationInfoWithIcons) {
     task.reset();
     run_loop.Run();
   }
+}
+
+TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
+  const GURL manifest_start_url = GURL("https://example.com/start");
+  const AppId app_id = GenerateAppIdFromURL(manifest_start_url);
+
+  auto manifest = std::make_unique<blink::Manifest>();
+  manifest->short_name = u"Short Name from Manifest";
+  manifest->name = u"Name from Manifest";
+  manifest->start_url = GURL("https://example.com/start");
+  manifest->isolated_storage = true;
+
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  UpdateWebAppInfoFromManifest(*manifest, manifest_start_url,
+                               web_app_info.get());
+
+  data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+  data_retriever_->SetRendererWebApplicationInfo(std::move(web_app_info));
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+
+  install_task_->InstallWebAppFromManifestWithFallback(
+      web_contents(), /*force_shortcut_app=*/false,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app_id, installed_app_id);
+            callback_called = true;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+
+  const WebApp* web_app = registrar().GetAppById(app_id);
+  EXPECT_NE(nullptr, web_app);
+  EXPECT_TRUE(web_app->IsStorageIsolated());
 }
 
 TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,

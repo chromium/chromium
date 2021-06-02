@@ -205,6 +205,7 @@ system_web_app:
   nullopt
 window_controls_overlay_enabled:
   0
+is_storage_isolated: 0
 )") << "Copypastable expectation: \n"
     << debug_string;
 }
@@ -374,6 +375,7 @@ system_web_app:
   nullopt
 window_controls_overlay_enabled:
   0
+is_storage_isolated: 0
 )") << "Copypastable expectation: \n"
     << debug_string;
 }

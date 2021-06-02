@@ -394,6 +394,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_window_controls_overlay_enabled(
       web_app.window_controls_overlay_enabled());
+
+  local_data->set_is_storage_isolated(web_app.IsStorageIsolated());
   return local_data;
 }
 
@@ -806,6 +808,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetWindowControlsOverlayEnabled(
         local_data.window_controls_overlay_enabled());
   }
+  web_app->SetStorageIsolated(local_data.is_storage_isolated());
   return web_app;
 }
 

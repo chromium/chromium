@@ -198,6 +198,8 @@ class WebApp {
     return manifest_id_;
   }
 
+  bool IsStorageIsolated() const { return is_storage_isolated_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -257,6 +259,7 @@ class WebApp {
   void SetManifestId(const absl::optional<std::string>& manifest_id);
   void SetFileHandlerPermissionBlocked(bool permission_blocked);
   void SetWindowControlsOverlayEnabled(bool enabled);
+  void SetStorageIsolated(bool is_storage_isolated);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -319,6 +322,7 @@ class WebApp {
   absl::optional<std::string> manifest_id_;
   bool file_handler_permission_blocked_ = false;
   bool window_controls_overlay_enabled_ = false;
+  bool is_storage_isolated_ = false;
   // New fields must be added to:
   //  - |operator==|
   //  - |operator<<|

@@ -369,6 +369,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   sync_fallback_data.icon_infos = app->icon_infos();
   app->SetSyncFallbackData(std::move(sync_fallback_data));
 
+  app->SetStorageIsolated(random.next_bool());
+
   return app;
 }
 

@@ -277,6 +277,9 @@ struct WebApplicationInfo {
   // scope.
   blink::mojom::CaptureLinks capture_links =
       blink::mojom::CaptureLinks::kUndefined;
+
+  // Whether the app should be loaded in a dedicated storage partition.
+  bool is_storage_isolated = false;
 };
 
 std::ostream& operator<<(std::ostream& out,

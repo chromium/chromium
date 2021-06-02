@@ -307,6 +307,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   if (manifest_url.is_valid())
     web_app_info->manifest_url = manifest_url;
+
+  web_app_info->is_storage_isolated = manifest.isolated_storage;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

@@ -305,6 +305,10 @@ void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
   window_controls_overlay_enabled_ = enabled;
 }
 
+void WebApp::SetStorageIsolated(bool is_storage_isolated) {
+  is_storage_isolated_ = is_storage_isolated;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -497,6 +501,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "window_controls_overlay_enabled:" << std::endl
       << Indent(app.window_controls_overlay_enabled_) << std::endl;
 
+  out << "is_storage_isolated: " << app.is_storage_isolated_ << std::endl;
+
   return out;
 }
 
@@ -559,7 +565,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_id_,
         app.client_data_.system_web_app_data,
         app.file_handler_permission_blocked_,
-        app.window_controls_overlay_enabled_
+        app.window_controls_overlay_enabled_,
+        app.is_storage_isolated_
         // clang-format on
     );
   };
