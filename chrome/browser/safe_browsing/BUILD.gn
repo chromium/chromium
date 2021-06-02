@@ -81,6 +81,7 @@ static_library("safe_browsing") {
     }
     deps += [
       "//chrome/browser/profiles:profile",
+      "//components/paint_preview/buildflags",
       "//extensions/browser",
     ]
   }
