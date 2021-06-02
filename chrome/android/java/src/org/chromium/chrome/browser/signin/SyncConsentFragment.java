@@ -98,43 +98,45 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     protected void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback) {
         // TODO(https://crbug.com/1002056): Change onSigninAccepted to get CoreAccountInfo.
-        Account account = AccountUtils.findAccountByName(
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(), accountName);
-        if (account == null) {
-            callback.run();
-            return;
-        }
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        signinManager.signinAndEnableSync(
-                mSigninAccessPoint, account, new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), true);
-                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                        if (settingsClicked) {
-                            settingsLauncher.launchSettingsActivity(getActivity(),
-                                    ManageSyncSettings.class,
-                                    ManageSyncSettings.createArguments(true));
-                        } else {
-                            ProfileSyncService.get().setFirstSetupComplete(
-                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            @Nullable
+            Account account = AccountUtils.findAccountByName(accounts, accountName);
+            if (account == null) {
+                callback.run();
+                return;
+            }
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                    Profile.getLastUsedRegularProfile());
+            signinManager.signinAndEnableSync(
+                    mSigninAccessPoint, account, new SigninManager.SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                                    Profile.getLastUsedRegularProfile(), true);
+                            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                            if (settingsClicked) {
+                                settingsLauncher.launchSettingsActivity(getActivity(),
+                                        ManageSyncSettings.class,
+                                        ManageSyncSettings.createArguments(true));
+                            } else {
+                                ProfileSyncService.get().setFirstSetupComplete(
+                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            }
+
+                            recordSigninCompletedHistogramAccountInfo();
+
+                            Activity activity = getActivity();
+                            if (activity != null) activity.finish();
+
+                            callback.run();
                         }
 
-                        recordSigninCompletedHistogramAccountInfo();
-
-                        Activity activity = getActivity();
-                        if (activity != null) activity.finish();
-
-                        callback.run();
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        callback.run();
-                    }
-                });
+                        @Override
+                        public void onSignInAborted() {
+                            callback.run();
+                        }
+                    });
+        });
     }
 
     private void recordSigninCompletedHistogramAccountInfo() {
