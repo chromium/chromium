@@ -1014,7 +1014,10 @@ class WPTExpectationsUpdater(object):
         if self.patchset:
             command.append('--patchset=' + str(self.patchset))
         command += tests_to_rebaseline
-        self.host.executive.run_command(command)
+        rebaseline_output = self.host.executive.run_command(command)
+        _log.debug(
+            "Output of rebaseline-cl:\n%s\n--end of rebaseline-cl output --" %
+            rebaseline_output)
         return tests_to_rebaseline, test_results
 
     def get_tests_to_rebaseline(self, test_results):
