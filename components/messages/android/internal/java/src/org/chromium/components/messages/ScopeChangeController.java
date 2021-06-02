@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Observe the webContents and notify queue manager of proper scope changes.
+ * Observe the webContents to notify queue manager of proper scope changes of {@link
+ * MessageScopeType#NAVIGATION} and {@link MessageScopeType#WEB_CONTENTS}. Observe the windowAndroid
+ * to notify queue manager of proper scope changes of {@link MessageScopeType#WINDOW}.
  */
 class ScopeChangeController {
     /**
@@ -49,9 +51,9 @@ class ScopeChangeController {
      */
     void firstMessageEnqueued(ScopeKey scopeKey) {
         assert !mObservers.containsKey(scopeKey) : "This scope key has already been observed.";
-        ScopeObserver observer = scopeKey.scopeType == MessageScopeType.NAVIGATION
-                ? new NavigationScopeObserver(mDelegate, scopeKey)
-                : new WindowScopeObserver(mDelegate, scopeKey);
+        ScopeObserver observer = scopeKey.scopeType == MessageScopeType.WINDOW
+                ? new WindowScopeObserver(mDelegate, scopeKey)
+                : new NavigationWebContentsScopeObserver(mDelegate, scopeKey);
         mObservers.put(scopeKey, observer);
     }
 
@@ -64,11 +66,16 @@ class ScopeChangeController {
         observer.destroy();
     }
 
-    static class NavigationScopeObserver extends WebContentsObserver implements ScopeObserver {
+    /**
+     * This handles both navigation type and webContents type. Only navigation type
+     * will destroy scopes on page navigation.
+     */
+    static class NavigationWebContentsScopeObserver
+            extends WebContentsObserver implements ScopeObserver {
         private final Delegate mDelegate;
         private final ScopeKey mScopeKey;
 
-        public NavigationScopeObserver(Delegate delegate, ScopeKey scopeKey) {
+        public NavigationWebContentsScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             super(scopeKey.webContents);
             mDelegate = delegate;
             mScopeKey = scopeKey;
