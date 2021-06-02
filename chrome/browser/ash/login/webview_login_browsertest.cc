@@ -30,6 +30,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -1722,8 +1723,15 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
   EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
 }
 
+// crbug.com/1215441
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_UserInfoNeverSent DISABLED_UserInfoNeverSent
+#else
+#define MAYBE_UserInfoNeverSent UserInfoNeverSent
+#endif
+
 // Verifies flow when user info message is never sent.
-IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, UserInfoNeverSent) {
+IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, MAYBE_UserInfoNeverSent) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
   DisableImplicitServices();
