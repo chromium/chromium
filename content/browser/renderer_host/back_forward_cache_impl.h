@@ -215,7 +215,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns true if query does not contain any of the parameters in
   // "blocked_cgi_params" parameter of |feature::kBackForwardCache|. The
   // comparison is done by splitting the query string on "&" and looking for
-  // exact matches in the list (parameter name and value).
+  // exact matches in the list (parameter name and value). It does not consider
+  // URL escaping.
   bool IsQueryAllowed(const GURL& current_url);
 
   // This is a wrapper around the flag that indicates whether or not the
@@ -330,7 +331,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Data provided from the "blocked_cgi_params" feature param. If any of these
   // occur in the query of the URL then the page is not eligible for caching.
-  // See
+  // See |IsQueryAllowed|.
   const std::unordered_set<std::string> blocked_cgi_params_;
 
   const UnloadSupportStrategy unload_strategy_;
