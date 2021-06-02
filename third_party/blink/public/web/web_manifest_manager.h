@@ -10,13 +10,12 @@
 
 namespace blink {
 
-struct Manifest;
 class WebLocalFrame;
 class WebURL;
 
 class WebManifestManager {
  public:
-  using Callback = base::OnceCallback<void(const WebURL&, const Manifest&)>;
+  using Callback = base::OnceCallback<void(const WebURL&)>;
 
   BLINK_EXPORT static void RequestManifestForTesting(WebLocalFrame*,
                                                      Callback callback);

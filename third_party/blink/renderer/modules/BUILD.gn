@@ -338,7 +338,6 @@ source_set("unit_tests") {
     "manifest/image_resource_type_converters_test.cc",
     "manifest/manifest_manager_unittest.cc",
     "manifest/manifest_parser_unittest.cc",
-    "manifest/manifest_type_converters_unittest.cc",
     "media/audio/audio_renderer_mixer_manager_test.cc",
     "media/audio/audio_renderer_sink_cache_test.cc",
     "media/audio/mojo_audio_input_ipc_test.cc",

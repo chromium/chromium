@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/modules/manifest/manifest_change_notifier.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_fetcher.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_parser.h"
-#include "third_party/blink/renderer/modules/manifest/manifest_type_converters.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -96,7 +95,7 @@ void ManifestManager::RequestManifestForTesting(
       [](WebManifestManager::Callback callback, const KURL& manifest_url,
          const mojom::blink::ManifestPtr& manifest,
          const mojom::blink::ManifestDebugInfo* debug_info) {
-        std::move(callback).Run(manifest_url, manifest.To<Manifest>());
+        std::move(callback).Run(manifest_url);
       },
       std::move(callback)));
 }

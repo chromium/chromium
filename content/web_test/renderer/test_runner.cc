@@ -1876,8 +1876,7 @@ void TestRunnerBindings::SetAnimationRequiresRaster(bool do_raster) {
 }
 
 static void GetManifestReply(BoundV8Callback callback,
-                             const blink::WebURL& manifest_url,
-                             const blink::Manifest& manifest) {
+                             const blink::WebURL& manifest_url) {
   std::move(callback).Run(NoV8Args());
 }
 
