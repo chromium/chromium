@@ -137,6 +137,20 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   _safeURL2 = self.testServer->GetURL("/echo_also_safe");
   _safeContent2 = "also_safe";
 
+  if (@available(iOS 15.1, *)) {
+  } else {
+    if (@available(iOS 14.5, *)) {
+      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
+      // some back/forward navigations between pages that share a renderer
+      // process. Use 'localhost' instead of '127.0.0.1' for safe URLs to
+      // prevent sharing renderer processes with unsafe URLs.
+      GURL::Replacements replacements;
+      replacements.SetHostStr("localhost");
+      _safeURL1 = _safeURL1.ReplaceComponents(replacements);
+      _safeURL2 = _safeURL2.ReplaceComponents(replacements);
+    }
+  }
+
   // |appConfigurationForTestCase| is called during [super setUp], and
   // depends on the URLs initialized above.
   [super setUp];
