@@ -117,8 +117,7 @@ public class ProfileSyncService {
         // This may cause us to create ProfileSyncService even if sync has not
         // been set up, but ProfileSyncService won't actually start until
         // credentials are available.
-        mNativeProfileSyncServiceAndroid =
-                ProfileSyncServiceJni.get().init(ProfileSyncService.this);
+        mNativeProfileSyncServiceAndroid = ProfileSyncServiceJni.get().init(this);
     }
 
     /**

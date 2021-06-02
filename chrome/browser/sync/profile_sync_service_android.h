@@ -11,8 +11,6 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
-class Profile;
-
 namespace syncer {
 class ProfileSyncService;
 class SyncSetupInProgressHandle;
@@ -25,16 +23,15 @@ class SyncSetupInProgressHandle;
 // This class should only be accessed from the UI thread.
 class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
  public:
-  ProfileSyncServiceAndroid(JNIEnv* env, jobject java_profile_sync_service);
+  // |sync_service| must not be null.
+  ProfileSyncServiceAndroid(JNIEnv* env,
+                            syncer::ProfileSyncService* sync_service,
+                            jobject java_profile_sync_service);
   ~ProfileSyncServiceAndroid() override;
 
   ProfileSyncServiceAndroid(const ProfileSyncServiceAndroid&) = delete;
   ProfileSyncServiceAndroid& operator=(const ProfileSyncServiceAndroid&) =
       delete;
-
-  // This method should be called once right after contructing the object.
-  // Returns false if we didn't get a ProfileSyncService.
-  bool Init();
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -119,17 +116,14 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   void TriggerRefresh(JNIEnv* env);
 
  private:
-  // A reference to the Chrome profile object.
-  Profile* profile_;
-
   // A reference to the sync service for this profile.
-  syncer::ProfileSyncService* sync_service_;
+  syncer::ProfileSyncService* const native_sync_service_;
+
+  // Java-side ProfileSyncService object.
+  const JavaObjectWeakGlobalRef java_sync_service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  // Java-side ProfileSyncService object.
-  JavaObjectWeakGlobalRef weak_java_profile_sync_service_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_PROFILE_SYNC_SERVICE_ANDROID_H_
