@@ -33,8 +33,6 @@ std::string ReasonIdToString(
       return "WebUSB";
     case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
       return "MediaSession";
-    default:
-      return "Unknown (default)";
   }
 }
 
