@@ -223,6 +223,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // AVSampleBufferDisplayLayer, then |ca_layer| will point to |av_layer|.
     base::scoped_nsobject<AVSampleBufferDisplayLayer> av_layer_;
 
+    // Layer used to colorize content when it updates, if borders are
+    // enabled.
+    base::scoped_nsobject<CALayer> update_indicator_layer_;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(ContentLayer);
   };

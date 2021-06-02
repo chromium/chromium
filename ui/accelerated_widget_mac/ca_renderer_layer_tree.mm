@@ -559,13 +559,16 @@ CARendererLayerTree::ContentLayer::ContentLayer(ContentLayer&& layer)
       video_type_can_downgrade_(layer.video_type_can_downgrade_),
       protected_video_type_(layer.protected_video_type_),
       ca_layer_(std::move(layer.ca_layer_)),
-      av_layer_(std::move(layer.av_layer_)) {
+      av_layer_(std::move(layer.av_layer_)),
+      update_indicator_layer_(std::move(layer.update_indicator_layer_)) {
   DCHECK(!layer.ca_layer_);
   DCHECK(!layer.av_layer_);
+  DCHECK(!update_indicator_layer_);
 }
 
 CARendererLayerTree::ContentLayer::~ContentLayer() {
   [ca_layer_ removeFromSuperlayer];
+  [update_indicator_layer_ removeFromSuperlayer];
 }
 
 bool CARendererLayerTree::RootLayer::AddContentLayer(
@@ -959,27 +962,81 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
 
   static bool show_borders = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kShowMacOverlayBorders);
-  if (show_borders) {
-    base::ScopedCFTypeRef<CGColorRef> color;
-    float alpha = update_anything ? 1.f : 0.2f;
-    if (type_ == CALayerType::kHDRCopier) {
-      // Blue represents an HDR layer.
-      color.reset(CGColorCreateGenericRGB(0, 0, 1, alpha));
-    } else if (type_ == CALayerType::kVideo) {
-      // Yellow represents an AV layer.
-      color.reset(CGColorCreateGenericRGB(1, 1, 0, alpha));
-    } else if (io_surface_) {
-      // Magenta represents a CALayer.
-      color.reset(CGColorCreateGenericRGB(1, 0, 1, alpha));
-    } else if (solid_color_contents_) {
-      // Cyan represents a solid color.
-      color.reset(CGColorCreateGenericRGB(0, 1, 1, alpha));
-    } else {
-      // Grey represents a CALayer that has not changed.
-      color.reset(CGColorCreateGenericRGB(0.5, 0.5, 0.5, 1));
+  static bool fill_layers = false;
+  if (show_borders || fill_layers) {
+    uint32_t pixel_format =
+        io_surface_ ? IOSurfaceGetPixelFormat(io_surface_) : 0;
+    float red = 0;
+    float green = 0;
+    float blue = 0;
+    switch (type_) {
+      case CALayerType::kHDRCopier:
+        // Blue represents a copied HDR layer.
+        blue = 1.0;
+        break;
+      case CALayerType::kVideo:
+        switch (pixel_format) {
+          case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+            // Yellow is NV12 AVSampleBufferDisplayLayer
+            red = green = 1;
+            break;
+          case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+            // Cyan is P010 AVSampleBufferDisplayLayer
+            green = blue = 1;
+            break;
+          default:
+            NOTREACHED();
+            break;
+        }
+        break;
+      case CALayerType::kDefault:
+        switch (pixel_format) {
+          case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+            // Green is NV12 AVSampleBufferDisplayLayer
+            green = 1;
+            break;
+          case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+            // Red is P010 AVSampleBufferDisplayLayer
+            red = 1;
+            break;
+          case 0:
+            // Grey is no IOSurface (a solid color layer).
+            red = green = blue = 0.5;
+            break;
+          default:
+            // Magenta is a non-video IOSurface.
+            red = blue = 1;
+            break;
+        }
+        break;
     }
-    [ca_layer_ setBorderWidth:1];
+
+    // If content did not change this frame, then use 0.5 opacity and a 1 pixel
+    // border. If it did change, then use full opacity and a 2 pixel border.
+    float alpha = update_anything ? 1.f : 0.5f;
+    [ca_layer_ setBorderWidth:update_anything ? 2 : 1];
+
+    // Set the layer color based on usage.
+    base::ScopedCFTypeRef<CGColorRef> color(
+        CGColorCreateGenericRGB(red, green, blue, alpha));
     [ca_layer_ setBorderColor:color];
+
+    // Flash indication of updates.
+    if (fill_layers) {
+      color.reset(CGColorCreateGenericRGB(red, green, blue, 1.0));
+      if (!update_indicator_layer_)
+        update_indicator_layer_.reset([[CALayer alloc] init]);
+      if (update_anything) {
+        [update_indicator_layer_ setBackgroundColor:color];
+        [update_indicator_layer_ setOpacity:0.25];
+        [ca_layer_ addSublayer:update_indicator_layer_];
+        [update_indicator_layer_
+            setFrame:CGRectMake(0, 0, CGRectGetWidth([ca_layer_ bounds]),
+                                CGRectGetHeight([ca_layer_ bounds]))];
+      } else {
+        [update_indicator_layer_ setOpacity:0.1];
+      }
+    }
   }
 }
 
