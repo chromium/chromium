@@ -65,4 +65,53 @@ SwitchAccessE2ETest = class extends E2ETestBase {
     this.listenUntil(
         predicate, Navigator.byItem.desktopNode, 'childrenChanged', callback);
   }
+
+  /**
+   * @param {!Object} expected
+   * @return {!Promise}
+   */
+  untilFocusIs(expected) {
+    const doesMatch = (expected) => {
+      const newNode = Navigator.byItem.node_;
+      const automationNode = newNode.automationNode || {};
+      return (!expected.instance || newNode instanceof expected.instance) &&
+          (!expected.role || expected.role === automationNode.role) &&
+          (!expected.className ||
+           expected.className === automationNode.className);
+    };
+
+    let didResolve = false;
+    let lastFocusChangeTime = new Date();
+    const id = setInterval(() => {
+      if (didResolve) {
+        clearInterval(id);
+        return;
+      }
+
+      if ((new Date() - lastFocusChangeTime) < 3000) {
+        return;
+      }
+
+      console.error(
+          `\nStill waiting for expectation: ${JSON.stringify(expected)}\n` +
+          `Focus is: ${Navigator.byItem.node_.debugString()}`);
+    }, 1000);
+    return new Promise(resolve => {
+      if (doesMatch(expected)) {
+        didResolve = true;
+        resolve(Navigator.byItem.node_);
+        return;
+      }
+      const original = Navigator.byItem.setNode_.bind(Navigator.byItem);
+      Navigator.byItem.setNode_ = (node) => {
+        original(node);
+        lastFocusChangeTime = new Date();
+        if (doesMatch(expected)) {
+          Navigator.byItem.setNode_ = original;
+          didResolve = true;
+          resolve(Navigator.byItem.node_);
+        }
+      };
+    });
+  }
 };

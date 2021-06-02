@@ -46,34 +46,6 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
     Navigator.byItem.moveTo_(pageContents);
     Navigator.byItem.enterGroup();
   }
-
-  // TODO(anastasi): this should probably be extracted to a helper class
-  // and after some time delay, print out the current state for debugging.
-  untilFocusIs(expected) {
-    const doesMatch = (expected) => {
-      const newNode = Navigator.byItem.node_;
-      const automationNode = newNode.automationNode || {};
-      return (!expected.instance || newNode instanceof expected.instance) &&
-          (!expected.role || expected.role === automationNode.role) &&
-          (!expected.className ||
-           expected.className === automationNode.className);
-    };
-    return new Promise(resolve => {
-      if (doesMatch(expected)) {
-        resolve(Navigator.byItem.node_);
-        return;
-      }
-      const original = Navigator.byItem.setNode_.bind(Navigator.byItem);
-      Navigator.byItem.setNode_ = (node) => {
-        original(node);
-        if (doesMatch(expected)) {
-          Navigator.byItem.setNode_ = original;
-          resolve(Navigator.byItem.node_);
-          return;
-        }
-      };
-    });
-  }
 };
 
 function currentNode() {
