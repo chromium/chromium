@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
@@ -13,10 +10,19 @@ import {assert} from 'chrome://resources/js/assert.m.js';
  * first dialog was opened.
  */
 export class DialogFocusManager {
-  private previousFocusElement_: HTMLElement|null = null;
-  private dialogs_: Set<HTMLDialogElement|CrDialogElement> = new Set();
+  constructor() {
+    /** @private {HTMLElement} */
+    this.previousFocusElement_ = null;
 
-  showDialog(dialog: (HTMLDialogElement|CrDialogElement), showFn?: () => void) {
+    /** @private {Set<HTMLDialogElement>} */
+    this.dialogs_ = new Set();
+  }
+
+  /**
+   * @param {HTMLDialogElement} dialog
+   * @param {function()=} showFn
+   */
+  showDialog(dialog, showFn) {
     if (!showFn) {
       showFn = function() {
         dialog.showModal();
@@ -39,9 +45,9 @@ export class DialogFocusManager {
   }
 
   /**
-   * @return True if the document currently has an open dialog.
+   * @return {boolean} True if the document currently has an open dialog.
    */
-  hasOpenDialog(): boolean {
+  hasOpenDialog() {
     return this.dialogs_.size > 0;
   }
 
@@ -53,22 +59,31 @@ export class DialogFocusManager {
     this.previousFocusElement_ = null;
   }
 
-  private updatePreviousFocus_() {
+  /** @private */
+  updatePreviousFocus_() {
     this.previousFocusElement_ = this.getFocusedElement_();
   }
 
-  private getFocusedElement_(): HTMLElement {
-    let focus = document.activeElement as HTMLElement;
-    while (focus.shadowRoot && focus.shadowRoot!.activeElement) {
-      focus = focus.shadowRoot!.activeElement as HTMLElement;
+  /**
+   * @return {HTMLElement}
+   * @private
+   */
+  getFocusedElement_() {
+    let focus = document.activeElement;
+    while (focus.root && focus.root.activeElement) {
+      focus = focus.root.activeElement;
     }
 
     return focus;
   }
 
-  private getCloseListener_(dialog: (HTMLDialogElement|CrDialogElement)):
-      ((p1: Event) => void) {
-    const closeListener = (e: Event) => {
+  /**
+   * @param {HTMLDialogElement} dialog
+   * @return {function(Event)}
+   * @private
+   */
+  getCloseListener_(dialog) {
+    const closeListener = (e) => {
       // If the dialog is open, then it got reshown immediately and we
       // shouldn't clear it until it is closed again.
       if (dialog.open) {
@@ -87,13 +102,16 @@ export class DialogFocusManager {
     return closeListener;
   }
 
-  static getInstance(): DialogFocusManager {
+  /** @return {!DialogFocusManager} */
+  static getInstance() {
     return instance || (instance = new DialogFocusManager());
   }
 
-  static setInstance(obj: DialogFocusManager|null) {
+  /** @param {?DialogFocusManager} obj */
+  static setInstance(obj) {
     instance = obj;
   }
 }
 
-let instance: DialogFocusManager|null = null;
+/** @type {?DialogFocusManager} */
+let instance = null;

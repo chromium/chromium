@@ -7,7 +7,6 @@
  * shortcuts.
  */
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -15,17 +14,13 @@ import 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-b
 import './edit_dialog.js';
 import './shared_style.js';
 import './strings.m.js';
-import './edit_dialog.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -38,25 +33,23 @@ import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROO
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {BookmarksEditDialogElement} from './edit_dialog.js';
 import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarkNode, BookmarksPageState, OpenCommandMenuDetail} from './types.js';
+import {BookmarkNode, BookmarksPageState} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ */
 const BookmarksCommandManagerElementBase =
-    mixinBehaviors([StoreClient], PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-          StoreObserver<BookmarksPageState>
-}
+    mixinBehaviors([StoreClient], PolymerElement);
 
-export interface BookmarksCommandManagerElement {
-  $: {
-    dropdown: CrLazyRenderElement,
-    editDialog: CrLazyRenderElement,
-    openDialog: CrLazyRenderElement,
-  }
-}
+/** @type {?BookmarksCommandManagerElement} */
+let instance = null;
 
-let instance: BookmarksCommandManagerElement|null = null;
-
+/** @polymer */
 export class BookmarksCommandManagerElement extends
     BookmarksCommandManagerElementBase {
   static get is() {
@@ -69,47 +62,52 @@ export class BookmarksCommandManagerElement extends
 
   static get properties() {
     return {
+      /** @private {!Array<Command>} */
       menuCommands_: {
         type: Array,
         computed: 'computeMenuCommands_(menuSource_)',
       },
 
+      /** @private {Set<string>} */
       menuIds_: Object,
 
-      menuSource_: Number,
+      /**
+       * Indicates where the context menu was opened from. Will be NONE if
+       * menu is not open, indicating that commands are from keyboard shortcuts
+       * or elsewhere in the UI.
+       * @private {MenuSource}
+       */
+      menuSource_: {
+        type: Number,
+        value: MenuSource.NONE,
+      },
 
+      /** @private */
       canPaste_: Boolean,
 
+      /** @private */
       globalCanEdit_: Boolean,
     };
   }
 
-  /**
-   * Indicates where the context menu was opened from. Will be NONE if
-   * menu is not open, indicating that commands are from keyboard shortcuts
-   * or elsewhere in the UI.
-   */
-  private menuSource_: MenuSource = MenuSource.NONE;
-  private confirmOpenCallback_: (() => void)|null = null;
-  private canPaste_: boolean;
-  private globalCanEdit_: boolean;
-  private menuIds_: Set<string>;
-  private menuCommands_: Command[];
-  private browserProxy_: BrowserProxy;
-  private shortcuts_: Map<Command, KeyboardShortcutList>;
-  private eventTracker_: EventTracker = new EventTracker();
+  constructor() {
+    super();
+    /** @private {?Function} */
+    this.confirmOpenCallback_ = null;
+  }
 
   connectedCallback() {
     super.connectedCallback();
     assert(instance === null);
     instance = this;
 
+    /** @private {!BrowserProxy} */
     this.browserProxy_ = BrowserProxy.getInstance();
 
-    this.watch(
-        'globalCanEdit_', state => (state as BookmarksPageState).prefs.canEdit);
+    this.watch('globalCanEdit_', state => state.prefs.canEdit);
     this.updateFromStore();
 
+    /** @private {!Map<Command, KeyboardShortcutList>} */
     this.shortcuts_ = new Map();
 
     this.addShortcut_(Command.EDIT, 'F2', 'Enter');
@@ -132,16 +130,21 @@ export class BookmarksCommandManagerElement extends
     this.addShortcut_(Command.COPY, 'Ctrl|c', 'Meta|c');
     this.addShortcut_(Command.PASTE, 'Ctrl|v', 'Meta|v');
 
-    this.eventTracker_.add(document, 'open-command-menu', e =>
-                           this.onOpenCommandMenu_(
-                               e as CustomEvent<OpenCommandMenuDetail>));
-    this.eventTracker_.add(document, 'keydown', e =>
-                           this.onKeydown_(e as KeyboardEvent));
+    /** @private {!Map<string, Function>} */
+    this.boundListeners_ = new Map();
 
-    const addDocumentListenerForCommand = (eventName: string,
-                                           command: Command) => {
-      this.eventTracker_.add(document, eventName, e => {
-        if ((e.composedPath()[0] as HTMLElement).tagName === 'INPUT') {
+    const addDocumentListener = (eventName, handler) => {
+      assert(!this.boundListeners_.has(eventName));
+      const boundListener = handler.bind(this);
+      this.boundListeners_.set(eventName, boundListener);
+      document.addEventListener(eventName, boundListener);
+    };
+    addDocumentListener('open-command-menu', this.onOpenCommandMenu_);
+    addDocumentListener('keydown', this.onKeydown_);
+
+    const addDocumentListenerForCommand = (eventName, command) => {
+      addDocumentListener(eventName, (e) => {
+        if (e.path[0].tagName === 'INPUT') {
           return;
         }
 
@@ -164,20 +167,26 @@ export class BookmarksCommandManagerElement extends
   disconnectedCallback() {
     super.disconnectedCallback();
     instance = null;
-    this.eventTracker_.removeAll();
+    this.boundListeners_.forEach(
+        (handler, eventName) =>
+            document.removeEventListener(eventName, handler));
   }
 
   /**
    * Display the command context menu at (|x|, |y|) in window coordinates.
    * Commands will execute on |items| if given, or on the currently selected
    * items.
+   * @param {number} x
+   * @param {number} y
+   * @param {MenuSource} source
+   * @param {Set<string>=} items
    */
-  openCommandMenuAtPosition(
-      x: number, y: number, source: MenuSource, items?: Set<string>) {
+  openCommandMenuAtPosition(x, y, source, items) {
     this.menuSource_ = source;
     this.menuIds_ = items || this.getState().selection.items;
 
-    const dropdown = (this.$.dropdown.get()) as CrActionMenuElement;
+    const dropdown =
+        /** @type {!CrActionMenuElement} */ (this.$.dropdown.get());
     // Ensure that the menu is fully rendered before trying to position it.
     flush();
     DialogFocusManager.getInstance().showDialog(
@@ -189,12 +198,15 @@ export class BookmarksCommandManagerElement extends
   /**
    * Display the command context menu positioned to cover the |target|
    * element. Commands will execute on the currently selected items.
+   * @param {!Element} target
+   * @param {MenuSource} source
    */
-  openCommandMenuAtElement(target: Element, source: MenuSource) {
+  openCommandMenuAtElement(target, source) {
     this.menuSource_ = source;
     this.menuIds_ = this.getState().selection.items;
 
-    const dropdown = this.$.dropdown.get() as CrActionMenuElement;
+    const dropdown =
+        /** @type {!CrActionMenuElement} */ (this.$.dropdown.get());
     // Ensure that the menu is fully rendered before trying to position it.
     flush();
     DialogFocusManager.getInstance().showDialog(
@@ -206,7 +218,7 @@ export class BookmarksCommandManagerElement extends
   closeCommandMenu() {
     this.menuIds_ = new Set();
     this.menuSource_ = MenuSource.NONE;
-    (this.$.dropdown.get() as CrActionMenuElement).close();
+    /** @type {!CrActionMenuElement} */ (this.$.dropdown.get()).close();
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -216,8 +228,11 @@ export class BookmarksCommandManagerElement extends
    * Determine if the |command| can be executed with the given |itemIds|.
    * Commands which appear in the context menu should be implemented
    * separately using `isCommandVisible_` and `isCommandEnabled_`.
+   * @param {Command} command
+   * @param {!Set<string>} itemIds
+   * @return {boolean}
    */
-  canExecute(command: Command, itemIds: Set<string>): boolean {
+  canExecute(command, itemIds) {
     const state = this.getState();
     switch (command) {
       case Command.OPEN:
@@ -244,7 +259,13 @@ export class BookmarksCommandManagerElement extends
     }
   }
 
-  isCommandVisible_(command: Command, itemIds: Set<string>): boolean {
+  /**
+   * @param {Command} command
+   * @param {!Set<string>} itemIds
+   * @return {boolean} True if the command should be visible in the context
+   *     menu.
+   */
+  isCommandVisible_(command, itemIds) {
     switch (command) {
       case Command.EDIT:
         return itemIds.size === 1 && this.globalCanEdit_;
@@ -278,7 +299,13 @@ export class BookmarksCommandManagerElement extends
     return assert(false);
   }
 
-  private isCommandEnabled_(command: Command, itemIds: Set<string>): boolean {
+  /**
+   * @param {Command} command
+   * @param {!Set<string>} itemIds
+   * @return {boolean} True if the command should be clickable in the context
+   *     menu.
+   */
+  isCommandEnabled_(command, itemIds) {
     const state = this.getState();
     switch (command) {
       case Command.EDIT:
@@ -295,7 +322,7 @@ export class BookmarksCommandManagerElement extends
             IncognitoAvailability.DISABLED;
       case Command.SORT:
         return this.canChangeList_() &&
-            state.nodes[state.selectedFolder]!.children!.length > 1;
+            state.nodes[state.selectedFolder].children.length > 1;
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
         return this.canChangeList_();
@@ -310,27 +337,33 @@ export class BookmarksCommandManagerElement extends
 
   /**
    * Returns whether the currently displayed bookmarks list can be changed.
+   * @private
+   * @return {boolean}
    */
-  private canChangeList_(): boolean {
+  canChangeList_() {
     const state = this.getState();
     return state.search.term === '' &&
         canReorderChildren(state, state.selectedFolder);
   }
 
-  handle(command: Command, itemIds: Set<string>) {
+  /**
+   * @param {Command} command
+   * @param {!Set<string>} itemIds
+   */
+  handle(command, itemIds) {
     const state = this.getState();
     switch (command) {
       case Command.EDIT: {
-        const id = Array.from(itemIds)[0]!;
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
-            .showEditDialog(state.nodes[id]!);
+        const id = Array.from(itemIds)[0];
+        /** @type {!BookmarksEditDialogElement} */ (this.$.editDialog.get())
+            .showEditDialog(state.nodes[id]);
         break;
       }
       case Command.COPY_URL:
       case Command.COPY: {
         const idList = Array.from(itemIds);
         chrome.bookmarkManagerPrivate.copy(idList, () => {
-          let labelPromise: Promise<string>;
+          let labelPromise;
           if (command === Command.COPY_URL) {
             labelPromise =
                 Promise.resolve(loadTimeData.getString('toastUrlCopied'));
@@ -343,14 +376,14 @@ export class BookmarksCommandManagerElement extends
           }
 
           this.showTitleToast_(
-              labelPromise, state.nodes[idList[0]!]!.title, false);
+              labelPromise, state.nodes[idList[0]].title, false);
         });
         break;
       }
       case Command.SHOW_IN_FOLDER: {
         const id = Array.from(itemIds)[0];
         this.dispatch(
-            selectFolder(assert(state.nodes[id!]!.parentId!), state.nodes));
+            selectFolder(assert(state.nodes[id].parentId), state.nodes));
         DialogFocusManager.getInstance().clearFocus();
         this.dispatchEvent(new CustomEvent(
             'highlight-items', {bubbles: true, composed: true, detail: [id]}));
@@ -358,8 +391,8 @@ export class BookmarksCommandManagerElement extends
       }
       case Command.DELETE: {
         const idList = Array.from(this.minimizeDeletionSet_(itemIds));
-        const title = state.nodes[idList[0]!]!.title;
-        let labelPromise: Promise<string>;
+        const title = state.nodes[idList[0]].title;
+        let labelPromise;
 
         if (idList.length === 1) {
           labelPromise =
@@ -388,7 +421,7 @@ export class BookmarksCommandManagerElement extends
         break;
       case Command.OPEN:
         if (this.isFolder_(itemIds)) {
-          const folderId = Array.from(itemIds)[0]!;
+          const folderId = Array.from(itemIds)[0];
           this.dispatch(selectFolder(folderId, state.nodes));
         } else {
           this.openUrls_(this.expandUrls_(itemIds), command);
@@ -420,15 +453,15 @@ export class BookmarksCommandManagerElement extends
       case Command.SORT:
         chrome.bookmarkManagerPrivate.sortChildren(
             assert(state.selectedFolder));
-        getToastManager().querySelector('dom-if')!.if = true;
+        getToastManager().querySelector('dom-if').if = true;
         getToastManager().show(loadTimeData.getString('toastFolderSorted'));
         break;
       case Command.ADD_BOOKMARK:
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
+        /** @type {!BookmarksEditDialogElement} */ (this.$.editDialog.get())
             .showAddDialog(false, assert(state.selectedFolder));
         break;
       case Command.ADD_FOLDER:
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
+        /** @type {!BookmarksEditDialogElement} */ (this.$.editDialog.get())
             .showAddDialog(true, assert(state.selectedFolder));
         break;
       case Command.IMPORT:
@@ -447,10 +480,17 @@ export class BookmarksCommandManagerElement extends
         itemIds, 'BookmarkManager.CommandExecuted', command);
   }
 
-  handleKeyEvent(e: Event, itemIds: Set<string>): boolean {
+  /**
+   * @param {!Event} e
+   * @param {!Set<string>} itemIds
+   * @return {boolean} True if the event was handled, triggering a keyboard
+   *     shortcut.
+   */
+  handleKeyEvent(e, itemIds) {
     for (const commandTuple of this.shortcuts_) {
-      const command = commandTuple[0] as Command;
-      const shortcut = commandTuple[1] as KeyboardShortcutList;
+      const command = /** @type {Command} */ (commandTuple[0]);
+      const shortcut =
+          /** @type {KeyboardShortcutList} */ (commandTuple[1]);
       if (shortcut.matchesEvent(e) && this.canExecute(command, itemIds)) {
         this.handle(command, itemIds);
 
@@ -468,9 +508,13 @@ export class BookmarksCommandManagerElement extends
 
   /**
    * Register a keyboard shortcut for a command.
+   * @param {Command} command Command that the shortcut will trigger.
+   * @param {string} shortcut Keyboard shortcut, using the syntax of
+   *     cr/ui/command.js.
+   * @param {string=} macShortcut If set, enables a replacement shortcut for
+   *     Mac.
    */
-  private addShortcut_(
-      command: Command, shortcut: string, macShortcut?: string) {
+  addShortcut_(command, shortcut, macShortcut) {
     shortcut = (isMac && macShortcut) ? macShortcut : shortcut;
     this.shortcuts_.set(command, new KeyboardShortcutList(shortcut));
   }
@@ -481,14 +525,16 @@ export class BookmarksCommandManagerElement extends
    * both a node and its descendant, we will only try to delete the topmost
    * node, preventing an error in the bookmarkManagerPrivate.removeTrees API
    * call.
+   * @param {!Set<string>} itemIds
+   * @return {!Set<string>}
    */
-  private minimizeDeletionSet_(itemIds: Set<string>): Set<string> {
-    const minimizedSet = new Set() as Set<string>;
+  minimizeDeletionSet_(itemIds) {
+    const minimizedSet = new Set();
     const nodes = this.getState().nodes;
     itemIds.forEach(function(itemId) {
-      let currentId = itemId!;
+      let currentId = itemId;
       while (currentId !== ROOT_NODE_ID) {
-        currentId = assert(nodes[currentId]!.parentId!);
+        currentId = assert(nodes[currentId].parentId);
         if (itemIds.has(currentId)) {
           return;
         }
@@ -501,8 +547,11 @@ export class BookmarksCommandManagerElement extends
   /**
    * Open the given |urls| in response to a |command|. May show a confirmation
    * dialog before opening large numbers of URLs.
+   * @param {!Array<string>} urls
+   * @param {Command} command
+   * @private
    */
-  private openUrls_(urls: Array<string>, command: Command) {
+  openUrls_(urls, command) {
     assert(
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
@@ -533,11 +582,10 @@ export class BookmarksCommandManagerElement extends
 
     this.confirmOpenCallback_ = openUrlsCallback;
     const dialog = this.$.openDialog.get();
-    dialog.querySelector('[slot=body]')!.textContent =
+    dialog.querySelector('[slot=body]').textContent =
         loadTimeData.getStringF('openDialogBody', urls.length);
 
-    DialogFocusManager.getInstance().showDialog(
-        this.$.openDialog.get() as CrDialogElement);
+    DialogFocusManager.getInstance().showDialog(this.$.openDialog.get());
   }
 
   /**
@@ -545,18 +593,21 @@ export class BookmarksCommandManagerElement extends
    * Note that these will be ordered by insertion order into the |itemIds|
    * set, and that it is possible to duplicate a URL by passing in both the
    * parent ID and child ID.
+   * @param {!Set<string>} itemIds
+   * @return {!Array<string>}
+   * @private
    */
-  private expandUrls_(itemIds: Set<string>): string[] {
-    const urls: string[] = [];
+  expandUrls_(itemIds) {
+    const urls = [];
     const nodes = this.getState().nodes;
 
     itemIds.forEach(function(id) {
-      const node = nodes[id]!;
+      const node = nodes[id];
       if (node.url) {
         urls.push(node.url);
       } else {
-        node.children!.forEach(function(childId) {
-          const childNode = nodes[childId]!;
+        node.children.forEach(function(childId) {
+          const childNode = nodes[childId];
           if (childNode.url) {
             urls.push(childNode.url);
           }
@@ -567,28 +618,49 @@ export class BookmarksCommandManagerElement extends
     return urls;
   }
 
-  private containsMatchingNode_(
-      itemIds: Set<string>, predicate: (p1: BookmarkNode) => boolean): boolean {
+  /**
+   * @param {!Set<string>} itemIds
+   * @param {function(BookmarkNode):boolean} predicate
+   * @return {boolean} True if any node in |itemIds| returns true for
+   *     |predicate|.
+   */
+  containsMatchingNode_(itemIds, predicate) {
     const nodes = this.getState().nodes;
 
     return Array.from(itemIds).some(function(id) {
-      return predicate(nodes[id]!);
+      return predicate(nodes[id]);
     });
   }
 
-  private isSingleBookmark_(itemIds: Set<string>): boolean {
+  /**
+   * @param {!Set<string>} itemIds
+   * @return {boolean} True if |itemIds| is a single bookmark (non-folder)
+   *     node.
+   * @private
+   */
+  isSingleBookmark_(itemIds) {
     return itemIds.size === 1 &&
         this.containsMatchingNode_(itemIds, function(node) {
           return !!node.url;
         });
   }
 
-  private isFolder_(itemIds: Set<string>): boolean {
+  /**
+   * @param {!Set<string>} itemIds
+   * @return {boolean}
+   * @private
+   */
+  isFolder_(itemIds) {
     return itemIds.size === 1 &&
         this.containsMatchingNode_(itemIds, node => !node.url);
   }
 
-  private getCommandLabel_(command: Command): string {
+  /**
+   * @param {Command} command
+   * @return {string}
+   * @private
+   */
+  getCommandLabel_(command) {
     // Handle non-pluralized strings first.
     let label = null;
     switch (command) {
@@ -597,8 +669,8 @@ export class BookmarksCommandManagerElement extends
           return '';
         }
 
-        const id = Array.from(this.menuIds_)[0]!;
-        const itemUrl = this.getState().nodes[id]!.url;
+        const id = Array.from(this.menuIds_)[0];
+        const itemUrl = this.getState().nodes[id].url;
         label = itemUrl ? 'menuEdit' : 'menuRename';
         break;
       case Command.CUT:
@@ -662,8 +734,14 @@ export class BookmarksCommandManagerElement extends
     return '';
   }
 
-  private getPluralizedOpenAllString_(
-      case0: string, case1: string, caseOther: string): string {
+  /**
+   * @param {string} case0 String ID for the case of zero URLs.
+   * @param {string} case1 String ID for the case of 1 URL.
+   * @param {string} caseOther String ID for string that includes the URL count.
+   * @return {string}
+   * @private
+   */
+  getPluralizedOpenAllString_(case0, case1, caseOther) {
     const multipleNodes = this.menuIds_.size > 1 ||
         this.containsMatchingNode_(this.menuIds_, node => !node.url);
 
@@ -679,7 +757,12 @@ export class BookmarksCommandManagerElement extends
     return loadTimeData.getStringF(caseOther, urls.length);
   }
 
-  private getCommandSublabel_(command: Command): string {
+  /**
+   * @param {Command} command
+   * @return {string}
+   * @private
+   */
+  getCommandSublabel_(command) {
     const multipleNodes = this.menuIds_.size > 1 ||
         this.containsMatchingNode_(this.menuIds_, function(node) {
           return !node.url;
@@ -693,7 +776,8 @@ export class BookmarksCommandManagerElement extends
     }
   }
 
-  private computeMenuCommands_(): Command[] {
+  /** @private */
+  computeMenuCommands_() {
     switch (this.menuSource_) {
       case MenuSource.ITEM:
       case MenuSource.TREE:
@@ -732,10 +816,15 @@ export class BookmarksCommandManagerElement extends
         return [];
     }
     assert(false);
-    return [];
   }
 
-  private showDividerAfter_(command: Command, itemIds: Set<string>): boolean {
+  /**
+   * @param {Command} command
+   * @param {!Set<string>} itemIds
+   * @return {boolean}
+   * @private
+   */
+  showDividerAfter_(command, itemIds) {
     switch (command) {
       case Command.SORT:
       case Command.ADD_FOLDER:
@@ -749,8 +838,13 @@ export class BookmarksCommandManagerElement extends
     return false;
   }
 
-  private recordCommandHistogram_(
-      itemIds: Set<string>, histogram: string, command: number) {
+  /**
+   * @param {!Set<string>} itemIds
+   * @param {string} histogram
+   * @param {number} command
+   * @private
+   */
+  recordCommandHistogram_(itemIds, histogram, command) {
     if (command === Command.OPEN) {
       command =
           this.isFolder_(itemIds) ? Command.OPEN_FOLDER : Command.OPEN_BOOKMARK;
@@ -762,24 +856,29 @@ export class BookmarksCommandManagerElement extends
   /**
    * Show a toast with a bookmark |title| inserted into a label, with the
    * title ellipsised if necessary.
+   * @param {!Promise<string>} labelPromise Promise which resolves with the
+   *    label for the toast.
+   * @param {string} title Bookmark title to insert.
+   * @param {boolean} canUndo If true, shows an undo button in the toast.
+   * @private
    */
-  private async showTitleToast_(
-      labelPromise: Promise<string>, title: string,
-      canUndo: boolean): Promise<void> {
+  async showTitleToast_(labelPromise, title, canUndo) {
     const label = await labelPromise;
     const pieces =
         loadTimeData.getSubstitutedStringPieces(label, title).map(function(p) {
           // Make the bookmark name collapsible.
-          const result =
-              p as {value: string, arg: string, collapsible: boolean};
-          result.collapsible = !!p.arg;
-          return result;
+          p.collapsible = !!p.arg;
+          return p;
         });
-    getToastManager().querySelector('dom-if')!.if = canUndo;
+    getToastManager().querySelector('dom-if').if = canUndo;
     getToastManager().showForStringPieces(pieces);
   }
 
-  private updateCanPaste_(targetId: string): Promise<void> {
+  /**
+   * @param {number} targetId
+   * @private
+   */
+  updateCanPaste_(targetId) {
     return new Promise(resolve => {
       chrome.bookmarkManagerPrivate.canPaste(`${targetId}`, result => {
         this.canPaste_ = result;
@@ -791,37 +890,47 @@ export class BookmarksCommandManagerElement extends
   ////////////////////////////////////////////////////////////////////////////
   // Event handlers:
 
-  private async onOpenCommandMenu_(
-      e: CustomEvent<OpenCommandMenuDetail>): Promise<void> {
+  /**
+   * @param {Event} e
+   * @private
+   */
+  async onOpenCommandMenu_(e) {
     if (e.detail.targetId) {
       await this.updateCanPaste_(e.detail.targetId);
     }
     if (e.detail.targetElement) {
-      this.openCommandMenuAtElement(e.detail.targetElement!, e.detail.source);
+      this.openCommandMenuAtElement(e.detail.targetElement, e.detail.source);
     } else {
-      this.openCommandMenuAtPosition(e.detail.x!, e.detail.y!, e.detail.source);
+      this.openCommandMenuAtPosition(e.detail.x, e.detail.y, e.detail.source);
     }
     this.browserProxy_.recordInHistogram(
         'BookmarkManager.CommandMenuOpened', e.detail.source,
         MenuSource.NUM_VALUES);
   }
 
-  private onCommandClick_(e: Event) {
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onCommandClick_(e) {
     this.handle(
-        Number((e.currentTarget as HTMLElement).getAttribute('command')) as
-            Command,
+        /** @type {Command} */ (
+            Number(e.currentTarget.getAttribute('command'))),
         assert(this.menuIds_));
     this.closeCommandMenu();
   }
 
-  private onKeydown_(e: Event) {
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onKeydown_(e) {
     const path = e.composedPath();
-    if ((path[0] as HTMLElement).tagName === 'INPUT') {
+    if (path[0].tagName === 'INPUT') {
       return;
     }
     if ((e.target === document.body ||
-         path.some(
-             el => (el as HTMLElement).tagName === 'BOOKMARKS-TOOLBAR')) &&
+         path.some(el => el.tagName === 'BOOKMARKS-TOOLBAR')) &&
         !DialogFocusManager.getInstance().hasOpenDialog()) {
       this.handleKeyEvent(e, this.getState().selection.items);
     }
@@ -831,27 +940,31 @@ export class BookmarksCommandManagerElement extends
    * Close the menu on mousedown so clicks can propagate to the underlying UI.
    * This allows the user to right click the list while a context menu is
    * showing and get another context menu.
+   * @param {Event} e
+   * @private
    */
-  private onMenuMousedown_(e: Event): void {
-    if ((e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
+  onMenuMousedown_(e) {
+    if (e.path[0].tagName !== 'DIALOG') {
       return;
     }
 
     this.closeCommandMenu();
   }
 
-  private onOpenCancelTap_() {
-    (this.$.openDialog.get() as CrDialogElement).cancel();
+  /** @private */
+  onOpenCancelTap_() {
+    this.$.openDialog.get().cancel();
   }
 
-  private onOpenConfirmTap_() {
-    const confirmOpenCallback = assert(this.confirmOpenCallback_!);
-    confirmOpenCallback();
-    (this.$.openDialog.get() as CrDialogElement).close();
+  /** @private */
+  onOpenConfirmTap_() {
+    this.confirmOpenCallback_();
+    this.$.openDialog.get().close();
   }
 
-  static getInstance(): BookmarksCommandManagerElement {
-    return assert(instance)!;
+  /** @return {!BookmarksCommandManagerElement} */
+  static getInstance() {
+    return assert(instance);
   }
 }
 

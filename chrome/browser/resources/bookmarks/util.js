@@ -5,47 +5,58 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {BOOKMARKS_BAR_ID, IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
-import {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
+import {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';
 
 /**
  * @fileoverview Utility functions for the Bookmarks page.
  */
 
-export function getDisplayedList(state: BookmarksPageState): string[] {
+/**
+ * Returns the list of bookmark IDs to be displayed in the UI, taking into
+ * account search and the currently selected folder.
+ * @param {!BookmarksPageState} state
+ * @return {!Array<string>}
+ */
+export function getDisplayedList(state) {
   if (isShowingSearch(state)) {
-    return assert(state.search.results!);
+    return assert(state.search.results);
   }
 
-  return assert(state.nodes[state.selectedFolder]!.children!);
+  return assert(state.nodes[state.selectedFolder].children);
 }
 
-export function normalizeNode(treeNode: chrome.bookmarks.BookmarkTreeNode):
-    BookmarkNode {
+/**
+ * @param {chrome.bookmarks.BookmarkTreeNode} treeNode
+ * @return {!BookmarkNode}
+ */
+export function normalizeNode(treeNode) {
   const node = Object.assign({}, treeNode);
   // Node index is not necessary and not kept up-to-date. Remove it from the
   // data structure so we don't accidentally depend on the incorrect
   // information.
   delete node.index;
-  delete node.children;
-  const bookmarkNode = node as unknown as BookmarkNode;
 
   if (!('url' in node)) {
     // The onCreated API listener returns folders without |children| defined.
-    bookmarkNode.children = (treeNode.children || []).map(function(child) {
+    node.children = (node.children || []).map(function(child) {
       return child.id;
     });
   }
-  return bookmarkNode;
+  return /** @type {BookmarkNode} */ (node);
 }
 
-export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
-    NodeMap {
-  const nodeMap: NodeMap = {};
+/**
+ * @param {chrome.bookmarks.BookmarkTreeNode} rootNode
+ * @return {NodeMap}
+ */
+export function normalizeNodes(rootNode) {
+  /** @type {NodeMap} */
+  const nodeMap = {};
   const stack = [];
   stack.push(rootNode);
 
   while (stack.length > 0) {
-    const node = stack.pop()!;
+    const node = stack.pop();
     nodeMap[node.id] = normalizeNode(node);
     if (!node.children) {
       continue;
@@ -59,7 +70,8 @@ export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
   return nodeMap;
 }
 
-export function createEmptyState(): BookmarksPageState {
+/** @return {!BookmarksPageState} */
+export function createEmptyState() {
   return {
     nodes: {},
     selectedFolder: BOOKMARKS_BAR_ID,
@@ -80,7 +92,11 @@ export function createEmptyState(): BookmarksPageState {
   };
 }
 
-export function isShowingSearch(state: BookmarksPageState): boolean {
+/**
+ * @param {BookmarksPageState} state
+ * @return {boolean}
+ */
+export function isShowingSearch(state) {
   return state.search.results != null;
 }
 
@@ -89,41 +105,56 @@ export function isShowingSearch(state: BookmarksPageState): boolean {
  * the node to be renamed, moved or deleted. Note that if a node is
  * uneditable, it may still have editable children (for example, the top-level
  * folders).
+ * @param {BookmarksPageState} state
+ * @param {string} itemId
+ * @return {boolean}
  */
-export function canEditNode(
-    state: BookmarksPageState, itemId: string): boolean {
+export function canEditNode(state, itemId) {
   return itemId !== ROOT_NODE_ID &&
-      state.nodes![itemId]!.parentId !== ROOT_NODE_ID &&
-      !state.nodes![itemId]!.unmodifiable && state.prefs.canEdit;
+      state.nodes[itemId].parentId !== ROOT_NODE_ID &&
+      !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
 }
 
 /**
  * Returns true if it is possible to modify the children list of the node with
  * ID |itemId|. This includes rearranging the children or adding new ones.
+ * @param {BookmarksPageState} state
+ * @param {string} itemId
+ * @return {boolean}
  */
-export function canReorderChildren(
-    state: BookmarksPageState, itemId: string): boolean {
-  return itemId !== ROOT_NODE_ID && !state.nodes[itemId]!.unmodifiable &&
+export function canReorderChildren(state, itemId) {
+  return itemId !== ROOT_NODE_ID && !state.nodes[itemId].unmodifiable &&
       state.prefs.canEdit;
 }
 
-export function hasChildFolders(id: string, nodes: NodeMap): boolean {
-  const children = nodes[id]!.children!;
+/**
+ * @param {string} id
+ * @param {NodeMap} nodes
+ * @return {boolean}
+ */
+export function hasChildFolders(id, nodes) {
+  const children = nodes[id].children;
   for (let i = 0; i < children.length; i++) {
-    if (nodes[children[i]!]!.children) {
+    if (nodes[children[i]].children) {
       return true;
     }
   }
   return false;
 }
 
-export function getDescendants(nodes: NodeMap, baseId: string): Set<string> {
-  const descendants = new Set() as Set<string>;
-  const stack: string[] = [];
+/**
+ * Get all descendants of a node, including the node itself.
+ * @param {NodeMap} nodes
+ * @param {string} baseId
+ * @return {!Set<string>}
+ */
+export function getDescendants(nodes, baseId) {
+  const descendants = new Set();
+  const stack = [];
   stack.push(baseId);
 
   while (stack.length > 0) {
-    const id = stack.pop()!;
+    const id = stack.pop();
     const node = nodes[id];
 
     if (!node) {
@@ -132,11 +163,11 @@ export function getDescendants(nodes: NodeMap, baseId: string): Set<string> {
 
     descendants.add(id);
 
-    if (!node!.children) {
+    if (!node.children) {
       continue;
     }
 
-    node!.children.forEach(function(childId) {
+    node.children.forEach(function(childId) {
       stack.push(childId);
     });
   }
@@ -144,8 +175,13 @@ export function getDescendants(nodes: NodeMap, baseId: string): Set<string> {
   return descendants;
 }
 
-export function removeIdsFromObject<Type>(
-    map: ObjectMap<Type>, ids: Set<string>): ObjectMap<Type> {
+/**
+ * @param {!Object<string, T>} map
+ * @param {!Set<string>} ids
+ * @return {!Object<string, T>}
+ * @template T
+ */
+export function removeIdsFromObject(map, ids) {
   const newObject = Object.assign({}, map);
   ids.forEach(function(id) {
     delete newObject[id];
@@ -154,8 +190,13 @@ export function removeIdsFromObject<Type>(
 }
 
 
-export function removeIdsFromMap<Type>(
-    map: Map<string, Type>, ids: Set<string>): Map<string, Type> {
+/**
+ * @param {!Map<string, T>} map
+ * @param {!Set<string>} ids
+ * @return {!Map<string, T>}
+ * @template T
+ */
+export function removeIdsFromMap(map, ids) {
   const newMap = new Map(map);
   ids.forEach(function(id) {
     newMap.delete(id);
@@ -163,8 +204,12 @@ export function removeIdsFromMap<Type>(
   return newMap;
 }
 
-export function removeIdsFromSet(
-    set: Set<string>, ids: Set<string>): Set<string> {
+/**
+ * @param {!Set<string>} set
+ * @param {!Set<string>} ids
+ * @return {!Set<string>}
+ */
+export function removeIdsFromSet(set, ids) {
   const difference = new Set(set);
   ids.forEach(function(id) {
     difference.delete(id);

@@ -13,18 +13,22 @@ import {createEmptyState} from './util.js';
  * the store.
  */
 
-export class Store extends CrUiStore<BookmarksPageState> {
+/** @extends {CrUiStore<BookmarksPageState>} */
+export class Store extends CrUiStore {
   constructor() {
     super(createEmptyState(), reduceAction);
   }
 
-  static getInstance(): Store {
+  /** @return {!Store} */
+  static getInstance() {
     return instance || (instance = new Store());
   }
 
-  static setInstance(obj: Store) {
+  /** @param {Store} obj */
+  static setInstance(obj) {
     instance = obj;
   }
 }
 
-let instance: (Store|null) = null;
+/** @type {?Store} */
+let instance = null;

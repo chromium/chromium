@@ -6,18 +6,16 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './shared_style.js';
 import './strings.m.js';
-import './item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
@@ -25,23 +23,21 @@ import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
 import {BookmarksItemElement} from './item.js';
 import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarksPageState, OpenCommandMenuDetail} from './types.js';
+import {BookmarksPageState} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ */
 const BookmarksListElementBase =
-    mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement) as
-{
-  new (): PolymerElement &BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState> & ListPropertyUpdateBehavior
-}
+    mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement);
 
-export interface BookmarksListElement {
-  $: {
-    list: IronListElement,
-    message: HTMLDivElement,
-  }
-}
-
+/** @polymer */
 export class BookmarksListElement extends BookmarksListElementBase {
   static get is() {
     return 'bookmarks-list';
@@ -57,6 +53,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
        * A list of item ids wrapped in an Object. This is necessary because
        * iron-list is unable to distinguish focusing index 6 from focusing id
        * '6' so the item we supply to iron-list needs to be non-index-like.
+       * @private {Array<{id: string}>}
        */
       displayedList_: {
         type: Array,
@@ -67,32 +64,28 @@ export class BookmarksListElement extends BookmarksListElementBase {
         },
       },
 
+      /** @private {Array<string>} */
       displayedIds_: {
         type: Array,
         observer: 'onDisplayedIdsChanged_',
       },
 
+      /** @private */
       searchTerm_: {
         type: String,
         observer: 'onDisplayedListSourceChange_',
       },
 
+      /** @private */
       selectedFolder_: {
         type: String,
         observer: 'onDisplayedListSourceChange_',
       },
 
+      /** @private {Set<string>} */
       selectedItems_: Object,
     };
   }
-
-  private displayedList_: {id: string}[];
-  private displayedIds_: string[];
-  private eventTracker_: EventTracker = new EventTracker();
-  private searchTerm_: string;
-  private selectedFolder_: string;
-  private selectedItems_: Set<string>;
-  private boundOnHighlightItems_: (p1: CustomEvent) => void;
 
   ready() {
     super.ready();
@@ -100,35 +93,34 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
     this.addEventListener(
         'open-command-menu',
-        e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
+        e => this.onOpenCommandMenu_(
+            /** @type {!CustomEvent<{source: !MenuSource}>} */ (e)));
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    const list = this.$.list;
+    const list = /** @type {IronListElement} */ (this.$.list);
     list.scrollTarget = this;
 
     this.watch('displayedIds_', function(state) {
-      return getDisplayedList(state as BookmarksPageState);
+      return getDisplayedList(/** @type {!BookmarksPageState} */ (state));
     });
     this.watch('searchTerm_', function(state) {
-      return (state as BookmarksPageState).search.term;
+      return state.search.term;
     });
     this.watch('selectedFolder_', function(state) {
-      return (state as BookmarksPageState).selectedFolder;
+      return state.selectedFolder;
     });
-    this.watch('selectedItems_', function(state) {
-      return (state as BookmarksPageState).selection.items;
-    });
+    this.watch('selectedItems_', ({selection: {items}}) => items);
     this.updateFromStore();
 
     this.$.list.addEventListener(
         'keydown', this.onItemKeydown_.bind(this), true);
 
-    this.eventTracker_.add(
-        document, 'highlight-items',
-        e => this.onHighlightItems_(e as CustomEvent<string[]>));
+    /** @private {function(!Event)} */
+    this.boundOnHighlightItems_ = this.onHighlightItems_.bind(this);
+    document.addEventListener('highlight-items', this.boundOnHighlightItems_);
 
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
@@ -138,19 +130,23 @@ export class BookmarksListElement extends BookmarksListElementBase {
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.eventTracker_.remove(document, 'highlight-items');
+    document.removeEventListener(
+        'highlight-items', this.boundOnHighlightItems_);
   }
 
-  getDropTarget(): HTMLElement {
-    return this.$.message;
+  /** @return {HTMLElement} */
+  getDropTarget() {
+    return /** @type {!HTMLDivElement} */ (this.$.message);
   }
 
   /**
    * Updates `displayedList_` using splices to be equivalent to `newValue`. This
    * allows the iron-list to delete sublists of items which preserves scroll and
    * focus on incremental update.
+   * @param {Array<string>} newValue
+   * @param {Array<string>} oldValue
    */
-  private async onDisplayedIdsChanged_(newValue: string[], oldValue: string[]) {
+  async onDisplayedIdsChanged_(newValue, oldValue) {
     const updatedList = newValue.map(id => ({id: id}));
     let skipFocus = false;
     let selectIndex = -1;
@@ -167,8 +163,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
         selectIndex = Math.min(selectIndex, updatedList.length - 1);
       }
     }
-    this.updateList(
-        'displayedList_', item => (item as {id: string}).id, updatedList);
+    this.updateList('displayedList_', item => item.id, updatedList);
     // Trigger a layout of the iron list. Otherwise some elements may render
     // as blank entries. See https://crbug.com/848683
     this.$.list.dispatchEvent(
@@ -185,20 +180,23 @@ export class BookmarksListElement extends BookmarksListElementBase {
         // Focus menu button so 'Undo' is only one tab stop away on delete.
         const item = getDeepActiveElement();
         if (item) {
-          (item as BookmarksItemElement).focusMenuButton();
+          item.focusMenuButton();
         }
       });
     }
   }
 
-  private onDisplayedListSourceChange_() {
+  /** @private */
+  onDisplayedListSourceChange_() {
     this.scrollTop = 0;
   }
 
   /**
    * Scroll the list so that |itemId| is visible, if it is not already.
+   * @param {string} itemId
+   * @private
    */
-  private scrollToId_(itemId: string) {
+  scrollToId_(itemId) {
     const index = this.displayedIds_.indexOf(itemId);
     const list = this.$.list;
     if (index >= 0 && index < list.firstVisibleIndex ||
@@ -207,7 +205,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
   }
 
-  private emptyListMessage_(): string {
+  /** @private */
+  emptyListMessage_() {
     let emptyListMessage = 'noSearchResults';
     if (!this.searchTerm_) {
       emptyListMessage =
@@ -218,42 +217,54 @@ export class BookmarksListElement extends BookmarksListElementBase {
     return loadTimeData.getString(emptyListMessage);
   }
 
-  private isEmptyList_(): boolean {
+  /** @private */
+  isEmptyList_() {
     return this.displayedList_.length === 0;
   }
 
-  private deselectItems_() {
+  /** @private */
+  deselectItems_() {
     this.dispatch(deselectItems());
   }
 
-  private getIndexForItemElement_(el: HTMLElement): number {
-    return (this.$.list.modelForElement(el) as unknown as {index: number})
-        .index;
+  /**
+   * @param{HTMLElement} el
+   * @private
+   */
+  getIndexForItemElement_(el) {
+    return this.$.list.modelForElement(el).index;
   }
 
-  private onOpenCommandMenu_(e: CustomEvent<{source: MenuSource}>) {
+  /**
+   * @param {!CustomEvent<{source: !MenuSource}>} e
+   * @private
+   */
+  onOpenCommandMenu_(e) {
     // If the item is not visible, scroll to it before rendering the menu.
     if (e.detail.source === MenuSource.ITEM) {
-      this.scrollToId_((e.composedPath()[0] as BookmarksItemElement).itemId);
+      this.scrollToId_(
+          /** @type {BookmarksItemElement} */ (e.composedPath()[0]).itemId);
     }
   }
 
   /**
    * Highlight a list of items by selecting them, scrolling them into view and
    * focusing the first item.
+   * @param {Event} e
+   * @private
    */
-  private onHighlightItems_(e: CustomEvent<string[]>) {
+  onHighlightItems_(e) {
     // Ensure that we only select items which are actually being displayed.
     // This should only matter if an unrelated update to the bookmark model
     // happens with the perfect timing to end up in a tracked batch update.
-    const toHighlight =
-        e.detail.filter((item) => this.displayedIds_.indexOf(item) !== -1);
+    const toHighlight = /** @type {!Array<string>} */
+        (e.detail.filter((item) => this.displayedIds_.indexOf(item) !== -1));
 
     if (toHighlight.length <= 0) {
       return;
     }
 
-    const leadId = toHighlight[0]!;
+    const leadId = toHighlight[0];
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
     // Allow iron-list time to render additions to the list.
@@ -265,11 +276,16 @@ export class BookmarksListElement extends BookmarksListElementBase {
     });
   }
 
-  private onItemKeydown_(e: KeyboardEvent) {
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onItemKeydown_(e) {
     let handled = true;
     const list = this.$.list;
     let focusMoved = false;
-    let focusedIndex = this.getIndexForItemElement_(e.target as HTMLElement);
+    let focusedIndex =
+        this.getIndexForItemElement_(/** @type {HTMLElement} */ (e.target));
     const oldFocusedIndex = focusedIndex;
     const cursorModifier = isMac ? e.metaKey : e.ctrlKey;
     if (e.key === 'ArrowUp') {
@@ -283,11 +299,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
       focusedIndex = 0;
       focusMoved = true;
     } else if (e.key === 'End') {
-      focusedIndex = list.items!.length - 1;
+      focusedIndex = list.items.length - 1;
       focusMoved = true;
     } else if (e.key === ' ' && cursorModifier) {
       this.dispatch(
-          selectItem(this.displayedIds_[focusedIndex]!, this.getState(), {
+          selectItem(this.displayedIds_[focusedIndex], this.getState(), {
             clear: false,
             range: false,
             toggle: true,
@@ -297,16 +313,15 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
 
     if (focusMoved) {
-      focusedIndex = Math.min(list.items!.length - 1,
-                              Math.max(0, focusedIndex));
+      focusedIndex = Math.min(list.items.length - 1, Math.max(0, focusedIndex));
       list.focusItem(focusedIndex);
 
       if (cursorModifier && !e.shiftKey) {
-        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
+        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]));
       } else {
         // If shift-selecting with no anchor, use the old focus index.
         if (e.shiftKey && this.getState().selection.anchor === null) {
-          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]!));
+          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]));
         }
 
         // If the focus moved from something other than a Ctrl + move event,
@@ -318,13 +333,13 @@ export class BookmarksListElement extends BookmarksListElementBase {
         };
 
         this.dispatch(selectItem(
-            this.displayedIds_[focusedIndex]!, this.getState(), config));
+            this.displayedIds_[focusedIndex], this.getState(), config));
       }
     }
 
     // Prevent the iron-list from changing focus on enter.
     if (e.key === 'Enter') {
-      if ((e.composedPath()[0] as HTMLElement).tagName === 'CR-ICON-BUTTON') {
+      if (e.composedPath()[0].tagName === 'CR-ICON-BUTTON') {
         return;
       }
       if (e.composedPath()[0] instanceof HTMLButtonElement) {
@@ -342,7 +357,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
   }
 
-  private onContextMenu_(e: MouseEvent) {
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onContextMenu_(e) {
     e.preventDefault();
     this.deselectItems_();
 
@@ -357,11 +376,21 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }));
   }
 
-  private getAriaRowindex_(index: number): number {
+  /**
+   * Returns a 1-based index for aria-rowindex.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getAriaRowindex_(index) {
     return index + 1;
   }
 
-  private getAriaSelected_(id: string): boolean {
+  /**
+   * @param {string} id
+   * @return {boolean}
+   */
+  getAriaSelected_(id) {
     return this.selectedItems_.has(id);
   }
 }

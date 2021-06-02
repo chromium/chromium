@@ -13,12 +13,10 @@ import './router.js';
 import './shared_vars.js';
 import './strings.m.js';
 import './command_manager.js';
-import './toolbar.js';
 
-import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,56 +24,61 @@ import {setSearchResults} from './actions.js';
 import {destroy as destroyApiListener, init as initApiListener} from './api_listener.js';
 import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
 import {DNDManager} from './dnd_manager.js';
-import {MouseFocusMixin} from './mouse_focus_behavior.js';
+import {MouseFocusBehavior} from './mouse_focus_behavior.js';
 import {Store} from './store.js';
 import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarksToolbarElement} from './toolbar.js';
 import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
 
-const BookmarksAppElementBase =
-    mixinBehaviors([StoreClient, FindShortcutBehavior],
-                   MouseFocusMixin(PolymerElement)) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState> & FindShortcutBehavior
-}
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ * @implements {FindShortcutBehaviorInterface}
+ */
+const BookmarksAppElementBase = mixinBehaviors(
+    [StoreClient, MouseFocusBehavior, FindShortcutBehavior], PolymerElement);
 
-export interface BookmarksAppElement {
-  $: {
-    splitter: CrSplitterElement,
-    sidebar: HTMLDivElement,
-  }
-}
-
+/** @polymer */
 export class BookmarksAppElement extends BookmarksAppElementBase {
   static get is() {
     return 'bookmarks-app';
   }
 
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
   static get properties() {
     return {
+      /** @private */
       searchTerm_: {
         type: String,
         observer: 'searchTermChanged_',
       },
 
+      /** @type {FolderOpenState} */
       folderOpenState_: {
         type: Object,
         observer: 'folderOpenStateChanged_',
       },
 
+      /** @private */
       sidebarWidth_: String,
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
-  private dndManager_: DNDManager|null = null;
-  private folderOpenState_: FolderOpenState;
-  private searchTerm_: string;
-  private sidebarWidth_: string;
-
   constructor() {
     super();
+
+    /** @private{?function(!Event)} */
+    this.boundUpdateSidebarWidth_ = null;
+
+    /** @private {DNDManager} */
+    this.dndManager_ = null;
 
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
@@ -86,28 +89,31 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     }
   }
 
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
 
-    this.watch('searchTerm_', function(state: BookmarksPageState) {
+    this.watch('searchTerm_', function(state) {
       return state.search.term;
     });
 
-    this.watch('folderOpenState_', function(state: BookmarksPageState) {
+    this.watch('folderOpenState_', function(state) {
       return state.folderOpenState;
     });
 
     chrome.bookmarks.getTree((results) => {
-      const nodeMap = normalizeNodes(results[0]!);
+      const nodeMap = normalizeNodes(results[0]);
       const initialState = createEmptyState();
       initialState.nodes = nodeMap;
-      initialState.selectedFolder = nodeMap[ROOT_NODE_ID]!.children![0]!;
+      initialState.selectedFolder = nodeMap[ROOT_NODE_ID].children[0];
       const folderStateString =
           window.localStorage[LOCAL_STORAGE_FOLDER_STATE_KEY];
       initialState.folderOpenState = folderStateString ?
-          new Map(JSON.parse(folderStateString)) :
+          new Map(
+              /** @type Array<Array<boolean|string>> */ (
+                  JSON.parse(folderStateString))) :
           new Map();
 
       Store.getInstance().init(initialState);
@@ -120,6 +126,8 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       });
     });
 
+    this.boundUpdateSidebarWidth_ = this.updateSidebarWidth_.bind(this);
+
     this.initializeSplitter_();
 
     this.dndManager_ = new DNDManager();
@@ -129,12 +137,16 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.eventTracker_.remove(window, 'resize');
-    this.dndManager_!.destroy();
+    window.removeEventListener('resize', this.boundUpdateSidebarWidth_);
+    this.dndManager_.destroy();
     destroyApiListener();
   }
 
-  private initializeSplitter_(): void {
+  /**
+   * Set up the splitter and set the initial width from localStorage.
+   * @private
+   */
+  initializeSplitter_() {
     const splitter = this.$.splitter;
     const splitterTarget = this.$.sidebar;
 
@@ -143,7 +155,8 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       splitterTarget.style.width =
           window.localStorage[LOCAL_STORAGE_TREE_WIDTH_KEY];
     }
-    this.sidebarWidth_ = getComputedStyle(splitterTarget).width;
+    this.sidebarWidth_ =
+        /** @type {string} */ (getComputedStyle(splitterTarget).width);
 
     splitter.addEventListener('resize', (e) => {
       window.localStorage[LOCAL_STORAGE_TREE_WIDTH_KEY] =
@@ -151,16 +164,18 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       this.updateSidebarWidth_();
     });
 
-    this.eventTracker_.add(splitter, 'dragmove',
-                           () => this.updateSidebarWidth_());
-    this.eventTracker_.add(window, 'resize', () => this.updateSidebarWidth_());
+    splitter.addEventListener('dragmove', this.boundUpdateSidebarWidth_);
+    window.addEventListener('resize', this.boundUpdateSidebarWidth_);
   }
 
-  private updateSidebarWidth_(): void {
-    this.sidebarWidth_ = getComputedStyle(this.$.sidebar).width;
+  /** @private */
+  updateSidebarWidth_() {
+    this.sidebarWidth_ =
+        /** @type {string} */ (getComputedStyle(this.$.sidebar).width);
   }
 
-  private searchTermChanged_(newValue: string, oldValue?: string) {
+  /** @private */
+  searchTermChanged_(newValue, oldValue) {
     if (oldValue !== undefined && !newValue) {
       this.dispatchEvent(new CustomEvent('iron-announce', {
         bubbles: true,
@@ -190,34 +205,36 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     });
   }
 
-  private folderOpenStateChanged_(): void {
+  /** @private */
+  folderOpenStateChanged_() {
     window.localStorage[LOCAL_STORAGE_FOLDER_STATE_KEY] =
         JSON.stringify(Array.from(this.folderOpenState_));
   }
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut(modalContextOpen: boolean): boolean {
+  /** @override */
+  handleFindShortcut(modalContextOpen) {
     if (modalContextOpen) {
       return false;
     }
-    this.shadowRoot!.querySelector<BookmarksToolbarElement>(
-        'bookmarks-toolbar')!.searchField.showAndFocus();
+    /** @type {!BookmarksToolbarElement} */ (
+        this.shadowRoot.querySelector('bookmarks-toolbar'))
+        .searchField.showAndFocus();
     return true;
   }
 
   // Override FindShortcutBehavior methods.
-  searchInputHasFocus(): boolean {
-    return this.shadowRoot!.querySelector<BookmarksToolbarElement>(
-        'bookmarks-toolbar')!.searchField.isSearchFocused();
+  /** @override */
+  searchInputHasFocus() {
+    return /** @type {!BookmarksToolbarElement} */ (
+               this.shadowRoot.querySelector('bookmarks-toolbar'))
+        .searchField.isSearchFocused();
   }
 
-  private onUndoClick_(): void {
+  /** @private */
+  onUndoClick_() {
     this.dispatchEvent(
         new CustomEvent('command-undo', {bubbles: true, composed: true}));
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

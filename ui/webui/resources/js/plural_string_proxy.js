@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-import {sendWithPromise} from './cr.m.js';
+import {addSingletonGetter, sendWithPromise} from './cr.m.js';
 // clang-format on
 
 /** @interface */
@@ -70,17 +70,6 @@ export class PluralStringProxyImpl {
         'getPluralStringTupleWithPeriods', messageName1, itemCount1,
         messageName2, itemCount2);
   }
-
-  /** @return {!PluralStringProxy} */
-  static getInstance() {
-    return instance || (instance = new PluralStringProxyImpl());
-  }
-
-  /** @param {PluralStringProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
 
-/** @type {?PluralStringProxy} */
-let instance = null;
+addSingletonGetter(PluralStringProxyImpl);

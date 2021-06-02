@@ -25,7 +25,7 @@ declare namespace chrome {
     export function paste(parentId: string, selectedIdList?: string[],
                           callback?: () => void): void;
     export function canPaste(
-        parentId: string, callback: (p1: boolean) => void): void;
+        parentId: string, callback: (boolean) => void): void;
     export function sortChildren(parentId: string): void;
     export function startDrag(idList: string[], dragNodeIndex: number,
                               isFromTouch: boolean, x: number, y: number): void;
@@ -38,12 +38,7 @@ declare namespace chrome {
     export function undo(): void;
     export function redo(): void;
 
-    type DragData = {
-      elements: chrome.bookmarks.BookmarkTreeNode[]|null;
-      sameProfile: boolean;
-    }
-    export const onDragEnter: chrome.bookmarks.ChromeEvent<(
-        p1: DragData) => void>;
+    export const onDragEnter: chrome.bookmarks.ChromeEvent<() => void>;
     export const onDragLeave: chrome.bookmarks.ChromeEvent<() => void>;
     export const onDrop: chrome.bookmarks.ChromeEvent<() => void>;
   }

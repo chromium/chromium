@@ -275,7 +275,7 @@ suite(policy_tests.suiteName, function() {
 
   test(assert(policy_tests.TestNames.SheetsPolicy), async () => {
     const pluralString = new PolicyTestPluralStringProxy();
-    PrintPreviewPluralStringProxyImpl.setInstance(pluralString);
+    PrintPreviewPluralStringProxyImpl.instance_ = pluralString;
     pluralString.text = 'Exceeds limit of 1 sheet of paper';
 
     const tests = [
