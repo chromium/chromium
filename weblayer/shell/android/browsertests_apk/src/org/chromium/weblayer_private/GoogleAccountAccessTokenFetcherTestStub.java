@@ -13,6 +13,7 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -26,6 +27,8 @@ public class GoogleAccountAccessTokenFetcherTestStub
             new HashMap<Integer, ValueCallback<String>>();
     private int mMostRecentRequestId;
     private Set<String> mMostRecentScopes;
+    private Set<String> mScopesForMostRecentInvalidToken = new HashSet<String>();
+    private String mMostRecentInvalidToken = "";
 
     @Override
     public void fetchAccessToken(
@@ -37,6 +40,16 @@ public class GoogleAccountAccessTokenFetcherTestStub
         mMostRecentScopes = scopes;
         mMostRecentRequestId++;
         mOutstandingRequests.put(mMostRecentRequestId, valueCallback);
+    }
+
+    @Override
+    public void onAccessTokenIdentifiedAsInvalid(
+            IObjectWrapper scopesWrapper, IObjectWrapper tokenWrapper) {
+        Set<String> scopes = ObjectWrapper.unwrap(scopesWrapper, Set.class);
+        String token = ObjectWrapper.unwrap(tokenWrapper, String.class);
+
+        mScopesForMostRecentInvalidToken = scopes;
+        mMostRecentInvalidToken = token;
     }
 
     @CalledByNative
@@ -52,6 +65,16 @@ public class GoogleAccountAccessTokenFetcherTestStub
     @CalledByNative
     int getNumOutstandingRequests() {
         return mOutstandingRequests.size();
+    }
+
+    @CalledByNative
+    String[] getScopesForMostRecentInvalidToken() {
+        return mScopesForMostRecentInvalidToken.toArray(new String[0]);
+    }
+
+    @CalledByNative
+    String getMostRecentInvalidToken() {
+        return mMostRecentInvalidToken;
     }
 
     @CalledByNative

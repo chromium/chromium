@@ -62,6 +62,11 @@ class TestAccessTokenFetchDelegate
     }
   }
 
+  void OnAccessTokenIdentifiedAsInvalid(const std::set<std::string>& scopes,
+                                        const std::string& token) override {
+    NOTREACHED();
+  }
+
   void set_should_respond_to_request(bool should_respond) {
     should_respond_to_request_ = should_respond;
   }

@@ -60,6 +60,19 @@ public final class GoogleAccountAccessTokenFetcherProxy {
     }
 
     /*
+     * Proxies onAccessTokenIdentifiedAsInvalid() calls to the client if it is set.
+     */
+    public void onAccessTokenIdentifiedAsInvalid(Set<String> scopes, String token)
+            throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 93) return;
+
+        if (mClient == null) return;
+
+        mClient.onAccessTokenIdentifiedAsInvalid(
+                ObjectWrapper.wrap(scopes), ObjectWrapper.wrap(token));
+    }
+
+    /*
      * Proxies access token requests from C++ to the public fetchAccessToken() interface.
      */
     @CalledByNative
@@ -70,6 +83,15 @@ public final class GoogleAccountAccessTokenFetcherProxy {
         };
 
         fetchAccessToken(new HashSet<String>(Arrays.asList(scopes)), onTokenFetchedCallback);
+    }
+
+    /*
+     * Proxies invalid access token notifications from C++ to the public interface.
+     */
+    @CalledByNative
+    private void onAccessTokenIdentifiedAsInvalid(String[] scopes, String token)
+            throws RemoteException {
+        onAccessTokenIdentifiedAsInvalid(new HashSet<String>(Arrays.asList(scopes)), token);
     }
 
     @NativeMethods

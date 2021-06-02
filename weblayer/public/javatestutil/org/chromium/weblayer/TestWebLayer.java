@@ -199,4 +199,10 @@ public final class TestWebLayer {
     public void setMockWebAuthnEnabled(boolean enabled) throws RemoteException {
         mITestWebLayer.setMockWebAuthnEnabled(enabled);
     }
+
+    public void fireOnAccessTokenIdentifiedAsInvalid(
+            Profile profile, Set<String> scopes, String token) throws RemoteException {
+        mITestWebLayer.fireOnAccessTokenIdentifiedAsInvalid(
+                profile.getIProfile(), ObjectWrapper.wrap(scopes), ObjectWrapper.wrap(token));
+    }
 }

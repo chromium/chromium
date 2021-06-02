@@ -33,6 +33,14 @@ class GoogleAccountAccessTokenFetchDelegate {
   virtual void FetchAccessToken(const std::set<std::string>& scopes,
                                 OnTokenFetchedCallback callback) = 0;
 
+  // Called when a token previously obtained via a call to
+  // FetchAccessToken(|scopes|) is identified as invalid, so the embedder can
+  // take appropriate action (e.g., dropping the token from its cache and/or
+  // force-fetching a new token).
+  virtual void OnAccessTokenIdentifiedAsInvalid(
+      const std::set<std::string>& scopes,
+      const std::string& token) = 0;
+
  protected:
   virtual ~GoogleAccountAccessTokenFetchDelegate() {}
 };

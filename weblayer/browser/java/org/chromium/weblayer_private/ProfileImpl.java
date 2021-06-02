@@ -433,6 +433,13 @@ public final class ProfileImpl
                 ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class));
     }
 
+    public void fireOnAccessTokenIdentifiedAsInvalidForTesting(
+            IObjectWrapper scopesWrapper, IObjectWrapper tokenWrapper) throws RemoteException {
+        mAccessTokenFetcherProxy.onAccessTokenIdentifiedAsInvalid(
+                ObjectWrapper.unwrap(scopesWrapper, Set.class),
+                ObjectWrapper.unwrap(tokenWrapper, String.class));
+    }
+
     @NativeMethods
     interface Natives {
         void enumerateAllProfileNames(Callback<String[]> callback);

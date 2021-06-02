@@ -40,6 +40,18 @@ void GoogleAccountAccessTokenFetcherProxy::FetchAccessToken(
       reinterpret_cast<jlong>(callback_id));
 }
 
+void GoogleAccountAccessTokenFetcherProxy::OnAccessTokenIdentifiedAsInvalid(
+    const std::set<std::string>& scopes,
+    const std::string& token) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::string> scopes_as_vector(scopes.begin(), scopes.end());
+
+  Java_GoogleAccountAccessTokenFetcherProxy_onAccessTokenIdentifiedAsInvalid(
+      env, java_delegate_,
+      base::android::ToJavaArrayOfStrings(env, scopes_as_vector),
+      base::android::ConvertUTF8ToJavaString(env, token));
+}
+
 static jlong
 JNI_GoogleAccountAccessTokenFetcherProxy_CreateGoogleAccountAccessTokenFetcherProxy(
     JNIEnv* env,

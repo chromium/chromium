@@ -34,6 +34,8 @@ class GoogleAccountAccessTokenFetcherProxy
   // GoogleAccountAccessTokenFetchDelegate:
   void FetchAccessToken(const std::set<std::string>& scopes,
                         OnTokenFetchedCallback callback) override;
+  void OnAccessTokenIdentifiedAsInvalid(const std::set<std::string>& scopes,
+                                        const std::string& token) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;

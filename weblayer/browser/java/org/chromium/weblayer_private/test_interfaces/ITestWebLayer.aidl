@@ -95,4 +95,8 @@ interface ITestWebLayer {
 
   // Mocks the GMSCore Fido calls used by WebAuthn.
   void setMockWebAuthnEnabled(in boolean enabled) = 28;
+
+  // Simulates the implementation-side event of an access token being
+  // identified as invalid.
+  void fireOnAccessTokenIdentifiedAsInvalid(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* String */ token) = 29;
 }

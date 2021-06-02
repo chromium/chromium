@@ -323,6 +323,14 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         }
     }
 
+    @Override
+    public void fireOnAccessTokenIdentifiedAsInvalid(IProfile profile,
+            IObjectWrapper /* Set<String> */ scopes, IObjectWrapper /* String */ token)
+            throws RemoteException {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        profileImpl.fireOnAccessTokenIdentifiedAsInvalidForTesting(scopes, token);
+    }
+
     @NativeMethods
     interface Natives {
         void waitForBrowserControlsMetadataState(

@@ -26,4 +26,12 @@ public abstract class GoogleAccountAccessTokenFetcher {
      */
     public abstract void fetchAccessToken(
             @NonNull Set<String> scopes, @NonNull Callback<String> onTokenFetchedCallback);
+
+    /**
+     * Called when a token previously obtained via a call to fetchAccessToken(|scopes|) is
+     * identified as invalid, so the embedder can take appropriate action (e.g., dropping the token
+     * from its cache and/or force-fetching a new token).
+     */
+    public abstract void onAccessTokenIdentifiedAsInvalid(
+            @NonNull Set<String> scopes, @NonNull String token);
 }

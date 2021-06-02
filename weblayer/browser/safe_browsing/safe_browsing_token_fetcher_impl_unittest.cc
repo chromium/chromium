@@ -44,9 +44,21 @@ class TestAccessTokenFetchDelegate
     outstanding_callbacks_[most_recent_request_id_] = std::move(callback);
   }
 
+  void OnAccessTokenIdentifiedAsInvalid(const std::set<std::string>& scopes,
+                                        const std::string& token) override {
+    // All invalid token notifications originating from
+    // SafeBrowsingTokenFetcherImpl should be for the safe browsing scope.
+    std::set<std::string> expected_scopes = {safe_browsing::kAPIScope};
+    EXPECT_EQ(expected_scopes, scopes);
+
+    invalid_token_ = token;
+  }
+
   int get_num_outstanding_requests() { return outstanding_callbacks_.size(); }
 
   int get_most_recent_request_id() { return most_recent_request_id_; }
+
+  const std::string& get_most_recent_invalid_token() { return invalid_token_; }
 
   void RespondWithTokenForRequest(int request_id, const std::string& token) {
     ASSERT_TRUE(outstanding_callbacks_.count(request_id));
@@ -60,6 +72,7 @@ class TestAccessTokenFetchDelegate
  private:
   int most_recent_request_id_ = 0;
   std::map<int, OnTokenFetchedCallback> outstanding_callbacks_;
+  std::string invalid_token_;
 };
 
 }  // namespace
@@ -295,6 +308,24 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, ConcurrentRequestsAtDifferentTimes) {
   run_loop2.Run();
   EXPECT_EQ("", access_token1);
   EXPECT_EQ(kTokenFromResponse2, access_token2);
+}
+
+// Tests that the fetcher calls through to GoogleAccountAccessTokenFetchDelegate
+// on being notified of an invalid token.
+TEST_F(SafeBrowsingTokenFetcherImplTest, OnInvalidAccessToken) {
+  TestAccessTokenFetchDelegate delegate;
+  const std::string kInvalidToken = "dummy";
+
+  SafeBrowsingTokenFetcherImpl fetcher(base::BindRepeating(
+      [](TestAccessTokenFetchDelegate* delegate)
+          -> GoogleAccountAccessTokenFetchDelegate* { return delegate; },
+      &delegate));
+
+  EXPECT_EQ("", delegate.get_most_recent_invalid_token());
+
+  fetcher.OnInvalidAccessToken(kInvalidToken);
+
+  EXPECT_EQ(kInvalidToken, delegate.get_most_recent_invalid_token());
 }
 
 }  // namespace weblayer

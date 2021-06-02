@@ -176,18 +176,54 @@ public class GoogleAccountAccessTokenFetcherTest {
         Assert.assertEquals(expectedToken3, accessTokens[2]);
     }
 
+    @Test
+    @SmallTest
+    // Tests that WebLayer forwards invalid access token notifications to the embedder.
+    public void testOnAccessTokenIdentifiedAsInvalid() throws Exception {
+        Profile profile = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getActivity().getBrowser().getProfile(); });
+
+        final Set<String> scopesForInvalidToken =
+                new HashSet<String>(Arrays.asList("scope1", "scope2"));
+        final String invalidToken = "accessToken1";
+
+        GoogleAccountAccessTokenFetcherEmbedderImpl fetcherImpl =
+                new GoogleAccountAccessTokenFetcherEmbedderImpl();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { profile.setGoogleAccountAccessTokenFetcher(fetcherImpl); });
+
+        Assert.assertNull(fetcherImpl.getScopesForMostRecentInvalidToken());
+        Assert.assertNull(fetcherImpl.getMostRecentInvalidToken());
+
+        TestWebLayer testWebLayer = TestWebLayer.getTestWebLayer(mActivity.getApplicationContext());
+        testWebLayer.fireOnAccessTokenIdentifiedAsInvalid(
+                profile, scopesForInvalidToken, invalidToken);
+
+        Assert.assertEquals(
+                scopesForInvalidToken, fetcherImpl.getScopesForMostRecentInvalidToken());
+        Assert.assertEquals(invalidToken, fetcherImpl.getMostRecentInvalidToken());
+    }
+
     private class GoogleAccountAccessTokenFetcherEmbedderImpl
             extends GoogleAccountAccessTokenFetcher {
         private HashMap<Integer, Callback<String>> mOutstandingRequests =
                 new HashMap<Integer, Callback<String>>();
         private int mMostRecentRequestId;
         private Set<String> mMostRecentRequestScopes;
+        private Set<String> mScopesForMostRecentInvalidToken;
+        private String mMostRecentInvalidToken;
 
         @Override
         public void fetchAccessToken(Set<String> scopes, Callback<String> onTokenFetched) {
             mMostRecentRequestScopes = scopes;
             mMostRecentRequestId++;
             mOutstandingRequests.put(mMostRecentRequestId, onTokenFetched);
+        }
+
+        @Override
+        public void onAccessTokenIdentifiedAsInvalid(Set<String> scopes, String token) {
+            mScopesForMostRecentInvalidToken = scopes;
+            mMostRecentInvalidToken = token;
         }
 
         int getMostRecentRequestId() {
@@ -200,6 +236,14 @@ public class GoogleAccountAccessTokenFetcherTest {
 
         int getNumOutstandingRequests() {
             return mOutstandingRequests.size();
+        }
+
+        Set<String> getScopesForMostRecentInvalidToken() {
+            return mScopesForMostRecentInvalidToken;
+        }
+
+        String getMostRecentInvalidToken() {
+            return mMostRecentInvalidToken;
         }
 
         void respondWithTokenForRequest(int requestId, String token) {

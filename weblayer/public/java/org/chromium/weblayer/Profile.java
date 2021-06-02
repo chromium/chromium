@@ -584,6 +584,16 @@ public class Profile {
 
             mFetcher.fetchAccessToken(scopes, (token) -> valueCallback.onReceiveValue(token));
         }
+
+        @Override
+        public void onAccessTokenIdentifiedAsInvalid(
+                IObjectWrapper scopesWrapper, IObjectWrapper tokenWrapper) {
+            StrictModeWorkaround.apply();
+            Set<String> scopes = ObjectWrapper.unwrap(scopesWrapper, Set.class);
+            String token = ObjectWrapper.unwrap(tokenWrapper, String.class);
+
+            mFetcher.onAccessTokenIdentifiedAsInvalid(scopes, token);
+        }
     }
 
     private static final class OpenUrlCallbackClientImpl extends IOpenUrlCallbackClient.Stub {

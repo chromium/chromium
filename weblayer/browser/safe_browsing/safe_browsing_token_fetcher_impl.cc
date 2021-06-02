@@ -43,8 +43,13 @@ void SafeBrowsingTokenFetcherImpl::Start(Callback callback) {
 
 void SafeBrowsingTokenFetcherImpl::OnInvalidAccessToken(
     const std::string& invalid_access_token) {
-  // TODO(crbug.com/1209050): The embedders can reset the cache for the token if
-  // applicable, but this is currently not implemented yet.
+  auto* delegate = delegate_getter_.Run();
+
+  if (!delegate)
+    return;
+
+  delegate->OnAccessTokenIdentifiedAsInvalid({safe_browsing::kAPIScope},
+                                             invalid_access_token);
 }
 
 void SafeBrowsingTokenFetcherImpl::OnTokenFetched(
