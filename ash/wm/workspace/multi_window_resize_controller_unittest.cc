@@ -598,17 +598,17 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
       &delegate1, -1, gfx::Rect(100, 100, 100, 100)));
   delegate1.set_window_component(HTRIGHT);
   WindowState* w1_state = WindowState::Get(w1.get());
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   w1_state->OnWMEvent(&snap_left);
-  EXPECT_EQ(WindowStateType::kLeftSnapped, w1_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
   aura::test::TestWindowDelegate delegate2;
   std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
       &delegate2, -2, gfx::Rect(100, 100, 100, 100)));
   delegate2.set_window_component(HTRIGHT);
   WindowState* w2_state = WindowState::Get(w2.get());
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   w2_state->OnWMEvent(&snap_right);
-  EXPECT_EQ(WindowStateType::kRightSnapped, w2_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
   EXPECT_EQ(0.5f, *w1_state->snapped_width_ratio());
   EXPECT_EQ(0.5f, *w2_state->snapped_width_ratio());
 
@@ -640,9 +640,9 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
   generator->ReleaseLeftButton();
 
   // Check snapped states and bounds.
-  EXPECT_EQ(WindowStateType::kLeftSnapped, w1_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
   EXPECT_EQ(gfx::Rect(0, 0, 300, bottom_inset), w1->bounds());
-  EXPECT_EQ(WindowStateType::kRightSnapped, w2_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
   EXPECT_EQ(gfx::Rect(300, 0, 100, bottom_inset), w2->bounds());
   EXPECT_EQ(0.75f, *w1_state->snapped_width_ratio());
   EXPECT_EQ(0.25f, *w2_state->snapped_width_ratio());

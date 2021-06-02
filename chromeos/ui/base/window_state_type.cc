@@ -22,9 +22,9 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kInactive";
     case WindowStateType::kFullscreen:
       return stream << "kFullscreen";
-    case WindowStateType::kLeftSnapped:
+    case WindowStateType::kPrimarySnapped:
       return stream << "kLeftSnapped";
-    case WindowStateType::kRightSnapped:
+    case WindowStateType::kSecondarySnapped:
       return stream << "kRightSnapped";
     case WindowStateType::kAutoPositioned:
       return stream << "kAutoPositioned";
@@ -65,8 +65,8 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kDefault:
       return ui::SHOW_STATE_DEFAULT;
     case WindowStateType::kNormal:
-    case WindowStateType::kRightSnapped:
-    case WindowStateType::kLeftSnapped:
+    case WindowStateType::kSecondarySnapped:
+    case WindowStateType::kPrimarySnapped:
     case WindowStateType::kAutoPositioned:
     case WindowStateType::kPip:
       return ui::SHOW_STATE_NORMAL;
@@ -112,8 +112,8 @@ bool IsValidWindowStateType(int64_t value) {
          value == int64_t(WindowStateType::kMaximized) ||
          value == int64_t(WindowStateType::kInactive) ||
          value == int64_t(WindowStateType::kFullscreen) ||
-         value == int64_t(WindowStateType::kLeftSnapped) ||
-         value == int64_t(WindowStateType::kRightSnapped) ||
+         value == int64_t(WindowStateType::kPrimarySnapped) ||
+         value == int64_t(WindowStateType::kSecondarySnapped) ||
          value == int64_t(WindowStateType::kAutoPositioned) ||
          value == int64_t(WindowStateType::kPinned) ||
          value == int64_t(WindowStateType::kTrustedPinned) ||

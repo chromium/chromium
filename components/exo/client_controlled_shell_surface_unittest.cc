@@ -1080,7 +1080,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
       ash::SplitViewController::LEFT, window1));
   state1->set_bounds_locally(false);
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kLeftSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
                 ash::SplitViewController::LEFT,
@@ -1094,7 +1094,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
       ash::SplitViewController::RIGHT, window1));
   state1->set_bounds_locally(false);
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kRightSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
                 ash::SplitViewController::RIGHT,
@@ -1297,7 +1297,7 @@ TEST_F(ClientControlledShellSurfaceDragTest, DragWindowFromTopInTabletMode) {
   shell->overview_controller()->EndOverview();
   SendGestureEvents(window, gfx::Point(0, 210));
   EXPECT_EQ(ash::WindowState::Get(window)->GetStateType(),
-            WindowStateType::kLeftSnapped);
+            WindowStateType::kPrimarySnapped);
 }
 
 namespace {
@@ -2061,9 +2061,9 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
 
   EnableTabletMode(true);
 
-  ash::WMEvent event(ash::WM_EVENT_SNAP_LEFT);
+  ash::WMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&event);
-  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kLeftSnapped);
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kPrimarySnapped);
 
   ash::NonClientFrameViewAsh* frame_view =
       static_cast<ash::NonClientFrameViewAsh*>(
@@ -2152,8 +2152,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   surface->SetFrame(SurfaceFrameType::NORMAL);
   surface->Commit();
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
-                                     WindowStateType::kRightSnapped, display_id,
-                                     gfx::Rect(0, 0, 100, 100), 0);
+                                     WindowStateType::kSecondarySnapped,
+                                     display_id, gfx::Rect(0, 0, 100, 100), 0);
   EXPECT_EQ(3, delegate->bounds_change_count());
   EXPECT_EQ(
       frame_view->GetClientBoundsForWindowBounds(gfx::Rect(0, 0, 100, 100)),
@@ -2163,8 +2163,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   // Snapped, in tablet mode.
   EnableTabletMode(true);
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
-                                     WindowStateType::kRightSnapped, display_id,
-                                     gfx::Rect(0, 0, 100, 100), 0);
+                                     WindowStateType::kSecondarySnapped,
+                                     display_id, gfx::Rect(0, 0, 100, 100), 0);
   EXPECT_EQ(4, delegate->bounds_change_count());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), delegate->requested_bounds().back());
 }
@@ -2686,7 +2686,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   surface->Commit();
   EXPECT_EQ(gfx::Rect(50, 68, 200, 332), widget->GetWindowBoundsInScreen());
 
-  ash::WMEvent event(ash::WM_EVENT_SNAP_LEFT);
+  ash::WMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
   ash::WindowState::Get(window)->OnWMEvent(&event);
   EXPECT_EQ(gfx::Rect(0, 32, 400, 568), delegate->requested_bounds().back());
 

@@ -30,7 +30,7 @@ class WindowState;
 class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
  public:
   // Possible states the window can end up in after a drag is complete.
-  enum class SnapType { kLeft, kRight, kMaximize, kNone };
+  enum class SnapType { kPrimary, kSecondary, kMaximize, kNone };
 
   // Min height we'll force on screen when dragging the caption.
   // TODO: this should come from a property on the window.

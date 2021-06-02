@@ -116,10 +116,10 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
   shell_surface_->SetBounds(display_id, bounds_in_display);
 
   if (requested_state != window_state->GetStateType()) {
-    DCHECK(requested_state == chromeos::WindowStateType::kLeftSnapped ||
-           requested_state == chromeos::WindowStateType::kRightSnapped);
+    DCHECK(requested_state == chromeos::WindowStateType::kPrimarySnapped ||
+           requested_state == chromeos::WindowStateType::kSecondarySnapped);
 
-    if (requested_state == chromeos::WindowStateType::kLeftSnapped)
+    if (requested_state == chromeos::WindowStateType::kPrimarySnapped)
       shell_surface_->SetSnappedToLeft();
     else
       shell_surface_->SetSnappedToRight();

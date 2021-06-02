@@ -356,14 +356,14 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
       }
 
       switch (WindowState::Get(window)->GetStateType()) {
-        case WindowStateType::kLeftSnapped:
+        case WindowStateType::kPrimarySnapped:
           if (!split_view_controller->left_window()) {
             split_view_controller->SnapWindow(window,
                                               SplitViewController::LEFT);
           }
           break;
 
-        case WindowStateType::kRightSnapped:
+        case WindowStateType::kSecondarySnapped:
           if (!split_view_controller->right_window()) {
             split_view_controller->SnapWindow(window,
                                               SplitViewController::RIGHT);

@@ -545,9 +545,9 @@ chromeos::WindowStateType GetExpectedWindowState(
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFULLSCREEN:
       return chromeos::WindowStateType::kFullscreen;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT:
-      return chromeos::WindowStateType::kLeftSnapped;
+      return chromeos::WindowStateType::kPrimarySnapped;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
-      return chromeos::WindowStateType::kRightSnapped;
+      return chromeos::WindowStateType::kSecondarySnapped;
     default:
       NOTREACHED();
       return chromeos::WindowStateType::kNormal;
@@ -565,9 +565,9 @@ ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFULLSCREEN:
       return ash::WMEventType::WM_EVENT_FULLSCREEN;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT:
-      return ash::WMEventType::WM_EVENT_SNAP_LEFT;
+      return ash::WMEventType::WM_EVENT_SNAP_PRIMARY;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
-      return ash::WMEventType::WM_EVENT_SNAP_RIGHT;
+      return ash::WMEventType::WM_EVENT_SNAP_SECONDARY;
     default:
       NOTREACHED();
       return ash::WMEventType::WM_EVENT_NORMAL;
@@ -590,10 +590,10 @@ api::autotest_private::WindowStateType ToWindowStateType(
     case chromeos::WindowStateType::kFullscreen:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_FULLSCREEN;
-    case chromeos::WindowStateType::kLeftSnapped:
+    case chromeos::WindowStateType::kPrimarySnapped:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_LEFTSNAPPED;
-    case chromeos::WindowStateType::kRightSnapped:
+    case chromeos::WindowStateType::kSecondarySnapped:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_RIGHTSNAPPED;
     case chromeos::WindowStateType::kPip:
@@ -3944,11 +3944,11 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
 
   // TODO(crbug.com/990713): Make WMEvent trigger split view in tablet mode.
   if (ash::TabletMode::Get()->InTabletMode()) {
-    if (expected_state == chromeos::WindowStateType::kLeftSnapped) {
+    if (expected_state == chromeos::WindowStateType::kPrimarySnapped) {
       ash::SplitViewTestApi().SnapWindow(
           window, ash::SplitViewTestApi::SnapPosition::LEFT);
       return RespondLater();
-    } else if (expected_state == chromeos::WindowStateType::kRightSnapped) {
+    } else if (expected_state == chromeos::WindowStateType::kSecondarySnapped) {
       ash::SplitViewTestApi().SnapWindow(
           window, ash::SplitViewTestApi::SnapPosition::RIGHT);
       return RespondLater();

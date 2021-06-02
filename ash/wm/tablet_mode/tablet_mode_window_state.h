@@ -72,9 +72,9 @@ class TabletModeWindowState : public WindowState::State {
   chromeos::WindowStateType GetMaximizedOrCenteredWindowType(
       WindowState* window_state);
 
-  // If |target_state| is LEFT/RIGHT_SNAPPED and the window can be snapped,
-  // returns |target_state|. Otherwise depending on the capabilities of the
-  // window either returns |WindowStateType::kMaximized| or
+  // If |target_state| is PRIMARY/SECONDARY_SNAPPED and the window can be
+  // snapped, returns |target_state|. Otherwise depending on the capabilities
+  // of the window either returns |WindowStateType::kMaximized| or
   // |WindowStateType::kNormal|.
   chromeos::WindowStateType GetSnappedWindowStateType(
       WindowState* window_state,

@@ -75,7 +75,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   gfx::Rect expected = gfx::Rect(kPrimaryDisplayWorkAreaBounds.x(),
                                  kPrimaryDisplayWorkAreaBounds.y(),
@@ -83,7 +83,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
                                  kPrimaryDisplayWorkAreaBounds.height());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
 
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right);
   expected.set_x(kPrimaryDisplayWorkAreaBounds.right() - expected.width());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
@@ -119,7 +119,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSize) {
   delegate.set_minimum_size(gfx::Size(kWorkAreaBounds.width() - 1, 0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right);
   gfx::Rect expected =
       gfx::Rect(kWorkAreaBounds.x() + 1, kWorkAreaBounds.y(),
@@ -380,9 +380,9 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
       &delegate, -1, gfx::Rect(100, 100, 100, 100)));
   delegate.set_window_component(HTRIGHT);
   WindowState* window_state = WindowState::Get(window.get());
-  const WMEvent cycle_snap_left(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent cycle_snap_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_left);
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected =
       gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
                 kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
@@ -399,7 +399,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   generator->ReleaseLeftButton();
   expected.set_width(expected.width() + kIncreasedWidth);
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   EXPECT_EQ(0.75f, *window_state->snapped_width_ratio());
 
   // Another cycle snap left event will restore window state to normal.
@@ -410,7 +410,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   // Another cycle snap left event will snap window and reset snapped width
   // ratio.
   window_state->OnWMEvent(&cycle_snap_left);
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
 }
 
@@ -432,16 +432,16 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
           .Build();
   delegate.set_window_component(HTCAPTION);
   WindowState* window_state = WindowState::Get(window.get());
-  const WMEvent cycle_snap_left(WM_EVENT_CYCLE_SNAP_LEFT);
-  window_state->OnWMEvent(&cycle_snap_left);
+  const WMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  window_state->OnWMEvent(&cycle_snap_primary);
 
-  // Snap window to the left.
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  // Snap window to primary position (left).
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected =
       gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
                 kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
   // Wait for the snapped animation to complete and test that the window bound
-  // is left-snapped and the snap width ratio is updated.
+  // is primary-snapped and the snap width ratio is updated.
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
                                        base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(expected, window->GetBoundsInScreen());
@@ -477,9 +477,9 @@ TEST_F(WindowStateTest, RestoreBounds) {
   gfx::Rect restore_bounds = window->GetBoundsInScreen();
   restore_bounds.set_width(restore_bounds.width() + 1);
   window_state->SetRestoreBoundsInScreen(restore_bounds);
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right);
   EXPECT_NE(restore_bounds.ToString(), window->GetBoundsInScreen().ToString());
   EXPECT_EQ(restore_bounds.ToString(),
@@ -516,7 +516,7 @@ TEST_F(WindowStateTest, AutoManaged) {
   window->Show();
 
   window_state->Maximize();
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right);
 
   const gfx::Rect kWorkAreaBounds =
@@ -881,14 +881,14 @@ TEST_F(WindowStateTest, OpacityChange) {
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(window->GetTransparent());
 
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
   EXPECT_TRUE(window->GetTransparent());
 
-  const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_FALSE(window->GetTransparent());
 

@@ -100,7 +100,7 @@ constexpr int kDeskId = 2;
 constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
-    chromeos::WindowStateType::kLeftSnapped;
+    chromeos::WindowStateType::kPrimarySnapped;
 
 void RemoveInactiveDesks() {
   // Removes all the inactive desks and waits for their async operations to
@@ -1474,10 +1474,10 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   // Snap |window| to the left and store its window properties.
   // TODO(sammiequon): Store and check desk id and restore bounds.
   auto* window_state = ash::WindowState::Get(window);
-  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_LEFT);
+  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&left_snap_event);
   const WindowStateType pre_save_state_type = window_state->GetStateType();
-  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped, pre_save_state_type);
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped, pre_save_state_type);
   const gfx::Rect pre_save_bounds = window->GetBoundsInScreen();
 
   SaveWindowInfo(window);

@@ -414,12 +414,12 @@ void ClientControlledShellSurface::SetFullscreen(bool fullscreen) {
 
 void ClientControlledShellSurface::SetSnappedToLeft() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToLeft");
-  pending_window_state_ = chromeos::WindowStateType::kLeftSnapped;
+  pending_window_state_ = chromeos::WindowStateType::kPrimarySnapped;
 }
 
 void ClientControlledShellSurface::SetSnappedToRight() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToRight");
-  pending_window_state_ = chromeos::WindowStateType::kRightSnapped;
+  pending_window_state_ = chromeos::WindowStateType::kSecondarySnapped;
 }
 
 void ClientControlledShellSurface::SetPip() {
@@ -1447,8 +1447,8 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
   // the window bounds instead for maximixed state.
   // Snapped window states in tablet mode do not include the caption height.
   const bool is_snapped =
-      window_state == chromeos::WindowStateType::kLeftSnapped ||
-      window_state == chromeos::WindowStateType::kRightSnapped;
+      window_state == chromeos::WindowStateType::kPrimarySnapped ||
+      window_state == chromeos::WindowStateType::kSecondarySnapped;
   const bool is_maximized =
       window_state == chromeos::WindowStateType::kMaximized;
   const display::TabletState tablet_state =

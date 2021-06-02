@@ -649,9 +649,9 @@ TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
   // other snapped right.
   const gfx::Rect restored_bounds(200, 200);
   AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
-                     chromeos::WindowStateType::kLeftSnapped);
+                     chromeos::WindowStateType::kPrimarySnapped);
   AddEntryToFakeFile(/*restore_window_id=*/3, restored_bounds,
-                     chromeos::WindowStateType::kRightSnapped);
+                     chromeos::WindowStateType::kSecondarySnapped);
 
   // Create two full restore windows with the same restore window ids as the
   // entries we added. Test they are snapped and have snapped bounds.
@@ -773,9 +773,9 @@ TEST_F(FullRestoreControllerTest, TabletSplitviewWindow) {
   ASSERT_TRUE(window1_info->window_state_type);
   ASSERT_TRUE(window2_info->window_state_type);
 
-  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped,
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             *window1_info->window_state_type);
-  EXPECT_EQ(chromeos::WindowStateType::kRightSnapped,
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             *window2_info->window_state_type);
   EXPECT_EQ(bounds, *window1_info->current_bounds);
   EXPECT_EQ(bounds, *window2_info->current_bounds);
@@ -788,9 +788,9 @@ TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
   // other snapped right.
   const gfx::Rect restored_bounds(200, 200);
   AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
-                     chromeos::WindowStateType::kLeftSnapped);
+                     chromeos::WindowStateType::kPrimarySnapped);
   AddEntryToFakeFile(/*restore_window_id=*/3, restored_bounds,
-                     chromeos::WindowStateType::kRightSnapped);
+                     chromeos::WindowStateType::kSecondarySnapped);
 
   TabletModeControllerTestApi().EnterTabletMode();
 
@@ -1118,7 +1118,7 @@ TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
                      chromeos::WindowStateType::kNormal, /*activation_index=*/2,
                      /*display_id=*/primary_id);
   AddEntryToFakeFile(/*restore_id=*/3, kFullBounds,
-                     chromeos::WindowStateType::kLeftSnapped,
+                     chromeos::WindowStateType::kPrimarySnapped,
                      /*activation_index=*/3, /*display_id=*/primary_id);
 
   // Restore the first window. The window should have the exact same bounds.

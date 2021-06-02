@@ -108,15 +108,15 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
       delegate_->HandleWindowStateRequest(window_state, next_state);
       break;
     }
-    case WM_EVENT_SNAP_LEFT:
-    case WM_EVENT_SNAP_RIGHT: {
+    case WM_EVENT_SNAP_PRIMARY:
+    case WM_EVENT_SNAP_SECONDARY: {
       if (window_state->CanSnap()) {
         HandleWindowSnapping(window_state, event->type());
         // Get the desired window bounds for the snap state.
         gfx::Rect bounds = GetSnappedWindowBoundsInParent(
-            window, event->type() == WM_EVENT_SNAP_LEFT
-                        ? WindowStateType::kLeftSnapped
-                        : WindowStateType::kRightSnapped);
+            window, event->type() == WM_EVENT_SNAP_PRIMARY
+                        ? WindowStateType::kPrimarySnapped
+                        : WindowStateType::kSecondarySnapped);
 
         // We don't want Unminimize() to restore the pre-snapped state during
         // the transition.
@@ -213,8 +213,8 @@ void ClientControlledState::HandleCompoundEvents(WindowState* window_state,
     case WM_EVENT_TOGGLE_FULLSCREEN:
       ToggleFullScreen(window_state, window_state->delegate());
       break;
-    case WM_EVENT_CYCLE_SNAP_LEFT:
-    case WM_EVENT_CYCLE_SNAP_RIGHT:
+    case WM_EVENT_CYCLE_SNAP_PRIMARY:
+    case WM_EVENT_CYCLE_SNAP_SECONDARY:
       CycleSnap(window_state, event->type());
       break;
     default:

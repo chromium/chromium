@@ -4770,10 +4770,10 @@ TEST_F(SplitViewOverviewSessionTest, AltLeftSquareBracketOnMaximizedWindow) {
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
   EXPECT_FALSE(InOverviewSession());
-  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
   snapped_window_state->OnWMEvent(&alt_left_square_bracket);
   EXPECT_TRUE(wm::IsActiveWindow(snapped_window.get()));
-  EXPECT_EQ(WindowStateType::kLeftSnapped,
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_EQ(SplitViewController::State::kLeftSnapped,
             split_view_controller()->state());
@@ -4791,10 +4791,10 @@ TEST_F(SplitViewOverviewSessionTest, AltRightSquareBracketOnMaximizedWindow) {
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
   EXPECT_FALSE(InOverviewSession());
-  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
   snapped_window_state->OnWMEvent(&alt_right_square_bracket);
   EXPECT_TRUE(wm::IsActiveWindow(snapped_window.get()));
-  EXPECT_EQ(WindowStateType::kRightSnapped,
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_EQ(SplitViewController::State::kRightSnapped,
             split_view_controller()->state());
@@ -4818,10 +4818,10 @@ TEST_F(SplitViewOverviewSessionTest, AltSquareBracketOnUnsnappableWindow) {
         EXPECT_FALSE(InOverviewSession());
       };
   expect_unsnappable_window_is_active_and_maximized();
-  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
   unsnappable_window_state->OnWMEvent(&alt_left_square_bracket);
   expect_unsnappable_window_is_active_and_maximized();
-  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
   unsnappable_window_state->OnWMEvent(&alt_right_square_bracket);
   expect_unsnappable_window_is_active_and_maximized();
 }
@@ -4845,36 +4845,36 @@ TEST_F(SplitViewOverviewSessionTest, AltSquareBracketOnSameSideSnappedWindow) {
   // Test Alt+[ with active window snapped on left and overview on right.
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_LEFT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_PRIMARY);
   // Test Alt+] with active window snapped on right and overview on left.
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(),
                                       SplitViewController::RIGHT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_RIGHT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_SECONDARY);
   // Test Alt+[ with active window snapped on left and other window snapped on
   // right, if the left window is the default snapped window.
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   split_view_controller()->SnapWindow(window2.get(),
                                       SplitViewController::RIGHT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_LEFT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_PRIMARY);
   // Test Alt+[ with active window snapped on left and other window snapped on
   // right, if the right window is the default snapped window.
   split_view_controller()->SnapWindow(window2.get(),
                                       SplitViewController::RIGHT);
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_LEFT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_PRIMARY);
   // Test Alt+] with active window snapped on right and other window snapped on
   // left, if the left window is the default snapped window.
   split_view_controller()->SnapWindow(window2.get(), SplitViewController::LEFT);
   split_view_controller()->SnapWindow(window1.get(),
                                       SplitViewController::RIGHT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_RIGHT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_SECONDARY);
   // Test Alt+] with active window snapped on right and other window snapped on
   // left, if the right window is the default snapped window.
   split_view_controller()->SnapWindow(window1.get(),
                                       SplitViewController::RIGHT);
   split_view_controller()->SnapWindow(window2.get(), SplitViewController::LEFT);
-  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_RIGHT);
+  test_unsnapping_window1(WM_EVENT_CYCLE_SNAP_SECONDARY);
 }
 
 // Tests using Alt+[ on a right snapped window, and Alt+] on a left snapped
@@ -4886,10 +4886,10 @@ TEST_F(SplitViewOverviewSessionTest,
   const auto test_left_snapping_window1 = [this, &window1, &window2]() {
     wm::ActivateWindow(window1.get());
     WindowState* window1_state = WindowState::Get(window1.get());
-    const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+    const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
     window1_state->OnWMEvent(&alt_left_square_bracket);
     EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
-    EXPECT_EQ(WindowStateType::kLeftSnapped, window1_state->GetStateType());
+    EXPECT_EQ(WindowStateType::kPrimarySnapped, window1_state->GetStateType());
     EXPECT_EQ(SplitViewController::State::kLeftSnapped,
               split_view_controller()->state());
     EXPECT_EQ(window1.get(), split_view_controller()->left_window());
@@ -4899,10 +4899,11 @@ TEST_F(SplitViewOverviewSessionTest,
   const auto test_right_snapping_window1 = [this, &window1, &window2]() {
     wm::ActivateWindow(window1.get());
     WindowState* window1_state = WindowState::Get(window1.get());
-    const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+    const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
     window1_state->OnWMEvent(&alt_right_square_bracket);
     EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
-    EXPECT_EQ(WindowStateType::kRightSnapped, window1_state->GetStateType());
+    EXPECT_EQ(WindowStateType::kSecondarySnapped,
+              window1_state->GetStateType());
     EXPECT_EQ(SplitViewController::State::kRightSnapped,
               split_view_controller()->state());
     EXPECT_EQ(window1.get(), split_view_controller()->right_window());
@@ -6204,7 +6205,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
   // Since the only window is snapped, overview and splitview should be both
   // ended.
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kLeftSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_FALSE(overview_controller()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
@@ -6223,7 +6224,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_TRUE(overview_controller()->overview_session()->IsWindowInOverview(
       window2.get()));
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kRightSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   // Close |window2| will end overview and splitview.
   window2.reset();
   EXPECT_FALSE(overview_controller()->InOverviewSession());
@@ -6236,9 +6237,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
   OverviewItem* overview_item3 = GetOverviewItemForWindow(window3.get());
   DragWindowTo(overview_item3, gfx::PointF(600, 300));
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kLeftSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(WindowState::Get(window3.get())->GetStateType(),
-            WindowStateType::kRightSnapped);
+            WindowStateType::kSecondarySnapped);
   EXPECT_FALSE(overview_controller()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
@@ -6257,9 +6258,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
       window3.get()));
   EXPECT_TRUE(overview_controller()->overview_session()->IsWindowInOverview(
       window1.get()));
-  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kLeftSnapped);
+  EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(WindowState::Get(window3.get())->GetStateType(),
-            WindowStateType::kLeftSnapped);
+            WindowStateType::kPrimarySnapped);
   EXPECT_TRUE(overview_controller()->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   // End overview, test that we'll not auto-snap a window to the right side of
@@ -6890,16 +6891,16 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
   // Alt+[
-  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
   WindowState* window1_state = WindowState::Get(window1.get());
   window1_state->OnWMEvent(&alt_left_square_bracket);
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window1_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
   // Alt+]
-  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window1_state->OnWMEvent(&alt_right_square_bracket);
-  EXPECT_EQ(WindowStateType::kRightSnapped, window1_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
 }
@@ -6913,11 +6914,11 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   split_view_controller()->SnapWindow(snapped_window.get(),
                                       SplitViewController::LEFT);
   WindowState* snapped_window_state = WindowState::Get(snapped_window.get());
-  EXPECT_EQ(WindowStateType::kLeftSnapped,
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(InOverviewSession());
-  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
   snapped_window_state->OnWMEvent(&alt_left_square_bracket);
   EXPECT_EQ(WindowStateType::kNormal, snapped_window_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -6933,11 +6934,11 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   split_view_controller()->SnapWindow(snapped_window.get(),
                                       SplitViewController::RIGHT);
   WindowState* snapped_window_state = WindowState::Get(snapped_window.get());
-  EXPECT_EQ(WindowStateType::kRightSnapped,
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(InOverviewSession());
-  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
   snapped_window_state->OnWMEvent(&alt_right_square_bracket);
   EXPECT_EQ(WindowStateType::kNormal, snapped_window_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -6956,27 +6957,27 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
                                       SplitViewController::RIGHT);
   wm::ActivateWindow(snapped_window.get());
   WindowState* snapped_window_state = WindowState::Get(snapped_window.get());
-  EXPECT_EQ(WindowStateType::kRightSnapped,
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_EQ(SplitViewController::State::kRightSnapped,
             split_view_controller()->state());
   EXPECT_EQ(snapped_window.get(), split_view_controller()->right_window());
   EXPECT_TRUE(InOverviewSession());
   // Test using Alt+[ to put |snapped_window| on the left.
-  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
   snapped_window_state->OnWMEvent(&alt_left_square_bracket);
   EXPECT_TRUE(wm::IsActiveWindow(snapped_window.get()));
-  EXPECT_EQ(WindowStateType::kLeftSnapped,
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_EQ(SplitViewController::State::kLeftSnapped,
             split_view_controller()->state());
   EXPECT_EQ(snapped_window.get(), split_view_controller()->left_window());
   EXPECT_TRUE(InOverviewSession());
   // Test using Alt+] to put |snapped_window| on the right.
-  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent alt_right_square_bracket(WM_EVENT_CYCLE_SNAP_SECONDARY);
   snapped_window_state->OnWMEvent(&alt_right_square_bracket);
   EXPECT_TRUE(wm::IsActiveWindow(snapped_window.get()));
-  EXPECT_EQ(WindowStateType::kRightSnapped,
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
             snapped_window_state->GetStateType());
   EXPECT_EQ(SplitViewController::State::kRightSnapped,
             split_view_controller()->state());

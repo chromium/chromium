@@ -149,9 +149,9 @@ WindowStateType GetStateTypeFromSnapPosition(
     SplitViewController::SnapPosition snap_position) {
   DCHECK(snap_position != SplitViewController::NONE);
   if (snap_position == SplitViewController::LEFT)
-    return WindowStateType::kLeftSnapped;
+    return WindowStateType::kPrimarySnapped;
   if (snap_position == SplitViewController::RIGHT)
-    return WindowStateType::kRightSnapped;
+    return WindowStateType::kSecondarySnapped;
   NOTREACHED();
   return WindowStateType::kDefault;
 }
@@ -777,8 +777,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                          .id());
   }
 
-  const WMEvent event(snap_position == LEFT ? WM_EVENT_SNAP_LEFT
-                                            : WM_EVENT_SNAP_RIGHT);
+  const WMEvent event(snap_position == LEFT ? WM_EVENT_SNAP_PRIMARY
+                                            : WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window)->OnWMEvent(&event);
 
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
@@ -786,7 +786,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
 
 void SplitViewController::OnWindowSnapWMEvent(aura::Window* window,
                                               WMEventType event_type) {
-  DCHECK(event_type == WM_EVENT_SNAP_LEFT || event_type == WM_EVENT_SNAP_RIGHT);
+  DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
+         event_type == WM_EVENT_SNAP_SECONDARY);
 
   // If split view can't be enabled at the moment, do nothing.
   if (!ShouldAllowSplitView())
@@ -806,7 +807,7 @@ void SplitViewController::OnWindowSnapWMEvent(aura::Window* window,
 
   // Start observe the to-be-snapped window.
   to_be_snapped_windows_observer_->AddToBeSnappedWindow(
-      window, event_type == WM_EVENT_SNAP_LEFT ? LEFT : RIGHT);
+      window, event_type == WM_EVENT_SNAP_PRIMARY ? LEFT : RIGHT);
 }
 
 void SplitViewController::AttachSnappingWindow(aura::Window* window,
@@ -1811,11 +1812,11 @@ void SplitViewController::UpdateBlackScrim(
 void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
   // Update the snapped windows' bounds.
   if (IsSnapped(left_window_)) {
-    const WMEvent left_window_event(WM_EVENT_SNAP_LEFT);
+    const WMEvent left_window_event(WM_EVENT_SNAP_PRIMARY);
     WindowState::Get(left_window_)->OnWMEvent(&left_window_event);
   }
   if (IsSnapped(right_window_)) {
-    const WMEvent right_window_event(WM_EVENT_SNAP_RIGHT);
+    const WMEvent right_window_event(WM_EVENT_SNAP_SECONDARY);
     WindowState::Get(right_window_)->OnWMEvent(&right_window_event);
   }
 

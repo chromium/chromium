@@ -27,8 +27,15 @@ enum WMEventType {
   WM_EVENT_MAXIMIZE,
   WM_EVENT_MINIMIZE,
   WM_EVENT_FULLSCREEN,
-  WM_EVENT_SNAP_LEFT,
-  WM_EVENT_SNAP_RIGHT,
+  // PRIMARY is left in primary landscape orientation and right in secondary
+  // landscape orientation. If |kVerticalSplitScreen| is enabled, PRIMARY is
+  // top in primary portrait orientation and SECONDARY is bottom in secondary
+  // portrait orientation. If not, in the clamshell mode, PRIMARY is left and
+  // SECONDARY is right.
+  WM_EVENT_SNAP_PRIMARY,
+  // SECONDARY is the opposite position of PRIMARY, i.e. if PRIMARY is left,
+  // SECONDARY is right.
+  WM_EVENT_SNAP_SECONDARY,
 
   // A window is requested to be the given bounds. The request may or
   // may not be fulfilled depending on the requested bounds and window's
@@ -56,17 +63,17 @@ enum WMEventType {
   // A user requested to toggle fullscreen state.
   WM_EVENT_TOGGLE_FULLSCREEN,
 
-  // A user requested a cycle of snap left.
+  // A user requested a cycle of snap primary (left).
   // The way this event is processed is the current window state is used as
   // the starting state. Assuming normal window start state; if the window can
-  // be snapped left, snap it; otherwise progress to next state. If the
-  // window can be restored; and this isn't the entry condition restore it;
+  // be snapped primary (left), snap it; otherwise progress to next state. If
+  // the window can be restored; and this isn't the entry condition restore it;
   // otherwise apply the bounce animation to the window.
-  WM_EVENT_CYCLE_SNAP_LEFT,
+  WM_EVENT_CYCLE_SNAP_PRIMARY,
 
-  // A user requested a cycle of snap right.
-  // See decription of WM_EVENT_CYCLE_SNAP_LEFT.
-  WM_EVENT_CYCLE_SNAP_RIGHT,
+  // A user requested a cycle of snap secondary (right).
+  // See description of WM_EVENT_CYCLE_SNAP_PRIMARY.
+  WM_EVENT_CYCLE_SNAP_SECONDARY,
 
   // A user requested to center a window.
   WM_EVENT_CENTER,

@@ -1651,7 +1651,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 5. Clamshell -> Tablet. If the window is snapped, it will be carried over
   // to splitview in tablet mode.
-  const WMEvent event(WM_EVENT_SNAP_LEFT);
+  const WMEvent event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window.get())->OnWMEvent(&event);
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
   // After transition, we should be in single split screen.
@@ -1723,7 +1723,7 @@ TEST_F(TabletModeWindowManagerTest,
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
   // First test 1 window case.
-  const WMEvent left_snap_event(WM_EVENT_SNAP_LEFT);
+  const WMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
   const gfx::Rect left_snapped_bounds =
       gfx::Rect(1200 / 2, 800 - ShelfConfig::Get()->shelf_size());
@@ -1746,7 +1746,7 @@ TEST_F(TabletModeWindowManagerTest,
   std::unique_ptr<aura::Window> window2(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
-  const WMEvent right_snap_event(WM_EVENT_SNAP_RIGHT);
+  const WMEvent right_snap_event(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window2.get())->OnWMEvent(&right_snap_event);
   // Change their bounds horizontally and then enter tablet mode.
   window->SetBounds(gfx::Rect(400, left_snapped_bounds.height()));

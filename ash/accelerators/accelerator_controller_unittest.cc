@@ -721,7 +721,7 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   wm::ActivateWindow(window1.get());
   left_clamshell_no_overview = 1;
   test("Snap left, clamshell, no overview", WINDOW_CYCLE_SNAP_LEFT,
-       WindowStateType::kLeftSnapped);
+       WindowStateType::kPrimarySnapped);
   left_clamshell_no_overview = 2;
   test("Unsnap left, clamshell, no overview", WINDOW_CYCLE_SNAP_LEFT,
        WindowStateType::kNormal);
@@ -729,14 +729,14 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   EnterOverviewAndDragToSnapRight(window1.get());
   left_clamshell_overview = 1;
   test("Snap left, clamshell, overview", WINDOW_CYCLE_SNAP_LEFT,
-       WindowStateType::kLeftSnapped);
+       WindowStateType::kPrimarySnapped);
   left_clamshell_overview = 2;
   test("Unsnap left, clamshell, overview", WINDOW_CYCLE_SNAP_LEFT,
        WindowStateType::kNormal);
   // Alt+], clamshell, no overview
   right_clamshell_no_overview = 1;
   test("Snap right, clamshell, no overview", WINDOW_CYCLE_SNAP_RIGHT,
-       WindowStateType::kRightSnapped);
+       WindowStateType::kSecondarySnapped);
   right_clamshell_no_overview = 2;
   test("Unsnap right, clamshell, no overview", WINDOW_CYCLE_SNAP_RIGHT,
        WindowStateType::kNormal);
@@ -744,7 +744,7 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   EnterOverviewAndDragToSnapLeft(window1.get());
   right_clamshell_overview = 1;
   test("Snap right, clamshell, overview", WINDOW_CYCLE_SNAP_RIGHT,
-       WindowStateType::kRightSnapped);
+       WindowStateType::kSecondarySnapped);
   right_clamshell_overview = 2;
   test("Unsnap right, clamshell, overview", WINDOW_CYCLE_SNAP_RIGHT,
        WindowStateType::kNormal);
@@ -752,7 +752,7 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   ShellTestApi().SetTabletModeEnabledForTest(true);
   left_tablet = 1;
   test("Snap left, tablet, no overview", WINDOW_CYCLE_SNAP_LEFT,
-       WindowStateType::kLeftSnapped);
+       WindowStateType::kPrimarySnapped);
   ToggleOverview();
   left_tablet = 2;
   test("Unsnap left, tablet, no overview", WINDOW_CYCLE_SNAP_LEFT,
@@ -761,14 +761,14 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   EnterOverviewAndDragToSnapRight(window1.get());
   left_tablet = 3;
   test("Snap left, tablet, overview", WINDOW_CYCLE_SNAP_LEFT,
-       WindowStateType::kLeftSnapped);
+       WindowStateType::kPrimarySnapped);
   left_tablet = 4;
   test("Unsnap left, tablet, overview", WINDOW_CYCLE_SNAP_LEFT,
        WindowStateType::kMaximized);
   // Alt+], tablet, no overview
   right_tablet = 1;
   test("Snap right, tablet, no overview", WINDOW_CYCLE_SNAP_RIGHT,
-       WindowStateType::kRightSnapped);
+       WindowStateType::kSecondarySnapped);
   ToggleOverview();
   right_tablet = 2;
   test("Unsnap right, tablet, no overview", WINDOW_CYCLE_SNAP_RIGHT,
@@ -777,7 +777,7 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   EnterOverviewAndDragToSnapLeft(window1.get());
   right_tablet = 3;
   test("Snap right, tablet, overview", WINDOW_CYCLE_SNAP_RIGHT,
-       WindowStateType::kRightSnapped);
+       WindowStateType::kSecondarySnapped);
   right_tablet = 4;
   test("Unsnap right, tablet, overview", WINDOW_CYCLE_SNAP_RIGHT,
        WindowStateType::kMaximized);

@@ -28,8 +28,8 @@ enum class WindowStateType {
   kFullscreen,
 
   // Additional ash states.
-  kLeftSnapped,
-  kRightSnapped,
+  kPrimarySnapped,
+  kSecondarySnapped,
 
   // A window is in this state when it is automatically placed and
   // sized by the window manager. (it's newly opened, or pushed to the side

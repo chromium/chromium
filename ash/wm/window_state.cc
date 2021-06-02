@@ -263,8 +263,8 @@ bool WindowState::IsMaximizedOrFullscreenOrPinned() const {
 }
 
 bool WindowState::IsSnapped() const {
-  return GetStateType() == WindowStateType::kLeftSnapped ||
-         GetStateType() == WindowStateType::kRightSnapped;
+  return GetStateType() == WindowStateType::kPrimarySnapped ||
+         GetStateType() == WindowStateType::kSecondarySnapped;
 }
 
 bool WindowState::IsPinned() const {
@@ -502,8 +502,9 @@ void WindowState::UpdateSnappedWidthRatio(const WMEvent* event) {
 
   const WMEventType type = event->type();
   // Initializes |snapped_width_ratio_| whenever |event| is snapping event.
-  if (type == WM_EVENT_SNAP_LEFT || type == WM_EVENT_SNAP_RIGHT ||
-      type == WM_EVENT_CYCLE_SNAP_LEFT || type == WM_EVENT_CYCLE_SNAP_RIGHT) {
+  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY ||
+      type == WM_EVENT_CYCLE_SNAP_PRIMARY ||
+      type == WM_EVENT_CYCLE_SNAP_SECONDARY) {
     // Since |UpdateSnappedWidthRatio()| is called post WMEvent taking effect,
     // |window_|'s bounds is in a correct state for ratio update.
     snapped_width_ratio_ =
@@ -672,9 +673,9 @@ void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
     bounds->set_width(
         static_cast<int>(*snapped_width_ratio_ * maximized_bounds.width()));
   }
-  if (GetStateType() == WindowStateType::kLeftSnapped)
+  if (GetStateType() == WindowStateType::kPrimarySnapped)
     bounds->set_x(maximized_bounds.x());
-  else if (GetStateType() == WindowStateType::kRightSnapped)
+  else if (GetStateType() == WindowStateType::kSecondarySnapped)
     bounds->set_x(maximized_bounds.right() - bounds->width());
   bounds->set_y(maximized_bounds.y());
   bounds->set_height(maximized_bounds.height());

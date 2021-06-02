@@ -902,7 +902,7 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
   EXPECT_EQ(buffer_size,
             shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
 
-  ash::WMEvent event(ash::WM_EVENT_CYCLE_SNAP_LEFT);
+  ash::WMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
   // Enter snapped mode.

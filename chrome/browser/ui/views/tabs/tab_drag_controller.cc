@@ -104,8 +104,8 @@ bool IsSnapped(const TabDragContext* context) {
   chromeos::WindowStateType type =
       GetWindowForTabDraggingProperties(context)->GetProperty(
           chromeos::kWindowStateTypeKey);
-  return type == chromeos::WindowStateType::kLeftSnapped ||
-         type == chromeos::WindowStateType::kRightSnapped;
+  return type == chromeos::WindowStateType::kPrimarySnapped ||
+         type == chromeos::WindowStateType::kSecondarySnapped;
 }
 
 // In Chrome OS tablet mode, when dragging a tab/tabs around, the desired

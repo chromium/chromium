@@ -2943,9 +2943,9 @@ TEST_F(DesksTest, SwitchToDeskWithSnappedActiveWindow) {
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   WindowState* win0_state = WindowState::Get(win0.get());
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_LEFT);
+  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   win0_state->OnWMEvent(&snap_to_left);
-  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped,
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             win0_state->GetStateType());
 
   // Switch to |desk_2| and then back to |desk_1|. Verify that neither split

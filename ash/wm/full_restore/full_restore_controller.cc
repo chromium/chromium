@@ -503,14 +503,14 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
       if (Shell::Get()->tablet_mode_controller()->InTabletMode())
         Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
-      if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
-          *state_type == chromeos::WindowStateType::kRightSnapped) {
+      if (*state_type == chromeos::WindowStateType::kPrimarySnapped ||
+          *state_type == chromeos::WindowStateType::kSecondarySnapped) {
         base::AutoReset<bool> auto_reset_is_restoring_snap_state(
             &is_restoring_snap_state_, true);
-        const WMEvent snap_event(*state_type ==
-                                         chromeos::WindowStateType::kLeftSnapped
-                                     ? WM_EVENT_SNAP_LEFT
-                                     : WM_EVENT_SNAP_RIGHT);
+        const WMEvent snap_event(
+            *state_type == chromeos::WindowStateType::kPrimarySnapped
+                ? WM_EVENT_SNAP_PRIMARY
+                : WM_EVENT_SNAP_SECONDARY);
         WindowState::Get(window)->OnWMEvent(&snap_event);
       }
     }

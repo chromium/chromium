@@ -299,8 +299,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
     case WM_EVENT_TOGGLE_FULLSCREEN:
       ToggleFullScreen(window_state, window_state->delegate());
       return;
-    case WM_EVENT_CYCLE_SNAP_LEFT:
-    case WM_EVENT_CYCLE_SNAP_RIGHT:
+    case WM_EVENT_CYCLE_SNAP_PRIMARY:
+    case WM_EVENT_CYCLE_SNAP_SECONDARY:
       CycleSnap(window_state, event->type());
       return;
     default:
@@ -343,14 +343,14 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   const WMEventType type = event->type();
-  if (type == WM_EVENT_SNAP_LEFT || type == WM_EVENT_SNAP_RIGHT)
+  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY)
     HandleWindowSnapping(window_state, type);
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
     gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
-        window_state->window(), event->type() == WM_EVENT_SNAP_LEFT
-                                    ? WindowStateType::kLeftSnapped
-                                    : WindowStateType::kRightSnapped);
+        window_state->window(), event->type() == WM_EVENT_SNAP_PRIMARY
+                                    ? WindowStateType::kPrimarySnapped
+                                    : WindowStateType::kSecondarySnapped);
     window_state->SetBoundsDirectAnimated(snapped_bounds);
     return;
   }
@@ -506,8 +506,8 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
   switch (state_type_) {
-    case WindowStateType::kLeftSnapped:
-    case WindowStateType::kRightSnapped:
+    case WindowStateType::kPrimarySnapped:
+    case WindowStateType::kSecondarySnapped:
       bounds_in_parent =
           GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
       break;

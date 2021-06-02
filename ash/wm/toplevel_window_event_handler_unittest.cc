@@ -524,7 +524,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
 
   // Verify that the window has moved after the gesture.
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
-  EXPECT_EQ(WindowStateType::kRightSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state->GetStateType());
 
   old_bounds = target->bounds();
 
@@ -536,7 +536,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
-  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
 
   window_state->Restore();
   gfx::Rect bounds_before_maximization = target->bounds();
@@ -595,7 +595,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragMultiDisplays) {
 
   // Verify that the window has moved after the gesture.
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
-  EXPECT_EQ(WindowStateType::kRightSnapped, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state->GetStateType());
 }
 
 // Tests that a gesture cannot minimize an unminimizeable window.
@@ -1088,7 +1088,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
   // Snap the window to the right.
   WindowState* window_state = WindowState::Get(w1.get());
   ASSERT_TRUE(window_state->CanSnap());
-  const WMEvent event(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state->OnWMEvent(&event);
   ASSERT_TRUE(window_state->IsSnapped());
 

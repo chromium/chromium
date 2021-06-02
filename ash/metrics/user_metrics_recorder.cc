@@ -60,8 +60,8 @@ ActiveWindowStateType GetActiveWindowState() {
       case WindowStateType::kFullscreen:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_FULLSCREEN;
         break;
-      case WindowStateType::kLeftSnapped:
-      case WindowStateType::kRightSnapped:
+      case WindowStateType::kPrimarySnapped:
+      case WindowStateType::kSecondarySnapped:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_SNAPPED;
         break;
       case WindowStateType::kPinned:

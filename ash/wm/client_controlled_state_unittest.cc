@@ -48,8 +48,8 @@ class TestClientControlledStateDelegate
                            int64_t display_id) override {
     requested_bounds_ = bounds;
     if (requested_state != window_state->GetStateType()) {
-      DCHECK(requested_state == WindowStateType::kLeftSnapped ||
-             requested_state == WindowStateType::kRightSnapped);
+      DCHECK(requested_state == WindowStateType::kPrimarySnapped ||
+             requested_state == WindowStateType::kSecondarySnapped);
       old_state_ = window_state->GetStateType();
       new_state_ = requested_state;
     }
@@ -333,12 +333,12 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   ASSERT_FALSE(window_state()->CanSnap());
 
   // The event should be ignored.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
 
-  const WMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_RIGHT);
+  const WMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
@@ -354,7 +354,7 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
   EXPECT_TRUE(delegate()->requested_bounds().origin().IsOrigin());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
-  EXPECT_EQ(WindowStateType::kLeftSnapped, delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
 
   delegate()->Reset();
 
@@ -365,7 +365,7 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   EXPECT_EQ(work_area.bottom_right(),
             delegate()->requested_bounds().bottom_right());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
-  EXPECT_EQ(WindowStateType::kRightSnapped, delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
 }
 
 TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
@@ -380,7 +380,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
   widget_delegate()->EnableSnap();
 
   // Make sure the requested bounds for snapped window is local to display.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_LEFT);
+  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
 
   EXPECT_EQ(second_display_id, delegate()->display_id());
@@ -600,13 +600,13 @@ TEST_F(ClientControlledStateTest,
   split_view_controller->SnapWindow(window_state()->window(),
                                     SplitViewController::SnapPosition::RIGHT);
 
-  EXPECT_EQ(WindowStateType::kRightSnapped, delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
   EXPECT_FALSE(window_state()->IsSnapped());
 
   // Ensures the window is in a transitional snapped state.
   EXPECT_TRUE(split_view_controller->IsWindowInTransitionalState(
       window_state()->window()));
-  EXPECT_EQ(WindowStateType::kRightSnapped, delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
   EXPECT_FALSE(window_state()->IsSnapped());
 
   // Ignores WMEvent if in a transitional state.

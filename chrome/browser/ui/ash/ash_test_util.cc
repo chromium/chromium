@@ -59,15 +59,15 @@ void ActivateAndSnapWindow(aura::Window* window,
   ASSERT_TRUE(wm::IsActiveWindow(window));
 
   SnapWaiter snap_waiter(window, type);
-  ASSERT_TRUE(type == chromeos::WindowStateType::kRightSnapped ||
-              type == chromeos::WindowStateType::kLeftSnapped);
+  ASSERT_TRUE(type == chromeos::WindowStateType::kSecondarySnapped ||
+              type == chromeos::WindowStateType::kPrimarySnapped);
 
   // Early return if it's already snapped.
   if (snap_waiter.IsSnapped())
     return;
 
   ui_controls::SendKeyPress(window,
-                            type == chromeos::WindowStateType::kLeftSnapped
+                            type == chromeos::WindowStateType::kPrimarySnapped
                                 ? ui::VKEY_OEM_4
                                 : ui::VKEY_OEM_6,
                             /*control=*/false,

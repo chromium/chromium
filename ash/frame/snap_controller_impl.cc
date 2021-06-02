@@ -48,8 +48,8 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
 
   WindowState* window_state = WindowState::Get(window);
   const WMEvent snap_event(snap == chromeos::SnapDirection::kLeft
-                               ? WM_EVENT_SNAP_LEFT
-                               : WM_EVENT_SNAP_RIGHT);
+                               ? WM_EVENT_SNAP_PRIMARY
+                               : WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_event);
 }
 

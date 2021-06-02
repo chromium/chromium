@@ -73,7 +73,7 @@ void DoSplitViewTransition(
 
   for (auto& iter : windows) {
     split_view_controller->SnapWindow(
-        iter.first, iter.second == WindowStateType::kLeftSnapped
+        iter.first, iter.second == WindowStateType::kPrimarySnapped
                         ? SplitViewController::LEFT
                         : SplitViewController::RIGHT);
   }
@@ -505,24 +505,24 @@ TabletModeWindowManager::GetCarryOverWindowsInSplitView(
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   if (IsCarryOverCandidateForSplitView(mru_windows, 0u, root_window)) {
     if (GetWindowStateType(mru_windows[0], clamshell_to_tablet) ==
-        WindowStateType::kLeftSnapped) {
+        WindowStateType::kPrimarySnapped) {
       windows.emplace_back(
-          std::make_pair(mru_windows[0], WindowStateType::kLeftSnapped));
+          std::make_pair(mru_windows[0], WindowStateType::kPrimarySnapped));
       if (IsCarryOverCandidateForSplitView(mru_windows, 1u, root_window) &&
           GetWindowStateType(mru_windows[1], clamshell_to_tablet) ==
-              WindowStateType::kRightSnapped) {
+              WindowStateType::kSecondarySnapped) {
         windows.emplace_back(
-            std::make_pair(mru_windows[1], WindowStateType::kRightSnapped));
+            std::make_pair(mru_windows[1], WindowStateType::kSecondarySnapped));
       }
     } else if (GetWindowStateType(mru_windows[0], clamshell_to_tablet) ==
-               WindowStateType::kRightSnapped) {
+               WindowStateType::kSecondarySnapped) {
       windows.emplace_back(
-          std::make_pair(mru_windows[0], WindowStateType::kRightSnapped));
+          std::make_pair(mru_windows[0], WindowStateType::kSecondarySnapped));
       if (IsCarryOverCandidateForSplitView(mru_windows, 1u, root_window) &&
           GetWindowStateType(mru_windows[1], clamshell_to_tablet) ==
-              WindowStateType::kLeftSnapped) {
+              WindowStateType::kPrimarySnapped) {
         windows.emplace_back(
-            std::make_pair(mru_windows[1], WindowStateType::kLeftSnapped));
+            std::make_pair(mru_windows[1], WindowStateType::kPrimarySnapped));
       }
     }
   }
@@ -535,9 +535,9 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
   aura::Window* left_window = nullptr;
   aura::Window* right_window = nullptr;
   for (auto& iter : windows_in_splitview) {
-    if (iter.second == WindowStateType::kLeftSnapped)
+    if (iter.second == WindowStateType::kPrimarySnapped)
       left_window = iter.first;
-    else if (iter.second == WindowStateType::kRightSnapped)
+    else if (iter.second == WindowStateType::kSecondarySnapped)
       right_window = iter.first;
   }
   if (!left_window && !right_window)

@@ -1304,9 +1304,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     // Override the reason only if the window enters snapped mode. If the window
     // resizes by dragging in snapped mode, we need to keep the original reason.
     if (requested_state != current_state) {
-      if (requested_state == WindowStateType::kLeftSnapped) {
+      if (requested_state == WindowStateType::kPrimarySnapped) {
         reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_LEFT;
-      } else if (requested_state == WindowStateType::kRightSnapped) {
+      } else if (requested_state == WindowStateType::kSecondarySnapped) {
         reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_RIGHT;
       }
     }
@@ -1383,10 +1383,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       case WindowStateType::kTrustedPinned:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_TRUSTED_PINNED;
         break;
-      case WindowStateType::kLeftSnapped:
+      case WindowStateType::kPrimarySnapped:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_LEFT_SNAPPED;
         break;
-      case WindowStateType::kRightSnapped:
+      case WindowStateType::kSecondarySnapped:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_RIGHT_SNAPPED;
         break;
       case WindowStateType::kPip:

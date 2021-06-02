@@ -68,10 +68,10 @@ WindowStateType BaseState::GetStateForTransitionEvent(const WMEvent* event) {
       return WindowStateType::kMinimized;
     case WM_EVENT_FULLSCREEN:
       return WindowStateType::kFullscreen;
-    case WM_EVENT_SNAP_LEFT:
-      return WindowStateType::kLeftSnapped;
-    case WM_EVENT_SNAP_RIGHT:
-      return WindowStateType::kRightSnapped;
+    case WM_EVENT_SNAP_PRIMARY:
+      return WindowStateType::kPrimarySnapped;
+    case WM_EVENT_SNAP_SECONDARY:
+      return WindowStateType::kSecondarySnapped;
     case WM_EVENT_SHOW_INACTIVE:
       return WindowStateType::kInactive;
     case WM_EVENT_PIN:
@@ -126,9 +126,9 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
   // For tablet mode, use |TabletModeWindowState::CycleTabletSnap|.
   DCHECK(!Shell::Get()->tablet_mode_controller()->InTabletMode());
 
-  WindowStateType desired_snap_state = event == WM_EVENT_CYCLE_SNAP_LEFT
-                                           ? WindowStateType::kLeftSnapped
-                                           : WindowStateType::kRightSnapped;
+  WindowStateType desired_snap_state = event == WM_EVENT_CYCLE_SNAP_PRIMARY
+                                           ? WindowStateType::kPrimarySnapped
+                                           : WindowStateType::kSecondarySnapped;
   aura::Window* window = window_state->window();
   // If |window| can be snapped but is not currently in |desired_snap_state|,
   // then snap |window| to the side that corresponds to |desired_snap_state|.
@@ -140,13 +140,13 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
       // restrictive than |WindowState::CanSnap|.
       DCHECK(SplitViewController::Get(window)->IsWindowInSplitView(window));
       SplitViewController::Get(window)->SnapWindow(
-          window, desired_snap_state == WindowStateType::kLeftSnapped
+          window, desired_snap_state == WindowStateType::kPrimarySnapped
                       ? SplitViewController::LEFT
                       : SplitViewController::RIGHT);
     } else {
-      const WMEvent event(desired_snap_state == WindowStateType::kLeftSnapped
-                              ? WM_EVENT_SNAP_LEFT
-                              : WM_EVENT_SNAP_RIGHT);
+      const WMEvent event(desired_snap_state == WindowStateType::kPrimarySnapped
+                              ? WM_EVENT_SNAP_PRIMARY
+                              : WM_EVENT_SNAP_SECONDARY);
       window_state->OnWMEvent(&event);
     }
     return;
@@ -210,12 +210,12 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
   if (ShouldAllowSplitView()) {
     bounds_in_parent =
         SplitViewController::Get(window)->GetSnappedWindowBoundsInParent(
-            (state_type == WindowStateType::kLeftSnapped)
+            (state_type == WindowStateType::kPrimarySnapped)
                 ? SplitViewController::LEFT
                 : SplitViewController::RIGHT,
             window);
   } else {
-    bounds_in_parent = (state_type == WindowStateType::kLeftSnapped)
+    bounds_in_parent = (state_type == WindowStateType::kPrimarySnapped)
                            ? GetDefaultLeftSnappedWindowBoundsInParent(window)
                            : GetDefaultRightSnappedWindowBoundsInParent(window);
   }
@@ -224,7 +224,8 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
 
 void BaseState::HandleWindowSnapping(WindowState* window_state,
                                      WMEventType event_type) {
-  DCHECK(event_type == WM_EVENT_SNAP_LEFT || event_type == WM_EVENT_SNAP_RIGHT);
+  DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
+         event_type == WM_EVENT_SNAP_SECONDARY);
   DCHECK(window_state->CanSnap());
 
   window_state->set_bounds_changed_by_user(true);
