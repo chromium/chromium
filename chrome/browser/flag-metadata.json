@@ -2838,7 +2838,7 @@
   {
     "name": "files-app-copy-image",
     "owners": ["nohe", "lucmult", "weifangsun"],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "files-filters-in-recents",
