@@ -43,14 +43,8 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       state_(V8CodecState::Enum::kUnconfigured),
       script_state_(script_state) {
-  // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
-  if (IsMainThread()) {
-    logger_ = std::make_unique<CodecLogger>(
-        GetExecutionContext(), Thread::MainThread()->GetTaskRunner());
-  } else {
-    // This will create a logger backed by a NullMediaLog, which does nothing.
-    logger_ = std::make_unique<CodecLogger>();
-  }
+  logger_ = std::make_unique<CodecLogger>(GetExecutionContext(),
+                                          Thread::Current()->GetTaskRunner());
 
   media::MediaLog* log = logger_->log();
 

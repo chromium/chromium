@@ -30,9 +30,6 @@ class ExecutionContext;
 // call Neuter() if the ExecutionContext passed to the constructor is destroyed.
 class MODULES_EXPORT CodecLogger final {
  public:
-  // Creates a CodecLogger backed by a NullMediaLog, which does nothing.
-  CodecLogger();
-
   // Attempts to create CodecLogger backed by a BatchingMediaLog. Falls back to
   // a NullMediaLog on failure.
   CodecLogger(ExecutionContext*,

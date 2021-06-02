@@ -75,14 +75,8 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
 
-  // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
-  if (IsMainThread()) {
-    logger_ = std::make_unique<CodecLogger>(
-        context, context->GetTaskRunner(TaskType::kInternalMedia));
-  } else {
-    // This will create a logger backed by a NullMediaLog, which does nothing.
-    logger_ = std::make_unique<CodecLogger>();
-  }
+  logger_ = std::make_unique<CodecLogger>(
+      context, context->GetTaskRunner(TaskType::kInternalMedia));
 
   logger_->log()->SetProperty<media::MediaLogProperty::kFrameUrl>(
       context->Url().GetString().Ascii());

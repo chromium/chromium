@@ -12,7 +12,11 @@ void RenderMediaEventHandler::SendQueuedMediaEvents(
   GetMediaInternalRecordLogRemote().Log(events_to_send);
 }
 
-RenderMediaEventHandler::RenderMediaEventHandler() = default;
+RenderMediaEventHandler::RenderMediaEventHandler() {
+  DCHECK(RenderThread::Get())
+      << "RenderMediaEventHandler must be constructed on the render thread";
+}
+
 RenderMediaEventHandler::~RenderMediaEventHandler() = default;
 
 // This media log doesn't care, since the RenderThread outlives us for

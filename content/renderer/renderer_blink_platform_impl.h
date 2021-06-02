@@ -242,7 +242,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       scoped_refptr<network::SharedURLLoaderFactory> factory) override;
   std::unique_ptr<media::MediaLog> GetMediaLog(
       blink::MediaInspectorContext* inspector_context,
-      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) override;
+      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
+      bool is_on_worker) override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
   scoped_refptr<base::SingleThreadTaskRunner> MediaThreadTaskRunner() override;
   media::DecoderFactory* GetMediaDecoderFactory() override;

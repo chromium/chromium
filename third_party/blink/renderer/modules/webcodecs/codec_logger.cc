@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -25,7 +26,8 @@ CodecLogger::CodecLogger(
   // collected before |parent_media_log_| is destroyed.
   if (!context->IsContextDestroyed()) {
     parent_media_log_ = Platform::Current()->GetMediaLog(
-        MediaInspectorContextImpl::From(*context), task_runner);
+        MediaInspectorContextImpl::From(*context), task_runner,
+        /*is_on_worker=*/!IsMainThread());
   }
 
   // NullMediaLog silently and safely does nothing.
@@ -36,10 +38,6 @@ CodecLogger::CodecLogger(
   // without causing problems to |media_log_| users.
   media_log_ = parent_media_log_->Clone();
 }
-
-CodecLogger::CodecLogger()
-    : parent_media_log_(std::make_unique<media::NullMediaLog>()),
-      media_log_(parent_media_log_->Clone()) {}
 
 DOMException* CodecLogger::MakeException(std::string error_msg,
                                          media::Status status) {

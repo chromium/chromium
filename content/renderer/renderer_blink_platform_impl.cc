@@ -1034,11 +1034,15 @@ void RendererBlinkPlatformImpl::RecordMetricsForBackgroundedRendererPurge() {
 // sent back to the Browser via Mojo objects bound to |owner_task_runner|.
 std::unique_ptr<media::MediaLog> RendererBlinkPlatformImpl::GetMediaLog(
     blink::MediaInspectorContext* inspector_context,
-    scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
+    bool is_on_worker) {
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
 
   // For chrome://media-internals.
-  handlers.push_back(std::make_unique<RenderMediaEventHandler>());
+  // This should only be created in the main Window context, and not from
+  // a worker context.
+  if (!is_on_worker)
+    handlers.push_back(std::make_unique<RenderMediaEventHandler>());
 
   // For devtools' media tab.
   handlers.push_back(

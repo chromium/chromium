@@ -813,11 +813,14 @@ class BLINK_PLATFORM_EXPORT Platform {
   // MediaLog from any thread, but it must be destroyed on |owner_task_runner|.
   // MediaLog owners should destroy the MediaLog if the ExecutionContext is
   // destroyed, since |inspector_context| may no longer be valid at that point.
+  // |is_on_worker| is used to avoid logging to the chrome://media-internal
+  // page, which can only be logged to from the window main thread.
   // Note: |inspector_context| is only used on |owner_task_runner|, so
   // destroying the MediaLog on |owner_task_runner| should avoid races.
   virtual std::unique_ptr<media::MediaLog> GetMediaLog(
       MediaInspectorContext* inspector_context,
-      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) {
+      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
+      bool is_on_worker) {
     return nullptr;
   }
 

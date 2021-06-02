@@ -8,14 +8,11 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
-#include "content/public/common/content_client.h"
-#include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_thread.h"
 #include "media/base/logging_override_if_enabled.h"
 
 namespace {
@@ -60,8 +57,6 @@ BatchingMediaLog::BatchingMediaLog(
       last_ipc_send_time_(tick_clock_->NowTicks()),
       ipc_send_pending_(false),
       logged_rate_limit_warning_(false) {
-  DCHECK(RenderThread::Get())
-      << "BatchingMediaLog must be constructed on the render thread";
   // Pre-bind the WeakPtr on the right thread since we'll receive calls from
   // other threads and don't want races.
   weak_this_ = weak_factory_.GetWeakPtr();
