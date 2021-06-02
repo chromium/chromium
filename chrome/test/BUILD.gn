@@ -3794,8 +3794,6 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
-      "../browser/lacros/clipboard_lacros_browsertest.cc",
-      "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
       "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
@@ -3805,10 +3803,8 @@ if (is_chromeos_lacros) {
       "../browser/lacros/media_session_lacros_browsertest.cc",
       "../browser/lacros/message_center_lacros_browsertest.cc",
       "../browser/lacros/metrics_reporting_lacros_browsertest.cc",
-      "../browser/lacros/overview_lacros_browsertest.cc",
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
-      "../browser/lacros/tablet_mode_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
     ]
 
@@ -3824,6 +3820,41 @@ if (is_chromeos_lacros) {
     ]
 
     data = [ "data/media/" ]
+
+    data_deps = [ "//chrome:packed_resources" ]
+  }
+
+  # This test target is intended for lacros chrome specific tests that depend
+  # on crosapi and must run in series, for those that can run in parallel,
+  # please use lacros_chrome_browsertests target instead.
+  test("lacros_chrome_browsertests_run_in_series") {
+    use_xvfb = use_xvfb_in_this_config
+
+    configs += [ "//build/config:precompiled_headers" ]
+    defines = [
+      "HAS_OUT_OF_PROC_TEST_RUNNER",
+      "CHROME_VERSION_MAJOR=" + chrome_version_major,
+    ]
+
+    sources = [
+      "../browser/lacros/browser_test_util.cc",
+      "../browser/lacros/browser_test_util.h",
+      "../browser/lacros/clipboard_lacros_browsertest.cc",
+      "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
+      "../browser/lacros/overview_lacros_browsertest.cc",
+      "../browser/lacros/tablet_mode_lacros_browsertest.cc",
+    ]
+
+    deps = [
+      ":browser_tests_runner",
+      ":test_support",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/cpp:stub",
+      "//chromeos/services/machine_learning/public/mojom",
+      "//ui/platform_window",
+    ]
 
     data_deps = [ "//chrome:packed_resources" ]
   }

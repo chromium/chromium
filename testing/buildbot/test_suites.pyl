@@ -4331,6 +4331,7 @@
 
     'linux_lacros_chrome_browsertests_version_skew': {
       'lacros_chrome_browsertests': { },
+      'lacros_chrome_browsertests_run_in_series': { },
     },
 
     'linux_lacros_cq_gtests': {
@@ -4348,6 +4349,7 @@
         },
       },
       'lacros_chrome_browsertests': {},
+      'lacros_chrome_browsertests_run_in_series': {},
       'lacros_chrome_unittests': {},
       'sync_integration_tests': {},
       'ui_base_unittests': {},
@@ -4356,6 +4358,7 @@
 
     'linux_lacros_specific_gtests': {
       'lacros_chrome_browsertests': {},
+      'lacros_chrome_browsertests_run_in_series': {},
       'lacros_chrome_unittests': {},
     },
 

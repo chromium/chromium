@@ -102,7 +102,8 @@ _TARGETS_REQUIRE_MOJO_CROSAPI = [
     # are allowed. For now we only enable crosapi in targets that run tests
     # serially.
     'interactive_ui_tests',
-    'lacros_chrome_browsertests'
+    'lacros_chrome_browsertests',
+    'lacros_chrome_browsertests_run_in_series'
 ]
 
 

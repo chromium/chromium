@@ -1128,6 +1128,10 @@
     "label": "//chrome/test:lacros_chrome_browsertests",
     "type": "windowed_test_launcher",
   },
+  "lacros_chrome_browsertests_run_in_series": {
+    "label": "//chrome/test:lacros_chrome_browsertests_run_in_series",
+    "type": "windowed_test_launcher",
+  },
   "lacros_chrome_unittests": {
     "label": "//chrome/test:lacros_chrome_unittests",
     "type": "console_test_launcher",
