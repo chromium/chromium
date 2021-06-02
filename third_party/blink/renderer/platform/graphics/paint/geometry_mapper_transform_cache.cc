@@ -40,6 +40,7 @@ void GeometryMapperTransformCache::Update(
   const GeometryMapperTransformCache& parent =
       node.UnaliasedParent()->GetTransformCache();
 
+  has_fixed_ = node.RequiresCompositingForFixedPosition() || parent.has_fixed_;
   // screen_transform_ will be updated only when needed.
   screen_transform_ = nullptr;
 

@@ -48,7 +48,8 @@ class CORE_EXPORT CompositingReasonFinder {
       const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
 
-  static bool RequiresCompositingForScrollDependentPosition(const PaintLayer&);
+  static CompositingReasons CompositingReasonsForScrollDependentPosition(
+      const PaintLayer&);
 
   static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
       const LayoutObject&);

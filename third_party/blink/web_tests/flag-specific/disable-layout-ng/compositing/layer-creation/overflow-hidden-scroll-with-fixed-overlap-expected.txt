@@ -1,0 +1,106 @@
+Before:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [300, 150],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped'",
+      "position": [8, 1008],
+      "bounds": [40, 40],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFA500",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 100, 0, 1]
+      ]
+    }
+  ]
+}
+
+After scroll:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [300, 150],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped'",
+      "position": [8, 102],
+      "bounds": [40, 40],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFA500",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

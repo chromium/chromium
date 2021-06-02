@@ -36,7 +36,8 @@ class GeometryMapperTest : public testing::Test,
       bool& success) {
     GeometryMapper::LocalToAncestorVisualRectInternal(
         local_state, ancestor_state, mapping_rect, kIgnoreOverlayScrollbarSize,
-        kNonInclusiveIntersect, kDontExpandVisualRectForAnimation, success);
+        kNonInclusiveIntersect, kDontExpandVisualRectForCompositingOverlap,
+        success);
   }
 
   void CheckMappings();
@@ -52,7 +53,7 @@ class GeometryMapperTest : public testing::Test,
   PropertyTreeStateOrAlias ancestor_state = PropertyTreeState::Root();
   FloatRect input_rect;
   FloatClipRect expected_visual_rect;
-  absl::optional<FloatClipRect> expected_visual_rect_expanded_for_animation;
+  absl::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
   FloatSize expected_translation_2d;
   absl::optional<TransformationMatrix> expected_transform;
   FloatClipRect expected_clip;
@@ -94,9 +95,9 @@ void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_visual_rect,
       kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
-      kExpandVisualRectForAnimation);
-  EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_animation
-                          ? *expected_visual_rect_expanded_for_animation
+      kExpandVisualRectForCompositingOverlap);
+  EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_compositing
+                          ? *expected_visual_rect_expanded_for_compositing
                           : expected_visual_rect,
                       actual_visual_rect);
 }
@@ -560,7 +561,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
   expected_visual_rect.Intersect(FloatClipRect(clip->UnsnappedClipRect()));
   expected_visual_rect.Map(*expected_transform);
   // The clip has animating transform, so it doesn't apply to the visual rect.
-  expected_visual_rect_expanded_for_animation = InfiniteLooseFloatClipRect();
+  expected_visual_rect_expanded_for_compositing = InfiniteLooseFloatClipRect();
   EXPECT_FALSE(expected_visual_rect.IsTight());
   expected_clip = FloatClipRect(clip->UnsnappedClipRect());
   expected_clip.Map(*expected_transform);
@@ -605,8 +606,8 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
   EXPECT_TRUE(expected_clip.IsTight());
   // The visual rect is expanded first to infinity because of the transform
   // animation, then clipped by the clip.
-  expected_visual_rect_expanded_for_animation = expected_clip;
-  expected_visual_rect_expanded_for_animation->ClearIsTight();
+  expected_visual_rect_expanded_for_compositing = expected_clip;
+  expected_visual_rect_expanded_for_compositing->ClearIsTight();
   CheckMappings();
 }
 
@@ -664,9 +665,56 @@ TEST_P(GeometryMapperTest,
   // The visual rect is expanded to infinity because of the transform animation,
   // then clipped by clip1. clip2 doesn't apply because it's below the animating
   // transform.
-  expected_visual_rect_expanded_for_animation =
+  expected_visual_rect_expanded_for_compositing =
       FloatClipRect(clip1->UnsnappedClipRect());
-  expected_visual_rect_expanded_for_animation->ClearIsTight();
+  expected_visual_rect_expanded_for_compositing->ClearIsTight();
+  CheckMappings();
+}
+
+TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
+  auto above_viewport = CreateTransform(t0(), TransformationMatrix());
+  auto viewport = CreateTransform(*above_viewport, TransformationMatrix());
+  auto scroll_translation = CreateScrollTranslation(
+      *viewport, -100, -200, IntRect(0, 0, 800, 600), IntSize(2400, 1800),
+      CompositingReason::kOverflowScrolling);
+
+  auto fixed_translate = TransformationMatrix().Translate(100, 0);
+
+  const FloatSize fixed_offset(200, 200);
+  TransformPaintPropertyNode::State fixed_state{fixed_offset, nullptr,
+                                                scroll_translation};
+  fixed_state.direct_compositing_reasons = CompositingReason::kFixedPosition;
+  auto fixed_transform =
+      TransformPaintPropertyNode::Create(*viewport, std::move(fixed_state));
+
+  const FloatSize child_of_fixed_offset(50, 50);
+  TransformPaintPropertyNode::State child_of_fixed_state{child_of_fixed_offset};
+  auto child_of_fixed = TransformPaintPropertyNode::Create(
+      *fixed_transform, std::move(child_of_fixed_state));
+
+  local_state.SetTransform(*child_of_fixed);
+  ancestor_state.SetTransform(*viewport);
+
+  const FloatSize child_of_fixed_size(100, 100);
+  input_rect = FloatRect(FloatPoint(), child_of_fixed_size);
+
+  const FloatSize descendant_offset = fixed_offset + child_of_fixed_offset;
+  expected_translation_2d = descendant_offset;
+  expected_transformed_rect =
+      FloatRect(FloatPoint(descendant_offset), child_of_fixed_size);
+  expected_visual_rect = FloatClipRect(expected_transformed_rect);
+  expected_visual_rect_expanded_for_compositing =
+      FloatClipRect(FloatRect(150, 50, 1700, 1300));
+
+  CheckMappings();
+
+  // If we're not mapping to the viewport, the fixed rect should not be
+  // expanded.
+  ancestor_state.SetTransform(*above_viewport);
+  expected_transform = TransformationMatrix().Translate(
+      descendant_offset.Width(), descendant_offset.Height());
+  expected_visual_rect.ClearIsTight();
+  expected_visual_rect_expanded_for_compositing = expected_visual_rect;
   CheckMappings();
 }
 
@@ -876,9 +924,9 @@ TEST_P(GeometryMapperTest,
   // The visual rect is expanded to infinity because of the filter animation,
   // the clipped by clip1. clip2 doesn't apply because it's below the animating
   // filter.
-  expected_visual_rect_expanded_for_animation =
+  expected_visual_rect_expanded_for_compositing =
       FloatClipRect(clip1->UnsnappedClipRect());
-  expected_visual_rect_expanded_for_animation->ClearIsTight();
+  expected_visual_rect_expanded_for_compositing->ClearIsTight();
   CheckMappings();
 }
 
