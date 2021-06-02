@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}one{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}other{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}}</translation>
 <translation id="2434158240863470628">Ukulanda kuqedile <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Izaziso</translation>
+<translation id="2485422356828889247">Khipha</translation>
 <translation id="2490684707762498678">Ilawulwa ngu-<ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Usizo nempendulo</translation>
 <translation id="2501278716633472235">Iya emuva</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Amakheli</translation>
 <translation id="2910701580606108292">Buza ngaphambi kokuvumela amasayithi ukudlala okuqukethwe okuvikelwe</translation>
 <translation id="2913331724188855103">Vumela amasayithi ukulondoloza nokufunda idatha yamakhukhi (kunconyiwe)</translation>
+<translation id="2932883381142163287">Bika ukuhlukumeza</translation>
 <translation id="2968755619301702150">Isibukeli sesitifiketi</translation>
 <translation id="300526633675317032">Lokhu kuzosula yonke i-<ph name="SIZE_IN_KB" /> yesitoreji sewebhusayithi.</translation>
 <translation id="3008272652534848354">Setha kabusha izimvume</translation>

@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Deskargatu da <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
+<translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2490684707762498678">Kudeatzailea: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Laguntza eta iritziak</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="2910701580606108292">Webguneei eduki babestua erreproduzitzeko baimena eman aurretik, eskatu onespena</translation>
 <translation id="2913331724188855103">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea (gomendatua)</translation>
+<translation id="2932883381142163287">Eman erabilera okerren berri</translation>
 <translation id="2968755619301702150">Ziurtagiri-ikustailea</translation>
 <translation id="300526633675317032"><ph name="SIZE_IN_KB" /> ezabatuko dira webguneen datuetatik.</translation>
 <translation id="3008272652534848354">Berrezarri baimenak</translation>

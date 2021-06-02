@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}}</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Meldingen</translation>
+<translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2490684707762498678">Beheerd door <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Vragen voordat sites beschermde content mogen afspelen</translation>
 <translation id="2913331724188855103">Sites toestaan cookiegegevens op te slaan en te lezen (aanbevolen)</translation>
+<translation id="2932883381142163287">Misbruik melden</translation>
 <translation id="2968755619301702150">Certificaatviewer</translation>
 <translation id="300526633675317032">Hiermee wordt de volledige <ph name="SIZE_IN_KB" /> aan site-opslag gewist.</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>

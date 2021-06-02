@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}}</translation>
 <translation id="2434158240863470628">Download selesai <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Notifikasi</translation>
+<translation id="2485422356828889247">Uninstal</translation>
 <translation id="2490684707762498678">Dikelola oleh <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Bantuan &amp; masukan</translation>
 <translation id="2501278716633472235">Kembali</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
 <translation id="2913331724188855103">Izinkan situs untuk menyimpan dan membaca data cookie (disarankan)</translation>
+<translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
 <translation id="300526633675317032">Ini akan menghapus seluruh penyimpanan situs web, sebesar <ph name="SIZE_IN_KB" />.</translation>
 <translation id="3008272652534848354">Reset izin</translation>

@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
+<translation id="2485422356828889247">అన్ఇన్‌స్టాల్ చేయి</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ద్వారా నిర్వహించబడుతున్నాయి</translation>
 <translation id="2498359688066513246">సహాయం &amp; అభిప్రాయం</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">అడ్రస్‌లు</translation>
 <translation id="2910701580606108292">సైట్‌లు రక్షిత కంటెంట్‌ను ప్లే చేయడానికి ముందు అనుమతి కోసం అడుగుతాయి</translation>
 <translation id="2913331724188855103">కుక్కీ డేటాను సేవ్ చేయడానికి, చదవడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
+<translation id="2932883381142163287">దుర్వినియోగాన్ని రిపోర్ట్ చేయి</translation>
 <translation id="2968755619301702150">ప్రమాణపత్రం వ్యూయర్</translation>
 <translation id="300526633675317032">ఇది వెబ్‌సైట్ నిల్వలోని మొత్తం <ph name="SIZE_IN_KB" />ను తీసివేస్తుంది.</translation>
 <translation id="3008272652534848354">అనుమతులను రీసెట్ చేయి</translation>

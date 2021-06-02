@@ -219,6 +219,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="168841957122794586">The server certificate contains a weak cryptographic key.</translation>
 <translation id="1696290444144917273">View virtual card details</translation>
 <translation id="1697532407822776718">You're all set!</translation>
+<translation id="1699570257714336246">Information missing</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from tomorrow. This may be caused by a misconfiguration or an attacker intercepting your connection.}other{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}}</translation>
 <translation id="1710259589646384581">OS</translation>

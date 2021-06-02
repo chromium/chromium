@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}}</translation>
 <translation id="2434158240863470628">Татаж дууссан <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
+<translation id="2485422356828889247">Устгах</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" />-с удирддаг</translation>
 <translation id="2498359688066513246">Тусламж болон санал хүсэлт</translation>
 <translation id="2501278716633472235">Буцаах</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Хаягууд</translation>
 <translation id="2910701580606108292">Сайтад хамгаалалттай контент тоглуулахыг зөвшөөрөхөөс өмнө асуух</translation>
 <translation id="2913331724188855103">Cookie data-г хадгалах мөн унших боломжийг сайтуудад олгох (зөвлөж байна)</translation>
+<translation id="2932883381142163287">Зөрчлийг мэдэгдэх</translation>
 <translation id="2968755619301702150">Сертификат харагч</translation>
 <translation id="300526633675317032">Энэ нь веб хуудасны сангийн бүх <ph name="SIZE_IN_KB" />-г устгах болно.</translation>
 <translation id="3008272652534848354">Зөвшөөрлийг шинэчлэх</translation>

@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
 <translation id="2434158240863470628">Endirmə tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
+<translation id="2485422356828889247">Sistemdən silin</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tərəfindən idarə edilir</translation>
 <translation id="2498359688066513246">Yardım və geri əlaqə</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="2910701580606108292">Saytlar qorunan kontenti göstərmədən öncə icazə tələb edilsin</translation>
 <translation id="2913331724188855103">Saytlara kuki datanı saxlamağa və oxumağa imkan verir (tövsiyə olunur)</translation>
+<translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
 <translation id="2968755619301702150">Sertifikat izləyici</translation>
 <translation id="300526633675317032">Bu, veb sayt yaddaşının <ph name="SIZE_IN_KB" /> hissəsini siləcək</translation>
 <translation id="3008272652534848354">İcazələri sıfırlayın</translation>

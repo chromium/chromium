@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}}</translation>
 <translation id="2434158240863470628">බාගැනීම සම්පූර්ණයි <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
+<translation id="2485422356828889247">අස්ථාපනය</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> විසින් කළමනා කෙරේ</translation>
 <translation id="2498359688066513246">උදවු සහ ප්‍රතිපෝෂණය</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">ලිපින</translation>
 <translation id="2910701580606108292">ආරක්ෂිත අන්තර්ගත වාදනය කිරීමට ඉඩ දීමට පෙර විමසන්න (නිර්දේශිතයි)</translation>
 <translation id="2913331724188855103">අඩවි වලට කුකී දත්ත සුරැකීමට සහ කුකී දත්ත කියවන්න (නිර්දේශිතයි)</translation>
+<translation id="2932883381142163287">අපහරණය වාර්තා කරන්න</translation>
 <translation id="2968755619301702150">සහතික දක්වනය</translation>
 <translation id="300526633675317032">මෙය වෙබ් අඩවි ආචයනයේ සියලු <ph name="SIZE_IN_KB" /> හිස් කරනු ඇත.</translation>
 <translation id="3008272652534848354">අවසර යළි සකසන්න</translation>

@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="2434158240863470628">Ներբեռնումն ավարտված է՝ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
+<translation id="2485422356828889247">Ապատեղադրել</translation>
 <translation id="2490684707762498678">Կառավարվում է <ph name="APP_NAME" /> հավելվածի կողմից</translation>
 <translation id="2498359688066513246">Օգնություն և հետադարձ կապ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Հասցեներ</translation>
 <translation id="2910701580606108292">Պաշտպանված բովանդակություն նվագարկելու թույլտվություն հարցել</translation>
 <translation id="2913331724188855103">Թույլատրել կայքերին պահել և կարդալ քուքիների տվյալները (խորհուրդ է տրվում)</translation>
+<translation id="2932883381142163287">Հաղորդել չարաշահման մասին</translation>
 <translation id="2968755619301702150">Վկայագրերի դիտում</translation>
 <translation id="300526633675317032">Կազատվի կայքի օգտագործած <ph name="SIZE_IN_KB" /> տարածք:</translation>
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>

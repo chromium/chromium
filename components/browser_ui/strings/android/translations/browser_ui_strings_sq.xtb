@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Njoftimet</translation>
+<translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2490684707762498678">Menaxhuar nga <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ndihmë dhe komente</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Adresat</translation>
 <translation id="2910701580606108292">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
+<translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
 <translation id="300526633675317032">Kjo do të pastrojë të gjitha <ph name="SIZE_IN_KB" /> të hapësirës ruajtëse të sajtit të uebit.</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>

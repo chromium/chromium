@@ -57,6 +57,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}}</translation>
 <translation id="2434158240863470628">डाउनलोड सम्पन्न भयो <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
+<translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ले व्यवस्थापन गरेको</translation>
 <translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
@@ -76,6 +77,7 @@
 <translation id="2903493209154104877">ठेगानाहरू</translation>
 <translation id="2910701580606108292">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुअघि सोध्नुहोस्</translation>
 <translation id="2913331724188855103">साइटहरूलाई कुकी डेटा सुरक्षित गर्ने र पढ्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2932883381142163287">दुरूपयोग रिपोर्ट गर्नुहोस्</translation>
 <translation id="2968755619301702150">प्रमाणपत्र दर्शक</translation>
 <translation id="300526633675317032">यसले वेबसाइटको भण्डारणको सबै <ph name="SIZE_IN_KB" /> खाली गर्ने छ।</translation>
 <translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>

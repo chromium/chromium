@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> жүктеп алынды</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
+<translation id="2485422356828889247">Жою</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> басқарады</translation>
 <translation id="2498359688066513246">Анықтама және пікір</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="2910701580606108292">Қорғалған мазмұнды ойнатуға рұқсат етпес бұрын сұрау</translation>
 <translation id="2913331724188855103">Сайттарға cookie деректерін сақтауға және оқуға рұқсат беру (ұсынылған)</translation>
+<translation id="2932883381142163287">Бұзақылық туралы хабарлау</translation>
 <translation id="2968755619301702150">Сертификат көру құралы</translation>
 <translation id="300526633675317032">Вебсайттың барлық деректері жойылады (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Рұқсаттарды бастапқы күйіне қайтару</translation>

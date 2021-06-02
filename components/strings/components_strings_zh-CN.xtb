@@ -219,6 +219,7 @@
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
 <translation id="1696290444144917273">查看虚拟卡详细信息</translation>
 <translation id="1697532407822776718">搞定了！</translation>
+<translation id="1699570257714336246">缺少信息</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书明天才会生效。出现此问题的原因可能是配置有误，或有攻击者拦截了您的连接。}other{此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书 # 天后才会生效。出现此问题的原因可能是配置有误，或有攻击者拦截了您的连接。}}</translation>
 <translation id="1710259589646384581">操作系统</translation>

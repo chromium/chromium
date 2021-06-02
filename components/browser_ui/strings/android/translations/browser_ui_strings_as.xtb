@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
 <translation id="2434158240863470628">ডাউনল’ড সম্পূর্ণ হৈছে <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">জাননী</translation>
+<translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" />এ পৰিচালনা কৰে</translation>
 <translation id="2498359688066513246">সহায় আৰু মতামত</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">ঠিকনা</translation>
 <translation id="2910701580606108292">ছাইটক প্রতিবন্ধিত সমল প্লে' কৰিব দিয়াৰ আগত সোধক</translation>
 <translation id="2913331724188855103">ছাইটসমূহক কুকি ডেটা ছেভ কৰিবলৈ আৰু পঢ়িবলৈ অনুমতি দিয়ক (আমি চুপাৰিছ কৰোঁ)</translation>
+<translation id="2932883381142163287">দুৰ্ব্যৱহাৰৰ অভিযোগ দিয়ক</translation>
 <translation id="2968755619301702150">প্ৰমাণপত্ৰ ভিউৱাৰ</translation>
 <translation id="300526633675317032">এইটোৱে ৱেবছাইটৰ ষ্ট’ৰেজৰ সম্পূৰ্ণ <ph name="SIZE_IN_KB" /> মচি পেলাব।</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>

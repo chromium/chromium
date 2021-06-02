@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ला अनुमती दिली}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ना अनुमती दिली}}</translation>
 <translation id="2434158240863470628">डाउनलोड पूर्ण झाले <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">सूचना</translation>
+<translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2498359688066513246">मदत आणि अभिप्राय</translation>
 <translation id="2501278716633472235">परत जा</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">पत्ते</translation>
 <translation id="2910701580606108292">सायटींना संरक्षित आशय प्ले करू देण्याआधी विचारा</translation>
 <translation id="2913331724188855103">कुकी डेटा सेव्ह करणे आणि वाचण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
+<translation id="2932883381142163287">दुरुपयोगाची तक्रार नोंदवा</translation>
 <translation id="2968755619301702150">सर्टिफिकेट दर्शक</translation>
 <translation id="300526633675317032">हे सर्व <ph name="SIZE_IN_KB" /> वेबसाइट स्टोरेज साफ करेल.</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>

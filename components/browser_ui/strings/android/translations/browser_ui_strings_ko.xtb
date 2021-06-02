@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}}</translation>
 <translation id="2434158240863470628">다운로드 완료: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">알림</translation>
+<translation id="2485422356828889247">제거</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" />에서 관리함</translation>
 <translation id="2498359688066513246">고객센터</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">주소</translation>
 <translation id="2910701580606108292">사이트에서 보호된 콘텐츠를 재생하도록 허용하기 전에 확인</translation>
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
+<translation id="2932883381142163287">악용사례 신고</translation>
 <translation id="2968755619301702150">인증서 뷰어</translation>
 <translation id="300526633675317032">웹사이트 저장공간 <ph name="SIZE_IN_KB" />가 모두 삭제됩니다.</translation>
 <translation id="3008272652534848354">권한 재설정</translation>

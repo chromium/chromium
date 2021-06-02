@@ -219,6 +219,7 @@
 <translation id="168841957122794586">Server sertifikatının kriptoqrafik açarı zəifdir.</translation>
 <translation id="1696290444144917273">Virtual kart detallarına baxın</translation>
 <translation id="1697532407822776718">Hər şey hazırdır!</translation>
+<translation id="1699570257714336246">Əskik məlumat var</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; böyük ehtimal təhlükəsizlik sertifikatı sabahdan etibarən nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}other{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; təhlükəsizlik sertifikatı gələcəkdə # gündən sonra nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}}</translation>
 <translation id="1710259589646384581">OS</translation>
@@ -1719,7 +1720,7 @@
 <translation id="7378594059915113390">Media Nəzarətləri</translation>
 <translation id="7378627244592794276">Xeyr</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7386364858855961704">Tətbiq edilə bilməz</translation>
+<translation id="7386364858855961704">Tətbiq olunmur</translation>
 <translation id="7390545607259442187">Kartı Təsdiqləyin</translation>
 <translation id="7392089738299859607">Ünvanı yeniləyin</translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>

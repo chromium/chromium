@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
 <translation id="2434158240863470628">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
+<translation id="2485422356828889247">ဖြုတ်ရန်</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> က စီမံခန့်ခွဲထားပါသည်</translation>
 <translation id="2498359688066513246">အကူအညီ &amp; အကြံပြုချက်</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">လိပ်စာများ</translation>
 <translation id="2910701580606108292">ဝဘ်ဆိုက်များအား ကာကွယ်ထားသည့် အကြောင်းအရာများကို ပြသခွင့် မပြုမီ ဦးစွာ မေးပါ</translation>
 <translation id="2913331724188855103">ဆိုဒ်များကို ကွက်ကီးများ ဖတ်ရန်နှင့် သိမ်းရန် ခွင့်ပြုသည် (အကြံပြုထား)</translation>
+<translation id="2932883381142163287">အလွဲသုံးစားပြုခြင်းအား အစီရင်ခံရန်</translation>
 <translation id="2968755619301702150">လက်မှတ်ကို ကြည့်ရှုသူ</translation>
 <translation id="300526633675317032">၎င်းသည် ဝဘ်ဆိုက်သိုလှောင်ခန်း၏ <ph name="SIZE_IN_KB" /> ကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>

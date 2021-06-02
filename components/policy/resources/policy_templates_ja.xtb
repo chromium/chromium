@@ -3560,9 +3560,6 @@
       このポリシーを無効に設定するか未設定のままにした場合、詳細なバッテリー充電モードは無効になります。
 
       ユーザーはこの設定を変更できません。</translation>
-<translation id="5845686745936515940">すべての Cookie を以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻します。以前の動作に戻すと、<ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性のない Cookie は「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」が指定されたものとして扱われます。また、「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」の Cookie に「<ph name="ATTRIBUTE_SECURE_NAME" />」属性は必須ではなくなります。さらに、2 つのサイトが同一サイトかどうかを評価する際に、スキーム比較がスキップされます。詳細については https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies をご覧ください。
-
-          このポリシーを設定しない場合、Cookie のデフォルトの <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作は、<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 機能、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 機能、<ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 機能に対するユーザーの個人設定（公開テストで、またはそれぞれ <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> フラグ、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> フラグ、<ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> フラグを有効か無効にすることで設定される）によって決まります。</translation>
 <translation id="5848438019586925019">鍵ペアの生成に使用するアルゴリズムです。</translation>
 <translation id="585270638818921943">信頼できない提供元の Android アプリの使用をユーザーに許可しない</translation>
 <translation id="5859344336338527083">このポリシーを設定することで、どの URL から拡張機能、アプリ、テーマのインストールを許可するかを指定できます。<ph name="PRODUCT_NAME" /> 21 より前では、*.crx ファイルのリンクをクリックすると、いくつかの警告が表示された後、<ph name="PRODUCT_NAME" /> によりファイルのインストールを申し出るメッセージが表示されました。それ以降のバージョンでは、このようなファイルは、ダウンロードしてから <ph name="PRODUCT_NAME" /> の設定ページにドラッグする必要があります。この設定を利用することで、特定の URL に以前の簡単なインストール フローを適用できます。

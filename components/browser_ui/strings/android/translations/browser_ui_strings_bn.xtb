@@ -58,6 +58,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}}</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> ডাউনলোড সম্পূর্ণ হয়েছে</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
+<translation id="2485422356828889247">আনইনস্টল</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ম্যানেজ করে</translation>
 <translation id="2498359688066513246">সহায়তা ও প্রতিবার্তা</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
@@ -77,6 +78,7 @@
 <translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="2910701580606108292">কোনও সাইটে সুরক্ষিত কন্টেন্ট চালু হওয়ার আগে আমায় জিজ্ঞেস করা হোক</translation>
 <translation id="2913331724188855103">সাইটগুলিকে কুকি ডেটা পড়ার এবং সংরক্ষণ করার অনুমতি দিন (প্রস্তাবিত)</translation>
+<translation id="2932883381142163287">আপত্তিজনক হিসাবে অভিযোগ করুন</translation>
 <translation id="2968755619301702150">সার্টিফিকেট প্রদর্শনকারী</translation>
 <translation id="300526633675317032">এটা ওয়েবসাইট স্টোরেজের <ph name="SIZE_IN_KB" />-এর পুরোটা সাফ করবে।</translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>

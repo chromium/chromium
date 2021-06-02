@@ -857,7 +857,7 @@
 <translation id="1885106732301550621">Espacio en disco</translation>
 <translation id="1886996562706621347">Permitir que los sitios se conviertan en controladores de protocolos predeterminados (recomendado)</translation>
 <translation id="1887442540531652736">No se ha podido iniciar sesión</translation>
-<translation id="1887597546629269384">Di "Ok Google" otra vez</translation>
+<translation id="1887597546629269384">Di "Hey Google" otra vez</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">Queda muy poco espacio en el disco. Libera espacio ahora.</translation>
 <translation id="189210018541388520">Abrir en pantalla completa</translation>
@@ -3276,7 +3276,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4531924570968473143">¿A quién quieres añadir a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" está en uso. Si el dispositivo se reasigna mientras se está usando, podrían producirse errores. ¿Seguro que quieres continuar?</translation>
 <translation id="4532646538815530781">Este sitio web está usando sensores de movimiento.</translation>
-<translation id="4533846798469727141">Ahora di "Ok Google"</translation>
+<translation id="4533846798469727141">Ahora di "Hey Google"</translation>
 <translation id="4533985347672295764">Tiempo de uso de la CPU</translation>
 <translation id="4534661889221639075">Inténtalo de nuevo.</translation>
 <translation id="4535127706710932914">Perfil predeterminado</translation>
