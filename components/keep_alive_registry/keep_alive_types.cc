@@ -68,6 +68,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "NATIVE_MESSAGING_HOST_ERROR_REPORT";
     case KeepAliveOrigin::WEB_APP_INTENT_PICKER:
       return out << "WEB_APP_INTENT_PICKER";
+    case KeepAliveOrigin::WEB_APP_PROTOCOL_HANDLER_LAUNCH:
+      return out << "WEB_APP_PROTOCOL_HANDLER_LAUNCH";
     case KeepAliveOrigin::SESSION_DATA_DELETER:
       return out << "SESSION_DATA_DELETER";
   }
