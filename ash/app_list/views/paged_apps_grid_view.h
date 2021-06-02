@@ -49,10 +49,14 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
+  // views::View:
+  void Layout() override;
+
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
+  void MaybeCreateGradientMask() override;
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
@@ -65,6 +69,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void ScrollEnded() override;
 
  private:
+  class FadeoutLayerDelegate;
+
   // Indicates whether the drag event (from the gesture or mouse) should be
   // handled by PagedAppsGridView.
   bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
@@ -84,6 +90,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // The last mouse drag location in root window coordinate. Used for
   // between-item drags that move the entire grid, not for app icon drags.
   gfx::PointF last_mouse_drag_point_;
+
+  // Implements a "fade out" gradient at the top and bottom of the grid. Used
+  // during page flip transitions and for cardified drags.
+  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
 
   // Records smoothness of pagination animation.
   absl::optional<ui::ThroughputTracker> pagination_metrics_tracker_;

@@ -82,6 +82,10 @@ gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   return grid_size;
 }
 
+void ScrollableAppsGridView::MaybeCreateGradientMask() {
+  // Scrollable apps grid does not have a gradient.
+}
+
 void ScrollableAppsGridView::CalculateIdealBounds() {
   DCHECK(!is_in_folder());
 

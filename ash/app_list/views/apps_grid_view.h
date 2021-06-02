@@ -186,7 +186,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void ViewHierarchyChanged(
@@ -355,8 +354,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
 
  protected:
-  class FadeoutLayerDelegate;
-
   // The cardified apps grid should be scaled down by this factor.
   static constexpr float kCardifiedScale = 0.84f;
 
@@ -369,11 +366,21 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
+  // Creates a layer mask for gradient alpha when the feature is enabled. The
+  // gradient appears at the top and bottom of the apps grid to create a
+  // "fade out" effect when
+  // TODO(crbug.com/1211608): Move to PagedAppsGridView when cardified view
+  // methods move.
+  virtual void MaybeCreateGradientMask() = 0;
+
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
 
   // Calculates the item views' bounds for folder.
   void CalculateIdealBoundsForFolder();
+
+  // Update the padding of tile view based on the contents bounds.
+  void UpdateTilePadding();
 
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
@@ -397,11 +404,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // zone or is over page switcher.
   void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
 
-  // Creates a layer mask for gradient alpha when the feature is enabled.
-  // TODO(crbug.com/1211608): Move to PagedAppsGridView when
-  // `fadeout_layer_delegate_` moves.
-  void MaybeCreateGradientMask();
-
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
   views::View* items_container() { return items_container_; }
@@ -413,7 +415,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   int horizontal_tile_padding() const { return horizontal_tile_padding_; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }
-  bool cardified_state() const { return cardified_state_; }
 
   // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
@@ -435,7 +436,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The location of |drag_view_| when the drag started.
   gfx::Point drag_view_start_;
 
-  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
+  // True if the AppList is in cardified state.
+  // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
+  bool cardified_state_ = false;
+
+  // Layer array for apps grid background cards. Used to display the background
+  // card during cardified state.
+  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
 
  private:
   friend class test::AppsGridViewTestApi;
@@ -736,9 +743,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // histograms.
   void RecordAppMovingTypeMetrics(AppListAppMovingType type);
 
-  // Update the padding of tile view based on the contents bounds.
-  void UpdateTilePadding();
-
   // Starts the animation to transition the |drag_item| from |source_bounds| to
   // the target bounds in the |folder_item_view|. Note that this animation
   // should run only after |drag_item| is added to the folder.
@@ -923,16 +927,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // If true, Layout() does nothing. See where set for details.
   bool ignore_layout_ = false;
 
-  // True if the AppList is in cardified state.
-  // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
-  bool cardified_state_ = false;
-
   // The highlighted page during cardified state.
   int highlighted_page_ = -1;
-
-  // Layer array for apps grid background cards. Used to display the background
-  // card during cardified state.
-  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
 
   int bounds_animation_for_cardified_state_in_progress_ = 0;
 
