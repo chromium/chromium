@@ -2803,6 +2803,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabStrip.PaintChildrenDuration" units="microseconds"
     expires_after="M80">
+  <obsolete>
+    Obsolete in M93. Histogram data was not used.
+  </obsolete>
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -2830,6 +2833,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabStrip.Tab.Icon.PaintDuration" units="microseconds"
     expires_after="M80">
+  <obsolete>
+    Obsolete in M93. Histogram data was not used.
+  </obsolete>
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

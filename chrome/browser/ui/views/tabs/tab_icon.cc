@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -159,9 +158,6 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
 }
 
 void TabIcon::OnPaint(gfx::Canvas* canvas) {
-  // This is used to log to UMA. NO EARLY RETURNS!
-  base::ElapsedTimer paint_timer;
-
   // Compute the bounds adjusted for the hiding fraction.
   gfx::Rect contents_bounds = GetContentsBounds();
 
@@ -185,11 +181,6 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
 
   if (GetShowingLoadingAnimation())
     PaintLoadingAnimation(canvas, icon_bounds);
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "TabStrip.Tab.Icon.PaintDuration", paint_timer.Elapsed(),
-      base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMicroseconds(10000), 50);
 }
 
 void TabIcon::OnThemeChanged() {
