@@ -573,7 +573,7 @@ template("test") {
       ]
 
       if (_use_ash_chrome) {
-        executable_args += [ "--ash-chrome-path=ash_clang_x64/chrome" ]
+        executable_args += [ "--ash-chrome-path=ash_clang_x64/test_ash_chrome" ]
       }
 
       if (is_asan) {
@@ -613,8 +613,7 @@ template("test") {
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
       if (_use_ash_chrome && also_build_ash_chrome) {
-        data_deps +=
-            [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
+        data_deps += [ "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)" ]
       }
 
       if (use_rts) {
