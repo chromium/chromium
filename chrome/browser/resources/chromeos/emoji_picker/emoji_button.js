@@ -36,7 +36,7 @@ export class EmojiButton extends PolymerElement {
       /** @type {?Array<Emoji>} */
       allVariants: {type: Array, readonly: true},
       /** @type {!string} */
-      toolTip: {type: String, readonly: true},
+      tooltip: {type: String, readonly: true},
     };
   }
 
@@ -59,7 +59,8 @@ export class EmojiButton extends PolymerElement {
       emoji: this.emoji,
       isVariant: this.variant,
       baseEmoji: this.base,
-      allVariants: this.allVariants ? this.allVariants : this.variants
+      allVariants: this.allVariants ? this.allVariants : this.variants,
+      name: this.tooltip
     }));
     ev.preventDefault();
     ev.stopPropagation();

@@ -94,10 +94,13 @@
     aria-label="[[_label(emoji, variants)]]">
   [[emoji]]
 </button>
-<paper-tooltip id="tooltip" for="emoji-button" fit-to-visible-bounds
-  part="tooltip" offset="8">
-  [[tooltip]]
-</paper-tooltip>
+<template is="dom-if" if="[[!variant]]">
+  <paper-tooltip id="tooltip" for="emoji-button" fit-to-visible-bounds
+    part="tooltip" offset="8">
+    [[tooltip]]
+  </paper-tooltip>
+</tooltip>
 <template is="dom-if" if="[[variantsVisible]]">
-  <emoji-variants variants="[[variants]]"></emoji-variants>
+  <emoji-variants variants="[[variants]]" tooltip="[[tooltip]]">
+  </emoji-variants>
 </template>

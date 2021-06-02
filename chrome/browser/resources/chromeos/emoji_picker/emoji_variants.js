@@ -64,7 +64,9 @@ export class EmojiVariants extends PolymerElement {
       /** @private {boolean} */
       showSkinTones: {type: Boolean},
       /** @private {boolean} */
-      showBaseEmoji: {type: Boolean}
+      showBaseEmoji: {type: Boolean},
+      /** @private {!string} */
+      tooltip: {type: String},
     };
   }
 

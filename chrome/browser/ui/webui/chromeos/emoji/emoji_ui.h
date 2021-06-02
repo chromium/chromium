@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
+#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 class Profile;
 
 namespace chromeos {

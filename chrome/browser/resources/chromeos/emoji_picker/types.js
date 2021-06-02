@@ -23,6 +23,7 @@ export let EmojiGroup;
 export let EmojiGroupData;
 
 /**
- * @typedef {{base:string, alternates:!Array<!string>}} StoredEmoji
+ * @typedef {{base:string, alternates:!Array<!string>, name:!string}}
+ * StoredEmoji
  */
 export let StoredEmoji;
