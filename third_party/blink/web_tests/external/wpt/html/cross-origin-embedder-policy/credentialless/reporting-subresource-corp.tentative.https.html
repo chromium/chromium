@@ -9,28 +9,19 @@
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script>
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
-const BASE = new URL("resources", location).pathname
+const BASE = "/html/cross-origin-embedder-policy/resources";
 const FRAME_URL = `${ORIGIN}/common/blank.html` +
-  '?pipe=header(cross-origin-embedder-policy,require-corp)' +
-  `|header(cross-origin-embedder-policy-report-only,require-corp)`;
+  '?pipe=header(cross-origin-embedder-policy,credentialless)' +
+  `|header(cross-origin-embedder-policy-report-only,credentialless)`;
 const WORKER_URL = `${ORIGIN}${BASE}/reporting-worker.js` +
-  '?pipe=header(cross-origin-embedder-policy,require-corp)' +
-  `|header(cross-origin-embedder-policy-report-only,require-corp)`;
+  '?pipe=header(cross-origin-embedder-policy,credentialless)' +
+  `|header(cross-origin-embedder-policy-report-only,credentialless)`;
 const REPORTING_FRAME_URL = `${ORIGIN}${BASE}/reporting-empty-frame.html` +
-  '?pipe=header(cross-origin-embedder-policy,require-corp)' +
-  `|header(cross-origin-embedder-policy-report-only,require-corp)`;
+  '?pipe=header(cross-origin-embedder-policy,credentialless)' +
+  `|header(cross-origin-embedder-policy-report-only,credentialless)`;
 
 function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
-}
-
-function checkReport(report, contextUrl, blockedUrl, disposition, destination) {
-  assert_equals(report.type, 'coep');
-  assert_equals(report.url, contextUrl);
-  assert_equals(report.body.type, 'corp');
-  assert_equals(report.body.blockedURL, blockedUrl);
-  assert_equals(report.body.disposition, disposition);
-  assert_equals(report.body.destination, destination);
 }
 
 async function fetchInFrame(t, frameUrl, url) {
@@ -47,8 +38,8 @@ async function fetchInFrame(t, frameUrl, url) {
   const init = { mode: 'no-cors', cache: 'no-store' };
   await frame.contentWindow.fetch(url, init).catch(() => {});
 
-  // Wait 200ms for reports to settle.
-  await wait(200);
+  // Wait 1000ms for reports to settle.
+  await new Promise(r => step_timeout(r, 1000));
   return reports;
 }
 
@@ -61,7 +52,7 @@ async function fetchInWorker(workerOrPort, url) {
 }
 
 // We want to test several URLs in various environments (document,
-// dedicated worker, shared worser, service worker). As expectations
+// dedicated worker, shared worker, service worker). As expectations
 // are independent of environment except for the context URLs in reports,
 // we define ENVIRONMENTS and CASES to reduce the code duplication.
 //
@@ -108,9 +99,8 @@ const ENVIRONMENTS = [{
   tag: 'service worker',
   contextUrl: WORKER_URL,
   run: async (test, url) => {
-    // As we don't want the service worker to control any page, generate a
-    // one-time scope.
-    const SCOPE = new URL(`resources/${token()}.html`, location).pathname;
+    // Generate a one-time scope for service workeer.
+    const SCOPE = `${BASE}/${token()}.html`;
     const reg =
       await service_worker_unregister_and_register(test, WORKER_URL, SCOPE);
     test.add_cleanup(() => reg.unregister());
@@ -122,7 +112,7 @@ const ENVIRONMENTS = [{
   tag: 'between service worker and page',
   contextUrl: REPORTING_FRAME_URL,
   run: async (test, url) => {
-    // Here we use a Service Worker without COEP.
+    // Service Worker without COEP.
     const WORKER_URL = `${ORIGIN}${BASE}/sw.js`;
     const reg = await service_worker_unregister_and_register(
       test, WORKER_URL, REPORTING_FRAME_URL);
@@ -150,18 +140,14 @@ const CASES = [{
   name: 'blocked due to COEP',
   url: `${REMOTE_ORIGIN}/common/text-plain.txt`,
   check: (reports, contextUrl, url) => {
-    assert_equals(reports.length, 2);
-    checkReport(reports[0], contextUrl, url, 'reporting', '');
-    checkReport(reports[1], contextUrl, url, 'enforce', '');
+    assert_equals(reports.length, 0);
   }
 }, {
   name: 'blocked during redirect',
   url: `${ORIGIN}/common/redirect.py?location=` +
        encodeURIComponent(`${REMOTE_ORIGIN}/common/text-plain.txt`),
   check: (reports, contextUrl, url) => {
-    assert_equals(reports.length, 2);
-    checkReport(reports[0], contextUrl, url, 'reporting', '');
-    checkReport(reports[1], contextUrl, url, 'enforce', '');
+    assert_equals(reports.length, 0);
   },
 }];
 
@@ -169,7 +155,6 @@ for (const env of ENVIRONMENTS) {
   for (const testcase of CASES) {
     promise_test(async (t) => {
       const reports = await env.run(t, testcase.url);
-
       testcase.check(reports, env.contextUrl, testcase.url);
     }, `[${env.tag}] ${testcase.name}`);
   }
@@ -193,11 +178,9 @@ promise_test(async (t) => {
   frame.contentDocument.body.appendChild(script);
 
   // Wait 200ms for reports to settle.
-  await wait(200);
+  await t.step_timeout(200);
 
-  assert_equals(reports.length, 2);
-  checkReport(reports[0], FRAME_URL, url, 'reporting', 'script');
-  checkReport(reports[1], FRAME_URL, url, 'enforce', 'script');
+  assert_equals(reports.length, 0);
 }, 'destination: script');
 
 </script>
