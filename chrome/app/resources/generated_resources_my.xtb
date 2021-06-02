@@ -189,7 +189,7 @@
 <translation id="1195558154361252544">သင်ခွင့်ပြုထားသည့် ဝဘ်ဆိုက်များအတွက်မှလွဲ၍ အကြောင်းကြားချက်များကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="1197979282329025000">ပရင်တာ <ph name="PRINTER_NAME" /> အတွက် ပရင်တာ၏ လုပ်နိုင်စွမ်းများကို ရယူနေစဉ် အမှား ကြုံခဲ့၇သည်။ ဒီပရင်တာကို <ph name="CLOUD_PRINT_NAME" />မှာ မှတ်ပုံတင် မထားတာ ဖြစ်နိုင်သည်။</translation>
-<translation id="119944043368869598">အားလုံး ရှင်းရန်</translation>
+<translation id="119944043368869598">အားလုံးထုတ်ပစ်ရန်</translation>
 <translation id="1199814941632954229">ဤအသိအမှတ်ပြုလက်မှတ် ပရိုဖိုင်များအတွက် အသိအမှတ်ပြုလက်မှတ်များကို ပေးနေသည်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1202596434010270079">Kiosk အက်ပ်ကို မွမ်းမံခဲ့သည်။ ကျေးဇူးပြုပြီး USB အချောင်းကို ဖယ်ရှားလိုက်ပါ။</translation>
@@ -1490,7 +1490,7 @@
 <translation id="2610780100389066815">Microsoft ယုံကြည်မှု စာရင်းထက်မှတ်ထိုး</translation>
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2616366145935564096">သင်၏ ဒေတာကို<ph name="WEBSITE_1" />မှာ ဖတ်ပါ၊ ပြောင်းလဲပါ</translation>
-<translation id="2617342710774726426">ဆင်းမ်ကဒ် လော့ခ်ကျနေပါသည်</translation>
+<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2618797463720777311">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ။</translation>
@@ -1757,7 +1757,7 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> သို့ လက်မှတ်ထိုးဝင်ရန် သင့်စက်ကို သုံးမလား။</translation>
 <translation id="2893168226686371498">ပုံသေ ဘရောင်ဇာ</translation>
 <translation id="2894757982205307093">အုပ်စုတွင် တဘ်အသစ်ထည့်ရန်</translation>
-<translation id="289644616180464099">ဆင်းမ်ကဒ် လော့ခ်ကျနေပါသည်</translation>
+<translation id="289644616180464099">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="289695669188700754">သော့ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ရုပ်ဖျက် ဝင်ဒိုးအားလုံးကို ပိတ်လိုက်သောအခါ ဤစိတ်ကြိုက်ဆက်တင်ကို ဖယ်ရှားပါမည်</translation>
 <translation id="2897878306272793870">သင်သည် တဘ် <ph name="TAB_COUNT" />ခုကို ဖွင့်ချင်တာ သေချာသလား?</translation>
@@ -3468,7 +3468,7 @@
 <translation id="4846680374085650406">ဤဆက်တင်အတွက် ကြီးကြပ်သူ၏ အကြံပြုချက်အား သင်လိုက်နာနေ။</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ကို ရွေးချယ်ထားသည်၊ <ph name="TOPIC_SOURCE" /> အယ်လ်ဘမ်များကိုရွေးရန် Enter နှိပ်ပါ</translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
-<translation id="4848518990323155912">ဆင်းမ်ကဒ် လော့ခ်ချခြင်းကို အသုံးပြုပါ (မိုဘိုင်းဒေတာအား အသုံးပြုရန် ပင်နံပါတ် လိုအပ်ပါသည်)</translation>
+<translation id="4848518990323155912">ဆင်းမ်ကတ် လော့ခ်ချခြင်းကို အသုံးပြုပါ (မိုဘိုင်းဒေတာအား အသုံးပြုရန် ပင်နံပါတ် လိုအပ်ပါသည်)</translation>
 <translation id="4849286518551984791">ညှိထားသည့် ကမ္ဘာ့ စံတော်ချိန် (UTC / ဂရင်းနစ်စံတော်ချိန်)</translation>
 <translation id="4849517651082200438">မသွင်းပါနှင့်</translation>
 <translation id="485053257961878904">အကြောင်းကြားချက်များ စင့်ခ်လုပ်ခြင်းကို ထည့်သွင်း၍မရပါ</translation>
@@ -3662,7 +3662,7 @@
 <translation id="5072900412896857127">‘Google Play ဝန်ဆောင်မှုစည်းမျဉ်းများ’ ကို ဖွင့်၍မရပါ။ သင်၏ ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />၊ <ph name="FILE2" />}other{<ph name="FILE1" />၊ <ph name="FILE2" /> နှင့် နောက်ထပ် # ခု}}</translation>
 <translation id="5074318175948309511">ဆက်တင်အသစ်များ အလုပ်မလုပ်ခင် ဤစာမျက်နှာအား ပြန်လည်ရယူရန် လိုသည်။</translation>
-<translation id="5075131525758602494">ဆင်းမ်ကဒ် ပင်နံပါတ်ကို ထည့်ပါ</translation>
+<translation id="5075131525758602494">ဆင်းမ်ကတ် ပင်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="5075910247684008552">လုံခြုံသောဝဘ်ဆိုက်များတွင် မူရင်းသတ်မှတ်ချက် အနေနှင့် လုံခြုံမှုမရှိသော အကြောင်းအရာများကို ပိတ်ပေးသည်</translation>
 <translation id="5078638979202084724">တဲပ်များအားလုံး ဘွတ်မတ်လုပ်ရန်</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
@@ -3738,7 +3738,7 @@
 <translation id="5158983316805876233">ပရိုတိုကော အားလုံး အတွက် တစ်ခုတည်းသော ပရော့က်စီကို သုံးရန်</translation>
 <translation id="5159094275429367735">Crostini စနစ် ထည့်သွင်းရန်</translation>
 <translation id="5159419673777902220">နောက်ဆက်တွဲခွင့်ပြုချက်များကို သင့်မိဘက ပိတ်ထားသည်</translation>
-<translation id="5160634252433617617">လက်ကွက် ခလုတ်ခုံ</translation>
+<translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ကို ပိတ်ထားလိုက်ပါပြီ</translation>
 <translation id="5163910114647549394">တဘ်အတန်း၏အဆုံးသို့ တဘ်ကို ရွှေ့လိုက်သည်</translation>
@@ -5328,7 +5328,7 @@
 <translation id="6964390816189577014">သူရဲကောင်း</translation>
 <translation id="6964760285928603117">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965648386495488594">ပေါ့ထ်</translation>
+<translation id="6965648386495488594">ပို့တ်</translation>
 <translation id="6965978654500191972">စက်ပစ္စည်း</translation>
 <translation id="696780070563539690">ဝဘ်ဆိုက်များသည် ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ဥပမာအားဖြင့် မတူညီသည့် ဝဘ်ဆိုက်များတစ်လျှောက်တွင် ကွတ်ကီးများသုံးပြီး သင့်ကြည့်ရှုခြင်းများကို ကြည့်နိုင်မည်မဟုတ်ပါ</translation>
 <translation id="6968288415730398122">မျက်နှာပြင်လော့ခ်ကို စီစဉ်သတ်မှတ်ရန် စကားဝှက်ထည့်ပါ</translation>
@@ -6649,7 +6649,7 @@
 <translation id="8428634594422941299">ရပါပြီ</translation>
 <translation id="84297032718407999">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အတွင်း ထွက်သွားပါမည်</translation>
 <translation id="8431190899827883166">တို့ရန်များကို ပြခြင်း</translation>
-<translation id="8431909052837336408">ဆင်းမ်ကဒ် ပင်နံပါတ်ပြောင်းရန်</translation>
+<translation id="8431909052837336408">ဆင်းမ်ကတ် ပင်နံပါတ်ပြောင်းရန်</translation>
 <translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="8435395510592618362">သင်မည်သူမည်ဝါဖြစ်ကြောင်း <ph name="APP_NAME" /> နှင့် အတည်ပြုပါ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -6662,7 +6662,7 @@
 <translation id="8448729345478502352">သင်၏ မျက်နှာပြင်ပေါ်ရှိ အရာများကို ပိုသေးအောင် သို့မဟုတ် ပိုကြီးအောင် ပြုလုပ်ပါ</translation>
 <translation id="8449008133205184768">ကပ်ပေးရန် နှင့် စတိုင် ညှိပေ</translation>
 <translation id="8449036207308062757">သိုလှောင်ခန်းကို စီမံခန့်ခွဲပါ</translation>
-<translation id="8452135315243592079">ဆင်းမ်ကဒ် မရှိပါ</translation>
+<translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>
 <translation id="8454502708934796641">သင့်ဈေးခြင်းတောင်းများတွင် ထည့်ထားသောအရာများအတွက် Google ကို လျှော့ဈေးများရှာခိုင်းမလား။</translation>
 <translation id="8455026683977728932">ADB သရုပ်ဖော်ပုံကို ဖွင့်၍မရပါ</translation>
 <translation id="8456398879271637452">'တိုက်ရိုက်စာတန်း' မြင်ရသည်၊ အထူးဖော်ပြမှုကို ရွှေ့ရန် Ctrl + 'နောက်ပြန်ခလုတ်' (သို့) Ctrl + 'ရှေ့သို့ခလုတ်' နှိပ်ပါ</translation>
@@ -7030,7 +7030,7 @@
 <translation id="8847523528195140327">အဖုံးပိတ်လိုက်သည့်အခါ ထွက်ရန်</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
-<translation id="8850251000316748990">ပိုမို ကြည့်ရှုရန်...</translation>
+<translation id="8850251000316748990">ပိုကြည့်ရန်...</translation>
 <translation id="885246833287407341">API လုပ်ဆောင်ချက် အကြောင်းပြချက်များ</translation>
 <translation id="8853586775156634952">ဤကတ်ကို ယခုစက်တစ်ခုတွင်သာ သိမ်းပါမည်</translation>
 <translation id="8855977033756560989">ဤ Chromebook Enterprise စက်တွင် 'Chrome Enterprise အဆင့်မြှင့်တင်မှု' တွဲ၍ပါဝင်သည်။ လုပ်ငန်းသုံး စွမ်းဆောင်ရည်များကို ကောင်းမွန်စွာ အသုံးချနိုင်ရန် ဤစက်ကို Google ကြီးကြပ်သူအကောင့်ဖြင့် စာရင်းသွင်းပါ။</translation>

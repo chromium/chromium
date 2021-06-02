@@ -544,7 +544,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3037605927509011580">Yah!</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
-<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menjalankan Pemeriksaan Keselamatan di setelan Chrome</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menjalankan Pemeriksaan Keamanan di setelan Chrome</translation>
 <translation id="3061707000357573562">Layanan Patch</translation>
 <translation id="3064966200440839136">Keluar dari mode samaran untuk membayar melalui aplikasi eksternal. Lanjutkan?</translation>
 <translation id="306573536155379004">Game dimulai.</translation>
@@ -791,7 +791,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3964661563329879394">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs }other{Dari # situs }}</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> diblokir.</translation>
-<translation id="3973357910713125165">Tombol Jalankan Pemeriksaan Keselamatan Chrome, tekan Enter untuk menjalankan Pemeriksaan Keselamatan di setelan Chrome</translation>
+<translation id="3973357910713125165">Tombol Jalankan Pemeriksaan Keamanan Chrome, tekan Enter untuk menjalankan Pemeriksaan Keamanan di setelan Chrome</translation>
 <translation id="3987405730340719549">Chrome telah menetapkan bahwa situs ini mungkin palsu atau menipu.
 
     Jika Anda yakin bahwa ini keliru, kunjungi https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -869,7 +869,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
     &lt;h4&gt;Langkah 5: Dapatkan bantuan ekstra&lt;/h4&gt;
     &lt;p&gt;Jika Anda masih melihat error, hubungi pemilik situs.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Jaringan<ph name="END_LINK" />.</translation>
-<translation id="4229544452621580519">Jalankan Pemeriksaan Keselamatan di setelan Chrome</translation>
+<translation id="4229544452621580519">Jalankan Pemeriksaan Keamanan di setelan Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Lanjutkan ke <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Valid</translation>
 <translation id="4250431568374086873">Sambungan ke situs ini tidak sepenuhnya aman</translation>
@@ -998,7 +998,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4756388243121344051">&amp;Riwayat</translation>
 <translation id="4758311279753947758">Tambahkan info kontak</translation>
 <translation id="4761104368405085019">Menggunakan mikrofon Anda</translation>
-<translation id="4761869838909035636">Jalankan Pemeriksaan Keselamatan Chrome</translation>
+<translation id="4761869838909035636">Jalankan Pemeriksaan Keamanan Chrome</translation>
 <translation id="4764776831041365478">Halaman web di <ph name="URL" /> mungkin sedang tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
 <translation id="4766713847338118463">Dua jepretan di bawah</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
@@ -1663,7 +1663,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7378627244592794276">Tidak</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7390545607259442187">Konfirmasi Kartu</translation>
-<translation id="7399802613464275309">Pemeriksaan Keselamatan</translation>
+<translation id="7399802613464275309">Pemeriksaan Keamanan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> Anda dikelola</translation>
 <translation id="7407424307057130981">&lt;p&gt;Anda akan melihat error ini jika memiliki software Superfish di komputer Windows.&lt;/p&gt;

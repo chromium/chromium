@@ -1410,7 +1410,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2513396635448525189">Obrázok na prihlasovacej obrazovke</translation>
 <translation id="2514326558286966059">Rýchlejšie odomykanie odtlačkom prsta</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">Vyhľadať</translation>
+<translation id="2517472476991765520">Skenovať</translation>
 <translation id="2518024842978892609">Použiť certifikáty klienta</translation>
 <translation id="2519517390894391510">Názov profilu certifikátu</translation>
 <translation id="2520644704042891903">Čaká sa na dostupný soket...</translation>
@@ -1992,7 +1992,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3151786313568798007">Orientácia</translation>
 <translation id="3154351730702813399">Správca zariadenia môže sledovať vašu aktivitu prehliadania.</translation>
 <translation id="3154429428035006212">Offline viac ako mesiac</translation>
-<translation id="3157387275655328056">Pridať do zoznamu na čítanie</translation>
+<translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157931365184549694">Obnoviť</translation>
 <translation id="3158033540161634471">Nastavenie odtlačku prsta</translation>
 <translation id="3159493096109238499">Béžová</translation>
@@ -4265,7 +4265,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5747809636523347288">Prilepiť a prejsť na <ph name="URL" /></translation>
 <translation id="5754152670305761216">Môže prehrávať chránený obsah</translation>
 <translation id="5756163054456765343">Centrum pomoci</translation>
-<translation id="5758631781033351321">Tu nájdete svoj zoznam na čítanie</translation>
+<translation id="5758631781033351321">Tu nájdete svoj čitateľský zoznam</translation>
 <translation id="5759728514498647443">Dokumenty odoslané na tlač prostredníctvom aplikácie <ph name="APP_NAME" /> môžete čítať pomocou aplikácie <ph name="APP_NAME" />.</translation>
 <translation id="5763751966069581670">Nenašli sa žiadne zariadenia USB</translation>
 <translation id="5764483294734785780">Uložiť &amp;audio ako...</translation>
@@ -6433,7 +6433,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="816704878106051517">{COUNT,plural, =1{telefónne číslo}few{# telefónne čísla}many{# phone numbers}other{# telefónnych čísiel}}</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8168943654413034772">Jediný prepínač pridelený k akcii Vybrať nie je možné odstrániť. Ukončite stlačením ľubovoľného klávesa.</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{Pridať kartu do zoznamu na čítanie}few{Pridať karty do zoznamu na čítanie}many{Pridať karty do zoznamu na čítanie}other{Pridať karty do zoznamu na čítanie}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Pridať kartu do čitateľského zoznamu}few{Pridať karty do čitateľského zoznamu}many{Pridať karty do čitateľského zoznamu}other{Pridať karty do čitateľského zoznamu}}</translation>
 <translation id="8171334254070436367">Skryť všetky karty</translation>
 <translation id="8174047975335711832">Informácie o zariadení</translation>
 <translation id="8174876712881364124">Zálohovanie na Disk Google. Ľahko kedykoľvek obnovte údaje alebo prejdite na iné zariadenie. Táto záloha obsahuje dáta aplikácií. Zálohy sa nahrajú do Googlu a zašifrujú pomocou vášho hesla účtu Google. <ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="END_LINK1" /></translation>
@@ -6767,7 +6767,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8575286410928791436">Ukončíte pridržaním klávesa <ph name="KEY_EQUIVALENT" /></translation>
 <translation id="8576785408880814823">Ak chcete nastaviť pridelenie, stlačte nový prepínač.
 Existujúce pridelenie odstránite stlačením prideleného prepínača.</translation>
-<translation id="8576885347118332789">{NUM_TABS,plural, =1{Pridať kartu do zoznamu na čítanie}few{Pridať karty do zoznamu na čítanie}many{Pridať karty do zoznamu na čítanie}other{Pridať karty do zoznamu na čítanie}}</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Pridať kartu do čitateľského zoznamu}few{Pridať karty do čitateľského zoznamu}many{Pridať karty do čitateľského zoznamu}other{Pridať karty do čitateľského zoznamu}}</translation>
 <translation id="8578639784464423491">Nemôže presiahnuť 99 znakov</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
 <translation id="8581809080475256101">Stlačením tohto tlačidla prejdete dopredu, históriu si zobrazíte pomocou kontextovej ponuky</translation>
@@ -7138,7 +7138,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8965037249707889821">Zadajte staré heslo</translation>
 <translation id="8966809848145604011">Ďalšie profily</translation>
 <translation id="8966870118594285808">Ak ste kartu omylom zavreli, znova ju otvorte</translation>
-<translation id="8967427617812342790">Pridať do čit. zoznamu</translation>
+<translation id="8967427617812342790">Pridať do čitateľského zoznamu</translation>
 <translation id="8967866634928501045">Zobrazíte pomocou klávesov Alt + Shift + A</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
 <translation id="89720367119469899">Escape</translation>

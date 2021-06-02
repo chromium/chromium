@@ -383,7 +383,7 @@
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
-<translation id="4217571870635786043">Дыктаванне</translation>
+<translation id="4217571870635786043">Галасавы ўвод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
@@ -537,7 +537,7 @@
 <translation id="5532994612895037630">Каб запісаць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="553675580533261935">Выконваецца выхад з сеанса</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
-<translation id="554893713779400387">Уключыць або выключыць дыктаванне</translation>
+<translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5571066253365925590">Bluetooth уключаны</translation>
 <translation id="557563299383177668">Наступны абзац</translation>
@@ -879,7 +879,7 @@
 <translation id="8413272770729657668">Запіс пачнецца праз 3, 2, 1</translation>
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8426708595819210923">Добры вечар, <ph name="GIVEN_NAME" />!</translation>
-<translation id="8427213022735114808">Функцыя дыктавання адпраўляе запісы вашага голасу сэрвісам Google, што дазваляе вам уводзіць тэкст голасам у тэкставых палях.</translation>
+<translation id="8427213022735114808">Функцыя галасавога ўводу адпраўляе запісы вашага голасу сэрвісам Google, што дазваляе вам уводзіць тэкст голасам у тэкставых палях.</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="8433977262951327081">Спалучэнне клавіш для паказу выплыўнога меню параметраў уводу на паліцы змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>

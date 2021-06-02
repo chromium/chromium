@@ -6,7 +6,7 @@
 <translation id="1012173283529841972">Liste öğesi</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">İki parmağınızı sağa kaydırın</translation>
-<translation id="1022586497894531524">ChromeVox sözlü geri bildirimini ilk kez mi kullanıyorsunuz? Bu hızlı eğiticide, ChromeVox'ı kullanmaya başlamak için gereken temel bilgiler açıklanmaktadır.</translation>
+<translation id="1022586497894531524">ChromeVox sözlü geri bildirimini ilk kez mi kullanıyorsunuz? Bu hızlı eğitimde, ChromeVox'ı kullanmaya başlamak için gereken temel bilgiler açıklanmaktadır.</translation>
 <translation id="1025074108959230262">Sabit mod devre dışı bırakıldı</translation>
 <translation id="1031961866430398710">sonra</translation>
 <translation id="1038643060055067718">Satır sayısı:</translation>
@@ -120,7 +120,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1717267964664691695">Dokunarak kullanma eğitimi tamamlandı</translation>
 <translation id="1722567105086139392">Bağlantı</translation>
 <translation id="1727806147743597030">ftr</translation>
-<translation id="1730447754326314349">ChromeVox eğiticisine hoş geldiniz. İstediğiniz zaman bu eğiticiden çıkmak için klavyenin sol üst köşesindeki Escape tuşuna basın. ChromeVox'u kapatmak için Control ve Alt tuşlarını basılı tutarken Z tuşuna basın. Hazır olduğunuzda bir sonraki derse geçmek için boşluk tuşunu kullanın.</translation>
+<translation id="1730447754326314349">ChromeVox eğitimine hoş geldiniz. İstediğiniz zaman bu eğitimden çıkmak için klavyenin sol üst köşesindeki Escape tuşuna basın. ChromeVox'u kapatmak için Control ve Alt tuşlarını basılı tutarken Z tuşuna basın. Hazır olduğunuzda bir sonraki derse geçmek için boşluk tuşunu kullanın.</translation>
 <translation id="174268867904053074">Sonraki grafik</translation>
 <translation id="1756785467854861272">Koyu Macenta</translation>
 <translation id="1758693804775271377">Bu konuyla ilgili derslere göz atmak için tek parmağınızla ekranı sola veya sağa kaydırın</translation>
@@ -214,7 +214,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2490721194269245365">Pembemsi Kahverengi</translation>
 <translation id="249330843868392562">Metin okuma ayarlarını aç</translation>
 <translation id="2497706219848005458">Yeşile Dönük Sarı</translation>
-<translation id="2523609930580546572">ChromeVox Eğiticisi</translation>
+<translation id="2523609930580546572">ChromeVox Eğitimi</translation>
 <translation id="2525706221823668172">Chromebook klavye kısayolları</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Devam etmekte olan bir konuşmayı durdurmak için 2 parmağınızla dokunun</translation>
@@ -237,7 +237,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2673280813984708147">düzenleniyor</translation>
 <translation id="267442004702508783">yenile</translation>
 <translation id="2675533876313964202">Açık Yeşil</translation>
-<translation id="2684412629217766642">ChromeVox Eğiticisi'ni kapat</translation>
+<translation id="2684412629217766642">ChromeVox Eğitimini kapat</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{aç parantez}other{# aç parantez}}</translation>
 <translation id="2705875883745373140">Basılmadı</translation>
@@ -274,7 +274,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2894654529758326923">Bilgiler</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{sol küme parantezi}other{# sol küme parantezi}}</translation>
 <translation id="2909584066358367921">Sonraki düğme yok</translation>
-<translation id="2911433807131383493">ChromeVox eğiticiyi aç</translation>
+<translation id="2911433807131383493">ChromeVox eğitimini aç</translation>
 <translation id="2912405967290226587">Üç parmağınızı sağa kaydırın</translation>
 <translation id="2937799153569150791">Sonraki 3. düzey başlık yok</translation>
 <translation id="2942710183375260152">Koyu Kurşun Mavisi</translation>
@@ -325,7 +325,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3172700825913348768">{COUNT,plural, =1{boşluk}other{# boşluk}}</translation>
 <translation id="3179119189286472195">Bağlantı verilmemiş</translation>
 <translation id="320041337977930740">Görüntüleme stilini üst üste (interleave) olarak değiştir</translation>
-<translation id="3206698050650195442">Eğiticiden çık</translation>
+<translation id="3206698050650195442">Eğitimden çık</translation>
 <translation id="3208346789712025453">Sonraki denetim yok</translation>
 <translation id="321072937702597574">Orkide</translation>
 <translation id="3218691001991391708"><ph name="TEXT" />metnini yapıştır.</translation>
@@ -355,7 +355,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3356951775008366684">Kelimenin fonetik telaffuzunu söyler</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">Ekranda bir sonraki etkileşimli öğeye geçmek için Sekme tuşunu da kullanabilirsiniz. Arama tuşunun hemen üzerindeki Sekme tuşunu bulun. Devam etmek için Sekme tuşuna basın.</translation>
-<translation id="3366946046494222386"><ph name="TOPIC" /> Eğiticisi, <ph name="LESSONS" /> Ders</translation>
+<translation id="3366946046494222386"><ph name="TOPIC" /> Eğitimi, <ph name="LESSONS" /> Ders</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{artı işareti}other{# artı işareti}}</translation>
 <translation id="338583716107319301">Ayırıcı</translation>
 <translation id="3389259863310851658">Önceki form alanı</translation>
@@ -395,7 +395,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar işareti}other{# dolar işareti}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="366419593095697301">İpucu: Bu eğiticiden çıkmak isterseniz Escape tuşuna basın.</translation>
+<translation id="366419593095697301">İpucu: Bu eğitimden çıkmak isterseniz Escape tuşuna basın.</translation>
 <translation id="3676062394766691318">Cihazınızı kurduktan sonra geri dönüp Arama + O tuşlarına, sonra da T tuşuna basarak diğer eğiticileri görüntüleyebilirsiniz.</translation>
 <translation id="3681531118904532409">Papaya Rengi</translation>
 <translation id="3692274950075847560">A:<ph name="RESULT" /></translation>
@@ -687,7 +687,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5851548754964597211">Sekme listesi</translation>
 <translation id="5866042630553435010">Kısmen işaretli</translation>
 <translation id="5866210856231860256">Bu konuyla ilgili derslere göz atmak için Arama + Sağ Ok veya Arama + Sol Ok tuşlarına basın</translation>
-<translation id="5867591286054666064">Bu eğitici sırasında herhangi bir tuşun adını duymak için ilgili tuşa basın.</translation>
+<translation id="5867591286054666064">Bu eğitim sırasında herhangi bir tuşun adını duymak için ilgili tuşa basın.</translation>
 <translation id="5869546221129391014">Tablo</translation>
 <translation id="5876817486144482042">Konuşma ses düzeyini düşür</translation>
 <translation id="5878206664863390311">Konulara göz atmak için Arama + Sağ Ok veya Arama + Sol Ok tuşlarına basın</translation>
@@ -928,7 +928,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Sonraki birleşik giriş kutusu yok</translation>
 <translation id="772146615414628379">Tebrikler! ChromeVox kullanımıyla ilgili temel bilgileri başarıyla öğrendiniz. ChromeVox komut menüsünü Arama+Nokta tuşlarına basarak istediğiniz zaman açabileceğinizi unutmayın. ChromeVox ve Chrome OS hakkında daha da fazla bilgi edinmek için aşağıdaki makaleleri inceleyin.
-    Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidip düğmeyi tıklayın.</translation>
+    Eğitimle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidip düğmeyi tıklayın.</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7731785449856576010">Sonraki medya widget'ı yok</translation>
 <translation id="7735498529470878067">Dokunarak keşfetmek, ekranda neler olduğunu kısa sürede algılamanıza yardımcı olabilir.</translation>
@@ -1045,7 +1045,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8603071050456974042">ChromeVox Paneli</translation>
 <translation id="8606621670302093223">Tarih denetimi</translation>
 <translation id="8613709718990529335">Beyaz Porselen</translation>
-<translation id="8614129468475308349">Tebrikler! ChromeVox ile ilgili temel bilgileri öğrendiniz. Tekrar eğiticinin üzerinden geçebilir veya aşağıdaki düğmelerden birini bulup tıklayarak bu eğiticiden çıkabilirsiniz.</translation>
+<translation id="8614129468475308349">Tebrikler! ChromeVox ile ilgili temel bilgileri öğrendiniz. Tekrar eğitimin üzerinden geçebilir veya aşağıdaki düğmelerden birini bulup tıklayarak bu eğitimden çıkabilirsiniz.</translation>
 <translation id="8625173877182443267">Sonraki 6. düzey başlık yok</translation>
 <translation id="8628186274519446680">Domates</translation>
 <translation id="8638532244051952400">Geçerli hücre koordinatlarını söyle</translation>
@@ -1090,7 +1090,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8986362086234534611">Unut</translation>
 <translation id="8989104346085848538">Devam etmekte olan bir ChromeVox konuşmasını durdurmak için Control tuşuna basın.</translation>
 <translation id="8993737615451556423">Okuma sesini hızlandırma, yavaşlatma ve duraklatma kontrollerini sağlar</translation>
-<translation id="9014206344398081366">ChromeVox eğiticisi</translation>
+<translation id="9014206344398081366">ChromeVox eğitimi</translation>
 <translation id="9040132695316389094">Başlık 1</translation>
 <translation id="9061884144798498064">8 noktalı bir braille tablosu seçin:</translation>
 <translation id="9065283790526219006">+popup</translation>

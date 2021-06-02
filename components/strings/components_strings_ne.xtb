@@ -48,7 +48,7 @@
 <translation id="1156303062776767266">तपाईं स्थानीय वा साझा फाइल हेर्दै हुनुहुन्छ</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ले अप्रत्याशित रूपमा जडान बन्द गर्यो।</translation>
 <translation id="115926840831309955">आफ्नो CVC जाँच गरी फेरि प्रयास गर्नुहोस् वा म्याद सकिने मिति अपडेट गर्नुहोस्</translation>
-<translation id="1161325031994447685">Wi-Fi मा पुनः जडान गर्नुहोस्</translation>
+<translation id="1161325031994447685">Wi-Fi मा पुनः कनेक्ट गर्नुहोस्</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
 <translation id="1165174597379888365">पृष्ठ खोलिएको छ</translation>
 <translation id="1174723505405632867">तपाईं <ph name="EMBEDDED_URL" /> लाई <ph name="TOP_LEVEL_URL" /> का कुकी र साइटको डेटा प्रयोग गर्ने अनुमति दिन चाहनुहुन्छ?
@@ -158,7 +158,7 @@
 <translation id="1492194039220927094">नीतिहरू लागू गर्ने कार्य:</translation>
 <translation id="1501859676467574491">आफ्नो Google खाताका कार्डहरू देखाउनुहोस्</translation>
 <translation id="1507202001669085618">&lt;p&gt;तपाईं अनलाइन हुनु पूर्व साइन इन गर्न पर्नेमा Wi-Fi पोर्टल प्रयोग गर्नुभएको खण्डमा तपाईंले यो त्रुटि देखुहुने छ।&lt;/p&gt;
-    &lt;p&gt;त्रुटि समाधान गर्न, तपाईंले खोल्ने प्रयास गर्नुभएको पृष्ठमा &lt;strong&gt;जडान गर्नुहोस्&lt;/strong&gt; मा क्लिक गर्नुहोस्‌।&lt;/p&gt;</translation>
+    &lt;p&gt;त्रुटि समाधान गर्न, तपाईंले खोल्ने प्रयास गर्नुभएको पृष्ठमा &lt;strong&gt;कनेक्ट गर्नुहोस्&lt;/strong&gt; मा क्लिक गर्नुहोस्‌।&lt;/p&gt;</translation>
 <translation id="1513706915089223971">इतिहाससम्बन्धी प्रविष्टिहरूको सूची</translation>
 <translation id="1517433312004943670">फोन नम्बर आवश्यक छ</translation>
 <translation id="1519264250979466059">निर्माण मिति</translation>
@@ -729,7 +729,7 @@
 <translation id="3711895659073496551">निलम्बन</translation>
 <translation id="3712624925041724820">इजाजतपत्र निकास</translation>
 <translation id="3714780639079136834">मोबाइल डेटा वा Wi-Fi लाई सक्रिय गर्नुहोस्</translation>
-<translation id="3715597595485130451">Wi-Fi मा जडान गर्नुहोस्</translation>
+<translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="373042150751172459">B4 (Envelope)</translation>
@@ -1137,7 +1137,7 @@
 <translation id="5230733896359313003">ढुवानीको ठेगाना</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
-<translation id="5250209940322997802">"नेटवर्कमा जडान गर्नुहोस्‌"</translation>
+<translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
@@ -1160,7 +1160,7 @@
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5306593769196050043">दुवै पाना</translation>
 <translation id="5307166000025436103">ठिक छ</translation>
-<translation id="5308380583665731573">जडान गर्नुहोस्</translation>
+<translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5308689395849655368">क्र्यास रिपोर्ट अक्षम छ।</translation>
 <translation id="5314967030527622926">पुस्तिका निर्माता</translation>
 <translation id="5316812925700871227">घडीको विपरीत दिशामा घुमाउनुहोस्</translation>
@@ -1472,7 +1472,7 @@
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
 <translation id="6578796323535178455">C2 (Envelope)</translation>
-<translation id="6579630537141957243">MIDI यन्त्र कनेक्ट गर्ने हो?</translation>
+<translation id="6579630537141957243">MIDI डिभाइस कनेक्ट गर्ने हो?</translation>
 <translation id="6579990219486187401">हल्का गुलाबी</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
 <translation id="6587182488465657433">Chrome ले तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड डेटा चोरीको घटनामा खुलासा गरिएको पत्ता लगायो। हामी तपाईंलाई अहिले नै उक्त पासवर्ड बदलेर र त्यसपछि आफूले सुरक्षित गरेका पासवर्डहरू जाँच गरेर आफ्ना खाता सुरक्षित राख्न सिफारिस गर्छौँ।</translation>
@@ -1513,7 +1513,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ले तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन चाहन्छ</translation>
 <translation id="6718612893943028815">क्यामेरा प्रयोग गर्ने हो?</translation>
 <translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
-<translation id="674375294223700098">अज्ञात सर्भर प्रमाणपत्र त्रुटि।</translation>
+<translation id="674375294223700098">अज्ञात सर्भर सर्टिफिकेट त्रुटि।</translation>
 <translation id="6744009308914054259">इन्टरनेटको प्रतीक्षा गर्दा गर्दै तपाईं अफलाइन लेखहरू पढ्न डाउनलोडहरू नामक फोल्डरमा जान सक्नुहुन्छ।</translation>
 <translation id="6753269504797312559">नीति मूल्य</translation>
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
@@ -1582,7 +1582,7 @@
 <translation id="7050187094878475250">तपाईं <ph name="DOMAIN" /> मा पुग्न प्रयास गर्नुभयो, तर सर्भरले एउटा प्रमाणपत्र प्रस्तुत गर्दछ जसको वैधानिकता अवधि भरोसा योग्य हुन निकै लामो छ।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यो कार्ड अहिले सुरक्षित गर्न सकिँदैन}other{यी कार्डहरू अहिले सुरक्षित गर्न सकिँदैन}}</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
-<translation id="7058163556978339998"><ph name="BROWSER" /> ले यस वेबसाइटको प्रमाणपत्र <ph name="ISSUER" /> ले जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
+<translation id="7058163556978339998"><ph name="BROWSER" /> ले यस वेबसाइटको सर्टिफिकेट <ph name="ISSUER" /> ले जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
 <translation id="7062635574500127092">गाढा निलो र हरियो</translation>
 <translation id="706295145388601875">Chrome का सेटिङमा गई ठेगानाहरू थप्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7064851114919012435">सम्पर्क बारे जानकारी</translation>
@@ -2134,7 +2134,7 @@
 <translation id="9114581008513152754">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
 <translation id="9128016270925453879">नीतिहरू लोड गरिएका छन्</translation>
-<translation id="9128870381267983090">नेटवर्कमा जडान गर्नुहोस्</translation>
+<translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="9148088599418889305">ढुवानीको विधि छनौट गर्नुहोस्</translation>
@@ -2146,7 +2146,7 @@
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">साइटहरूलाई तपाईंले भुक्तानी विधिहरू सुरक्षित गर्नुभए नभएको कुरा जाँच गर्न दिन्छ</translation>
 <translation id="9169664750068251925">सधैँ यस साइटमा ब्लक गर्नुहोस्</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" /> लाई गृह स्क्रिनमा थप्नुहोस्‌</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> लाई होम स्क्रिनमा हाल्नुहोस्‌</translation>
 <translation id="9170848237812810038">&amp;पूर्वस्थितिमा फर्काउनुहोस्</translation>
 <translation id="9171296965991013597">एप छोड्ने हो?</translation>
 <translation id="9173282814238175921">एउटा कागजात/नयाँ पाना</translation>

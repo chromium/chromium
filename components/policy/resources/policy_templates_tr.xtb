@@ -1649,7 +1649,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="3072847235228302527">Bir cihaz yerel hesabı için Hizmet Şartları'nı ayarlama</translation>
 <translation id="3083259245974004342">Şifre koruma</translation>
 <translation id="3086995894968271156">Cast Receiver'ı <ph name="PRODUCT_NAME" /> ürününde yapılandırın.</translation>
-<translation id="3087346703976541109">Çapraz kaynak izoleli olmayan bağlamda, SharedArrayBuffers kullanılıp kullanılamayacağını belirler</translation>
+<translation id="3087346703976541109">Kökler arası erişime kapalı olmayan bağlamda, SharedArrayBuffers kullanılıp kullanılamayacağını belirler</translation>
 <translation id="3088557424854005813">Onay</translation>
 <translation id="3091832372132789233">Öncelikle harici bir güç kaynağına bağlı cihazlar için pili şarj edin.</translation>
 <translation id="3092059499596000593">Yazdırma Önizleme'de varsayılan seçenek olarak sistem varsayılan yazıcısını kullan</translation>
@@ -3800,8 +3800,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6111936128861357925">Dinozor Paskalya Yumurtası Oyununa İzin Verme</translation>
 <translation id="6123052603197028610">Zaman damgalarını almak için Google sunucularına sorgu gönderilmesine izin verme</translation>
 <translation id="6132506775968708399">3. taraf çerezleri engelle</translation>
-<translation id="6132739217670763962">
-      Çapraz kaynak izolasyonu olmayan bir bağlamda SharedArrayBuffers kullanılıp kullanılamayacağını belirler. Chrome, Chrome 91 ve sonrasında (25.05.2021) Web Uyumluluğu nedeniyle SharedArrayBuffers kullanımında çapraz kaynak izolasyonu gerektirecek. Daha fazla ayrıntıyı aşağıdaki adreste bulabilirsiniz:
+<translation id="6132739217670763962">Kökler arası erişime kapalı olmayan bir bağlamda SharedArrayBuffers kullanılıp kullanılamayacağını belirler. Chrome, Chrome 91 ve sonrasında (25.05.2021) Web Uyumluluğu nedeniyle SharedArrayBuffers kullanımında kökler arası erişime kapalı olmasını gerektirecek. Daha fazla ayrıntıyı aşağıdaki adreste bulabilirsiniz:
       https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Tüm sitelerin anahtar oluşturma işlevini kullanmasına izin ver</translation>
 <translation id="6135398260575578389">Güvenli Tarama gelişmiş modda etkin. Bu mod daha yüksek güvenlik sağlar, ancak Google ile daha fazla tarama bilgisi paylaşmayı gerektirir.</translation>

@@ -62,7 +62,7 @@
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1391102559483454063">अन</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
-<translation id="1419738280318246476">सूचनासम्बन्धी कारबाही गर्न यन्त्र अनलक गर्नुहोस्</translation>
+<translation id="1419738280318246476">सूचनासम्बन्धी कारबाही गर्न डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="144853431011121127">आफ्नो फोनका सूचनाहरू आफ्नो <ph name="DEVICE_TYPE" /> मा प्राप्त गर्नुहोस्</translation>
@@ -307,7 +307,7 @@
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
 <translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
 <translation id="3573179567135747900">पुन: "<ph name="FROM_LOCALE" />" मा परिवर्तन गर्नुहोस् (फेरि सुरु गर्न आवश्यक छ)</translation>
-<translation id="3576141592585647168">समय क्षेत्र परिवर्तन गर्नुहोस्</translation>
+<translation id="3576141592585647168">प्रामाणिक समय परिवर्तन गर्नुहोस्</translation>
 <translation id="3593039967545720377">आफूले विगतमा क्लिपबोर्डमा कपी गरेका वस्तुहरू हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। सुरु गर्न कुनै वस्तु कपी गर्नुहोस्।</translation>
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
@@ -444,7 +444,7 @@
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4659419629803378708">ChromeVox सक्षम पारियो</translation>
 <translation id="4665114317261903604">बाधा नपुर्‍याउनुहोस् नामक मोड टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
-<translation id="4696813013609194136">अभिभावकको कोडमार्फत यन्त्र अनलक गर्नुहोस्</translation>
+<translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
 <translation id="4705716602320768426">प्रतिक्रिया दिनुहोस्</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>

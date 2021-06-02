@@ -29,7 +29,7 @@
 <translation id="118532027333893379">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
 <translation id="1190609913194133056">အသိပေးချက် စင်တာ</translation>
 <translation id="1195412055398077112">စကင်လုပ်</translation>
-<translation id="119944043368869598">အားလုံး ရှင်းရန်</translation>
+<translation id="119944043368869598">အားလုံးထုတ်ပစ်ရန်</translation>
 <translation id="1199716647557067911">'ခလုတ်သုံးခြင်း' ပိတ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="1210557957257435379">ဖန်သားပြင်ရိုက်ကူးခြင်း</translation>
 <translation id="121097972571826261">စာလုံးအလိုက် ရှေ့သို့သွားရန်</translation>
@@ -196,7 +196,7 @@
 <translation id="2582112259361606227">အပ်ဒိတ်လုပ်ရန်အတွက် ပြန်လည်စတင်ရန်</translation>
 <translation id="2595239820337756193">၅ ကီလိုမီတာကို မိုင်ပြောင်းပါ</translation>
 <translation id="2596078834055697711">ဝင်းဒိုး မျက်နှာပြင်ပုံ ရိုက်ရန်</translation>
-<translation id="2617342710774726426">ဆင်းမ်ကဒ် လော့ခ်ကျနေပါသည်</translation>
+<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2621713457727696555">လုံခြုံပြီ</translation>
 <translation id="2653019840645008922">ဝင်းဒိုး ပုံဖမ်းယူမှု</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
@@ -393,7 +393,7 @@
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
-<translation id="4296136865091727875">သတိပေးချက် <ph name="COUNT" /> ခုလုံးကို ဖယ်ရှားပါ</translation>
+<translation id="4296136865091727875">အကြောင်းကြားချက် <ph name="COUNT" /> ခုလုံးကို ထုတ်ပစ်ရန်</translation>
 <translation id="4302592941791324970">မရနိုင်ပါ</translation>
 <translation id="4303223480529385476">အခြေအနေပြ နေရာကို ချဲ့ရန်</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -639,7 +639,7 @@
 <translation id="639644700271529076">စာလုံးကြီးများကို နှိပ်မထား</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="642644398083277086">သတိပေးချက်အားလုံးကို ဖယ်ရှားပါ</translation>
+<translation id="642644398083277086">အကြောင်းကြားချက်အားလုံးကို ထုတ်ပစ်ရန်</translation>
 <translation id="643147933154517414">အားလုံးပြီးပါပြီ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /></translation>
@@ -884,7 +884,7 @@
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>
 <translation id="8433977262951327081">စင်ပေါ်တွင် စာရိုက်စနစ်ရွေးချယ်စရာ မီနူးစာသားအကွက်ကို ပြသရန် ဖြတ်လမ်းလင့်ခ် ပြောင်းသွားပါပြီ။ <ph name="NEW_SHORTCUT" /> ကို <ph name="OLD_SHORTCUT" /> အစား သုံးပေးပါ။</translation>
 <translation id="8444246603146515890">မြင်ကွင်း <ph name="DESK_TITILE" /> စတင်ထားသည်</translation>
-<translation id="8452135315243592079">ဆင်းမ်ကဒ် မရှိပါ</translation>
+<translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>
 <translation id="8454013096329229812">ကြိုးမဲ့ အင်တာနက် ဖွင့်ထားသည်။</translation>
 <translation id="8462305545768648477">'စကားပြော ရွေးရန်' ကို ပိတ်ရန်</translation>
 <translation id="847056008324733326">မြင်ကွင်းစကေး ဆက်တင်များ</translation>

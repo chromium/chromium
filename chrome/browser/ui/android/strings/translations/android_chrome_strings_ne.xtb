@@ -170,7 +170,7 @@
 <translation id="2126426811489709554">Chrome द्वारा संचालित</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> बचत गरियो</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बन्द भयो</translation>
-<translation id="2139186145475833000">गृह स्क्रिनमा थप्नुहोस्</translation>
+<translation id="2139186145475833000">होम स्क्रिनमा हाल्नुहोस्</translation>
 <translation id="214888715418183969">तपाईं Chrome सँग कुन कुन जानकारी सेयर गर्न चाहनुहुन्छ भन्ने कुरा छनौट गर्नुहोस्। तपाईंले सेयर गर्ने मेट्रिकहरू Chrome का सुविधा, कार्यसम्पादन र स्थिरता सुधार गर्न प्रयोग गरिने छ।</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2154710561487035718">URL प्रतिलिपि गर्नुहोस्</translation>
@@ -643,7 +643,7 @@
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5304593522240415983">यो क्षेत्र खाली हुन सक्दैन</translation>
-<translation id="5308380583665731573">जडान गर्नुहोस्</translation>
+<translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5324858694974489420">अभिभावक सेटिङहरू</translation>
@@ -841,7 +841,7 @@
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> डाउनलोड भण्डारण ठाउँ कमीको कारण असफल भयो।</translation>
 <translation id="6489610539826642779">अध्ययन सूची <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">हाइलाइट गरिएको पाठको लिंक</translation>
-<translation id="6496823230996795692">पहिलोपटक <ph name="APP_NAME" /> प्रयोग गर्न कृपया इन्टरनेटमा जडान गर्नुहोस्।</translation>
+<translation id="6496823230996795692">पहिलोपटक <ph name="APP_NAME" /> प्रयोग गर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6532866250404780454">तपाईंले Chrome मार्फत हेर्नुभएका साइटहरू देखिने छैनन्। साइटका सबै टाइमरहरू मेटाइने छन्।</translation>

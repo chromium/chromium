@@ -1025,7 +1025,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="211144231511833662">Ryd typer</translation>
-<translation id="2111670510994270194">Ny fane i højre side</translation>
+<translation id="2111670510994270194">Ny fane til højre</translation>
 <translation id="2111810003053064883">Annoncører kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fastgør fane</translation>
@@ -4374,7 +4374,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5870086504539785141">Luk menuen for hjælpefunktioner</translation>
 <translation id="5870155679953074650">Hårde fejl</translation>
 <translation id="5876576639916258720">Kører...</translation>
-<translation id="5876851302954717356">Ny fane i højre side</translation>
+<translation id="5876851302954717356">Ny fane til højre</translation>
 <translation id="5877064549588274448">Kanalen er ændret. Genstart din enhed for at anvende ændringerne.</translation>
 <translation id="5877584842898320529">Den valgte printer er enten ikke tilgængelig eller ikke installeret korrekt.<ph name="BR" />Tjek din printer, eller vælg en anden printer.</translation>
 <translation id="5882919346125742463">Kendte netværk</translation>
@@ -6542,7 +6542,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8286036467436129157">Log ind</translation>
 <translation id="8286963743045814739">Du kan bruge nettet privat ved hjælp af et inkognitovindue</translation>
-<translation id="8287902281644548111">Søg efter API-opkald/webadresse</translation>
+<translation id="8287902281644548111">Søg efter API-kald/webadresse</translation>
 <translation id="8288032458496410887">Afinstaller <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Diskstørrelse</translation>
 <translation id="8293206222192510085">Tilføj bogmærke</translation>
@@ -6663,7 +6663,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8447409163267621480">Skal indeholde enten Ctrl eller Alt</translation>
 <translation id="8448729345478502352">Gør elementer på skærmen mindre eller større</translation>
-<translation id="8449008133205184768">Sæt ind og match stil</translation>
+<translation id="8449008133205184768">Indsæt og match stil</translation>
 <translation id="8449036207308062757">Administrer lagerplads</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
 <translation id="8454502708934796641">Skal Google finde rabatter til de varer, du lægger i din kurv?</translation>

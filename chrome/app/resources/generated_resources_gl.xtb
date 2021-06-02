@@ -11,7 +11,7 @@
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="1010498023906173788">Esta pestana está conectada a un porto en serie.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Páxina que non responde}other{Páxinas que non responden}}</translation>
-<translation id="1011355516189274711">Volume da síntese de voz</translation>
+<translation id="1011355516189274711">Volume da saída de texto a voz</translation>
 <translation id="1012794136286421601">Estanse sincronizando os teus ficheiros de Documentos, Follas de Cálculo, Presentacións e Debuxos. Abre a aplicación Google Drive para acceder a eles con conexión ou sen ela.</translation>
 <translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -396,7 +396,7 @@
 <translation id="1426410128494586442">Si</translation>
 <translation id="142655739075382478">A aplicación <ph name="APP_NAME" /> está bloqueada</translation>
 <translation id="1426870617281699524">Fai clic en Tentar de novo e acepta a solicitude no teu ordenador</translation>
-<translation id="1427179946227469514">Ton da síntese de voz</translation>
+<translation id="1427179946227469514">Ton da conversión de texto a voz</translation>
 <translation id="1427269577154060167">País</translation>
 <translation id="142758023928848008">Activar as teclas presas (para executar atallos do teclado escribíndoos de forma secuencial)</translation>
 <translation id="142765311413773645">Caducou a licenza de <ph name="APP_NAME" /></translation>
@@ -483,7 +483,7 @@
 <translation id="1521442365706402292">Xestionar certificados</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="152234381334907219">Contrasinais que non se gardan nunca</translation>
-<translation id="1523978563989812243">Motores de síntese de voz</translation>
+<translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1525740877599838384">Utilizar só a wifi para determinar a localización</translation>
@@ -2443,7 +2443,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3677959414150797585">Inclúe aplicacións, páxinas web e moito máis. Envía estatísticas para mellorar as suxestións só se escolliches compartir datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">As páxinas que visites nesta ventá non aparecerán no historial do navegador nin deixarán outros rastros (por exemplo, cookies) no ordenador unha vez peches sesión. Non se conservarán os ficheiros que descargues nin os marcadores que crees.</translation>
-<translation id="3680683624079082902">Voz da síntese de voz</translation>
+<translation id="3680683624079082902">Voz da conversión de texto a voz</translation>
 <translation id="3681311097828166361">Grazas polo teu comentario. Agora estás sen conexión, polo que o informe se enviará máis tarde.</translation>
 <translation id="3682824389861648626">Límite de movemento</translation>
 <translation id="3683524264665795342">Solicitude para compartir a pantalla de <ph name="APP_NAME" /></translation>
@@ -4006,7 +4006,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5468173180030470402">Buscando ficheiros compartidos</translation>
 <translation id="5469852975082458401">Podes navegar polas páxinas cun cursor de texto. Preme F7 para desactivar esta función.</translation>
 <translation id="5470735824776589490">É necesario reiniciar o dispositivo para poder restablecelo cun Powerwash. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="5471768120198416576">Ola! Son a túa voz de síntese de voz.</translation>
+<translation id="5471768120198416576">Ola! Son a túa voz de conversión de texto a voz.</translation>
 <translation id="5472627187093107397">Gardar os contrasinais deste sitio</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN debe ter como mínimo 1 carácter}other{O PIN debe ter como mínimo # caracteres}}</translation>
 <translation id="5473333559083690127">Volve introducir o novo PIN</translation>
@@ -4849,7 +4849,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6419546358665792306">Cargar extensión descomprimida</translation>
 <translation id="6419843101460769608">Non permitir que ningún sitio acceda aos dispositivos Bluetooth</translation>
 <translation id="642469772702851743">O propietario bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
-<translation id="6425556984042222041">Velocidade da síntese de voz</translation>
+<translation id="6425556984042222041">Velocidade da saída de texto a voz</translation>
 <translation id="6426200009596957090">Abrir configuración de ChromeVox</translation>
 <translation id="642729974267661262">Sitios que non poden reproducir son</translation>
 <translation id="6428982734197629783">Procesando imaxe</translation>
@@ -5034,7 +5034,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse no teu nome.</translation>
 <translation id="6635362468090274700">Ninguén pode compartir contido contigo ata que o teu dispositivo sexa visible.<ph name="BR" /><ph name="BR" />Se queres facelo visible de forma temporal, abre a área de estado e, a continuación, activa Visibilidade.</translation>
 <translation id="6635944431854494329">O propietario pode controlar esta función en Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.</translation>
-<translation id="6635956300022133031">Selecciona e personaliza as voces da síntese de voz</translation>
+<translation id="6635956300022133031">Selecciona e personaliza as voces da conversión de texto a voz</translation>
 <translation id="6636588250634969791">Para continuar, introduce unha SIM</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6642720633335369752">Para ver todas as ventás abertas da aplicación, pasa o dedo cara arriba desde a parte inferior da pantalla e mantena premida.</translation>
@@ -5613,7 +5613,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> %. <ph name="TIME" /> para completar a carga</translation>
 <translation id="727952162645687754">Erro de descarga</translation>
 <translation id="7280041992884344566">Produciuse un erro mentres Chrome buscaba software daniño</translation>
-<translation id="7280649757394340890">Configuración da síntese de voz</translation>
+<translation id="7280649757394340890">Configuración da conversión de texto a voz</translation>
 <translation id="7280877790564589615">Solicitouse permiso</translation>
 <translation id="7282992757463864530">Barra de información</translation>
 <translation id="7283555985781738399">Modo de invitado</translation>

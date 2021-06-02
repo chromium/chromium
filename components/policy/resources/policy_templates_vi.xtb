@@ -1845,7 +1845,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
           Chỉ định khoảng thời gian kể từ lần cuối cùng người dùng nhập cho đến thời điểm hộp thoại cảnh báo hiển thị khi chạy bằng pin.
 
-          Khi bạn đặt, chính sách này sẽ chỉ định khoảng thời gian người dùng phải duy trì chế độ tạm vắng trước khi <ph name="PRODUCT_OS_NAME" /> hiển thị hộp thoại cảnh báo cho người dùng biết rằng hành động ở chế độ tạm vắng đó sắp được thực hiện.
+          Khi bạn đặt, chính sách này sẽ chỉ định khoảng thời gian người dùng phải duy trì chế độ tạm vắng trước khi <ph name="PRODUCT_OS_NAME" /> hiện hộp thoại cảnh báo cho người dùng biết rằng hành động ở chế độ tạm vắng đó sắp được thực hiện.
 
           Khi bạn không đặt chính sách này, sẽ không có hộp thoại cảnh báo nào hiển thị.
 
@@ -3740,7 +3740,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="5950069117106131681">Nếu bạn đặt chính sách này thành Bật, đầu trang và chân trang ở chế độ xem trước bản in sẽ được bật. Nếu bạn đặt chính sách này thành Tắt, đầu trang và chân trang ở chế độ xem trước bản in sẽ bị tắt.
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, người dùng sẽ quyết định có để đầu trang và chân trang xuất hiện hay không.</translation>
-<translation id="5951418260805607969">Hiển thị thông báo khi dung lượng ổ đĩa sắp hết</translation>
+<translation id="5951418260805607969">Hiện thông báo khi dung lượng ổ đĩa sắp hết</translation>
 <translation id="5958746038080720143">Bật tính năng tối ưu hóa Web Proxy Auto-Discovery (WPAD) (Tự động phát hiện proxy web)</translation>
 <translation id="5959428851851090097">Nếu đặt chính sách này thành Bật, thì chính sách đám mây sẽ được ưu tiên nếu chính sách này xung đột với chính sách nền tảng.
 
@@ -3998,7 +3998,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
           Chỉ định khoảng thời gian kể từ lần cuối cùng người dùng nhập cho đến thời điểm hộp thoại cảnh báo hiển thị khi chạy bằng nguồn điện xoay chiều.
 
-          Khi bạn đặt, chính sách này sẽ chỉ định khoảng thời gian người dùng phải duy trì chế độ tạm vắng trước khi <ph name="PRODUCT_OS_NAME" /> hiển thị hộp thoại cảnh báo cho người dùng biết rằng hành động ở chế độ tạm vắng đó sắp được thực hiện.
+          Khi bạn đặt, chính sách này sẽ chỉ định khoảng thời gian người dùng phải duy trì chế độ tạm vắng trước khi <ph name="PRODUCT_OS_NAME" /> hiện hộp thoại cảnh báo cho người dùng biết rằng hành động ở chế độ tạm vắng đó sắp được thực hiện.
 
           Khi bạn không đặt chính sách này, sẽ không có hộp thoại cảnh báo nào hiển thị.
 
@@ -5045,7 +5045,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
           Lưu ý: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> (nếu đã được chỉ định) sẽ ghi đè chính sách này.</translation>
 <translation id="7632147323011514740">Các khoảng thời gian mà quá trình cập nhật ảnh chụp nhanh dữ liệu ARC có thể bắt đầu cho Phiên khách được quản lý</translation>
 <translation id="7632724434767231364">Tên thư viện GSSAPI</translation>
-<translation id="7635106595080609261">Khi bạn đặt thành Bật hoặc không đặt chính sách này, Chrome có thể hiển thị hộp thoại chọn tệp và người dùng có thể mở hộp thoại này.
+<translation id="7635106595080609261">Khi bạn đặt thành Bật hoặc không đặt chính sách này, Chrome có thể hiện hộp thoại chọn tệp và người dùng có thể mở hộp thoại này.
 
       Khi bạn đặt chính sách này thành Tắt, bất cứ khi nào người dùng thực hiện thao tác làm kích hoạt hộp thoại chọn tệp (chẳng hạn như nhập dấu trang, tải tệp lên, lưu đường liên kết, v.v), một thông báo sẽ xuất hiện. Người dùng được xem là đã nhấp vào nút Hủy trên hộp thoại chọn tệp.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
@@ -5986,7 +5986,7 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
           Đối với những cookie trên miền không khớp với các mẫu nêu ở đây hoặc đối với tất cả cookie, nếu bạn không đặt chính sách này, thì giá trị mặc định chung của chính sách <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> (nếu bạn đã đặt chính sách này) hoặc trong cấu hình cá nhân của người dùng sẽ được sử dụng.
 
           Xin lưu ý rằng các mẫu bạn liệt kê ở đây được xử lý như miền, chứ không phải như URL. Vì vậy, bạn không nên chỉ định lược đồ hoặc cổng.</translation>
-<translation id="8887709920496070892">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm hệ thống hiển thị hộp thoại cảnh báo</translation>
+<translation id="8887709920496070892">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm hệ thống hiện hộp thoại cảnh báo</translation>
 <translation id="8890438048579188548">Ẩn cảnh báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Dung lượng ổ đĩa trống cần có cho <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892783613915541293">Số lần trì hoãn và các hành động cần thực hiện khi thiết bị ở trạng thái rảnh và chạy bằng nguồn điện AC</translation>

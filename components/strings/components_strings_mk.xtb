@@ -784,7 +784,7 @@
 <translation id="3909477809443608991"><ph name="URL" /> сака да пушти заштитени содржини. Google ќе го потврди идентитетот на вашиот уред, а сајтов ќе може да пристапи до него.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
-<translation id="3946209740501886391">Секогаш прашувај на овој сајт</translation>
+<translation id="3946209740501886391">Прашувај секогаш на овој сајт</translation>
 <translation id="3949571496842715403">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат не наведува алтернативни имиња на предметот. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="3949601375789751990">Историјата на прелистување се појавува тука</translation>
 <translation id="3949870428812919180">Нема зачувани начини на плаќање</translation>
@@ -2004,7 +2004,7 @@
 <translation id="8574899947864779331">Користете Touch ID за побрзо потврдување на картичките</translation>
 <translation id="858637041960032120">Додај телефонски број</translation>
 <translation id="8589998999637048520">Најдобар квалитет</translation>
-<translation id="8600271352425265729">Само овој пат</translation>
+<translation id="8600271352425265729">Само овојпат</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>
 <translation id="8606726445206553943">Користете ги MIDI уредите</translation>
 <translation id="8612761427948161954">Здраво <ph name="USERNAME" />,

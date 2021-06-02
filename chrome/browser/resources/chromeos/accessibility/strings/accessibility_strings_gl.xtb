@@ -50,7 +50,7 @@
 <translation id="1246424317317450637">Negra</translation>
 <translation id="1251750620252348585">Seguinte título de nivel 6</translation>
 <translation id="1268366246392928616">Non hai ningunha expresión matemática anterior</translation>
-<translation id="1273314450961659276">Configuración da síntese de voz</translation>
+<translation id="1273314450961659276">Configuración da conversión de texto a voz</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1284576163386164372">Cando queiras consultar os titoriais, toca a pantalla con catro dedos para abrir os menús. Despois, activa o titorial en cuestión na sección ChromeVox.</translation>
 <translation id="1291286136605998134">Botón de activación/desactivación</translation>
@@ -212,7 +212,7 @@
 <translation id="2471138580042810658">Título 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}other{# asteriscos}}</translation>
 <translation id="2490721194269245365">Marrón rosado</translation>
-<translation id="249330843868392562">Abre a configuración da síntese de voz</translation>
+<translation id="249330843868392562">Abre a configuración da conversión de texto a voz</translation>
 <translation id="2497706219848005458">Amarelo verdoso</translation>
 <translation id="2523609930580546572">Titorial de ChromeVox</translation>
 <translation id="2525706221823668172">Atallos de teclado de Chromebook</translation>
@@ -692,7 +692,7 @@
 <translation id="5876817486144482042">Baixar volume da voz</translation>
 <translation id="5878206664863390311">Para avanzar ou retroceder polos temas, preme Buscar + Frecha dereita ou Buscar + Frecha esquerda</translation>
 <translation id="5878908838135392163">Azul po</translation>
-<translation id="588108970619830498">Restablecéronse os valores predeterminados da configuración da síntese de voz</translation>
+<translation id="588108970619830498">Restablecéronse os valores predeterminados da configuración da conversión de texto a voz</translation>
 <translation id="5891934789323004067">Táboa</translation>
 <translation id="5899860758576822363">Baixar o volume de reprodución cando ChromeVox estea falando</translation>
 <translation id="5901630391730855834">Amarelo</translation>
@@ -864,7 +864,7 @@
 <translation id="7244947685630430863">Non hai ningún gráfico anterior</translation>
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="725969808843520477">Seguinte botón de opción</translation>
-<translation id="7261612856573623172">Voz da síntese de voz do sistema</translation>
+<translation id="7261612856573623172">Voz da conversión de texto a voz do sistema</translation>
 <translation id="7269119382257320590">Sen puntuación</translation>
 <translation id="7271278495464744706">Activar descricións detalladas</translation>
 <translation id="7273174640290488576">En branco</translation>
@@ -921,7 +921,7 @@
 <translation id="7668307052366682650">{COUNT,plural, =1{hora}other{horas}}</translation>
 <translation id="7674576868851035240">Seguinte ligazón</translation>
 <translation id="7674768236845044097">marca</translation>
-<translation id="7676847077928500578">Restablece a configuración da síntese de voz</translation>
+<translation id="7676847077928500578">Restablece a configuración da conversión de texto a voz</translation>
 <translation id="7684431668231950609">Edita texto, entrada de URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de opción anterior</translation>

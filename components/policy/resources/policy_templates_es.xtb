@@ -1005,7 +1005,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si se asigna el valor "True" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> habilitará estas protecciones de seguridad en todas las conexiones.
 
-      Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> inhabilitará estas protecciones de seguridad en las conexiones autenticadas con certificados de CA instalados de forma local. Estas protecciones siempre están habilitadas en las conexiones autenticadas con certificados de CA en los que se confíe públicamente.
+      Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> inhabilitará estas protecciones de seguridad en las conexiones autenticadas con certificados AC instalados de forma local. Estas protecciones siempre están habilitadas en las conexiones autenticadas con certificados AC en los que se confíe públicamente.
 
       El valor predeterminado de esta política ha cambiado de "False" a "True" en <ph name="PRODUCT_NAME" /> 81. La conexión de los proxies afectados debería fallar y debería aparecer el código de error ERR_TLS13_DOWNGRADE_DETECTED. Los administradores que necesiten más tiempo para actualizar los proxies afectados podrán usar esta política para inhabilitar temporalmente esta función de seguridad. Esta política se retiró en la versión 86.
       </translation>
@@ -1468,7 +1468,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2893546967669465276">Enviar los registros del sistema al servidor de administración</translation>
-<translation id="2899002520262095963">Las aplicaciones para Android pueden utilizar los ajustes de red y los certificados de CA configurados mediante esta política, pero no tienen acceso a algunas opciones de configuración.</translation>
+<translation id="2899002520262095963">Las aplicaciones para Android pueden utilizar los ajustes de red y los certificados AC configurados mediante esta política, pero no tienen acceso a algunas opciones de configuración.</translation>
 <translation id="2899213072616346687">Restringe el modo de impresión de gráficos de fondo. Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="290002216614278247">Te permite bloquear la sesión del usuario en función del tiempo del cliente o la cuota de uso diaria.
 
@@ -3036,7 +3036,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5073609397321802133">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
 
       Si se asigna el valor "true" a esta política o no se le asigna ningún valor, los usuarios podrán personalizar la imagen de fondo en la página Nueva pestaña.</translation>
-<translation id="5075190314377370852">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados localmente. Si <ph name="PRODUCT_NAME" /> no puede obtener información sobre el estado de la revocación, <ph name="PRODUCT_NAME" /> considerará que estos certificados están revocados (modo estricto).
+<translation id="5075190314377370852">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente. Si <ph name="PRODUCT_NAME" /> no puede obtener información sobre el estado de la revocación, <ph name="PRODUCT_NAME" /> considerará que estos certificados están revocados (modo estricto).
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.</translation>
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
@@ -3437,7 +3437,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Los ID deben coincidir con el campo "id" del archivo definido en la política <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Si no se define esta política, no se realizará ningún filtrado y se tendrán en cuenta todos los servidores de impresión proporcionados por <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.</translation>
-<translation id="557360560705413259">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> usará commonName de un certificado de servidor para buscar concordancias con un nombre de host si el certificado no tiene ninguna extensión subjectAlternativeName, siempre que se valide correctamente y se vincule a certificados de CA instalados localmente.
+<translation id="557360560705413259">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> usará commonName de un certificado de servidor para buscar concordancias con un nombre de host si el certificado no tiene ninguna extensión subjectAlternativeName, siempre que se valide correctamente y se vincule a certificados AC instalados localmente.
 
       Recuerda que no se recomienda esta opción, ya que puede permitir que se omita la extensión nameConstraints que restringe los nombres de host para los que puede estar autorizado un certificado concreto.
 
@@ -4780,7 +4780,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Permite habilitar las notificaciones de Mi teléfono.</translation>
-<translation id="7249828445670652637">Habilitar los certificados de CA de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
+<translation id="7249828445670652637">Habilitar los certificados AC de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
 <translation id="7251825257294351251">Permitir notificaciones del sistema</translation>
 <translation id="7252681704926980614">Enviar los nombres de usuario y de archivo al servidor de impresoras nativas con cada trabajo de impresión. Los nombres no se envían de forma predeterminada.
 
@@ -5002,7 +5002,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       * "Replace" hará que la política de usuarios de los GPO del usuario se sustituya por la de los GPO del ordenador. Se ignorarán los GPO del usuario.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
-<translation id="757395965347379751">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> permitirá los certificados SHA-1 firmados siempre que se validen correctamente y se vinculen a certificados de CA instalados localmente.
+<translation id="757395965347379751">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> permitirá los certificados SHA-1 firmados siempre que se validen correctamente y se vinculen a certificados AC instalados localmente.
 
       Ten en cuenta que esta política depende de la pila de verificación de certificados del sistema operativo que permite las firmas SHA-1. Si una actualización del sistema operativo cambia la forma en que este gestiona los certificados SHA-1, es posible que la política deje de estar efectiva. Además, el objetivo de esta política es proporcionar a las empresas una solución temporal para que tengan más tiempo para abandonar los certificados SHA-1. Esta política se retirará sobre el 1 de enero de 2019.
 
@@ -6002,7 +6002,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       sobre el estado de la pantalla y la tarjeta gráfica. Si se le asigna el valor "true", se proporcionará información
       sobre el estado de la pantalla y la tarjeta gráfica.</translation>
 <translation id="891435090623616439">codificado como cadena JSON, consulta <ph name="COMPLEX_POLICIES_URL" /> para obtener más información</translation>
-<translation id="8917070657147922192">Permite que los usuarios gestionen los certificados de CA instalados.</translation>
+<translation id="8917070657147922192">Permite que los usuarios gestionen los certificados AC instalados.</translation>
 <translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>
 <translation id="8931555638815157255">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre su versión de firmware y de SO de forma periódica.
@@ -6256,7 +6256,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="982497069985795632">Habilitar corrector ortográfico</translation>
 <translation id="983256325512298435">Definir una lista de protocolos que pueden abrir una aplicación externa de orígenes autorizados sin pedir permiso al usuario</translation>
 <translation id="991560005425213776">Enviar los nombres de usuario y de archivo a impresoras nativas</translation>
-<translation id="99202634486128833">Si se asigna el valor CopyCaCerts a esta política, todos los certificados de CA instalados en ONC con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las aplicaciones ARC.
+<translation id="99202634486128833">Si se asigna el valor CopyCaCerts a esta política, todos los certificados AC instalados en ONC con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las aplicaciones ARC.
 
        Si se le asigna el valor "none" o no se le asigna ningún valor, los certificados de <ph name="PRODUCT_OS_NAME" /> no estarán disponibles para las aplicaciones ARC.</translation>
 <translation id="99232017131102456">Esta política configura una caché única global por perfil con credenciales de autenticación del servidor HTTP.

@@ -274,7 +274,7 @@
 <translation id="1908217026282415406">استخدام الكاميرا وتحريكها</translation>
 <translation id="191374271204266022">‏نسخ بتنسيق JSON</translation>
 <translation id="1914326953223720820">خدمة "فك الضغط"</translation>
-<translation id="1915697529809968049">‏هل تريد استخدام رقم التعريف باللمس بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
+<translation id="1915697529809968049">‏هل تريد استخدام ميزة Touch ID بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
 <translation id="1916770123977586577">لتطبيق الإعدادات المُحدَّثة على الموقع الإلكتروني هذا، أعِد تحميل هذه الصفحة</translation>
 <translation id="1919345977826869612">الإعلانات</translation>
 <translation id="1919367280705858090">الحصول على مساعدة بخصوص رسالة خطأ محددة</translation>
@@ -814,7 +814,7 @@
 <translation id="4072193657607981494">جارٍ تحميل السياسات</translation>
 <translation id="4072486802667267160">حدث خطأ أثناء معالجة طلبك. يُرجى إعادة المحاولة.</translation>
 <translation id="4075732493274867456">لا يدعم كل من العميل والخادم مجموعة ترميز أو إصدار بروتوكول طبقة المقابس الآمنة الشائع.</translation>
-<translation id="4075941231477579656">رقم التعريف باللمس</translation>
+<translation id="4075941231477579656">‏ميزة Touch ID</translation>
 <translation id="4079302484614802869">‏تم ضبط إعداد الخادم الوكيل لاستخدام عنوان URL نص برمجي ‎.pac وليس الخوادم الوكيلة الثابتة.</translation>
 <translation id="4082393374666368382">الإعدادات - الإدارة</translation>
 <translation id="4084120443451129199">‏وضع "البحث"، يُرجى الضغط على مفتاح Enter للبحث عن <ph name="KEYWORD_SUFFIX" />.</translation>
@@ -950,7 +950,7 @@
 <translation id="4506176782989081258">خطأ في عملية التحقق: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">الاتصال بمشرف النظام</translation>
 <translation id="450710068430902550">المشاركة مع المشرف</translation>
-<translation id="4508814173490746936">تعذّر استخدام رقم التعريف باللمس</translation>
+<translation id="4508814173490746936">‏تعذّر استخدام ميزة Touch ID</translation>
 <translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لترجمة هذه الصفحة باستخدام "ترجمة Google".</translation>
 <translation id="4510487217173779431">‏Chou4 (مغلف)</translation>
 <translation id="4515275063822566619">‏يتم أخذ البطاقات والعناوين من Chrome وحسابك على Google (<ph name="ACCOUNT_EMAIL" />)، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
@@ -1442,7 +1442,7 @@
 <translation id="6409754798200046165">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لذا يُوصي Chrome بتغيير كلمة مرورك الآن.</translation>
 <translation id="6410264514553301377">‏أدخِل تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">‏يمكن أن يساعدك Chromium على حماية حسابك على Google وتغيير كلمة المرور.</translation>
-<translation id="6423385022588644828">التأكد من بطاقاتك بشكلٍ أسرع باستخدام رقم التعريف باللمس من الآن فصاعدًا</translation>
+<translation id="6423385022588644828">‏التأكد من بطاقاتك بشكلٍ أسرع باستخدام ميزة Touch ID من الآن فصاعدًا</translation>
 <translation id="6425092077175753609">متعدد الأبعاد</translation>
 <translation id="6427730057873428458">الطي على شكل بوابة</translation>
 <translation id="6428450836711225518">إثبات ملكية رقم الهاتف</translation>
@@ -1629,7 +1629,7 @@
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>
 <translation id="7210993021468939304">‏نشاط نظام التشغيل Linux في الحاوية ويمكن تثبيت تطبيقات نظام التشغيل Linux وتشغيلها في الحاوية.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>
-<translation id="7217745192097460130">هل تريد استخدام ميزة "رقم التعريف باللمس" لإكمال عملية الشراء؟</translation>
+<translation id="7217745192097460130">‏هل تريد استخدام ميزة Touch ID لإكمال عملية الشراء؟</translation>
 <translation id="7219179957768738017">الاتصال يستخدم <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">جارٍ المعالجة</translation>
 <translation id="7221855153210829124">عرض الإشعارات</translation>
@@ -1870,7 +1870,7 @@
 <translation id="8086971161893892807">مسودّة</translation>
 <translation id="8088680233425245692">تعذّر عرض المقالة.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
-<translation id="8090329638663751802">‏يمكنك استخدام Windows Hello لإثبات هويّتك بسرعة في المرة التالية التي تستخدم فيها هذا الجهاز لإجراء عمليّة شراء من خلال طريقة الدفع هذه.</translation>
+<translation id="8090329638663751802">‏يمكنك استخدام ميزة Touch ID لإثبات هويتك بسرعة في المرة التالية التي تستخدم فيها هذا الجهاز لإجراء عملية شراء من خلال طريقة الدفع هذه.</translation>
 <translation id="8090403583893450254">الحجم 20</translation>
 <translation id="8091372947890762290">التفعيل قيد الانتظار في الخادم</translation>
 <translation id="8092774999298748321">أرجواني داكن</translation>
@@ -2001,7 +2001,7 @@
           <ph name="LIST_ITEM" />الصفحات التي تعرضها في هذه النافذة
           <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات الموقع الإلكتروني
         <ph name="END_LIST" /></translation>
-<translation id="8574899947864779331">استخدام رقم التعريف باللمس للتأكد من البطاقات بشكلٍ أسرع</translation>
+<translation id="8574899947864779331">‏استخدام ميزة Touch ID للتأكد من البطاقات بشكلٍ أسرع</translation>
 <translation id="858637041960032120">إضافة رقم هاتف
 </translation>
 <translation id="8589998999637048520">أفضل جودة</translation>
@@ -2117,7 +2117,7 @@
 <translation id="9035022520814077154">خطأ متعلق بالأمان</translation>
 <translation id="9038649477754266430">استخدام إحدى خدمات التوقع لتحميل الصفحات بسرعة أكبر</translation>
 <translation id="9039213469156557790">إضافة إلى ذلك، تتضمن هذه الصفحة موارد أخرى غير آمنة. ويستطيع الآخرون مشاهدة هذه الموارد أثناء نقلها، كما يستطيع أي مهاجم تعديلها لتغيير سلوك الصفحة.</translation>
-<translation id="9044359186343685026">استخدام رقم التعريف باللمس</translation>
+<translation id="9044359186343685026">‏استخدام ميزة Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">لقد حاولت الوصول إلى <ph name="DOMAIN" />, ولكن الخادم قدّم شهادة غير صالحة.</translation>
 <translation id="9050666287014529139">عبارة المرور</translation>
