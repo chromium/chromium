@@ -243,6 +243,7 @@ source_set("web_applications_test_support") {
     "//components/crx_file:crx_file",
     "//components/keyed_service/content:content",
     "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service/public/cpp:types",
     "//components/sync:test_support_model",
     "//components/webapps/browser",
     "//content/test:test_support",

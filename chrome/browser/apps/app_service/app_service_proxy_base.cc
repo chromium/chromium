@@ -23,6 +23,7 @@
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/url_data_source.h"
 #include "ui/display/types/display_constants.h"
@@ -375,7 +376,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
                                     &exclude_browsers](
                                        const apps::AppUpdate& update) {
-      if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
+      if (!apps_util::IsInstalled(update.Readiness())) {
         return;
       }
       std::set<std::string> existing_activities;
@@ -452,7 +453,7 @@ void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                  bool should_notify_initialized) {
   if (app_service_.is_connected()) {
     for (const auto& delta : deltas) {
-      if (delta->readiness == apps::mojom::Readiness::kUninstalledByUser) {
+      if (!apps_util::IsInstalled(delta->readiness)) {
         app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
       }
     }
@@ -491,7 +492,7 @@ void AppServiceProxyBase::InitializePreferredApps(
 
 void AppServiceProxyBase::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() ||
-      update.Readiness() != apps::mojom::Readiness::kUninstalledByUser) {
+      !apps_util::IsInstalled(update.Readiness())) {
     return;
   }
   preferred_apps_.DeleteAppId(update.AppId());

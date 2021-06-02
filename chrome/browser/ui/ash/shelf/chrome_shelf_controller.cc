@@ -956,7 +956,8 @@ void ChromeShelfController::OnAppUpdated(
 
 void ChromeShelfController::OnAppUninstalledPrepared(
     content::BrowserContext* browser_context,
-    const std::string& app_id) {
+    const std::string& app_id,
+    bool by_migration) {
   // Since we might have windowed apps of this type which might have
   // outstanding locks which needs to be removed.
   const Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -983,7 +984,7 @@ void ChromeShelfController::OnAppUninstalledPrepared(
     // We don't remove the pin position from the preferences, in case we want to
     // restore the app pinned state when the app state has changed to blocked or
     // enabled.
-    if (show_in_shelf_changed && is_app_disabled) {
+    if (by_migration || (show_in_shelf_changed && is_app_disabled)) {
       ScopedPinSyncDisabler scoped_pin_sync_disabler =
           GetScopedPinSyncDisabler();
       UnpinShelfItemInternal(shelf_id);

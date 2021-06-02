@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
@@ -53,8 +54,7 @@ bool IsAppInstalled(apps::AppServiceProxyBase* proxy, const AppId& app_id) {
   bool installed = false;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&installed](const apps::AppUpdate& update) {
-        installed =
-            update.Readiness() != apps::mojom::Readiness::kUninstalledByUser;
+        installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;
 }

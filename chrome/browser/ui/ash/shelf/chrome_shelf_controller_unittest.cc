@@ -1012,7 +1012,14 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     app_service_test_.WaitForAppService();
   }
 
-  // Remove extension and allow AppService async callbacks to run.
+  // Uninstall extension and allow AppService async callbacks to run.
+  void UninstallExtension(const std::string& extension_id,
+                          extensions::UninstallReason reason) {
+    extension_service_->UninstallExtension(extension_id, reason, nullptr);
+    app_service_test_.WaitForAppService();
+  }
+
+  // Unload extension and allow AppService async callbacks to run.
   void UnloadExtension(const std::string& extension_id,
                        UnloadedExtensionReason reason) {
     extension_service_->UnloadExtension(extension_id, reason);
@@ -1786,8 +1793,9 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
   SendPinChanges(sync_list3, true);
   EXPECT_EQ("Chrome, Gmail, App2, App1", GetPinnedAppStatus());
 
-  // Check that unloading of extensions works as expected.
-  UnloadExtension(extension1_->id(), UnloadedExtensionReason::UNINSTALL);
+  // Check that uninstalling of extensions works as expected.
+  UninstallExtension(extension1_->id(),
+                     extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING);
   EXPECT_EQ("Chrome, Gmail, App2", GetPinnedAppStatus());
 
   // Check that an update of an extension does not crash the system.

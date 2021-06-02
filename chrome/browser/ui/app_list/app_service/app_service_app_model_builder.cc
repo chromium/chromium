@@ -120,11 +120,20 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
         // Play Store.
         unsynced_change = !arc::IsArcPlayStoreEnabledForProfile(profile());
       }
+
       if (update.InstalledInternally() == apps::mojom::OptionalBool::kTrue) {
         // Don't sync default app removal as default installed apps are not
         // synced.
         unsynced_change = true;
       }
+
+      if (update.Readiness() ==
+          apps::mojom::Readiness::kUninstalledByMigration) {
+        // Don't sync migration uninstallations as it will interfere with other
+        // devices doing their own migration.
+        unsynced_change = true;
+      }
+
       RemoveApp(update.AppId(), unsynced_change);
     }
 

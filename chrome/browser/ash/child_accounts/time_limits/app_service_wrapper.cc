@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -105,7 +106,7 @@ std::vector<AppId> AppServiceWrapper::GetInstalledApps() const {
   std::vector<AppId> installed_apps;
   GetAppCache().ForEachApp(
       [&installed_apps, this](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser)
+        if (!apps_util::IsInstalled(update.Readiness()))
           return;
 
         const AppId app_id = AppIdFromAppUpdate(update);
@@ -126,7 +127,7 @@ bool AppServiceWrapper::IsHiddenArcApp(const AppId& app_id) const {
 
   GetAppCache().ForOneApp(
       app_service_id, [&is_hidden](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser)
+        if (!apps_util::IsInstalled(update.Readiness()))
           return;
 
         is_hidden =
@@ -139,7 +140,7 @@ bool AppServiceWrapper::IsHiddenArcApp(const AppId& app_id) const {
 std::vector<AppId> AppServiceWrapper::GetHiddenArcApps() const {
   std::vector<AppId> hidden_arc_apps;
   GetAppCache().ForEachApp([&hidden_arc_apps](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser)
+    if (!apps_util::IsInstalled(update.Readiness()))
       return;
 
     const AppId app_id = AppIdFromAppUpdate(update);
@@ -249,6 +250,7 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
         }
       break;
     case apps::mojom::Readiness::kUninstalledByUser:
+    case apps::mojom::Readiness::kUninstalledByMigration:
       for (auto& listener : listeners_)
         listener.OnAppUninstalled(app_id);
       break;

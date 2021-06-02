@@ -64,6 +64,7 @@ class AppServiceFileTasksTest : public testing::Test {
     auto app = apps::mojom::App::New();
     app->app_id = app_id;
     app->app_type = apps::mojom::AppType::kArc;
+    app->readiness = apps::mojom::Readiness::kReady;
     auto intent_filter =
         is_send_multiple
             ? apps_util::CreateIntentFilterForSendMultiple(mime_type,

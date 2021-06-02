@@ -17,6 +17,8 @@
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -38,7 +40,9 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
@@ -216,7 +220,9 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kExtension;
   app->app_id = extension->id();
-  app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+  app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
+                       ? apps::mojom::Readiness::kUninstalledByMigration
+                       : apps::mojom::Readiness::kUninstalledByUser;
 
   SetShowInFields(app, extension);
   Publish(std::move(app), subscribers_);
@@ -606,8 +612,9 @@ void ExtensionAppsBase::OnExtensionUnloaded(
       readiness = apps::mojom::Readiness::kTerminated;
       break;
     case extensions::UnloadedExtensionReason::UNINSTALL:
-      readiness = apps::mojom::Readiness::kUninstalledByUser;
-      break;
+      // App readiness will be updated by OnExtensionUninstalled(). We defer to
+      // that method to ensure the correct kUninstalledBy* enum is set.
+      return;
     default:
       return;
   }

@@ -44,9 +44,14 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
         delegate()->OnAppInstalled(browser_context(), app_id);
         return;
       case apps::mojom::Readiness::kUninstalledByUser:
+      case apps::mojom::Readiness::kUninstalledByMigration:
         if (it != installed_apps_.end()) {
           installed_apps_.erase(it);
-          delegate()->OnAppUninstalledPrepared(browser_context(), app_id);
+          const bool by_migration =
+              update.Readiness() ==
+              apps::mojom::Readiness::kUninstalledByMigration;
+          delegate()->OnAppUninstalledPrepared(browser_context(), app_id,
+                                               by_migration);
           delegate()->OnAppUninstalled(browser_context(), app_id);
         }
         return;
@@ -98,7 +103,8 @@ void ShelfAppServiceAppUpdater::OnShowInShelfChanged(const std::string& app_id,
   } else {
     if (it != installed_apps_.end()) {
       installed_apps_.erase(it);
-      delegate()->OnAppUninstalledPrepared(browser_context(), app_id);
+      delegate()->OnAppUninstalledPrepared(browser_context(), app_id,
+                                           /*by_migration=*/false);
     }
   }
 }

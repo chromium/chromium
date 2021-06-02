@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -131,7 +132,7 @@ void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
       ->AppRegistryCache()
       .ForEachApp([this, &apps](const apps::AppUpdate& update) {
         if (update.ShowInManagement() == apps::mojom::OptionalBool::kTrue &&
-            update.Readiness() != apps::mojom::Readiness::kUninstalledByUser) {
+            apps_util::IsInstalled(update.Readiness())) {
           apps.push_back(CreateUIAppPtr(update));
         }
       });
@@ -235,7 +236,7 @@ void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
     }
 
     if (update.ShowInManagement() == apps::mojom::OptionalBool::kFalse ||
-        update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
+        !apps_util::IsInstalled(update.Readiness())) {
       page_->OnAppRemoved(update.AppId());
     }
   } else {

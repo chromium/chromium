@@ -351,6 +351,7 @@ source_set("chromeos") {
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:types",
     "//components/session_manager/core",
     "//components/signin/public/identity_manager",
     "//components/signin/public/webdata",
