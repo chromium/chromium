@@ -129,6 +129,7 @@ input_ime::AssistiveWindowButton ConvertAssistiveWindowButton(
     case ui::ime::ButtonId::kSmartInputsSettingLink:
     case ui::ime::ButtonId::kSuggestion:
     case ui::ime::ButtonId::kLearnMore:
+    case ui::ime::ButtonId::kIgnoreSuggestion:
       return input_ime::ASSISTIVE_WINDOW_BUTTON_NONE;
     case ui::ime::ButtonId::kUndo:
       return input_ime::ASSISTIVE_WINDOW_BUTTON_UNDO;

@@ -520,6 +520,9 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
     case ui::ime::ButtonId::kUndo:
       autocorrect_manager_->UndoAutocorrect();
       break;
+    case ui::ime::ButtonId::kIgnoreSuggestion:
+      // TODO(crbug/1201454): To be implemented.
+      break;
     case ui::ime::ButtonId::kAddToDictionary:
     case ui::ime::ButtonId::kNone:
       ime_base_observer_->OnAssistiveWindowButtonClicked(button);

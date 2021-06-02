@@ -19,6 +19,7 @@ enum class ButtonId {
   kSmartInputsSettingLink,
   kSuggestion,
   kLearnMore,
+  kIgnoreSuggestion,
 };
 
 enum class AssistiveWindowType {
