@@ -76,6 +76,8 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetCurrentUserInterfaceStyle(2);
   crash_keys::SetRegularTabCount(999);
   crash_keys::SetIncognitoTabCount(999);
+  crash_keys::SetForegroundScenesCount(999);
+  crash_keys::SetConnectedScenesCount(999);
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(true);
   crash_keys::SetGridToVisibleTabAnimation(
       @"to_view_controller", @"presenting_view_controller",

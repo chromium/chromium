@@ -42,6 +42,8 @@ NSString* const kIsShowingPDF = @"pdf";
 NSString* const kVideoPlaying = @"avplay";
 NSString* const kIncognitoTabCount = @"OTRTabs";
 NSString* const kRegularTabCount = @"regTabs";
+NSString* const kConnectedScenes = @"scenes";
+NSString* const kForegroundScenes = @"fgScenes";
 NSString* const kDestroyingAndRebuildingIncognitoBrowserState =
     @"destroyingAndRebuildingOTR";
 
@@ -121,6 +123,27 @@ void SetCurrentlySignedIn(bool signedIn) {
                                                      withValue:1];
   } else {
     [[CrashReportUserApplicationState sharedInstance] removeValue:kSignedIn];
+  }
+}
+
+void SetConnectedScenesCount(int connectedScenes) {
+  if (connectedScenes > 1) {
+    [[CrashReportUserApplicationState sharedInstance] setValue:kConnectedScenes
+                                                     withValue:connectedScenes];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kConnectedScenes];
+  }
+}
+
+void SetForegroundScenesCount(int foregroundScenes) {
+  if (foregroundScenes > 1) {
+    [[CrashReportUserApplicationState sharedInstance]
+         setValue:kForegroundScenes
+        withValue:foregroundScenes];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kForegroundScenes];
   }
 }
 

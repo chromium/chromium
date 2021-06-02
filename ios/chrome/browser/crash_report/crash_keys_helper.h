@@ -62,6 +62,12 @@ void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 // values from 0 to 2).
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
 
+// Sets the number of connected scenes. Only reported if not 1.
+void SetConnectedScenesCount(int connectedScenes);
+
+// Sets the number of foreground scenes. Only reported if not 1.
+void SetForegroundScenesCount(int connectedScenes);
+
 // Sets a key in browser_state dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
