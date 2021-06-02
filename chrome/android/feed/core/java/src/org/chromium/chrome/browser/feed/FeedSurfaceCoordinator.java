@@ -115,7 +115,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
-    private @Nullable ViewResizer mStreamViewResizer;
+    private @Nullable FeedStreamViewResizer mStreamViewResizer;
     // This is the "default"/interest feed stream, not necessarily the current stream.
     // TODO(chili): Remove the necessity of this.
     private @Nullable FeedStream mStream;
@@ -498,8 +498,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mRecyclerView.setBackgroundResource(R.color.default_bg_color);
 
         mRootView.addView(mRecyclerView);
-        mStreamViewResizer = ViewResizer.createAndAttach(
-                mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
+        mStreamViewResizer = FeedStreamViewResizer.createAndAttach(
+                mActivity, mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
 
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
         if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
