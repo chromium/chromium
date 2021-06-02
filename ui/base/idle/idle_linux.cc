@@ -83,9 +83,7 @@ class IdleLinuxImpl {
             base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits(
                 base::MayBlock(),
                 base::TaskPriority::USER_VISIBLE,
-                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN))) {}
-
-  void Init() {
+                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN))) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&IdleLinuxImpl::InitOnTaskRunner,
                                           base::Unretained(this)));
