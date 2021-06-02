@@ -638,10 +638,6 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
 
   if (is_main_frame && !is_same_document) {
     task_time_ = base::TimeDelta();
-    // Ignore result here, based on the assumption that
-    // MTSI::DidCommitProvisionalLoad will trigger an update policy.
-    ignore_result(main_thread_scheduler_->agent_scheduling_strategy()
-                      .OnDocumentChangedInMainFrame(*this));
   }
 
   main_thread_scheduler_->DidCommitProvisionalLoad(
@@ -951,22 +947,9 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
     return;
 
   main_thread_scheduler_->OnMainFramePaint();
-
-  if (main_thread_scheduler_->agent_scheduling_strategy()
-          .OnMainFrameFirstMeaningfulPaint(*this) ==
-      AgentSchedulingStrategy::ShouldUpdatePolicy::kYes) {
-    main_thread_scheduler_->OnAgentStrategyUpdated();
-  }
 }
 
 void FrameSchedulerImpl::OnLoad() {
-  if (GetFrameType() == FrameScheduler::FrameType::kMainFrame) {
-    // TODO(talp): Once MTSI::UpdatePolicyLocked is refactored, this can notify
-    // the agent strategy directly and, if necessary, trigger the queue priority
-    // update.
-    main_thread_scheduler_->OnMainFrameLoad(*this);
-  }
-
   loading_power_mode_voter_->ResetVoteAfterTimeout(
       power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
@@ -1127,14 +1110,6 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       return TaskQueue::QueuePriority::kLowPriority;
     }
   }
-
-  // Consult per-agent scheduling strategy to see if it wants to affect queue
-  // priority. Done here to avoid interfering with other policy decisions.
-  absl::optional<TaskQueue::QueuePriority> per_agent_priority =
-      main_thread_scheduler_->agent_scheduling_strategy().QueuePriority(
-          *task_queue);
-  if (per_agent_priority.has_value())
-    return per_agent_priority.value();
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kLoadingControl) {

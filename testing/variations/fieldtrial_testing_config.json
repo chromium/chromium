@@ -1277,34 +1277,6 @@
             ]
         }
     ],
-    "BlinkSchedulerPerAgentSchedulingStudy": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "best-effort_timer-queues_until_onload",
-                    "params": {
-                        "delay_ms": "0",
-                        "method": "best-effort",
-                        "queues": "timer-queues",
-                        "signal": "onload"
-                    },
-                    "enable_features": [
-                        "BlinkSchedulerPerAgentSchedulingExperiments"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [

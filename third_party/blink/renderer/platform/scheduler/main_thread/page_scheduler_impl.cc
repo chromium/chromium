@@ -432,7 +432,6 @@ void PageSchedulerImpl::RegisterFrameSchedulerImpl(
   MaybeInitializeBackgroundCPUTimeBudgetPool(&lazy_now);
 
   frame_schedulers_.insert(frame_scheduler);
-  main_thread_scheduler_->OnFrameAdded(*frame_scheduler);
   frame_scheduler->UpdatePolicy();
 }
 
@@ -449,7 +448,6 @@ std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
 void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
   DCHECK(frame_schedulers_.find(frame_scheduler) != frame_schedulers_.end());
   frame_schedulers_.erase(frame_scheduler);
-  main_thread_scheduler_->OnFrameRemoved(*frame_scheduler);
 }
 
 void PageSchedulerImpl::OnNavigation() {

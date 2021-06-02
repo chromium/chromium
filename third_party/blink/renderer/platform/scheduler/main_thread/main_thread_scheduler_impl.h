@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/pollable_thread_safe_flag.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/agent_scheduling_strategy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/compositor_priority_experiments.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/deadline_task_runner.h"
@@ -80,7 +79,6 @@ class WebRenderWidgetSchedulingState;
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
-      public AgentSchedulingStrategy::Delegate,
       public IdleHelper::Delegate,
       public MainThreadSchedulerHelper::Observer,
       public RenderWidgetSignals::Observer,
@@ -326,13 +324,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void AddPageScheduler(PageSchedulerImpl*);
   void RemovePageScheduler(PageSchedulerImpl*);
 
-  void OnFrameAdded(const FrameSchedulerImpl& frame_scheduler);
-  void OnFrameRemoved(const FrameSchedulerImpl& frame_scheduler);
-
-  AgentSchedulingStrategy& agent_scheduling_strategy() {
-    return *agent_scheduling_strategy_;
-  }
-
   // Called by an associated PageScheduler when frozen or resumed.
   void OnPageFrozen();
   void OnPageResumed();
@@ -385,8 +376,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Virtual for test.
   virtual void OnMainFramePaint();
-  void OnMainFrameLoad(const FrameSchedulerImpl& frame_scheduler);
-  void OnAgentStrategyUpdated();
 
   void OnShutdownTaskQueue(const scoped_refptr<MainThreadTaskQueue>& queue);
 
@@ -627,10 +616,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     MainThreadSchedulerImpl* scheduler_;  // NOT OWNED
   };
 
-  // AgentSchedulingStrategy::Delegate implementation:
-  void OnSetTimer(const FrameSchedulerImpl& frame_scheduler,
-                  base::TimeDelta delay) override;
-
   // IdleHelper::Delegate implementation:
   bool CanEnterLongIdlePeriod(
       base::TimeTicks now,
@@ -708,10 +693,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // An input event of some sort happened, the policy may need updating.
   void UpdateForInputEventOnCompositorThread(const WebInputEvent& event,
                                              InputEventState input_event_state);
-
-  // Notifies the per-agent scheduling strategy that an input event occurred.
-  void NotifyAgentSchedulerOnInputEvent();
-  void OnAgentStrategyDelayPassed(base::WeakPtr<const FrameSchedulerImpl>);
 
   // The task cost estimators and the UserModel need to be reset upon page
   // nagigation. This function does that. Must be called from the main thread.
@@ -861,12 +842,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   base::RepeatingClosure update_policy_closure_;
   DeadlineTaskRunner delayed_update_policy_runner_;
   CancelableClosureHolder end_renderer_hidden_idle_period_closure_;
-  base::RepeatingClosure notify_agent_strategy_on_input_event_closure_;
-  base::RepeatingCallback<void(base::WeakPtr<const FrameSchedulerImpl>)>
-      agent_strategy_delay_callback_;
-
-  std::unique_ptr<AgentSchedulingStrategy> agent_scheduling_strategy_ =
-      AgentSchedulingStrategy::Create(*this);
 
   // We have decided to improve thread safety at the cost of some boilerplate
   // (the accessors) for the following data members.
@@ -1061,7 +1036,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
   PollableThreadSafeFlag policy_may_need_update_;
-  PollableThreadSafeFlag notify_agent_strategy_task_posted_;
   WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers_;
   WebAgentGroupScheduler* current_agent_group_scheduler_{nullptr};
 

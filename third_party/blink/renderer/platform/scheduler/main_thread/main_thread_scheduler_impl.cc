@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/agent_scheduling_strategy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
@@ -253,8 +252,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
               TaskType::kMainThreadTaskQueueControl)),
       main_thread_only_(this, helper_.GetClock(), helper_.NowTicks()),
       any_thread_(this),
-      policy_may_need_update_(&any_thread_lock_),
-      notify_agent_strategy_task_posted_(&any_thread_lock_) {
+      policy_may_need_update_(&any_thread_lock_) {
   helper_.AttachToCurrentThread();
 
   // Compositor task queue and default task queue should be managed by
@@ -296,12 +294,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       &MainThreadSchedulerImpl::UpdatePolicy, weak_factory_.GetWeakPtr());
   end_renderer_hidden_idle_period_closure_.Reset(base::BindRepeating(
       &MainThreadSchedulerImpl::EndIdlePeriod, weak_factory_.GetWeakPtr()));
-  notify_agent_strategy_on_input_event_closure_ = base::BindRepeating(
-      &MainThreadSchedulerImpl::NotifyAgentSchedulerOnInputEvent,
-      weak_factory_.GetWeakPtr());
-  agent_strategy_delay_callback_ =
-      base::BindRepeating(&MainThreadSchedulerImpl::OnAgentStrategyDelayPassed,
-                          weak_factory_.GetWeakPtr());
 
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MainThreadScheduler",
@@ -1363,16 +1355,6 @@ void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
       break;
   }
 
-  // Make sure the per-agent scheduling strategy is notified that there was an
-  // input event.
-  if (type != WebInputEvent::Type::kMouseMove &&
-      !notify_agent_strategy_task_posted_.IsSet() &&
-      agent_scheduling_strategy_->ShouldNotifyOnInputEvent()) {
-    notify_agent_strategy_task_posted_.SetWhileLocked(true);
-    control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
-        FROM_HERE, notify_agent_strategy_on_input_event_closure_);
-  }
-
   // Avoid unnecessary policy updates if the use case did not change.
   UseCase use_case = ComputeCurrentUseCase(now, &unused_policy_duration);
 
@@ -1382,19 +1364,6 @@ void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
     EnsureUrgentPolicyUpdatePostedOnMainThread(FROM_HERE);
   }
   GetCompositorThreadOnly().last_input_type = type;
-}
-
-void MainThreadSchedulerImpl::NotifyAgentSchedulerOnInputEvent() {
-  helper_.CheckOnValidThread();
-
-  if (agent_scheduling_strategy_->OnInputEvent() ==
-          AgentSchedulingStrategy::ShouldUpdatePolicy::kYes &&
-      !policy_may_need_update_.IsSet()) {
-    OnAgentStrategyUpdated();
-  }
-
-  base::AutoLock lock(any_thread_lock_);
-  notify_agent_strategy_task_posted_.SetWhileLocked(false);
 }
 
 void MainThreadSchedulerImpl::WillPostInputEventToMainThread(
@@ -1711,10 +1680,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   UpdateStateForAllTaskQueues(old_policy);
 }
 
-void MainThreadSchedulerImpl::OnAgentStrategyUpdated() {
-  UpdateStateForAllTaskQueues(absl::nullopt);
-}
-
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
     absl::optional<Policy> previous_policy) {
   helper_.CheckOnValidThread();
@@ -1742,11 +1707,8 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
     task_queue->GetTaskQueue()->SetQueuePriority(ComputePriority(task_queue));
 
   if (task_queue_enabled_voter) {
-    bool is_enabled_for_agent =
-        agent_scheduling_strategy_->QueueEnabledState(*task_queue)
-            .value_or(true);
     task_queue_enabled_voter->SetVoteToEnable(
-        is_enabled_for_agent && new_policy.IsQueueEnabled(task_queue));
+        new_policy.IsQueueEnabled(task_queue));
   }
 
   // Make sure if there's no voter that the task queue is enabled.
@@ -2298,36 +2260,6 @@ void MainThreadSchedulerImpl::OnMainFramePaint() {
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
-void MainThreadSchedulerImpl::OnMainFrameLoad(
-    const FrameSchedulerImpl& frame_scheduler) {
-  helper_.CheckOnValidThread();
-  if (agent_scheduling_strategy_->OnMainFrameLoad(frame_scheduler) ==
-      AgentSchedulingStrategy::ShouldUpdatePolicy::kYes) {
-    OnAgentStrategyUpdated();
-  };
-}
-
-void MainThreadSchedulerImpl::OnSetTimer(
-    const FrameSchedulerImpl& frame_scheduler,
-    base::TimeDelta delay) {
-  helper_.CheckOnValidThread();
-  control_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(agent_strategy_delay_callback_,
-                     frame_scheduler.GetWeakPtr()),
-      delay);
-}
-
-void MainThreadSchedulerImpl::OnAgentStrategyDelayPassed(
-    base::WeakPtr<const FrameSchedulerImpl> frame_scheduler) {
-  helper_.CheckOnValidThread();
-  if (frame_scheduler &&
-      agent_scheduling_strategy_->OnDelayPassed(*frame_scheduler) ==
-          AgentSchedulingStrategy::ShouldUpdatePolicy::kYes) {
-    OnAgentStrategyUpdated();
-  }
-}
-
 void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::ResetForNavigationLocked");
@@ -2636,22 +2568,6 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyMainFrameWaitingForFirstMeaningfulPaint();
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
-}
-
-void MainThreadSchedulerImpl::OnFrameAdded(
-    const FrameSchedulerImpl& frame_scheduler) {
-  if (agent_scheduling_strategy_->OnFrameAdded(frame_scheduler) ==
-      AgentSchedulingStrategy::ShouldUpdatePolicy::kYes) {
-    OnAgentStrategyUpdated();
-  }
-}
-
-void MainThreadSchedulerImpl::OnFrameRemoved(
-    const FrameSchedulerImpl& frame_scheduler) {
-  if (agent_scheduling_strategy_->OnFrameRemoved(frame_scheduler) ==
-      AgentSchedulingStrategy::ShouldUpdatePolicy::kYes) {
-    OnAgentStrategyUpdated();
-  }
 }
 
 void MainThreadSchedulerImpl::OnPageFrozen() {
