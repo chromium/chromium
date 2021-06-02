@@ -31,8 +31,6 @@
 #endif
 
 namespace gl {
-class GLApi;
-
 GL_EXPORT void Crash();
 GL_EXPORT void Hang();
 
@@ -68,31 +66,6 @@ GL_EXPORT bool ShouldForceDirectCompositionRootSurfaceFullDamage();
 GL_EXPORT void CollectX11GpuExtraInfo(bool enable_native_gpu_memory_buffer,
                                       gfx::GpuExtraInfo& info);
 #endif
-
-// Temporarily allows compilation of shaders that use the
-// ARB_texture_rectangle/ANGLE_texture_rectangle extension. We don't want to
-// expose the extension to WebGL user shaders but we still need to use it for
-// parts of the implementation on macOS. Note that the extension is always
-// enabled on macOS and this only controls shader compilation.
-class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
- public:
-  ScopedEnableTextureRectangleInShaderCompiler(
-      const ScopedEnableTextureRectangleInShaderCompiler&) = delete;
-  ScopedEnableTextureRectangleInShaderCompiler& operator=(
-      const ScopedEnableTextureRectangleInShaderCompiler&) = delete;
-
-  // This class is a no-op except on macOS.
-#if !defined(OS_MAC)
-  explicit ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {}
-
-#else
-  explicit ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api);
-  ~ScopedEnableTextureRectangleInShaderCompiler();
-
- private:
-  gl::GLApi* gl_api_;
-#endif
-};
 
 }  // namespace gl
 
