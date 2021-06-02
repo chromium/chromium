@@ -326,6 +326,12 @@ IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_TestEnableTracing) {
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, ContinueAtShutdown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
+  StartupTracingController::GetInstance()
+      .set_continue_on_shutdown_for_testing();
+}
+
 class EmergencyStopTracingTest : public StartupTracingTest {};
 
 INSTANTIATE_TEST_SUITE_P(
