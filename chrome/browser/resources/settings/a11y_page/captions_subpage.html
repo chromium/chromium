@@ -1,4 +1,8 @@
     <style include="cr-shared-style settings-shared">
+      .cr-row-no-top-gap {
+        margin-bottom: var(--cr-section-vertical-margin);
+        min-height: auto;
+      }
       .preview-box {
         all: initial;
         align-items: center;
@@ -21,7 +25,7 @@
     <div class="cr-row">
       <h2 class="start">$i18n{captionsPreferencesTitle}</h2>
     </div>
-    <div class="cr-row first">
+    <div class="cr-row first cr-row-no-top-gap">
       <div class="start">$i18n{captionsPreferencesSubtitle}</div>
     </div>
     <div class="preview-box">
