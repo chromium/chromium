@@ -153,9 +153,8 @@ ts_library("build_ts") {
     "util.ts",
   ]
   definitions = [
-    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
-    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
