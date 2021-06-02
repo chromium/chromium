@@ -6897,6 +6897,122 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForWebsitesUrlPatterns,
   EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com")));
 }
 
+// Test the "blocked_cgi_params" feature params in back-forward cache.
+class BackForwardCacheBrowserTestWithBlockedCgiParams
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets the blocked websites for testing, additionally adding the params
+    // used by BackForwardCacheBrowserTest.
+    std::string blocked_cgi_params = "ibp=1|tbm=1";
+    EnableFeatureAndSetParams(features::kBackForwardCache, "blocked_cgi_params",
+                              blocked_cgi_params);
+
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check the disallowed page isn't bfcached when it's navigated from allowed
+// page.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedCgiParams,
+                       NavigateFromAllowedPageToDisallowedPage) {
+  // Skip checking the AllSites metrics since BackForwardCacheMetrics stop
+  // recording except BackForwardCache.AllSites.* metrics when the target URL is
+  // disallowed by allowed_websites or blocked_websites.
+  DisableCheckingMetricsForAllSites();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_allowed(
+      embedded_test_server()->GetURL("a.llowed", "/title1.html?tbm=0"));
+  GURL url_not_allowed(
+      embedded_test_server()->GetURL("nota.llowed", "/title1.html?tbm=1"));
+
+  // 1) Navigate to url_allowed.
+  EXPECT_TRUE(NavigateToURL(shell(), url_allowed));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImpl* rfh_allowed = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_allowed(rfh_allowed);
+
+  // 2) Navigate to url_not_allowed.
+  EXPECT_TRUE(NavigateToURL(shell(), url_not_allowed));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImpl* rfh_not_allowed = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_not_allowed(rfh_not_allowed);
+
+  // 3) Check that url_allowed is stored in back-forward cache.
+  EXPECT_FALSE(delete_observer_rfh_allowed.deleted());
+  EXPECT_TRUE(rfh_allowed->IsInBackForwardCache());
+
+  // 4) Now go back to url_allowed.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_allowed, current_frame_host());
+  ExpectRestored(FROM_HERE);
+
+  // 5) Check that url_not_allowed is not stored in back-forward cache
+  delete_observer_rfh_not_allowed.WaitUntilDeleted();
+  EXPECT_TRUE(delete_observer_rfh_not_allowed.deleted());
+
+  // 6) Go forward to url_not_allowed, it should not be restored from the
+  // back-forward cache.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Nothing is recorded since it is disallowed.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
+}
+
+// Check the allowed page is bfcached when it's navigated from disallowed
+// page.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedCgiParams,
+                       NavigateFromDisallowedPageToAllowedPage) {
+  // Skip checking the AllSites metrics since BackForwardCacheMetrics stop
+  // recording except BackForwardCache.AllSites.* metrics when the target URL is
+  // disallowed by allowed_websites or blocked_websites.
+  DisableCheckingMetricsForAllSites();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_allowed(
+      embedded_test_server()->GetURL("a.llowed", "/title1.html?tbm=0"));
+  GURL url_not_allowed(
+      embedded_test_server()->GetURL("nota.llowed", "/title1.html?tbm=1"));
+
+  // 1) Navigate to url_not_allowed.
+  EXPECT_TRUE(NavigateToURL(shell(), url_not_allowed));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImpl* rfh_not_allowed = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_not_allowed(rfh_not_allowed);
+
+  // 2) Navigate to url_allowed.
+  EXPECT_TRUE(NavigateToURL(shell(), url_allowed));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImpl* rfh_allowed = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_allowed(rfh_allowed);
+
+  // 3) Check that url_not_allowed is not stored in back-forward cache.
+  delete_observer_rfh_not_allowed.WaitUntilDeleted();
+  EXPECT_TRUE(delete_observer_rfh_not_allowed.deleted());
+
+  // 4) Now go back to url_not_allowed.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Nothing is recorded since it is disallowed.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
+
+  // 5) Check that url_allowed is stored in back-forward cache
+  EXPECT_FALSE(delete_observer_rfh_allowed.deleted());
+  EXPECT_TRUE(rfh_allowed->IsInBackForwardCache());
+
+  // 6) Go forward to url_allowed, it should be restored from the
+  // back-forward cache.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
 // Check that if WebPreferences was changed while a page was bfcached, it will
 // get up-to-date WebPreferences when it was restored.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
