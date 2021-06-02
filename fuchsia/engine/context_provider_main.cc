@@ -24,6 +24,7 @@
 
 namespace {
 
+// This must match the value in web_instance_host.cc
 constexpr char kCrashProductName[] = "FuchsiaWebEngine";
 // TODO(https://fxbug.dev/51490): Use a programmatic mechanism to obtain this.
 constexpr char kComponentUrl[] =

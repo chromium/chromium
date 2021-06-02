@@ -89,14 +89,11 @@ constexpr char kDisableMixedContentAutoupgradeOrigin[] =
 // is available - see crbug.com/1211174). This should only be called once per
 // process, and the calling thread must have an async_dispatcher.
 void RegisterWebInstanceProductData() {
-  // TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
-  constexpr char kComponentUrl[] =
-      "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
   constexpr char kCrashProductName[] = "FuchsiaWebEngine";
   constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 
-  cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
-                                                   kCrashProductName);
+  cr_fuchsia::RegisterProductDataForCrashReporting(
+      WebInstanceHost::kComponentUrl, kCrashProductName);
 
   cr_fuchsia::RegisterProductDataForFeedback(kFeedbackAnnotationsNamespace);
 }
@@ -405,6 +402,7 @@ std::vector<std::string> LoadWebInstanceSandboxServices() {
 }  // namespace
 
 // Production URL for web hosting Component instances.
+// TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
 const char WebInstanceHost::kComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
 
