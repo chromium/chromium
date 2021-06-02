@@ -105,7 +105,9 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // should not be trusted any longer.
   virtual bool Unserialize(const AXTreeUpdate& update);
 
-  virtual void UpdateData(const AXTreeData& data);
+  // Used by tests to update the tree data without changing any of the nodes in
+  // the tree, notifying all tree observers in the process.
+  virtual void UpdateDataForTesting(const AXTreeData& data);
 
   // Convert any rectangle from the local coordinate space of one node in
   // the tree, to bounds in the coordinate space of the tree.

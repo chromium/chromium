@@ -444,7 +444,7 @@ void TestAXNodeWrapper::ReplaceTreeDataTextSelection(int32_t anchor_node_id,
   new_tree_data.sel_focus_object_id = focus_node_id;
   new_tree_data.sel_focus_offset = focus_offset;
 
-  tree_->UpdateData(new_tree_data);
+  tree_->UpdateDataForTesting(new_tree_data);
 }
 
 bool TestAXNodeWrapper::IsTable() const {
