@@ -1,0 +1,1 @@
+textarea.AXNextWordEndTextMarkerForTextMarker({:3, 0, down})={:3, 3, down}

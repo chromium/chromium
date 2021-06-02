@@ -88,6 +88,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(AXInspectFactory::kMac),
                          TestPassToString());
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXNextWordEndTextMarkerForTextMarker) {
+  RunMacTextMarkerTest(
+      FILE_PATH_LITERAL("ax-next-word-end-text-marker-for-text-marker.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXPreviousWordStartTextMarkerForTextMarker) {
+  RunMacTextMarkerTest(FILE_PATH_LITERAL(
+      "ax-previous-word-start-text-marker-for-text-marker.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
   RunMacTextMarkerTest(FILE_PATH_LITERAL("ax_start_text_marker.html"));
 }

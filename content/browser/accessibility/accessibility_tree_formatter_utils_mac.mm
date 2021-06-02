@@ -186,7 +186,10 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
       property_name == "AXTextMarkerRangeForUIElement") {  // UIElement
     return OptionalNSObject::NotNilOrError(PropertyNodeToUIElement(arg_node));
   }
-  if (property_name == "AXIndexForTextMarker") {  // TextMarker
+  if (property_name == "AXIndexForTextMarker" ||
+      property_name == "AXNextWordEndTextMarkerForTextMarker" ||
+      property_name ==
+          "AXPreviousWordStartTextMarkerForTextMarker") {  // TextMarker
     return OptionalNSObject::NotNilOrError(PropertyNodeToTextMarker(arg_node));
   }
   if (property_name == "AXStringForTextMarkerRange") {  // TextMarkerRange
