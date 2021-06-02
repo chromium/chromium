@@ -903,7 +903,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
   NGBoxStrut scrollbars_before =
       ComputeScrollbarsForNonAnonymous(node_info.node);
   scoped_refptr<const NGLayoutResult> layout_result =
-      Layout(oof_node_to_layout, fragmentainer_constraint_space);
+      Layout(oof_node_to_layout, offset_info, fragmentainer_constraint_space);
   NGBoxStrut scrollbars_after =
       ComputeScrollbarsForNonAnonymous(node_info.node);
 
@@ -934,9 +934,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
       // so recompute the OffsetInfo.
       offset_info = CalculateOffset(node_info, only_layout,
                                     /* is_first_run */ false);
-
-      layout_result =
-          Layout(oof_node_to_layout, fragmentainer_constraint_space);
+      layout_result = Layout(oof_node_to_layout, offset_info,
+                             fragmentainer_constraint_space);
 
       scrollbars_after = ComputeScrollbarsForNonAnonymous(node_info.node);
       DCHECK(!freeze_horizontal || !freeze_vertical ||
@@ -1037,9 +1036,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
+    const OffsetInfo& offset_info,
     const NGConstraintSpace* fragmentainer_constraint_space) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
-  const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   const WritingDirectionMode candidate_writing_direction =
       node_info.node.Style().GetWritingDirection();
   LogicalSize container_content_size_in_candidate_writing_mode =

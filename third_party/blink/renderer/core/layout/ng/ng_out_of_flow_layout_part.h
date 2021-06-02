@@ -222,6 +222,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   scoped_refptr<const NGLayoutResult> Layout(
       const NodeToLayout& oof_node_to_layout,
+      const OffsetInfo& offset_info,
       const NGConstraintSpace* fragmentainer_constraint_space);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
