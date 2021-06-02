@@ -5787,7 +5787,7 @@ ci.memory_builder(
     ),
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     main_console_view = "main",
 )
