@@ -19,7 +19,7 @@ class UserContext;
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) TestAttemptState
     : public AuthAttemptState {
  public:
-  explicit TestAttemptState(const UserContext& credentials);
+  TestAttemptState(const UserContext& credentials);
 
   ~TestAttemptState() override;
 

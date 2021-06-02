@@ -432,7 +432,7 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
 // Replaces settings urls for KioskSettingsNavigationThrottle.
 class ScopedSettingsPages {
  public:
-  explicit ScopedSettingsPages(
+  ScopedSettingsPages(
       std::vector<KioskSettingsNavigationThrottle::SettingsPage>* pages) {
     KioskSettingsNavigationThrottle::SetSettingPagesForTesting(pages);
   }

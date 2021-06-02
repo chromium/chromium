@@ -477,7 +477,7 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
 class NativeWindowVisibilityBrowserMainExtraParts
     : public ChromeBrowserMainExtraParts {
  public:
-  explicit NativeWindowVisibilityBrowserMainExtraParts(
+  NativeWindowVisibilityBrowserMainExtraParts(
       NativeWindowVisibilityObserver* observer)
       : observer_(observer) {}
   ~NativeWindowVisibilityBrowserMainExtraParts() override = default;

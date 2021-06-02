@@ -20,7 +20,7 @@ class BottomStatusIndicator : public views::LabelButton {
  public:
   using TappedCallback = base::RepeatingClosure;
 
-  explicit BottomStatusIndicator(TappedCallback on_tapped_callback);
+  BottomStatusIndicator(TappedCallback on_tapped_callback);
   BottomStatusIndicator(const BottomStatusIndicator&) = delete;
   BottomStatusIndicator& operator=(const BottomStatusIndicator&) = delete;
   ~BottomStatusIndicator() override;

@@ -44,7 +44,7 @@ class ActiveDirectoryPasswordChangeScreenHandler
  public:
   using TView = ActiveDirectoryPasswordChangeView;
 
-  explicit ActiveDirectoryPasswordChangeScreenHandler(
+  ActiveDirectoryPasswordChangeScreenHandler(
       JSCallsContainer* js_calls_container);
   ~ActiveDirectoryPasswordChangeScreenHandler() override;
 

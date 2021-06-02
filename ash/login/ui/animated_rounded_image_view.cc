@@ -21,8 +21,7 @@ namespace {
 class SingleFrameImageDecoder
     : public AnimatedRoundedImageView::AnimationDecoder {
  public:
-  explicit SingleFrameImageDecoder(const gfx::ImageSkia& image)
-      : image_(image) {}
+  SingleFrameImageDecoder(const gfx::ImageSkia& image) : image_(image) {}
   ~SingleFrameImageDecoder() override = default;
 
   // AnimatedRoundedImageView::AnimationDecoder:

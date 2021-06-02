@@ -17,7 +17,7 @@ class LoginExpandedPublicAccountView;
 // clicks on the learn more link on the pubic account expanded view.
 class ASH_EXPORT PublicAccountWarningDialog : public views::DialogDelegateView {
  public:
-  explicit PublicAccountWarningDialog(
+  PublicAccountWarningDialog(
       base::WeakPtr<LoginExpandedPublicAccountView> controller);
   ~PublicAccountWarningDialog() override;
 
