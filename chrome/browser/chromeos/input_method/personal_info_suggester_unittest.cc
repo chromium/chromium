@@ -193,7 +193,7 @@ class PersonalInfoSuggesterTest : public testing::Test {
   const std::u16string phone_number_ = u"16505678910";
 };
 
-TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsEmail) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -213,7 +213,42 @@ TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
   suggestion_handler_->VerifySuggestion(email_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenFlagIsDisabled) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsEmailWithMultilineText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"\nmy email is ", 13, 13);
+  suggestion_handler_->VerifySuggestion(email_, 0);
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
+
+  suggester_->Suggest(u"Hey\nMan\nmy email is ", 20, 20);
+  suggestion_handler_->VerifySuggestion(email_, 0);
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
+}
+
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestWhenPrefixIsntOnLastLine) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(u"\nmy email is \n", 14, 14);
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+
+  suggester_->Suggest(u"\nmy email is \n ", 15, 15);
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+
+  suggester_->Suggest(u"Hey\nMan\nmy email is \nhey ", 25, 25);
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+}
+
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestEmailWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -225,7 +260,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenFlagIsDisabled) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenPrefixDoesNotMatch) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestEmailWhenPrefixDoesNotMatch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -240,7 +275,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenPrefixDoesNotMatch) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestWhenVirtualKeyboardEnabled) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestWhenVirtualKeyboardEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -268,7 +303,7 @@ TEST_F(PersonalInfoSuggesterTest,
       std::vector<std::string>{base::UTF16ToUTF8(email_)});
 }
 
-TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsNames) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
@@ -298,7 +333,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
   suggestion_handler_->VerifySuggestion(full_name_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, SuggestNamesButInsufficientData) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsNamesButInsufficientData) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
@@ -318,7 +353,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNamesButInsufficientData) {
                                       1);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenFlagIsDisabled) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestNamesWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -342,7 +377,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenFlagIsDisabled) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenPrefixDoesNotMatch) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestNamesWhenPrefixDoesNotMatch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -369,7 +404,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenPrefixDoesNotMatch) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsAddress) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoAddress},
@@ -410,7 +445,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
   suggestion_handler_->VerifySuggestion(address_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenFlagIsDisabled) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestAddressWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -435,7 +470,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenFlagIsDisabled) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenPrefixDoesNotMatch) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestAddressWhenPrefixDoesNotMatch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoAddress},
@@ -466,7 +501,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenPrefixDoesNotMatch) {
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsPhoneNumber) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
@@ -498,7 +533,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumberWhenFlagIsDisabled) {
+TEST_F(PersonalInfoSuggesterTest, DoesntSuggestPhoneNumberWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -516,7 +551,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumberWhenFlagIsDisabled) {
 }
 
 TEST_F(PersonalInfoSuggesterTest,
-       DoNotSuggestPhoneNumberWhenPrefixDoesNotMatch) {
+       DoesntSuggestPhoneNumberWhenPrefixDoesNotMatch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
@@ -541,7 +576,7 @@ TEST_F(PersonalInfoSuggesterTest,
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
+TEST_F(PersonalInfoSuggesterTest, AcceptsSuggestionWithDownEnter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -557,7 +592,7 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
   EXPECT_TRUE(suggestion_handler_->IsSuggestionAccepted());
 }
 
-TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
+TEST_F(PersonalInfoSuggesterTest, AcceptsSuggestionWithUpEnter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -576,7 +611,7 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
   EXPECT_TRUE(suggestion_handler_->IsSuggestionAccepted());
 }
 
-TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
+TEST_F(PersonalInfoSuggesterTest, DismissesSuggestion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
@@ -593,7 +628,7 @@ TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
   EXPECT_FALSE(suggestion_handler_->IsSuggestionAccepted());
 }
 
-TEST_F(PersonalInfoSuggesterTest, SuggestWithConfirmedLength) {
+TEST_F(PersonalInfoSuggesterTest, SuggestsWithConfirmedLength) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
@@ -611,7 +646,7 @@ TEST_F(PersonalInfoSuggesterTest, SuggestWithConfirmedLength) {
 }
 
 TEST_F(PersonalInfoSuggesterTest,
-       DoNotAnnounceSpokenFeedbackWhenChromeVoxIsOff) {
+       DoesntAnnounceSpokenFeedbackWhenChromeVoxIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -631,7 +666,7 @@ TEST_F(PersonalInfoSuggesterTest,
   tts_handler_->VerifyAnnouncement("");
 }
 
-TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
+TEST_F(PersonalInfoSuggesterTest, AnnouncesSpokenFeedbackWhenChromeVoxIsOn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -663,7 +698,7 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
   tts_handler_->VerifyAnnouncement("Suggestion dismissed.");
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
+TEST_F(PersonalInfoSuggesterTest, DoesntShowAnnotationAfterMaxAcceptanceCount) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -679,7 +714,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
   suggestion_handler_->VerifyShowAnnotation(false);
 }
 
-TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
+TEST_F(PersonalInfoSuggesterTest, ShowsSettingLink) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -699,7 +734,7 @@ TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
   suggestion_handler_->VerifyShowSettingLink(false);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
+TEST_F(PersonalInfoSuggesterTest, DoesntShowSettingLinkAfterAcceptance) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -717,7 +752,7 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
   suggestion_handler_->VerifyShowSettingLink(false);
 }
 
-TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
+TEST_F(PersonalInfoSuggesterTest, ClicksSettingsWithDownDownEnter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -738,7 +773,7 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
       ui::ime::ButtonId::kSmartInputsSettingLink);
 }
 
-TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithUpEnter) {
+TEST_F(PersonalInfoSuggesterTest, ClicksSettingsWithUpEnter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -827,7 +862,7 @@ TEST_F(PersonalInfoSuggesterTest,
 }
 
 TEST_F(PersonalInfoSuggesterTest,
-       GetSuggestionsReturnsCandidatesWhenAvailable) {
+       GetsSuggestionsReturnsCandidatesWhenAvailable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
@@ -845,7 +880,7 @@ TEST_F(PersonalInfoSuggesterTest,
 }
 
 TEST_F(PersonalInfoSuggesterTest,
-       GetSuggestionsReturnsZeroCandidatesWhenCandidatesUnavailable) {
+       GetsSuggestionsReturnsZeroCandidatesWhenCandidatesUnavailable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},

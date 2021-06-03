@@ -114,15 +114,15 @@ TextSuggestion MapToTextSuggestion(std::u16string candidate_string) {
 AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
   std::string lower_case_utf8_text =
       base::ToLowerASCII(base::UTF16ToUTF8(text));
-  if (!(RE2::FullMatch(lower_case_utf8_text, ".* $"))) {
+  if (!(RE2::PartialMatch(lower_case_utf8_text, " $"))) {
     return AssistiveType::kGenericAction;
   }
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kAssistPersonalInfoAddress)) {
-    if (RE2::FullMatch(
+    if (RE2::PartialMatch(
             lower_case_utf8_text,
-            base::StringPrintf(".*%s%s%s", kSingleOrPluralSubjectRegex,
+            base::StringPrintf("%s%s%s$", kSingleOrPluralSubjectRegex,
                                kAddressRegex, kTriggersRegex))) {
       return AssistiveType::kPersonalAddress;
     }
@@ -130,37 +130,39 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kAssistPersonalInfoEmail)) {
-    if (RE2::FullMatch(lower_case_utf8_text,
-                       base::StringPrintf(".*%s%s%s", kSingleSubjectRegex,
-                                          kEmailRegex, kTriggersRegex))) {
+    if (RE2::PartialMatch(lower_case_utf8_text,
+                          base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
+                                             kEmailRegex, kTriggersRegex))) {
       return AssistiveType::kPersonalEmail;
     }
   }
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kAssistPersonalInfoName)) {
-    if (RE2::FullMatch(lower_case_utf8_text,
-                       base::StringPrintf(".*%s%s%s", kSingleSubjectRegex,
-                                          kNameRegex, kTriggersRegex))) {
+    if (RE2::PartialMatch(lower_case_utf8_text,
+                          base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
+                                             kNameRegex, kTriggersRegex))) {
       return AssistiveType::kPersonalName;
     }
-    if (RE2::FullMatch(lower_case_utf8_text,
-                       base::StringPrintf(".*%s%s%s", kSingleSubjectRegex,
-                                          kFirstNameRegex, kTriggersRegex))) {
+    if (RE2::PartialMatch(
+            lower_case_utf8_text,
+            base::StringPrintf("%s%s%s$", kSingleSubjectRegex, kFirstNameRegex,
+                               kTriggersRegex))) {
       return AssistiveType::kPersonalFirstName;
     }
-    if (RE2::FullMatch(lower_case_utf8_text,
-                       base::StringPrintf(".*%s%s%s", kSingleSubjectRegex,
-                                          kLastNameRegex, kTriggersRegex))) {
+    if (RE2::PartialMatch(lower_case_utf8_text,
+                          base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
+                                             kLastNameRegex, kTriggersRegex))) {
       return AssistiveType::kPersonalLastName;
     }
   }
 
   if (base::FeatureList::IsEnabled(
           chromeos::features::kAssistPersonalInfoPhoneNumber)) {
-    if (RE2::FullMatch(lower_case_utf8_text,
-                       base::StringPrintf(".*%s%s%s", kSingleSubjectRegex,
-                                          kPhoneNumberRegex, kTriggersRegex))) {
+    if (RE2::PartialMatch(
+            lower_case_utf8_text,
+            base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
+                               kPhoneNumberRegex, kTriggersRegex))) {
       return AssistiveType::kPersonalPhoneNumber;
     }
   }
