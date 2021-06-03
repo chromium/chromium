@@ -29,7 +29,10 @@ source_set("font_size") {
 }
 
 js_compile_bundle("font_size_js") {
-  visibility = [ ":font_size" ]
+  visibility = [
+    ":font_size",
+    ":unit_tests",
+  ]
   closure_entry_point = "__crWeb.font_size"
 
   sources = [ "resources/font_size.js" ]
@@ -38,9 +41,13 @@ js_compile_bundle("font_size_js") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "font_size_tab_helper_unittest.mm" ]
+  sources = [
+    "font_size_js_unittest.mm",
+    "font_size_tab_helper_unittest.mm",
+  ]
   deps = [
     ":font_size",
+    ":font_size_js",
     "//base",
     "//base/test:test_support",
     "//components/sync_preferences",
@@ -57,5 +64,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
