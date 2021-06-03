@@ -283,9 +283,6 @@ void MediaHost::ResetMediaState() {
 }
 
 void MediaHost::StartObservingMediaController() {
-  if (!features::IsMediaSessionIntegrationEnabled())
-    return;
-
   if (chromeos_media_state_observer_)
     return;
 

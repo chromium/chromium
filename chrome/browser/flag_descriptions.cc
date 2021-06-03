@@ -4147,11 +4147,6 @@ const char kEnableAssistantLauncherUIDescription[] =
     "Enables the embedded Assistant UI in the app list. Requires Assistant to "
     "be enabled.";
 
-const char kEnableAssistantMediaSessionIntegrationName[] =
-    "Assistant Media Session integration";
-const char kEnableAssistantMediaSessionIntegrationDescription[] =
-    "Enable Assistant Media Session Integration.";
-
 const char kEnableAssistantRoutinesName[] = "Assistant Routines";
 const char kEnableAssistantRoutinesDescription[] = "Enable Assistant Routines.";
 

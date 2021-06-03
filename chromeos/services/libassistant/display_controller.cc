@@ -50,8 +50,7 @@ DisplayController::DisplayController(
     : event_observer_(std::make_unique<EventObserver>(this)),
       display_connection_(std::make_unique<DisplayConnectionImpl>(
           event_observer_.get(),
-          /*feedback_ui_enabled=*/true,
-          assistant::features::IsMediaSessionIntegrationEnabled())),
+          /*feedback_ui_enabled=*/true)),
       speech_recognition_observers_(*speech_recognition_observers),
       mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(speech_recognition_observers);

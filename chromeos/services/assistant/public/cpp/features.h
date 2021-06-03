@@ -48,10 +48,6 @@ extern const base::Feature kEnableBetterAssistant;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableDspHotword;
 
-// Enables MediaSession Integration.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableMediaSessionIntegration;
-
 // Enables stereo audio input.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableStereoAudioInput;
@@ -63,8 +59,6 @@ extern const base::Feature kEnablePowerManager;
 // Uses the LibAssistant beta backend instead of the release channel.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableLibAssistantBetaBackend;
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAmbientAssistantEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAppSupportEnabled();
 
@@ -85,16 +79,10 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsDspHotwordEnabled();
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 bool IsLauncherChipIntegrationEnabled();
 
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-bool IsMediaSessionIntegrationEnabled();
-
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsPowerManagerEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 bool IsLibAssistantBetaBackendEnabled();
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-bool IsResponseProcessingV2Enabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsRoutinesEnabled();
 

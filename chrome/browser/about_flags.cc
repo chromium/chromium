@@ -5160,13 +5160,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAssistantAppSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantAppSupport)},
 
-    {"enable-assistant-media-session-integration",
-     flag_descriptions::kEnableAssistantMediaSessionIntegrationName,
-     flag_descriptions::kEnableAssistantMediaSessionIntegrationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::assistant::features::kEnableMediaSessionIntegration)},
-
     {"enable-quick-answers", flag_descriptions::kEnableQuickAnswersName,
      flag_descriptions::kEnableQuickAnswersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswers)},

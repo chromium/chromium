@@ -15,11 +15,9 @@ namespace libassistant {
 
 DisplayConnectionImpl::DisplayConnectionImpl(
     DisplayConnectionObserver* observer,
-    bool feedback_ui_enabled,
-    bool media_session_enabled)
+    bool feedback_ui_enabled)
     : observer_(observer),
       feedback_ui_enabled_(feedback_ui_enabled),
-      media_session_enabled_(media_session_enabled),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(observer_);
 }
@@ -136,14 +134,12 @@ void DisplayConnectionImpl::FillDisplayRequestLocked(
     }
   }
 
-  if (media_session_enabled_) {
-    set_capabilities_request->mutable_supported_features()
-        ->set_media_session_detection(
-            related_info_enabled_
-                ? ::assistant::api::RELIABLE_MEDIA_SESSION_DETECTION
-                : ::assistant::api::
-                      MEDIA_SESSION_DETECTION_DISABLED_SCREEN_CONTEXT);
-  }
+  set_capabilities_request->mutable_supported_features()
+      ->set_media_session_detection(
+          related_info_enabled_
+              ? ::assistant::api::RELIABLE_MEDIA_SESSION_DETECTION
+              : ::assistant::api::
+                    MEDIA_SESSION_DETECTION_DISABLED_SCREEN_CONTEXT);
 }
 
 }  // namespace libassistant

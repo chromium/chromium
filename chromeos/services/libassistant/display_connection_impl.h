@@ -27,8 +27,7 @@ class DisplayConnectionObserver {
 class DisplayConnectionImpl : public assistant_client::DisplayConnection {
  public:
   DisplayConnectionImpl(DisplayConnectionObserver* observer,
-                        bool feedback_ui_enabled,
-                        bool media_session_enabled);
+                        bool feedback_ui_enabled);
   DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
   DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
   ~DisplayConnectionImpl() override;
@@ -59,9 +58,6 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
 
   // Whether Assistant feedback UI is enabled.
   const bool feedback_ui_enabled_;
-
-  // Whether Media Session support is enabled.
-  const bool media_session_enabled_;
 
   // Whether ARC++ is enabled.
   bool arc_play_store_enabled_ GUARDED_BY(update_display_request_mutex_) =
