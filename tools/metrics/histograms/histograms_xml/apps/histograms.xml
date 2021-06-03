@@ -2227,6 +2227,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening"
+    units="ms" expires_after="M99">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between session activation and opening the Launcher for
+    the first time on a new user session. This metric is recorded when a new
+    user opens the laucnher for the first time.
+  </summary>
+</histogram>
+
 <histogram name="Apps.UsageTime.{AppType}" units="ms"
     expires_after="2021-10-28">
   <owner>dominickn@chromium.org</owner>

@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/session_manager/core/session_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -60,6 +61,7 @@ AppListClientImpl::AppListClientImpl()
           std::make_unique<AppListNotifierImpl>(app_list_controller_)) {
   app_list_controller_->SetClient(this);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
+  session_manager::SessionManager::Get()->AddObserver(this);
 
   DCHECK(!g_app_list_client_instance);
   g_app_list_client_instance = this;
@@ -69,6 +71,7 @@ AppListClientImpl::~AppListClientImpl() {
   SetProfile(nullptr);
 
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
+  session_manager::SessionManager::Get()->RemoveObserver(this);
 
   DCHECK_EQ(this, g_app_list_client_instance);
   g_app_list_client_instance = nullptr;
@@ -188,6 +191,8 @@ void AppListClientImpl::ViewClosing() {
 }
 
 void AppListClientImpl::ViewShown(int64_t display_id) {
+  MaybeRecordViewShown();
+
   if (current_model_updater_) {
     base::RecordAction(base::UserMetricsAction("Launcher_Show"));
     base::UmaHistogramSparse("Apps.AppListBadgedAppsCount",
@@ -315,6 +320,14 @@ void AppListClientImpl::OnQuickSettingsChanged(
 }
 
 void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
+  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    // In tests, the user before switching and the one after switching may
+    // be both new. It should not happen in the real world.
+    state_for_new_user_ = StateForNewUser();
+  } else if (state_for_new_user_) {
+    state_for_new_user_.reset();
+  }
+
   if (!active_user->is_profile_created())
     return;
 
@@ -398,6 +411,22 @@ app_list::SearchController* AppListClientImpl::search_controller() {
 
 AppListModelUpdater* AppListClientImpl::GetModelUpdaterForTest() {
   return current_model_updater_;
+}
+
+void AppListClientImpl::InitializeAsIfNewUserLoginForTest() {
+  new_user_session_activation_time_ = base::TimeTicks::Now();
+  state_for_new_user_ = StateForNewUser();
+}
+
+void AppListClientImpl::OnSessionStateChanged() {
+  // Return early if the current user is not new or the session is not active.
+  if (!user_manager::UserManager::Get()->IsCurrentUserNew() ||
+      session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  new_user_session_activation_time_ = base::TimeTicks::Now();
 }
 
 void AppListClientImpl::OnTemplateURLServiceChanged() {
@@ -492,4 +521,37 @@ void AppListClientImpl::NotifySearchResultsForLogging(
 
 ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
+}
+
+void AppListClientImpl::MaybeRecordViewShown() {
+  // Record the time duration between session activation and the first launcher
+  // showing if the current user is new.
+
+  // We do not need to worry about the scenario below:
+  // log in to a new account -> switch to another account -> switch back to the
+  // initial account-> show the launcher
+  // In this case, when showing the launcher, the current user is not
+  // new anymore.
+  // TODO(https://crbug.com/1211620): If this bug is fixed, we might need to
+  // do some changes here.
+  if (!user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    DCHECK(!state_for_new_user_);
+    return;
+  }
+
+  if (state_for_new_user_->showing_recorded) {
+    // Showing launcher was recorded before so return early.
+    return;
+  }
+
+  state_for_new_user_->showing_recorded = true;
+
+  DCHECK(new_user_session_activation_time_.has_value());
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      /*name=*/
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
+      /*sample=*/base::TimeTicks::Now() - *new_user_session_activation_time_,
+      /*min=*/base::TimeDelta::FromSeconds(1),
+      /*max=*/base::TimeDelta::FromDays(7),
+      /*bucket_count=*/100);
 }

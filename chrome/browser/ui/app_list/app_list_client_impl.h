@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace app_list {
@@ -38,6 +40,7 @@ class AppListClientImpl
     : public ash::AppListClient,
       public AppListControllerDelegate,
       public user_manager::UserManager::UserSessionStateObserver,
+      public session_manager::SessionManagerObserver,
       public TemplateURLServiceObserver {
  public:
   AppListClientImpl();
@@ -130,8 +133,21 @@ class AppListClientImpl
 
   AppListModelUpdater* GetModelUpdaterForTest();
 
+  // Initializes as if a new user logged in for testing.
+  void InitializeAsIfNewUserLoginForTest();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListClientWithProfileTest, CheckDataRace);
+
+  // TODO(https://crbug.com/1211359): Add a boolean value here to indicate
+  // whether the first launcher action has been recorded.
+  struct StateForNewUser {
+    // Indicates whether showing the app list has been recorded.
+    bool showing_recorded = false;
+  };
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
 
   // Overridden from TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
@@ -141,6 +157,9 @@ class AppListClientImpl
 
   // Updates the speech webview and start page for the current |profile_|.
   void SetUpSearchUI();
+
+  // Maybe records the metrics related to showing the app list.
+  void MaybeRecordViewShown();
 
   // The current display id showing the app list.
   int64_t display_id_ = display::kInvalidDisplayId;
@@ -171,6 +190,17 @@ class AppListClientImpl
   ash::AppListController* app_list_controller_ = nullptr;
 
   std::unique_ptr<AppListNotifierImpl> app_list_notifier_;
+
+  // Records the app list state for the session started by a new user. It
+  // gets reset when:
+  // (1) the active user changes, or
+  // (2) the user signs out all accounts. `AppListClientImpl` is destructed in
+  // this scenario.
+  absl::optional<StateForNewUser> state_for_new_user_;
+
+  // Indicates when the session of a new user becomes active. If there is no new
+  // users logged in, `new_user_session_activation_time_` is null.
+  absl::optional<base::TimeTicks> new_user_session_activation_time_;
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;
