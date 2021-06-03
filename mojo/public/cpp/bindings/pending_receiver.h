@@ -92,7 +92,7 @@ class PendingReceiver {
     return request;
   }
 
-  // Indicates whether the PendingReceiver is valid, meaning it can ne used to
+  // Indicates whether the PendingReceiver is valid, meaning it can be used to
   // bind a Receiver that wants to begin dispatching method calls made by the
   // entangled Remote.
   bool is_valid() const { return state_.pipe.is_valid(); }

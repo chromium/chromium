@@ -52,7 +52,7 @@ class Receiver {
   using ImplPointerType = typename ImplRefTraits::PointerType;
 
   // Constructs an unbound Receiver linked to |impl| for the duration of the
-  // Receive's lifetime. The Receiver can be bound later by calling |Bind()| or
+  // Receiver's lifetime. The Receiver can be bound later by calling |Bind()| or
   // |BindNewPipeAndPassRemote()|. An unbound Receiver does not schedule any
   // asynchronous tasks.
   explicit Receiver(ImplPointerType impl) : internal_state_(std::move(impl)) {}
@@ -139,7 +139,7 @@ class Receiver {
     return remote;
   }
 
-  // Like above, but the returne PendingRemote has the version annotated.
+  // Like above, but the returned PendingRemote has the version annotated.
   PendingRemote<Interface> BindNewPipeAndPassRemoteWithVersion(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
       WARN_UNUSED_RESULT {
