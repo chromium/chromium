@@ -435,6 +435,7 @@ if (is_win || is_mac) {
 
     if (is_win) {
       sources += [
+        "activity_impl_win_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
         "win/installer_api_unittest.cc",
