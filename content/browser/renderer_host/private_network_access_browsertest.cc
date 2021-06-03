@@ -21,6 +21,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -699,6 +700,64 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       ClientSecurityStateForCachedSecureLocalDocument) {
+  // Navigate to the cacheable document in order to cache it, then navigate
+  // away.
+  const GURL url = SecureLocalURL("/cachetime");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  // Navigate to the cached document.
+  //
+  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
+  // both of those seem to bypass the cache.
+  ResourceLoadObserver observer(shell());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  observer.WaitForResourceCompletion(url);
+
+  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(url);
+  ASSERT_TRUE(info);
+  ASSERT_TRUE(*info);
+  EXPECT_TRUE((*info)->was_cached);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       ClientSecurityStateForCachedInsecurePublicDocument) {
+  // Navigate to the cacheable document in order to cache it, then navigate
+  // away.
+  const GURL url = InsecurePublicURL("/cachetime");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  // Navigate to the cached document.
+  //
+  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
+  // both of those seem to bypass the cache.
+  ResourceLoadObserver observer(shell());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  observer.WaitForResourceCompletion(url);
+
+  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(url);
+  ASSERT_TRUE(info);
+  ASSERT_TRUE(*info);
+  EXPECT_TRUE((*info)->was_cached);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
 }
