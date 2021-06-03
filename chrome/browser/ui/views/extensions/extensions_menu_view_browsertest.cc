@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1173344): Flaky on Linux.
 #define MAYBE_InvokeUi_UninstallDialog_Cancel \
   DISABLED_InvokeUi_UninstallDialog_Cancel
