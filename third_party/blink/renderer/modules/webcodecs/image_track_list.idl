@@ -8,7 +8,7 @@
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
 ] interface ImageTrackList {
-  getter ImageTrack(unsigned long index);
+  getter ImageTrack([EnforceRange] unsigned long index);
   readonly attribute unsigned long length;
 
   // Index of the currently selected track or -1 if no track is selected.

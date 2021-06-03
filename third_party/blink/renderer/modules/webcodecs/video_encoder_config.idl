@@ -11,7 +11,7 @@ dictionary VideoEncoderConfig {
   HardwarePreference hardwareAcceleration = "allow";
   AlphaOption alpha = "discard";
 
-  unsigned long long bitrate;
+  [EnforceRange] unsigned long long bitrate;
 
   double framerate;
 

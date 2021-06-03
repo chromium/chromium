@@ -6,7 +6,7 @@
 
 dictionary ImageDecodeOptions {
   // The index of the frame to decode.
-  unsigned long frameIndex = 0;
+  [EnforceRange] unsigned long frameIndex = 0;
 
   // When |completeFramesOnly| is set to false, partial progressive frames will
   // be returned. When in this mode, decode() calls will resolve only once per

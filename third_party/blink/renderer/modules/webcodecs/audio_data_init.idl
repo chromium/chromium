@@ -5,6 +5,6 @@
 // https://github.com/WICG/web-codecs
 
 dictionary AudioDataInit {
-  required long long timestamp;  // microseconds
+  required [EnforceRange] long long timestamp;  // microseconds
   required AudioBuffer buffer;
 };

@@ -11,10 +11,10 @@ dictionary AudioEncoderConfig {
   required DOMString codec;
 
   // Rate of samples per second. 44100, 48000, etc.
-  required unsigned long sampleRate;
+  required [EnforceRange] unsigned long sampleRate;
 
   // 1, 2, etc.
-  required unsigned short numberOfChannels;
+  required [EnforceRange] unsigned short numberOfChannels;
 
-  unsigned long long bitrate;
+  [EnforceRange] unsigned long long bitrate;
 };
