@@ -442,7 +442,28 @@ String KURL::GetPath() const {
   return ComponentString(parsed_.path);
 }
 
+namespace {
+
+bool IsASCIITabOrNewline(UChar ch) {
+  return ch == '\t' || ch == '\r' || ch == '\n';
+}
+
+// See https://url.spec.whatwg.org/#concept-basic-url-parser:
+// 3. Remove all ASCII tab or newline from |input|.
+//
+// Matches url::RemoveURLWhitespace.
+String RemoveURLWhitespace(const String& input) {
+  return input.RemoveCharacters(IsASCIITabOrNewline);
+}
+
+}  // namespace
+
 bool KURL::SetProtocol(const String& protocol) {
+  // We should remove whitespace from |protocol| according to spec, but Firefox
+  // and Safari don't do it.
+  // - https://url.spec.whatwg.org/#dom-url-protocol
+  // - https://github.com/whatwg/url/issues/609
+
   // Firefox and IE remove everything after the first ':'.
   wtf_size_t separator_position = protocol.find(':');
   String new_protocol = protocol.Substring(0, separator_position);
@@ -544,7 +565,8 @@ wtf_size_t FindHostEnd(const String& host, bool is_special) {
 
 }  // namespace
 
-void KURL::SetHost(const String& host) {
+void KURL::SetHost(const String& input) {
+  String host = RemoveURLWhitespace(input);
   wtf_size_t value_end = FindHostEnd(host, IsHierarchical());
   String truncated_host = host.Substring(0, value_end);
   StringUTF8Adaptor host_utf8(truncated_host);
@@ -554,10 +576,12 @@ void KURL::SetHost(const String& host) {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetHostAndPort(const String& orig_host_and_port) {
+void KURL::SetHostAndPort(const String& input) {
   // This method intentionally does very sloppy parsing for backwards
   // compatibility. See https://url.spec.whatwg.org/#host-state for what we
   // theoretically should be doing.
+
+  String orig_host_and_port = RemoveURLWhitespace(input);
   wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsHierarchical());
   String host_and_port = orig_host_and_port.Substring(0, value_end);
 
@@ -616,7 +640,8 @@ void KURL::RemovePort() {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetPort(const String& port) {
+void KURL::SetPort(const String& input) {
+  String port = RemoveURLWhitespace(input);
   String parsed_port = ParsePortFromStringPosition(port, 0);
   if (!parsed_port.IsEmpty())
     SetPort(parsed_port.ToUInt());
@@ -645,6 +670,9 @@ void KURL::SetUser(const String& user) {
 
   // The canonicalizer will clear any usernames that are empty, so we
   // don't have to explicitly call ClearUsername() here.
+  //
+  // Unlike other setters, we do not remove whitespace per spec:
+  // https://url.spec.whatwg.org/#dom-url-username
   StringUTF8Adaptor user_utf8(user);
   url::Replacements<char> replacements;
   replacements.SetUsername(CharactersOrEmpty(user_utf8),
@@ -660,6 +688,9 @@ void KURL::SetPass(const String& pass) {
 
   // The canonicalizer will clear any passwords that are empty, so we
   // don't have to explicitly call ClearUsername() here.
+  //
+  // Unlike other setters, we do not remove whitespace per spec:
+  // https://url.spec.whatwg.org/#dom-url-password
   StringUTF8Adaptor pass_utf8(pass);
   url::Replacements<char> replacements;
   replacements.SetPassword(CharactersOrEmpty(pass_utf8),
@@ -667,12 +698,13 @@ void KURL::SetPass(const String& pass) {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetFragmentIdentifier(const String& fragment) {
+void KURL::SetFragmentIdentifier(const String& input) {
   // This function is commonly called to clear the ref, which we
   // normally don't have, so we optimize this case.
-  if (fragment.IsNull() && !parsed_.ref.is_valid())
+  if (input.IsNull() && !parsed_.ref.is_valid())
     return;
 
+  String fragment = RemoveURLWhitespace(input);
   StringUTF8Adaptor fragment_utf8(fragment);
 
   url::Replacements<char> replacements;
@@ -691,7 +723,8 @@ void KURL::RemoveFragmentIdentifier() {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetQuery(const String& query) {
+void KURL::SetQuery(const String& input) {
+  String query = RemoveURLWhitespace(input);
   StringUTF8Adaptor query_utf8(query);
   url::Replacements<char> replacements;
   if (query.IsNull()) {
@@ -715,9 +748,10 @@ void KURL::SetQuery(const String& query) {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetPath(const String& path) {
+void KURL::SetPath(const String& input) {
   // Empty paths will be canonicalized to "/", so we don't have to worry
   // about calling ClearPath().
+  String path = RemoveURLWhitespace(input);
   StringUTF8Adaptor path_utf8(path);
   url::Replacements<char> replacements;
   replacements.SetPath(CharactersOrEmpty(path_utf8),
