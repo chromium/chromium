@@ -1,0 +1,97 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
+
+#include <idle-client-protocol.h>
+
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+
+namespace ui {
+
+namespace {
+
+// After the system has gone idle, it will wait for this time before notifying
+// us.  This reduces "jitter" of the idle/active state, but also adds some lag
+// in responsiveness: when we are finally notified that the idle state has come,
+// it is already there for kIdleThresholdMs milliseconds.
+constexpr uint64_t kIdleThresholdMs = 5000;
+
+}  // namespace
+
+// Wraps the actual handling of system notifications about the idle state.
+class OrgKdeKwinIdle::Timeout {
+ public:
+  explicit Timeout(org_kde_kwin_idle_timeout* timeout);
+  Timeout(const Timeout&) = delete;
+  Timeout& operator=(const Timeout&) = delete;
+  ~Timeout();
+
+  // Returns the idle time.
+  base::TimeDelta GetIdleTime() const;
+
+ private:
+  static void Idle(void* data,
+                   struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout);
+  static void Resumed(
+      void* data,
+      struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout);
+
+  wl::Object<org_kde_kwin_idle_timeout> timeout_;
+
+  // Time when the system went into idle state.
+  base::Time idle_timestamp_;
+};
+
+OrgKdeKwinIdle::OrgKdeKwinIdle(org_kde_kwin_idle* idle,
+                               WaylandConnection* connection)
+    : idle_(idle), connection_(connection) {}
+
+OrgKdeKwinIdle::~OrgKdeKwinIdle() = default;
+
+absl::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
+  if (!connection_->seat())
+    return absl::nullopt;
+
+  if (!idle_timeout_) {
+    idle_timeout_ =
+        std::make_unique<Timeout>(org_kde_kwin_idle_get_idle_timeout(
+            idle_.get(), connection_->seat(), kIdleThresholdMs));
+  }
+  return idle_timeout_->GetIdleTime();
+}
+
+OrgKdeKwinIdle::Timeout::Timeout(org_kde_kwin_idle_timeout* timeout)
+    : timeout_(timeout) {
+  static const struct org_kde_kwin_idle_timeout_listener kTimeoutListener = {
+      OrgKdeKwinIdle::Timeout::Idle, OrgKdeKwinIdle::Timeout::Resumed};
+  org_kde_kwin_idle_timeout_add_listener(timeout, &kTimeoutListener, this);
+}
+
+OrgKdeKwinIdle::Timeout::~Timeout() = default;
+
+base::TimeDelta OrgKdeKwinIdle::Timeout::GetIdleTime() const {
+  if (idle_timestamp_.is_null())
+    return base::TimeDelta::FromSeconds(0);
+  return base::Time::Now() - idle_timestamp_;
+}
+
+// static
+void OrgKdeKwinIdle::Timeout::Idle(
+    void* data,
+    struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout) {
+  auto* self = static_cast<OrgKdeKwinIdle::Timeout*>(data);
+  self->idle_timestamp_ =
+      base::Time::Now() - base::TimeDelta::FromMicroseconds(kIdleThresholdMs);
+}
+
+// static
+void OrgKdeKwinIdle::Timeout::Resumed(
+    void* data,
+    struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout) {
+  auto* self = static_cast<OrgKdeKwinIdle::Timeout*>(data);
+  self->idle_timestamp_ = {};
+}
+
+}  // namespace ui

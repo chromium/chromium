@@ -1,0 +1,13 @@
+KDE Idle Wayland protocol extension
+
+Maintainers:
+Alexander Dunaev <adunaev@igalia.com>
+
+Additional resources:
+https://wayland.app/protocols/kde-idle
+
+Source:
+https://github.com/KDE/plasma-wayland-protocols/blob/master/src/protocols/idle.xml
+
+This protocol allows to query KDE Plasma desktop environment for the idle time,
+and to get notifications about the system entering and leaving the idle status.

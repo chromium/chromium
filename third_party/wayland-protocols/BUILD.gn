@@ -140,3 +140,7 @@ wayland_protocol("extended_drag") {
 wayland_protocol("weston_test") {
   sources = [ "unstable/weston-test/weston-test.xml" ]
 }
+
+wayland_protocol("org_kde_kwin_idle") {
+  sources = [ "kde/idle/idle.xml" ]
+}

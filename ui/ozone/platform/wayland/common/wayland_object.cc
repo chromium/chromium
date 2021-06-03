@@ -9,6 +9,7 @@
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
 #include <gtk-shell-client-protocol.h>
+#include <idle-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
@@ -106,6 +107,16 @@ const wl_interface* ObjectTraits<gtk_surface1>::interface =
     &gtk_surface1_interface;
 void (*ObjectTraits<gtk_surface1>::deleter)(gtk_surface1*) =
     &gtk_surface1_destroy;
+
+const wl_interface* ObjectTraits<org_kde_kwin_idle>::interface =
+    &org_kde_kwin_idle_interface;
+void (*ObjectTraits<org_kde_kwin_idle>::deleter)(org_kde_kwin_idle*) =
+    &org_kde_kwin_idle_destroy;
+
+const wl_interface* ObjectTraits<org_kde_kwin_idle_timeout>::interface =
+    &org_kde_kwin_idle_timeout_interface;
+void (*ObjectTraits<org_kde_kwin_idle_timeout>::deleter)(
+    org_kde_kwin_idle_timeout*) = &org_kde_kwin_idle_timeout_destroy;
 
 const wl_interface*
     ObjectTraits<zwp_primary_selection_device_manager_v1>::interface =

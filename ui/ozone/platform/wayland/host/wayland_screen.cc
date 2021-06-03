@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
@@ -246,6 +247,13 @@ display::Display WaylandScreen::GetDisplayMatching(
 }
 
 base::TimeDelta WaylandScreen::CalculateIdleTime() const {
+  // Try the org_kde_kwin_idle Wayland protocol extension (KWin).
+  if (const auto* kde_idle = connection_->org_kde_kwin_idle()) {
+    const auto idle_time = kde_idle->GetIdleTime();
+    if (idle_time)
+      return *idle_time;
+  }
+
 #if defined(USE_DBUS)
   // Try the org.gnome.Mutter.IdleMonitor D-Bus service (Mutter).
   if (!org_gnome_mutter_idle_monitor_)
@@ -256,7 +264,6 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
     return *idle_time;
 #endif  // defined(USE_DBUS)
 
-  // Try the org_kde_kwin_idle Wayland protocol extension (KWin).
   NOTIMPLEMENTED_LOG_ONCE();
 
   // No providers.  Return 0 which means the system never gets idle.

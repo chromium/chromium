@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
@@ -93,6 +94,8 @@ constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
 // useful.
 constexpr uint32_t kMinGtkShell1Version = 3;
 constexpr uint32_t kMaxGtkShell1Version = 4;
+
+constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -651,6 +654,16 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to zcr_extended_drag_v1 global";
       return;
     }
+  } else if (!connection->org_kde_kwin_idle_ &&
+             strcmp(interface, "org_kde_kwin_idle") == 0) {
+    auto idle = wl::Bind<struct org_kde_kwin_idle>(
+        registry, name, std::min(version, kMaxOrgKdeKwinIdleVersion));
+    if (!idle) {
+      LOG(ERROR) << "Failed to bind to org_kde_kwin_idle global";
+      return;
+    }
+    connection->org_kde_kwin_idle_ =
+        std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
   }
 
   connection->ScheduleFlush();

@@ -32,6 +32,7 @@ class WaylandProxy;
 namespace ui {
 
 class DeviceHotplugEventObserver;
+class OrgKdeKwinIdle;
 class WaylandBufferManagerHost;
 class WaylandCursor;
 class WaylandCursorBufferListener;
@@ -187,6 +188,8 @@ class WaylandConnection {
 
   GtkShell1* gtk_shell1() { return gtk_shell1_.get(); }
 
+  OrgKdeKwinIdle* org_kde_kwin_idle() { return org_kde_kwin_idle_.get(); }
+
   ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager()
       const {
     return zwp_primary_selection_device_manager_.get();
@@ -307,6 +310,9 @@ class WaylandConnection {
   std::unique_ptr<WaylandClipboard> clipboard_;
 
   std::unique_ptr<GtkShell1> gtk_shell1_;
+
+  // Objects specific to KDE Plasma desktop environment.
+  std::unique_ptr<OrgKdeKwinIdle> org_kde_kwin_idle_;
 
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
   std::unique_ptr<WaylandWindowDragController> window_drag_controller_;
