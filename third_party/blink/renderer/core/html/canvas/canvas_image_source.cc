@@ -47,6 +47,9 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
     scoped_refptr<StaticBitmapImage>&& image,
     const AlphaDisposition alpha_disposition) {
+  if (!image)
+    return nullptr;
+
   SkAlphaType alpha_type = (alpha_disposition == kPremultiplyAlpha)
                                ? kPremul_SkAlphaType
                                : kUnpremul_SkAlphaType;
