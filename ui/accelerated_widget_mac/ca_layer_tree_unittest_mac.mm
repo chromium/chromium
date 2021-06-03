@@ -58,7 +58,7 @@ scoped_refptr<gl::GLImageIOSurface> CreateGLImage(const gfx::Size& size,
     base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
     CVPixelBufferCreateWithIOSurface(nullptr, io_surface, nullptr,
                                      cv_pixel_buffer.InitializeInto());
-    gl_image->InitializeWithCVPixelBuffer(cv_pixel_buffer,
+    gl_image->InitializeWithCVPixelBuffer(cv_pixel_buffer, 0,
                                           gfx::GenericSharedMemoryId(), format);
   } else {
     gl_image->Initialize(io_surface, 0, gfx::GenericSharedMemoryId(), format);

@@ -46,6 +46,7 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   // initialization will ensure that the CVPixelBuffer be retained for the
   // lifetime of the GLImage.
   bool InitializeWithCVPixelBuffer(CVPixelBufferRef cv_pixel_buffer,
+                                   uint32_t io_surface_plane,
                                    gfx::GenericSharedMemoryId io_surface_id,
                                    gfx::BufferFormat format);
 

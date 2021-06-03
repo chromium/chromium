@@ -222,10 +222,10 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
 
 bool GLImageIOSurface::InitializeWithCVPixelBuffer(
     CVPixelBufferRef cv_pixel_buffer,
+    uint32_t io_surface_plane,
     gfx::GenericSharedMemoryId io_surface_id,
     gfx::BufferFormat format) {
   IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(cv_pixel_buffer);
-  const uint32_t io_surface_plane = 0;
   if (!io_surface) {
     LOG(ERROR) << "Can't init GLImage from CVPixelBuffer with no IOSurface";
     return false;
