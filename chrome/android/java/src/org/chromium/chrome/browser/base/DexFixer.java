@@ -139,7 +139,10 @@ public class DexFixer {
             // startup.
             SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
             long versionCode = BuildInfo.getInstance().versionCode;
-            if (prefManager.readLong(ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION)
+            // The default value is always lesser than any non-negative versionCode. This prevents
+            // some tests from failing when application's versionCode is stuck at 0.
+            if (prefManager.readLong(
+                        ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION, versionCode - 1)
                     != versionCode) {
                 // Compiling the dex is an asynchronous operation anyways, so update the pref here
                 // rather than attempting to wait.

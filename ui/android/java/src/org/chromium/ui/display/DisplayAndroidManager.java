@@ -13,6 +13,8 @@ import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -228,5 +230,11 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
         void setPrimaryDisplayId(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
+    }
+
+    /** Clears the object returned by {@link #getInstance()} */
+    @VisibleForTesting
+    public static void resetInstanceForTesting() {
+        sDisplayAndroidManager = null;
     }
 }

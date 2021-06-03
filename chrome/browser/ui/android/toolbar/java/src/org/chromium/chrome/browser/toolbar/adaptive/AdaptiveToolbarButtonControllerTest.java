@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/** Unit tests for the {@code MagicToolbarButtonController} */
+/** Unit tests for the {@link AdaptiveToolbarButtonController} */
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdaptiveToolbarButtonControllerTest {

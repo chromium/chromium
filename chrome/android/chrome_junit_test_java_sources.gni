@@ -229,6 +229,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
+  "junit/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",

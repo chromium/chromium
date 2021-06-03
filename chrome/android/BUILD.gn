@@ -848,11 +848,15 @@ junit_binary("chrome_junit_tests") {
     "//mojo/public/mojom/base",
   ]
 
+  # Needed by androidx.test.core.app.ActivityScenario
+  android_manifest = chrome_public_android_manifest
+
   deps = [
     ":app_hooks_java",
     ":base_module_java",
     ":chrome_app_java_resources",
     ":chrome_java",
+    ":chrome_public_android_manifest",
     ":partner_location_descriptor_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
