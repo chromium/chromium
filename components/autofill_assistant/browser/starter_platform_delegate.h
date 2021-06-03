@@ -38,9 +38,9 @@ class StarterPlatformDelegate {
       std::unique_ptr<TriggerContext> trigger_context,
       const absl::optional<TriggerScriptProto>& trigger_script) = 0;
   // Returns whether a regular script is currently running.
-  virtual bool IsRegularScriptRunning() const;
+  virtual bool IsRegularScriptRunning() const = 0;
   // Returns whether a regular script is currently showing UI to the user.
-  virtual bool IsRegularScriptVisible() const;
+  virtual bool IsRegularScriptVisible() const = 0;
 
   // Access to the login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
