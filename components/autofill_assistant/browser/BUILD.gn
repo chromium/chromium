@@ -382,6 +382,7 @@ source_set("unit_tests") {
     "element_precondition_unittest.cc",
     "event_handler_unittest.cc",
     "field_formatter_unittest.cc",
+    "full_card_requester_unittest.cc",
     "generic_ui_replace_placeholders_unittest.cc",
     "mock_client_context.cc",
     "mock_client_context.h",
