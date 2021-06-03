@@ -25,6 +25,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
 
+  // Adds a diagnostics log item backed by the provided `file_path`.
+  virtual void AddDiagnosticsLog(const base::FilePath& file_path) = 0;
+
   // Adds a screenshot item backed by the provided `file_path`.
   virtual void AddScreenshot(const base::FilePath& file_path) = 0;
 

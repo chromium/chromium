@@ -67,6 +67,11 @@ HoldingSpaceClientImpl::HoldingSpaceClientImpl(Profile* profile)
 
 HoldingSpaceClientImpl::~HoldingSpaceClientImpl() = default;
 
+void HoldingSpaceClientImpl::AddDiagnosticsLog(
+    const base::FilePath& file_path) {
+  GetHoldingSpaceKeyedService(profile_)->AddDiagnosticsLog(file_path);
+}
+
 void HoldingSpaceClientImpl::AddScreenshot(const base::FilePath& file_path) {
   GetHoldingSpaceKeyedService(profile_)->AddScreenshot(file_path);
 }

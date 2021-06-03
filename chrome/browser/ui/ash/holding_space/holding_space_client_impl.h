@@ -25,6 +25,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   ~HoldingSpaceClientImpl() override;
 
   // HoldingSpaceClient:
+  void AddDiagnosticsLog(const base::FilePath& file_path) override;
   void AddScreenRecording(const base::FilePath& file_path) override;
   void AddScreenshot(const base::FilePath& file_path) override;
   void CancelItems(const std::vector<const HoldingSpaceItem*>& items) override;

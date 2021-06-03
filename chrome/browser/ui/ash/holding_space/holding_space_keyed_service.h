@@ -128,9 +128,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }
 
-  const HoldingSpaceClient* client_for_testing() const {
-    return &holding_space_client_;
-  }
+  HoldingSpaceClient* client() { return &holding_space_client_; }
 
   const HoldingSpaceModel* model_for_testing() const {
     return &holding_space_model_;
