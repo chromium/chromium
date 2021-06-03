@@ -42,6 +42,9 @@ const CGFloat kIdentityControlMaxWidth = 327;
 
 - (void)viewDidLoad {
   self.bannerImage = [UIImage imageNamed:@"signin_screen_banner"];
+  self.isTallBanner = NO;
+  self.scrollToEndMandatory = YES;
+
   self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);
   if (!self.primaryActionString) {
@@ -70,8 +73,6 @@ const CGFloat kIdentityControlMaxWidth = 327;
         constraintLessThanOrEqualToAnchor:self.specificContentView
                                               .bottomAnchor],
   ]];
-
-  // TODO(crbug.com/1189836): Add the identity control to the wrapper view.
 
   // Call super after setting up the strings and others, as required per super
   // class.
@@ -110,11 +111,7 @@ const CGFloat kIdentityControlMaxWidth = 327;
 #pragma mark - SignInScreenConsumer
 
 - (void)setUserImage:(UIImage*)userImage {
-  if (userImage) {
-    [self.identityControl setIdentityAvatar:userImage];
-  } else {
-    // TODO(crbug.com/1189836): Update with default avatar.
-  }
+  [self.identityControl setIdentityAvatar:userImage];
 }
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
