@@ -233,6 +233,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // installed to support the API.
   bool MayHaveProxies() const;
 
+  bool HasExtraHeadersListenerForTesting();
+
  private:
   friend class BrowserContextKeyedAPIFactory<WebRequestAPI>;
 

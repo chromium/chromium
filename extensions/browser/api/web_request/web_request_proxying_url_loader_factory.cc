@@ -203,7 +203,15 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
       ukm_source_id_));
 
+  // The value of `has_any_extra_headers_listeners_` is constant for the
+  // lifetime of InProgressRequest and determines whether the request is made
+  // with the network::mojom::kURLLoadOptionUseHeaderClient option. To prevent
+  // the redirected request from getting into a state where
+  // `current_request_uses_header_client_` is true but the request is not made
+  // with the kURLLoadOptionUseHeaderClient option, also check
+  // `has_any_extra_headers_listeners_` here. See http://crbug.com/1074282.
   current_request_uses_header_client_ =
+      has_any_extra_headers_listeners_ &&
       factory_->url_loader_header_client_receiver_.is_bound() &&
       (request_.url.SchemeIsHTTPOrHTTPS() ||
        request_.url.SchemeIs(url::kUrnScheme)) &&
