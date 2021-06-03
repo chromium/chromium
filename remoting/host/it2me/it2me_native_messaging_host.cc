@@ -26,12 +26,12 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/name_value_map.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_constants.h"
+#include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/remoting_register_support_host_request.h"
 #include "remoting/host/xmpp_register_support_host_request.h"
@@ -56,17 +56,6 @@ namespace remoting {
 using protocol::ErrorCode;
 
 namespace {
-
-const NameMapElement<It2MeHostState> kIt2MeHostStates[] = {
-    {kDisconnected, kHostStateDisconnected},
-    {kStarting, kHostStateStarting},
-    {kRequestedAccessCode, kHostStateRequestedAccessCode},
-    {kReceivedAccessCode, kHostStateReceivedAccessCode},
-    {kConnecting, kHostStateConnecting},
-    {kConnected, kHostStateConnected},
-    {kError, kHostStateError},
-    {kInvalidDomainError, kHostStateDomainError},
-};
 
 #if defined(OS_WIN)
 const base::FilePath::CharType kBaseHostBinaryName[] =
@@ -421,7 +410,8 @@ void It2MeNativeMessagingHost::ProcessIncomingIq(
     incoming_message_callback_.Run(iq);
   } else {
     LOG(WARNING) << "Dropping message because signaling is not connected. "
-                 << "Current It2MeHost state: " << state_;
+                 << "Current It2MeHost state: "
+                 << It2MeHostStateToString(state_);
   }
   SendMessageToClient(std::move(response));
 }
@@ -466,24 +456,24 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
   std::unique_ptr<base::DictionaryValue> message(new base::DictionaryValue());
 
   message->SetString(kMessageType, kHostStateChangedMessage);
-  message->SetString(kState, HostStateToString(state));
+  message->SetString(kState, It2MeHostStateToString(state));
 
   switch (state_) {
-    case kReceivedAccessCode:
+    case It2MeHostState::kReceivedAccessCode:
       message->SetString(kAccessCode, access_code_);
       message->SetInteger(kAccessCodeLifetime,
                           access_code_lifetime_.InSeconds());
       break;
 
-    case kConnected:
+    case It2MeHostState::kConnected:
       message->SetString(kClient, client_username_);
       break;
 
-    case kDisconnected:
+    case It2MeHostState::kDisconnected:
       client_username_.clear();
       break;
 
-    case kError:
+    case It2MeHostState::kError:
       // kError is an internal-only state, sent to the web-app by a separate
       // "error" message so that errors that occur before the "connect" message
       // is sent can be communicated.
@@ -543,23 +533,23 @@ It2MeNativeMessagingHost::task_runner() const {
 }
 
 /* static */
-std::string It2MeNativeMessagingHost::HostStateToString(
-    It2MeHostState host_state) {
-  return ValueToName(kIt2MeHostStates, host_state);
-}
 
 void It2MeNativeMessagingHost::OnPolicyUpdate(
     std::unique_ptr<base::DictionaryValue> policies) {
+  // If an It2MeHost exists, provide it with the updated policies first.
+  // That way it won't appear that the policies have changed if the pending
+  // connect callback is run. If done the other way around, there is a race
+  // condition which could cause the connection to be canceled before it starts.
+  if (it2me_host_) {
+    it2me_host_->OnPolicyUpdate(std::move(policies));
+  }
+
   if (!policy_received_) {
     policy_received_ = true;
 
     if (pending_connect_) {
       std::move(pending_connect_).Run();
     }
-  }
-
-  if (it2me_host_) {
-    it2me_host_->OnPolicyUpdate(std::move(policies));
   }
 }
 

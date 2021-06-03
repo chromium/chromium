@@ -32,6 +32,7 @@
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
@@ -240,6 +241,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
+  ConstructRemote<crosapi::mojom::Remoting,
+                  &crosapi::mojom::Crosapi::BindRemoting,
+                  Crosapi::MethodMinVersions::kBindRemotingMinVersion>();
   ConstructRemote<crosapi::mojom::SelectFile,
                   &crosapi::mojom::Crosapi::BindSelectFile,
                   Crosapi::MethodMinVersions::kBindSelectFileMinVersion>();

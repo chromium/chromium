@@ -5,6 +5,13 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "remote_url_opener.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  sources = [
+    "remote_support.mojom",
+    "remote_url_opener.mojom",
+  ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

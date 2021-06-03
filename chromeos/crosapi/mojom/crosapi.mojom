@@ -24,6 +24,7 @@ import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
+import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
@@ -60,8 +61,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 30
-// Next method id: 35
+// Next version: 33
+// Next method id: 38
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -168,6 +169,11 @@ interface Crosapi {
   // Binds the prefs service which allows get, set, and notify update of prefs.
   // Added in M89.
   [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
+
+  // Binds the Remoting service to allow websites running in Lacros to interact
+  // with Chrome Remote Desktop functionality available in ash-chrome.
+  // Added in M93.
+  [MinVersion=32] BindRemoting@37(pending_receiver<Remoting> receiver);
 
   // Binds the ScreenManager interface for interacting with windows, screens and
   // displays.

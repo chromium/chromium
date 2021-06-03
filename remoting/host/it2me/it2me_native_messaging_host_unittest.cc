@@ -31,6 +31,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
+#include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/native_messaging/log_message_handler.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
@@ -159,22 +160,22 @@ void MockIt2MeHost::Connect(
 
   OnPolicyUpdate(std::move(policies));
 
-  RunSetState(kStarting);
-  RunSetState(kRequestedAccessCode);
+  RunSetState(It2MeHostState::kStarting);
+  RunSetState(It2MeHostState::kRequestedAccessCode);
 
   host_context()->ui_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&It2MeHost::Observer::OnStoreAccessCode, observer_,
                      kTestAccessCode, kTestAccessCodeLifetime));
 
-  RunSetState(kReceivedAccessCode);
-  RunSetState(kConnecting);
+  RunSetState(It2MeHostState::kReceivedAccessCode);
+  RunSetState(It2MeHostState::kConnecting);
 
   host_context()->ui_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeHost::Observer::OnClientAuthenticated,
                                 observer_, kTestClientUsername));
 
-  RunSetState(kConnected);
+  RunSetState(It2MeHostState::kConnected);
 }
 
 void MockIt2MeHost::Disconnect() {
@@ -189,7 +190,7 @@ void MockIt2MeHost::Disconnect() {
   register_request_.reset();
   signal_strategy_.reset();
 
-  RunSetState(kDisconnected);
+  RunSetState(It2MeHostState::kDisconnected);
 }
 
 void MockIt2MeHost::CreateConnectionContextOnNetworkThread(
@@ -442,15 +443,15 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
       ASSERT_TRUE(response->GetString(kState, &state));
 
       std::string value;
-      if (state == It2MeNativeMessagingHost::HostStateToString(kStarting)) {
+      if (state == It2MeHostStateToString(It2MeHostState::kStarting)) {
         EXPECT_FALSE(starting_received);
         starting_received = true;
-      } else if (state == It2MeNativeMessagingHost::HostStateToString(
-                              kRequestedAccessCode)) {
+      } else if (state ==
+                 It2MeHostStateToString(It2MeHostState::kRequestedAccessCode)) {
         EXPECT_FALSE(requestedAccessCode_received);
         requestedAccessCode_received = true;
-      } else if (state == It2MeNativeMessagingHost::HostStateToString(
-                              kReceivedAccessCode)) {
+      } else if (state ==
+                 It2MeHostStateToString(It2MeHostState::kReceivedAccessCode)) {
         EXPECT_FALSE(receivedAccessCode_received);
         receivedAccessCode_received = true;
 
@@ -461,12 +462,10 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
         EXPECT_TRUE(
             response->GetInteger(kAccessCodeLifetime, &access_code_lifetime));
         EXPECT_EQ(kTestAccessCodeLifetime.InSeconds(), access_code_lifetime);
-      } else if (state ==
-                 It2MeNativeMessagingHost::HostStateToString(kConnecting)) {
+      } else if (state == It2MeHostStateToString(It2MeHostState::kConnecting)) {
         EXPECT_FALSE(connecting_received);
         connecting_received = true;
-      } else if (state ==
-                 It2MeNativeMessagingHost::HostStateToString(kConnected)) {
+      } else if (state == It2MeHostStateToString(It2MeHostState::kConnected)) {
         EXPECT_FALSE(connected_received);
         connected_received = true;
 
@@ -501,7 +500,7 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
     } else if (type == kHostStateChangedMessage) {
       std::string state;
       ASSERT_TRUE(response->GetString(kState, &state));
-      if (state == It2MeNativeMessagingHost::HostStateToString(kDisconnected)) {
+      if (state == It2MeHostStateToString(It2MeHostState::kDisconnected)) {
         EXPECT_FALSE(disconnected_received);
         disconnected_received = true;
       } else {

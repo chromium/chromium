@@ -64,8 +64,6 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // processed.
   void SetPolicyErrorClosureForTesting(base::OnceClosure closure);
 
-  static std::string HostStateToString(It2MeHostState host_state);
-
  private:
   // These "Process.." methods handle specific request types. The |response|
   // dictionary is pre-filled by ProcessMessage() with the parts of the

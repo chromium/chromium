@@ -418,7 +418,7 @@ source_set("chromeos") {
     "//components/webapps/browser",
     "//printing",
     "//printing/mojom",
-    "//remoting/host/it2me:chrome_os_host",
+    "//remoting/host/chromeos:remoting_service",
     "//services/audio/public/cpp",
     "//services/data_decoder/public/cpp",
     "//services/device/public/cpp/usb",

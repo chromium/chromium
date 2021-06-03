@@ -6,6 +6,11 @@ specific_include_rules = {
     "+chrome/browser/ash/crosapi",
     "+ui/message_center/message_center.h",
   ],
+  "remoting_ash\.cc": [
+    # For remote support functionality.
+    "+remoting/host/chromeos/remote_support_host_ash.h",
+    "+remoting/host/chromeos/remoting_service.h",
+  ],
   "screen_manager_ash\.cc": [
     # For window parenting.
     "+ash/shell.h",

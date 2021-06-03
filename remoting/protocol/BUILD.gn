@@ -6,6 +6,14 @@ import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
 
+static_library("errors") {
+  sources = [
+    "errors.cc",
+    "errors.h",
+  ]
+  deps = [ "//remoting/base:base" ]
+}
+
 static_library("protocol") {
   sources = [
     "audio_decode_scheduler.cc",
@@ -58,8 +66,6 @@ static_library("protocol") {
     "datagram_channel_factory.h",
     "display_size.cc",
     "display_size.h",
-    "errors.cc",
-    "errors.h",
     "file_transfer_helpers.cc",
     "file_transfer_helpers.h",
     "frame_consumer.h",
@@ -216,6 +222,7 @@ static_library("protocol") {
   ]
 
   public_deps = [
+    ":errors",
     ":session_config",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",

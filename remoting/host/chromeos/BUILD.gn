@@ -44,6 +44,28 @@ source_set("chromeos") {
   ]
 }
 
+source_set("remoting_service") {
+  sources = [
+    "remote_support_host_ash.cc",
+    "remote_support_host_ash.h",
+    "remoting_service.cc",
+    "remoting_service.h",
+  ]
+
+  public_deps = [ "//remoting/host/it2me:chrome_os_host" ]
+
+  configs += [ "//remoting/build/config:version" ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//content/public/browser:browser",
+    "//mojo/public/cpp/bindings",
+    "//remoting/base:base",
+    "//remoting/host",
+    "//remoting/host/mojom:mojom",
+  ]
+}
+
 # The host portions of the remoting unit tests.
 source_set("unit_tests") {
   testonly = true

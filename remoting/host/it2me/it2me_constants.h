@@ -7,6 +7,23 @@
 
 namespace remoting {
 
+// These state values are defined in the website client as well.  Remember to
+// update both enums when making changes.
+enum class It2MeHostState {
+  kDisconnected,
+  kStarting,
+  kRequestedAccessCode,
+  kReceivedAccessCode,
+  kConnecting,
+  kConnected,
+  kError,
+  kInvalidDomainError,
+};
+
+// Indicates that an OAuth access token can be provided to the host which will
+// use it for service requests (e.g. ICE config, signaling, host registration).
+extern const char kFeatureAccessTokenAuth[];
+
 // ID used to identify the current message. Must be included in the response if
 // the sender includes it.
 extern const char kMessageId[];
