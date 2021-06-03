@@ -65,8 +65,8 @@ class ASH_PUBLIC_EXPORT PaginationController {
   // Helper function to change the page and callback record_metrics_.
   void SelectPageAndRecordMetric(int delta, ui::EventType type);
 
-  PaginationModel* pagination_model_;  // Not owned.
-  ScrollAxis scroll_axis_;
+  PaginationModel* const pagination_model_;  // Not owned.
+  const ScrollAxis scroll_axis_;
 
   const RecordMetrics record_metrics_;
 

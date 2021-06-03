@@ -30,6 +30,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
+  bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
 };
 

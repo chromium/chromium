@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
@@ -168,10 +170,33 @@ PagedAppsGridView::PagedAppsGridView(
       contents_view_(contents_view) {
   DCHECK(contents_view_);
   pagination_model_.AddObserver(this);
+
+  pagination_controller_ = std::make_unique<PaginationController>(
+      &pagination_model_,
+      is_in_folder() ? PaginationController::SCROLL_AXIS_HORIZONTAL
+                     : PaginationController::SCROLL_AXIS_VERTICAL,
+      is_in_folder()
+          ? base::DoNothing()
+          : base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType),
+      IsTabletMode());
 }
 
 PagedAppsGridView::~PagedAppsGridView() {
   pagination_model_.RemoveObserver(this);
+}
+
+void PagedAppsGridView::OnTabletModeChanged(bool started) {
+  pagination_controller_->set_is_tablet_mode(started);
+
+  // Enable/Disable folder icons's background blur based on tablet mode.
+  for (const auto& entry : view_model()->entries()) {
+    auto* item_view = static_cast<AppListItemView*>(entry.view);
+    if (item_view->item()->is_folder())
+      item_view->SetBackgroundBlurEnabled(started);
+  }
+
+  // Prevent context menus from remaining open after a transition
+  CancelContextMenusOnCurrentPage();
 }
 
 void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
@@ -472,6 +497,11 @@ int PagedAppsGridView::GetPaddingBetweenPages() const {
   return cardified_state_
              ? kCardifiedPaddingBetweenPages + 2 * vertical_tile_padding_
              : GetAppListConfig().page_spacing();
+}
+
+bool PagedAppsGridView::IsScrollAxisVertical() const {
+  return pagination_controller_->scroll_axis() ==
+         PaginationController::SCROLL_AXIS_VERTICAL;
 }
 
 void PagedAppsGridView::MaybeStartCardifiedView() {

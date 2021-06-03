@@ -46,7 +46,6 @@ class AppListItemView;
 class AppListViewDelegate;
 class AppsGridViewFolderDelegate;
 class ContentsView;
-class PaginationController;
 class PulsingBlockView;
 class GhostImageView;
 
@@ -123,9 +122,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // All items in this view become unfocusable if |disabled| is true. This is
   // used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
-
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
 
   // Sets |model| to use. Note this does not take ownership of |model|.
   void SetModel(AppListModel* model);
@@ -342,6 +338,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // does not use pages.
   virtual int GetPaddingBetweenPages() const = 0;
 
+  // Returns true if scrolling is vertical (the common case). Folders may scroll
+  // horizontally.
+  virtual bool IsScrollAxisVertical() const = 0;
+
   // Starts the "cardified" state if the subclass supports it.
   virtual void MaybeStartCardifiedView() {}
 
@@ -402,9 +402,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
-
-  // Must appear after |pagination_model_|.
-  std::unique_ptr<PaginationController> pagination_controller_;
 
   // View structure used only for non-folder.
   PagedViewStructure view_structure_{this};

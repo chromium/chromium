@@ -28,6 +28,7 @@ class Layer;
 namespace ash {
 
 class ContentsView;
+class PaginationController;
 
 // An apps grid that shows the apps on a series of fixed-size pages.
 // Used for the peeking/fullscreen launcher, home launcher and folders.
@@ -40,6 +41,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;
   ~PagedAppsGridView() override;
+
+  // Called when tablet mode starts and ends.
+  void OnTabletModeChanged(bool started);
 
   // Passes scroll information from AppListView to the PaginationController,
   // which may switch pages.
@@ -63,6 +67,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
+  bool IsScrollAxisVertical() const override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
 
@@ -124,6 +129,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* const contents_view_;
+
+  // Depends on |pagination_model_|.
+  std::unique_ptr<PaginationController> pagination_controller_;
 
   // Whether the grid is in mouse drag. Used for between-item drags that move
   // the entire grid, not for app icon drags.

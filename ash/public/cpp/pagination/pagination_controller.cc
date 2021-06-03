@@ -5,6 +5,7 @@
 #include "ash/public/cpp/pagination/pagination_controller.h"
 
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -28,6 +29,7 @@ PaginationController::PaginationController(PaginationModel* model,
       scroll_axis_(scroll_axis),
       record_metrics_(record_metrics),
       is_tablet_mode_(is_tablet_mode) {
+  DCHECK(pagination_model_);
   DCHECK(record_metrics_);
 }
 

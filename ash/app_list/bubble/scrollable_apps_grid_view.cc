@@ -87,6 +87,10 @@ int ScrollableAppsGridView::GetPaddingBetweenPages() const {
   return 0;
 }
 
+bool ScrollableAppsGridView::IsScrollAxisVertical() const {
+  return true;
+}
+
 void ScrollableAppsGridView::CalculateIdealBounds() {
   DCHECK(!is_in_folder());
 
