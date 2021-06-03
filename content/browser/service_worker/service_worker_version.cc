@@ -258,7 +258,8 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       validator_(std::make_unique<blink::TrialTokenValidator>()),
       remote_reference_(std::move(remote_reference)),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
-                                            ukm::SourceIdType::WORKER_ID)) {
+                                            ukm::SourceIdType::WORKER_ID)),
+      reporting_source_(base::UnguessableToken::Create()) {
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId, version_id);
   DCHECK(context_);
   DCHECK(registration);

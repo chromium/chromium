@@ -75,6 +75,7 @@ class CONTENT_EXPORT ServiceWorkerHost {
   }
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
+  const base::UnguessableToken& GetReportingSource() const;
 
   base::WeakPtr<ServiceWorkerHost> GetWeakPtr();
 

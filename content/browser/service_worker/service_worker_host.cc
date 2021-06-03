@@ -117,6 +117,10 @@ net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
       version_->origin());
 }
 
+const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
+  return version_->reporting_source();
+}
+
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return weak_factory_.GetWeakPtr();

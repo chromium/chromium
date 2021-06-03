@@ -165,6 +165,10 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
 
+  const base::UnguessableToken& GetReportingSource() const {
+    return reporting_source_;
+  }
+
   void ReportNoBinderForInterface(const std::string& error);
 
   // Creates a network factory params for subresource requests from this worker.
@@ -273,6 +277,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   GURL final_response_url_;
 
   const ukm::SourceId ukm_source_id_;
+
+  const base::UnguessableToken reporting_source_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 

@@ -135,6 +135,10 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
     return isolation_info_.network_isolation_key();
   }
 
+  const base::UnguessableToken& GetReportingSource() const {
+    return reporting_source_;
+  }
+
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
     DCHECK(worker_cross_origin_embedder_policy_.has_value());
@@ -238,6 +242,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // The IsolationInfo associated with this worker. Same as that of the
   // frame or the worker that created this worker.
   const net::IsolationInfo isolation_info_;
+
+  const base::UnguessableToken reporting_source_;
 
   // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
   // this worker.

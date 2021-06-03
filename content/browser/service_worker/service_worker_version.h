@@ -213,6 +213,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   ServiceWorkerVersionInfo GetInfo();
   Status status() const { return status_; }
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+  const base::UnguessableToken& reporting_source() const {
+    return reporting_source_;
+  }
 
   // This status is set to EXISTS or DOES_NOT_EXIST when the install event has
   // been executed in a new version or when an installed version is loaded from
@@ -1142,6 +1145,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Identifier for UKM recording in the service worker thread. Stored here so
   // it can be associated with clients' source IDs.
   const ukm::SourceId ukm_source_id_;
+
+  base::UnguessableToken reporting_source_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 

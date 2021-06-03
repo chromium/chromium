@@ -120,7 +120,8 @@ SharedWorkerHost::SharedWorkerHost(
       next_connection_request_id_(1),
       devtools_handle_(std::make_unique<ScopedDevToolsHandle>(this)),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
-                                            ukm::SourceIdType::WORKER_ID)) {
+                                            ukm::SourceIdType::WORKER_ID)),
+      reporting_source_(base::UnguessableToken::Create()) {
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 

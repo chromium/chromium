@@ -67,6 +67,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       // the worker script URL.
       worker_origin_(creator_origin),
       isolation_info_(isolation_info),
+      reporting_source_(base::UnguessableToken::Create()),
       creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
       host_receiver_(this, std::move(host)),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
