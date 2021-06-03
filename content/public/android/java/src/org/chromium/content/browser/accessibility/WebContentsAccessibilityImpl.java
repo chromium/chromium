@@ -1288,6 +1288,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
         event.setPackageName(mContext.getPackageName());
         event.setSource(mView, virtualViewId);
+        if (eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+        }
         if (!WebContentsAccessibilityImplJni.get().populateAccessibilityEvent(mNativeObj,
                     WebContentsAccessibilityImpl.this, event, virtualViewId, eventType)) {
             event.recycle();
