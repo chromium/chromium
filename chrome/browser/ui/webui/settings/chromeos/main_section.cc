@@ -131,6 +131,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"edit", IDS_SETTINGS_EDIT},
       {"extensionsLinkTooltip", IDS_SETTINGS_MENU_EXTENSIONS_LINK_TOOLTIP},
       {"learnMore", IDS_LEARN_MORE},
+      {"shortcutBannerDismissed", IDS_SETTINGS_SHORTCUT_BANNER_DISMISSED},
       {"menu", IDS_MENU},
       {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
       {"moreActions", IDS_SETTINGS_MORE_ACTIONS},

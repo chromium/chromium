@@ -16,6 +16,9 @@
   <message name="IDS_SETTINGS_DISMISS" desc="Label to dismiss a shortcut reminder.">
     Dismiss
   </message>
+  <message name="IDS_SETTINGS_SHORTCUT_BANNER_DISMISSED" desc="The message spoken aloud by screen readers when the user dismisses a banner showing keyboard shortcuts.">
+    Keyboard shortcut notice dismissed
+  </message>
 
   <!--Main Page-->
   <message name="IDS_SETTINGS_SECONDARY_USER_BANNER" desc="Banner displayed in settings page when the user is secondary in a multi-profile session.">
