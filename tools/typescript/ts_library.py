@@ -80,6 +80,23 @@ def main(argv):
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 
+  # Delete any obsolete .ts files (from previous builds) corresponding to .js
+  # |in_files| in the |root_dir| folder, as they would cause the following error
+  # to be thrown:
+  #
+  # "error TS5056: Cannot write file '...' because it would be overwritten by
+  # multiple input files."
+  #
+  # This can happen when a ts_library() is migrating JS to TS one file at a time
+  # and a bot is switched from building a later CL to building an earlier CL.
+  if args.in_files is not None:
+    for f in args.in_files:
+      [pathname, extension] = os.path.splitext(f)
+      if extension == '.js':
+        to_check = os.path.join(args.root_dir, pathname + '.ts')
+        if os.path.exists(to_check):
+          os.remove(to_check)
+
   node.RunNode([
       node_modules.PathToTypescript(), '--project',
       os.path.join(args.gen_dir, 'tsconfig.json')
