@@ -817,6 +817,7 @@ void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
 void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
+  session_->connection()->OnPathValidationFailureAtClient();
   // Note that socket, packet writer, and packet reader in |context| will be
   // discarded.
   auto* chrome_context =
@@ -843,6 +844,7 @@ void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
 void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
+  session_->connection()->OnPathValidationFailureAtClient();
   // Note that socket, packet writer, and packet reader in |context| will be
   // discarded.
   auto* chrome_context =
@@ -2183,9 +2185,13 @@ int QuicChromiumClientSession::HandleWriteError(
                      weak_factory_.GetWeakPtr(), error_code,
                      connection()->writer()));
 
-  // Store packet in the session since the actual migration and packet rewrite
-  // can happen via this posted task or via an async network notification.
-  packet_ = std::move(packet);
+  // Only save packet from the old path for retransmission on the new path when
+  // the connection ID does not change.
+  if (!connection()->connection_migration_use_new_cid()) {
+    // Store packet in the session since the actual migration and packet rewrite
+    // can happen via this posted task or via an async network notification.
+    packet_ = std::move(packet);
+  }
   ignore_read_error_ = true;
 
   // Cause the packet writer to return ERR_IO_PENDING and block so
@@ -2501,7 +2507,7 @@ void QuicChromiumClientSession::OnProbeFailed(
                                                        /*is_success=*/false);
                     });
 
-  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
+  if (connection()->connection_migration_use_new_cid()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
 
@@ -2580,7 +2586,7 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       "disconnected_network", disconnected_network);
 
   // Stop probing the disconnected network if there is one.
-  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
+  if (connection()->connection_migration_use_new_cid()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == disconnected_network &&
@@ -2706,7 +2712,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Cancel probing on |network| if there is any.
-  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
+  if (connection()->connection_migration_use_new_cid()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == network &&
@@ -3041,7 +3047,8 @@ ProbingResult QuicChromiumClientSession::MaybeStartProbing(
 
   // Abort probing if connection migration is disabled by config.
   if (config()->DisableConnectionMigration() ||
-      (version().HasIetfQuicFrames() && !connection()->use_path_validator())) {
+      (version().HasIetfQuicFrames() &&
+       !connection()->connection_migration_use_new_cid())) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
@@ -3057,7 +3064,7 @@ ProbingResult QuicChromiumClientSession::StartProbing(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
   // Check if probing manager is probing the same path.
-  if (version().HasIetfQuicFrames() && connection()->use_path_validator()) {
+  if (connection()->connection_migration_use_new_cid()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
     if (context && context->network() == network &&
@@ -3097,7 +3104,8 @@ ProbingResult QuicChromiumClientSession::StartProbing(
     rtt_ms = kDefaultRTTMilliSecs;
   int timeout_ms = rtt_ms * 2;
 
-  if (connection()->use_path_validator() && version().HasIetfQuicFrames()) {
+  if (connection()->connection_migration_use_new_cid() &&
+      version().HasIetfQuicFrames()) {
     probing_reader->StartReading();
     path_validation_writer_delegate_.set_network(network);
     path_validation_writer_delegate_.set_peer_address(peer_address);
@@ -3586,8 +3594,6 @@ MigrationResult QuicChromiumClientSession::Migrate(
   if (!MigrateToSocket(ToQuicSocketAddress(self_address),
                        ToQuicSocketAddress(peer_address), std::move(socket),
                        std::move(new_reader), std::move(new_writer))) {
-    HistogramAndLogMigrationFailure(MIGRATION_STATUS_TOO_MANY_CHANGES,
-                                    connection_id(), "Too many changes");
     if (close_session_on_error) {
       if (migrate_session_on_network_change_v2_) {
         CloseSessionOnErrorLater(
@@ -3619,6 +3625,8 @@ bool QuicChromiumClientSession::MigrateToSocket(
   // write error events, and path degrading on original network.
   if (!migrate_session_on_network_change_v2_ &&
       sockets_.size() >= kMaxReadersPerQuicSession) {
+    HistogramAndLogMigrationFailure(MIGRATION_STATUS_TOO_MANY_CHANGES,
+                                    connection_id(), "Too many changes");
     return false;
   }
 
@@ -3628,8 +3636,14 @@ bool QuicChromiumClientSession::MigrateToSocket(
   // WriteToNewSocket completes.
   DVLOG(1) << "Force blocking the packet writer";
   writer->set_force_write_blocked(true);
-  MigratePath(self_address, peer_address, writer.release(),
-              /*owns_writer=*/true);
+  if (!MigratePath(self_address, peer_address, writer.release(),
+                   /*owns_writer=*/true)) {
+    HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_UNUSED_CONNECTION_ID,
+                                    connection_id(),
+                                    "No unused server connection ID");
+    DVLOG(1) << "MigratePath fails as there is no CID available";
+    return false;
+  }
 
   // Post task to write the pending packet or a PING packet to the new
   // socket. This avoids reentrancy issues if there is a write error

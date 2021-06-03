@@ -66354,6 +66354,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12"
       label="Exceeding maximum number of migrations on write error"/>
   <int value="13" label="Path degrading before handshake confirmed"/>
+  <int value="14" label="Idle migration period exceeded"/>
+  <int value="15" label="Migration fails due to lack of connection ID"/>
 </enum>
 
 <enum name="QuicDisabledReason">
