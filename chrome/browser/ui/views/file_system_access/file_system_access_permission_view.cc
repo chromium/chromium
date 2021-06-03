@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
@@ -29,16 +30,30 @@ using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 int GetMessageText(const FileSystemAccessPermissionView::Request& request) {
   switch (request.access) {
     case AccessType::kRead:
-      return request.handle_type == HandleType::kDirectory
-                 ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT
-                 : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT;
+      if (base::FeatureList::IsEnabled(
+              features::kFileSystemAccessPersistentPermissions)) {
+        return request.handle_type == HandleType::kDirectory
+                   ? IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_DIRECTORY_TEXT
+                   : IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_FILE_TEXT;
+      } else {
+        return request.handle_type == HandleType::kDirectory
+                   ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT
+                   : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT;
+      }
     case AccessType::kWrite:
     case AccessType::kReadWrite:
       // Only difference between write and read-write access dialog is in button
       // label and dialog title.
-      return request.handle_type == HandleType::kDirectory
-                 ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT
-                 : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
+      if (base::FeatureList::IsEnabled(
+              features::kFileSystemAccessPersistentPermissions)) {
+        return request.handle_type == HandleType::kDirectory
+                   ? IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_DIRECTORY_TEXT
+                   : IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_FILE_TEXT;
+      } else {
+        return request.handle_type == HandleType::kDirectory
+                   ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT
+                   : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
+      }
   }
   NOTREACHED();
 }
