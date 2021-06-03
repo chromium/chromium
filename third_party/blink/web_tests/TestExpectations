@@ -6975,3 +6975,8 @@ crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Fa
 crbug.com/1176162 [ Linux ] http/tests/devtools/screen-orientation-override.js [ Pass Failure ]
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
 crbug.com/1216139 virtual/bfcache/http/tests/devtools/bfcache/bfcache-elements-update.js [ Pass Failure ]
+
+# TODO(csmartalton): Tessellation improves these tests. Rebaseline after Skia roll.
+skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug2479-3.html [ Pass Failure ]
+skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug7342.html [ Pass Failure ]
+skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug59354.html [ Pass Failure ]
