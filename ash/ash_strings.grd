@@ -1071,17 +1071,26 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_SCREEN_CAPTURES_TITLE" desc="Title of the screen captures area in the holding space bubble.">
         Screen captures
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL" desc="Title of the cancel option in the holding space item context menu.">
+        Cancel
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD" desc="Title of the option to copy an image to the clipboard in the holding space item context menu.">
         Copy image
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS" desc="Title of the option to hide previews in the holding space tray context menu.">
         Hide previews
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE" desc="Title of the pause option in the holding space item context menu.">
+        Pause
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN" desc="Title of the pin option in the holding space item context menu.">
         Pin
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE" desc="Title of the remove option in the holding space item context menu.">
         Remove
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME" desc="Title of the resume option in the holding space item context menu.">
+        Resume
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER" desc="Title of the option to show item in its folder in the holding space item context menu.">
         Show in folder

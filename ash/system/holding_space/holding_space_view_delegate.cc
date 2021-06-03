@@ -534,7 +534,6 @@ void HoldingSpaceViewDelegate::OnTabletModeEnded() {
   UpdateSelectionUi();
 }
 
-// TODO(crbug.com/1184438): Handle i18n and add icons for in-progress commands.
 ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
@@ -575,18 +574,27 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   }
 
   if (is_pausable) {
-    context_menu_model_->AddItem(
-        static_cast<int>(HoldingSpaceCommandId::kPauseItem), u"[I18N] Pause");
+    context_menu_model_->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kPauseItem),
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE),
+        ui::ImageModel::FromVectorIcon(kPauseIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   }
 
   if (is_resumable) {
-    context_menu_model_->AddItem(
-        static_cast<int>(HoldingSpaceCommandId::kResumeItem), u"[I18N] Resume");
+    context_menu_model_->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kResumeItem),
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME),
+        ui::ImageModel::FromVectorIcon(kResumeIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   }
 
   if (is_cancelable) {
-    context_menu_model_->AddItem(
-        static_cast<int>(HoldingSpaceCommandId::kCancelItem), u"[I18N] Cancel");
+    context_menu_model_->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kCancelItem),
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL),
+        ui::ImageModel::FromVectorIcon(kCancelIcon, /*color_id=*/-1,
+                                       kHoldingSpaceIconSize));
   }
 
   // The "Pause"/"Resume"/"Cancel" commands are separated from other commands.
