@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_SHILL_FAKE_MODEM_MESSAGING_CLIENT_H_
 #define CHROMEOS_DBUS_SHILL_FAKE_MODEM_MESSAGING_CLIENT_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,8 @@
 namespace chromeos {
 
 class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
-    : public ModemMessagingClient {
+    : public ModemMessagingClient,
+      public ModemMessagingClient::TestInterface {
  public:
   FakeModemMessagingClient();
   ~FakeModemMessagingClient() override;
@@ -34,9 +36,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
             const dbus::ObjectPath& object_path,
             ListCallback callback) override;
 
+  ModemMessagingClient::TestInterface* GetTestInterface() override;
+
+  // ModemMessagingClient::TestInterface overrides.
+  void ReceiveSms(const dbus::ObjectPath& object_path,
+                  const dbus::ObjectPath& sms_path) override;
+
  private:
-  SmsReceivedHandler sms_received_handler_;
-  std::vector<dbus::ObjectPath> message_paths_;
+  std::map<dbus::ObjectPath, SmsReceivedHandler> sms_received_handlers_;
+  std::map<dbus::ObjectPath, std::vector<dbus::ObjectPath>> message_paths_map_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeModemMessagingClient);
 };

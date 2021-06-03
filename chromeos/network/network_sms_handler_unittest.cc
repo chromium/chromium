@@ -12,14 +12,20 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
+#include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
 namespace {
+
+const char kCellularDeviceObjectPath[] =
+    "/org/freedesktop/ModemManager1/stub/0";
+const char kSmsPath[] = "/SMS/0";
 
 class TestObserver : public NetworkSmsHandler::Observer {
  public:
@@ -65,19 +71,16 @@ class NetworkSmsHandlerTest : public testing::Test {
     ShillDeviceClient::TestInterface* device_test =
         ShillDeviceClient::Get()->GetTestInterface();
     ASSERT_TRUE(device_test);
-    device_test->AddDevice("/org/freedesktop/ModemManager1/stub/0",
-                           shill::kTypeCellular,
+    device_test->AddDevice(kCellularDeviceObjectPath, shill::kTypeCellular,
                            "stub_cellular_device2");
 
     // This relies on the stub dbus implementations for ShillManagerClient,
     // ShillDeviceClient, ModemMessagingClient and SMSClient.
-    // Initialize a sms handler. The stub dbus clients will not send the
-    // first test message until RequestUpdate has been called.
     network_sms_handler_.reset(new NetworkSmsHandler());
     network_sms_handler_->Init();
     test_observer_ = std::make_unique<TestObserver>();
     network_sms_handler_->AddObserver(test_observer_.get());
-    network_sms_handler_->RequestUpdate(true);
+    network_sms_handler_->RequestUpdate();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -106,7 +109,13 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
-  network_sms_handler_->RequestUpdate(false);
+  ModemMessagingClient::TestInterface* modem_messaging_test =
+      ModemMessagingClient::Get()->GetTestInterface();
+  modem_messaging_test->ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath),
+                                   dbus::ObjectPath(kSmsPath));
+  base::RunLoop().RunUntilIdle();
+
+  network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
   EXPECT_NE(messages.find(kMessage1), messages.end());

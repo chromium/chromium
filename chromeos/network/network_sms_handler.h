@@ -43,9 +43,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
 
   ~NetworkSmsHandler() override;
 
-  // Requests an immediate check for new messages. If |request_existing| is
-  // true then also requests to be notified for any already received messages.
-  void RequestUpdate(bool request_existing);
+  // Requests an immediate check for new messages.
+  void RequestUpdate();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

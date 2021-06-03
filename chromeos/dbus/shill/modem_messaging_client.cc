@@ -164,6 +164,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
     GetProxy(service_name, object_path)->List(std::move(callback));
   }
 
+  TestInterface* GetTestInterface() override { return nullptr; }
+
  private:
   using ProxyMap = std::map<std::pair<std::string, std::string>,
                             std::unique_ptr<ModemMessagingProxy>>;

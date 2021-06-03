@@ -41,8 +41,6 @@ class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
   NetworkSmsDeviceHandler() = default;
   virtual ~NetworkSmsDeviceHandler() = default;
-
-  virtual void RequestUpdate() = 0;
 };
 
 class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
@@ -51,8 +49,6 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
                                        const std::string& service_name,
                                        const dbus::ObjectPath& object_path);
-
-  void RequestUpdate() override;
 
  private:
   void ListCallback(absl::optional<std::vector<dbus::ObjectPath>> paths);
@@ -96,16 +92,6 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
   // List the existing messages.
   ModemMessagingClient::Get()->List(
       service_name_, object_path_,
-      base::BindOnce(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
-                         ListCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::RequestUpdate() {
-  // Calling List using the service "AddSMS" causes the stub
-  // implementation to deliver new sms messages.
-  ModemMessagingClient::Get()->List(
-      std::string("AddSMS"), dbus::ObjectPath("/"),
       base::BindOnce(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
                          ListCallback,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -228,15 +214,9 @@ void NetworkSmsHandler::Init() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NetworkSmsHandler::RequestUpdate(bool request_existing) {
-  // If we already received messages and |request_existing| is true, send
-  // updates for existing messages.
+void NetworkSmsHandler::RequestUpdate() {
   for (const auto& message : received_messages_) {
     NotifyMessageReceived(message);
-  }
-  // Request updates from each device.
-  for (auto& handler : device_handlers_) {
-    handler->RequestUpdate();
   }
 }
 
