@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -278,7 +280,8 @@ void AppTimeControllerTest::DeleteController() {
 }
 
 void AppTimeControllerTest::InstantiateController() {
-  controller_ = std::make_unique<AppTimeController>(&profile_);
+  controller_ = std::make_unique<AppTimeController>(
+      &profile_, base::DoNothing::Repeatedly());
   test_api_ = std::make_unique<AppTimeController::TestApi>(controller_.get());
 }
 

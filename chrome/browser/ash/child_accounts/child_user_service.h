@@ -9,10 +9,10 @@
 #include <set>
 #include <string>
 
-#include "chrome/browser/ash/child_accounts/family_user_parental_control_metrics.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace base {
 class TimeDelta;
@@ -27,6 +27,7 @@ class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
 class GURL;
+class Profile;
 
 namespace ash {
 namespace app_time {
@@ -55,10 +56,31 @@ class ChildUserService : public KeyedService,
     ChildUserService* const service_;
   };
 
+  // These enum values represent the current Family Link user's time limit
+  // policy type for the Family Experiences team's metrics. Multiple time
+  // limit policy types might be enabled at the same time. These values are
+  // logged to UMA. Entries should not be renumbered and numeric values should
+  // never be reused. Please keep in sync with "TimeLimitPolicyType" in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class TimeLimitPolicyType {
+    kNoTimeLimit = 0,
+    kOverrideTimeLimit = 1,
+    kBedTimeLimit = 2,
+    kScreenTimeLimit = 3,
+    kWebTimeLimit = 4,
+    kAppTimeLimit = 5,  // Does not cover blocked apps.
+
+    // Used for UMA. Update kMaxValue to the last value. Add future entries
+    // above this comment. Sync with enums.xml.
+    kMaxValue = kAppTimeLimit
+  };
+
   // Family Link helper(for child and teens) is an app available to supervised
   // users and the companion app of Family Link app(for parents).
   static const char kFamilyLinkHelperAppPackageName[];
   static const char kFamilyLinkHelperAppPlayStoreURL[];
+
+  static const char* GetTimeLimitPolicyTypesHistogramNameForTest();
 
   explicit ChildUserService(content::BrowserContext* context);
   ChildUserService(const ChildUserService&) = delete;
@@ -96,17 +118,19 @@ class ChildUserService : public KeyedService,
   // |features::kWebTimeLimits| features are enabled.
   base::TimeDelta GetWebTimeLimit() const;
 
-  // Checks whether app time limit and chrome app time limit are enabled and
-  // inserts the enabled types to `enabled_policies`.
-  void GetEnabledAppTimeLimitPolicies(
-      std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
-          enabled_policies);
+  // Report enabled TimeLimitPolicyType.
+  void ReportTimeLimitPolicy() const;
 
  private:
   // KeyedService:
   void Shutdown() override;
 
   std::unique_ptr<app_time::AppTimeController> app_time_controller_;
+
+  // Preference changes observer.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  Profile* const profile_;
 };
 
 }  // namespace ash

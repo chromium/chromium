@@ -78165,6 +78165,8 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="TimeLimitPolicyType">
+<!-- App Time Limit does not cover blocked apps. -->
+
   <int value="0" label="No Time Limit"/>
   <int value="1" label="Override Time Limit"/>
   <int value="2" label="Bed Time Limit"/>

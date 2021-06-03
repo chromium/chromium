@@ -5673,8 +5673,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records whether managed sites approved list and blocked list are enabled for
-    currently active Family Link user. Reports at the beginning of the first
-    active session daily. Ignores the reports during OOBE and sign out.
+    currently active Family Link user. Prior to M93, this metric was recorded at
+    the beginning of first active session daily. In M93, this metric is now also
+    recorded when manual hosts and manual urls policies are changed. Ignores the
+    reports during OOBE and sign out.
   </summary>
 </histogram>
 
@@ -5767,7 +5769,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records what time limit policy types are enabled for the currently active
     Family Link user. Enabling multiple policies would report multiple buckets
-    to UMA. Reports at the beginning of the first active session daily.
+    to UMA. Prior to M93, this metric was recorded at the beginning of first
+    active session daily. In M93, this metric is now also recorded when bed time
+    limit, daily limit, override time limit, apps time limit and web time limit
+    policies are changed. App time limits does not include blocked apps.
   </summary>
 </histogram>
 
@@ -5820,9 +5825,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Records the web filter type for currently active Family Link user. Reports
-    at the beginning of the first active session daily. Ignores the reports
-    during OOBE and sign out.
+    Records the web filter type for currently active Family Link user. Prior to
+    M93, this metric was recorded at the beginning of first active session
+    daily. In M93, this metric is now also recorded when web filter type policy
+    changed. Ignores the reports during OOBE and sign out.
   </summary>
 </histogram>
 

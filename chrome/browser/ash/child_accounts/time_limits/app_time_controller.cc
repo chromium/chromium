@@ -209,7 +209,9 @@ void AppTimeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kPerAppTimeLimitsAllowlistPolicy);
 }
 
-AppTimeController::AppTimeController(Profile* profile)
+AppTimeController::AppTimeController(
+    Profile* profile,
+    base::RepeatingClosure on_policy_updated_callback)
     : profile_(profile),
       app_service_wrapper_(std::make_unique<AppServiceWrapper>(profile)),
       app_registry_(
@@ -218,7 +220,8 @@ AppTimeController::AppTimeController(Profile* profile)
                                                 profile->GetPrefs())),
       web_time_activity_provider_(std::make_unique<WebTimeActivityProvider>(
           this,
-          app_service_wrapper_.get())) {
+          app_service_wrapper_.get())),
+      on_policy_updated_callback_(on_policy_updated_callback) {
   DCHECK(profile);
 
   if (WebTimeLimitEnforcer::IsEnabled())
@@ -388,6 +391,8 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
             .size();
 
     base::UmaHistogramCounts1000(kBlockedAppsCountMetric, blocked_apps);
+
+    on_policy_updated_callback_.Run();
   }
 }
 

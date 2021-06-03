@@ -128,6 +128,11 @@ class SupervisedUserURLFilter {
   SupervisedUserURLFilter();
   ~SupervisedUserURLFilter();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static const char* GetWebFilterTypeHistogramNameForTest();
+  static const char* GetManagedSiteListHistogramNameForTest();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Returns true if the parental allowlist/blocklist should be skipped in
   // |contents|. SafeSearch filtering is still applied to |contents|.
   static bool ShouldSkipParentManualAllowlistFiltering(
@@ -242,10 +247,18 @@ class SupervisedUserURLFilter {
       const scoped_refptr<base::TaskRunner>& task_runner);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // // Returns WebFilterType for current web filter setting.
   WebFilterType GetWebFilterType() const;
-  // Returns ManagedSiteList for current web filter setting.
-  ManagedSiteList GetManagedSiteList() const;
+
+  // Reports FamilyUser.WebFilterType metrics when `is_filter_initialized_` is
+  // true.
+  void ReportWebFilterTypeMetrics() const;
+
+  // Reports FamilyUser.ManagedSiteList metrics when `is_filter_initialized_` is
+  // true.
+  void ReportManagedSiteListMetrics() const;
+
+  // Set value for `is_filter_initialized_`.
+  void SetFilterInitialized(bool is_filter_initialized);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -288,6 +301,10 @@ class SupervisedUserURLFilter {
   scoped_refptr<base::TaskRunner> blocking_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_filter_initialized_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 

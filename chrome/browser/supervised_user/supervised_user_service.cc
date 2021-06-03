@@ -124,6 +124,17 @@ base::FilePath GetDenylistPath() {
   return denylist_dir.AppendASCII(kDenylistFilename);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool AreWebFilterPrefsDefault(PrefService* pref_service) {
+  return pref_service
+             ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+             ->IsDefaultValue() ||
+         pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
+             ->IsDefaultValue();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 SupervisedUserService::~SupervisedUserService() {
@@ -205,8 +216,8 @@ std::string SupervisedUserService::GetExtensionRequestId(
 }
 
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
-  std::string email = profile_->GetPrefs()->GetString(
-      prefs::kSupervisedUserCustodianEmail);
+  std::string email =
+      profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
@@ -227,8 +238,8 @@ std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
 }
 
 std::string SupervisedUserService::GetCustodianName() const {
-  std::string name = profile_->GetPrefs()->GetString(
-      prefs::kSupervisedUserCustodianName);
+  std::string name =
+      profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianName);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (name.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
@@ -401,11 +412,15 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-bool SupervisedUserService::IsFilteringBehaviorPrefDefault() const {
-  return profile_->GetPrefs()
-      ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-      ->IsDefaultValue();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
+  if (AreWebFilterPrefsDefault(profile_->GetPrefs()))
+    return;
+
+  url_filter_.ReportManagedSiteListMetrics();
+  url_filter_.ReportWebFilterTypeMetrics();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SupervisedUserService::SetActive(bool active) {
   if (active_ == active)
@@ -470,6 +485,11 @@ void SupervisedUserService::SetActive(bool active) {
     OnSafeSitesSettingChanged();
     UpdateManualHosts();
     UpdateManualURLs();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    GetURLFilter()->SetFilterInitialized(true);
+    current_web_filter_type_ = url_filter_.GetWebFilterType();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     RefreshApprovedExtensionsFromPrefs();
@@ -576,6 +596,16 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SupervisedUserURLFilter::WebFilterType filter_type =
+      url_filter_.GetWebFilterType();
+  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
+      current_web_filter_type_ != filter_type) {
+    url_filter_.ReportWebFilterTypeMetrics();
+    current_web_filter_type_ = filter_type;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
@@ -593,6 +623,16 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
   }
 
   UpdateAsyncUrlChecker();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SupervisedUserURLFilter::WebFilterType filter_type =
+      url_filter_.GetWebFilterType();
+  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
+      current_web_filter_type_ != filter_type) {
+    url_filter_.ReportWebFilterTypeMetrics();
+    current_web_filter_type_ = filter_type;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateAsyncUrlChecker() {
@@ -726,6 +766,11 @@ void SupervisedUserService::UpdateManualHosts() {
 
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
+    url_filter_.ReportManagedSiteListMetrics();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateManualURLs() {
@@ -740,6 +785,11 @@ void SupervisedUserService::UpdateManualURLs() {
 
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
+    url_filter_.ReportManagedSiteListMetrics();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::Shutdown() {

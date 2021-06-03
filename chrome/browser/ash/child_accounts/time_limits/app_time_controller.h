@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -70,7 +71,8 @@ class AppTimeController : public SystemClockClient::Observer,
   // Registers preferences
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  explicit AppTimeController(Profile* profile);
+  AppTimeController(Profile* profile,
+                    base::RepeatingClosure on_policy_updated_callback);
   AppTimeController(const AppTimeController&) = delete;
   AppTimeController& operator=(const AppTimeController&) = delete;
   ~AppTimeController() override;
@@ -179,6 +181,8 @@ class AppTimeController : public SystemClockClient::Observer,
   // Metrics information to be recorded for PerAppTimeLimits.
   int patl_policy_update_count_ = 0;
   int apps_with_limit_ = 0;
+
+  base::RepeatingClosure on_policy_updated_callback_;
 
   base::WeakPtrFactory<AppTimeController> weak_ptr_factory_{this};
 };

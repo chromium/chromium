@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/file_downloader.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
@@ -220,9 +221,11 @@ class SupervisedUserService : public KeyedService,
   void RecordExtensionEnablementUmaMetrics(bool enabled) const;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  // Returns true if prefs::kDefaultSupervisedUserFilteringBehavior is set to
-  // default value.
-  bool IsFilteringBehaviorPrefDefault() const;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList metrics.
+  // Igores reporting when AreWebFilterPrefsDefault() is true.
+  void ReportNonDefaultWebFilterValue() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;
@@ -408,6 +411,16 @@ class SupervisedUserService : public KeyedService,
 #if !defined(OS_ANDROID)
   bool signout_required_after_supervision_enabled_ = false;
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // When there is change between WebFilterType::kTryToBlockMatureSites and
+  // WebFilterType::kCertainSites, both
+  // prefs::kDefaultSupervisedUserFilteringBehavior and
+  // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
+  // reports. Initialized in the SetActive().
+  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
+      SupervisedUserURLFilter::WebFilterType::kMaxValue;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 

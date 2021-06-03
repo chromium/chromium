@@ -1333,25 +1333,21 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::Value& old_policy,
   return updated_policies;
 }
 
-void GetEnabledTimeLimitPolicies(
-    std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
-        enabled_policies,
+std::set<PolicyType> GetEnabledTimeLimitPolicies(
     const base::Value& time_limit_prefs) {
   DCHECK(time_limit_prefs.is_dict());
-  if (!enabled_policies)
-    return;
+  std::set<PolicyType> enabled_policies;
+
   absl::optional<internal::TimeWindowLimit> time_window_limit =
       TimeWindowLimitFromPolicy(time_limit_prefs);
   if (time_window_limit && !time_window_limit->entries.empty()) {
-    enabled_policies->insert(
-        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kBedTimeLimit);
+    enabled_policies.insert(PolicyType::kFixedLimit);
   }
 
   absl::optional<internal::TimeUsageLimit> time_usage_limit =
       TimeUsageLimitFromPolicy(time_limit_prefs);
   if (time_usage_limit && !time_usage_limit->entries.empty()) {
-    enabled_policies->insert(FamilyUserParentalControlMetrics::
-                                 TimeLimitPolicyType::kScreenTimeLimit);
+    enabled_policies.insert(PolicyType::kUsageLimit);
   }
 
   absl::optional<TimeLimitOverride> time_limit_override =
@@ -1360,9 +1356,10 @@ void GetEnabledTimeLimitPolicies(
   // Ignores the override time limit that is not created within 1 day.
   if (time_limit_override && now > time_limit_override->created_at() &&
       now - time_limit_override->created_at() < base::TimeDelta::FromDays(1)) {
-    enabled_policies->insert(FamilyUserParentalControlMetrics::
-                                 TimeLimitPolicyType::kOverrideTimeLimit);
+    enabled_policies.insert(PolicyType::kOverride);
   }
+
+  return enabled_policies;
 }
 
 }  // namespace usage_time_limit
