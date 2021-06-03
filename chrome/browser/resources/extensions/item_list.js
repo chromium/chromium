@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
-import './shared_style.js';
 import './checkup.js';
+import './item.js';
+import './shared_style.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

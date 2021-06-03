@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import './activity_log/activity_log.js';
 import './detail_view.js';
 import './drop_overlay.js';
 import './error_page.js';

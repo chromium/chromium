@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './activity_log_stream.js';
+import './activity_log_history.js';
 import '../strings.m.js';
 import '../shared_style.js';
 import '../shared_vars.js';

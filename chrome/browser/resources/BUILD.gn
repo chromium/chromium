@@ -148,9 +148,6 @@ if (enable_js_type_check) {
         "nearby_share/shared:closure_compile_module",
       ]
     }
-    if (enable_extensions) {
-      deps += [ "extensions:closure_compile" ]
-    }
     if (enable_nacl) {
       deps += [ "about_nacl:closure_compile" ]
     }

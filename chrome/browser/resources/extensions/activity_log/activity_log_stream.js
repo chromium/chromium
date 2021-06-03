@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../shared_style.js';
+import './activity_log_stream_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
