@@ -208,7 +208,7 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForPrimaryAccount(
 
   if (primary_account_only || !primary_account_info.gaia.empty()) {
     // The extension is using the primary account.
-    OnReceivedExtensionAccountInfo(&primary_account_info);
+    OnReceivedExtensionAccountInfo(primary_account_info);
   } else {
     // No primary account, try the first account in cookies.
     DCHECK_EQ(AccountListeningMode::kNotListening, account_listening_mode_);
@@ -226,15 +226,14 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForPrimaryAccount(
 
 void IdentityGetAuthTokenFunction::FetchExtensionAccountInfo(
     const std::string& gaia_id) {
-  OnReceivedExtensionAccountInfo(base::OptionalOrNullptr(
+  OnReceivedExtensionAccountInfo(
       IdentityManagerFactory::GetForProfile(GetProfile())
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-              gaia_id)));
+          ->FindExtendedAccountInfoByGaiaId(gaia_id));
 }
 
 void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
-    const CoreAccountInfo* account_info) {
-  token_key_.account_info = account_info ? *account_info : CoreAccountInfo();
+    const CoreAccountInfo& account_info) {
+  token_key_.account_info = account_info;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
@@ -256,9 +255,9 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
   }
 #endif
 
-  if (!account_info ||
+  if (account_info.IsEmpty() ||
       !IdentityManagerFactory::GetForProfile(GetProfile())
-           ->HasAccountWithRefreshToken(account_info->account_id)) {
+           ->HasAccountWithRefreshToken(account_info.account_id)) {
     if (!ShouldStartSigninFlow()) {
       IdentityGetAuthTokenError error(
           IsBrowserSigninAllowed(GetProfile())
@@ -292,12 +291,11 @@ void IdentityGetAuthTokenFunction::OnAccountsInCookieUpdated(
     // If the account is in auth error, it won't be in the identity manager.
     // Save the email now to use as email hint for the login prompt.
     email_for_default_web_account_ = account.email;
-    OnReceivedExtensionAccountInfo(base::OptionalOrNullptr(
+    OnReceivedExtensionAccountInfo(
         IdentityManagerFactory::GetForProfile(GetProfile())
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-                account.gaia_id)));
+            ->FindExtendedAccountInfoByGaiaId(account.gaia_id));
   } else {
-    OnReceivedExtensionAccountInfo(nullptr);
+    OnReceivedExtensionAccountInfo(CoreAccountInfo());
   }
 }
 
@@ -719,10 +717,9 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
-  absl::optional<AccountInfo> account =
-      IdentityManagerFactory::GetForProfile(GetProfile())
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id);
-  if (!account) {
+  AccountInfo account = IdentityManagerFactory::GetForProfile(GetProfile())
+                            ->FindExtendedAccountInfoByGaiaId(gaia_id);
+  if (account.IsEmpty()) {
     CompleteMintTokenFlow();
     CompleteFunctionWithError(IdentityGetAuthTokenError(
         IdentityGetAuthTokenError::State::kRemoteConsentUserNotSignedIn));
@@ -733,7 +730,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     CoreAccountId primary_account_id =
         IdentityManagerFactory::GetForProfile(GetProfile())
             ->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-    if (primary_account_id != account->account_id) {
+    if (primary_account_id != account.account_id) {
       CompleteMintTokenFlow();
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kRemoteConsentUserNonPrimary));
@@ -747,7 +744,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   // It's important to update the cache before calling CompleteMintTokenFlow()
   // as this call may start a new request synchronously and query the cache.
   ExtensionTokenKey new_token_key(token_key_);
-  new_token_key.account_info = account.value();
+  new_token_key.account_info = account;
   id_api->token_cache()->SetToken(
       new_token_key,
       IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result));
@@ -888,12 +885,11 @@ void IdentityGetAuthTokenFunction::StartGaiaRequest(
 }
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
-  absl::optional<AccountInfo> account =
-      IdentityManagerFactory::GetForProfile(GetProfile())
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              token_key_.account_info.account_id);
+  AccountInfo account = IdentityManagerFactory::GetForProfile(GetProfile())
+                            ->FindExtendedAccountInfoByAccountId(
+                                token_key_.account_info.account_id);
   std::string email_hint =
-      account ? account->email : email_for_default_web_account_;
+      account.IsEmpty() ? email_for_default_web_account_ : account.email;
 
   LoginUIService* login_ui_service =
       LoginUIServiceFactory::GetForProfile(GetProfile());

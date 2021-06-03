@@ -490,11 +490,10 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   // Chrome OS), then show only the primary account, whether or not that account
   // has consented to sync.
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
-  if (primary_account_info.has_value())
-    accounts.Append(GetAccountValue(primary_account_info.value()));
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  if (!primary_account_info.IsEmpty())
+    accounts.Append(GetAccountValue(primary_account_info));
   return accounts;
 }
 
@@ -509,14 +508,12 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
 
-  absl::optional<AccountInfo> maybe_account =
+  AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-              email->GetString());
+          ->FindExtendedAccountInfoByEmailAddress(email->GetString());
 
   signin_ui_util::EnableSyncFromMultiAccountPromo(
-      browser,
-      maybe_account.has_value() ? maybe_account.value() : AccountInfo(),
+      browser, maybe_account,
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       is_default_promo_account->GetBool());
 #else

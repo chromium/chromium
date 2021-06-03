@@ -1584,9 +1584,7 @@ AccountInfo ChromePasswordProtectionService::GetSignedInNonSyncAccount(
   if (account_iterator == signed_in_accounts.end())
     return AccountInfo();
 
-  return identity_manager
-      ->FindExtendedAccountInfoForAccountWithRefreshToken(*account_iterator)
-      .value_or(AccountInfo());
+  return identity_manager->FindExtendedAccountInfo(*account_iterator);
 }
 
 bool ChromePasswordProtectionService::IsInExcludedCountry() {
@@ -1659,11 +1657,8 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
   if (!identity_manager)
     return AccountInfo();
 
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-
-  return primary_account_info.value_or(AccountInfo());
+  return identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
 }
 
 ChromePasswordProtectionService::ChromePasswordProtectionService(

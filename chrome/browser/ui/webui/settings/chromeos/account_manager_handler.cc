@@ -298,11 +298,9 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
       continue;
     }
 
-    absl::optional<AccountInfo> maybe_account_info =
-        identity_manager_
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-                account_key.id);
-    if (!maybe_account_info.has_value()) {
+    AccountInfo maybe_account_info =
+        identity_manager_->FindExtendedAccountInfoByGaiaId(account_key.id);
+    if (maybe_account_info.IsEmpty()) {
       // This account hasn't propagated to IdentityManager yet. When this
       // happens, `IdentityManager` will call `OnRefreshTokenUpdatedForAccount`
       // which will trigger another UI update.
@@ -313,16 +311,16 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     account.SetId(account_key.id)
         .SetAccountType(static_cast<int>(account_key.account_type))
         .SetIsDeviceAccount(false)
-        .SetFullName(maybe_account_info->full_name)
+        .SetFullName(maybe_account_info.full_name)
         .SetEmail(stored_account.raw_email)
         .SetUnmigrated(!is_child_user && account_token_pair.second)
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
-                                maybe_account_info->account_id));
+                                maybe_account_info.account_id));
 
-    if (!maybe_account_info->account_image.IsEmpty()) {
-      account.SetPic(webui::GetBitmapDataUrl(
-          maybe_account_info->account_image.AsBitmap()));
+    if (!maybe_account_info.account_image.IsEmpty()) {
+      account.SetPic(
+          webui::GetBitmapDataUrl(maybe_account_info.account_image.AsBitmap()));
     } else {
       gfx::ImageSkia default_icon =
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(

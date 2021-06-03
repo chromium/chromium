@@ -103,13 +103,11 @@ void ChildAccountService::Init() {
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
   // "Unconsented" because this class doesn't care about browser sync consent.
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin));
+  AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
-  if (primary_account_info.has_value())
-    OnExtendedAccountInfoUpdated(primary_account_info.value());
+  if (!primary_account_info.IsEmpty())
+    OnExtendedAccountInfoUpdated(primary_account_info);
 }
 
 bool ChildAccountService::IsChildAccountStatusKnown() {
@@ -251,11 +249,10 @@ void ChildAccountService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
-    auto account_info =
-        identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-            event_details.GetCurrentState().primary_account);
-    if (account_info.has_value()) {
-      OnExtendedAccountInfoUpdated(account_info.value());
+    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+        event_details.GetCurrentState().primary_account);
+    if (!account_info.IsEmpty()) {
+      OnExtendedAccountInfoUpdated(account_info);
     }
     // Otherwise OnExtendedAccountInfoUpdated will be notified once
     // the account info is available.

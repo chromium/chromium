@@ -371,16 +371,15 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
     EXPECT_EQ(expected_account.raw_email,
               ValueOrEmpty(account.FindStringKey("email")));
 
-    absl::optional<AccountInfo> expected_account_info =
-        identity_manager()
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
-                expected_account.key.id);
-    EXPECT_TRUE(expected_account_info.has_value());
-    EXPECT_EQ(expected_account_info->full_name,
+    AccountInfo expected_account_info =
+        identity_manager()->FindExtendedAccountInfoByGaiaId(
+            expected_account.key.id);
+    EXPECT_FALSE(expected_account_info.IsEmpty());
+    EXPECT_EQ(expected_account_info.full_name,
               ValueOrEmpty(account.FindStringKey("fullName")));
     EXPECT_EQ(
         !identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-            expected_account_info->account_id),
+            expected_account_info.account_id),
         account.FindBoolKey("isSignedIn").value());
   }
 }

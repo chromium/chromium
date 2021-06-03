@@ -143,12 +143,12 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // instance, or empty if this was not in the parameters.
   void GetAuthTokenForPrimaryAccount(const std::string& extension_gaia_id);
 
-  // Wrapper to FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId() to
-  // avoid a synchronous call to IdentityManager in RunAsync().
+  // Wrapper to FindExtendedAccountInfoByGaiaId() to avoid a synchronous call to
+  // IdentityManager in RunAsync().
   void FetchExtensionAccountInfo(const std::string& gaia_id);
 
   // Called when the AccountInfo that this instance should use is available.
-  void OnReceivedExtensionAccountInfo(const CoreAccountInfo* account_info);
+  void OnReceivedExtensionAccountInfo(const CoreAccountInfo& account_info);
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
