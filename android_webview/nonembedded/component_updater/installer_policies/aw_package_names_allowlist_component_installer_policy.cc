@@ -87,11 +87,10 @@ bool AwPackageNamesAllowlistComponentInstallerPolicy::
   return false;
 }
 
-// Called during startup and installation before ComponentReady().
 bool AwPackageNamesAllowlistComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
-  return manifest.HasKey(kWebViewAppsPackageNamesAllowlistName);
+  return true;
 }
 
 base::FilePath
