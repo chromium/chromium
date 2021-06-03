@@ -678,6 +678,7 @@
 <translation id="1706625117072057435">Томруулах түвшин</translation>
 <translation id="1708338024780164500">(Идэвхигүй)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Туршилтын хөтөч! Өгөгдөл алдах эсвэл нууцлал, аюулгүй байдал алдагдаж магадгүй. Асуудлыг дараахаар мэдээлнэ үү: Тусламж &gt; "Асуудал мэдээлэх...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Төрөлх)</translation>
 <translation id="1709217939274742847">Нотолгоонд хэрэглэх тасалбарыг сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Хуваалцах боломжгүй</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2144557304298909478">Linux-н Андройд аппын хөгжүүлэлт</translation>
 <translation id="2146263598007866206">Сайтууд таны цагийг хэмнэхийн тулд холбоотой файлуудыг хамтад нь автоматаар татаж болзошгүй</translation>
 <translation id="2147151613919729065">Зочны горимын түүхийг арилгахын тулд Зочны бүх цонхыг хаана уу.</translation>
+<translation id="2147218225094845757">Хажуугийн самбарыг нуух</translation>
 <translation id="2148219725039824548">Хуваалцлыг залгаж чадсангүй. Сонгосон хуваалцал сүлжээнээс олдсонгүй.</translation>
 <translation id="2148756636027685713">Форматлаж дууссан</translation>
 <translation id="2148892889047469596">Цонх дамжуулах</translation>
@@ -3947,6 +3949,7 @@
 <translation id="5269977353971873915">Хэвлэх үйлдэл амжилтгүй болсон байна</translation>
 <translation id="5275352920323889391">Нохой</translation>
 <translation id="527605982717517565"><ph name="HOST" />-д байгаа JavaScript-ийг үргэлж зөвшөөрөх</translation>
+<translation id="5277127016695466621">Хажуугийн самбарыг харуулах</translation>
 <translation id="5278823018825269962">Төлөвийн Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />-н мандат үнэмлэхийг шинэчлэх</translation>
 <translation id="5280243692621919988">Таныг бүх цонхыг хаахад күүки болон сайтын өгөгдлийг устгах</translation>
@@ -6127,7 +6130,6 @@
 <translation id="7685049629764448582">JavaScript санах ой</translation>
 <translation id="7685087414635069102">ПИН шаардлагатай</translation>
 <translation id="768549422429443215">Хэл нэмэх эсвэл жагсаалтыг дахин эрэмбэлнэ үү.</translation>
-<translation id="7686424868232681412">Lacros нь туршилтын хөтөч юм. Асуудлыг дараахаар мэдээлнэ үү: Тусламж &gt; "Асуудал мэдээлэх...".</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7690378713476594306">Жагсаалтаас сонгох</translation>

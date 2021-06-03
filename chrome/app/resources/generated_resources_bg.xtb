@@ -678,6 +678,7 @@
 <translation id="1706625117072057435">Нива на мащаба</translation>
 <translation id="1708338024780164500">(Неактивно)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (идент. №: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Експериментален браузър! Възможна е загуба на данни или компрометиране на поверителността или сигурността. Отворете „Помощ &gt; Подаване на сигнал за проблем...“, за да сигнализирате за проблеми.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандартно)</translation>
 <translation id="1709217939274742847">Изберете пропуск, който да използвате за удостоверяване. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Споделянето не е възможно</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2144557304298909478">Разработване на приложения за Android в Linux</translation>
 <translation id="2146263598007866206">Сайтовете може автоматично да изтеглят сродни файлове, за да ви спестят време</translation>
 <translation id="2147151613919729065">За да изчистите историята в режим на гост, затворете всички прозорци в този режим.</translation>
+<translation id="2147218225094845757">Скриване на страничния панел</translation>
 <translation id="2148219725039824548">Възникна грешка при свързването на посочения дял. Той не бе намерен в мрежата.</translation>
 <translation id="2148756636027685713">Форматирането завърши</translation>
 <translation id="2148892889047469596">Предаване на раздела</translation>
@@ -3949,6 +3951,7 @@
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Да се разреши на <ph name="HOST" /> винаги да изпълнява JavaScript</translation>
+<translation id="5277127016695466621">Показване на страничния панел</translation>
 <translation id="5278823018825269962">ID на състоянието</translation>
 <translation id="5280064835262749532">Актуализирайте идентификационните данни за <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Изчистване на „бисквитките“ и данните за сайтовете, когато затворите всички прозорци</translation>
@@ -6130,7 +6133,6 @@
 <translation id="7685049629764448582">Памет за JavaScript</translation>
 <translation id="7685087414635069102">Изисква се ПИН код</translation>
 <translation id="768549422429443215">Добавяне на езици или пренареждане на списъка.</translation>
-<translation id="7686424868232681412">Lacros е експериментален браузър. Отворете „Помощ &gt; Подаване на сигнал за проблем...“, за да сигнализирате за проблеми.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7690378713476594306">Избиране от списъка</translation>

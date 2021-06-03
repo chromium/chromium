@@ -682,6 +682,7 @@
 <translation id="1706625117072057435">ဇူးမ်အဆင့်များ</translation>
 <translation id="1708338024780164500">(အသုံးမပြု)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (အိုင်ဒီ − <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">စမ်းသပ်နေဆဲ ဘရောင်ဇာဖြစ်သည်။ ဒေတာဆုံးရှုံးနိုင်သည် သို့မဟုတ် ပုဂ္ဂိုလ်ရေး (သို့) လုံခြုံရေး ထိခိုက်နိုင်သည်။ ပြဿနာများ အကြောင်းကြားရန်- ‘အကူအညီ’ &gt; “ပြဿနာ အကြောင်းကြားရန်...” သို့သွားပါ။</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူလ)</translation>
 <translation id="1709217939274742847">အထောက်အထားစိစစ်ရာတွင် အသုံးပြုရန် လက်မှတ်တစ်ခု ရွေးပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">မျှဝေ၍ မရပါ</translation>
@@ -1099,6 +1100,7 @@
 <translation id="2144557304298909478">Linux Android အက်ပ် ရေးဆွဲမှု</translation>
 <translation id="2146263598007866206">သင့်အတွက် အချိန်ကုန်သက်သာစေရန် သက်ဆိုင်ရာဖိုင်များကို ဝဘ်ဆိုက်များက အလိုအလျောက် ဒေါင်းလုဒ်လုပ်နိုင်သည်</translation>
 <translation id="2147151613919729065">‘ဧည့်သည်မုဒ်’ မှတ်တမ်း ရှင်းထုတ်ရန် ‘ဧည့်သည်ဝင်းဒိုး’ အားလုံးကို ပိတ်ပါ။</translation>
+<translation id="2147218225094845757">ဘေးအကန့် ဖျောက်ထားရန်</translation>
 <translation id="2148219725039824548">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ သတ်မှတ်ထားသည့် မျှဝေဖိုင်တွဲကို ကွန်ရက်ပေါ်တွင် မတွေ့ပါ။</translation>
 <translation id="2148756636027685713">ဖိုင်ပြန်လည်စီခြင်း ပြီးဆုံးပြီ။</translation>
 <translation id="2148892889047469596">ကာစ်တ် တဘ်</translation>
@@ -3950,6 +3952,7 @@
 <translation id="5269977353971873915">ပရင်ထုတ်ရန် မအောင်မြင်ပါ</translation>
 <translation id="5275352920323889391">ခွေး</translation>
 <translation id="527605982717517565"><ph name="HOST" /> တွင် အမြဲတမ်း JavaScript ခွင့်ပြုရန်</translation>
+<translation id="5277127016695466621">ဘေးအကန့် ပြသရန်</translation>
 <translation id="5278823018825269962">အခြေအနေ Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> အတွက် အထောက်အထားများ အပ်ဒိတ်လုပ်ခြင်း</translation>
 <translation id="5280243692621919988">ဝင်းဒိုးများအားလုံးကို သင်ပိတ်သည့်အခါ ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများအားလုံးကို ရှင်းလင်းပါ</translation>
@@ -6128,7 +6131,6 @@
 <translation id="7685049629764448582">JavaScript မှတ်ဉာဏ်</translation>
 <translation id="7685087414635069102">ပင်နံပါတ် လိုအပ်သည်</translation>
 <translation id="768549422429443215">ဘာသာစကားများ ထည့်ပါ သို့မဟုတ် စာရင်းကို ပြန်စီပါ။</translation>
-<translation id="7686424868232681412">Lacros သည် စမ်းသပ် ‘ဘရောင်ဇာ’ ဖြစ်သည်။ ပြဿနာများ သတင်းပို့ရန် ‘အကူအညီ’ &gt; “ပြဿနာ သတင်းပို့ရန်...” သို့သွားပါ။</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7690378713476594306">စာရင်းထဲမှ ရွေးရန်</translation>

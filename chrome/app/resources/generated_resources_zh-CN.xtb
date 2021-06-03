@@ -3261,7 +3261,7 @@
 <translation id="4519935350946509010">建立连接时出错。</translation>
 <translation id="4520385623207007473">正在使用的 Cookie</translation>
 <translation id="452039078290142656">来自<ph name="VENDOR_NAME" />的未知设备</translation>
-<translation id="4522570452068850558">详细信息</translation>
+<translation id="4522570452068850558">详情</translation>
 <translation id="4522600456902129422">继续允许此网站查看剪贴板</translation>
 <translation id="4522890784888918985">子帐号不受支持</translation>
 <translation id="4524832533047962394">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本。</translation>
@@ -6111,7 +6111,6 @@
 <translation id="7685049629764448582">JavaScript 使用的内存</translation>
 <translation id="7685087414635069102">必须输入 PIN 码</translation>
 <translation id="768549422429443215">添加语言或将列表中的语言重新排列。</translation>
-<translation id="7686424868232681412">Lacros 是一款实验性浏览器。若要报告问题，请使用“帮助”&gt;“报告问题…”。</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7690378713476594306">从列表中选择</translation>

@@ -3267,7 +3267,7 @@
 <translation id="4519935350946509010">Ошибка подключения.</translation>
 <translation id="4520385623207007473">Использование файлов cookie</translation>
 <translation id="452039078290142656">неизвестные устройства от <ph name="VENDOR_NAME" /></translation>
-<translation id="4522570452068850558">Подробнее</translation>
+<translation id="4522570452068850558">Детали</translation>
 <translation id="4522600456902129422">Оставить этому сайту доступ к буферу обмена</translation>
 <translation id="4522890784888918985">Дочерние аккаунты не поддерживаются.</translation>
 <translation id="4524832533047962394">Режим регистрации устройства не поддерживается этой версией операционной системы. Убедитесь, что вы используете последнюю версию, и повторите попытку.</translation>
@@ -6117,7 +6117,6 @@
 <translation id="7685049629764448582">Память JavaScript</translation>
 <translation id="7685087414635069102">Требуется PIN-код</translation>
 <translation id="768549422429443215">Добавьте языки или измените порядок их расположения.</translation>
-<translation id="7686424868232681412">Lacros – экспериментальный браузер. Чтобы сообщить о проблемах, связанных с ним, нажмите "Справка &gt; Сообщить о проблеме".</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7690378713476594306">Выбрать из списка</translation>

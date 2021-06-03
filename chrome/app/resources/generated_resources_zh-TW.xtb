@@ -3265,7 +3265,7 @@
 <translation id="4519935350946509010">連線錯誤。</translation>
 <translation id="4520385623207007473">使用中的 Cookie</translation>
 <translation id="452039078290142656">由 <ph name="VENDOR_NAME" /> 製造的不明裝置</translation>
-<translation id="4522570452068850558">詳細資訊</translation>
+<translation id="4522570452068850558">詳細資料</translation>
 <translation id="4522600456902129422">繼續允許這個網站讀取剪貼簿</translation>
 <translation id="4522890784888918985">不支援子帳戶</translation>
 <translation id="4524832533047962394">這個版本的作業系統不支援目前提供的註冊模式。請確認你使用的是最新版本。</translation>
@@ -6115,7 +6115,6 @@
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">請輸入 PIN 碼</translation>
 <translation id="768549422429443215">新增語言或重新排列清單。</translation>
-<translation id="7686424868232681412">Lacros 是實驗性瀏覽器。如有問題，請依序按一下 [說明] &gt; [回報問題...] 進行回報。</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7690378713476594306">從清單中選擇</translation>

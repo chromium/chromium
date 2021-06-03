@@ -6131,7 +6131,6 @@
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">必須提供 PIN</translation>
 <translation id="768549422429443215">新增語言或重新排列清單。</translation>
-<translation id="7686424868232681412">Lacros 是實驗版瀏覽器。請按一下 [說明] &gt; [報告問題…] 以報告問題。</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7690378713476594306">從清單中選擇</translation>
@@ -6886,7 +6885,7 @@
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="8502536196501630039">如要使用從 Google Play 下載的應用程式，請先還原您的應用程式。此操作可能會導致部分資料遺失。</translation>
-<translation id="8503813439785031346">使用者名稱</translation>
+<translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8507227974644337342">螢幕解像度</translation>
 <translation id="850875081535031620">未發現任何有害軟件</translation>
 <translation id="8509177919508253835">重設安全密鑰並建立 PIN</translation>
