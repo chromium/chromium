@@ -256,30 +256,5 @@
     "160a29e8413328fde6623493a4da522f",
     "a2029dbf4304d50965dc2aad44b930c4",
     "1c082bc656c7752f21118f10b8677a6c"
-  ],
-  "thumbnail_checksums": [
-    "# Intel Sandy Brige - EGL",
-    "1a69a608521e3542f6fb060855f5ba14",
-    "# Intel - VA_FILTER_SCALING_DEFAULT",
-    "d924f9464d01847f3c3d2dee739603cc",
-    "# Intel - VA decode to NV12, EGLImage CSC",
-    "82a05426b6ef227e5147eb7b710423fb",
-    "d1ba5f08cdbcc39ee24d99acaf9477ea",
-    "# Intel - Broadwell - guado and rikku",
-    "e67adcfcb6985b47b0faf29168a56766",
-    "# TODO(hiroh): Update X11 value",
-    "# Intel - Haswell - X11",
-    "# Intel - Ivy Bridge - X11",
-    "# 5f697b015b7af0afa7ff202905f748fa",
-    "# Intel - Sandy Bridge - X11",
-    "# 07bac7ad907bcb75004324645637a06c",
-    "# ARM - Mali",
-    "82c979d493a00ee2188f7259230a8de9",
-    "# ARM - Tegra",
-    "b55cda7d10c37104d8c49d27c2699e40",
-    "# ARM - MediaTek",
-    "af21b8aa5ea63c4e88f0472ee948d01a",
-    "# AMD - Stoney Ridge",
-    "7ad287d048d6bdee63fbe37a3cd2c760"
   ]
 }

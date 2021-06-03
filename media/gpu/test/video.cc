@@ -63,7 +63,6 @@ std::unique_ptr<Video> Video::Expand(const gfx::Size& resolution,
       << "An odd origin point is not supported";
   auto new_video = std::make_unique<Video>(file_path_, metadata_file_path_);
   new_video->frame_checksums_ = frame_checksums_;
-  new_video->thumbnail_checksums_ = thumbnail_checksums_;
   new_video->profile_ = profile_;
   new_video->codec_ = codec_;
   new_video->frame_rate_ = frame_rate_;
@@ -128,7 +127,6 @@ std::unique_ptr<Video> Video::ConvertToNV12() const {
       << "The pixel format of source video is not I420";
   auto new_video = std::make_unique<Video>(file_path_, metadata_file_path_);
   new_video->frame_checksums_ = frame_checksums_;
-  new_video->thumbnail_checksums_ = thumbnail_checksums_;
   new_video->profile_ = profile_;
   new_video->codec_ = codec_;
   new_video->bit_depth_ = bit_depth_;
@@ -336,10 +334,6 @@ const std::vector<std::string>& Video::FrameChecksums() const {
   return frame_checksums_;
 }
 
-const std::vector<std::string>& Video::ThumbnailChecksums() const {
-  return thumbnail_checksums_;
-}
-
 // static
 void Video::SetTestDataPath(const base::FilePath& test_data_path) {
   test_data_path_ = test_data_path;
@@ -496,18 +490,6 @@ bool Video::LoadMetadata() {
   if (md5_checksums) {
     for (const base::Value& checksum : md5_checksums->GetList()) {
       frame_checksums_.push_back(checksum.GetString());
-    }
-  }
-
-  // Find optional thumbnail checksums. These are only required when using the
-  // thumbnail test on older platforms that don't support the frame validator.
-  const base::Value* thumbnail_checksums =
-      metadata->FindKeyOfType("thumbnail_checksums", base::Value::Type::LIST);
-  if (thumbnail_checksums) {
-    for (const base::Value& checksum : thumbnail_checksums->GetList()) {
-      const std::string& checksum_str = checksum.GetString();
-      if (checksum_str.size() > 0 && checksum_str[0] != '#')
-        thumbnail_checksums_.push_back(checksum_str);
     }
   }
 

@@ -76,29 +76,6 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
 
 VideoPlayerTestEnvironment::~VideoPlayerTestEnvironment() = default;
 
-void VideoPlayerTestEnvironment::SetUp() {
-  VideoTestEnvironment::SetUp();
-
-  // TODO(dstaessens): Remove this check once all platforms support import mode.
-  // Some older platforms do not support importing buffers, but need to allocate
-  // buffers internally in the decoder.
-  // Note: buddy, guado and rikku support import mode for H.264 and VP9, but for
-  // VP8 they use a different video decoder (V4L2 instead of VAAPI) and don't
-  // support import mode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  constexpr const char* kImportModeBlocklist[] = {
-      "buddy",      "guado",      "guado-cfm", "guado-kernelnext", "nyan_big",
-      "nyan_blaze", "nyan_kitty", "rikku",     "rikku-cfm"};
-  const std::string board = base::SysInfo::GetLsbReleaseBoard();
-  import_supported_ = (std::find(std::begin(kImportModeBlocklist),
-                                 std::end(kImportModeBlocklist),
-                                 board) == std::end(kImportModeBlocklist));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // VideoDecoders always require import mode to be supported.
-  DCHECK(import_supported_ || implementation_ == DecoderImplementation::kVDA);
-}
-
 const media::test::Video* VideoPlayerTestEnvironment::Video() const {
   return video_.get();
 }
@@ -137,10 +114,6 @@ uint64_t VideoPlayerTestEnvironment::GetFrameOutputLimit() const {
 
 const base::FilePath& VideoPlayerTestEnvironment::OutputFolder() const {
   return output_folder_;
-}
-
-bool VideoPlayerTestEnvironment::ImportSupported() const {
-  return import_supported_;
 }
 
 }  // namespace test

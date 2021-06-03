@@ -31,13 +31,6 @@ class EncodedDataHelper;
 class FrameRenderer;
 class VideoFrameProcessor;
 
-// TODO(dstaessens@) Remove allocation mode, temporary added here so we can
-// support the thumbnail test for older platforms that don't support import.
-enum class AllocationMode {
-  kImport,    // Client allocates video frame memory.
-  kAllocate,  // Video decoder allocates video frame memory.
-};
-
 // The supported video decoding implementation.
 enum class DecoderImplementation {
   kVDA,    // VDA-based video decoder.
@@ -50,8 +43,6 @@ struct VideoDecoderClientConfig {
   // The maximum number of bitstream buffer decodes that can be requested
   // without waiting for the result of the previous decode requests.
   size_t max_outstanding_decode_requests = 1;
-  // How the pictures buffers should be allocated.
-  AllocationMode allocation_mode = AllocationMode::kImport;
   DecoderImplementation implementation = DecoderImplementation::kVDA;
 };
 

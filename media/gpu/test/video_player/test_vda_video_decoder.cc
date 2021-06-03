@@ -40,15 +40,11 @@ constexpr size_t kTimestampCacheSize = 128;
 }  // namespace
 
 TestVDAVideoDecoder::TestVDAVideoDecoder(
-    AllocationMode allocation_mode,
     bool use_vd_vda,
     const gfx::ColorSpace& target_color_space,
     FrameRenderer* const frame_renderer,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
-    : output_mode_(allocation_mode == AllocationMode::kAllocate
-                       ? VideoDecodeAccelerator::Config::OutputMode::ALLOCATE
-                       : VideoDecodeAccelerator::Config::OutputMode::IMPORT),
-      use_vd_vda_(use_vd_vda),
+    : use_vd_vda_(use_vd_vda),
       target_color_space_(target_color_space),
       frame_renderer_(frame_renderer),
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -56,10 +52,6 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decode_start_timestamps_(kTimestampCacheSize) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
-
-  // TODO(crbug.com/933632) Remove support for allocate mode, and always use
-  // import mode. Support for allocate mode is temporary maintained for older
-  // platforms that don't support import mode.
 
   vda_wrapper_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
@@ -120,7 +112,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Create Decoder.
   VideoDecodeAccelerator::Config vda_config(config.profile());
-  vda_config.output_mode = output_mode_;
+  vda_config.output_mode = VideoDecodeAccelerator::Config::OutputMode::IMPORT;
   vda_config.encryption_scheme = config.encryption_scheme();
   vda_config.is_deferred_initialization_allowed = false;
   vda_config.initial_expected_coded_size = config.coded_size();
@@ -228,75 +220,40 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
             << " picture buffers with size " << dimensions.width() << "x"
             << dimensions.height();
 
-  // If using allocate mode the format requested here might be
-  // PIXEL_FORMAT_UNKNOWN.
-  if (format == PIXEL_FORMAT_UNKNOWN)
-    format = PIXEL_FORMAT_ARGB;
-
+  // Create a set of DMABuf-backed video frames.
   std::vector<PictureBuffer> picture_buffers;
+  for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
+    picture_buffers.emplace_back(GetNextPictureBufferId(), dimensions);
+  }
 
-  switch (output_mode_) {
-    case VideoDecodeAccelerator::Config::OutputMode::IMPORT:
-      // If using import mode, create a set of DMABuf-backed video frames.
-      for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
-        picture_buffers.emplace_back(GetNextPictureBufferId(), dimensions);
-      }
-      decoder_->AssignPictureBuffers(picture_buffers);
+  decoder_->AssignPictureBuffers(picture_buffers);
 
-      // Create a video frame for each of the picture buffers and provide memory
-      // handles to the video frame's data to the decoder.
-      for (const PictureBuffer& picture_buffer : picture_buffers) {
-        scoped_refptr<VideoFrame> video_frame;
+  // Create a video frame for each of the picture buffers and provide memory
+  // handles to the video frame's data to the decoder.
+  for (const PictureBuffer& picture_buffer : picture_buffers) {
+    scoped_refptr<VideoFrame> video_frame;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-        video_frame = CreatePlatformVideoFrame(
-            gpu_memory_buffer_factory_, format, dimensions, visible_rect,
-            visible_rect.size(), base::TimeDelta(),
-            gfx::BufferUsage::SCANOUT_VDA_WRITE);
+    video_frame = CreatePlatformVideoFrame(
+        gpu_memory_buffer_factory_, format, dimensions, visible_rect,
+        visible_rect.size(), base::TimeDelta(),
+        gfx::BufferUsage::SCANOUT_VDA_WRITE);
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-        ASSERT_TRUE(video_frame) << "Failed to create video frame";
-        video_frames_.emplace(picture_buffer.id(), video_frame);
-        gfx::GpuMemoryBufferHandle handle;
+    ASSERT_TRUE(video_frame) << "Failed to create video frame";
+    video_frames_.emplace(picture_buffer.id(), video_frame);
+    gfx::GpuMemoryBufferHandle handle;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-        handle = CreateGpuMemoryBufferHandle(video_frame.get());
-        DCHECK(!handle.is_null());
+    handle = CreateGpuMemoryBufferHandle(video_frame.get());
+    DCHECK(!handle.is_null());
 #else
-        NOTREACHED();
+    NOTREACHED();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-        ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";
-        decoder_->ImportBufferForPicture(picture_buffer.id(), format,
-                                         std::move(handle));
-      }
-      break;
-    case VideoDecodeAccelerator::Config::OutputMode::ALLOCATE: {
-      // If using allocate mode, request a set of texture-backed video frames
-      // from the renderer.
-      const gfx::Size texture_dimensions =
-          texture_target == GL_TEXTURE_EXTERNAL_OES
-              ? GetRectSizeFromOrigin(visible_rect)
-              : dimensions;
-      for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
-        uint32_t texture_id;
-        auto video_frame = frame_renderer_->CreateVideoFrame(
-            format, texture_dimensions, texture_target, &texture_id);
-        ASSERT_TRUE(video_frame) << "Failed to create video frame";
-        int32_t picture_buffer_id = GetNextPictureBufferId();
-        PictureBuffer::TextureIds texture_ids(1, texture_id);
-        picture_buffers.emplace_back(picture_buffer_id, texture_dimensions,
-                                     texture_ids, texture_ids, texture_target,
-                                     format);
-        video_frames_.emplace(picture_buffer_id, std::move(video_frame));
-      }
-      // The decoder requires an active GL context to allocate memory.
-      decoder_->AssignPictureBuffers(picture_buffers);
-      break;
-    }
-    default:
-      LOG(ERROR) << "Unsupported output mode "
-                 << static_cast<size_t>(output_mode_);
+    ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";
+    decoder_->ImportBufferForPicture(picture_buffer.id(), format,
+                                     std::move(handle));
   }
 }
 

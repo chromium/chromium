@@ -83,10 +83,6 @@ class Video {
 
   // Get the list of frame checksums.
   const std::vector<std::string>& FrameChecksums() const;
-  // Get the list of thumbnail checksums, used by the "RenderThumbnails" test.
-  // TODO(crbug.com/933632) Remove once the frame validator is supported on all
-  // active platforms.
-  const std::vector<std::string>& ThumbnailChecksums() const;
 
   // Set the default path to the test video data.
   static void SetTestDataPath(const base::FilePath& test_data_path);
@@ -142,8 +138,6 @@ class Video {
 
   // Ordered list of video frame checksums.
   std::vector<std::string> frame_checksums_;
-  // List of thumbnail checksums.
-  std::vector<std::string> thumbnail_checksums_;
 
   // Video codec, profile and bit depth for encoded videos.
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;

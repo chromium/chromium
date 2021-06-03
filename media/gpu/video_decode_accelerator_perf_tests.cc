@@ -321,10 +321,6 @@ class VideoDecoderTest : public ::testing::Test {
     VideoDecoderClientConfig config;
     config.implementation = g_env->GetDecoderImplementation();
 
-    // Force allocate mode if import mode is not supported.
-    if (!g_env->ImportSupported())
-      config.allocation_mode = AllocationMode::kAllocate;
-
     auto video_player = VideoPlayer::Create(
         config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
         std::move(frame_processors));

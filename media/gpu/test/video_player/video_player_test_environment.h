@@ -38,9 +38,6 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
   ~VideoPlayerTestEnvironment() override;
 
-  // Set up video test environment, called once for entire test run.
-  void SetUp() override;
-
   // Get the video the tests will be ran on.
   const media::test::Video* Video() const;
   // Check whether frame validation is enabled.
@@ -58,9 +55,6 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   uint64_t GetFrameOutputLimit() const;
   // Get the output folder.
   const base::FilePath& OutputFolder() const;
-
-  // Whether import mode is supported, valid after SetUp() has been called.
-  bool ImportSupported() const;
 
   // Get the GpuMemoryBufferFactory for doing buffer allocations. This needs to
   // survive as long as the process is alive just like in production which is
@@ -81,9 +75,6 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
 
   const FrameOutputConfig frame_output_config_;
   const base::FilePath output_folder_;
-
-  // TODO(dstaessens): Remove this once all allocate-only platforms reached EOL.
-  bool import_supported_ = false;
 
   std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
