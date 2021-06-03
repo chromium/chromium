@@ -23,7 +23,7 @@
 
 FlagsUIHandler::FlagsUIHandler()
     : access_(flags_ui::kGeneralAccessFlagsOnly),
-      experimental_features_requested_(false),
+      experimental_features_callback_id_(""),
       deprecated_features_only_(false) {}
 
 FlagsUIHandler::~FlagsUIHandler() {}
@@ -57,8 +57,8 @@ void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
   flags_storage_.reset(flags_storage);
   access_ = access;
 
-  if (experimental_features_requested_)
-    HandleRequestExperimentalFeatures(nullptr);
+  if (!experimental_features_callback_id_.empty())
+    SendExperimentalFeatures();
 }
 
 void FlagsUIHandler::HandleRequestExperimentalFeatures(
@@ -66,14 +66,17 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
 
-  experimental_features_requested_ = true;
+  experimental_features_callback_id_ = callback_id.GetString();
   // Bail out if the handler hasn't been initialized yet. The request will be
   // handled after the initialization.
   if (!flags_storage_) {
-    ResolveJavascriptCallback(callback_id, base::Value());
     return;
   }
 
+  SendExperimentalFeatures();
+}
+
+void FlagsUIHandler::SendExperimentalFeatures() {
   base::DictionaryValue results;
 
   std::unique_ptr<base::ListValue> supported_features(new base::ListValue);
@@ -108,7 +111,9 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
   results.SetBoolean(flags_ui::kShowBetaChannelPromotion, false);
   results.SetBoolean(flags_ui::kShowDevChannelPromotion, false);
 #endif
-  ResolveJavascriptCallback(callback_id, results);
+  ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
+                            results);
+  experimental_features_callback_id_.clear();
 }
 
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
