@@ -26,6 +26,10 @@ namespace ui {
 
 class WaylandConnection;
 
+#if defined(USE_DBUS)
+class OrgGnomeMutterIdleMonitor;
+#endif
+
 // A PlatformScreen implementation for Wayland.
 class WaylandScreen : public PlatformScreen {
  public:
@@ -58,6 +62,7 @@ class WaylandScreen : public PlatformScreen {
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
+  base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   base::Value GetGpuExtraInfoAsListValue(
@@ -76,6 +81,11 @@ class WaylandScreen : public PlatformScreen {
 
   absl::optional<gfx::BufferFormat> image_format_alpha_;
   absl::optional<gfx::BufferFormat> image_format_no_alpha_;
+
+#if defined(USE_DBUS)
+  mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
+      org_gnome_mutter_idle_monitor_;
+#endif
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };

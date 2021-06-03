@@ -172,6 +172,8 @@ source_set("wayland") {
     configs += [ "//ui/events/ozone/layout:xkbcommon" ]
   }
 
+  defines = [ "OZONE_IMPLEMENTATION" ]
+
   deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -226,6 +228,15 @@ source_set("wayland") {
     "//ui/platform_window/wm",
   ]
 
+  if (use_dbus) {
+    sources += [
+      "host/org_gnome_mutter_idle_monitor.cc",
+      "host/org_gnome_mutter_idle_monitor.h",
+    ]
+    deps += [ "//dbus" ]
+    defines += [ "USE_DBUS" ]
+  }
+
   if (use_gtk) {
     sources += [
       "host/linux_ui_delegate_wayland.cc",
@@ -247,8 +258,6 @@ source_set("wayland") {
       "host/wayland_cursor_factory.h",
     ]
   }
-
-  defines = [ "OZONE_IMPLEMENTATION" ]
 
   if (use_system_libwayland) {
     defines += [ "USE_LIBWAYLAND_STUBS" ]

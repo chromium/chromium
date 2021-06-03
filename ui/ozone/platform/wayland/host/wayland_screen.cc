@@ -24,6 +24,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
+#if defined(USE_DBUS)
+#include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
+#endif
+
 namespace ui {
 
 WaylandScreen::WaylandScreen(WaylandConnection* connection)
@@ -239,6 +243,24 @@ display::Display WaylandScreen::GetDisplayMatching(
       display::FindDisplayWithBiggestIntersection(display_list_.displays(),
                                                   match_rect);
   return display_matching ? *display_matching : GetPrimaryDisplay();
+}
+
+base::TimeDelta WaylandScreen::CalculateIdleTime() const {
+#if defined(USE_DBUS)
+  // Try the org.gnome.Mutter.IdleMonitor D-Bus service (Mutter).
+  if (!org_gnome_mutter_idle_monitor_)
+    org_gnome_mutter_idle_monitor_ =
+        std::make_unique<OrgGnomeMutterIdleMonitor>();
+  const auto idle_time = org_gnome_mutter_idle_monitor_->GetIdleTime();
+  if (idle_time)
+    return *idle_time;
+#endif  // defined(USE_DBUS)
+
+  // Try the org_kde_kwin_idle Wayland protocol extension (KWin).
+  NOTIMPLEMENTED_LOG_ONCE();
+
+  // No providers.  Return 0 which means the system never gets idle.
+  return base::TimeDelta::FromSeconds(0);
 }
 
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
