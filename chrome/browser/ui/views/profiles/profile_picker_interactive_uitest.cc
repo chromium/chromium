@@ -143,8 +143,15 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
 }
 #endif
 
+// Flaky on Mac, see https://crbug.com/1216134
+#if defined(OS_MAC)
+#define MAYBE_FullscreenWithKeyboard DISABLED_FullscreenWithKeyboard
+#else
+#define MAYBE_FullscreenWithKeyboard FullscreenWithKeyboard
+#endif
 // Checks that the main picker view can switch to full screen.
-IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       MAYBE_FullscreenWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
