@@ -132,7 +132,10 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
 
 TEST_F(StorageAreaTrunkTest, HasOnChanged) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("storage").Build();
+      ExtensionBuilder("foo")
+          .SetManifestKey("manifest_version", 3)
+          .AddPermission("storage")
+          .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

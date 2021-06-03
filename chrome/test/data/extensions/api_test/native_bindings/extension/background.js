@@ -155,8 +155,6 @@ var tests = [
     chrome.test.assertTrue(!!chrome.storage.managed, 'managed');
     chrome.test.assertFalse(!!chrome.storage.managed.QUOTA_BYTES,
                             'managed quota bytes');
-    chrome.test.assertTrue(!!chrome.storage.session.QUOTA_BYTES,
-                           'session quota bytes');
     chrome.storage.local.set({foo: 'bar', nullkey: null}, () => {
       chrome.storage.local.get(['foo', 'nullkey'], (results) => {
         chrome.test.assertTrue(!!results, 'no results');
