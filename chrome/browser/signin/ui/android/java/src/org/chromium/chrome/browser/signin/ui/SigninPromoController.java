@@ -60,8 +60,6 @@ public class SigninPromoController {
 
     private @Nullable DisplayableProfileData mProfileData;
     private @Nullable ImpressionTracker mImpressionTracker;
-    private final OneShotImpressionListener mImpressionFilter =
-            new OneShotImpressionListener(this::recordSigninPromoImpression);
     private final @AccessPoint int mAccessPoint;
     private final @Nullable String mImpressionCountName;
     private final String mImpressionUserActionName;
@@ -111,7 +109,7 @@ public class SigninPromoController {
     /**
      * Creates a new SigninPromoController.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
-     * @param syncConsentActivityLauncher Launcher of {@link SigninActivity}.
+     * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
      */
     public SigninPromoController(
             @AccessPoint int accessPoint, SyncConsentActivityLauncher syncConsentActivityLauncher) {
@@ -278,20 +276,20 @@ public class SigninPromoController {
     private void setupPromoView(PersonalizedSigninPromoView view,
             final @Nullable DisplayableProfileData profileData,
             final @Nullable OnDismissListener onDismissListener) {
-        detach();
+        if (mImpressionTracker != null) {
+            mImpressionTracker.setListener(null);
+            mImpressionTracker = null;
+        }
+        mImpressionTracker = new ImpressionTracker(view);
+        mImpressionTracker.setListener(
+                new OneShotImpressionListener(this::recordSigninPromoImpression));
+
         mProfileData = profileData;
         mWasDisplayed = true;
-
-        assert mImpressionTracker
-                == null : "detach() should be called before setting up a new view";
-        mImpressionTracker = new ImpressionTracker(view);
-        mImpressionTracker.setListener(mImpressionFilter);
-
-        final Context context = view.getContext();
         if (mProfileData == null) {
-            setupColdState(context, view);
+            setupColdState(view);
         } else {
-            setupHotState(context, view);
+            setupHotState(view);
         }
 
         if (onDismissListener != null) {
@@ -318,12 +316,8 @@ public class SigninPromoController {
         }
     }
 
-    /** @return the resource used for the text displayed as promo description. */
-    public @StringRes int getDescriptionStringId() {
-        return mProfileData == null ? mDescriptionStringIdNoAccount : mDescriptionStringId;
-    }
-
-    private void setupColdState(final Context context, PersonalizedSigninPromoView view) {
+    private void setupColdState(PersonalizedSigninPromoView view) {
+        final Context context = view.getContext();
         view.getImage().setImageResource(R.drawable.chrome_sync_logo);
         setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
 
@@ -335,7 +329,8 @@ public class SigninPromoController {
         view.getSecondaryButton().setVisibility(View.GONE);
     }
 
-    private void setupHotState(final Context context, PersonalizedSigninPromoView view) {
+    private void setupHotState(PersonalizedSigninPromoView view) {
+        final Context context = view.getContext();
         Drawable accountImage = mProfileData.getImage();
         view.getImage().setImageDrawable(accountImage);
         setImageSize(context, view, R.dimen.signin_promo_account_image_size);
