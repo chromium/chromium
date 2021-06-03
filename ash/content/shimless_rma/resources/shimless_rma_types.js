@@ -142,7 +142,7 @@ export let Component;
  * Type alias for ErrorObserver.
  * @typedef {{onError: !function(!RmadErrorCode)}}
  */
-export let ErrorObserver;
+export let ErrorObserverRemote;
 
 /**
  * Type alias for CalibrationProgressObserver.
@@ -150,7 +150,7 @@ export let ErrorObserver;
  *   onCalibrationUpdated: !function(!CalibrationComponent, number)
  * }}
  */
-export let CalibrationObserver;
+export let CalibrationObserverRemote;
 
 /**
  * Type alias for ProvisioningProgressObserver.
@@ -158,7 +158,7 @@ export let CalibrationObserver;
  *   onProvisioningUpdated: !function(!ProvisioningStep, number)
  * }}
  */
-export let ProvisioningObserver;
+export let ProvisioningObserverRemote;
 
 /**
  * Type alias for HardwareWriteProtectionState.
@@ -166,7 +166,7 @@ export let ProvisioningObserver;
  *   onHardwareWriteProtectionStateChanged: !function(boolean)
  * }}
  */
-export let HardwareWriteProtectionStateObserver;
+export let HardwareWriteProtectionStateObserverRemote;
 
 /**
  * Type alias for PowerCableState.
@@ -174,7 +174,7 @@ export let HardwareWriteProtectionStateObserver;
  *   onPowerCableStateChanged: !function(boolean)
  * }}
  */
-export let PowerCableStateObserver;
+export let PowerCableStateObserverRemote;
 
 /**
  * Type of ShimlessRmaServiceInterface.setStates function.

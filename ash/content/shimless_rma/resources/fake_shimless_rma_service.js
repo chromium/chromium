@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponent, CalibrationObserver, Component, ComponentRepairState, ComponentType, ErrorObserver, HardwareWriteProtectionStateObserver, PowerCableStateObserver, ProvisioningObserver, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairState, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -512,7 +512,7 @@ export class FakeShimlessRmaService {
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
-   * @param {!ErrorObserver} remote
+   * @param {!ErrorObserverRemote} remote
    */
   observeError(remote) {
     this.observables_.observe('ErrorObserver_onError', (error) => {
@@ -523,9 +523,9 @@ export class FakeShimlessRmaService {
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveCalibration.
-   * @param {!CalibrationObserver} remote
+   * @param {!CalibrationObserverRemote} remote
    */
-  observeCalibration(remote) {
+  observeCalibrationProgress(remote) {
     this.observables_.observe(
         'CalibrationObserver_onCalibrationUpdated', (component, progress) => {
           remote.onCalibrationUpdated(
@@ -536,9 +536,9 @@ export class FakeShimlessRmaService {
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveProvisioning.
-   * @param {!ProvisioningObserver} remote
+   * @param {!ProvisioningObserverRemote} remote
    */
-  observeProvisioning(remote) {
+  observeProvisioningProgress(remote) {
     this.observables_.observe(
         'ProvisioningObserver_onProvisioningUpdated', (step, progress) => {
           remote.onProvisioningUpdated(
@@ -549,7 +549,7 @@ export class FakeShimlessRmaService {
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveHardwareWriteProtectionState.
-   * @param {!HardwareWriteProtectionStateObserver} remote
+   * @param {!HardwareWriteProtectionStateObserverRemote} remote
    */
   observeHardwareWriteProtectionState(remote) {
     this.observables_.observe(
@@ -562,7 +562,7 @@ export class FakeShimlessRmaService {
 
   /**
    * Implements ShimlessRmaServiceInterface.ObservePowerCableState.
-   * @param {!PowerCableStateObserver} remote
+   * @param {!PowerCableStateObserverRemote} remote
    */
   observePowerCableState(remote) {
     this.observables_.observe(
