@@ -2046,13 +2046,7 @@
   },
 
   "LegacySameSiteCookieBehaviorEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "LegacySameSiteCookieBehaviorEnabled": 1 },
-        "prefs": { "profile.managed_default_content_settings.legacy_cookie_access": {} }
-      }
-    ]
+    "note": "This policy is deprecated, https://crbug.com/1214078."
   },
 
   "LegacySameSiteCookieBehaviorEnabledForDomainList": {
