@@ -1,4 +1,4 @@
-# Installation
+# [Web Apps](../README.md) - Installation
 
 Installing a webapp can come from a variety of channels. This section serves to enumerate them all and show how they fit together in the installation pipeline. 
 

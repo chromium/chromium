@@ -1,7 +1,15 @@
-This directory holds files for components that implement features for
-Progressive Web Apps on the browser side.
+# [Web Apps](../README.md) - Operating System Integration
 
-# Components
+The WebAppProvider system has to provide a lot of integrations with operating system surfaces for web apps. This functionality is usually different per operating system, and is usually invoked through the [`OsIntegrationManager`](../components/os_integration_manager.h).
+
+The [`OsIntegrationManager`](../components/os_integration_manager.h)'s main responsibility is support the following operations:
+1. Install operating system integration for a given web app.
+1. Update operating system integration for a given web app.
+1. Uninstall/remove operating system integration for a given web app.
+
+It owns sub-managers who are responsible for each individual operating system integration functionality (e.g. [`file_handler_manager.h`](../components/file_handler_manager.h) which owns the file handling feature). That manager will implement the non-os-specific logic, and then call into functions that have os-specific implementations (e.g. `web_app_file_handler_registration.h/_mac.h/_win.h/_linux.h` files).
+
+Below are sections describing how each OS integration works.
 
 ## Protocol Handler
 

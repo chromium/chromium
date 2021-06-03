@@ -229,13 +229,13 @@ TODO
 ## Deep Dives
 
 * [Installation Sources & Pipeline](docs/installation_pipeline.md)
+* [Operating system integration](docs/os_integration.md)
 * TODO: Uninstallation
 * TODO: Manifest Update
 
 ## Testing
 
-TODO: How to write a unit test.
-TODO: How to write a browser test.
+See [the testing docs](docs/testing.md).
 
 ## Debugging
 
