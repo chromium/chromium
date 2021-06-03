@@ -144,6 +144,10 @@ class MODULES_EXPORT MediaStreamAudioProcessor
                            TestAgcEnableHybridAgcDryRun);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
                            TestAgcEnableHybridAgcSimdNotAllowed);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableClippingControl);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableClippingControlDefaultParams);
 
   // WebRtcPlayoutDataSource::Sink implementation.
   void OnPlayoutData(media::AudioBus* audio_bus,

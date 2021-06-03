@@ -134,6 +134,24 @@ struct PLATFORM_EXPORT WebRtcHybridAgcParams {
   bool neon_allowed;
 };
 
+// WebRTC analog AGC clipping control parameters.
+struct PLATFORM_EXPORT WebRtcAnalogAgcClippingControlParams {
+  int mode;
+  // Mode can be the following:
+  // 0: Clipping event prediction,
+  // 1: Adaptive step clipping peak prediction,
+  // 2: Fixed step clipping peak prediction.
+
+  int window_length;
+  int reference_window_length;
+  int reference_window_delay;
+  float clipping_threshold;
+  float crest_factor_margin;
+  int clipped_level_step;
+  float clipped_ratio_threshold;
+  int clipped_wait_frames;
+};
+
 // Changes the automatic gain control configuration in `apm_config` if
 // `properties.goog_auto_gain_control` or
 // `properties.goog_experimental_auto_gain_control` are true. If both are true
@@ -147,6 +165,8 @@ struct PLATFORM_EXPORT WebRtcHybridAgcParams {
 PLATFORM_EXPORT void ConfigAutomaticGainControl(
     const AudioProcessingProperties& properties,
     const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
+    const absl::optional<WebRtcAnalogAgcClippingControlParams>&
+        clipping_control_params,
     absl::optional<double> compression_gain_db,
     webrtc::AudioProcessing::Config& apm_config);
 

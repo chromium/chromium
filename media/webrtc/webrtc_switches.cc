@@ -41,4 +41,8 @@ const base::Feature kWebRtcAllow48kHzProcessingOnArm{
 const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables and configures the clipping control in the WebRTC analog AGC.
+const base::Feature kWebRtcAnalogAgcClippingControl{
+    "WebRtcAnalogAgcClippingControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
