@@ -51,6 +51,8 @@ class AudioDetailedView : public TrayDetailedView {
   AudioDeviceList input_devices_;
   AudioDeviceMap device_map_;
 
+  std::unique_ptr<views::View> CreateNoiseCancellationToggleRow();
+
   DISALLOW_COPY_AND_ASSIGN(AudioDetailedView);
 };
 

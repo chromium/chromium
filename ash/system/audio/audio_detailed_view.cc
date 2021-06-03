@@ -5,22 +5,33 @@
 #include "ash/system/audio/audio_detailed_view.h"
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 namespace {
+
+const int kLabelFontSizeDelta = 1;
+const int kToggleButtonRowViewSpacing = 18;
+constexpr gfx::Insets kToggleButtonRowLabelPadding(16, 0, 15, 0);
+constexpr gfx::Insets kToggleButtonRowViewPadding(0, 56, 8, 0);
 
 std::u16string GetAudioDeviceName(const AudioDevice& device) {
   switch (device.type) {
@@ -161,12 +172,55 @@ void AudioDetailedView::UpdateScrollableList() {
         AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
+    // Add the input noise cancellation toggle.
+    if (features::IsInputNoiseCancellationUiEnabled()) {
+      AddScrollListChild(CreateNoiseCancellationToggleRow());
+    }
+
     AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
         device.id, device.IsInternalMic()));
   }
 
   scroll_content()->SizeToPreferredSize();
   scroller()->Layout();
+}
+
+std::unique_ptr<views::View>
+AudioDetailedView::CreateNoiseCancellationToggleRow() {
+  auto row_view = std::make_unique<views::View>();
+
+  auto* row_layout =
+      row_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kToggleButtonRowViewPadding, kToggleButtonRowViewSpacing));
+
+  auto noise_cancellation_toggle = base::WrapUnique<views::ToggleButton>(
+      new TrayToggleButton(base::DoNothing::Repeatedly(),
+                           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
+
+  noise_cancellation_toggle->SetFlipCanvasOnPaintForRTLUI(false);
+
+  auto noise_cancellation_label =
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
+
+  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  noise_cancellation_label->SetEnabledColor(text_color);
+  noise_cancellation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  noise_cancellation_label->SetFontList(
+      gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));
+  noise_cancellation_label->SetAutoColorReadabilityEnabled(false);
+  noise_cancellation_label->SetSubpixelRenderingEnabled(false);
+  noise_cancellation_label->SetBorder(
+      views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
+
+  auto* label_ptr = row_view->AddChildView(std::move(noise_cancellation_label));
+  row_layout->SetFlexForView(label_ptr, 1);
+
+  row_view->AddChildView(std::move(noise_cancellation_toggle));
+
+  return row_view;
 }
 
 void AudioDetailedView::HandleViewClicked(views::View* view) {

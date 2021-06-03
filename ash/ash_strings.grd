@@ -1818,6 +1818,10 @@ This file contains the strings for ash.
         Mic jack
       </message>
 
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION" desc="label used for input noise cancellation toggle">
+        Noise cancellation
+      </message>
+
       <!-- Status tray Live Caption strings. -->
       <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Live Caption feature on or off.">
         Toggle Live Caption. <ph name="STATE_TEXT">$1<ex>Live Caption is on.</ex></ph>
