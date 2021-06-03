@@ -123,9 +123,8 @@ export let CalibrationComponent = {
  */
 export let ProvisioningStep = {
   kProvisioningUnknown: 0,
-  kFrobWidget: 1,
-  kTwiddleSettings: 2,
-  kProvisioningComplete: 3,
+  kInProgress: 1,
+  kProvisioningComplete: 2,
   MIN_VALUE: 0,
   MAX_VALUE: 3,
 };

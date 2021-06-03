@@ -737,13 +737,13 @@ export function fakeShimlessRmaServiceTestSuite() {
        * @param {number} progress
        */
       onProvisioningUpdated(step, progress) {
-        assertEquals(step, ProvisioningStep.kTwiddleSettings);
+        assertEquals(step, ProvisioningStep.kInProgress);
         assertEquals(progress, 0.25);
       }
     });
     service.observeProvisioningProgress(provisioningObserver);
     return service.triggerProvisioningObserver(
-        ProvisioningStep.kTwiddleSettings, 0.25, 0);
+        ProvisioningStep.kInProgress, 0.25, 0);
   });
 
   test('ObserveHardwareWriteProtectionStateChange', () => {
