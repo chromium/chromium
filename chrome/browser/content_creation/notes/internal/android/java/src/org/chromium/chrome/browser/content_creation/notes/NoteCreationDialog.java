@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
@@ -29,6 +30,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * Dialog for the note creation.
  */
 public class NoteCreationDialog extends DialogFragment {
+    private static final float FIRST_NOTE_PADDING_RATIO = 0.5f;
+    private static final float NOTE_PADDING_RATIO = 0.25f;
+
     private View mContentView;
     private String mSelectedText;
 
@@ -70,6 +74,20 @@ public class NoteCreationDialog extends DialogFragment {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         noteCarousel.setLayoutManager(layoutManager);
+
+        noteCarousel.addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                LinearLayoutManager layoutManager =
+                        (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager.findFirstCompletelyVisibleItemPosition() < 0) return;
+                int selectedItem = layoutManager.findFirstCompletelyVisibleItemPosition();
+                ((TextView) mContentView.findViewById(R.id.title))
+                        .setText(carouselItems.get(selectedItem)
+                                         .model.get(NoteProperties.TEMPLATE)
+                                         .localizedName);
+            }
+        });
     }
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
@@ -79,13 +97,27 @@ public class NoteCreationDialog extends DialogFragment {
         View background = parent.findViewById(R.id.background);
         template.mainBackground.apply(background);
         background.setClipToOutline(true);
-        ((TextView) parent.findViewById(R.id.title)).setText(template.localizedName);
-
         TextView noteText = (TextView) parent.findViewById(R.id.text);
         noteText.setText(mSelectedText);
         noteText.setTextColor(template.textStyle.fontColor);
         noteText.setAllCaps(template.textStyle.allCaps);
         noteText.setGravity(TextAlignment.toGravity(template.textStyle.alignment));
         noteText.setTypeface(typeface);
+
+        setLeftPadding(model.get(NoteProperties.IS_FIRST), parent.findViewById(R.id.item));
+    }
+
+    // Adjust the left padding for carousel items, so that the first item is centered and the
+    // following item is slightlight peaking from the right. For that, set left padding exactly
+    // what is needed to push the first item to the center, but set a smaller padding for the
+    // following items.
+    private void setLeftPadding(boolean is_first, View itemView) {
+        int dialogWidth = mContentView.getWidth();
+        int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
+        int paddingLeft = (int) ((dialogWidth - templateWidth)
+                        * (is_first ? FIRST_NOTE_PADDING_RATIO : NOTE_PADDING_RATIO)
+                + 0.5f);
+        itemView.setPadding(paddingLeft, itemView.getPaddingTop(), itemView.getPaddingRight(),
+                itemView.getPaddingBottom());
     }
 }

@@ -57,6 +57,7 @@ android_resources("java_resources") {
     "java/res/layout/carousel_item.xml",
     "java/res/layout/creation_dialog.xml",
     "java/res/layout/top_bar.xml",
+    "java/res/values/dimens.xml",
   ]
 }
 

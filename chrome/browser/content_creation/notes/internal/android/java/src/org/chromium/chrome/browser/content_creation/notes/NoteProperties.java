@@ -15,11 +15,14 @@ class NoteProperties {
     public static final int NOTE_VIEW_TYPE = 1;
 
     /** The template definition.*/
+    static final WritableObjectPropertyKey<Boolean> IS_FIRST = new WritableObjectPropertyKey<>();
+
+    /** The template definition.*/
     static final WritableObjectPropertyKey<NoteTemplate> TEMPLATE =
             new WritableObjectPropertyKey<>();
 
     /** The Typeface instance that has been loaded for the associated template. */
     static final WritableObjectPropertyKey<Typeface> TYPEFACE = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TEMPLATE, TYPEFACE};
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_FIRST, TEMPLATE, TYPEFACE};
 }

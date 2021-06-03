@@ -12,32 +12,18 @@
         android:id="@+id/item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="60dp"
-        android:paddingEnd="24dp"
         android:layout_gravity="center_horizontal"
-        android:orientation="vertical"
-        android:background="@color/modern_grey_200">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="18dp"
-            android:paddingRight="18dp"
-            android:layout_marginBottom="17dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/note_title_outline"
-            android:textAppearance="@style/TextAppearance.TextSmall" />
+        android:background="@color/modern_grey_200"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/background"
-            android:layout_width="280dp"
+            android:layout_width="@dimen/note_width"
             android:layout_height="240dp"
             android:gravity="center_horizontal"
             android:background="@drawable/note_background_outline"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/text"

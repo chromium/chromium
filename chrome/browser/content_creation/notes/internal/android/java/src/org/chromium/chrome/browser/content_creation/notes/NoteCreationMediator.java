@@ -86,14 +86,15 @@ public class NoteCreationMediator {
                 continue;
             }
 
-            ListItem listItem = new ListItem(
-                    NoteProperties.NOTE_VIEW_TYPE, buildModel(tuple.template, response.typeface));
+            ListItem listItem = new ListItem(NoteProperties.NOTE_VIEW_TYPE,
+                    buildModel(mListModel.size() == 0, tuple.template, response.typeface));
             mListModel.add(listItem);
         }
     }
 
-    private PropertyModel buildModel(NoteTemplate template, Typeface typeface) {
+    private PropertyModel buildModel(boolean is_first, NoteTemplate template, Typeface typeface) {
         PropertyModel.Builder builder = new PropertyModel.Builder(NoteProperties.ALL_KEYS)
+                                                .with(NoteProperties.IS_FIRST, is_first)
                                                 .with(NoteProperties.TEMPLATE, template)
                                                 .with(NoteProperties.TYPEFACE, typeface);
 
