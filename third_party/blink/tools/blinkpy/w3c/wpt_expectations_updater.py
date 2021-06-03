@@ -477,9 +477,10 @@ class WPTExpectationsUpdater(object):
                 merged_dict[tuple([current_key])] = dictionary[current_key]
                 keys.remove(current_key)
                 break
-
+            current_result_set = set(dictionary[current_key].actual.split())
             for next_item in keys[1:]:
-                if dictionary[current_key] == dictionary[next_item]:
+                if (current_result_set ==
+                        set(dictionary[next_item].actual.split())):
                     found_match = True
                     matching_value_keys.update([current_key, next_item])
 

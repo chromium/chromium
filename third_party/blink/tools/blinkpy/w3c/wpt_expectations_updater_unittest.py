@@ -348,44 +348,36 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(self.mock_host())
         self.assertEqual(
             updater.merge_same_valued_keys({
-                'one': {
-                    'expected': 'FAIL',
-                    'actual': 'PASS'
-                },
-                'two': {
-                    'expected': 'FAIL',
-                    'actual': 'PASS'
-                },
-            }), {('two', 'one'): {
-                     'expected': 'FAIL',
-                     'actual': 'PASS'
-                 }})
+                'one': SimpleTestResult(actual='FAIL TIMEOUT',
+                                        expected='FAIL',
+                                        bug=''),
+                'two': SimpleTestResult(actual='TIMEOUT FAIL',
+                                        expected='TIMEOUT',
+                                        bug='')
+            }), {('two', 'one'): SimpleTestResult(actual='FAIL TIMEOUT',
+                                                  expected='FAIL',
+                                                  bug='')})
 
     def test_merge_same_valued_keys_one_mismatch(self):
         updater = WPTExpectationsUpdater(self.mock_host())
         self.assertEqual(
             updater.merge_same_valued_keys({
-                'one': {
-                    'expected': 'FAIL',
-                    'actual': 'PASS'
-                },
-                'two': {
-                    'expected': 'FAIL',
-                    'actual': 'TIMEOUT'
-                },
-                'three': {
-                    'expected': 'FAIL',
-                    'actual': 'PASS'
-                },
+                'one': SimpleTestResult(actual='FAIL TIMEOUT',
+                                        expected='FAIL',
+                                        bug=''),
+                'two': SimpleTestResult(actual='TIMEOUT FAIL',
+                                        expected='TIMEOUT',
+                                        bug=''),
+                'three': SimpleTestResult(actual='TIMEOUT',
+                                          expected='FAIL',
+                                          bug='')
             }), {
-                ('three', 'one'): {
-                    'expected': 'FAIL',
-                    'actual': 'PASS'
-                },
-                ('two',): {
-                    'expected': 'FAIL',
-                    'actual': 'TIMEOUT'
-                },
+                ('two', 'one'): SimpleTestResult(actual='FAIL TIMEOUT',
+                                                 expected='FAIL',
+                                                 bug=''),
+                ('three',): SimpleTestResult(actual='TIMEOUT',
+                                             expected='FAIL',
+                                             bug='')
             })
 
     def test_get_expectations(self):
