@@ -977,6 +977,12 @@ Status ExecuteGetElementAttribute(Session* session,
   if (!params.GetString("name", &attribute_name))
     return Status(kInvalidArgument, "missing 'name'");
 
+  // In legacy mode, use old behavior for backward compatibility.
+  if (!session->w3c_compliant) {
+    return GetElementAttribute(session, web_view, element_id, attribute_name,
+                               value);
+  }
+
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
