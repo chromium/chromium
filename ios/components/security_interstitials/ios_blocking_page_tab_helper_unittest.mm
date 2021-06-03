@@ -33,10 +33,10 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
   }
 
  private:
-  void HandleScriptCommand(const base::DictionaryValue& message,
-                           const GURL& origin_url,
-                           bool user_is_interacting,
-                           web::WebFrame* sender_frame) override {}
+  void HandleCommand(SecurityInterstitialCommand command,
+                     const GURL& origin_url,
+                     bool user_is_interacting,
+                     web::WebFrame* sender_frame) override {}
   bool ShouldCreateNewNavigation() const override { return false; }
   void PopulateInterstitialStrings(
       base::DictionaryValue* load_time_data) const override {}

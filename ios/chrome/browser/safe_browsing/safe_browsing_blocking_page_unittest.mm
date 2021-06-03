@@ -63,11 +63,9 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   }
 
   void SendCommand(SecurityInterstitialCommand command) {
-    base::DictionaryValue dict;
-    dict.SetKey("command", base::Value("." + base::NumberToString(command)));
-    page_->HandleScriptCommand(dict, url_,
-                               /*user_is_interacting=*/true,
-                               /*sender_frame=*/nullptr);
+    page_->HandleCommand(command, url_,
+                         /*user_is_interacting=*/true,
+                         /*sender_frame=*/nullptr);
   }
 
  protected:

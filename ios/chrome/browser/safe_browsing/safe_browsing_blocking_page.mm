@@ -121,32 +121,12 @@ std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
   return webui::GetI18nTemplateHtml(html, &load_time_data);
 }
 
-void SafeBrowsingBlockingPage::HandleScriptCommand(
-    const base::DictionaryValue& message,
+void SafeBrowsingBlockingPage::HandleCommand(
+    SecurityInterstitialCommand command,
     const GURL& origin_url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  // Fetch the command string from the message.
-  std::string command_string;
-  if (!message.GetString("command", &command_string)) {
-    LOG(ERROR) << "JS message parameter not found: command";
-    return;
-  }
-
-  // Remove the command prefix so that the string value can be converted to a
-  // SecurityInterstitialCommand enum value.
-  std::size_t delimiter = command_string.find(".");
-  if (delimiter == std::string::npos)
-    return;
-
-  // Parse the command int value from the text after the delimiter.
-  int command = 0;
-  if (!base::StringToInt(command_string.substr(delimiter + 1), &command)) {
-    NOTREACHED() << "Command cannot be parsed to an int : " << command_string;
-    return;
-  }
-
-  error_ui_->HandleCommand(static_cast<SecurityInterstitialCommand>(command));
+  error_ui_->HandleCommand(command);
   if (command == security_interstitials::CMD_DONT_PROCEED) {
     // |error_ui_| handles recording PROCEED decisions.
     client_->metrics_helper()->RecordUserDecision(

@@ -81,31 +81,14 @@ bool IOSSSLBlockingPage::IsOverridable(int options_mask) {
          !(options_mask & SSLErrorOptionsMask::STRICT_ENFORCEMENT);
 }
 
-void IOSSSLBlockingPage::HandleScriptCommand(
-    const base::DictionaryValue& message,
+void IOSSSLBlockingPage::HandleCommand(
+    security_interstitials::SecurityInterstitialCommand command,
     const GURL& origin_url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
-    LOG(ERROR) << "JS message parameter not found: command";
-    return;
-  }
-
-  // Remove the command prefix so that the string value can be converted to a
-  // SecurityInterstitialCommand enum value.
-  std::size_t delimiter = command.find(".");
-  if (delimiter == std::string::npos) {
-    return;
-  }
-  std::string command_str = command.substr(delimiter + 1);
-  int command_num = 0;
-  bool command_is_num = base::StringToInt(command_str, &command_num);
-  DCHECK(command_is_num) << command_str;
-
   // If a proceed command is received, allowlist the certificate and reload
   // the page to re-initiate the original navigation.
-  if (command_num == security_interstitials::CMD_PROCEED) {
+  if (command == security_interstitials::CMD_PROCEED) {
     web_state_->GetSessionCertificatePolicyCache()->RegisterAllowedCertificate(
         ssl_info_.cert, request_url().host(), ssl_info_.cert_status);
     web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
@@ -113,7 +96,5 @@ void IOSSSLBlockingPage::HandleScriptCommand(
     return;
   }
 
-  ssl_error_ui_->HandleCommand(
-      static_cast<security_interstitials::SecurityInterstitialCommand>(
-          command_num));
+  ssl_error_ui_->HandleCommand(command);
 }

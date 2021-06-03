@@ -36,10 +36,11 @@ class LookalikeUrlBlockingPage
   bool ShouldDisplayURL() const override;
 
  private:
-  void HandleScriptCommand(const base::DictionaryValue& message,
-                           const GURL& origin_url,
-                           bool user_is_interacting,
-                           web::WebFrame* sender_frame) override;
+  void HandleCommand(
+      security_interstitials::SecurityInterstitialCommand command,
+      const GURL& origin_url,
+      bool user_is_interacting,
+      web::WebFrame* sender_frame) override;
 
   web::WebState* web_state_ = nullptr;
   std::unique_ptr<LookalikeUrlControllerClient> controller_;

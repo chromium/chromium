@@ -84,29 +84,13 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 }
 
-void IOSCaptivePortalBlockingPage::HandleScriptCommand(
-    const base::DictionaryValue& message,
+void IOSCaptivePortalBlockingPage::HandleCommand(
+    security_interstitials::SecurityInterstitialCommand command,
     const GURL& origin_url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
-    LOG(ERROR) << "JS message parameter not found: command";
-    return;
-  }
-
-  // Remove the command prefix since it is ignored when converting the value
-  // to a SecurityInterstitialCommand.
-  std::size_t delimiter = command.find(".");
-  if (delimiter == std::string::npos)
-    return;
-
-  std::string command_suffix = command.substr(delimiter + 1);
-  int command_num = 0;
-  bool command_is_num = base::StringToInt(command_suffix, &command_num);
-  DCHECK(command_is_num) << command_suffix;
   // Any command other than "open the login page" is ignored.
-  if (command_num == security_interstitials::CMD_OPEN_LOGIN) {
+  if (command == security_interstitials::CMD_OPEN_LOGIN) {
     captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
         captive_portal::CaptivePortalMetrics::OPEN_LOGIN_PAGE);
 

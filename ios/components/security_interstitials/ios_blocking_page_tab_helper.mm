@@ -5,6 +5,7 @@
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -62,16 +63,31 @@ void IOSBlockingPageTabHelper::OnBlockingPageCommand(
     const GURL& url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
+  if (!blocking_page_for_currently_committed_navigation_)
+    return;
+
   const std::string* command = message.FindStringKey("command");
-  if (!command) {
-    DLOG(WARNING) << "JS message parameter not found: command";
-  } else {
-    if (blocking_page_for_currently_committed_navigation_) {
-      blocking_page_for_currently_committed_navigation_->HandleScriptCommand(
-          base::Value::AsDictionaryValue(message), url, user_is_interacting,
-          sender_frame);
-    }
-  }
+  if (!command)
+    return;
+
+  // Remove the command prefix since it is ignored when converting the value
+  // to a SecurityInterstitialCommand.
+  const std::size_t pos = command->find('.');
+  if (pos == std::string::npos || pos + 1 == command->size())
+    return;
+
+  // Use a string piece to avoid creating a copy of the suffix (as calling
+  // std::string::substr would do). This is safe as `*command` is owned by
+  // the base::Value which stay in scope for the whole method.
+  const base::StringPiece suffix = base::StringPiece(*command).substr(pos + 1);
+
+  int command_id;
+  if (!base::StringToInt(suffix, &command_id))
+    return;
+
+  blocking_page_for_currently_committed_navigation_->HandleCommand(
+      static_cast<SecurityInterstitialCommand>(command_id), url,
+      user_is_interacting, sender_frame);
 }
 
 void IOSBlockingPageTabHelper::UpdateForFinishedNavigation(

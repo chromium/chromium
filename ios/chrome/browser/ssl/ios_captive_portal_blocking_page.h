@@ -34,10 +34,11 @@ class IOSCaptivePortalBlockingPage
   // IOSSecurityInterstitialPage overrides:
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(base::DictionaryValue*) const override;
-  void HandleScriptCommand(const base::DictionaryValue& message,
-                           const GURL& origin_url,
-                           bool user_is_interacting,
-                           web::WebFrame* sender_frame) override;
+  void HandleCommand(
+      security_interstitials::SecurityInterstitialCommand command,
+      const GURL& origin_url,
+      bool user_is_interacting,
+      web::WebFrame* sender_frame) override;
 
   // The landing page url for the captive portal network.
   const GURL landing_url_;
