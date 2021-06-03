@@ -210,6 +210,10 @@ class MODULES_EXPORT DecoderTemplate
 
   // TODO(sandersd): Can this just be a HashSet by ptr comparison?
   uint32_t pending_decode_id_ = 0;
+
+  // Used to differentiate Decoders' counters during tracing.
+  int trace_counter_id_;
+
   HeapHashMap<uint32_t, Member<Request>> pending_decodes_;
 };
 

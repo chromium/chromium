@@ -9,12 +9,14 @@
 
 #include "media/base/media_log.h"
 #include "media/base/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -38,6 +40,8 @@ class MODULES_EXPORT EncoderBase
   using OutputChunkType = typename Traits::OutputChunk;
   using OutputCallbackType = typename Traits::OutputCallback;
   using MediaEncoderType = typename Traits::MediaEncoder;
+
+  static const CodecTraceNames* GetTraceNames();
 
   EncoderBase(ScriptState*, const InitType*, ExceptionState&);
   ~EncoderBase() override;
@@ -81,12 +85,29 @@ class MODULES_EXPORT EncoderBase
 
     void Trace(Visitor*) const;
 
+    // Starts an async trace event.
+    void StartTracing();
+
+    // Starts an async encode trace.
+    void StartTracingVideoEncode(bool is_keyframe);
+
+    // Ends the async trace event associated with |this|.
+    void EndTracing(bool aborted = false);
+
+    // Get a trace event name from DecoderTemplate::GetTraceNames() and |type|.
+    const char* TraceNameFromType();
+
     Type type;
     // Current value of EncoderBase.reset_count_ when request was created.
     uint32_t reset_count = 0;
     Member<InputType> input;                     // used by kEncode
     Member<const EncodeOptionsType> encodeOpts;  // used by kEncode
     Member<ScriptPromiseResolver> resolver;      // used by kFlush
+
+#if DCHECK_IS_ON()
+    // Tracks the state of tracing for debug purposes.
+    bool is_tracing;
+#endif
   };
 
   virtual void HandleError(DOMException* ex);
@@ -103,6 +124,8 @@ class MODULES_EXPORT EncoderBase
   virtual InternalConfigType* ParseConfig(const ConfigType*,
                                           ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
+
+  void TraceQueueSizes() const;
 
   std::unique_ptr<CodecLogger> logger_;
 
@@ -128,6 +151,9 @@ class MODULES_EXPORT EncoderBase
   bool stall_request_processing_ = false;
 
   bool first_output_after_configure_ = true;
+
+  // Used to differentiate Encoders' counters during tracing.
+  int trace_counter_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
