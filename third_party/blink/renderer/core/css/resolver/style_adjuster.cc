@@ -658,7 +658,8 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
   style.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
   style.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
   style.SetColorScheme({"light", "dark"});
-  style.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
+  if (style.ShouldForceColor(style.AccentColor()))
+    style.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
   if (!style.HasUrlBackgroundImage())
     style.ClearBackgroundImage();
 }

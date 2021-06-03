@@ -16,6 +16,8 @@ class StyleAutoColor : public StyleColor {
  public:
   explicit StyleAutoColor(Color color) : StyleColor(color) {}
   explicit StyleAutoColor(CSSValueID keyword) : StyleColor(keyword) {}
+  StyleAutoColor(Color color, CSSValueID keyword)
+      : StyleColor(color, keyword) {}
   static StyleAutoColor AutoColor() {
     return StyleAutoColor(CSSValueID::kAuto);
   }

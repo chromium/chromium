@@ -5,19 +5,24 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  input {
+  #a, #b {
     accent-color: green;
   }
-  #a {
+  #a, #c {
     forced-color-adjust: none;
+  }
+  #c, #d {
+    accent-color: CanvasText;
   }
 </style>
 <input type="checkbox" id="a" checked>
 <input type="checkbox" id="b" checked>
-
+<input type="checkbox" id="c" checked>
+<input type="checkbox" id="d" checked>
 <script>
   test(function(){
     assert_equals(getComputedStyle(a).accentColor, "rgb(0, 128, 0)");
     assert_equals(getComputedStyle(b).accentColor, "auto");
-  }, "Accent-color computes to auto in forced colors mode, unless forced-color-adjust is none.");
+    assert_equals(getComputedStyle(c).accentColor, getComputedStyle(d).accentColor)
+  }, "Accent-color computes to auto in forced colors mode, unless forced-color-adjust is none or accent-color is a system color.");
 </script>
