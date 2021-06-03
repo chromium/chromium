@@ -102,17 +102,17 @@ class SigninHeaderHelperTest : public testing::Test {
 
   net::HttpRequestHeaders CreateRequest(
       const GURL& url,
-      const std::string& account_id,
+      const std::string& gaia_id,
       const absl::optional<bool>& is_child_account) {
     net::HttpRequestHeaders original_headers;
     RequestAdapterWrapper request_adapter(url, original_headers);
     AppendOrRemoveMirrorRequestHeader(
-        request_adapter.adapter(), GURL(), account_id, is_child_account,
+        request_adapter.adapter(), GURL(), gaia_id, is_child_account,
         account_consistency_, cookie_settings_.get(), PROFILE_MODE_DEFAULT,
         kTestSource, force_account_consistency_);
-    AppendOrRemoveDiceRequestHeader(
-        request_adapter.adapter(), GURL(), account_id, sync_enabled_,
-        account_consistency_, cookie_settings_.get(), device_id_);
+    AppendOrRemoveDiceRequestHeader(request_adapter.adapter(), GURL(), gaia_id,
+                                    sync_enabled_, account_consistency_,
+                                    cookie_settings_.get(), device_id_);
     return request_adapter.GetFinalHeaders();
   }
 
@@ -130,23 +130,23 @@ class SigninHeaderHelperTest : public testing::Test {
   }
 
   void CheckMirrorHeaderRequest(const GURL& url,
-                                const std::string& account_id,
+                                const std::string& gaia_id,
                                 const absl::optional<bool>& is_child_account,
                                 const std::string& expected_request) {
     net::HttpRequestHeaders headers =
-        CreateRequest(url, account_id, is_child_account);
+        CreateRequest(url, gaia_id, is_child_account);
     CheckAccountConsistencyHeaderRequest(headers, kChromeConnectedHeader,
                                          expected_request);
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void CheckDiceHeaderRequest(const GURL& url,
-                              const std::string& account_id,
+                              const std::string& gaia_id,
                               const absl::optional<bool>& is_child_account,
                               const std::string& expected_mirror_request,
                               const std::string& expected_dice_request) {
     net::HttpRequestHeaders headers =
-        CreateRequest(url, account_id, is_child_account);
+        CreateRequest(url, gaia_id, is_child_account);
     CheckAccountConsistencyHeaderRequest(headers, kChromeConnectedHeader,
                                          expected_mirror_request);
     CheckAccountConsistencyHeaderRequest(headers, kDiceRequestHeader,
@@ -657,11 +657,11 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderEligibleRedirectURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://docs.google.com/document");
   const GURL redirect_url("https://www.google.com");
-  const std::string account_id = "0123456789";
+  const std::string gaia_id = "0123456789";
   net::HttpRequestHeaders original_headers;
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id,
+      request_adapter.adapter(), redirect_url, gaia_id,
       /*is_child_account=*/absl::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
@@ -675,12 +675,12 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderNonEligibleRedirectURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://docs.google.com/document");
   const GURL redirect_url("http://www.foo.com");
-  const std::string account_id = "0123456789";
+  const std::string gaia_id = "0123456789";
   net::HttpRequestHeaders original_headers;
   original_headers.SetHeader(kChromeConnectedHeader, "foo,bar");
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id,
+      request_adapter.adapter(), redirect_url, gaia_id,
       /*is_child_account=*/absl::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
@@ -694,13 +694,13 @@ TEST_F(SigninHeaderHelperTest, TestIgnoreMirrorHeaderNonEligibleURLs) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://www.bar.com");
   const GURL redirect_url("http://www.foo.com");
-  const std::string account_id = "0123456789";
+  const std::string gaia_id = "0123456789";
   const std::string fake_header = "foo,bar";
   net::HttpRequestHeaders original_headers;
   original_headers.SetHeader(kChromeConnectedHeader, fake_header);
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id,
+      request_adapter.adapter(), redirect_url, gaia_id,
       /*is_child_account=*/absl::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
