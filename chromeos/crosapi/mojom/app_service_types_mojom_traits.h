@@ -278,6 +278,31 @@ struct EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType> {
                         apps::mojom::IconType* output);
 };
 
+template <>
+struct StructTraits<crosapi::mojom::IconValueDataView,
+                    apps::mojom::IconValuePtr> {
+  static apps::mojom::IconType icon_type(const apps::mojom::IconValuePtr& r) {
+    return r->icon_type;
+  }
+
+  static const gfx::ImageSkia& uncompressed(
+      const apps::mojom::IconValuePtr& r) {
+    return r->uncompressed;
+  }
+
+  static const absl::optional<std::vector<uint8_t>>& compressed(
+      const apps::mojom::IconValuePtr& r) {
+    return r->compressed;
+  }
+
+  static bool is_placeholder_icon(const apps::mojom::IconValuePtr& r) {
+    return r->is_placeholder_icon;
+  }
+
+  static bool Read(crosapi::mojom::IconValueDataView,
+                   apps::mojom::IconValuePtr* out);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

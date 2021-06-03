@@ -82,6 +82,11 @@ mojom("mojom") {
           mojom = "crosapi.mojom.IconType"
           cpp = "::apps::mojom::IconType"
         },
+        {
+          mojom = "crosapi.mojom.IconValue"
+          cpp = "::apps::mojom::IconValuePtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
@@ -106,5 +111,6 @@ source_set("unit_tests") {
     "//components/services/app_service/public/mojom:mojom",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

@@ -4,3 +4,9 @@
 include_rules = [
   "+components/services/app_service/public",
 ]
+
+specific_include_rules = {
+  "app_service_types_traits_unittest\.cc": [
+    "+ui/gfx/image/image_unittest_util.h"
+  ]
+}

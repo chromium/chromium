@@ -594,4 +594,29 @@ bool EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType>::FromMojom(
   return false;
 }
 
+bool StructTraits<
+    crosapi::mojom::IconValueDataView,
+    apps::mojom::IconValuePtr>::Read(crosapi::mojom::IconValueDataView data,
+                                     apps::mojom::IconValuePtr* out) {
+  apps::mojom::IconType icon_type;
+  if (!data.ReadIconType(&icon_type))
+    return false;
+
+  gfx::ImageSkia uncompressed;
+  if (!data.ReadUncompressed(&uncompressed))
+    return false;
+
+  absl::optional<std::vector<uint8_t>> compressed;
+  if (!data.ReadCompressed(&compressed))
+    return false;
+
+  auto icon_value = apps::mojom::IconValue::New();
+  icon_value->icon_type = icon_type;
+  icon_value->uncompressed = std::move(uncompressed);
+  icon_value->compressed = std::move(compressed);
+  icon_value->is_placeholder_icon = data.is_placeholder_icon();
+  *out = std::move(icon_value);
+  return true;
+}
+
 }  // namespace mojo

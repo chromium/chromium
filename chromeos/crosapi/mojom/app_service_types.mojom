@@ -7,6 +7,7 @@
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
 
@@ -225,4 +226,17 @@ enum IconType {
   // Icon as an uncompressed gfx::ImageSkia with the standard Chrome OS mask
   // applied. This is the default suggested icon type.
   kStandard,
+};
+
+// The icon value for each app.
+[Stable]
+struct IconValue {
+  // The icon format and whether it uses Chrome OS mask.
+  IconType icon_type;
+  // The uncompressed icon data in gfx::ImageSkia format.
+  gfx.mojom.ImageSkia? uncompressed;
+  // The compressed icon data in PNG format.
+  array<uint8>? compressed;
+  // Whether this icon data is a placeholder icon.
+  bool is_placeholder_icon;
 };
