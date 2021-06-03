@@ -621,8 +621,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
             request->state()->selected_shipping_option_error_profile());
 }
 
+// Flaky on ozone: https://crbug.com/1216184
+#if defined(USE_OZONE)
+#define MAYBE_FocusFirstField_Name DISABLED_FocusFirstField_Name
+#else
+#define MAYBE_FocusFirstField_Name FocusFirstField_Name
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
-                       FocusFirstField_Name) {
+                       MAYBE_FocusFirstField_Name) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   InvokePaymentRequestUI();
   SetRegionDataLoader(&test_region_data_loader_);
@@ -644,8 +650,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_TRUE(textfield->HasFocus());
 }
 
+// Flaky on ozone: https://crbug.com/1216184
+#if defined(USE_OZONE)
+#define MAYBE_FocusFirstInvalidField_NotName \
+  DISABLED_FocusFirstInvalidField_NotName
+#else
+#define MAYBE_FocusFirstInvalidField_NotName FocusFirstInvalidField_NotName
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
-                       FocusFirstInvalidField_NotName) {
+                       MAYBE_FocusFirstInvalidField_NotName) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with only the name set, so that another view takes focus.
   autofill::AutofillProfile profile;
