@@ -167,10 +167,17 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
 // with ENABLE_SESSION_SERVICE.
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 
+// Flaky on Win: https://crbug.com/1211377
+#if defined(OS_WIN)
+#define MAYBE_CapturesRestoredTabWhenRequested \
+  DISABLED_CapturesRestoredTabWhenRequested
+#else
+#define MAYBE_CapturesRestoredTabWhenRequested CapturesRestoredTabWhenRequested
+#endif
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
-                       CapturesRestoredTabWhenRequested) {
+                       MAYBE_CapturesRestoredTabWhenRequested) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
