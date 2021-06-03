@@ -1260,6 +1260,9 @@ _CONFIG = [
 
             # The liburlpattern API requires using std::vector.
             'std::vector',
+
+            # Internal namespace used by url_pattern module.
+            'url_pattern::.+',
         ],
     },
     {

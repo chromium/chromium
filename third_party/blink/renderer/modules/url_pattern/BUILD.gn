@@ -8,6 +8,10 @@ blink_modules_sources("url_pattern") {
   sources = [
     "url_pattern.cc",
     "url_pattern.h",
+    "url_pattern_canon.cc",
+    "url_pattern_canon.h",
+    "url_pattern_component.cc",
+    "url_pattern_component.h",
   ]
 
   public_deps = [

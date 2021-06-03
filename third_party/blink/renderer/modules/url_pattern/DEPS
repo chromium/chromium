@@ -5,4 +5,6 @@
 include_rules = [
     "+base/strings/string_util.h",
     "+third_party/liburlpattern",
+    "+url/url_canon.h",
+    "+url/url_util.h",
 ]
