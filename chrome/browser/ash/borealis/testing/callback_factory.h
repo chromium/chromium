@@ -17,6 +17,9 @@ namespace borealis {
 //
 // The callbacks created by this factory are 'naggy' in the sense that
 // uninteresting calls on it will cause a warning to be printed.
+//
+// Prefer to use the NiceCallbackFactory where possible (see
+// go/gmock-cookbook#NiceStrictNaggy)
 template <typename F>
 class NaggyCallbackFactory : public ::testing::MockFunction<F> {
  public:
@@ -39,10 +42,16 @@ class NaggyCallbackFactory : public ::testing::MockFunction<F> {
 };
 
 // As above, but uninteresting calls will be errors.
+//
+// Prefer to use the NiceCallbackFactory where possible (see
+// go/gmock-cookbook#NiceStrictNaggy)
 template <typename F>
 using StrictCallbackFactory = ::testing::StrictMock<NaggyCallbackFactory<F>>;
 
 // As above, but uninteresting calls will be ignored.
+//
+// We recommend using this factory in preference to the others, see
+// go/gmock-cookbook#NiceStrictNaggy for more information.
 template <typename F>
 using NiceCallbackFactory = ::testing::NiceMock<NaggyCallbackFactory<F>>;
 
