@@ -211,7 +211,7 @@ class AppListClientImpl
 
   // Indicates when the session of a new user becomes active. If there is no new
   // users logged in, `new_user_session_activation_time_` is null.
-  absl::optional<base::TimeTicks> new_user_session_activation_time_;
+  absl::optional<base::Time> new_user_session_activation_time_;
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;
