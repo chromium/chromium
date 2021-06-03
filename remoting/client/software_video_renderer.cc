@@ -160,7 +160,7 @@ void SoftwareVideoRenderer::ProcessVideoPacket(
                      std::move(frame)),
       base::BindOnce(&SoftwareVideoRenderer::RenderFrame,
                      weak_factory_.GetWeakPtr(), std::move(frame_stats),
-                     base::AdaptCallbackForRepeating(done_runner.Release())));
+                     done_runner.Release()));
 }
 
 void SoftwareVideoRenderer::RenderFrame(
