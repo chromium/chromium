@@ -6,6 +6,10 @@ import("//build/config/features.gni")
 
 static_library("browser") {
   sources = [
+    "pdf_navigation_throttle.cc",
+    "pdf_navigation_throttle.h",
+    "pdf_url_loader_request_interceptor.cc",
+    "pdf_url_loader_request_interceptor.h",
     "pdf_web_contents_helper.cc",
     "pdf_web_contents_helper.h",
     "pdf_web_contents_helper_client.h",

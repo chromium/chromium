@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
+  "+services/network/public/cpp",
   "+ui/base",
   "+ui/touch_selection",
 ]
