@@ -12,6 +12,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace metrics {
 
@@ -101,7 +103,14 @@ std::string GetCpuUarch(const CPUIdentity& cpuid) {
 CPUIdentity GetCPUIdentity() {
   CPUIdentity result = {};
   result.arch = base::SysInfo::OperatingSystemArchitecture();
-  result.release = base::SysInfo::OperatingSystemVersion();
+  result.release =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::SysInfo::KernelVersion();
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::SysInfo::OperatingSystemVersion();
+#else
+#error "Unsupported configuration"
+#endif
   base::CPU cpuid;
   result.vendor = cpuid.vendor_name();
   result.family = cpuid.family();
