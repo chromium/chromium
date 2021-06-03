@@ -6492,6 +6492,7 @@ crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout
 
 # Sheriff 2021-04-14
 crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Pass Failure ]
+crbug.com/1198828 [ Linux ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Pass Failure ]
 
 # Sheriff 2021-04-15
 crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
