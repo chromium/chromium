@@ -7,6 +7,7 @@
  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.chromium.cronet_sample_apk">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -23,5 +24,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+        <provider
+            android:authorities="org.chromium.cronet_sample_apk.androidx-startup"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            tools:node="remove">
+        </provider>
     </application>
 </manifest>
