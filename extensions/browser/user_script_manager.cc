@@ -4,7 +4,9 @@
 
 #include "extensions/browser/user_script_manager.h"
 
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/user_script_loader.h"
@@ -33,10 +35,15 @@ UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
 
 ExtensionUserScriptLoader* UserScriptManager::GetUserScriptLoaderForExtension(
     const ExtensionId& extension_id) {
-  auto it = extension_script_loaders_.find(extension_id);
-  DCHECK(it != extension_script_loaders_.end());
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  DCHECK(extension);
 
-  return it->second.get();
+  auto it = extension_script_loaders_.find(extension->id());
+  return (it == extension_script_loaders_.end())
+             ? CreateExtensionUserScriptLoader(extension)
+             : it->second.get();
 }
 
 WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
@@ -50,12 +57,7 @@ void UserScriptManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   ExtensionUserScriptLoader* loader =
-      extension_script_loaders_
-          .emplace(extension->id(),
-                   std::make_unique<ExtensionUserScriptLoader>(
-                       browser_context_, *extension,
-                       true /* listen_for_extension_system_loaded */))
-          .first->second.get();
+      GetUserScriptLoaderForExtension(extension->id());
 
   std::unique_ptr<UserScriptList> scripts =
       GetManifestScriptsMetadata(extension);
@@ -114,8 +116,24 @@ std::unique_ptr<UserScriptList> UserScriptManager::GetManifestScriptsMetadata(
   return script_vector;
 }
 
+ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
+    const Extension* extension) {
+  DCHECK(!base::Contains(extension_script_loaders_, extension->id()));
+  // Inserts a new ExtensionUserScriptLoader and returns a ptr to it.
+  ExtensionUserScriptLoader* loader =
+      extension_script_loaders_
+          .emplace(extension->id(),
+                   std::make_unique<ExtensionUserScriptLoader>(
+                       browser_context_, *extension,
+                       true /* listen_for_extension_system_loaded */))
+          .first->second.get();
+
+  return loader;
+}
+
 WebUIUserScriptLoader* UserScriptManager::CreateWebUIUserScriptLoader(
     const GURL& url) {
+  DCHECK(!base::Contains(webui_script_loaders_, url));
   // Inserts a new WebUIUserScriptLoader and returns a ptr to it.
   WebUIUserScriptLoader* loader =
       webui_script_loaders_

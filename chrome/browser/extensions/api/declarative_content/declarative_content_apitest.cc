@@ -24,6 +24,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/declarative/rules_registry.h"
+#include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -1027,6 +1030,52 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   const std::string kRemoveTestRule1 = "removeRule('1', 'remove_rule1');\n";
   EXPECT_EQ("remove_rule1",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveTestRule1));
+}
+
+// Test that an extension with a RequestContentScript rule in its manifest can
+// be loaded.
+// Regression for crbug.com/1211316, which could cause this test to flake if
+// RulesRegistry::OnExtensionLoaded() was called before
+// UserScriptmanager::OnExtensionLoaded().
+IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, RequestContentScriptRule) {
+  constexpr char kManifest[] = R"(
+      {
+        "name": "Declarative Content apitest",
+        "version": "0.1",
+        "manifest_version": 2,
+        "page_action": {},
+        "permissions": [
+          "declarativeContent"
+        ],
+        "event_rules": [{
+          "event": "declarativeContent.onPageChanged",
+          "actions": [{
+            "type": "declarativeContent.RequestContentScript",
+            "js": ["asdf.js"]
+          }],
+          "conditions": [{
+            "type": "declarativeContent.PageStateMatcher",
+            "pageUrl": {"hostPrefix": "test1"}
+          }]
+        }]
+      }
+  )";
+
+  ext_dir_.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  RulesRegistryService* rules_registry_service =
+      extensions::RulesRegistryService::Get(browser()->profile());
+  scoped_refptr<RulesRegistry> rules_registry =
+      rules_registry_service->GetRulesRegistry(
+          RulesRegistryService::kDefaultRulesRegistryID,
+          "declarativeContent.onPageChanged");
+  DCHECK(rules_registry);
+
+  std::vector<const api::events::Rule*> rules;
+  rules_registry->GetAllRules(extension->id(), &rules);
+  EXPECT_EQ(1u, rules.size());
 }
 
 // TODO(wittman): Once ChromeContentRulesRegistry operates on condition and
