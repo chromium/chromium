@@ -3074,9 +3074,13 @@ TEST_F('ChromeVoxBackgroundTest', 'ReadFromHereBlankNodes', function() {
   const site = `<a tabindex=0></a><p>start</p><a tabindex=0></a><p>end</p>`;
   this.runWithLoadedTree(site, function(root) {
     assertEquals(
-        RoleType.ANCHOR, ChromeVoxState.instance.currentRange.start.node.role);
+        RoleType.STATIC_TEXT,
+        ChromeVoxState.instance.currentRange.start.node.role);
 
-    mockFeedback.call(doCmd('readFromHere'))
+    // "start" is uttered twice, once for the initial focus as the page loads,
+    // and once during the 'read from here' command.
+    mockFeedback.expectSpeech('start')
+        .call(doCmd('readFromHere'))
         .expectSpeech('start', 'end')
         .replay();
   });

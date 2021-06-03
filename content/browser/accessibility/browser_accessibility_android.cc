@@ -1051,9 +1051,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kAlert:
       message_id = IDS_AX_ROLE_ALERT;
       break;
-    case ax::mojom::Role::kAnchor:
-      // No role description.
-      break;
     case ax::mojom::Role::kApplication:
       message_id = IDS_AX_ROLE_APPLICATION;
       break;

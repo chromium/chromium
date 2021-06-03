@@ -145,7 +145,6 @@ chrome.automation.RoleType = {
   ABBR: 'abbr',
   ALERT: 'alert',
   ALERT_DIALOG: 'alertDialog',
-  ANCHOR: 'anchor',
   APPLICATION: 'application',
   ARTICLE: 'article',
   AUDIO: 'audio',

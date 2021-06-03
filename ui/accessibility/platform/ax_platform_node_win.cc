@@ -5280,9 +5280,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kAlertDialog:
       return ROLE_SYSTEM_DIALOG;
 
-    case ax::mojom::Role::kAnchor:
-      return ROLE_SYSTEM_LINK;
-
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:
       return ROLE_SYSTEM_GROUPING;
@@ -6098,9 +6095,6 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
       // |ax::mojom::Role::kAlertDialog| yet.
       return L"alert";
 
-    case ax::mojom::Role::kAnchor:
-      return L"link";
-
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:
       return L"group";
@@ -6767,9 +6761,6 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       // Windows screen readers are not compatible with
       // |ax::mojom::Role::kAlertDialog| yet.
       return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kAnchor:
-      return UIA_HyperlinkControlTypeId;
 
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:

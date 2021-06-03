@@ -146,8 +146,6 @@ const char* ToString(ax::mojom::Role role) {
       return "alertDialog";
     case ax::mojom::Role::kAlert:
       return "alert";
-    case ax::mojom::Role::kAnchor:
-      return "anchor";
     case ax::mojom::Role::kApplication:
       return "application";
     case ax::mojom::Role::kArticle:

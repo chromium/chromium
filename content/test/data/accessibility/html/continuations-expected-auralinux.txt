@@ -10,11 +10,11 @@
 ++++[section]
 ++++++[static] name='After'
 ++[panel] name='Group 3'
-++++[link] name='Before'
+++++[section]
 ++++++[section]
 ++++++++[static] name='Before'
 ++++[section]
-++++++[link] name='Ever '
+++++++[section]
 ++++++++[static] name='Ever '
 ++++++[link] name='After'
 ++++++++[static] name='After'

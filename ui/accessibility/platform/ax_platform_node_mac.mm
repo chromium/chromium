@@ -42,7 +42,6 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kAbbr, NSAccessibilityGroupRole},
       {ax::mojom::Role::kAlert, NSAccessibilityGroupRole},
       {ax::mojom::Role::kAlertDialog, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kAnchor, NSAccessibilityGroupRole},
       {ax::mojom::Role::kApplication, NSAccessibilityGroupRole},
       {ax::mojom::Role::kArticle, NSAccessibilityGroupRole},
       {ax::mojom::Role::kAudio, NSAccessibilityGroupRole},

@@ -20,10 +20,10 @@ AXWebArea
 ++++AXGroup
 ++++AXStaticText AXValue='After empty anchor'
 ++AXGroup
-++++AXGroup AXTitle='Anchor with content'
+++++AXGroup
 ++++++AXStaticText AXValue='Anchor with content'
 ++AXGroup
-++++AXGroup AXTitle='Anchor with ID'
+++++AXGroup
 ++++++AXStaticText AXValue='Anchor with ID'
 ++AXGroup
 ++++AXGroup

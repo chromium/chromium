@@ -5202,7 +5202,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
   switch (RoleValue()) {
     // ----- NameFrom: contents -------------------------
     // Get their own name from contents, or contribute to ancestors
-    case ax::mojom::blink::Role::kAnchor:
     case ax::mojom::blink::Role::kButton:
     case ax::mojom::blink::Role::kCell:
     case ax::mojom::blink::Role::kCheckBox:

@@ -2390,10 +2390,8 @@ ImplementedAtkInterfaces AXPlatformNodeAuraLinux::GetGTypeInterfaceMask(
   // AtkObject. It is indeed implemented by actual web hyperlinks, but also by
   // objects that will become embedded objects in ATK hypertext, so the name is
   // a bit of a misnomer from the ATK API.
-  if (IsLink(data.role) || data.role == ax::mojom::Role::kAnchor ||
-      !ui::IsText(data.role)) {
+  if (IsLink(data.role) || !ui::IsText(data.role))
     interface_mask.Add(ImplementedAtkInterfaces::Value::kHyperlink);
-  }
 
   if (data.role == ax::mojom::Role::kWindow)
     interface_mask.Add(ImplementedAtkInterfaces::Value::kWindow);
@@ -2642,8 +2640,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_NOTIFICATION;
     case ax::mojom::Role::kAlertDialog:
       return ATK_ROLE_ALERT;
-    case ax::mojom::Role::kAnchor:
-      return ATK_ROLE_LINK;
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:
       return ATK_ROLE_SECTION;

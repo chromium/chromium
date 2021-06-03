@@ -831,23 +831,17 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsA<HTMLImageElement>(GetNode()))
     return ax::mojom::blink::Role::kImage;
 
-  // <a href> or <svg:a xlink:href>
-  if (GetNode()->IsLink()) {
-    // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
-    return ax::mojom::blink::Role::kLink;
-  }
-
-  if (IsA<HTMLPortalElement>(*GetNode())) {
-    return ax::mojom::blink::Role::kPortal;
-  }
-
-  if (IsA<HTMLAnchorElement>(*GetNode())) {
-    // We assume that an anchor element is LinkRole if it has event listeners
-    // even though it doesn't have kHrefAttr.
-    if (IsClickable())
+  // <a> or <svg:a>.
+  if (IsA<HTMLAnchorElement>(GetNode()) || IsA<SVGAElement>(GetNode())) {
+    // Assume that an anchor element is a Role::kLink if it has an href or a
+    // click event listener.
+    if (GetNode()->IsLink() || IsClickable())
       return ax::mojom::blink::Role::kLink;
-    return ax::mojom::blink::Role::kAnchor;
+    return ax::mojom::blink::Role::kGenericContainer;
   }
+
+  if (IsA<HTMLPortalElement>(*GetNode()))
+    return ax::mojom::blink::Role::kPortal;
 
   if (IsA<HTMLButtonElement>(*GetNode()))
     return ButtonRoleType();
