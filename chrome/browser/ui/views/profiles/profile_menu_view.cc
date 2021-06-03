@@ -445,9 +445,7 @@ void ProfileMenuView::BuildIdentity() {
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  absl::optional<AccountInfo> account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          account);
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(account);
   ProfileAttributesEntry* profile_attributes =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -471,16 +469,16 @@ void ProfileMenuView::BuildIdentity() {
 
   SkColor background_color =
       profile_attributes->GetProfileThemeColors().profile_highlight_color;
-  if (account_info.has_value()) {
-    menu_title_ = base::UTF8ToUTF16(account_info.value().full_name);
+  if (!account_info.IsEmpty()) {
+    menu_title_ = base::UTF8ToUTF16(account_info.full_name);
     menu_subtitle_ =
         IsSyncPaused(profile)
             ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
-            : base::UTF8ToUTF16(account_info.value().email);
+            : base::UTF8ToUTF16(account_info.email);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
-        ui::ImageModel::FromImage(account_info.value().account_image),
-        menu_title_, menu_subtitle_);
+        ui::ImageModel::FromImage(account_info.account_image), menu_title_,
+        menu_subtitle_);
   } else {
     menu_title_ = std::u16string();
     menu_subtitle_ =
@@ -567,17 +565,16 @@ void ProfileMenuView::BuildSyncInfo() {
   // Show sync promos.
   CoreAccountInfo unconsented_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  absl::optional<AccountInfo> account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          unconsented_account);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(unconsented_account);
 
-  if (account_info.has_value()) {
+  if (!account_info.IsEmpty()) {
     BuildSyncInfoWithCallToAction(
         l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE),
         l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON),
         ui::NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount,
         base::BindRepeating(&ProfileMenuView::OnSigninAccountButtonClicked,
-                            base::Unretained(this), account_info.value()),
+                            base::Unretained(this), account_info),
         /*show_badge=*/true);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -71,12 +71,8 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount() {
     ClearProfileEntry();
   }
 
-  auto maybe_account_info =
-      identity_manager_
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              unconsented_primary_account_info.account_id);
-  if (maybe_account_info.has_value())
-    UpdatePrimaryAccount(maybe_account_info.value());
+  UpdatePrimaryAccount(identity_manager_->FindExtendedAccountInfoByAccountId(
+      unconsented_primary_account_info.account_id));
 }
 
 void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
@@ -197,12 +193,8 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
     // downloaded).
     for (gaia::ListedAccount account :
          accounts_in_cookie_jar_info.signed_in_accounts) {
-      auto maybe_account_info =
-          identity_manager_
-              ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                  account.id);
-      if (maybe_account_info.has_value())
-        UpdateAnyAccount(*maybe_account_info);
+      UpdateAnyAccount(
+          identity_manager_->FindExtendedAccountInfoByAccountId(account.id));
     }
   }
 }

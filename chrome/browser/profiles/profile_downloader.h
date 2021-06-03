@@ -51,9 +51,6 @@ class ProfileDownloader : public ImageDecoder::ImageRequest,
   // token is available. Should not be called more than once.
   virtual void StartForAccount(const CoreAccountId& account_id);
 
-  // On successful download this returns the hosted domain of the user.
-  virtual std::u16string GetProfileHostedDomain() const;
-
   // On successful download this returns the full name of the user. For example
   // "Pat Smith".
   virtual std::u16string GetProfileFullName() const;

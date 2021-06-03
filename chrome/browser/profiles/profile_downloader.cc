@@ -70,10 +70,6 @@ void ProfileDownloader::StartForAccount(const CoreAccountId& account_id) {
   StartFetchingOAuth2AccessToken();
 }
 
-std::u16string ProfileDownloader::GetProfileHostedDomain() const {
-  return base::UTF8ToUTF16(account_info_.hosted_domain);
-}
-
 std::u16string ProfileDownloader::GetProfileFullName() const {
   return base::UTF8ToUTF16(account_info_.full_name);
 }
@@ -107,12 +103,10 @@ std::string ProfileDownloader::GetProfilePictureURL() const {
 
 void ProfileDownloader::StartFetchingImage() {
   VLOG(1) << "Fetching user entry with token: " << auth_token_;
-  auto maybe_account_info =
-      identity_manager_
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id_);
-  if (maybe_account_info.has_value())
-    account_info_ = maybe_account_info.value();
+  AccountInfo maybe_account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id_);
+  if (!maybe_account_info.IsEmpty())
+    account_info_ = maybe_account_info;
 
   if (account_info_.IsValid()) {
     // FetchImageData might call the delegate's OnProfileDownloadSuccess
