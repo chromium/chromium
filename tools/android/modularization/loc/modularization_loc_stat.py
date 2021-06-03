@@ -15,12 +15,13 @@ import subprocess
 import sys
 from collections import OrderedDict
 from collections import defaultdict
-from typing import Tuple
+from typing import List, Tuple
 
 # Output json keys
 KEY_LOC_MODULARIZED = 'loc_modularized'
 KEY_LOC_LEGACY = 'loc_legacy'
-KEY_RANKINGS = 'rankings'
+KEY_RANKINGS_MODULARIZED = 'rankings'
+KEY_RANKINGS_LEGACY = 'rankings_legacy'
 KEY_START_DATE = 'start_date'
 KEY_END_DATE = 'end_date'
 
@@ -86,7 +87,8 @@ def GenerateLOCStats(start_date,
     print(f'\nSTDOUT: {e.stdout}', file=sys.stderr)
     raise
 
-  author_stat = defaultdict(int)
+  author_stat_m12n = defaultdict(int)
+  author_stat_legacy = defaultdict(int)
   total_m12n = 0
   total_legacy = 0
   prev_msg_len = 0
@@ -111,9 +113,10 @@ def GenerateLOCStats(start_date,
       diff = int(added)
       if _is_m12n_path(path):
         total_m12n += diff
-        author_stat[author] += diff
+        author_stat_m12n[author] += diff
       elif _is_legacy_path(path):
         total_legacy += diff
+        author_stat_legacy[author] += diff
 
     msg = f'\rProcessing {commit_date} by {author}'
     if not quiet: _print_progress(msg, prev_msg_len)
@@ -123,14 +126,17 @@ def GenerateLOCStats(start_date,
     _print_progress('Processing complete', prev_msg_len)
     print('\n')
 
-  rankings = OrderedDict(
-      sorted(author_stat.items(), key=lambda x: x[1], reverse=True))
+  rankings_modularized = OrderedDict(
+      sorted(author_stat_m12n.items(), key=lambda x: x[1], reverse=True))
+  rankings_legacy = OrderedDict(
+      sorted(author_stat_legacy.items(), key=lambda x: x[1], reverse=True))
 
   if json_format:
     return json.dumps({
         KEY_LOC_MODULARIZED: total_m12n,
         KEY_LOC_LEGACY: total_legacy,
-        KEY_RANKINGS: rankings,
+        KEY_RANKINGS_MODULARIZED: rankings_modularized,
+        KEY_RANKINGS_LEGACY: rankings_legacy,
         KEY_START_DATE: start_date,
         KEY_END_DATE: end_date,
     })
@@ -139,22 +145,33 @@ def GenerateLOCStats(start_date,
     total = total_m12n + total_legacy
     percentage = 100.0 * total_m12n / total if total > 0 else 0
     output.append(f'# of lines added in modularized files: {total_m12n}')
-    output.append(f'# of lines added in legacy files: {total_legacy}')
+    output.append(f'# of lines added in non-modularized files: {total_legacy}')
     output.append(f'% of lines landing in modularized files: {percentage:2.2f}')
 
-    # Shows the top 50 contributors to modularized files.
-    output.append('\nTop contributors:')
-    if rankings:
-      output.append('No  lines    %    author')
-      for rank, author in enumerate(list(rankings.keys())[:50], 1):
-        lines = rankings[author]
-        if lines == 0:
-          break
-        ratio = 100 * lines / total_m12n
-        output.append(f'{rank:2d} {lines:6d} {ratio:5.1f}  {author}')
-    else:
-      output.append('...none found.')
+    # Shows the top 50 contributors in each category.
+    output.extend(
+        _print_ranking(rankings_modularized, total_m12n,
+                       'modules and components'))
+    output.extend(
+        _print_ranking(rankings_legacy, total_legacy, 'legacy and glue'))
+
     return '\n'.join(output)
+
+
+def _print_ranking(rankings: OrderedDict, total: int, label: str) -> List[str]:
+  if not rankings:
+    return []
+
+  output = []
+  output.append(f'\nTop contributors ({label}):')
+  output.append('No  lines    %    author')
+  for rank, author in enumerate(list(rankings.keys())[:50], 1):
+    lines = rankings[author]
+    if lines == 0:
+      break
+    ratio = 100 * lines / total
+    output.append(f'{rank:2d} {lines:6d} {ratio:5.1f}  {author}')
+  return output
 
 
 def _is_m12n_path(path):
