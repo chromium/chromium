@@ -287,7 +287,18 @@ bool PaletteTray::ShouldShowOnDisplay() {
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
-  return display.IsInternal();
+
+  if (!display.IsInternal())
+    return false;
+
+  for (const ui::TouchscreenDevice& device :
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+    if (device.has_stylus && device.target_display_id == display.id()) {
+      return true;
+    }
+  }
+
+  return display_has_stylus_for_testing_;
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
@@ -682,6 +693,11 @@ bool PaletteTray::DeactivateActiveTool() {
 
 bool PaletteTray::HasSeenStylus() {
   return local_state_ && local_state_->GetBoolean(prefs::kHasSeenStylus);
+}
+
+void PaletteTray::SetDisplayHasStylusForTesting() {
+  display_has_stylus_for_testing_ = true;
+  UpdateIconVisibility();
 }
 
 void PaletteTray::UpdateIconVisibility() {

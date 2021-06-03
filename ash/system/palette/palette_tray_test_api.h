@@ -36,6 +36,9 @@ class PaletteTrayTestApi {
     palette_tray_->OnStylusStateChanged(state);
   }
 
+  // Have the tray act as though it is on a display with a stylus
+  void SetDisplayHasStylus() { palette_tray_->SetDisplayHasStylusForTesting(); }
+
  private:
   PaletteTray* palette_tray_ = nullptr;
 

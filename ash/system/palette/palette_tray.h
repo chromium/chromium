@@ -39,7 +39,7 @@ class TrayBubbleWrapper;
 // The PaletteTray shows the palette in the bottom area of the screen. This
 // class also controls the lifetime for all of the tools available in the
 // palette. PaletteTray has one instance per-display. It is only made visible if
-// the display is primary and if the device has stylus hardware.
+// the display is primary and the display has stylus hardware.
 class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
                                public ShellObserver,
@@ -56,8 +56,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // for determining if an event should be propagated through to the palette.
   bool ContainsPointInScreen(const gfx::Point& point);
 
-  // Returns true if the palette should be visible in the UI. This happens when:
-  // there is a stylus input, there is an internal display, and the user has not
+  // Returns true if the palette should be visible in the UI. This happens when
+  // there is a stylus input on an internal display and the user has not
   // disabled it in settings. This can be overridden by passing switches.
   bool ShouldShowPalette() const;
 
@@ -110,8 +110,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void OnActiveToolChanged() override;
   aura::Window* GetWindow() override;
 
-  // Returns true if we're on an internal display or on every
-  // display if requested from the command line.
+  // Returns true if we're on an internal display with a stylus
+  // or on every display if requested from the command line.
   bool ShouldShowOnDisplay();
 
   // Initializes with Shell's local state and starts to observe it.
@@ -136,6 +136,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // previously, or if the device has an internal stylus.
   bool HasSeenStylus();
 
+  // Have the palette act as though it is on a display with a stylus for
+  // testing purposes.
+  void SetDisplayHasStylusForTesting();
+
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -153,6 +157,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // Cached palette pref value.
   bool is_palette_enabled_ = true;
+
+  // Whether the palette should behave as though its display has a stylus.
+  bool display_has_stylus_for_testing_ = false;
 
   // Used to indicate whether the palette bubble is automatically opened by a
   // stylus eject event.

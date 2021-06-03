@@ -80,6 +80,9 @@ class PaletteTrayTest : public AshTestBase {
     palette_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray();
     test_api_ = std::make_unique<PaletteTrayTestApi>(palette_tray_);
+
+    display::test::DisplayManagerTestApi(display_manager())
+        .SetFirstDisplayAsInternalDisplay();
   }
 
   PrefService* prefs() {
@@ -591,6 +594,12 @@ class PaletteTrayTestWithInternalStylus : public PaletteTrayTest {
   }
   ~PaletteTrayTestWithInternalStylus() override = default;
 
+  // PaletteTrayTest:
+  void SetUp() override {
+    PaletteTrayTest::SetUp();
+    test_api_->SetDisplayHasStylus();
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithInternalStylus);
 };
@@ -810,6 +819,8 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
       controllers[0]->GetStatusAreaWidget()->palette_tray();
   PaletteTray* external_tray =
       controllers[1]->GetStatusAreaWidget()->palette_tray();
+
+  test_api_->SetDisplayHasStylus();
 
   // The palette tray on the external monitor is not visible.
   EXPECT_TRUE(main_tray->GetVisible());
