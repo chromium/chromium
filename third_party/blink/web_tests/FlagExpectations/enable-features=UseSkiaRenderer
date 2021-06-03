@@ -31,6 +31,7 @@ crbug.com/1175758 [ Linux ] images/rgb-png-with-cmyk-color-profile.html [ Failur
 crbug.com/1175758 [ Linux ] media/video-controls-hide-on-move-outside-controls.html [ Failure Pass ]
 crbug.com/1175758 [ Linux ] virtual/android/fullscreen/model/fully-exit-fullscreen-single.html [ Failure Pass ]
 [ Linux ] transforms/shadows.html [ Skip ]
+crbug.com/1215248 [ Linux ] images/color-profile-mask-image-svg.html [ Failure ]
 
 # Flaky on Windows.
 crbug.com/1026375 [ Win ] media/video-currentTime-delay.html [ Timeout Pass ]
