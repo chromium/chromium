@@ -1041,9 +1041,10 @@ TEST_F(CartServiceFakeDataTest, TestFakeData) {
 
 // Tests expired entries are deleted when data is loaded.
 TEST_F(CartServiceTest, TestExpiredDataDeleted) {
-  base::RunLoop run_loop[3];
+  base::RunLoop run_loop[6];
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
+  const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
 
   merchant_proto.set_timestamp(
       (base::Time::Now() - base::TimeDelta::FromDays(16)).ToDoubleT());
@@ -1063,16 +1064,37 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
                      run_loop[1].QuitClosure(), kEmptyExpected));
   run_loop[1].Run();
 
-  merchant_proto.set_timestamp(
-      (base::Time::Now() - base::TimeDelta::FromDays(13)).ToDoubleT());
+  // If the cart is removed, the expired entry is deleted in load results but is
+  // kept in database.
+  merchant_proto.set_is_removed(true);
   service_->AddCart(kMockMerchantA, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
-  const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
   service_->LoadAllActiveCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
-                     run_loop[2].QuitClosure(), result));
+                     run_loop[2].QuitClosure(), kEmptyExpected));
   run_loop[2].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[3].QuitClosure(), result));
+  run_loop[3].Run();
+
+  merchant_proto.set_timestamp(
+      (base::Time::Now() - base::TimeDelta::FromDays(13)).ToDoubleT());
+  merchant_proto.set_is_removed(false);
+  service_->GetDB()->AddCart(
+      kMockMerchantA, merchant_proto,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[5].QuitClosure(), false));
+  run_loop[5].Run();
 }
 
 // Tests cart-related actions would reshow hidden module.
