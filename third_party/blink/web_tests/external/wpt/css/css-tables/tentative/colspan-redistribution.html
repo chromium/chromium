@@ -41,7 +41,7 @@
   <li class="error">Red paragraphs are major browser disagreements</li>
 </ol>
 
-<h2>Colspan&gt;1 cell's percentage distribution</h2>
+<h2>Colspan&gt;1 cell's percentage distribution auto tables</h2>
 <p>Rules</p>
 <ul>
   <li>Percentages can only be redistributed to non-percentage cells.</li>
@@ -97,6 +97,87 @@ Percentage is not getting redistributed, because column% > colspan&gt;1%</p>
   </tr>
   <tr>
     <td colspan=2 style="width:19%" data-expected-width="208"><div style="width:208px">208</div></td>
+  </tr>
+</table>
+
+<h2>Colspan&gt;1 cell's percentage distribution fixed tables</h2>
+<p>Colspan cells distribute width over col widths.
+<p>Rules</p>
+<ul>
+  <li>Percentages are not distributed to fixed columns.</li>
+  <li>Percentages are not distributed to percentage columns.</li>
+  <li>Percentages are distributed to auto columns, each column gets distributed%/colspan percent.</li>
+</ul>
+<p class="testdesc">Auto column distribution
+auto colums get percentage widths distributed evenly.
+C0/C1 become 25% columns.
+Assignable table size is 400-4*8=368. Column size is 25% of 368 = 92px</p>
+<p class="error">FF disagrees in how border-spacing is handled and ends up with slightly different cell widths. </p>
+<table style="table-layout:fixed; width: 400px">
+  <col style="width:auto">
+  <col style="width:auto">
+  <tr>
+    <td colspan="2" style="width:50%">50%</td>
+    <td>a</td>
+  </tr>
+  <tr>
+    <td data-expected-width=92>a</td>
+    <td data-expected-width=92>aa</td>
+    <td>a</td>
+  </tr>
+</table>
+
+<p class="testdesc">Fixed column distribution
+fixed columns do not get percentage distribution.</p>
+<table style="table-layout:fixed; width: 400px">
+  <col style="width:50px">
+  <col style="width:50px">
+  <tr>
+    <td colspan="2" style="width:50%">50%</td>
+    <td>a</td>
+  </tr>
+  <tr>
+    <td data-expected-width="50">a</td>
+    <td data-expected-width="50">a</td>
+    <td>a</td>
+  </tr>
+</table>
+
+<p class="testdesc">Percentage column distribution
+percentage columns do not get percentage distribution.</p>
+<table style="table-layout:fixed; width: 400px">
+  <col style="width:12.5%">
+  <col style="width:25%">
+  <tr>
+    <td colspan="2" style="width:50%">50%</td>
+    <td>a</td>
+  </tr>
+  <tr>
+    <td data-expected-width="46">a</td>
+    <td data-expected-width="92">a</td>
+    <td>a</td>
+  </tr>
+</table>
+
+<p class="testdesc">Distribute over percentage/auto/fixed mix cells
+Collspanned TD distributes 50%. Auto TD gets 50%/(colspanned span = 4): 12.5%
+12.5%* 400px is 50.
+</p>
+<table style="table-layout:fixed; width: 400px;border-spacing:0">
+  <col style="width:25%">
+  <col style="width:25px">
+  <col style="width:25px">
+  <col style="width:auto">
+  <tr>
+    <td colspan="4" style="width:50%">50%</td>
+    <td>a</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>a</td>
+    <td>a</td>
+    <td data-expected-width="50" style="background-color:yellow">a</td>
+    <td>a</td>
   </tr>
 </table>
 

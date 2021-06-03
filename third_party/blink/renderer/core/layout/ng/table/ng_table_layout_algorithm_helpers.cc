@@ -521,11 +521,9 @@ void DistributeColspanCellToColumnsFixed(
        total_inner_border_spacing)
           .ClampNegativeToZero();
 
-  // Distribute min/max/percentage evenly between all cells.
+  // Distribute min/max evenly between all cells.
   LayoutUnit rounding_error_min_inline_size = colspan_cell_min_inline_size;
   LayoutUnit rounding_error_max_inline_size = colspan_cell_max_inline_size;
-  float rounding_error_percent =
-      colspan_cell.cell_inline_constraint.percent.value_or(0.0f);
 
   LayoutUnit new_min_size = LayoutUnit(colspan_cell_min_inline_size /
                                        static_cast<float>(effective_span));
@@ -536,7 +534,7 @@ void DistributeColspanCellToColumnsFixed(
     new_percent = *colspan_cell.cell_inline_constraint.percent / effective_span;
   }
 
-  NGTableTypes::Column* last_column;
+  NGTableTypes::Column* last_column = nullptr;
   for (NGTableTypes::Column* column = start_column; column < end_column;
        ++column) {
     if (column->is_mergeable)
@@ -544,8 +542,6 @@ void DistributeColspanCellToColumnsFixed(
     last_column = column;
     rounding_error_min_inline_size -= new_min_size;
     rounding_error_max_inline_size -= new_max_size;
-    if (new_percent)
-      rounding_error_percent -= *new_percent;
 
     if (!column->min_inline_size) {
       column->is_constrained |=
@@ -557,15 +553,16 @@ void DistributeColspanCellToColumnsFixed(
           colspan_cell.cell_inline_constraint.is_constrained;
       column->max_inline_size = new_max_size;
     }
-    if (!column->percent && new_percent)
-      column->percent = new_percent;
+    // Percentages only get distributed over auto columns.
+    if (!column->percent && !column->is_constrained && new_percent) {
+      column->percent = *new_percent;
+    }
   }
+  DCHECK(last_column);
   last_column->min_inline_size =
       *last_column->min_inline_size + rounding_error_min_inline_size;
   last_column->max_inline_size =
       *last_column->max_inline_size + rounding_error_max_inline_size;
-  if (new_percent)
-    last_column->percent = *last_column->percent + rounding_error_percent;
 }
 
 void DistributeColspanCellToColumnsAuto(
