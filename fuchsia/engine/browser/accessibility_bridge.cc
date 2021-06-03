@@ -238,8 +238,14 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
       return;
     }
 
-    action_data.target_rect = gfx::ToEnclosedRectIgnoringError(
+    // The scroll-to-make-visible action expects coordinates in the local
+    // coordinate space of |node|. So, we need to translate node's bounds to the
+    // origin.
+    auto local_bounds = gfx::ToEnclosedRectIgnoringError(
         node->data().relative_bounds.bounds, kRectConversionError);
+    local_bounds = gfx::Rect(local_bounds.size());
+
+    action_data.target_rect = local_bounds;
     action_data.horizontal_scroll_alignment =
         ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
     action_data.vertical_scroll_alignment =
