@@ -5695,6 +5695,11 @@
 
   "RebootAfterUpdate": {},
 
+  "DeviceScheduledReboot": {
+    "os": ["chromeos"],
+    "test_policy": { "DeviceScheduledReboot": {"reboot_time" : {"hour": 22, "minute": 30}, "frequency": "WEEKLY", "day_of_week": "TUESDAY" }}
+  },
+
   "AttestationEnabledForDevice": {},
 
   "AttestationForContentProtectionEnabled": {},

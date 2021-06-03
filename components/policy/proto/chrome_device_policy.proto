@@ -1778,6 +1778,15 @@ message DeviceDebugPacketCaptureAllowedProto {
   optional bool allowed = 1;
 }
 
+// Settings that control when a device will reboot. The reboots are
+// recurring. In order to disable scheduled reboots the policy must be
+// removed.
+message DeviceScheduledRebootProto {
+  // This is a JSON string, for details see "DeviceScheduledReboot" in
+  // policy_templates.json.
+  optional string device_scheduled_reboot_settings = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1935,4 +1944,5 @@ message ChromeDeviceSettingsProto {
       device_allowed_bluetooth_services = 120;
   optional DeviceDebugPacketCaptureAllowedProto
       device_debug_packet_capture_allowed = 121;
+  optional DeviceScheduledRebootProto device_scheduled_reboot = 122;
 }

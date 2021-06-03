@@ -21839,6 +21839,51 @@
       'desc': '''Allows setting a custom schedule to check for updates. This applies to all users, and to all interfaces on the device. Once set, the device will check for updates according to the schedule. The policy must be removed to cancel any more scheduled update checks.'''
     },
     {
+      'name': 'DeviceScheduledReboot',
+      'owners': ['sanjaperisic@chromium.org'],
+      'device_only': True,
+      'type': 'dict',
+      'schema': {
+        'type': 'object',
+        'properties': {
+          'reboot_time': {
+            'description': '''Time when the reboot should happen, interpreted in the device's local time zone.''',
+            '$ref': 'Time'
+          },
+          'frequency': {
+            'description': 'Frequency at which the reboot should recur.',
+            'type': 'string',
+            'enum': [
+              'DAILY',
+              'WEEKLY',
+              'MONTHLY'
+            ]
+          },
+          'day_of_week': {
+            'description': '''Day of week when the reboot should happen, interpreted in the device's local time zone. Only used when 'frequency' is 'WEEKLY'.''',
+            '$ref': 'WeekDay'
+          },
+          'day_of_month': {
+            'description': '''Day of month [1-31] when the reboot should happen, interpreted in the device's local time zone. Only used when 'frequency' is 'MONTHLY'. If this is more than the maximum number of days in a given month then the last day of the month will be chosen.''',
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 31
+          }
+        },
+        'required': ['reboot_time', 'frequency']
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': {'reboot_time' : {'hour': 22, 'minute': 30}, 'frequency': 'WEEKLY', 'day_of_week': 'TUESDAY', 'day_of_month': 11},
+      'tags': [],
+      'id': 862,
+      'caption': '''Set custom schedule to reboot kiosk devices''',
+      'desc': '''Allows setting a custom schedule to reboot devices. The policy currently applies only to devices which have enabled auto-launch app in the Kiosk session. Once set to True, the device will reboot to the schedule. The policy must be removed to cancel any more scheduled reboots.'''
+    },
+    {
       'name': 'KerberosEnabled',
       'owners': ['fsandrade@chromium.org', 'file://chrome/browser/ash/kerberos/OWNERS'],
       'type': 'main',
@@ -26468,6 +26513,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceBorealisAllowed': 'device_borealis_allowed.allowed',
     'DeviceAllowedBluetoothServices': 'device_allowed_bluetooth_services.allowlist',
     'DeviceDebugPacketCaptureAllowed': 'device_debug_packet_capture_allowed.allowed',
+    'DeviceScheduledReboot': 'device_scheduled_reboot.device_scheduled_reboot_settings',
   },
   'policy_atomic_group_definitions': [
     {
@@ -26956,6 +27002,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 861,
+  'highest_id_currently_used': 862,
   'highest_atomic_group_id_currently_used': 40
 }
