@@ -75,19 +75,19 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   // Start listening for pref changes.
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      prefs::kSAMLOfflineSigninTimeLimit,
-      base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kGaiaOfflineSigninTimeLimitDays,
       base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
-      base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
+      prefs::kSAMLOfflineSigninTimeLimit,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
       base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
                           base::Unretained(this)));
   // Start listening to power state.
