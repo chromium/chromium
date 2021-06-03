@@ -180,6 +180,10 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     }
   }
 
+  // To mirror what RTCVideoDecoderStreamAdapter does a little more closely,
+  // record an init failure here.  Otherwise, we only ever record successes.
+  base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess", false);
+
   return nullptr;
 }
 
@@ -253,7 +257,8 @@ int32_t RTCVideoDecoderAdapter::InitDecode(
   current_resolution_ =
       static_cast<int32_t>(codec_settings->width) * codec_settings->height;
 
-  UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoDecoderInitDecodeSuccess", !has_error_);
+  base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
+                            !has_error_);
   if (!has_error_) {
     UMA_HISTOGRAM_ENUMERATION(
         "Media.RTCVideoDecoderProfile",

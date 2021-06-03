@@ -62,6 +62,20 @@ namespace blink {
 class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
     : public webrtc::VideoDecoder {
  public:
+  // Minimum resolution that we'll consider "not low resolution" for the purpose
+  // of falling back to software.
+#if defined(OS_CHROMEOS)
+  // Effectively opt-out CrOS, since it may cause tests to fail (b/179724180).
+  static constexpr gfx::Size kMinResolution{2, 2};
+#else
+  static constexpr gfx::Size kMinResolution{320, 240};
+#endif
+
+  // Maximum number of decoder instances we'll allow before fallback to software
+  // if the resolution is too low.  We'll allow more than this for high
+  // resolution streams, but they'll fall back if they adapt below the limit.
+  static constexpr int32_t kMaxDecoderInstances = 8;
+
   // Creates and initializes an RTCVideoDecoderStreamAdapter. Returns nullptr if
   // |format| cannot be supported. The gpu_factories may be null, in which case
   // only SW decoders will be used.
@@ -161,6 +175,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Decoding thread members.
   bool key_frame_required_ = true;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
+  // Has anything been sent to Decode() yet?
+  bool have_started_decoding_ = false;
 
   // Shared members.
   mutable base::Lock lock_;
@@ -184,6 +200,10 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Time since construction.  Cleared when we record that a frame has been
   // successfully decoded.
   absl::optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
+  // Resolution of most recently decoded frame, or the initial resolution if we
+  // haven't decoded anything yet.  Since this is updated asynchronously, it's
+  // only an approximation of "most recently".
+  gfx::Size current_resolution_ GUARDED_BY(lock_);
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

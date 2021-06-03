@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/atomic_ref_count.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
@@ -74,12 +75,26 @@ constexpr int32_t kMaxPendingBuffers = 8;
 // never completed, or (c) we're hopelessly behind.
 constexpr int32_t kAbsoluteMaxPendingBuffers = 32;
 
+// Name we'll report for hardware decoders.
+constexpr const char* kExternalDecoderName = "ExternalDecoder";
+
+// Number of RTCVideoDecoder instances right now that have started decoding.
+std::atomic_int* GetDecoderCounter() {
+  static base::NoDestructor<std::atomic_int> s_counter(0);
+  // Note that this will init only in the first call in the ctor, so it's still
+  // single threaded.
+  return s_counter.get();
+}
+
 void RecordInitializationLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Media.RTCVideoDecoderInitializationLatencyMs",
                           latency);
 }
 
 }  // namespace
+
+// static
+constexpr gfx::Size RTCVideoDecoderStreamAdapter::kMinResolution;
 
 // DemuxerStream implementation that forwards DecoderBuffer from some other
 // source (i.e., VideoDecoder::Decode).
@@ -245,7 +260,10 @@ RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
       config_(config),
       max_pending_buffer_count_(kAbsoluteMaxPendingBuffers) {
   DVLOG(1) << __func__;
-  decoder_info_.implementation_name = "unknown";
+  // Default to hw-accelerated decoder, in case something checks before decoding
+  // a frame.  It's unclear what we should report in the long run, but for now,
+  // it's better to report hardware since that's all we support anyway.
+  decoder_info_.implementation_name = kExternalDecoderName;
   decoder_info_.is_hardware_accelerated = false;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -254,6 +272,9 @@ RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
 RTCVideoDecoderStreamAdapter::~RTCVideoDecoderStreamAdapter() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (have_started_decoding_)
+    --(*GetDecoderCounter());
 }
 
 void RTCVideoDecoderStreamAdapter::InitializeSync(
@@ -289,6 +310,8 @@ int32_t RTCVideoDecoderStreamAdapter::InitDecode(
 
   base::AutoLock auto_lock(lock_);
   init_decode_complete_ = true;
+  current_resolution_ =
+      gfx::Size(codec_settings->width, codec_settings->height);
   AttemptLogInitializationState_Locked();
   return has_error_ ? WEBRTC_VIDEO_CODEC_UNINITIALIZED : WEBRTC_VIDEO_CODEC_OK;
 }
@@ -308,7 +331,8 @@ void RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked() {
 
   logged_init_status_ = true;
 
-  UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoDecoderInitDecodeSuccess", !has_error_);
+  base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
+                            !has_error_);
   if (!has_error_) {
     UMA_HISTOGRAM_ENUMERATION(
         "Media.RTCVideoDecoderProfile",
@@ -323,6 +347,36 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     int64_t render_time_ms) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  // If this is the first decode, then increment the count of working decoders.
+  if (!have_started_decoding_) {
+    have_started_decoding_ = true;
+    ++(*GetDecoderCounter());
+  }
+
+#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  const bool has_software_fallback =
+      video_codec_type_ != webrtc::kVideoCodecH264;
+#else
+  const bool has_software_fallback = true;
+#endif
+
+  // Don't allow hardware decode for small videos if there are too many
+  // decoder instances.  This includes the case where our resolution drops while
+  // too many decoders exist.  When DecoderStream supports software decoders,
+  // this should be moved to DecoderSelector.
+  {
+    base::AutoLock auto_lock(lock_);
+    if (has_software_fallback &&
+        current_resolution_.GetArea() < kMinResolution.GetArea() &&
+        GetDecoderCounter()->load() > kMaxDecoderInstances) {
+      // Decrement the count and clear the flag, so that other decoders don't
+      // fall back also.
+      have_started_decoding_ = false;
+      --(*GetDecoderCounter());
+      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    }
+  }
 
   // Fall back to software decoding if there's no support for VP9 spatial
   // layers. See https://crbug.com/webrtc/9304.
@@ -413,12 +467,6 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       // drop any other non-key frame.
       key_frame_required_ = true;
 
-#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-      const bool has_software_fallback =
-          video_codec_type_ != webrtc::kVideoCodecH264;
-#else
-      const bool has_software_fallback = true;
-#endif
       // If we hit the absolute limit, then give up.
       if (has_software_fallback &&
           pending_buffer_count_ >= kAbsoluteMaxPendingBuffers) {
@@ -645,6 +693,10 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
     start_time_.reset();
   }
 
+  // Update `current_resolution_`, in case it's changed.  This lets us fall back
+  // to software, or avoid doing so, if we're over the decoder limit.
+  current_resolution_ = gfx::Size(rtc_frame.width(), rtc_frame.height());
+
   // Try to read the next output, if any, regardless if this succeeded.
   AttemptRead_Locked();
 
@@ -774,7 +826,7 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
   decoder_info_.is_hardware_accelerated = decoder->IsPlatformDecoder();
   decoder_info_.implementation_name =
       decoder->IsPlatformDecoder()
-          ? "ExternalDecoder"
+          ? kExternalDecoderName
           : media::GetDecoderName(decoder->GetDecoderType()) +
                 " (DecoderStream)";
 }
