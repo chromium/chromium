@@ -318,6 +318,17 @@ void ShillPropertyHandler::RequestTrafficCounters(
                      network_handler::ErrorCallback()));
 }
 
+void ShillPropertyHandler::ResetTrafficCounters(
+    const std::string& service_path) {
+  NET_LOG(EVENT) << "ResetTrafficCounters: Success";
+
+  ShillServiceClient::Get()->ResetTrafficCounters(
+      dbus::ObjectPath(service_path), base::DoNothing(),
+      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
+                     "ResetTrafficCounters Failed", service_path,
+                     network_handler::ErrorCallback()));
+}
+
 void ShillPropertyHandler::OnPropertyChanged(const std::string& key,
                                              const base::Value& value) {
   ManagerPropertyChanged(key, value);
