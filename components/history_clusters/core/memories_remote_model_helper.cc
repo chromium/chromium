@@ -164,6 +164,10 @@ void MemoriesRemoteModelHelper::GetMemories(
   std::string request_body;
   base::JSONWriter::Write(container_value, &request_body);
 
+  // Also dump the encoded request, as it allows us to repro server-side errors.
+  if (debug_logger_)
+    debug_logger_->Run(request_body);
+
   auto url_loader = CreateLoader(CreateRequest(endpoint), request_body);
   network::SimpleURLLoader* unowned_url_loader = url_loader.get();
   unowned_url_loader->DownloadToString(
