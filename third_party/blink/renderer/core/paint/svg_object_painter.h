@@ -11,7 +11,6 @@
 
 namespace blink {
 
-struct PaintInfo;
 class AffineTransform;
 class ComputedStyle;
 class GraphicsContext;
@@ -34,7 +33,8 @@ class SVGObjectPainter {
   // object. Returns true if successful, and the caller can continue to paint
   // using |paint_flags|.
   bool PreparePaint(
-      const PaintInfo&,
+      const GraphicsContext& context,
+      bool is_rendering_clip_path_as_mask_image,
       const ComputedStyle&,
       LayoutSVGResourceMode,
       PaintFlags& paint_flags,

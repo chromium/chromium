@@ -14,7 +14,8 @@ namespace blink {
 
 namespace {
 
-void CopyStateFromGraphicsContext(GraphicsContext& context, PaintFlags& flags) {
+void CopyStateFromGraphicsContext(const GraphicsContext& context,
+                                  PaintFlags& flags) {
   // TODO(fs): The color filter can be set when generating a picture for a mask
   // due to color-interpolation. We could also just apply the
   // color-interpolation property from the the shape itself (which could mean
@@ -57,12 +58,13 @@ bool SVGObjectPainter::ApplyPaintResource(
 }
 
 bool SVGObjectPainter::PreparePaint(
-    const PaintInfo& paint_info,
+    const GraphicsContext& context,
+    bool is_rendering_clip_path_as_mask_image,
     const ComputedStyle& style,
     LayoutSVGResourceMode resource_mode,
     PaintFlags& flags,
     const AffineTransform* additional_paint_server_transform) {
-  if (paint_info.IsRenderingClipPathAsMaskImage()) {
+  if (is_rendering_clip_path_as_mask_image) {
     if (resource_mode == kApplyToStrokeMode)
       return false;
     flags.setColor(SK_ColorBLACK);
@@ -78,7 +80,7 @@ bool SVGObjectPainter::PreparePaint(
   if (paint.HasUrl()) {
     if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
-      CopyStateFromGraphicsContext(paint_info.context, flags);
+      CopyStateFromGraphicsContext(context, flags);
       return true;
     }
   }
@@ -88,7 +90,7 @@ bool SVGObjectPainter::PreparePaint(
     const Color color = style.VisitedDependentColor(property);
     flags.setColor(ScaleAlpha(color.Rgb(), alpha));
     flags.setShader(nullptr);
-    CopyStateFromGraphicsContext(paint_info.context, flags);
+    CopyStateFromGraphicsContext(context, flags);
     return true;
   }
   return false;
