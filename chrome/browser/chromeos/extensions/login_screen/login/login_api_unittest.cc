@@ -144,8 +144,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::unique_ptr<ash::FakeChromeUserManager>(fake_chrome_user_manager_));
-    mock_login_display_host_ =
-        std::make_unique<chromeos::MockLoginDisplayHost>();
+    mock_login_display_host_ = std::make_unique<ash::MockLoginDisplayHost>();
     mock_existing_user_controller_ =
         std::make_unique<MockExistingUserController>();
     // Set |LOGIN_PRIMARY| as the default state.
@@ -190,7 +189,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
 
   ash::FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<chromeos::MockLoginDisplayHost> mock_login_display_host_;
+  std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   // Sets up the global |SessionManager| instance.
   session_manager::SessionManager session_manager_;

@@ -122,7 +122,7 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
 
   // Simulates reset screen request from views based login.
   void InvokeResetScreen() {
-    chromeos::LoginDisplayHost::default_host()->HandleAccelerator(
+    LoginDisplayHost::default_host()->HandleAccelerator(
         ash::LoginAcceleratorAction::kShowResetScreen);
     OobeScreenWaiter(ResetView::kScreenId).Wait();
     test::OobeJS()

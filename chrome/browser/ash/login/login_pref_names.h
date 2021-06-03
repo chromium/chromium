@@ -38,6 +38,7 @@ namespace prefs {
 using ::chromeos::prefs::kOobeMarketingOptInChoice;
 using ::chromeos::prefs::kOobeMarketingOptInScreenFinished;
 using ::chromeos::prefs::kOobeOnboardingTime;
+using ::chromeos::prefs::kOobeScreenPending;
 }
 }  // namespace ash
 

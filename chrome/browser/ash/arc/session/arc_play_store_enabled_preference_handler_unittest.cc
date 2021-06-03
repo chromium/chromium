@@ -133,8 +133,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
  protected:
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ =
-        std::make_unique<chromeos::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
   }
 
  private:
@@ -145,7 +144,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
       identity_test_env_profile_adaptor_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
+  std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandlerTest);

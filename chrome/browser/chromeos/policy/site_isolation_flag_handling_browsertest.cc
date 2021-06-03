@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
   // Start user sign-in. We can't use |LoginPolicyTestBase::LogIn|, because
   // it waits for a user session start unconditionally, which will not happen if
   // chrome requests a restart to set user-session flags.
-  chromeos::WizardController::SkipPostLoginScreensForTesting();
+  ash::WizardController::SkipPostLoginScreensForTesting();
   OobeBaseTest::WaitForSigninScreen();
 
   LoginDisplayHost::default_host()

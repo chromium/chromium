@@ -173,7 +173,7 @@ std::string ReadDeviceRegionFromVpd() {
 // Returns an absolute path under the preinstalled demo resources directory.
 base::FilePath CreateDemoResourcesTermsPath(const base::FilePath& file_path) {
   // Offline ARC TOS are only available during demo mode setup.
-  auto* wizard_controller = chromeos::WizardController::default_controller();
+  auto* wizard_controller = ash::WizardController::default_controller();
   if (!wizard_controller || !wizard_controller->demo_setup_controller())
     return base::FilePath();
   return wizard_controller->demo_setup_controller()

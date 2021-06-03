@@ -21,7 +21,7 @@ chromeos::ArcTermsOfServiceScreenView* GetScreenView() {
   if (g_view_for_testing)
     return g_view_for_testing;
 
-  chromeos::LoginDisplayHost* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = ash::LoginDisplayHost::default_host();
   DCHECK(host);
   DCHECK(host->GetOobeUI());
   return host->GetOobeUI()->GetView<chromeos::ArcTermsOfServiceScreenHandler>();

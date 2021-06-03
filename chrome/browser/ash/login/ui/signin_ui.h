@@ -71,6 +71,7 @@ class SigninUI {
 // source migration is finished.
 namespace ash {
 using ::chromeos::SigninError;
+using ::chromeos::SigninUI;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_SIGNIN_UI_H_

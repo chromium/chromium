@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 LoginDisplayHost* LoginDisplayHost::default_host_ = nullptr;
@@ -18,4 +18,4 @@ LoginDisplayHost::~LoginDisplayHost() {
   default_host_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

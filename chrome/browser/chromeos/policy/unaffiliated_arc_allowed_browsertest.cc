@@ -56,7 +56,7 @@ class UnaffiliatedArcAllowedTest
 
   void TearDownOnMainThread() override {
     // If the login display is still showing, exit gracefully.
-    if (chromeos::LoginDisplayHost::default_host()) {
+    if (ash::LoginDisplayHost::default_host()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&chrome::AttemptExit));
       RunUntilBrowserProcessQuits();

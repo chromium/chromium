@@ -193,7 +193,7 @@ bool ShouldShowSigninScreen(chromeos::OobeScreenId first_screen) {
 }
 
 void MaybeShowDeviceDisabledScreen() {
-  DCHECK(chromeos::LoginDisplayHost::default_host());
+  DCHECK(LoginDisplayHost::default_host());
   if (!g_browser_process->platform_part()->device_disabling_manager()) {
     // Device disabled check will be done in the DeviceDisablingManager.
     return;
@@ -202,7 +202,7 @@ void MaybeShowDeviceDisabledScreen() {
   if (!system::DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation())
     return;
 
-  chromeos::LoginDisplayHost::default_host()->StartWizard(
+  LoginDisplayHost::default_host()->StartWizard(
       DeviceDisabledScreenView::kScreenId);
 }
 
@@ -238,15 +238,14 @@ void ShowLoginWizardFinish(
 
   // Create the LoginDisplayHost. Use the views-based implementation only for
   // the sign-in screen.
-  chromeos::LoginDisplayHost* display_host = nullptr;
-  if (chromeos::LoginDisplayHost::default_host()) {
+  LoginDisplayHost* display_host = nullptr;
+  if (LoginDisplayHost::default_host()) {
     // Tests may have already allocated an instance for us to use.
-    display_host = chromeos::LoginDisplayHost::default_host();
+    display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host =
-        new chromeos::LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
   } else {
-    display_host = new chromeos::LoginDisplayHostWebUI();
+    display_host = new LoginDisplayHostWebUI();
   }
 
   // Restore system timezone.
@@ -278,7 +277,7 @@ void ShowLoginWizardFinish(
   // This step requires the session manager to have been initialized and login
   // display host to be created.
   DCHECK(session_manager::SessionManager::Get());
-  DCHECK(chromeos::LoginDisplayHost::default_host());
+  DCHECK(LoginDisplayHost::default_host());
   WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   // TODO(crbug.com/1105387): Part of initial screen logic.
   MaybeShowDeviceDisabledScreen();

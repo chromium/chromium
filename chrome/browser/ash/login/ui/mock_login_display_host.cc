@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 
-namespace chromeos {
+namespace ash {
 
 MockLoginDisplayHost::MockLoginDisplayHost() {}
 
 MockLoginDisplayHost::~MockLoginDisplayHost() {}
 
-}  // namespace chromeos
+}  // namespace ash

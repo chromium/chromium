@@ -170,8 +170,7 @@ class DemoModeChromeOSTermsTest : public ChromeOSTermsTest {
 
     // Simulate Demo Mode setup.
     chromeos::DBusThreadManager::Initialize();
-    fake_login_display_host_ =
-        std::make_unique<chromeos::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
     fake_login_display_host_->StartWizard(
         chromeos::DemoPreferencesScreenView::kScreenId);
     fake_login_display_host_->GetWizardController()
@@ -224,7 +223,7 @@ class DemoModeChromeOSTermsTest : public ChromeOSTermsTest {
   }
 
  private:
-  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
+  std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
 
   DISALLOW_COPY_AND_ASSIGN(DemoModeChromeOSTermsTest);
 };

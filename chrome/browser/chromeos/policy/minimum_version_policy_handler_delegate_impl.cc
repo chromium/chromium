@@ -70,8 +70,8 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginInProgress() const {
 }
 
 void MinimumVersionPolicyHandlerDelegateImpl::ShowUpdateRequiredScreen() {
-  if (chromeos::LoginDisplayHost::default_host()) {
-    chromeos::LoginDisplayHost::default_host()->StartWizard(
+  if (ash::LoginDisplayHost::default_host()) {
+    ash::LoginDisplayHost::default_host()->StartWizard(
         chromeos::UpdateRequiredView::kScreenId);
   }
 }
@@ -82,9 +82,7 @@ void MinimumVersionPolicyHandlerDelegateImpl::RestartToLoginScreen() {
 
 void MinimumVersionPolicyHandlerDelegateImpl::
     HideUpdateRequiredScreenIfShown() {
-  using chromeos::WizardController;
-  WizardController* const wizard_controller =
-      WizardController::default_controller();
+  auto* const wizard_controller = ash::WizardController::default_controller();
   if (!wizard_controller)
     return;
   auto* screen = wizard_controller->GetScreen<ash::UpdateRequiredScreen>();

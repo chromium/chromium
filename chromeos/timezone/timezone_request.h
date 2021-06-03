@@ -136,6 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneRequest {
 
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
+using ::chromeos::DefaultTimezoneProviderURL;
 using ::chromeos::TimeZoneResponseData;
 }
 

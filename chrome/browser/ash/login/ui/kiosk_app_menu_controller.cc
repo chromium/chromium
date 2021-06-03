@@ -89,7 +89,7 @@ void KioskAppMenuController::SendKioskApps() {
 }
 
 void KioskAppMenuController::LaunchApp(const ash::KioskAppMenuEntry& app) {
-  auto* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = LoginDisplayHost::default_host();
   if (!app.account_id.is_valid())
     return;
 

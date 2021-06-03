@@ -177,7 +177,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
   DisplayPasswordButtonTest() : LoginManagerTest() {}
 
   void LoginAndLock(const LoginManagerMixin::TestUserInfo& test_user) {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    WizardController::SkipPostLoginScreensForTesting();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
@@ -318,7 +318,7 @@ class UserManagementDisclosureTest : public LoginManagerTest {
     if (user_policy_mixin)
       user_policy_mixin->RequestPolicyUpdate();
 
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    WizardController::SkipPostLoginScreensForTesting();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
@@ -528,7 +528,7 @@ class SshWarningTest : public OobeBaseTest,
 };
 
 IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnGaia) {
-  chromeos::WizardController::default_controller()->SkipToLoginForTesting();
+  WizardController::default_controller()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::UIPath ssh_warning = {"gaia-signin", "signin-frame-dialog",
                               "sshWarning"};
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnGaia) {
 }
 
 IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnEnrollment) {
-  chromeos::WizardController::default_controller()->SkipToLoginForTesting();
+  WizardController::default_controller()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   LoginDisplayHost::default_host()->HandleAccelerator(

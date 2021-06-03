@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -34,9 +35,9 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 // Web Kiosk splash screen minimum show time.
 constexpr base::TimeDelta kKioskSplashScreenMinTime =
     base::TimeDelta::FromSeconds(10);
@@ -750,4 +751,4 @@ std::unique_ptr<KioskLaunchController> KioskLaunchController::CreateForTesting(
   return controller;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -57,10 +57,8 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
       delegate_(delegate),
       title_(title),
       url_(url) {
-  if (!parent_window_ && chromeos::LoginDisplayHost::default_host()) {
-    parent_window_ =
-        chromeos::LoginDisplayHost::default_host()->GetNativeWindow();
-  }
+  if (!parent_window_ && LoginDisplayHost::default_host())
+    parent_window_ = LoginDisplayHost::default_host()->GetNativeWindow();
   LOG_IF(WARNING, !parent_window)
       << "No parent window. Dialog sizes could be wrong";
 }

@@ -94,7 +94,7 @@ constexpr char kCellularServicePath[] = "/service/cellular1";
 constexpr char kDemoEolMessage[] = "Please return your device.";
 
 chromeos::OobeUI* GetOobeUI() {
-  auto* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = LoginDisplayHost::default_host();
   return host ? host->GetOobeUI() : nullptr;
 }
 

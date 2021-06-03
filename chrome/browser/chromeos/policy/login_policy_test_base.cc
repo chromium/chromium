@@ -106,14 +106,14 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
 }
 
 void LoginPolicyTestBase::SkipToLoginScreen() {
-  chromeos::WizardController::SkipPostLoginScreensForTesting();
+  ash::WizardController::SkipPostLoginScreensForTesting();
   OobeBaseTest::WaitForSigninScreen();
 }
 
 void LoginPolicyTestBase::TriggerLogIn(const std::string& user_id,
                                        const std::string& password,
                                        const std::string& services) {
-  chromeos::LoginDisplayHost::default_host()
+  ash::LoginDisplayHost::default_host()
       ->GetOobeUI()
       ->GetView<chromeos::GaiaScreenHandler>()
       ->ShowSigninScreenForTest(user_id, password, services);

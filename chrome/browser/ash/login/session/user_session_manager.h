@@ -31,8 +31,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -67,7 +65,7 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
-
+class LoginDisplayHost;
 class OnboardingUserActivityCounter;
 
 namespace test {

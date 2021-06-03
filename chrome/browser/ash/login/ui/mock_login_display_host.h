@@ -11,12 +11,14 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockLoginDisplayHost : public LoginDisplayHost {
  public:
@@ -60,10 +62,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, ShowGaiaDialog, (const AccountId&), (override));
   MOCK_METHOD(void, HideOobeDialog, (), (override));
   MOCK_METHOD(void, SetShelfButtonsEnabled, (bool), (override));
-  MOCK_METHOD(void,
-              UpdateOobeDialogState,
-              (ash::OobeDialogState state),
-              (override));
+  MOCK_METHOD(void, UpdateOobeDialogState, (OobeDialogState state), (override));
 
   MOCK_METHOD(void, CompleteLogin, (const UserContext&), (override));
   MOCK_METHOD(void, OnGaiaScreenReady, (), (override));
@@ -83,7 +82,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, ResyncUserData, (), (override));
   MOCK_METHOD(bool,
               HandleAccelerator,
-              (ash::LoginAcceleratorAction action),
+              (LoginAcceleratorAction action),
               (override));
   MOCK_METHOD(void, HandleDisplayCaptivePortal, (), (override));
   MOCK_METHOD(void, UpdateAddUserButtonStatus, (), (override));
@@ -98,6 +97,12 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   DISALLOW_COPY_AND_ASSIGN(MockLoginDisplayHost);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockLoginDisplayHost;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_HOST_H_

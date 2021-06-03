@@ -303,8 +303,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
   void StartPublicSessionLogin() {
     // Start login into the device-local account.
-    chromeos::LoginDisplayHost* host =
-        chromeos::LoginDisplayHost::default_host();
+    auto* host = ash::LoginDisplayHost::default_host();
     ASSERT_TRUE(host);
     host->StartSignInScreen();
     chromeos::ExistingUserController* controller =
@@ -321,7 +320,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   void WaitForSessionStart() {
     if (IsSessionStarted())
       return;
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    ash::WizardController::SkipPostLoginScreensForTesting();
     chromeos::test::WaitForPrimaryUserSessionStart();
   }
 

@@ -198,7 +198,7 @@ void AddAdditionalData(bool enable_annotations, base::Value* dict) {
   bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Chrome OS, enable printing only if we are not at OOBE.
-  printing_enabled = !chromeos::LoginDisplayHost::default_host();
+  printing_enabled = !ash::LoginDisplayHost::default_host();
   annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   dict->SetKey("printingEnabled", base::Value(printing_enabled));

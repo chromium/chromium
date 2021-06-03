@@ -777,7 +777,7 @@ class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
 IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
   // Checks update required screen is shown at startup if the policy handler is
   // invoked before login display host is created.
-  EXPECT_EQ(chromeos::LoginDisplayHost::default_host(), nullptr);
+  EXPECT_EQ(ash::LoginDisplayHost::default_host(), nullptr);
   EXPECT_TRUE(GetMinimumVersionPolicyHandler());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->DeadlineReached());
   ShowLoginWizard(chromeos::OobeScreen::SCREEN_UNKNOWN);
@@ -870,7 +870,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
   ~MinimumVersionPolicyChildUser() override = default;
 
   void LoginChildUser() {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    ash::WizardController::SkipPostLoginScreensForTesting();
     user_policy_mixin_.RequestPolicyUpdate();
     login_manager_.LoginAsNewChildUser();
     login_manager_.WaitForActiveSession();

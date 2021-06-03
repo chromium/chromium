@@ -78,6 +78,7 @@ class ScopedCanConfigureNetwork {
 // TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
 namespace ash {
 using ::chromeos::KioskSessionInitializedWaiter;
+using ::chromeos::ScopedCanConfigureNetwork;
 using ::chromeos::ScopedDeviceSettings;
 }
 

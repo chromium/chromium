@@ -212,6 +212,7 @@ class EnrollmentScreenHandler
 // source migration is finished.
 namespace ash {
 using ::chromeos::ActiveDirectoryErrorState;
+using ::chromeos::EnrollmentScreenHandler;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENROLLMENT_SCREEN_HANDLER_H_

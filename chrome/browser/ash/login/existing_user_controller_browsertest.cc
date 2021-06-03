@@ -1331,7 +1331,7 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
   }
 
   void Login(const LoginManagerMixin::TestUserInfo& test_user) {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    WizardController::SkipPostLoginScreensForTesting();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);

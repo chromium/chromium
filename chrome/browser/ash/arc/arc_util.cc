@@ -424,7 +424,7 @@ bool IsArcOobeOptInActive() {
   // Check if Chrome OS OOBE flow is currently showing.
   // TODO(b/65861628): Redesign the OptIn flow since there is no longer reason
   // to have two different OptIn flows.
-  if (!chromeos::LoginDisplayHost::default_host())
+  if (!ash::LoginDisplayHost::default_host())
     return false;
 
   // Use the legacy logic for first sign-in OOBE OptIn flow. Make sure the user

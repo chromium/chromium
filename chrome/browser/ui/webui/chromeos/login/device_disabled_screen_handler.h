@@ -64,6 +64,7 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
 
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
+using ::chromeos::DeviceDisabledScreenHandler;
 using ::chromeos::DeviceDisabledScreenView;
 }
 

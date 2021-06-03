@@ -772,11 +772,10 @@ class ArcOobeTest : public ChromeArcUtilTest {
 
  protected:
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ =
-        std::make_unique<chromeos::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
   }
 
-  chromeos::FakeLoginDisplayHost* login_display_host() {
+  ash::FakeLoginDisplayHost* login_display_host() {
     return fake_login_display_host_.get();
   }
 
@@ -784,7 +783,7 @@ class ArcOobeTest : public ChromeArcUtilTest {
 
  private:
   std::unique_ptr<chromeos::OobeConfiguration> oobe_configuration_;
-  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
+  std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcOobeTest);
 };

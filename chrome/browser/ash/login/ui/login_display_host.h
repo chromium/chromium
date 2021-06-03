@@ -13,22 +13,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/user_manager/user_type.h"
 
 #include "ui/gfx/native_widget_types.h"
 
 class AccountId;
-
-namespace ash {
-enum class OobeDialogState;
-}
 
 namespace content {
 class WebContents;
@@ -38,13 +37,11 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace chromeos {
-
+namespace ash {
+class KioskAppId;
 class KioskLaunchController;
-class ExistingUserController;
-class OobeUI;
-class WebUILoginView;
 class WizardController;
+enum class OobeDialogState;
 
 // An interface that defines an out-of-box-experience (OOBE) or login screen
 // host. It contains code specific to the login UI implementation.
@@ -155,7 +152,7 @@ class LoginDisplayHost {
   virtual void SetShelfButtonsEnabled(bool enabled) = 0;
 
   // Update the state of the oobe dialog.
-  virtual void UpdateOobeDialogState(ash::OobeDialogState state) = 0;
+  virtual void UpdateOobeDialogState(OobeDialogState state) = 0;
 
   // Confirms sign in by provided credentials in `user_context`.
   // Used for new user login via GAIA extension.
@@ -199,7 +196,7 @@ class LoginDisplayHost {
 
   // Handles an accelerator action.
   // Returns `true` if the accelerator was handled.
-  virtual bool HandleAccelerator(ash::LoginAcceleratorAction action) = 0;
+  virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;
 
   // Handles a request to show the captive portal web dialog. For webui, the
   // dialog is displayed immediately. For views, the dialog is displayed as soon
@@ -237,11 +234,11 @@ class LoginDisplayHost {
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHost);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::LoginDisplayHost;
+namespace chromeos {
+using ::ash::LoginDisplayHost;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_H_

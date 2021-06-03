@@ -565,7 +565,7 @@ class AshHUDLoginTest
   }
 
   void Login() {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    WizardController::SkipPostLoginScreensForTesting();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(
         login_manager_mixin_.users()[0]);

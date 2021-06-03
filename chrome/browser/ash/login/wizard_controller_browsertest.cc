@@ -112,19 +112,13 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
+namespace {
+
 using ::testing::_;
-using ::testing::AtLeast;
-using ::testing::Exactly;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::Mock;
-using ::testing::Not;
 using ::testing::NotNull;
-using ::testing::Return;
-
-namespace chromeos {
-
-namespace {
 
 const char kGeolocationResponseBody[] =
     "{\n"
@@ -679,7 +673,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
           }
         }));
 
-    ASSERT_TRUE(ash::LoginScreenTestApi::IsLoginShelfShown());
+    ASSERT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
 
     EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
@@ -692,7 +686,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     CheckCurrentScreen(EulaView::kScreenId);
     // Login shelf should still be visible.
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsLoginShelfShown());
+    EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
 
     EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
@@ -1920,11 +1914,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityTest, CanNavigateToTest) {
   WizardController* const wizard_controller =
       WizardController::default_controller();
   ASSERT_TRUE(wizard_controller != nullptr);
-  EXPECT_EQ(1, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(1, LoginScreenTestApi::GetUsersCount());
 
   // Check reset screen is visible on startup.
   OobeScreenWaiter(ResetView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   // Showing update required screen should fail due to lower priority than reset
   // screen.
@@ -2810,4 +2804,4 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
 
 // TODO(khorimoto): Add tests for MultiDevice Setup UI.
 
-}  // namespace chromeos
+}  // namespace ash

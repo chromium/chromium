@@ -29,9 +29,9 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
 
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kExtensionName[] = "extension_name";
@@ -475,4 +475,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(KioskAppType::kArcApp,
                                          KioskAppType::kChromeApp,
                                          KioskAppType::kWebApp));
-}  // namespace chromeos
+
+}  // namespace ash

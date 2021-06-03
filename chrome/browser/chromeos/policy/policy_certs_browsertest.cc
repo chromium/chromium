@@ -730,9 +730,8 @@ class PolicyProvidedCertsPublicSessionTest
   }
 
   void StartLogin() {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
-    chromeos::WizardController* const wizard_controller =
-        chromeos::WizardController::default_controller();
+    ash::WizardController::SkipPostLoginScreensForTesting();
+    auto* const wizard_controller = ash::WizardController::default_controller();
     ASSERT_TRUE(wizard_controller);
     wizard_controller->SkipToLoginForTesting();
 
@@ -781,7 +780,7 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
   }
 
   void TriggerLogIn() {
-    chromeos::LoginDisplayHost::default_host()
+    ash::LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetView<chromeos::GaiaScreenHandler>()
         ->ShowSigninScreenForTest(kAccountId, kAccountPassword, kEmptyServices);

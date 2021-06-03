@@ -225,7 +225,7 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
   }
 
   // Do not set wallpaper in tests.
-  if (chromeos::WizardController::IsZeroDelayEnabled())
+  if (ash::WizardController::IsZeroDelayEnabled())
     return;
 
   // Show the wallpaper of the active user during an user session.

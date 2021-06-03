@@ -194,9 +194,10 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/accelerators/accelerator.h"
 
-using content::BrowserThread;
-
+namespace ash {
 namespace {
+
+using ::content::BrowserThread;
 
 bool g_using_zero_delays = false;
 
@@ -242,10 +243,10 @@ const chromeos::StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
 // The HID detection screen is only allowed for form factors without built-in
 // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
 bool CanShowHIDDetectionScreen() {
-  switch (chromeos::GetDeviceType()) {
-    case chromeos::DeviceType::kChromebase:
-    case chromeos::DeviceType::kChromebit:
-    case chromeos::DeviceType::kChromebox:
+  switch (GetDeviceType()) {
+    case DeviceType::kChromebase:
+    case DeviceType::kChromebit:
+    case DeviceType::kChromebox:
       return true;
     default:
       return false;
@@ -329,12 +330,12 @@ void RecordUMAHistogramForOOBEStepCompletionTime(chromeos::OobeScreenId screen,
   histogram_with_reason->AddTime(step_time);
 }
 
-chromeos::LoginDisplayHost* GetLoginDisplayHost() {
-  return chromeos::LoginDisplayHost::default_host();
+LoginDisplayHost* GetLoginDisplayHost() {
+  return LoginDisplayHost::default_host();
 }
 
 chromeos::OobeUI* GetOobeUI() {
-  auto* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = LoginDisplayHost::default_host();
   return host ? host->GetOobeUI() : nullptr;
 }
 
@@ -352,8 +353,6 @@ chromeos::OobeScreenId PrefToScreenId(const std::string& pref_value) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 const int WizardController::kMinAudibleOutputVolumePercent = 10;
@@ -373,7 +372,7 @@ bool WizardController::is_branded_build_ = false;
 
 // static
 WizardController* WizardController::default_controller() {
-  auto* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = LoginDisplayHost::default_host();
   return host ? host->GetWizardController() : nullptr;
 }
 
@@ -490,7 +489,7 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kOobeSkipToLogin)) {
+          switches::kOobeSkipToLogin)) {
     SkipToLoginForTesting();
   }
 }
@@ -1637,7 +1636,7 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
 void WizardController::InitiateOOBEUpdate() {
   // If this is a Cellular First device, instruct UpdateEngine to allow
   // updates over cellular data connections.
-  if (chromeos::switches::IsCellularFirstDevice()) {
+  if (switches::IsCellularFirstDevice()) {
     DBusThreadManager::Get()
         ->GetUpdateEngineClient()
         ->SetUpdateOverCellularPermission(
@@ -1908,7 +1907,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   }
 }
 
-bool WizardController::HandleAccelerator(ash::LoginAcceleratorAction action) {
+bool WizardController::HandleAccelerator(LoginAcceleratorAction action) {
   if (current_screen_) {
     if (current_screen_->HandleAccelerator(action))
       return true;
@@ -2138,7 +2137,7 @@ void WizardController::OnTimezoneResolved(
   if (!timezone->timeZoneId.empty()) {
     VLOG(1) << "Resolve TimeZone: setting timezone to '" << timezone->timeZoneId
             << "'";
-    chromeos::system::SetSystemAndSigninScreenTimezone(timezone->timeZoneId);
+    system::SetSystemAndSigninScreenTimezone(timezone->timeZoneId);
   }
 }
 
@@ -2257,4 +2256,4 @@ AutoEnrollmentController* WizardController::GetAutoEnrollmentController() {
   return auto_enrollment_controller_.get();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -27,7 +27,7 @@ bool ChromeOSLoginMediaAccessHandler::SupportsStreamType(
     const extensions::Extension* extension) {
   if (!web_contents)
     return false;
-  chromeos::LoginDisplayHost* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = ash::LoginDisplayHost::default_host();
   return host && web_contents == host->GetOobeWebContents();
 }
 

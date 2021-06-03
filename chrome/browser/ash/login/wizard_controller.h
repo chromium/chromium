@@ -25,10 +25,14 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
@@ -60,24 +64,21 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-// TODO(https://crbug.com/1164001): move LoginDisplayHost to forward
-// declaration when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/geolocation/geoposition.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/geolocation/simple_geolocation_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/timezone/timezone_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/timezone/timezone_request.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
 
-namespace chromeos {
-
-namespace login {
-class NetworkStateHelper;
-}  // namespace login
-
-struct Geoposition;
-class SimpleGeolocationProvider;
-class TimeZoneProvider;
-struct TimeZoneResponseData;
+namespace ash {
+class ErrorScreen;
 
 // Class that manages control flow between wizard screens. Wizard controller
 // interacts with screen controllers to move the user between screens.
@@ -527,10 +528,12 @@ class WizardController {
   DISALLOW_COPY_AND_ASSIGN(WizardController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using ::chromeos::WizardController;
+namespace chromeos {
+using ::ash::WizardController;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTROLLER_H_
