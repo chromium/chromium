@@ -726,6 +726,7 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
   re2::StringPiece text(input);
   re2::StringPiece skipped;
   re2::StringPiece matched_id;
+  const re2::StringPiece dash("-");
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
     if (IsUrlExempt(matched_id, first_party_extension_ids_)) {
       skipped.AppendToString(&result);
@@ -737,6 +738,14 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
     if (identifier_space->count(matched_id_as_string) == 0) {
       replacement_id = MaybeScrubIPAddress(matched_id_as_string);
       if (replacement_id != matched_id_as_string) {
+        // USB paths can be confused with IPv4 Addresses because they can look
+        // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
+        if (skipped.ends_with(dash) && strcmp("IPv4", pattern.alias) == 0) {
+          skipped.AppendToString(&result);
+          matched_id.AppendToString(&result);
+          continue;
+        }
+
         // The weird NumberToString trick is because Windows does not like
         // to deal with %zu and a size_t in printf, nor does it support %llu.
         replacement_id = base::StringPrintf(

@@ -216,7 +216,17 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("[<IPv6: 4>]", RedactCustomPatterns("[aa::bb]"));
   EXPECT_EQ("State::Abort", RedactCustomPatterns("State::Abort"));
 
+  // Real IPv4 address
   EXPECT_EQ("<IPv4: 1>", RedactCustomPatterns("192.160.0.1"));
+
+  // Non-PII IPv4 address (see MaybeScrubIPAddress)
+  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
+
+  // Not an actual IPv4 address
+  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
+
+  // USB Path - not an actual IPv4 Address
+  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
 
   EXPECT_EQ("<URL: 1>", RedactCustomPatterns("http://example.com/foo?test=1"));
   EXPECT_EQ("Foo <URL: 2> Bar",
@@ -368,6 +378,8 @@ TEST_F(RedactionToolTest, RedactChunk) {
      "255.255.259.255"},
     {"255.300.255.255",  // Not an IP address.
      "255.300.255.255"},
+    {"3-1.2.3.4",  // USB path, not an IP address.
+     "3-1.2.3.4"},
     {"aaaa123.123.45.4aaa",  // IP address.
      "aaaa<IPv4: 23>aaa"},
     {"11:11;11::11",  // IP address.
