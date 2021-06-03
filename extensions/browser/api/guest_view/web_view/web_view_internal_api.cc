@@ -15,6 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -343,8 +345,28 @@ bool WebViewInternalCaptureVisibleRegionFunction::ClientAllowsTransparency() {
 
 void WebViewInternalCaptureVisibleRegionFunction::OnCaptureSuccess(
     const SkBitmap& bitmap) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&WebViewInternalCaptureVisibleRegionFunction::
+                         EncodeBitmapOnWorkerThread,
+                     this, base::ThreadTaskRunnerHandle::Get(), bitmap));
+}
+
+void WebViewInternalCaptureVisibleRegionFunction::EncodeBitmapOnWorkerThread(
+    scoped_refptr<base::TaskRunner> reply_task_runner,
+    const SkBitmap& bitmap) {
   std::string base64_result;
-  if (!EncodeBitmap(bitmap, &base64_result)) {
+  bool success = EncodeBitmap(bitmap, &base64_result);
+  reply_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&WebViewInternalCaptureVisibleRegionFunction::
+                                    OnBitmapEncodedOnUIThread,
+                                this, success, std::move(base64_result)));
+}
+
+void WebViewInternalCaptureVisibleRegionFunction::OnBitmapEncodedOnUIThread(
+    bool success,
+    std::string base64_result) {
+  if (!success) {
     OnCaptureFailure(FAILURE_REASON_ENCODING_FAILED);
     return;
   }
