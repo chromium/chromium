@@ -139,6 +139,7 @@ class ClientCertResolverTest : public testing::Test,
     network_profile_handler_.reset();
     network_state_handler_.reset();
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
     shill_clients::Shutdown();
   }
 

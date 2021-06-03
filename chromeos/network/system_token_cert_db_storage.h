@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
 #define CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
@@ -66,8 +64,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
   // database when it is ready.
   // Note: This method is expected to be called only once by the
   // SystemTokenCertDbInitializer.
-  void SetDatabase(
-      std::unique_ptr<net::NSSCertDatabase> system_token_cert_database);
+  void SetDatabase(net::NSSCertDatabase* system_token_cert_database);
+
+  // Used by SystemTokenCertDbInitializer to reset the system token certificate
+  // database and notify observers that it is not usable anymore.
+  void ResetDatabase();
 
   // Retrieves the global NSSCertDatabase for the system token and passes it to
   // |callback|. If the database is already initialized, calls |callback|
@@ -89,9 +90,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
   // informing callers that the database initialization failed.
   void OnSystemTokenDbRetrievalTimeout();
 
-  // Global NSSCertDatabase which sees the system token.
-  std::unique_ptr<net::NSSCertDatabase> system_token_cert_database_;
-
   // List of callbacks that should be executed when the system token certificate
   // database is created.
   base::OnceCallbackList<GetDatabaseCallback::RunType>
@@ -100,6 +98,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
   // List of observers that will be notified when the global system token
   // NSSCertDatabase is destroyed.
   base::ObserverList<Observer> observers_;
+
+  // Global NSSCertDatabase which sees the system token. Owned by
+  // SystemTokenCertDbInitializer.
+  net::NSSCertDatabase* system_token_cert_database_ = nullptr;
 
   bool system_token_cert_db_retrieval_failed_ = false;
 
