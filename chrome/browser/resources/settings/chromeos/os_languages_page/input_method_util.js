@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {inputMethodSettings, SettingsTypes} from './input_method_settings.js';
 
 /**
  * @fileoverview constants related to input method options.
@@ -16,7 +17,7 @@ cr.define('settings.input_method_util', function() {
       '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
 
   /**
-   * All possible keyboard layouts.
+   * All possible keyboard layouts. Should match Google3.
    *
    * @enum {string}
    */
@@ -42,7 +43,7 @@ cr.define('settings.input_method_util', function() {
   };
 
   /**
-   * All possible options on options pages.
+   * All possible options on options pages. Should match Gooogle3.
    *
    * @enum {string}
    */
@@ -142,17 +143,33 @@ cr.define('settings.input_method_util', function() {
   };
 
   /**
-   * Enumeration for input tool codes.
+   * Enumeration for engine IDs.
    *
    * @enum {string}
    */
-  /* #export */ const InputToolCode = {
+  /* #export */ const EngineId = {
     PINYIN_CHINESE_SIMPLIFIED: 'zh-t-i0-pinyin',
     ZHUYIN_CHINESE_TRADITIONAL: 'zh-hant-t-i0-und',
-    XKB_US_ENG: 'xkb:us::eng',
-    XKB_UK_ENG: 'xkb:gb:extd:eng',
   };
 
+  const Settings = {
+    [SettingsTypes.LATIN_SETTINGS]: {
+      physicalKeyboard: [
+        OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+        OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
+        OptionType.ENABLE_PREDICTION
+      ],
+      virtualKeyboard: [
+        OptionType.ENABLE_SOUND_ON_KEYPRESS,
+        OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+        OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
+        OptionType.ENABLE_DOUBLE_SPACE_PERIOD, OptionType.ENABLE_GESTURE_TYPING,
+        OptionType.EDIT_USER_DICT
+      ],
+      basic: [],
+      advanced: [],
+    }
+  };
   /**
    * @param {string} id Input method ID.
    * @return {string} The corresponding engind ID of the input method.
@@ -171,9 +188,9 @@ cr.define('settings.input_method_util', function() {
       return false;
     }
     const engineId = getFirstPartyInputMethodEngineId(id);
-    return engineId === InputToolCode.PINYIN_CHINESE_SIMPLIFIED ||
-        engineId === InputToolCode.XKB_US_ENG ||
-        engineId === InputToolCode.XKB_UK_ENG;
+
+    return engineId === EngineId.PINYIN_CHINESE_SIMPLIFIED ||
+        (!!inputMethodSettings[engineId]);
   }
 
   /**
@@ -186,7 +203,7 @@ cr.define('settings.input_method_util', function() {
   /* #export */ function generateOptions(engineId) {
     const options =
         {basic: [], advanced: [], physicalKeyboard: [], virtualKeyboard: []};
-    if (engineId === InputToolCode.PINYIN_CHINESE_SIMPLIFIED) {
+    if (engineId === EngineId.PINYIN_CHINESE_SIMPLIFIED) {
       options.basic.push(
           OptionType.XKB_LAYOUT, OptionType.PINYIN_ENABLE_UPPER_PAGING,
           OptionType.PINYIN_ENABLE_LOWER_PAGING,
@@ -195,31 +212,16 @@ cr.define('settings.input_method_util', function() {
           OptionType.PINYIN_CHINESE_PUNCTUATION);
       options.advanced.push(
           OptionType.PINYIN_ENABLE_FUZZY, OptionType.EDIT_USER_DICT);
-    }
-    if (engineId === InputToolCode.XKB_US_ENG) {
-      options.physicalKeyboard.push(
-          OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-          OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          OptionType.ENABLE_PREDICTION);
-      options.virtualKeyboard.push(
-          OptionType.ENABLE_SOUND_ON_KEYPRESS,
-          OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-          OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          OptionType.ENABLE_DOUBLE_SPACE_PERIOD,
-          OptionType.ENABLE_GESTURE_TYPING, OptionType.EDIT_USER_DICT);
-    }
-
-    if (engineId === InputToolCode.XKB_UK_ENG) {
-      options.physicalKeyboard.push(
-          OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-          OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          OptionType.ENABLE_PREDICTION);
-      options.virtualKeyboard.push(
-          OptionType.ENABLE_SOUND_ON_KEYPRESS,
-          OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-          OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          OptionType.ENABLE_DOUBLE_SPACE_PERIOD,
-          OptionType.ENABLE_GESTURE_TYPING, OptionType.EDIT_USER_DICT);
+    } else {
+      if (inputMethodSettings[engineId]) {
+        inputMethodSettings[engineId].forEach((settingType) => {
+          const settings = Settings[settingType];
+          options.basic.push(...settings.basic);
+          options.advanced.push(...settings.advanced);
+          options.physicalKeyboard.push(...settings.physicalKeyboard);
+          options.virtualKeyboard.push(...settings.virtualKeyboard);
+        });
+      }
     }
 
     return [
@@ -380,7 +382,7 @@ cr.define('settings.input_method_util', function() {
     OptionType,
     OPTION_DEFAULT,
     UiType,
-    InputToolCode,
+    EngineId,
     getFirstPartyInputMethodEngineId,
     hasOptionsPageInSettings,
     generateOptions,

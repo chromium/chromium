@@ -138,11 +138,11 @@ Polymer({
    */
   getPrefsPrefix_() {
     if (this.engineId_ ===
-        settings.input_method_util.InputToolCode.PINYIN_CHINESE_SIMPLIFIED) {
+        settings.input_method_util.EngineId.PINYIN_CHINESE_SIMPLIFIED) {
       return 'pinyin';
     } else if (
         this.engineId_ ===
-        settings.input_method_util.InputToolCode.ZHUYIN_CHINESE_TRADITIONAL) {
+        settings.input_method_util.EngineId.ZHUYIN_CHINESE_TRADITIONAL) {
       return 'zhuyin';
     }
     return this.engineId_;

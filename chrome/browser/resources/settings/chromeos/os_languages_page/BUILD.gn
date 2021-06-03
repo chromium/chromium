@@ -61,8 +61,15 @@ js_library("change_device_language_dialog.m") {
 
 js_library("input_method_util.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.m.js" ]
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":input_method_settings",
+    "//ui/webui/resources/js:cr.m",
+  ]
   extra_deps = [ ":modulize" ]
+}
+
+js_library("input_method_settings") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("input_method_options_page.m") {
