@@ -4426,6 +4426,19 @@ are declared in tools/grit/grit_rule.gni.
         The folder you selected contains sensitive files. Are you sure you want to grant "<ph name="APP_NAME">$1<ex>Text</ex></ph>" permanent write access to this folder?
       </message>
 
+      <!-- Direct Sockets connection dialog -->
+      <if expr="not is_android">
+        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_TITLE_LABEL" desc="Name shown in the direct sockets connection dialog's title">
+          Connection Dialog
+        </message>
+        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_ADDRESS_LABEL" desc="The remote host name that direct sockets will connect to">
+          Address
+        </message>
+        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_PORT_LABEL" desc="The remote port number that direct sockets will connect to">
+          Port
+        </message>
+      </if>
+
       <!-- Extensions strings, which are not used by chrome://extensions. -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING" desc="The title of the section that describes an extension load error.">

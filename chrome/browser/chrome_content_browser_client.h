@@ -566,6 +566,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
+  void ShowDirectSocketsConnectionDialog(
+      content::RenderFrameHost* owner,
+      const std::string& address,
+      base::OnceCallback<void(bool, const std::string&, const std::string&)>
+          callback) override;
 #endif
   bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,

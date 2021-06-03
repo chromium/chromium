@@ -497,6 +497,7 @@
 #include "chrome/browser/serial/chrome_serial_delegate.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -5225,6 +5226,26 @@ ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
     content::RenderFrameHost* render_frame_host) {
   return AuthenticatorRequestScheduler::CreateRequestDelegate(
       render_frame_host);
+}
+
+void ChromeContentBrowserClient::ShowDirectSocketsConnectionDialog(
+    content::RenderFrameHost* owner,
+    const std::string& address,
+    base::OnceCallback<void(bool, const std::string&, const std::string&)>
+        callback) {
+  auto* contents = content::WebContents::FromRenderFrameHost(owner);
+  if (!contents)
+    return;
+
+  auto* browser = chrome::FindBrowserWithWebContents(contents);
+  if (!browser ||
+      browser->tab_strip_model()->GetActiveWebContents() != contents) {
+    std::move(callback).Run(false, std::string(), std::string());
+    return;
+  }
+
+  chrome::ShowDirectSocketsConnectionDialog(browser, address,
+                                            std::move(callback));
 }
 #endif
 

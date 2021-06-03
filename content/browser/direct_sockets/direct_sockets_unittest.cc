@@ -15,10 +15,6 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
-#if defined(OS_WIN)
-#include "base/win/win_util.h"
-#endif
-
 namespace content {
 
 class DirectSocketsUnitTest : public RenderViewHostTestHarness {
@@ -72,17 +68,6 @@ TEST_F(DirectSocketsUnitTest, WebContentsDestroyed) {
 
   blink::mojom::DirectSocketOptions options;
   EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
-
-// TODO(crbug.com/1119597): Allow the user to enter the address.
-TEST_F(DirectSocketsUnitTest, RemoteAddressCurrentlyRequired) {
-// Mark as not enterprise managed.
-#if defined(OS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain(false);
-#endif
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_NAME_NOT_RESOLVED);
 }
 
 TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {

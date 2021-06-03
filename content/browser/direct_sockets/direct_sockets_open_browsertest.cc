@@ -431,6 +431,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
+    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
     DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
 
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
@@ -505,6 +506,42 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_CannotEvadeCors) {
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 1);
+}
+
+// Permission Denied failures(user dialog) should be triggered if connection
+// dialog is not accepted.
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_ConnectionDialogNotAccepted) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kUserDialog, 0);
+
+  DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(false);
+
+  const std::string script =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kUserDialog, 1);
+}
+
+// Remote address should be provided or TEST will fail with NotAllowedError. In
+// actual use scenario, it can be obtained from the user's input in connection
+// dialog.
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_RemoteAddressCurrentlyRequired) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script = "openTcp({remotePort: 993})";
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -686,6 +723,42 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_CannotEvadeCors) {
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 1);
+}
+
+// Permission Denied failures(user dialog) should be triggered if connection
+// dialog is not accepted.
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenUdp_ConnectionDialogNotAccepted) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kUserDialog, 0);
+
+  DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(false);
+
+  const std::string script =
+      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
+
+  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kUserDialog, 1);
+}
+
+// Remote address should be provided or TEST will fail with NotAllowedError. In
+// actual use scenario, it can be obtained from the user's input in connection
+// dialog.
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenUdp_RemoteAddressCurrentlyRequired) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script = "openUdp({remotePort: 993})";
+
+  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,

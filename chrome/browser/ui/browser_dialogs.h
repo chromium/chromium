@@ -412,6 +412,19 @@ void ShowWindowNamePrompt(Browser* browser);
 void ShowWindowNamePromptForTesting(Browser* browser,
                                     gfx::NativeWindow context);
 
+// Callback used to indicate whether Direct Sockets connection dialog is
+// accepted or not. If accepted, the remote address and port number are
+// provided.
+using OnProceedCallback = base::OnceCallback<
+    void(bool accepted, const std::string& address, const std::string& port)>;
+
+// Show dialog to accept remote address and port number information, which will
+// be used to make a socket connection. The window is automatically destroyed
+// when it is closed.
+void ShowDirectSocketsConnectionDialog(Browser* browser,
+                                       const std::string& address,
+                                       OnProceedCallback callback);
+
 }  // namespace chrome
 
 void ShowFolderUploadConfirmationDialog(

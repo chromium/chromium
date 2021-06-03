@@ -2928,6 +2928,7 @@ static_library("ui") {
       "views/autofill/payments/webauthn_dialog_view_impl.h",
       "views/close_bubble_on_tab_activation_helper.cc",
       "views/close_bubble_on_tab_activation_helper.h",
+      "views/direct_sockets_connection_bubble_dialog.cc",
       "views/external_protocol_dialog.cc",
       "views/external_protocol_dialog.h",
       "views/hats/hats_next_web_dialog.cc",
