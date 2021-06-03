@@ -418,6 +418,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<dawn_native::Instance> dawn_instance_;
   std::vector<dawn_native::Adapter> dawn_adapters_;
 
+  bool allow_spirv_ = false;
   std::vector<std::string> force_enabled_toggles_;
   std::vector<std::string> force_disabled_toggles_;
 
@@ -503,6 +504,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       break;
   }
 
+  allow_spirv_ = gpu_preferences.enable_webgpu_spirv;
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -562,6 +564,12 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   if (mock_unsupported_extension_for_test) {
     device_descriptor.requiredExtensions.push_back(
         "not_supported_extension_for_test");
+  }
+
+  // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
+  // is secure), unless --enable-unsafe-webgpu is used.
+  if (!allow_spirv_) {
+    device_descriptor.forceEnabledToggles.push_back("disallow_spirv");
   }
 
   for (const std::string& toggles : force_enabled_toggles_) {

@@ -252,6 +252,10 @@ struct GPU_EXPORT GpuPreferences {
   // Enable the WebGPU command buffer.
   bool enable_webgpu = false;
 
+  // Enable usage of SPIR-V with WebGPU. This is unsafe since SPIR-V from the
+  // renderer process isn't fully validated.
+  bool enable_webgpu_spirv = false;
+
   // Enable validation layers in Dawn backends.
   DawnBackendValidationLevel enable_dawn_backend_validation =
       DawnBackendValidationLevel::kDisabled;

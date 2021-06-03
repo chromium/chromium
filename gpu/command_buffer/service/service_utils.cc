@@ -160,6 +160,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
       command_line->HasSwitch(switches::kEnableUnsafeWebGPUService);
+  gpu_preferences.enable_webgpu_spirv =
+      command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   if (command_line->HasSwitch(switches::kEnableDawnBackendValidation)) {
     auto value = command_line->GetSwitchValueASCII(
         switches::kEnableDawnBackendValidation);

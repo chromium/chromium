@@ -209,6 +209,7 @@ struct GPU_EXPORT
     out->enable_gpu_benchmarking_extension =
         prefs.enable_gpu_benchmarking_extension();
     out->enable_webgpu = prefs.enable_webgpu();
+    out->enable_webgpu_spirv = prefs.enable_webgpu_spirv();
     if (!prefs.ReadEnableDawnBackendValidation(
             &out->enable_dawn_backend_validation))
       return false;
@@ -399,6 +400,9 @@ struct GPU_EXPORT
   }
   static bool enable_webgpu(const gpu::GpuPreferences& prefs) {
     return prefs.enable_webgpu;
+  }
+  static bool enable_webgpu_spirv(const gpu::GpuPreferences& prefs) {
+    return prefs.enable_webgpu_spirv;
   }
   static gpu::DawnBackendValidationLevel enable_dawn_backend_validation(
       const gpu::GpuPreferences& prefs) {
