@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
@@ -729,9 +730,18 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   origin_window->SetPointerFocus(restored_focus);
 }
 
+// TODO(crbug.com/1211689): Flaky on LaCrOS.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupRequestCreatesAuxiliaryWindow \
+  DISABLED_PopupRequestCreatesAuxiliaryWindow
+#else
+#define MAYBE_PopupRequestCreatesAuxiliaryWindow \
+  PopupRequestCreatesAuxiliaryWindow
+#endif
 // Ensures that requests to create a |PlatformWindowType::kPopup| during drag
 // sessions return wl_subsurface-backed windows.
-TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesAuxiliaryWindow) {
+TEST_P(WaylandDataDragControllerTest,
+       MAYBE_PopupRequestCreatesAuxiliaryWindow) {
   auto* origin_window = window_.get();
   const bool restored_focus = origin_window->has_pointer_focus();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
