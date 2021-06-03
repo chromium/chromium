@@ -410,6 +410,9 @@ void TextFragmentSelectorGenerator::NoMatchFound() {
 
 void TextFragmentSelectorGenerator::OnSelectorReady(
     const TextFragmentSelector& selector) {
+  // Check that frame is not deattched and generator is still valid.
+  DCHECK(selection_frame_);
+
   RecordAllMetrics(selector);
   if (pending_generate_selector_callback_) {
     NotifyClientSelectorReady(selector);
@@ -433,6 +436,7 @@ void TextFragmentSelectorGenerator::ClearSelection() {
 }
 
 void TextFragmentSelectorGenerator::Detach() {
+  Reset();
   selection_frame_ = nullptr;
 }
 
