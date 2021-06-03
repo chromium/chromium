@@ -67,16 +67,24 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                                                    const void* key,
                                                    intptr_t old) {
-  if (key != ash::kArcResizeLockKey)
+  if (key != ash::kArcResizeLockKey && key != ash::kAppIDKey)
     return;
 
-  const bool current_value = window->GetProperty(ash::kArcResizeLockKey);
-  if (current_value == static_cast<bool>(old))
-    return;
+  const bool current_resize_lock_value =
+      window->GetProperty(ash::kArcResizeLockKey);
+  const bool resize_lock_changed =
+      (key == ash::kArcResizeLockKey &&
+       current_resize_lock_value != static_cast<bool>(old));
+  const bool has_app_id = window->GetProperty(ash::kAppIDKey) != nullptr;
+  const bool app_id_changed = key == ash::kAppIDKey;
 
-  if (current_value)
+  // Both the resize lock value and app id are needed to enable resize lock.
+  if (has_app_id && current_resize_lock_value &&
+      (app_id_changed || resize_lock_changed)) {
     EnableResizeLock(window);
-  else
+  }
+
+  if (resize_lock_changed && !current_resize_lock_value)
     DisableResizeLock(window);
 }
 

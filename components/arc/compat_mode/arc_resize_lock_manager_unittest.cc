@@ -85,6 +85,10 @@ TEST_F(ArcResizeLockManagerTest, TestArcWindowPropertyChange) {
 
   EXPECT_FALSE(IsResizeLockEnabled(arc_window));
 
+  // App id needs to be set to toogle resize lock state.
+  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
   // Test EnableResizeLock will be called by the property change.
   arc_window->SetProperty(ash::kArcResizeLockKey, true);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window));
