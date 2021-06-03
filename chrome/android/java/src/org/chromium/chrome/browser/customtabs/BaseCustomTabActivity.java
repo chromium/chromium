@@ -466,8 +466,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        Boolean result = KeyboardShortcuts.dispatchKeyEvent(
-                event, this, mToolbarCoordinator.toolbarIsInitialized());
+        Boolean result = KeyboardShortcuts.dispatchKeyEvent(event,
+                mToolbarCoordinator.toolbarIsInitialized(), getFullscreenManager(),
+                /* menuOrKeyboardActionController= */ this);
         return result != null ? result : super.dispatchKeyEvent(event);
     }
 
@@ -494,7 +495,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         if (!mToolbarCoordinator.toolbarIsInitialized()) {
             return super.onKeyDown(keyCode, event);
         }
-        return KeyboardShortcuts.onKeyDown(event, this, true, false)
+        return KeyboardShortcuts.onKeyDown(event, true, false, getTabModelSelector(),
+                       /* menuOrKeyboardActionController= */ this, getToolbarManager())
                 || super.onKeyDown(keyCode, event);
     }
 

@@ -13,10 +13,13 @@ import android.view.KeyboardShortcutInfo;
 
 import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 
@@ -47,14 +50,16 @@ public class KeyboardShortcuts {
      * the key event. So the keys handled here cannot be overridden by any view or web page.
      *
      * @param event The KeyEvent to handle.
-     * @param activity The ChromeActivity in which the key was pressed.
      * @param uiInitialized Whether the UI has been initialized. If this is false, most keys will
      *                      not be handled.
+     * @param fullscreenManager Manages fullscreen state.
+     * @param menuOrKeyboardActionController Controls keyboard actions.
      * @return True if the event was handled. False if the event was ignored. Null if the event
      *         should be handled by the activity's parent class.
      */
-    public static Boolean dispatchKeyEvent(KeyEvent event, ChromeActivity activity,
-            boolean uiInitialized) {
+    public static Boolean dispatchKeyEvent(KeyEvent event, boolean uiInitialized,
+            FullscreenManager fullscreenManager,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
         int keyCode = event.getKeyCode();
         if (!uiInitialized) {
             if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) return true;
@@ -64,19 +69,23 @@ public class KeyboardShortcuts {
         switch (keyCode) {
             case KeyEvent.KEYCODE_SEARCH:
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    activity.onMenuOrKeyboardAction(R.id.focus_url_bar, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_url_bar, false);
                 }
                 // Always consume the SEARCH key events to prevent android from showing
                 // the default app search UI, which locks up Chrome.
                 return true;
             case KeyEvent.KEYCODE_MENU:
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    activity.onMenuOrKeyboardAction(R.id.show_menu, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 }
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    if (activity.exitFullscreenIfShowing()) return true;
+                    if (fullscreenManager.getPersistentFullscreenMode()) {
+                        fullscreenManager.exitPersistentFullscreenMode();
+                        return true;
+                    }
                 }
                 break;
             case KeyEvent.KEYCODE_TV:
@@ -186,15 +195,19 @@ public class KeyboardShortcuts {
      * the key event. So the keys handled here *can* be overridden by any view or web page.
      *
      * @param event The KeyEvent to handle.
-     * @param activity The ChromeActivity in which the key was pressed.
-     * @param isCurrentTabVisible Whether page-related actions are valid, e.g. reload, zoom in.
-     *                            This should be false when in the tab switcher.
+     * @param isCurrentTabVisible Whether page-related actions are valid, e.g. reload, zoom in. This
+     *         should be false when in the tab switcher.
      * @param tabSwitchingEnabled Whether shortcuts that switch between tabs are enabled (e.g.
-     *                            Ctrl+Tab, Ctrl+3).
+     *         Ctrl+Tab, Ctrl+3).
+     * @param tabModelSelector The current tab modelSelector.
+     * @param menuOrKeyboardActionController Controls keyboard actions.
+     * @param toolbarManager Manages the toolbar.
      * @return Whether the key event was handled.
      */
-    public static boolean onKeyDown(KeyEvent event, ChromeActivity activity,
-            boolean isCurrentTabVisible, boolean tabSwitchingEnabled) {
+    public static boolean onKeyDown(KeyEvent event, boolean isCurrentTabVisible,
+            boolean tabSwitchingEnabled, TabModelSelector tabModelSelector,
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            ToolbarManager toolbarManager) {
         int keyCode = event.getKeyCode();
         if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) return false;
         if (KeyEvent.isGamepadButton(keyCode)) {
@@ -207,26 +220,31 @@ public class KeyboardShortcuts {
             return false;
         }
 
-        TabModel curModel = activity.getCurrentTabModel();
-        int count = curModel.getCount();
+        TabModel currentTabModel = tabModelSelector.getCurrentModel();
+        Tab currentTab = tabModelSelector.getCurrentTab();
+        WebContents currentWebContents = currentTab == null ? null : currentTab.getWebContents();
 
+        int tabCount = currentTabModel.getCount();
         int metaState = getMetaState(event);
         int keyCodeAndMeta = keyCode | metaState;
 
         switch (keyCodeAndMeta) {
             case CTRL | SHIFT | KeyEvent.KEYCODE_T:
-                activity.onMenuOrKeyboardAction(R.id.open_recently_closed_tab, false);
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.open_recently_closed_tab, false);
                 return true;
             case CTRL | KeyEvent.KEYCODE_T:
-                activity.onMenuOrKeyboardAction(curModel.isIncognito()
-                        ? R.id.new_incognito_tab_menu_id
-                        : R.id.new_tab_menu_id, false);
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(currentTabModel.isIncognito()
+                                ? R.id.new_incognito_tab_menu_id
+                                : R.id.new_tab_menu_id,
+                        false);
                 return true;
             case CTRL | KeyEvent.KEYCODE_N:
-                activity.onMenuOrKeyboardAction(R.id.new_tab_menu_id, false);
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.new_tab_menu_id, false);
                 return true;
             case CTRL | SHIFT | KeyEvent.KEYCODE_N:
-                activity.onMenuOrKeyboardAction(R.id.new_incognito_tab_menu_id, false);
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.new_incognito_tab_menu_id, false);
                 return true;
             // Alt+E represents a special character ´ (latin code: &#180) in Android.
             // If an EditText or ContentView has focus, Alt+E will be swallowed by
@@ -235,20 +253,20 @@ public class KeyboardShortcuts {
             case ALT | KeyEvent.KEYCODE_F:
             case KeyEvent.KEYCODE_F10:
             case KeyEvent.KEYCODE_BUTTON_Y:
-                activity.onMenuOrKeyboardAction(R.id.show_menu, false);
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 return true;
         }
 
         if (isCurrentTabVisible) {
             if (tabSwitchingEnabled && (metaState == CTRL || metaState == ALT)) {
                 int numCode = keyCode - KeyEvent.KEYCODE_0;
-                if (numCode > 0 && numCode <= Math.min(count, 8)) {
+                if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
                     // Ctrl+1 to Ctrl+8: select tab by index
-                    TabModelUtils.setIndex(curModel, numCode - 1);
+                    TabModelUtils.setIndex(currentTabModel, numCode - 1);
                     return true;
-                } else if (numCode == 9 && count != 0) {
+                } else if (numCode == 9 && tabCount != 0) {
                     // Ctrl+9: select last tab
-                    TabModelUtils.setIndex(curModel, count - 1);
+                    TabModelUtils.setIndex(currentTabModel, tabCount - 1);
                     return true;
                 }
             }
@@ -257,102 +275,101 @@ public class KeyboardShortcuts {
                 case CTRL | KeyEvent.KEYCODE_TAB:
                 case CTRL | KeyEvent.KEYCODE_PAGE_DOWN:
                 case KeyEvent.KEYCODE_BUTTON_R1:
-                    if (tabSwitchingEnabled && count > 1) {
-                        TabModelUtils.setIndex(curModel, (curModel.index() + 1) % count);
+                    if (tabSwitchingEnabled && tabCount > 1) {
+                        TabModelUtils.setIndex(
+                                currentTabModel, (currentTabModel.index() + 1) % tabCount);
                     }
                     return true;
                 case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
                 case CTRL | KeyEvent.KEYCODE_PAGE_UP:
                 case KeyEvent.KEYCODE_BUTTON_L1:
-                    if (tabSwitchingEnabled && count > 1) {
-                        TabModelUtils.setIndex(curModel, (curModel.index() + count - 1) % count);
+                    if (tabSwitchingEnabled && tabCount > 1) {
+                        TabModelUtils.setIndex(currentTabModel,
+                                (currentTabModel.index() + tabCount - 1) % tabCount);
                     }
                     return true;
                 case CTRL | KeyEvent.KEYCODE_W:
                 case CTRL | KeyEvent.KEYCODE_F4:
                 case KeyEvent.KEYCODE_BUTTON_B:
-                    TabModelUtils.closeCurrentTab(curModel);
+                    TabModelUtils.closeCurrentTab(currentTabModel);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_F:
                 case CTRL | KeyEvent.KEYCODE_G:
                 case CTRL | SHIFT | KeyEvent.KEYCODE_G:
                 case KeyEvent.KEYCODE_F3:
                 case SHIFT | KeyEvent.KEYCODE_F3:
-                    activity.onMenuOrKeyboardAction(R.id.find_in_page_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.find_in_page_id, false);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_L:
                 case ALT | KeyEvent.KEYCODE_D:
                 case KeyEvent.KEYCODE_BUTTON_X:
-                    activity.onMenuOrKeyboardAction(R.id.focus_url_bar, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_url_bar, false);
                     return true;
                 case CTRL | SHIFT | KeyEvent.KEYCODE_B:
-                    activity.onMenuOrKeyboardAction(R.id.all_bookmarks_menu_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.all_bookmarks_menu_id, false);
                     return true;
                 case KeyEvent.KEYCODE_BOOKMARK:
                 case CTRL | KeyEvent.KEYCODE_D:
-                    activity.onMenuOrKeyboardAction(R.id.bookmark_this_page_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.bookmark_this_page_id, false);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_H:
-                    activity.onMenuOrKeyboardAction(R.id.open_history_menu_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.open_history_menu_id, false);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_P:
-                    activity.onMenuOrKeyboardAction(R.id.print_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, false);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_PLUS:
                 case CTRL | KeyEvent.KEYCODE_EQUALS:
                 case CTRL | SHIFT | KeyEvent.KEYCODE_PLUS:
                 case CTRL | SHIFT | KeyEvent.KEYCODE_EQUALS:
                 case KeyEvent.KEYCODE_ZOOM_IN:
-                    ZoomController.zoomIn(getCurrentWebContents(activity));
+                    ZoomController.zoomIn(currentWebContents);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_MINUS:
                 case KeyEvent.KEYCODE_ZOOM_OUT:
-                    ZoomController.zoomOut(getCurrentWebContents(activity));
+                    ZoomController.zoomOut(currentWebContents);
                     return true;
                 case CTRL | KeyEvent.KEYCODE_0:
-                    ZoomController.zoomReset(getCurrentWebContents(activity));
+                    ZoomController.zoomReset(currentWebContents);
                     return true;
                 case SHIFT | CTRL | KeyEvent.KEYCODE_R:
                 case CTRL | KeyEvent.KEYCODE_R:
                 case SHIFT | KeyEvent.KEYCODE_F5:
                 case KeyEvent.KEYCODE_F5:
-                    Tab tab = activity.getActivityTab();
-                    if (tab != null) {
+                    if (currentTab != null) {
                         if ((keyCodeAndMeta & SHIFT) == SHIFT) {
-                            tab.reloadIgnoringCache();
+                            currentTab.reloadIgnoringCache();
                         } else {
-                            tab.reload();
+                            currentTab.reload();
                         }
 
-                        if (activity.getToolbarManager() != null
-                                && tab.getWebContents() != null
-                                && tab.getWebContents().focusLocationBarByDefault()) {
-                            activity.getToolbarManager().revertLocationBarChanges();
-                        } else {
-                            if (tab.getView() != null) tab.getView().requestFocus();
+                        if (toolbarManager != null && currentWebContents != null
+                                && currentWebContents.focusLocationBarByDefault()) {
+                            toolbarManager.revertLocationBarChanges();
+                        } else if (currentTab.getView() != null) {
+                            currentTab.getView().requestFocus();
                         }
                     }
                     return true;
                 case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
-                    tab = activity.getActivityTab();
-                    if (tab != null && tab.canGoBack()) tab.goBack();
+                    if (currentTab != null && currentTab.canGoBack()) currentTab.goBack();
                     return true;
                 case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_FORWARD:
                 case KeyEvent.KEYCODE_BUTTON_START:
-                    tab = activity.getActivityTab();
-                    if (tab != null && tab.canGoForward()) tab.goForward();
+                    if (currentTab != null && currentTab.canGoForward()) currentTab.goForward();
                     return true;
                 case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH:  // i.e. Ctrl+?
-                    activity.onMenuOrKeyboardAction(R.id.help_id, false);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
             }
         }
 
         return false;
-    }
-
-    private static WebContents getCurrentWebContents(ChromeActivity activity) {
-        return activity.getActivityTab().getWebContents();
     }
 }

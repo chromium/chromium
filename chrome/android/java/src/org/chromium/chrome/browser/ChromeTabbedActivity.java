@@ -2418,7 +2418,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        Boolean result = KeyboardShortcuts.dispatchKeyEvent(event, this, mUIWithNativeInitialized);
+        Boolean result = KeyboardShortcuts.dispatchKeyEvent(event, mUIWithNativeInitialized,
+                getFullscreenManager(), /* menuOrKeyboardActionController= */ this);
         return result != null ? result : super.dispatchKeyEvent(event);
     }
 
@@ -2437,7 +2438,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         boolean isCurrentTabVisible = !mOverviewModeController.overviewVisible()
                 && (!isTablet() || getCurrentTabModel().getCount() != 0);
-        return KeyboardShortcuts.onKeyDown(event, this, isCurrentTabVisible, true)
+        return KeyboardShortcuts.onKeyDown(event, isCurrentTabVisible, true, getTabModelSelector(),
+                       /* menuOrKeyboardActionController= */ this, getToolbarManager())
                 || super.onKeyDown(keyCode, event);
     }
 
