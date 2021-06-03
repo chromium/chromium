@@ -4,15 +4,23 @@
 
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 
-#include <memory>
-
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/bind.h"
 #include "base/notreached.h"
 #include "components/arc/compat_mode/resize_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -35,69 +43,187 @@ absl::optional<ResizeToggleMenu::CommandId> PredictCurrentMode(
   return absl::nullopt;
 }
 
+class MenuButtonView : public views::Button {
+ public:
+  static constexpr int kBorderThicknessDp = 1;
+
+  MenuButtonView(PressedCallback callback,
+                 const gfx::VectorIcon& icon,
+                 int title_string_id,
+                 bool is_selected)
+      : views::Button(std::move(callback)),
+        icon_(icon),
+        is_selected_(is_selected) {
+    if (is_selected_)
+      SetState(views::Button::ButtonState::STATE_DISABLED);
+
+    AddChildView(
+        views::Builder<views::ImageView>().CopyAddressTo(&icon_view_).Build());
+    AddChildView(views::Builder<views::Label>()
+                     .CopyAddressTo(&title_)
+                     .SetBackgroundColor(SK_ColorTRANSPARENT)
+                     .SetText(l10n_util::GetStringUTF16(title_string_id))
+                     .SetVerticalAlignment(gfx::ALIGN_BOTTOM)
+                     .SetLineHeight(20)
+                     .SetMultiLine(true)
+                     .SetMaxLines(2)
+                     .Build());
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderThicknessDp)));
+    SetPreferredSize(gfx::Size(96, 86));
+  }
+  MenuButtonView(const MenuButtonView&) = delete;
+  MenuButtonView& operator=(const MenuButtonView&) = delete;
+  ~MenuButtonView() override = default;
+
+ private:
+  void Layout() override {
+    constexpr int kIconSize = 24;
+    constexpr int kIconTopPadding = 17;
+
+    gfx::Rect content_bounds_with_padding = GetContentsBounds();
+    content_bounds_with_padding.Inset(gfx::Insets(kIconTopPadding, 0));
+
+    gfx::Rect icon_rect(GetContentsBounds());
+    icon_rect.ClampToCenteredSize(gfx::Size(kIconSize, kIconSize));
+    icon_rect.set_y(content_bounds_with_padding.y());
+    icon_view_->SetBoundsRect(icon_rect);
+    title_->SetBoundsRect(content_bounds_with_padding);
+  }
+
+  void OnFocus() override { SchedulePaint(); }
+
+  void OnBlur() override { SchedulePaint(); }
+
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    const auto color = GetNativeTheme()->GetSystemColor(
+        is_selected_ ? ui::NativeTheme::kColorId_ProminentButtonColor
+                     : ui::NativeTheme::kColorId_LabelEnabledColor);
+    icon_view_->SetImage(gfx::CreateVectorIcon(icon_, color));
+    title_->SetEnabledColor(color);
+  }
+
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    auto* const provider = views::LayoutProvider::Get();
+    const int round_radius =
+        provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
+
+    const gfx::Rect content_bounds = GetContentsBounds();
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    if (is_selected_) {
+      flags.setColor(GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor));
+      flags.setStyle(cc::PaintFlags::kFill_Style);
+      canvas->DrawRoundRect(content_bounds, round_radius, flags);
+    } else {
+      flags.setColor(SK_ColorTRANSPARENT);
+      flags.setStyle(cc::PaintFlags::kFill_Style);
+      canvas->DrawRoundRect(content_bounds, round_radius, flags);
+
+      flags.setColor(GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_MenuBorderColor));
+      flags.setStrokeWidth(kBorderThicknessDp);
+      flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
+      canvas->DrawRoundRect(content_bounds, round_radius, flags);
+    }
+  }
+
+  // Owned by views hierarchy.
+  views::ImageView* icon_view_{nullptr};
+  views::Label* title_{nullptr};
+
+  const gfx::VectorIcon& icon_;
+  const bool is_selected_;
+};
+
+class RoundedCornerBubbleDialogDelegateView
+    : public views::BubbleDialogDelegateView {
+ public:
+  explicit RoundedCornerBubbleDialogDelegateView(int corner_radius)
+      : corner_radius_(corner_radius) {}
+
+  // views::View:
+  void AddedToWidget() override {
+    auto* const frame = GetBubbleFrameView();
+    if (frame)
+      frame->SetCornerRadius(corner_radius_);
+  }
+
+ private:
+  const int corner_radius_;
+};
+
 }  // namespace
 
 ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
                                    ArcResizeLockPrefDelegate* pref_delegate)
     : widget_(widget), pref_delegate_(pref_delegate) {
-  model_ = MakeMenuModel();
-  adapter_ = std::make_unique<views::MenuModelAdapter>(model_.get());
-  root_view_ = adapter_->CreateMenu();
-
-  const auto currentMode = PredictCurrentMode(widget_);
-  if (currentMode) {
-    auto* item = root_view_->GetMenuItemByID(*currentMode);
-    item->SetSelected(true);
-    item->SetMinorIcon(ui::ImageModel::FromVectorIcon(
-        ash::kHollowCheckCircleIcon,
-        ui::NativeTheme::kColorId_ProminentButtonColor));
-  }
-
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      root_view_, views::MenuRunner::CONTEXT_MENU |
-                      views::MenuRunner::USE_TOUCHABLE_LAYOUT |
-                      views::MenuRunner::FIXED_ANCHOR);
-
   const gfx::Rect client_view_rect =
       widget_->client_view()->GetBoundsInScreen();
-  // Anchored to the right edge of the client_view.
+  // Anchored to the top edge of the client_view with padding.
+  constexpr auto kMarginTopDp = 8;
   const gfx::Rect anchor_rect =
-      gfx::Rect(client_view_rect.right(), client_view_rect.y(), 0,
-                client_view_rect.height());
-  menu_runner_->RunMenuAt(
-      /*widget_owner=*/widget_, /*menu_button_controller=*/nullptr, anchor_rect,
-      views::MenuAnchorPosition::kBubbleLeft, ui::MENU_SOURCE_MOUSE);
+      gfx::Rect(client_view_rect.x(), client_view_rect.y() + kMarginTopDp,
+                client_view_rect.width(), 0);
+
+  bubble_widget_ =
+      views::BubbleDialogDelegateView::CreateBubble(MakeBubbleDelegateView(
+          widget_, anchor_rect,
+          base::BindRepeating(&ResizeToggleMenu::ExecuteCommand,
+                              base::Unretained(this))));
+  bubble_widget_->Show();
 }
 
-ResizeToggleMenu::~ResizeToggleMenu() {
-  menu_runner_->Cancel();
+ResizeToggleMenu::~ResizeToggleMenu() = default;
+
+std::unique_ptr<views::BubbleDialogDelegateView>
+ResizeToggleMenu::MakeBubbleDelegateView(
+    views::Widget* parent,
+    gfx::Rect anchor_rect,
+    base::RepeatingCallback<void(CommandId)> command_handler) {
+  constexpr int kCornerRadius = 16;
+
+  auto delegate_view =
+      std::make_unique<RoundedCornerBubbleDialogDelegateView>(kCornerRadius);
+
+  // Setup delegate.
+  delegate_view->SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
+  delegate_view->SetButtons(ui::DIALOG_BUTTON_NONE);
+  delegate_view->set_parent_window(parent->GetNativeView());
+  delegate_view->set_title_margins(gfx::Insets());
+  delegate_view->set_margins(gfx::Insets());
+  delegate_view->SetAnchorRect(anchor_rect);
+
+  // Setup view.
+  auto* const provider = views::LayoutProvider::Get();
+  delegate_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      provider->GetInsetsMetric(views::INSETS_DIALOG),
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+
+  const auto selected_mode = PredictCurrentMode(widget_);
+  const auto add_menu_button =
+      [&delegate_view, &command_handler, &selected_mode](
+          CommandId command_id, const gfx::VectorIcon& icon, int string_id) {
+        return delegate_view->AddChildView(std::make_unique<MenuButtonView>(
+            base::BindRepeating(command_handler, command_id), icon, string_id,
+            selected_mode && *selected_mode == command_id));
+      };
+  phone_button_ =
+      add_menu_button(CommandId::kResizePhone, ash::kSystemMenuPhoneIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+  tablet_button_ =
+      add_menu_button(CommandId::kResizeTablet, ash::kSystemMenuTabletIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+  desktop_button_ =
+      add_menu_button(CommandId::kResizeDesktop, ash::kSystemMenuComputerIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP);
+
+  return delegate_view;
 }
 
-std::unique_ptr<ui::SimpleMenuModel> ResizeToggleMenu::MakeMenuModel() {
-  auto model = std::make_unique<ui::SimpleMenuModel>(this);
-
-  model->AddItemWithStringIdAndIcon(
-      CommandId::kResizePhone, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE,
-      ui::ImageModel::FromVectorIcon(ash::kSystemMenuPhoneIcon));
-
-  model->AddItemWithStringIdAndIcon(
-      CommandId::kResizeTablet, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET,
-      ui::ImageModel::FromVectorIcon(ash::kSystemMenuTabletIcon));
-
-  model->AddItemWithStringIdAndIcon(
-      CommandId::kResizeDesktop, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP,
-      ui::ImageModel::FromVectorIcon(ash::kSystemMenuComputerIcon));
-
-  model->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  model->AddItemWithStringIdAndIcon(
-      CommandId::kOpenSettings,
-      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS,
-      ui::ImageModel::FromVectorIcon(ash::kSystemMenuSettingsIcon));
-  return model;
-}
-
-void ResizeToggleMenu::ExecuteCommand(int command_id, int event_flags) {
+void ResizeToggleMenu::ExecuteCommand(CommandId command_id) {
   switch (command_id) {
     case CommandId::kResizePhone:
       ResizeToPhoneWithConfirmationIfNeeded(widget_, pref_delegate_);
@@ -111,9 +237,6 @@ void ResizeToggleMenu::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kOpenSettings:
       // TODO(b/181614585): Implement this.
       NOTIMPLEMENTED();
-      break;
-    default:
-      NOTREACHED();
       break;
   }
 }

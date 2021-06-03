@@ -9,9 +9,13 @@
 #include "ash/public/cpp/window_properties.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace arc {
 namespace {
@@ -46,6 +50,7 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
     widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
     widget_->GetNativeWindow()->SetProperty(ash::kAppIDKey,
                                             std::string(kTestAppId));
+    widget_->Show();
     resize_toggle_menu_ =
         std::make_unique<ResizeToggleMenu>(widget_.get(), &pref_delegate);
   }
@@ -55,7 +60,7 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
   }
 
   bool IsMenuRunning() {
-    return resize_toggle_menu_->menu_runner_->IsRunning();
+    return resize_toggle_menu_->bubble_widget_->IsVisible();
   }
 
   // Re-show the menu. This might close the running menu if any.
@@ -65,32 +70,35 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
         std::make_unique<ResizeToggleMenu>(widget_.get(), &pref_delegate);
   }
 
-  bool IsOnlyOneItemSelected(ResizeToggleMenu::CommandId target_command_id) {
-    if (!resize_toggle_menu_->root_view_->GetMenuItemByID(target_command_id)) {
-      // The target item is NOT in the menu.
-      return false;
-    }
-    for (int id = ResizeToggleMenu::CommandId::kResizePhone;
-         id <= ResizeToggleMenu::CommandId::kMaxValue; ++id) {
-      const auto* menu_item_view =
-          resize_toggle_menu_->root_view_->GetMenuItemByID(id);
-      const bool is_selected = menu_item_view->IsSelected();
-      if (id == target_command_id && !is_selected) {
-        // The target item is NOT selected.
-        return false;
-      }
-      if (id != target_command_id && is_selected) {
-        // The NON-target item is wrongly selected.
-        return false;
-      }
-    }
-    return true;
+  bool IsCommandButtonDisabled(ResizeToggleMenu::CommandId command_id) {
+    return GetButtonByCommandId(command_id)->GetState() ==
+           views::Button::ButtonState::STATE_DISABLED;
   }
 
-  ResizeToggleMenu* resize_toggle_menu() { return resize_toggle_menu_.get(); }
+  void ClickButton(ResizeToggleMenu::CommandId command_id) {
+    const auto* button = GetButtonByCommandId(command_id);
+    ui::test::EventGenerator event_generator(GetRootWindow(widget_.get()));
+    event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    event_generator.ClickLeftButton();
+  }
+
   views::Widget* widget() { return widget_.get(); }
 
  private:
+  views::Button* GetButtonByCommandId(ResizeToggleMenu::CommandId command_id) {
+    switch (command_id) {
+      case ResizeToggleMenu::CommandId::kResizePhone:
+        return resize_toggle_menu_->phone_button_;
+      case ResizeToggleMenu::CommandId::kResizeTablet:
+        return resize_toggle_menu_->tablet_button_;
+      case ResizeToggleMenu::CommandId::kResizeDesktop:
+        return resize_toggle_menu_->desktop_button_;
+      case ResizeToggleMenu::CommandId::kOpenSettings:
+        ADD_FAILURE() << "Not implemented";
+        return nullptr;
+    }
+  }
+
   TestArcResizeLockPrefDelegate pref_delegate;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
@@ -107,8 +115,7 @@ TEST_F(ResizeToggleMenuTest, TestResizePhone) {
   EXPECT_TRUE(widget()->IsMaximized());
 
   // Test that resize command is properly handled.
-  resize_toggle_menu()->ExecuteCommand(
-      ResizeToggleMenu::CommandId::kResizePhone, 0);
+  ClickButton(ResizeToggleMenu::CommandId::kResizePhone);
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
@@ -116,7 +123,12 @@ TEST_F(ResizeToggleMenuTest, TestResizePhone) {
   // Test that the item is selected after the resize.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
-  EXPECT_TRUE(IsOnlyOneItemSelected(ResizeToggleMenu::CommandId::kResizePhone));
+  EXPECT_TRUE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizePhone));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeTablet));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeDesktop));
 }
 
 TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
@@ -126,8 +138,7 @@ TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
   EXPECT_TRUE(widget()->IsMaximized());
 
   // Test that resize command is properly handled.
-  resize_toggle_menu()->ExecuteCommand(
-      ResizeToggleMenu::CommandId::kResizeTablet, 0);
+  ClickButton(ResizeToggleMenu::CommandId::kResizeTablet);
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
@@ -135,8 +146,12 @@ TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
   // Test that the item is selected after the resize.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizePhone));
   EXPECT_TRUE(
-      IsOnlyOneItemSelected(ResizeToggleMenu::CommandId::kResizeTablet));
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeTablet));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeDesktop));
 }
 
 TEST_F(ResizeToggleMenuTest, TestResizeDesktop) {
@@ -145,15 +160,18 @@ TEST_F(ResizeToggleMenuTest, TestResizeDesktop) {
   EXPECT_FALSE(widget()->IsMaximized());
 
   // Test that resize command is properly handled.
-  resize_toggle_menu()->ExecuteCommand(
-      ResizeToggleMenu::CommandId::kResizeDesktop, 0);
+  ClickButton(ResizeToggleMenu::CommandId::kResizeDesktop);
   EXPECT_TRUE(widget()->IsMaximized());
 
   // Test that the item is selected after the resize.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizePhone));
+  EXPECT_FALSE(
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeTablet));
   EXPECT_TRUE(
-      IsOnlyOneItemSelected(ResizeToggleMenu::CommandId::kResizeDesktop));
+      IsCommandButtonDisabled(ResizeToggleMenu::CommandId::kResizeDesktop));
 }
 
 }  // namespace arc

@@ -5,54 +5,58 @@
 #ifndef COMPONENTS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_H_
 #define COMPONENTS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_H_
 
-#include "ui/base/models/menu_model_delegate.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
+#include <memory>
+
+#include "base/callback_forward.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace views {
+class BubbleDialogDelegateView;
+class Button;
 class Widget;
-class MenuItemView;
 }  // namespace views
 
 namespace arc {
 
 class ArcResizeLockPrefDelegate;
 
-class ResizeToggleMenu : public ui::SimpleMenuModel::Delegate {
+class ResizeToggleMenu {
  public:
-  enum CommandId {
-    kResizePhone = 1,  // Starting from 1 to avoid the conflict with "separator
-                       // item" because its command id is 0.
-    kResizeTablet = 2,
-    kResizeDesktop = 3,
-    kOpenSettings = 4,
-    kMaxValue = kOpenSettings,
+  enum class CommandId {
+    kResizePhone,
+    kResizeTablet,
+    kResizeDesktop,
+    kOpenSettings,
   };
 
   ResizeToggleMenu(views::Widget* widget,
                    ArcResizeLockPrefDelegate* pref_delegate);
   ResizeToggleMenu(const ResizeToggleMenu&) = delete;
   ResizeToggleMenu& operator=(const ResizeToggleMenu&) = delete;
-  ~ResizeToggleMenu() override;
-
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
+  ~ResizeToggleMenu();
 
  private:
   friend class ResizeToggleMenuTest;
 
-  std::unique_ptr<ui::SimpleMenuModel> MakeMenuModel();
+  void ExecuteCommand(CommandId command_id);
+
+  std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
+      views::Widget* parent,
+      gfx::Rect anchor_rect,
+      base::RepeatingCallback<void(CommandId)> command_handler);
 
   views::Widget* widget_;
 
   ArcResizeLockPrefDelegate* pref_delegate_;
 
-  // Owned by |menu_runner_|. Store this here only for testing.
-  views::MenuItemView* root_view_ = nullptr;
-
-  std::unique_ptr<ui::SimpleMenuModel> model_;
-  std::unique_ptr<views::MenuModelAdapter> adapter_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
+  // Store only for testing.
+  views::Widget* bubble_widget_{nullptr};
+  views::Button* phone_button_{nullptr};
+  views::Button* tablet_button_{nullptr};
+  views::Button* desktop_button_{nullptr};
 };
 
 }  // namespace arc
