@@ -67,8 +67,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -600,11 +598,9 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
-  chrome::AddSelectedTabWithURL(browser, GURL(url::kAboutBlankURL),
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
+      browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  content::TestNavigationObserver observer(blank_tab);
   observer.Wait();
 
   browser->window()->Show();
