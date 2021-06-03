@@ -21,14 +21,11 @@ class MockCastContentWindowDelegate
   MOCK_METHOD1(CanHandleGesture, bool(GestureType gesture_type));
   MOCK_METHOD2(ConsumeGesture,
                void(GestureType gesture_type,
-                    base::RepeatingCallback<void(bool)> handled_callback));
+                    GestureHandledCallback handled_callback));
   MOCK_METHOD1(CancelGesture, void(GestureType gesture_type));
   MOCK_METHOD2(GestureProgress,
                void(GestureType gesture_type,
                     const gfx::Point& touch_location));
-
-  void ConsumeGesture(GestureType gesture_type,
-                      GestureHandledCallback handled_callback) override;
 
   std::string GetId() override;
 };

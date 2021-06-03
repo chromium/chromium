@@ -40,12 +40,6 @@ constexpr gfx::Point kRightSidePoint(500, 50);
 constexpr gfx::Point kOngoingRightGesturePoint1(400, 50);
 constexpr gfx::Point kRightGestureEndPoint(200, 60);
 
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_1_VALUE_PARAMS(p0)) {
-  std::move(std::get<k>(args)).Run(p0);
-}
-
 }  // namespace
 
 class CastContentGestureHandlerTest : public testing::Test {
@@ -70,7 +64,8 @@ TEST_F(CastContentGestureHandlerTest, VerifySimpleBackSuccess) {
   EXPECT_CALL(*delegate_, GestureProgress(Eq(GestureType::GO_BACK),
                                           Eq(kOngoingBackGesturePoint1)));
   EXPECT_CALL(*delegate_, ConsumeGesture(Eq(GestureType::GO_BACK), _))
-      .WillRepeatedly(InvokeCallbackArgument<1>(true));
+      .WillRepeatedly(
+          [](auto, auto callback) { std::move(callback).Run(true); });
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::LEFT);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::LEFT, kLeftSidePoint);
@@ -117,7 +112,8 @@ TEST_F(CastContentGestureHandlerTest, VerifyOnlySingleDispatch) {
   EXPECT_CALL(*delegate_,
               GestureProgress(Eq(GestureType::GO_BACK), Eq(kPastTheEndPoint1)));
   EXPECT_CALL(*delegate_, ConsumeGesture(Eq(GestureType::GO_BACK), _))
-      .WillRepeatedly(InvokeCallbackArgument<1>(true));
+      .WillRepeatedly(
+          [](auto, auto callback) { std::move(callback).Run(true); });
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::LEFT);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::LEFT, kLeftSidePoint);
@@ -215,7 +211,8 @@ TEST_F(CastContentGestureHandlerTest, VerifySimpleTopSuccess) {
   EXPECT_CALL(*delegate_, GestureProgress(Eq(GestureType::TOP_DRAG),
                                           Eq(kOngoingTopGesturePoint1)));
   EXPECT_CALL(*delegate_, ConsumeGesture(Eq(GestureType::TOP_DRAG), _))
-      .WillRepeatedly(InvokeCallbackArgument<1>(true));
+      .WillRepeatedly(
+          [](auto, auto callback) { std::move(callback).Run(true); });
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::TOP);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::TOP, kTopSidePoint);
@@ -238,7 +235,8 @@ TEST_F(CastContentGestureHandlerTest, VerifySimpleRightSuccess) {
   EXPECT_CALL(*delegate_, GestureProgress(Eq(GestureType::RIGHT_DRAG),
                                           Eq(kOngoingRightGesturePoint1)));
   EXPECT_CALL(*delegate_, ConsumeGesture(Eq(GestureType::RIGHT_DRAG), _))
-      .WillRepeatedly(InvokeCallbackArgument<1>(true));
+      .WillRepeatedly(
+          [](auto, auto callback) { std::move(callback).Run(true); });
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::RIGHT);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::RIGHT, kRightSidePoint);

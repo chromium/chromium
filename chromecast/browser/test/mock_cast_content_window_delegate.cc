@@ -10,13 +10,6 @@ MockCastContentWindowDelegate::MockCastContentWindowDelegate() {}
 
 MockCastContentWindowDelegate::~MockCastContentWindowDelegate() = default;
 
-void MockCastContentWindowDelegate::ConsumeGesture(
-    GestureType gesture_type,
-    GestureHandledCallback handled_callback) {
-  ConsumeGesture(gesture_type,
-                 base::AdaptCallbackForRepeating(std::move(handled_callback)));
-}
-
 std::string MockCastContentWindowDelegate::GetId() {
   return "mockContentWindowDelegate";
 }
