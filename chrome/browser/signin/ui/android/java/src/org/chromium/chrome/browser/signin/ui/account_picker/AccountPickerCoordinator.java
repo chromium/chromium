@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin.ui.account_picker;
 import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ItemType;
@@ -56,17 +55,11 @@ public class AccountPickerCoordinator {
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listModel);
 
-        final boolean isMobileIdentityConsistencyEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY);
         adapter.registerType(ItemType.ADD_ACCOUNT_ROW,
-                new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
-                                ? R.layout.account_picker_new_account_row
-                                : R.layout.account_picker_new_account_row_legacy),
+                new LayoutViewBuilder<>(R.layout.account_picker_new_account_row),
                 new OnClickListenerViewBinder(AddAccountRowProperties.ON_CLICK_LISTENER));
         adapter.registerType(ItemType.EXISTING_ACCOUNT_ROW,
-                new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
-                                ? R.layout.account_picker_row
-                                : R.layout.account_picker_row_legacy),
+                new LayoutViewBuilder<>(R.layout.account_picker_row),
                 new ExistingAccountRowViewBinder());
 
         view.setAdapter(adapter);

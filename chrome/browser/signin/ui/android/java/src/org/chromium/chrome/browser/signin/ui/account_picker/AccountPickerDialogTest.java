@@ -53,8 +53,7 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(
-        {ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY, ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@DisableFeatures(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
 @Batch(Batch.PER_CLASS)
 public class AccountPickerDialogTest extends DummyUiActivityTestCase {
     @Rule
@@ -113,7 +112,7 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     public void testAddAccount() {
-        onView(withText(R.string.signin_add_account)).perform(click());
+        onView(withText(R.string.signin_add_account_to_device)).perform(click());
         verify(mListenerMock).addAccount();
     }
 
@@ -135,16 +134,6 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testAccountPickerDialogViewLegacy() throws IOException {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                mCoordinator.getAccountPickerViewForTests(), "account_picker_dialog_legacy");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void testAccountPickerDialogView() throws IOException {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(
