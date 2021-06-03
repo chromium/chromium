@@ -8,9 +8,11 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -127,14 +129,15 @@ std::unique_ptr<views::View> CreateBannerView() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(text_icon_color);
 
-  if (features::IsClipboardHistoryScreenshotNudgeEnabled()) {
-    banner_view->AddChildView(CreateClipboardShortcutView());
-    layout->SetFlexForView(label, 1);
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (features::IsClipboardHistoryScreenshotNudgeEnabled()) {
+      banner_view->AddChildView(CreateClipboardShortcutView());
+      layout->SetFlexForView(label, 1);
+    }
+
+    // Notify the clipboard history of the created notification.
+    ClipboardHistoryController::Get()->OnScreenshotNotificationCreated();
   }
-
-  // Notify the clipboard history of the created notification.
-  ClipboardHistoryController::Get()->OnScreenshotNotificationCreated();
-
   return banner_view;
 }
 
