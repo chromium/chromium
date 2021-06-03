@@ -215,7 +215,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 
   __block absl::optional<base::Value> messageValue;
   const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::DictionaryValue& value, const GURL&,
+      base::BindRepeating(^(const base::Value& value, const GURL&,
                             /*interacted*/ bool,
                             /*sender_frame*/ web::WebFrame*) {
         const base::Value* result = value.FindKey(kMessageResultKey);

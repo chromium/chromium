@@ -205,7 +205,7 @@ TEST_F(WebFrameImplIntTest, JavaScriptMessageFromMainFrame) {
   // The callback doesn't care about any of the parameters not related to
   // frames.
   auto callback = base::BindRepeating(
-      ^(const base::DictionaryValue& /* json */, const GURL& /* origin_url */,
+      ^(const base::Value& /* json */, const GURL& /* origin_url */,
         bool /* user_is_interacting */, WebFrame* sender_frame) {
         command_received = true;
         EXPECT_TRUE(sender_frame->IsMainFrame());
@@ -233,7 +233,7 @@ TEST_F(WebFrameImplIntTest, JavaScriptMessageFromFrame) {
   // The callback doesn't care about any of the parameters not related to
   // frames.
   auto callback = base::BindRepeating(
-      ^(const base::DictionaryValue& /* json */, const GURL& /* origin_url */,
+      ^(const base::Value& /* json */, const GURL& /* origin_url */,
         bool /* user_is_interacting */, WebFrame* sender_frame) {
         command_received = true;
         EXPECT_FALSE(sender_frame->IsMainFrame());

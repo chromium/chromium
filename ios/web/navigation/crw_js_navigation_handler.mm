@@ -68,14 +68,16 @@ GURL URLEscapedForHistory(const GURL& url) {
     _delegate = delegate;
 
     __weak CRWJSNavigationHandler* weakSelf = self;
-    auto navigationStateCallback = ^(
-        const base::DictionaryValue& message, const GURL&,
-        bool /* user_is_interacting */, web::WebFrame* senderFrame) {
+    auto navigationStateCallback = ^(const base::Value& message, const GURL&,
+                                     bool /* user_is_interacting */,
+                                     web::WebFrame* senderFrame) {
       if (!senderFrame->IsMainFrame())
         return;
 
       const std::string* command = message.FindStringKey("command");
-      DCHECK(command);
+      if (!command)
+        return;
+
       if (*command == "navigation.hashchange") {
         [weakSelf handleNavigationHashChangeInFrame:senderFrame];
       } else if (*command == "navigation.willChangeState") {
@@ -129,8 +131,7 @@ GURL URLEscapedForHistory(const GURL& url) {
 }
 
 // Handles the navigation.didChangeState message sent from |senderFrame|.
-- (void)handleNavigationDidPushStateMessage:
-            (const base::DictionaryValue&)message
+- (void)handleNavigationDidPushStateMessage:(const base::Value&)message
                                     inFrame:(web::WebFrame*)senderFrame {
   DCHECK(self.changingHistoryState);
   self.changingHistoryState = NO;
@@ -204,8 +205,7 @@ GURL URLEscapedForHistory(const GURL& url) {
 }
 
 // Handles the navigation.didReplaceState message sent from |senderFrame|.
-- (void)handleNavigationDidReplaceStateMessage:
-            (const base::DictionaryValue&)message
+- (void)handleNavigationDidReplaceStateMessage:(const base::Value&)message
                                        inFrame:(web::WebFrame*)senderFrame {
   DCHECK(self.changingHistoryState);
   self.changingHistoryState = NO;

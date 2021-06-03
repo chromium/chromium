@@ -58,17 +58,18 @@ IOSSecurityInterstitialPage* IOSBlockingPageTabHelper::GetCurrentBlockingPage()
 }
 
 void IOSBlockingPageTabHelper::OnBlockingPageCommand(
-    const base::DictionaryValue& message,
+    const base::Value& message,
     const GURL& url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
+  const std::string* command = message.FindStringKey("command");
+  if (!command) {
     DLOG(WARNING) << "JS message parameter not found: command";
   } else {
     if (blocking_page_for_currently_committed_navigation_) {
       blocking_page_for_currently_committed_navigation_->HandleScriptCommand(
-          message, url, user_is_interacting, sender_frame);
+          base::Value::AsDictionaryValue(message), url, user_is_interacting,
+          sender_frame);
     }
   }
 }

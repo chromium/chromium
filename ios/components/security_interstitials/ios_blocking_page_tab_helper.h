@@ -46,7 +46,7 @@ class IOSBlockingPageTabHelper
 
   // Handler for "blockingPage.*" JavaScript command. Dispatch to more specific
   // handler.
-  void OnBlockingPageCommand(const base::DictionaryValue& message,
+  void OnBlockingPageCommand(const base::Value& message,
                              const GURL& url,
                              bool user_is_interacting,
                              web::WebFrame* sender_frame);

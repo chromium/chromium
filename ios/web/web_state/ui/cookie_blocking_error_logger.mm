@@ -47,12 +47,12 @@ CookieBlockingErrorLogger::CookieBlockingErrorLogger(WebState* web_state)
 CookieBlockingErrorLogger::~CookieBlockingErrorLogger() {}
 
 void CookieBlockingErrorLogger::OnJavascriptMessageReceived(
-    const base::DictionaryValue& message,
+    const base::Value& message,
     const GURL& page_url,
     bool user_is_interacting,
     WebFrame* sender_frame) {
-  const base::Value* broken_overrides = message.FindListPath("brokenOverrides");
-  if (!broken_overrides || !broken_overrides->is_list()) {
+  const base::Value* broken_overrides = message.FindListKey("brokenOverrides");
+  if (!broken_overrides) {
     DLOG(WARNING) << "Broken overrides parameter not found: brokenOverrides";
     return;
   }

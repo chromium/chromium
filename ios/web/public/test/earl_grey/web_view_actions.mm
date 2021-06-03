@@ -95,7 +95,7 @@ base::CallbackListSubscription AddVerifierToElementWithPrefix(
   // The callback doesn't care about any of the parameters, just whether it is
   // called or not.
   auto callback = base::BindRepeating(
-      ^(const base::DictionaryValue& /* json */, const GURL& /* origin_url */,
+      ^(const base::Value& /* json */, const GURL& /* origin_url */,
         bool /* user_is_interacting */, web::WebFrame* /* sender_frame */) {
         *verified = true;
       });

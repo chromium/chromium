@@ -61,7 +61,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 @interface PasswordFormHelper ()
 
 // Handler for injected JavaScript callbacks.
-- (BOOL)handleScriptCommand:(const base::DictionaryValue&)JSONCommand;
+- (BOOL)handleScriptCommand:(const base::Value&)JSONCommand;
 
 // Parses the |jsonString| which contatins the password forms found on a web
 // page to populate the |forms| vector.
@@ -113,9 +113,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
     _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
 
     __weak PasswordFormHelper* weakSelf = self;
-    auto callback = base::BindRepeating(
-        ^(const base::DictionaryValue& JSON, const GURL& originURL,
-          bool interacting, web::WebFrame* senderFrame) {
+    auto callback =
+        base::BindRepeating(^(const base::Value& JSON, const GURL& originURL,
+                              bool interacting, web::WebFrame* senderFrame) {
           // Passwords is only supported on main frame.
           if (senderFrame->IsMainFrame()) {
             // |originURL| and |interacting| aren't used.
@@ -184,13 +184,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
 #pragma mark - Private methods
 
-- (BOOL)handleScriptCommand:(const base::DictionaryValue&)JSONCommand {
-  std::string command;
-  if (!JSONCommand.GetString("command", &command)) {
-    return NO;
-  }
-
-  if (command != "passwordForm.submitButtonClick") {
+- (BOOL)handleScriptCommand:(const base::Value&)JSONCommand {
+  const std::string* command = JSONCommand.FindStringKey("command");
+  if (!command || *command != "passwordForm.submitButtonClick") {
     return NO;
   }
 

@@ -38,37 +38,40 @@ void ErrorPageControllerBridge::StartHandlingJavascriptCommands() {
 }
 
 void ErrorPageControllerBridge::OnErrorPageCommand(
-    const base::DictionaryValue& message,
+    const base::Value& message,
     const GURL& url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
+  const std::string* command = message.FindStringKey("command");
+  if (!command) {
     return;
   }
-  if (command == "errorPageController.updateEasterEggHighScore") {
-    std::string high_score_string;
-    if (!message.GetString("highScore", &high_score_string)) {
+  if (*command == "errorPageController.updateEasterEggHighScore") {
+    const std::string* high_score_string = message.FindStringKey("highScore");
+    if (!high_score_string) {
       return;
     }
     int high_score;
-    if (!base::StringToInt(high_score_string, &high_score)) {
+    if (!base::StringToInt(*high_score_string, &high_score)) {
       return;
     }
     [[NSUserDefaults standardUserDefaults] setInteger:high_score
                                                forKey:kEasterEggHighScore];
+    return;
   }
-  if (command == "errorPageController.resetEasterEggHighScore") {
+  if (*command == "errorPageController.resetEasterEggHighScore") {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kEasterEggHighScore];
+    return;
   }
-  if (command == "errorPageController.trackEasterEgg") {
+  if (*command == "errorPageController.trackEasterEgg") {
     int high_score = [[NSUserDefaults standardUserDefaults]
         integerForKey:kEasterEggHighScore];
     std::vector<base::Value> parameters;
     parameters.push_back(base::Value(high_score));
     sender_frame->CallJavaScriptFunction(
         "errorPageController.initializeEasterEggHighScore", parameters);
+    return;
   }
 }
 

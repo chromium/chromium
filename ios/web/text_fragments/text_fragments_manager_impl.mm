@@ -49,16 +49,11 @@ TextFragmentsManagerImpl::TextFragmentsManagerImpl(WebState* web_state)
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 
-  const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-      ^(const base::DictionaryValue& message, const GURL& page_url,
-        bool interacted, web::WebFrame* sender_frame) {
-        if (web_state_ && sender_frame && sender_frame->IsMainFrame()) {
-          DidReceiveJavaScriptResponse(message);
-        }
-      });
-
-  subscription_ =
-      web_state_->AddScriptCommandCallback(callback, kScriptCommandPrefix);
+  subscription_ = web_state_->AddScriptCommandCallback(
+      base::BindRepeating(
+          &TextFragmentsManagerImpl::DidReceiveJavaScriptResponse,
+          base::Unretained(this)),
+      kScriptCommandPrefix);
 }
 
 TextFragmentsManagerImpl::~TextFragmentsManagerImpl() {
@@ -164,7 +159,13 @@ bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
 }
 
 void TextFragmentsManagerImpl::DidReceiveJavaScriptResponse(
-    const base::DictionaryValue& response) {
+    const base::Value& response,
+    const GURL& page_url,
+    bool interacted,
+    web::WebFrame* sender_frame) {
+  if (!web_state_ || !sender_frame || !sender_frame->IsMainFrame())
+    return;
+
   const std::string* command = response.FindStringKey("command");
   if (!command || *command != kScriptResponseCommand) {
     return;

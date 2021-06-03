@@ -155,7 +155,7 @@ class WebFrameImpl : public WebFrame,
   // Handles message from JavaScript with result of executing the function
   // specified in CallJavaScriptFunction.
   void OnJavaScriptReply(web::WebState* web_state,
-                         const base::DictionaryValue& command,
+                         const base::Value& command,
                          const GURL& page_url,
                          bool interacting,
                          WebFrame* sender_frame);

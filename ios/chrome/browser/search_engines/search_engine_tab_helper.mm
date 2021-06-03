@@ -124,7 +124,7 @@ void SearchEngineTabHelper::DidFinishNavigation(
   }
 }
 
-void SearchEngineTabHelper::OnJsMessage(const base::DictionaryValue& message,
+void SearchEngineTabHelper::OnJsMessage(const base::Value& message,
                                         const GURL& page_url,
                                         bool user_is_interacting,
                                         web::WebFrame* sender_frame) {

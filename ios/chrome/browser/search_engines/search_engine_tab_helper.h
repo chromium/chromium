@@ -58,7 +58,7 @@ class SearchEngineTabHelper
   // Handles messages from JavaScript. Messages can be:
   //   1. A OSDD <link> is found;
   //   2. A searchable URL is generated from <form> submission.
-  void OnJsMessage(const base::DictionaryValue& message,
+  void OnJsMessage(const base::Value& message,
                    const GURL& page_url,
                    bool user_is_interacting,
                    web::WebFrame* sender_frame);

@@ -21,10 +21,6 @@
 @class JsTranslateManager;
 class GURL;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace web {
 class NavigationContext;
 }  // namespace web
@@ -92,16 +88,16 @@ class TranslateController : public web::WebStateObserver {
                            OnTranslateSendRequestWithBadMethod);
 
   // Called when a JavaScript command is received.
-  bool OnJavascriptCommandReceived(const base::DictionaryValue& command,
+  bool OnJavascriptCommandReceived(const base::Value& command,
                                    const GURL& url,
                                    bool interacting,
                                    web::WebFrame* sender_frame);
   // Methods to handle specific JavaScript commands.
   // Return false if the command is invalid.
-  bool OnTranslateReady(const base::DictionaryValue& command);
-  bool OnTranslateComplete(const base::DictionaryValue& command);
-  bool OnTranslateLoadJavaScript(const base::DictionaryValue& command);
-  bool OnTranslateSendRequest(const base::DictionaryValue& command);
+  bool OnTranslateReady(const base::Value& command);
+  bool OnTranslateComplete(const base::Value& command);
+  bool OnTranslateLoadJavaScript(const base::Value& command);
+  bool OnTranslateSendRequest(const base::Value& command);
 
   // The callback when the script is fetched or a server error occurred.
   void OnScriptFetchComplete(std::unique_ptr<std::string> response_body);

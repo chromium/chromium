@@ -71,20 +71,19 @@ namespace {
 // A key used in NSCoder to store the session storage object.
 NSString* const kSessionStorageKey = @"sessionStorage";
 
-// Converts base::DictionaryValue to NSDictionary.
-NSDictionary* NSDictionaryFromDictionaryValue(
-    const base::DictionaryValue& value) {
+// Converts base::Value expected to be a dictionary to NSDictionary.
+NSDictionary* NSDictionaryFromDictionaryValue(const base::Value& value) {
+  DCHECK(value.is_dict()) << "Incorrect value type: " << value.type();
+
   std::string json;
-  if (!base::JSONWriter::Write(value, &json)) {
-    NOTREACHED() << "Failed to convert base::DictionaryValue to JSON";
-    return nil;
-  }
+  const bool success = base::JSONWriter::Write(value, &json);
+  DCHECK(success) << "Failed to convert base::Value to JSON";
 
   NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
-  NSDictionary* ns_dictionary =
+  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
       [NSJSONSerialization JSONObjectWithData:json_data
                                       options:kNilOptions
-                                        error:nil];
+                                        error:nil]);
   DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
   return ns_dictionary;
 }
@@ -635,7 +634,7 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
                   commandPrefix:(NSString*)commandPrefix {
   CWVWebView* __weak weakSelf = self;
   const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-      ^(const base::DictionaryValue& content, const GURL& mainDocumentURL,
+      ^(const base::Value& content, const GURL& mainDocumentURL,
         bool userInteracting, web::WebFrame* senderFrame) {
         NSDictionary* nsContent = NSDictionaryFromDictionaryValue(content);
         CWVScriptCommand* command = [[CWVScriptCommand alloc]

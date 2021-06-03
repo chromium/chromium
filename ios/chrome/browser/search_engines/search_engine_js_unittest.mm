@@ -71,7 +71,7 @@ class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
     WebTestWithWebState::TearDown();
   }
 
-  void OnMessageFromJavaScript(const base::DictionaryValue& message,
+  void OnMessageFromJavaScript(const base::Value& message,
                                const GURL& page_url,
                                bool user_is_interacting,
                                web::WebFrame* sender_frame) {

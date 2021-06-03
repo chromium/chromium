@@ -95,7 +95,7 @@ class WebStateImpl : public WebState,
 
   // Called when a script command is received.
   void OnScriptCommandReceived(const std::string& command,
-                               const base::DictionaryValue& value,
+                               const base::Value& value,
                                const GURL& page_url,
                                bool user_is_interacting,
                                web::WebFrame* sender_frame);

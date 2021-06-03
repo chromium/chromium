@@ -358,30 +358,23 @@ void WebFrameImpl::CancelPendingRequests() {
 }
 
 void WebFrameImpl::OnJavaScriptReply(web::WebState* web_state,
-                                     const base::DictionaryValue& command_json,
+                                     const base::Value& command_json,
                                      const GURL& page_url,
                                      bool interacting,
                                      WebFrame* sender_frame) {
-  auto* command = command_json.FindKey("command");
-  if (!command || !command->is_string() || !command_json.HasKey("messageId")) {
-    NOTREACHED();
+  const std::string* command_string = command_json.FindStringKey("command");
+  if (!command_string ||
+      *command_string != (GetScriptCommandPrefix() + ".reply")) {
     return;
   }
 
-  const std::string command_string = command->GetString();
-  if (command_string != (GetScriptCommandPrefix() + ".reply")) {
-    NOTREACHED();
+  absl::optional<double> message_id = command_json.FindDoubleKey("messageId");
+  if (!message_id) {
     return;
   }
 
-  auto* message_id_value = command_json.FindKey("messageId");
-  if (!message_id_value->is_double()) {
-    NOTREACHED();
-    return;
-  }
-
-  int message_id = static_cast<int>(message_id_value->GetDouble());
-  CompleteRequest(message_id, command_json.FindKey("result"));
+  CompleteRequest(static_cast<int>(*message_id),
+                  command_json.FindKey("result"));
 }
 
 void WebFrameImpl::DetachFromWebState() {

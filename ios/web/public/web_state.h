@@ -37,7 +37,6 @@ typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 typedef UIView<CRWScrollableContent> CRWContentView;
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -315,11 +314,10 @@ class WebState : public base::SupportsUserData {
   // frame, |user_is_interacting| indicates if the user is interacting with the
   // page.
   // TODO(crbug.com/881813): remove |page_url|.
-  using ScriptCommandCallbackSignature =
-      void(const base::DictionaryValue& message,
-           const GURL& page_url,
-           bool user_is_interacting,
-           web::WebFrame* sender_frame);
+  using ScriptCommandCallbackSignature = void(const base::Value& message,
+                                              const GURL& page_url,
+                                              bool user_is_interacting,
+                                              web::WebFrame* sender_frame);
   using ScriptCommandCallback =
       base::RepeatingCallback<ScriptCommandCallbackSignature>;
   // Registers |callback| for JS message whose 'command' matches

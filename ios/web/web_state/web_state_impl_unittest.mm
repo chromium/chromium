@@ -138,11 +138,11 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
 // Sets |is_called| to true if it is called, and checks that the parameters
 // match their expected values.
 void HandleScriptCommand(bool* is_called,
-                         base::DictionaryValue* expected_value,
+                         base::Value* expected_value,
                          const GURL& expected_url,
                          bool expected_user_is_interacting,
                          web::WebFrame* expected_sender_frame,
-                         const base::DictionaryValue& value,
+                         const base::Value& value,
                          const GURL& url,
                          bool user_is_interacting,
                          web::WebFrame* sender_frame) {
@@ -838,8 +838,8 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   // Set up three script command callbacks.
   const std::string kPrefix1("prefix1");
   const std::string kCommand1("prefix1.command1");
-  base::DictionaryValue value_1;
-  value_1.SetString("a", "b");
+  base::Value value_1(base::Value::Type::DICTIONARY);
+  value_1.SetStringKey("a", "b");
   const GURL kUrl1("http://foo");
   bool is_called_1 = false;
   auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
@@ -852,8 +852,8 @@ TEST_F(WebStateImplTest, ScriptCommand) {
 
   const std::string kPrefix2("prefix2");
   const std::string kCommand2("prefix2.command2");
-  base::DictionaryValue value_2;
-  value_2.SetString("c", "d");
+  base::Value value_2(base::Value::Type::DICTIONARY);
+  value_2.SetStringKey("c", "d");
   const GURL kUrl2("http://bar");
   bool is_called_2 = false;
   base::CallbackListSubscription subscription_2 =
@@ -865,8 +865,8 @@ TEST_F(WebStateImplTest, ScriptCommand) {
 
   const std::string kPrefix3("prefix3");
   const std::string kCommand3("prefix3.command3");
-  base::DictionaryValue value_3;
-  value_3.SetString("e", "f");
+  base::Value value_3(base::Value::Type::DICTIONARY);
+  value_3.SetStringKey("e", "f");
   const GURL kUrl3("http://iframe");
   bool is_called_3 = false;
   auto subframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());

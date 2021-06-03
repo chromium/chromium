@@ -48,7 +48,10 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
 
   bool AreTextFragmentsAllowed(const web::NavigationContext* context);
 
-  void DidReceiveJavaScriptResponse(const base::DictionaryValue& response);
+  void DidReceiveJavaScriptResponse(const base::Value& response,
+                                    const GURL& page_url,
+                                    bool interacted,
+                                    web::WebFrame* sender_frame);
 
   web::WebState* web_state_ = nullptr;
   base::CallbackListSubscription subscription_;

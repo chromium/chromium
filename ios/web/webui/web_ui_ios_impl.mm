@@ -113,7 +113,7 @@ void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
   message_callbacks_.insert(std::make_pair(message, callback));
 }
 
-void WebUIIOSImpl::OnJsMessage(const base::DictionaryValue& message,
+void WebUIIOSImpl::OnJsMessage(const base::Value& message,
                                const GURL& page_url,
                                bool user_is_interacting,
                                web::WebFrame* sender_frame) {
@@ -125,17 +125,18 @@ void WebUIIOSImpl::OnJsMessage(const base::DictionaryValue& message,
       web::URLVerificationTrustLevel::kNone;
   const GURL current_url = web_state_->GetCurrentURL(&trust_level);
   if (web::GetWebClient()->IsAppSpecificURL(current_url)) {
-    std::string message_content;
-    const base::ListValue* arguments = nullptr;
-    if (!message.GetString("message", &message_content)) {
+    const std::string* message_content = message.FindStringKey("message");
+    if (!message_content) {
       DLOG(WARNING) << "JS message parameter not found: message";
       return;
     }
-    if (!message.GetList("arguments", &arguments)) {
+    const base::Value* arguments = message.FindListKey("arguments");
+    if (!arguments) {
       DLOG(WARNING) << "JS message parameter not found: arguments";
       return;
     }
-    ProcessWebUIIOSMessage(current_url, message_content, *arguments);
+    ProcessWebUIIOSMessage(current_url, *message_content,
+                           base::Value::AsListValue(*arguments));
   }
 }
 

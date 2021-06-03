@@ -48,12 +48,7 @@ TranslateController::TranslateController(web::WebState* web_state,
   web_state_->AddObserver(this);
   subscription_ = web_state_->AddScriptCommandCallback(
       base::BindRepeating(
-          [](TranslateController* ptr, const base::DictionaryValue& command,
-             const GURL& page_url, bool user_is_interacting,
-             web::WebFrame* sender_frame) {
-            ptr->OnJavascriptCommandReceived(command, page_url,
-                                             user_is_interacting, sender_frame);
-          },
+          base::IgnoreResult(&TranslateController::OnJavascriptCommandReceived),
           base::Unretained(this)),
       kCommandPrefix);
 }
@@ -85,7 +80,7 @@ void TranslateController::SetJsTranslateManagerForTesting(
 }
 
 bool TranslateController::OnJavascriptCommandReceived(
-    const base::DictionaryValue& command,
+    const base::Value& command,
     const GURL& page_url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
@@ -93,97 +88,91 @@ bool TranslateController::OnJavascriptCommandReceived(
     // Translate is only supported on main frame.
     return false;
   }
-  const base::Value* value = nullptr;
-  command.Get("command", &value);
-  if (!value) {
+  const std::string* command_string = command.FindStringKey("command");
+  if (!command_string) {
     return false;
   }
 
-  std::string out_string;
-  value->GetAsString(&out_string);
-  if (out_string == "translate.ready")
+  if (*command_string == "translate.ready")
     return OnTranslateReady(command);
-  if (out_string == "translate.status")
+  if (*command_string == "translate.status")
     return OnTranslateComplete(command);
-  if (out_string == "translate.loadjavascript")
+  if (*command_string == "translate.loadjavascript")
     return OnTranslateLoadJavaScript(command);
-  if (out_string == "translate.sendrequest")
+  if (*command_string == "translate.sendrequest")
     return OnTranslateSendRequest(command);
 
   return false;
 }
 
-bool TranslateController::OnTranslateReady(
-    const base::DictionaryValue& command) {
-  double error_code = 0.;
-  double load_time = 0.;
-  double ready_time = 0.;
-
-  if (!command.HasKey("errorCode") ||
-      !command.GetDouble("errorCode", &error_code) ||
-      error_code < TranslateErrors::NONE ||
-      error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
+bool TranslateController::OnTranslateReady(const base::Value& command) {
+  absl::optional<double> error_code = command.FindDoubleKey("errorCode");
+  if (!error_code.has_value() || *error_code < TranslateErrors::NONE ||
+      *error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
     return false;
   }
 
-  TranslateErrors::Type error_type =
-      static_cast<TranslateErrors::Type>(error_code);
+  absl::optional<double> load_time;
+  absl::optional<double> ready_time;
+
+  const TranslateErrors::Type error_type =
+      static_cast<TranslateErrors::Type>(*error_code);
   if (error_type == TranslateErrors::NONE) {
-    if (!command.HasKey("loadTime") || !command.HasKey("readyTime")) {
+    load_time = command.FindDoubleKey("loadTime");
+    ready_time = command.FindDoubleKey("readyTime");
+    if (!load_time.has_value() || !ready_time.has_value()) {
       return false;
     }
-    command.GetDouble("loadTime", &load_time);
-    command.GetDouble("readyTime", &ready_time);
   }
-  if (observer_)
-    observer_->OnTranslateScriptReady(error_type, load_time, ready_time);
+  if (observer_) {
+    observer_->OnTranslateScriptReady(error_type, load_time.value_or(0.),
+                                      ready_time.value_or(0.));
+  }
   return true;
 }
 
-bool TranslateController::OnTranslateComplete(
-    const base::DictionaryValue& command) {
-  double error_code = 0.;
-  std::string source_language;
-  double translation_time = 0.;
-
-  if (!command.HasKey("errorCode") ||
-      !command.GetDouble("errorCode", &error_code) ||
-      error_code < TranslateErrors::NONE ||
-      error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
+bool TranslateController::OnTranslateComplete(const base::Value& command) {
+  absl::optional<double> error_code = command.FindDoubleKey("errorCode");
+  if (!error_code.has_value() || *error_code < TranslateErrors::NONE ||
+      *error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
     return false;
   }
 
-  TranslateErrors::Type error_type =
-      static_cast<TranslateErrors::Type>(error_code);
+  const std::string* source_language = nullptr;
+  absl::optional<double> translation_time;
+
+  const TranslateErrors::Type error_type =
+      static_cast<TranslateErrors::Type>(*error_code);
   if (error_type == TranslateErrors::NONE) {
-    if (!command.HasKey("pageSourceLanguage") ||
-        !command.HasKey("translationTime")) {
+    source_language = command.FindStringKey("pageSourceLanguage");
+    translation_time = command.FindDoubleKey("translationTime");
+    if (!source_language || !translation_time.has_value()) {
       return false;
     }
-    command.GetString("pageSourceLanguage", &source_language);
-    command.GetDouble("translationTime", &translation_time);
   }
 
-  if (observer_)
-    observer_->OnTranslateComplete(error_type, source_language,
-                                   translation_time);
+  if (observer_) {
+    observer_->OnTranslateComplete(
+        error_type, source_language ? *source_language : std::string(),
+        translation_time.value_or(0.));
+  }
   return true;
 }
 
 bool TranslateController::OnTranslateLoadJavaScript(
-    const base::DictionaryValue& command) {
-  std::string url;
-  if (!command.HasKey("url") || !command.GetString("url", &url)) {
+    const base::Value& command) {
+  const std::string* url = command.FindStringKey("url");
+  if (!url) {
     return false;
   }
 
   GURL security_origin = translate::GetTranslateSecurityOrigin();
-  if (url.find(security_origin.spec()) || script_fetcher_) {
+  if (url->find(security_origin.spec()) || script_fetcher_) {
     return false;
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(url);
+  resource_request->url = GURL(*url);
 
   script_fetcher_ = network::SimpleURLLoader::Create(
       std::move(resource_request), NO_TRAFFIC_ANNOTATION_YET);
@@ -195,45 +184,43 @@ bool TranslateController::OnTranslateLoadJavaScript(
   return true;
 }
 
-bool TranslateController::OnTranslateSendRequest(
-    const base::DictionaryValue& command) {
-  std::string method;
-  if (!command.HasKey("method") || !command.GetString("method", &method)) {
+bool TranslateController::OnTranslateSendRequest(const base::Value& command) {
+  const std::string* method = command.FindStringKey("method");
+  if (!method) {
     return false;
   }
-  std::string url;
-  if (!command.HasKey("url") || !command.GetString("url", &url)) {
+  const std::string* url = command.FindStringKey("url");
+  if (!url) {
     return false;
   }
-  std::string body;
-  if (!command.HasKey("body") || !command.GetString("body", &body)) {
+  const std::string* body = command.FindStringKey("body");
+  if (!body) {
     return false;
   }
-  double request_id;
-  if (!command.HasKey("requestID") ||
-      !command.GetDouble("requestID", &request_id)) {
+  absl::optional<double> request_id = command.FindDoubleKey("requestID");
+  if (!request_id.has_value()) {
     return false;
   }
 
   GURL security_origin = translate::GetTranslateSecurityOrigin();
-  if (url.find(security_origin.spec())) {
+  if (url->find(security_origin.spec())) {
     return false;
   }
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->method = method;
-  request->url = GURL(url);
+  request->method = *method;
+  request->url = GURL(*url);
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto fetcher = network::SimpleURLLoader::Create(std::move(request),
                                                   NO_TRAFFIC_ANNOTATION_YET);
-  fetcher->AttachStringForUpload(body, "application/x-www-form-urlencoded");
+  fetcher->AttachStringForUpload(*body, "application/x-www-form-urlencoded");
   auto* raw_fetcher = fetcher.get();
   auto pair = request_fetchers_.insert(std::move(fetcher));
   raw_fetcher->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       web_state_->GetBrowserState()->GetURLLoaderFactory(),
       base::BindOnce(&TranslateController::OnRequestFetchComplete,
-                     base::Unretained(this), pair.first, url,
-                     static_cast<int>(request_id)));
+                     base::Unretained(this), pair.first, *url,
+                     static_cast<int>(*request_id)));
   return true;
 }
 

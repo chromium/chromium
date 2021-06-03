@@ -246,16 +246,16 @@ class JsLanguageDetectionManagerDetectLanguageTest
         web_state()->AddScriptCommandCallback(callback, "languageDetection");
   }
   // Called when "languageDetection" command is received.
-  void CommandReceived(const base::DictionaryValue& command,
+  void CommandReceived(const base::Value& command,
                        const GURL& url,
                        bool user_is_interacting,
                        web::WebFrame* sender_frame) {
-    commands_received_.push_back(command.CreateDeepCopy());
+    commands_received_.push_back(command.Clone());
   }
 
  protected:
   // Received "languageDetection" commands.
-  std::vector<std::unique_ptr<base::DictionaryValue>> commands_received_;
+  std::vector<base::Value> commands_received_;
 
   // Subscription for JS message.
   base::CallbackListSubscription subscription_;
@@ -287,11 +287,11 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   InjectJSAndWaitUntilCondition(@"__gCrWeb.languageDetection.detectLanguage()",
                                 commands_recieved_block);
   ASSERT_EQ(1U, commands_received_.size());
-  base::DictionaryValue* value = commands_received_[0].get();
-  EXPECT_TRUE(value->HasKey("translationAllowed"));
-  bool translation_allowed = true;
-  value->GetBoolean("translationAllowed", &translation_allowed);
-  EXPECT_FALSE(translation_allowed);
+  const base::Value& value = commands_received_[0];
+  absl::optional<bool> translation_allowed =
+      value.FindBoolKey("translationAllowed");
+  ASSERT_TRUE(translation_allowed);
+  EXPECT_FALSE(*translation_allowed);
 }
 
 // Tests if |__gCrWeb.languageDetection.detectLanguage| correctly informs the
@@ -317,14 +317,14 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
     return !commands_received_.empty();
   });
   ASSERT_EQ(1U, commands_received_.size());
-  base::DictionaryValue* value = commands_received_[0].get();
+  const base::Value& value = commands_received_[0];
 
-  EXPECT_TRUE(value->HasKey("translationAllowed"));
-  EXPECT_TRUE(value->HasKey("captureTextTime"));
-  EXPECT_TRUE(value->HasKey("htmlLang"));
-  EXPECT_TRUE(value->HasKey("httpContentLanguage"));
+  absl::optional<bool> translation_allowed =
+      value.FindBoolKey("translationAllowed");
 
-  bool translation_allowed = false;
-  value->GetBoolean("translationAllowed", &translation_allowed);
-  EXPECT_TRUE(translation_allowed);
+  ASSERT_TRUE(translation_allowed);
+  EXPECT_TRUE(value.FindKey("captureTextTime"));
+  EXPECT_TRUE(value.FindKey("htmlLang"));
+  EXPECT_TRUE(value.FindKey("httpContentLanguage"));
+  EXPECT_TRUE(*translation_allowed);
 }

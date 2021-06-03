@@ -204,7 +204,7 @@ void WebStateImpl::OnRenderProcessGone() {
 }
 
 void WebStateImpl::OnScriptCommandReceived(const std::string& command,
-                                           const base::DictionaryValue& value,
+                                           const base::Value& value,
                                            const GURL& page_url,
                                            bool user_is_interacting,
                                            web::WebFrame* sender_frame) {

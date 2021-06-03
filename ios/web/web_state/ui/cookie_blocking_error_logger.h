@@ -8,9 +8,6 @@
 #include "base/macros.h"
 #import "ios/web/public/web_state.h"
 
-namespace base {
-class DictionaryValue;
-}
 class GURL;
 namespace web {
 class WebFrame;
@@ -29,7 +26,7 @@ class CookieBlockingErrorLogger final {
 
   // Callback called when this class receives a Javascript message from its
   // corresponding web state.
-  void OnJavascriptMessageReceived(const base::DictionaryValue& message,
+  void OnJavascriptMessageReceived(const base::Value& message,
                                    const GURL& page_url,
                                    bool user_is_interacting,
                                    WebFrame* sender_frame);
