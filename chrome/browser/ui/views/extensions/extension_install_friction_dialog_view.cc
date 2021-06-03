@@ -8,7 +8,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,6 +20,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/constants.h"
@@ -93,10 +97,37 @@ void ReportExtensionInstallFrictionDialogAction(
 
 }  // namespace
 
+class ExtensionInstallFrictionDialogView::WebContentsDestructionObserver
+    : public content::WebContentsObserver {
+ public:
+  WebContentsDestructionObserver(const WebContentsDestructionObserver&) =
+      delete;
+  WebContentsDestructionObserver(WebContentsDestructionObserver&&) = delete;
+
+  explicit WebContentsDestructionObserver(
+      ExtensionInstallFrictionDialogView* parent_view)
+      : content::WebContentsObserver(parent_view->parent_web_contents()),
+        parent_view_(parent_view) {}
+
+  ~WebContentsDestructionObserver() override = default;
+
+  void WebContentsDestroyed() override {
+    parent_view_->parent_web_contents_ = nullptr;
+  }
+
+ private:
+  // Not owned.
+  ExtensionInstallFrictionDialogView* parent_view_;
+};
+
 ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
-    content::PageNavigator* navigator,
+    content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback)
-    : navigator_(navigator), callback_(std::move(callback)) {
+    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      parent_web_contents_(web_contents),
+      web_contents_destruction_observer_(
+          std::make_unique<WebContentsDestructionObserver>(this)),
+      callback_(std::move(callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -194,10 +225,20 @@ void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
 
   learn_more_clicked_ = true;
-  navigator_->OpenURL(params);
+  if (parent_web_contents_) {
+    parent_web_contents_->OpenURL(params);
+  } else {
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
+    displayer.browser()->OpenURL(params);
+  }
+
   CancelDialog();
 
   // TODO(jeffcyr): Record UMA metric
+}
+
+void ExtensionInstallFrictionDialogView::ClickLearnMoreLinkForTesting() {
+  OnLearnMoreLinkClicked();
 }
 
 BEGIN_METADATA(ExtensionInstallFrictionDialogView,
