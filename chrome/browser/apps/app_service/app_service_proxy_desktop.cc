@@ -84,4 +84,12 @@ bool AppServiceProxy::MaybeShowLaunchPreventionDialog(
   return false;
 }
 
+void AppServiceProxy::Shutdown() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (web_apps_publisher_host_) {
+    web_apps_publisher_host_->Shutdown();
+  }
+#endif
+}
+
 }  // namespace apps

@@ -72,7 +72,7 @@ WebAppsBase::~WebAppsBase() = default;
 void WebAppsBase::Shutdown() {
   if (provider_) {
     registrar_observation_.Reset();
-    content_settings_observation_.Reset();
+    publisher_helper().Shutdown();
   }
 }
 
@@ -80,6 +80,10 @@ const WebApp* WebAppsBase::GetWebApp(const AppId& app_id) const {
   // GetRegistrar() might return nullptr if the legacy bookmark apps registry is
   // enabled. This may happen in migration browser tests.
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
+}
+
+bool WebAppsBase::Accepts(const std::string& app_id) const {
+  return WebAppPublisherHelper::Accepts(app_id);
 }
 
 void WebAppsBase::OnWebAppInstalled(const AppId& app_id) {
@@ -109,8 +113,6 @@ void WebAppsBase::Initialize(
   DCHECK(provider_);
 
   registrar_observation_.Observe(&provider_->registrar());
-  content_settings_observation_.Observe(
-      HostContentSettingsMapFactory::GetForProfile(profile_));
 
   PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
@@ -181,38 +183,6 @@ void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
 
 void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {
   Publish(std::move(app), subscribers_);
-}
-
-void WebAppsBase::OnContentSettingChanged(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  // If content_type is not one of the supported permissions, do nothing.
-  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(content_type)) {
-    return;
-  }
-
-  if (!profile_) {
-    return;
-  }
-
-  const WebAppRegistrar* registrar = GetRegistrar();
-  // Can be nullptr in tests.
-  if (!registrar) {
-    return;
-  }
-
-  for (const WebApp& web_app : registrar->GetApps()) {
-    if (primary_pattern.Matches(web_app.start_url()) &&
-        Accepts(web_app.app_id())) {
-      apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = app_type_;
-      app->app_id = web_app.app_id();
-      publisher_helper().PopulateWebAppPermissions(&web_app, &app->permissions);
-
-      Publish(std::move(app), subscribers_);
-    }
-  }
 }
 
 void WebAppsBase::OnWebAppLastLaunchTimeChanged(

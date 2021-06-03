@@ -55,8 +55,4 @@ apps::mojom::AppPtr WebApps::Convert(const WebApp* web_app,
   return app;
 }
 
-bool WebApps::Accepts(const std::string& app_id) {
-  return true;
-}
-
 }  // namespace web_app

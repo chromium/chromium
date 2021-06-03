@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -62,8 +61,10 @@ void WebAppsPublisherHost::Init() {
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
   registrar_observation_.Observe(&registrar());
-  content_settings_observation_.Observe(
-      HostContentSettingsMapFactory::GetForProfile(profile()));
+}
+
+void WebAppsPublisherHost::Shutdown() {
+  publisher_helper().Shutdown();
 }
 
 WebAppRegistrar& WebAppsPublisherHost::registrar() const {
@@ -223,27 +224,6 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
   }
 
   PublishWebApp(publisher_helper().ConvertLaunchedWebApp(web_app));
-}
-
-void WebAppsPublisherHost::OnContentSettingChanged(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  // If content_type is not one of the supported permissions, do nothing.
-  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(content_type)) {
-    return;
-  }
-
-  for (const WebApp& web_app : registrar().GetApps()) {
-    if (primary_pattern.Matches(web_app.start_url())) {
-      apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = apps::mojom::AppType::kWeb;
-      app->app_id = web_app.app_id();
-      publisher_helper().PopulateWebAppPermissions(&web_app, &app->permissions);
-
-      PublishWebApp(std::move(app));
-    }
-  }
 }
 
 void WebAppsPublisherHost::OnRequestUpdate(

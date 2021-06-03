@@ -154,8 +154,6 @@ class WebAppsChromeOs : public WebAppsBase,
   // remove the Chrome app badge.
   void ApplyChromeBadge(const std::string& arc_package_name);
 
-  bool Accepts(const std::string& app_id) override;
-
   // Returns whether the app should show a badge.
   apps::mojom::OptionalBool ShouldShowBadge(
       const std::string& app_id,

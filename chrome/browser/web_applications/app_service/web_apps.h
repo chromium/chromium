@@ -39,7 +39,6 @@ class WebApps : public WebAppsBase {
   // WebAppsBase overrides.
   apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness) override;
-  bool Accepts(const std::string& app_id) override;
 };
 
 }  // namespace web_app

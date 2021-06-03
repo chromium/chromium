@@ -20,14 +20,11 @@
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class ContentSettingsPattern;
 class Profile;
 
 namespace content {
@@ -45,7 +42,6 @@ class WebAppRegistrar;
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
                              public WebAppPublisherHelper::Delegate,
                              public AppRegistrarObserver,
-                             public content_settings::Observer,
                              public MediaCaptureDevicesDispatcher::Observer,
                              public apps::AppWebContentsData::Client {
  public:
@@ -57,6 +53,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   ~WebAppsPublisherHost() override;
 
   void Init();
+
+  void Shutdown();
 
   Profile* profile() { return profile_; }
   WebAppRegistrar& registrar() const;
@@ -118,11 +116,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       const std::string& app_id,
       const base::Time& last_launch_time) override;
 
-  // content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
-
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 
   // MediaCaptureDevicesDispatcher::Observer:
@@ -151,9 +144,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
-
-  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observation_{this};
 
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>

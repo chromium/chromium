@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -40,6 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -89,7 +89,8 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
       app_type_(app_type),
       delegate_(delegate),
       provider_(WebAppProvider::Get(profile)) {
-  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
+  DCHECK(profile_);
+  Init();
 }
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
@@ -98,6 +99,38 @@ WebAppPublisherHelper::~WebAppPublisherHelper() = default;
 bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(
     ContentSettingsType permission_type) {
   return base::Contains(kSupportedPermissionTypes, permission_type);
+}
+
+// static
+webapps::WebappUninstallSource
+WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
+    apps::mojom::UninstallSource uninstall_source) {
+  switch (uninstall_source) {
+    case apps::mojom::UninstallSource::kAppList:
+      return webapps::WebappUninstallSource::kAppList;
+    case apps::mojom::UninstallSource::kAppManagement:
+      return webapps::WebappUninstallSource::kAppManagement;
+    case apps::mojom::UninstallSource::kShelf:
+      return webapps::WebappUninstallSource::kShelf;
+    case apps::mojom::UninstallSource::kMigration:
+      return webapps::WebappUninstallSource::kMigration;
+    case apps::mojom::UninstallSource::kUnknown:
+      return webapps::WebappUninstallSource::kUnknown;
+  }
+}
+
+// static
+bool WebAppPublisherHelper::Accepts(const std::string& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Crostini Terminal System App is handled by Crostini Apps.
+  return app_id != crostini::kCrostiniTerminalSystemAppId;
+#else
+  return true;
+#endif
+}
+
+void WebAppPublisherHelper::Shutdown() {
+  content_settings_observation_.Reset();
 }
 
 void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
@@ -214,24 +247,6 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
   return app;
 }
 
-// static
-webapps::WebappUninstallSource
-WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
-    apps::mojom::UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case apps::mojom::UninstallSource::kAppList:
-      return webapps::WebappUninstallSource::kAppList;
-    case apps::mojom::UninstallSource::kAppManagement:
-      return webapps::WebappUninstallSource::kAppManagement;
-    case apps::mojom::UninstallSource::kShelf:
-      return webapps::WebappUninstallSource::kShelf;
-    case apps::mojom::UninstallSource::kMigration:
-      return webapps::WebappUninstallSource::kMigration;
-    case apps::mojom::UninstallSource::kUnknown:
-      return webapps::WebappUninstallSource::kUnknown;
-  }
-}
-
 void WebAppPublisherHelper::UninstallWebApp(
     const WebApp* web_app,
     apps::mojom::UninstallSource uninstall_source,
@@ -267,49 +282,6 @@ void WebAppPublisherHelper::UninstallWebApp(
                              base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
                          kAvoidClosingConnections, base::DoNothing());
-}
-
-IconEffects WebAppPublisherHelper::GetIconEffects(
-    const WebApp* web_app,
-    absl::optional<bool> is_disabled_opt) {
-  IconEffects icon_effects = IconEffects::kRoundCorners;
-  if (!web_app->is_locally_installed()) {
-    icon_effects |= IconEffects::kBlocked;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    icon_effects |= web_app->is_generated_icon()
-                        ? IconEffects::kCrOsStandardMask
-                        : IconEffects::kCrOsStandardIcon;
-  } else {
-    icon_effects |= IconEffects::kResizeAndPad;
-  }
-#endif
-
-  if (IsPaused(web_app->app_id())) {
-    icon_effects |= IconEffects::kPaused;
-  }
-
-  bool is_disabled = false;
-  if (is_disabled_opt.has_value()) {
-    is_disabled = *is_disabled_opt;
-  } else if (web_app->chromeos_data().has_value()) {
-    is_disabled = web_app->chromeos_data()->is_disabled;
-  }
-  if (is_disabled) {
-    icon_effects |= IconEffects::kBlocked;
-  }
-
-// TODO(crbug.com/1214707): Implement badging for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
-                                                       web_app->app_id())) {
-    icon_effects |= IconEffects::kChromeBadge;
-  }
-#endif
-
-  return icon_effects;
 }
 
 apps::mojom::IconKeyPtr WebAppPublisherHelper::MakeIconKey(
@@ -580,6 +552,77 @@ void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
+}
+
+void WebAppPublisherHelper::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // If content_type is not one of the supported permissions, do nothing.
+  if (!IsSupportedWebAppPermissionType(content_type)) {
+    return;
+  }
+
+  for (const WebApp& web_app : registrar().GetApps()) {
+    if (primary_pattern.Matches(web_app.start_url()) &&
+        Accepts(web_app.app_id())) {
+      apps::mojom::AppPtr app = apps::mojom::App::New();
+      app->app_type = app_type_;
+      app->app_id = web_app.app_id();
+      PopulateWebAppPermissions(&web_app, &app->permissions);
+
+      delegate_->PublishWebApp(std::move(app));
+    }
+  }
+}
+
+void WebAppPublisherHelper::Init() {
+  content_settings_observation_.Observe(
+      HostContentSettingsMapFactory::GetForProfile(profile_));
+  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
+}
+
+IconEffects WebAppPublisherHelper::GetIconEffects(
+    const WebApp* web_app,
+    absl::optional<bool> is_disabled_opt) {
+  IconEffects icon_effects = IconEffects::kRoundCorners;
+  if (!web_app->is_locally_installed()) {
+    icon_effects |= IconEffects::kBlocked;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effects |= web_app->is_generated_icon()
+                        ? IconEffects::kCrOsStandardMask
+                        : IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effects |= IconEffects::kResizeAndPad;
+  }
+#endif
+
+  if (IsPaused(web_app->app_id())) {
+    icon_effects |= IconEffects::kPaused;
+  }
+
+  bool is_disabled = false;
+  if (is_disabled_opt.has_value()) {
+    is_disabled = *is_disabled_opt;
+  } else if (web_app->chromeos_data().has_value()) {
+    is_disabled = web_app->chromeos_data()->is_disabled;
+  }
+  if (is_disabled) {
+    icon_effects |= IconEffects::kBlocked;
+  }
+
+// TODO(crbug.com/1214707): Implement badging for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (extensions::util::ShouldApplyChromeBadgeToWebApp(profile(),
+                                                       web_app->app_id())) {
+    icon_effects |= IconEffects::kChromeBadge;
+  }
+#endif
+
+  return icon_effects;
 }
 
 const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {

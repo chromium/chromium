@@ -52,6 +52,9 @@ class AppServiceProxy : public AppServiceProxyBase {
   void Initialize() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
 
+  // KeyedService overrides:
+  void Shutdown() override;
+
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
 

@@ -9,10 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -30,7 +33,7 @@ class WebAppProvider;
 class WebAppRegistrar;
 class WebAppLaunchManager;
 
-class WebAppPublisherHelper {
+class WebAppPublisherHelper : public content_settings::Observer {
  public:
   class Delegate {
    public:
@@ -49,11 +52,22 @@ class WebAppPublisherHelper {
                         Delegate* delegate);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
-  ~WebAppPublisherHelper();
+  ~WebAppPublisherHelper() override;
 
   // Indicates if |permission_type| is supported by Web Applications.
   static bool IsSupportedWebAppPermissionType(
       ContentSettingsType permission_type);
+
+  // Converts |uninstall_source| to a |WebappUninstallSource|.
+  static webapps::WebappUninstallSource
+  ConvertUninstallSourceToWebAppUninstallSource(
+      apps::mojom::UninstallSource uninstall_source);
+
+  // Returns true if the app is published as a web app.
+  static bool Accepts(const std::string& app_id);
+
+  // Must be called before profile keyed services are destroyed.
+  void Shutdown();
 
   // Populates the various show_in_* fields of |app|.
   void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app);
@@ -74,11 +88,6 @@ class WebAppPublisherHelper {
   // Constructs an App with only the information required to update
   // last launch time.
   apps::mojom::AppPtr ConvertLaunchedWebApp(const WebApp* web_app);
-
-  // Converts |uninstall_source| to a |WebappUninstallSource|.
-  static webapps::WebappUninstallSource
-  ConvertUninstallSourceToWebAppUninstallSource(
-      apps::mojom::UninstallSource uninstall_source);
 
   // Directly uninstalls |web_app| without prompting the user.
   // If |clear_site_data| is true, any site data associated with the app will
@@ -146,6 +155,13 @@ class WebAppPublisherHelper {
   WebAppRegistrar& registrar() const;
 
  private:
+  // content_settings::Observer:
+  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
+                               const ContentSettingsPattern& secondary_pattern,
+                               ContentSettingsType content_type) override;
+
+  void Init();
+
   apps::IconEffects GetIconEffects(const WebApp* web_app,
                                    absl::optional<bool> is_disabled_opt);
 
@@ -167,6 +183,9 @@ class WebAppPublisherHelper {
   Delegate* const delegate_;
 
   WebAppProvider* const provider_;
+
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 
   std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 

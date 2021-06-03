@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -671,11 +670,6 @@ void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {
       publisher_helper().SetIconEffect(app_id);
     }
   }
-}
-
-bool WebAppsChromeOs::Accepts(const std::string& app_id) {
-  // Crostini Terminal System App is handled by Crostini Apps.
-  return app_id != crostini::kCrostiniTerminalSystemAppId;
 }
 
 apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
