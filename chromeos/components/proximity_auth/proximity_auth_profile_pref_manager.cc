@@ -195,10 +195,9 @@ bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
     return false;
   }
 
-  bool pref_value = false;
-  current_user_prefs->GetBooleanWithoutPathExpansion(
-      prefs::kProximityAuthHasShownLoginDisabledMessage, &pref_value);
-  return pref_value;
+  return current_user_prefs
+      ->FindBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage)
+      .value_or(false);
 }
 
 void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(

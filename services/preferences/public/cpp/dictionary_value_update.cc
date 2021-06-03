@@ -189,7 +189,12 @@ bool DictionaryValueUpdate::GetList(base::StringPiece path,
 bool DictionaryValueUpdate::GetBooleanWithoutPathExpansion(
     base::StringPiece key,
     bool* out_value) const {
-  return value_->GetBooleanWithoutPathExpansion(key, out_value);
+  absl::optional<bool> flag = value_->FindBoolKey(key);
+  if (!flag)
+    return false;
+
+  *out_value = flag.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetIntegerWithoutPathExpansion(

@@ -210,10 +210,10 @@ TEST_F(NetworkDeviceHandlerTest, CellularAllowRoaming) {
   // Roaming should be enabled now.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  bool allow_roaming;
-  EXPECT_TRUE(properties_->GetBooleanWithoutPathExpansion(
-      shill::kCellularAllowRoamingProperty, &allow_roaming));
-  EXPECT_TRUE(allow_roaming);
+  absl::optional<bool> allow_roaming =
+      properties_->FindBoolKey(shill::kCellularAllowRoamingProperty);
+  EXPECT_TRUE(allow_roaming.has_value());
+  EXPECT_TRUE(allow_roaming.value());
 
   network_device_handler_->SetCellularAllowRoaming(false);
   base::RunLoop().RunUntilIdle();
@@ -221,9 +221,10 @@ TEST_F(NetworkDeviceHandlerTest, CellularAllowRoaming) {
   // Roaming should be disable again.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  EXPECT_TRUE(properties_->GetBooleanWithoutPathExpansion(
-      shill::kCellularAllowRoamingProperty, &allow_roaming));
-  EXPECT_FALSE(allow_roaming);
+  allow_roaming =
+      properties_->FindBoolKey(shill::kCellularAllowRoamingProperty);
+  EXPECT_TRUE(allow_roaming.has_value());
+  EXPECT_FALSE(allow_roaming.value());
 }
 
 TEST_F(NetworkDeviceHandlerTest,

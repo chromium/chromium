@@ -164,8 +164,7 @@ void Normalizer::NormalizeIPsec(base::DictionaryValue* ipsec) {
 }
 
 void Normalizer::NormalizeNetworkConfiguration(base::DictionaryValue* network) {
-  bool remove = false;
-  network->GetBooleanWithoutPathExpansion(::onc::kRemove, &remove);
+  bool remove = network->FindBoolKey(::onc::kRemove).value_or(false);
   if (remove) {
     network->RemoveKey(::onc::network_config::kStaticIPConfig);
     network->RemoveKey(::onc::network_config::kName);

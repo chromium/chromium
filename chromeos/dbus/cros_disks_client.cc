@@ -708,22 +708,23 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   if (!value || !value->GetAsDictionary(&properties))
     return;
 
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDeviceIsDrive, &is_drive_);
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDeviceIsReadOnly, &is_read_only_);
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDevicePresentationHide, &is_hidden_);
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDeviceIsMediaAvailable, &has_media_);
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDeviceIsOnBootDevice, &on_boot_device_);
-  properties->GetBooleanWithoutPathExpansion(
-      cros_disks::kDeviceIsOnRemovableDevice, &on_removable_device_);
-  properties->GetBooleanWithoutPathExpansion(cros_disks::kDeviceIsVirtual,
-                                             &is_virtual_);
-  properties->GetBooleanWithoutPathExpansion(cros_disks::kIsAutoMountable,
-                                             &is_auto_mountable_);
+  is_drive_ =
+      properties->FindBoolKey(cros_disks::kDeviceIsDrive).value_or(is_drive_);
+  is_read_only_ = properties->FindBoolKey(cros_disks::kDeviceIsReadOnly)
+                      .value_or(is_read_only_);
+  is_hidden_ = properties->FindBoolKey(cros_disks::kDevicePresentationHide)
+                   .value_or(is_hidden_);
+  has_media_ = properties->FindBoolKey(cros_disks::kDeviceIsMediaAvailable)
+                   .value_or(has_media_);
+  on_boot_device_ = properties->FindBoolKey(cros_disks::kDeviceIsOnBootDevice)
+                        .value_or(on_boot_device_);
+  on_removable_device_ =
+      properties->FindBoolKey(cros_disks::kDeviceIsOnRemovableDevice)
+          .value_or(on_removable_device_);
+  is_virtual_ = properties->FindBoolKey(cros_disks::kDeviceIsVirtual)
+                    .value_or(is_virtual_);
+  is_auto_mountable_ = properties->FindBoolKey(cros_disks::kIsAutoMountable)
+                           .value_or(is_auto_mountable_);
   properties->GetStringWithoutPathExpansion(cros_disks::kStorageDevicePath,
                                             &storage_device_path_);
   properties->GetStringWithoutPathExpansion(

@@ -189,10 +189,9 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
   if (other()) {
     std::unique_ptr<ExtensionActivity::Other> other_field(
         new ExtensionActivity::Other);
-    bool prerender;
-    if (other()->GetBooleanWithoutPathExpansion(constants::kActionPrerender,
-                                                &prerender)) {
-      other_field->prerender = std::make_unique<bool>(prerender);
+    if (absl::optional<bool> prerender =
+            other()->FindBoolKey(constants::kActionPrerender)) {
+      other_field->prerender = std::make_unique<bool>(*prerender);
     }
     const base::DictionaryValue* web_request;
     if (other()->GetDictionaryWithoutPathExpansion(constants::kActionWebRequest,

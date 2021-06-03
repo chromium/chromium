@@ -172,13 +172,15 @@ void SupervisedUserManagerImpl::SetPasswordInformation(
     SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision,
                         password_revision.value());
 
-  bool flag;
-  if (password_info->GetBooleanWithoutPathExpansion(kRequirePasswordUpdate,
-                                                    &flag)) {
-    SetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate, flag);
+  absl::optional<bool> flag =
+      password_info->FindBoolKey(kRequirePasswordUpdate);
+  if (flag.has_value()) {
+    SetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate,
+                        flag.value());
   }
-  if (password_info->GetBooleanWithoutPathExpansion(kHasIncompleteKey, &flag))
-    SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag);
+  flag = password_info->FindBoolKey(kHasIncompleteKey);
+  if (flag.has_value())
+    SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag.value());
 
   std::string salt;
   if (password_info->GetStringWithoutPathExpansion(kSalt, &salt))
@@ -213,7 +215,12 @@ bool SupervisedUserManagerImpl::GetUserBooleanValue(const std::string& user_id,
                                                     bool* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetBooleanWithoutPathExpansion(user_id, out_value);
+  absl::optional<bool> flag = dictionary->FindBoolKey(user_id);
+  if (!flag)
+    return false;
+
+  *out_value = flag.value();
+  return true;
 }
 
 void SupervisedUserManagerImpl::SetUserStringValue(const std::string& user_id,

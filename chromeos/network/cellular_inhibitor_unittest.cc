@@ -122,11 +122,11 @@ class CellularInhibitorTest : public testing::Test {
     if (!properties_)
       return GetInhibitedPropertyResult::kOperationFailed;
 
-    bool inhibited;
-    EXPECT_TRUE(properties_->GetBooleanWithoutPathExpansion(
-        shill::kInhibitedProperty, &inhibited));
-    return inhibited ? GetInhibitedPropertyResult::kTrue
-                     : GetInhibitedPropertyResult::kFalse;
+    absl::optional<bool> inhibited =
+        properties_->FindBoolKey(shill::kInhibitedProperty);
+    EXPECT_TRUE(inhibited.has_value());
+    return inhibited.value() ? GetInhibitedPropertyResult::kTrue
+                             : GetInhibitedPropertyResult::kFalse;
   }
 
   absl::optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {

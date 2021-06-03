@@ -74,27 +74,29 @@ int ProximityAuthLocalStatePrefManager::GetPromotionShownCount() const {
 }
 
 bool ProximityAuthLocalStatePrefManager::IsEasyUnlockAllowed() const {
-  bool pref_value;
   const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
-  if (!user_prefs || !user_prefs->GetBooleanWithoutPathExpansion(
-                         chromeos::multidevice_setup::kSmartLockAllowedPrefName,
-                         &pref_value)) {
-    PA_LOG(ERROR) << "Failed to get easyunlock_allowed.";
-    return true;
+  if (user_prefs) {
+    absl::optional<bool> pref_value = user_prefs->FindBoolKey(
+        chromeos::multidevice_setup::kSmartLockAllowedPrefName);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
   }
-  return pref_value;
+  PA_LOG(ERROR) << "Failed to get easyunlock_allowed.";
+  return true;
 }
 
 bool ProximityAuthLocalStatePrefManager::IsEasyUnlockEnabled() const {
-  bool pref_value;
   const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
-  if (!user_prefs || !user_prefs->GetBooleanWithoutPathExpansion(
-                         chromeos::multidevice_setup::kSmartLockEnabledPrefName,
-                         &pref_value)) {
-    PA_LOG(ERROR) << "Failed to get easyunlock_enabled.";
-    return false;
+  if (user_prefs) {
+    absl::optional<bool> pref_value = user_prefs->FindBoolKey(
+        chromeos::multidevice_setup::kSmartLockEnabledPrefName);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
   }
-  return pref_value;
+  PA_LOG(ERROR) << "Failed to get easyunlock_enabled.";
+  return false;
 }
 
 bool ProximityAuthLocalStatePrefManager::IsEasyUnlockEnabledStateSet() const {
@@ -103,16 +105,16 @@ bool ProximityAuthLocalStatePrefManager::IsEasyUnlockEnabledStateSet() const {
 }
 
 bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginAllowed() const {
-  bool pref_value;
   const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
-  if (!user_prefs ||
-      !user_prefs->GetBooleanWithoutPathExpansion(
-          chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
-          &pref_value)) {
-    PA_LOG(VERBOSE) << "Failed to get is_chrome_login_allowed, not disallowing";
-    return true;
+  if (user_prefs) {
+    absl::optional<bool> pref_value = user_prefs->FindBoolKey(
+        chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
   }
-  return pref_value;
+  PA_LOG(VERBOSE) << "Failed to get is_chrome_login_allowed, not disallowing";
+  return true;
 }
 
 void ProximityAuthLocalStatePrefManager::SetIsChromeOSLoginEnabled(
@@ -121,15 +123,16 @@ void ProximityAuthLocalStatePrefManager::SetIsChromeOSLoginEnabled(
 }
 
 bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() const {
-  bool pref_value;
   const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
-  if (!user_prefs ||
-      !user_prefs->GetBooleanWithoutPathExpansion(
-          prefs::kProximityAuthIsChromeOSLoginEnabled, &pref_value)) {
-    PA_LOG(ERROR) << "Failed to get is_chrome_login_enabled.";
-    return false;
+  if (user_prefs) {
+    absl::optional<bool> pref_value =
+        user_prefs->FindBoolKey(prefs::kProximityAuthIsChromeOSLoginEnabled);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
   }
-  return pref_value;
+  PA_LOG(ERROR) << "Failed to get is_chrome_login_enabled.";
+  return false;
 }
 
 void ProximityAuthLocalStatePrefManager::SetHasShownLoginDisabledMessage(
@@ -164,10 +167,9 @@ bool ProximityAuthLocalStatePrefManager::HasShownLoginDisabledMessage() const {
   if (!user_prefs)
     return false;
 
-  bool pref_value = false;
-  user_prefs->GetBooleanWithoutPathExpansion(
-      prefs::kProximityAuthHasShownLoginDisabledMessage, &pref_value);
-  return pref_value;
+  return user_prefs
+      ->FindBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage)
+      .value_or(false);
 }
 
 const base::DictionaryValue*

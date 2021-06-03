@@ -971,12 +971,11 @@ bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {
 
   const base::DictionaryValue* prefs_force_online =
       GetLocalState()->GetDictionary(kUserForceOnlineSignin);
-  bool force_online_signin = false;
   if (prefs_force_online) {
-    prefs_force_online->GetBooleanWithoutPathExpansion(
-        account_id.GetUserEmail(), &force_online_signin);
+    return prefs_force_online->FindBoolKey(account_id.GetUserEmail())
+        .value_or(false);
   }
-  return force_online_signin;
+  return false;
 }
 
 void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {

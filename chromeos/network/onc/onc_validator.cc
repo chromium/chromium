@@ -665,8 +665,7 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
 
   bool all_required_exist = RequireField(*result, ::onc::network_config::kGUID);
 
-  bool remove = false;
-  result->GetBooleanWithoutPathExpansion(::onc::kRemove, &remove);
+  bool remove = result->FindBoolKey(::onc::kRemove).value_or(false);
   if (!remove) {
     all_required_exist &= RequireField(*result, ::onc::network_config::kName) &&
                           RequireField(*result, ::onc::network_config::kType);
@@ -1150,8 +1149,7 @@ bool Validator::ValidateCertificate(base::DictionaryValue* result) {
 
   bool all_required_exist = RequireField(*result, ::onc::certificate::kGUID);
 
-  bool remove = false;
-  result->GetBooleanWithoutPathExpansion(::onc::kRemove, &remove);
+  bool remove = result->FindBoolKey(::onc::kRemove).value_or(false);
   if (remove) {
     path_.push_back(::onc::kRemove);
     std::ostringstream msg;

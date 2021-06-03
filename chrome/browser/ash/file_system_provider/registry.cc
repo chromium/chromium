@@ -158,8 +158,9 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
 
     std::string file_system_id;
     std::string display_name;
-    bool writable = false;
-    bool supports_notify_tag = false;
+    absl::optional<bool> writable = file_system->FindBoolKey(kPrefKeyWritable);
+    absl::optional<bool> supports_notify_tag =
+        file_system->FindBoolKey(kPrefKeySupportsNotifyTag);
     absl::optional<int> opened_files_limit =
         file_system->FindIntKey(kPrefKeyOpenedFilesLimit);
 
@@ -169,11 +170,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
                                                      &file_system_id) ||
          !file_system->GetStringWithoutPathExpansion(kPrefKeyDisplayName,
                                                      &display_name) ||
-         !file_system->GetBooleanWithoutPathExpansion(kPrefKeyWritable,
-                                                      &writable) ||
-         !file_system->GetBooleanWithoutPathExpansion(kPrefKeySupportsNotifyTag,
-                                                      &supports_notify_tag) ||
-         file_system_id.empty() || display_name.empty()) ||
+         !writable || !supports_notify_tag || file_system_id.empty() ||
+         display_name.empty()) ||
         // Optional fields.
         (opened_files_limit.has_value() && opened_files_limit.value() < 0)) {
       LOG(ERROR)
@@ -184,8 +182,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     MountOptions options;
     options.file_system_id = file_system_id;
     options.display_name = display_name;
-    options.writable = writable;
-    options.supports_notify_tag = supports_notify_tag;
+    options.writable = writable.value();
+    options.supports_notify_tag = supports_notify_tag.value();
     options.opened_files_limit = opened_files_limit.value_or(0);
 
     RestoredFileSystem restored_file_system;
@@ -202,16 +200,20 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         const base::Value* watcher_value = watchers->FindKey(it.key());
         DCHECK(watcher_value);
 
+        if (!watcher_value->GetAsDictionary(&watcher)) {
+          LOG(ERROR) << "Malformed watcher information in preferences.";
+          continue;
+        }
+
         std::string entry_path;
-        bool recursive = false;
+        absl::optional<bool> recursive =
+            watcher->FindBoolKey(kPrefKeyWatcherRecursive);
         std::string last_tag;
         const base::ListValue* persistent_origins = NULL;
 
-        if (!watcher_value->GetAsDictionary(&watcher) ||
-            !watcher->GetStringWithoutPathExpansion(kPrefKeyWatcherEntryPath,
+        if (!watcher->GetStringWithoutPathExpansion(kPrefKeyWatcherEntryPath,
                                                     &entry_path) ||
-            !watcher->GetBooleanWithoutPathExpansion(kPrefKeyWatcherRecursive,
-                                                     &recursive) ||
+            !recursive ||
             !watcher->GetStringWithoutPathExpansion(kPrefKeyWatcherLastTag,
                                                     &last_tag) ||
             !watcher->GetListWithoutPathExpansion(
@@ -226,7 +228,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         Watcher restored_watcher;
         restored_watcher.entry_path =
             base::FilePath::FromUTF8Unsafe(entry_path);
-        restored_watcher.recursive = recursive;
+        restored_watcher.recursive = recursive.value();
         restored_watcher.last_tag = last_tag;
         for (const auto& persistent_origin : persistent_origins->GetList()) {
           std::string origin;
@@ -239,7 +241,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
           restored_watcher.subscribers[origin_as_gurl].persistent = true;
         }
         restored_file_system.watchers[WatcherKey(
-            base::FilePath::FromUTF8Unsafe(entry_path), recursive)] =
+            base::FilePath::FromUTF8Unsafe(entry_path), recursive.value())] =
             restored_watcher;
       }
     }

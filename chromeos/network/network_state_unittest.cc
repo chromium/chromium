@@ -356,10 +356,10 @@ TEST_F(NetworkStateTest, TetherProperties) {
   EXPECT_TRUE(battery_percentage.has_value());
   EXPECT_EQ(85, battery_percentage.value());
 
-  bool tether_has_connected_to_host;
-  EXPECT_TRUE(dictionary.GetBooleanWithoutPathExpansion(
-      kTetherHasConnectedToHost, &tether_has_connected_to_host));
-  EXPECT_TRUE(tether_has_connected_to_host);
+  absl::optional<bool> tether_has_connected_to_host =
+      dictionary.FindBoolKey(kTetherHasConnectedToHost);
+  EXPECT_TRUE(tether_has_connected_to_host.has_value());
+  EXPECT_TRUE(tether_has_connected_to_host.value());
 
   std::string carrier;
   EXPECT_TRUE(

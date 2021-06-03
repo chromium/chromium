@@ -281,10 +281,11 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
     } else if (entry.GetAsDictionary(&dict_entry)) {
       dict_entry->GetStringWithoutPathExpansion(kStateStoreSPKI, &spki_b64);
       KeyEntry new_entry(spki_b64);
-      dict_entry->GetBooleanWithoutPathExpansion(kStateStoreSignOnce,
-                                                 &new_entry.sign_once);
-      dict_entry->GetBooleanWithoutPathExpansion(kStateStoreSignUnlimited,
-                                                 &new_entry.sign_unlimited);
+      new_entry.sign_once = dict_entry->FindBoolKey(kStateStoreSignOnce)
+                                .value_or(new_entry.sign_once);
+      new_entry.sign_unlimited =
+          dict_entry->FindBoolKey(kStateStoreSignUnlimited)
+              .value_or(new_entry.sign_unlimited);
       state_store_entries_.push_back(new_entry);
     } else {
       LOG(ERROR) << "Found invalid entry of type " << entry.type()

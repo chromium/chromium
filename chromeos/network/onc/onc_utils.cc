@@ -1321,11 +1321,10 @@ bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
   if (!global_config)
     return false;  // By default, all networks are allowed to autoconnect.
 
-  bool only_policy_autoconnect = false;
-  global_config->GetBooleanWithoutPathExpansion(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
-      &only_policy_autoconnect);
-  return only_policy_autoconnect;
+  return global_config
+      ->FindBoolKey(
+          ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect)
+      .value_or(false);
 }
 
 const base::DictionaryValue* GetPolicyForNetwork(
