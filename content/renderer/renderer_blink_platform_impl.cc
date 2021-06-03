@@ -1123,4 +1123,10 @@ RendererBlinkPlatformImpl::CreateWebV8ValueConverter() {
   return std::make_unique<V8ValueConverterImpl>();
 }
 
+void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
+    const blink::WebURL& url,
+    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
+  GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
+}
+
 }  // namespace content

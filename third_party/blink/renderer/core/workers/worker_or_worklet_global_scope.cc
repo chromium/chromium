@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 
+#include <utility>
+
 #include "base/threading/thread_checker.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -11,7 +13,9 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
@@ -38,6 +42,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/null_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -448,6 +453,16 @@ void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->SetSupportsWasmEval(SchemeRegistry::SchemeSupportsWasmEvalCSP(
         GetSecurityOrigin()->Protocol()));
+
+    // Check if the embedder wants to add any default policies, and add them.
+    WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;
+    Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
+                                                     &embedder_default_csp);
+    for (const auto& header : embedder_default_csp) {
+      csp->AddPolicies(ParseContentSecurityPolicies(
+          header.header_value, header.type, header.source, Url()));
+    }
+
     SetContentSecurityPolicy(csp);
   }
   GetContentSecurityPolicy()->AddPolicies(std::move(policies));

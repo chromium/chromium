@@ -37,6 +37,9 @@ struct CSPInfo : public Extension::ManifestData {
   // shouldn't be returned for those cases.
   static const std::string& GetExtensionPagesCSP(const Extension* extension);
 
+  // Returns the default extension pages CSP for Manifest V3 extensions.
+  static const std::string& GetDefaultMV3ExtensionPagesCSP();
+
   // Returns the Content Security Policy to be used for extension isolated
   // worlds or null if there is no defined CSP.
   static const std::string* GetIsolatedWorldCSP(const Extension& extension);

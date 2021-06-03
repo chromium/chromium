@@ -41,6 +41,7 @@ class WebThreadScheduler;
 class WebGraphicsContext3DProvider;
 class WebSecurityOrigin;
 enum class ProtocolHandlerSecurityLevel;
+struct WebContentSecurityPolicyHeader;
 }  // namespace blink
 
 namespace gpu {
@@ -254,6 +255,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   SkBitmap* GetSadPageBitmap() override;
   std::unique_ptr<blink::WebV8ValueConverter> CreateWebV8ValueConverter()
       override;
+  void AppendContentSecurityPolicy(
+      const blink::WebURL& url,
+      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.

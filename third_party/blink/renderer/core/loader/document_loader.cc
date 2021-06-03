@@ -43,6 +43,8 @@
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -2664,6 +2666,15 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
           ContentSecurityPolicyResponseHeaders(response_));
   policy_container_->AddContentSecurityPolicies(mojo::Clone(parsed_policies));
   csp->AddPolicies(std::move(parsed_policies));
+
+  // Check if the embedder wants to add any default policies, and add them.
+  WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;
+  Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
+                                                   &embedder_default_csp);
+  for (const auto& header : embedder_default_csp) {
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        header.header_value, header.type, header.source, Url()));
+  }
 
   // Retrieve CSP stored in the OriginPolicy and add them to the policy
   // container.

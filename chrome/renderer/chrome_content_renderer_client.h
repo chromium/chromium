@@ -55,6 +55,7 @@ class ThreadProfiler;
 namespace blink {
 class WebServiceWorkerContextProxy;
 enum class ProtocolHandlerSecurityLevel;
+struct WebContentSecurityPolicyHeader;
 }
 
 namespace chrome {
@@ -190,6 +191,9 @@ class ChromeContentRendererClient
                              const std::string& name) override;
   bool IsSafeRedirectTarget(const GURL& url) override;
   void DidSetUserAgent(const std::string& user_agent) override;
+  void AppendContentSecurityPolicy(
+      const blink::WebURL& url,
+      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   static mojo::AssociatedRemote<chrome::mojom::PluginInfoHost>&

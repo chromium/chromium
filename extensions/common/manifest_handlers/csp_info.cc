@@ -119,6 +119,12 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 }
 
 // static
+const std::string& CSPInfo::GetDefaultMV3ExtensionPagesCSP() {
+  static const base::NoDestructor<std::string> default_csp(kDefaultSecureCSP);
+  return *default_csp;
+}
+
+// static
 const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
   if (extension.manifest_version() >= 3) {
     // The isolated world will use its own CSP which blocks remotely hosted

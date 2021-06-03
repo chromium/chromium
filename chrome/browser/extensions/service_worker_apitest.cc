@@ -2432,6 +2432,45 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
       mojom::APIPermissionID::kStorage));
 }
 
+// Tests that a Manifest V3 extension's service worker can't be used to relax
+// the extension CSP.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       ExtensionCSPModification_MV3) {
+  ExtensionTestMessageListener worker_listener("ready", false);
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/extension_csp_modification"));
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  ASSERT_TRUE(worker_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener csp_modified_listener(
+      "script-src 'self'; object-src 'self';", false);
+  csp_modified_listener.set_extension_id(extension_id);
+  ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("extension_page.html"));
+  EXPECT_TRUE(csp_modified_listener.WaitUntilSatisfied());
+
+  // Ensure the inline script is not executed because we ensure that the
+  // extension's CSP is applied in the renderer (even though the service worker
+  // removed it).
+  constexpr char kScript[] = R"(
+    (() => {
+      try {
+        scriptExecuted;
+        window.domAutomationController.send('FAIL');
+      } catch (e) {
+        const result = e.message.includes('scriptExecuted is not defined')
+          ? 'PASS' : 'FAIL';
+        window.domAutomationController.send(result);
+      }
+    })();
+  )";
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      browser()->tab_strip_model()->GetActiveWebContents(), kScript, &result));
+  EXPECT_EQ("PASS", result);
+}
+
 // Tests that console messages logged by extension service workers, both via
 // the typical console.* methods and via our custom bindings console, are
 // passed through the normal ServiceWorker console messaging and are

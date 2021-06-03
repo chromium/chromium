@@ -252,4 +252,8 @@ ContentRendererClient::GetAudioRendererAlgorithmParameters(
   return absl::nullopt;
 }
 
+void ContentRendererClient::AppendContentSecurityPolicy(
+    const blink::WebURL& url,
+    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
+
 }  // namespace content

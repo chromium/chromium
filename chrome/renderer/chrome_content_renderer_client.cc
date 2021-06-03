@@ -142,8 +142,10 @@
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_cache.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -195,6 +197,7 @@
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
@@ -1655,5 +1658,30 @@ void ChromeContentRendererClient::DidSetUserAgent(
     const std::string& user_agent) {
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::SetAgent(user_agent);
+#endif
+}
+
+void ChromeContentRendererClient::AppendContentSecurityPolicy(
+    const blink::WebURL& url,
+    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  DCHECK(csp);
+  GURL gurl(url);
+  const extensions::Extension* extension =
+      extensions::RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
+          gurl);
+  if (!extension || !extension->is_extension() ||
+      extension->manifest_version() < 3) {
+    return;
+  }
+
+  // Append the default extension pages CSP to ensure the extension can't relax
+  // the default applied CSP through means like Service Worker.
+  const std::string& default_csp =
+      extensions::CSPInfo::GetDefaultMV3ExtensionPagesCSP();
+
+  csp->push_back({blink::WebString::FromUTF8(default_csp),
+                  network::mojom::ContentSecurityPolicyType::kEnforce,
+                  network::mojom::ContentSecurityPolicySource::kHTTP});
 #endif
 }

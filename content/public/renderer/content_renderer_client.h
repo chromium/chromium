@@ -50,6 +50,7 @@ class WebPrescientNetworking;
 class WebServiceWorkerContextProxy;
 class WebURL;
 class WebURLRequest;
+struct WebContentSecurityPolicyHeader;
 struct WebPluginParams;
 struct WebURLError;
 enum class ProtocolHandlerSecurityLevel;
@@ -398,6 +399,12 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual absl::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters);
+
+  // Appends to `csp`, the default CSP which should be applied to the given
+  // `url`. This allows the embedder to customize the applied CSP.
+  virtual void AppendContentSecurityPolicy(
+      const blink::WebURL& url,
+      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp);
 };
 
 }  // namespace content

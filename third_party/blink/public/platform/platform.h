@@ -143,6 +143,7 @@ class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
 class WebVideoCaptureImplManager;
+struct WebContentSecurityPolicyHeader;
 
 namespace scheduler {
 class WebThreadScheduler;
@@ -866,6 +867,14 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual std::unique_ptr<WebV8ValueConverter> CreateWebV8ValueConverter() {
     return nullptr;
   }
+
+  // Content Security Policy --------------------------------------
+
+  // Appends to `csp`, the default CSP which should be applied to the given
+  // `url`. This allows the embedder to customize the applied CSP.
+  virtual void AppendContentSecurityPolicy(
+      const WebURL& url,
+      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
 
  private:
   static void InitializeMainThreadCommon(Platform* platform,

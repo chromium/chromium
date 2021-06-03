@@ -171,6 +171,9 @@ class WebVector {
     data_.emplace_back(std::forward<Args>(args)...);
   }
 
+  void push_back(const T& value) { data_.push_back(value); }
+  void push_back(T&& value) { data_.push_back(std::move(value)); }
+
   void Swap(WebVector<T>& other) { data_.swap(other.data_); }
   void Clear() { data_.clear(); }
 
