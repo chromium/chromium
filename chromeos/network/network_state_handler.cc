@@ -225,6 +225,11 @@ void NetworkStateHandler::RequestTrafficCounters(
                                                   std::move(callback));
 }
 
+void NetworkStateHandler::ResetTrafficCounters(
+    const std::string& service_path) {
+  shill_property_handler_->ResetTrafficCounters(service_path);
+}
+
 // static
 std::unique_ptr<NetworkStateHandler> NetworkStateHandler::InitializeForTest() {
   auto handler = base::WrapUnique(new NetworkStateHandler());
