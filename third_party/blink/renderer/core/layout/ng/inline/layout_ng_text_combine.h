@@ -37,9 +37,11 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 // static
 inline bool LayoutNGTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
-  const auto& style = layout_object.StyleRef();
-  return !style.IsHorizontalWritingMode() && style.HasTextCombine() &&
-         layout_object.IsText() && layout_object.IsLayoutNGObject();
+  if (LIKELY(layout_object.IsHorizontalWritingMode()) ||
+      !layout_object.IsText())
+    return false;
+  return UNLIKELY(layout_object.StyleRef().HasTextCombine()) &&
+         layout_object.IsLayoutNGObject();
 }
 
 template <>

@@ -497,6 +497,9 @@ void LayoutObject::AddChild(LayoutObject* new_child,
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
+  } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||
+             !new_child->IsText()) {
+    children->InsertChildNode(this, new_child, before_child);
   } else if (IsA<LayoutNGTextCombine>(*this)) {
     DCHECK(LayoutNGTextCombine::ShouldBeParentOf(*new_child)) << new_child;
     new_child->SetStyle(Style());
@@ -524,6 +527,8 @@ void LayoutObject::AddChild(LayoutObject* new_child,
                                           To<LayoutText>(new_child)));
     }
   } else {
+    DCHECK(!new_child->IsHorizontalWritingMode()) << new_child;
+    DCHECK(new_child->IsText()) << new_child;
     children->InsertChildNode(this, new_child, before_child);
   }
 
@@ -2994,7 +2999,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         child_block_flow->IsAnonymousBlockContinuation())
       new_style->SetPosition(child->StyleRef().GetPosition());
 
-    if (IsA<LayoutNGTextCombine>(child)) {
+    if (UNLIKELY(IsA<LayoutNGTextCombine>(child))) {
       // "text-combine-width-after-style-change.html" reaches here.
       StyleAdjuster::AdjustStyleForTextCombine(*new_style);
     }
