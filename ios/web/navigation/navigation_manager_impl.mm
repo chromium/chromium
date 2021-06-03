@@ -185,6 +185,7 @@ void NavigationManagerImpl::AddPendingItem(
     const web::Referrer& referrer,
     ui::PageTransition navigation_type,
     NavigationInitiationType initiation_type,
+    bool is_post_navigation,
     bool is_using_https_as_default_scheme) {
   DiscardNonCommittedItems();
 
@@ -260,7 +261,11 @@ void NavigationManagerImpl::AddPendingItem(
         IsSameOrPlaceholderOf(current_item_url, net::GURLWithNSURL(proxy.URL));
   }
 
-  if (proxy.backForwardList.currentItem && isCurrentURLSameAsPending) {
+  bool is_form_post =
+      is_post_navigation &&
+      (navigation_type & ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT);
+  if (proxy.backForwardList.currentItem && isCurrentURLSameAsPending &&
+      !is_form_post) {
     pending_item_index_ = web_view_cache_.GetCurrentItemIndex();
 
     // If |currentItem| is not already associated with a NavigationItemImpl,
@@ -695,7 +700,8 @@ void NavigationManagerImpl::LoadURLWithParams(
           ? NavigationInitiationType::RENDERER_INITIATED
           : NavigationInitiationType::BROWSER_INITIATED;
   AddPendingItem(params.url, params.referrer, params.transition_type,
-                 initiation_type, params.is_using_https_as_default_scheme);
+                 initiation_type, /*is_post_navigation=*/false,
+                 params.is_using_https_as_default_scheme);
 
   // Mark pending item as created from hash change if necessary. This is needed
   // because window.hashchange message may not arrive on time.

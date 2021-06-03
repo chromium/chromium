@@ -170,7 +170,9 @@ class WebStateImplTest : public web::WebTest {
   void AddCommittedNavigationItem() {
     web_state_->GetNavigationManagerImpl().AddPendingItem(
         GURL::EmptyGURL(), web::Referrer(), ui::PAGE_TRANSITION_LINK,
-        NavigationInitiationType::RENDERER_INITIATED);
+        NavigationInitiationType::RENDERER_INITIATED,
+        /*is_post_navigation=*/false,
+        /*is_using_https_as_default_scheme=*/false);
     web_state_->GetNavigationManagerImpl().CommitPendingItem();
   }
 

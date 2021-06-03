@@ -1914,7 +1914,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // Create pending item.
   self.navigationManagerImpl->AddPendingItem(
       blockedURL, web::Referrer(), transition,
-      web::NavigationInitiationType::BROWSER_INITIATED);
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false,
+      /*is_using_https_as_default_scheme=*/false);
 
   // Create context.
   std::unique_ptr<web::NavigationContextImpl> context =
