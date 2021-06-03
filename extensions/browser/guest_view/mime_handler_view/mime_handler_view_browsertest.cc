@@ -205,13 +205,9 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, EmbedWithInitialCrossOriginFrame) {
 // potential race between the cross-origin renderer initiated navigation and
 // the navigation to "about:blank" started from the browser.
 //
-// Disabled on Linux and Mac due to flakiness: https://crbug.com/1182355.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_MAC)
-#define MAYBE_NavigationRaceFromEmbedder DISABLED_NavigationRaceFromEmbedder
-#else
-#define MAYBE_NavigationRaceFromEmbedder NavigationRaceFromEmbedder
-#endif
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_NavigationRaceFromEmbedder) {
+// Disabled on all platforms due to flakiness: https://crbug.com/1182355.
+IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
+                       DISABLED_NavigationRaceFromEmbedder) {
   const std::string kTestName = "test_navigation_race_embedder";
   auto cross_origin_url =
       embedded_test_server()->GetURL("b.com", "/test_page.html").spec();
