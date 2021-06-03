@@ -6,11 +6,29 @@
  * @fileoverview 'settings-ambient-mode-photos-page' is the settings page to
  * select personal albums in Google Photos or categories in Art gallary.
  */
+import './album_list.js';
+import './art_album_dialog.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '../localized_link/localized_link.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
+import {AmbientModeBrowserProxy, AmbientModeBrowserProxyImpl} from './ambient_mode_browser_proxy.js';
+import {AmbientModeAlbum, AmbientModeSettings, AmbientModeTopicSource} from './constants.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-ambient-mode-photos-page',
 
-  behaviors:
-      [I18nBehavior, settings.RouteObserverBehavior, WebUIListenerBehavior],
+  behaviors: [I18nBehavior, RouteObserverBehavior, WebUIListenerBehavior],
 
   properties: {
     photoPreviewEnabled: {
@@ -46,12 +64,12 @@ Polymer({
     'selected-albums-changed': 'onSelectedAlbumsChanged_',
   },
 
-  /** @private {?settings.AmbientModeBrowserProxy} */
+  /** @private {?AmbientModeBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.AmbientModeBrowserProxyImpl.getInstance();
+    this.browserProxy_ = AmbientModeBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -63,16 +81,16 @@ Polymer({
 
   /**
    * RouteObserverBehavior
-   * @param {!settings.Route} currentRoute
+   * @param {!Route} currentRoute
    * @protected
    */
   currentRouteChanged(currentRoute) {
-    if (currentRoute !== settings.routes.AMBIENT_MODE_PHOTOS) {
+    if (currentRoute !== routes.AMBIENT_MODE_PHOTOS) {
       return;
     }
 
     const topicSourceParam =
-        settings.Router.getInstance().getQueryParameters().get('topicSource');
+        Router.getInstance().getQueryParameters().get('topicSource');
     const topicSourceInt = parseInt(topicSourceParam, 10);
 
     if (isNaN(topicSourceInt)) {

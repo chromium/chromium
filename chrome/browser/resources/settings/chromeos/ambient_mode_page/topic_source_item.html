@@ -1,52 +1,36 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared cr-shared-style iron-flex
+    cr-radio-button-style">
+  :host {
+    display: inline-flex;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="./constants.html">
+  #rowContainer {
+    /* Set height to 100% of parent to always capture click events. */
+    height: 100%;
+    padding-inline-end: var(--cr-icon-ripple-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
 
-<dom-module id="topic-source-item">
-  <template>
-    <style include="settings-shared cr-shared-style iron-flex
-        cr-radio-button-style">
-      :host {
-        display: inline-flex;
-      }
+<div id="rowContainer" class="layout horizontal center flex"
+    on-click="onItemClick_">
+  <!-- This item behaviors similar to a radio button and reuses disc and
+       label style in cr-radio-button-style. -->
+  <div class="disc-wrapper" aria-hidden="true">
+    <div class="disc-border"></div>
+    <div class="disc"></div>
+  </div>
 
-      #rowContainer {
-        /* Set height to 100% of parent to always capture click events. */
-        height: 100%;
-        padding-inline-end: var(--cr-icon-ripple-padding);
-        padding-inline-start: var(--cr-section-padding);
-      }
-    </style>
-
-    <div id="rowContainer" class="layout horizontal center flex"
-        on-click="onItemClick_">
-      <!-- This item behaviors similar to a radio button and reuses disc and
-           label style in cr-radio-button-style. -->
-      <div class="disc-wrapper" aria-hidden="true">
-        <div class="disc-border"></div>
-        <div class="disc"></div>
-      </div>
-
-      <div id="labelWrapper" aria-hidden="true">
-        <div>[[getItemName_(item)]]</div>
-        <div class="cr-secondary-text">
-          [[getItemDescription_(item, hasGooglePhotosAlbums)]]
-        </div>
-      </div>
-
-      <cr-icon-button class="subpage-arrow" id="subpage-button"
-          on-click="onSubpageArrowClick_" tabindex$="[[tabindex]]"
-          aria-label$="[[buttonLabel]]"
-          disabled$="[[disabled]]">
-      </cr-icon-button>
+  <div id="labelWrapper" aria-hidden="true">
+    <div>[[getItemName_(item)]]</div>
+    <div class="cr-secondary-text">
+      [[getItemDescription_(item, hasGooglePhotosAlbums)]]
     </div>
-  </template>
-  <script src="topic_source_item.js"></script>
-</dom-module>
+  </div>
+
+  <cr-icon-button class="subpage-arrow" id="subpage-button"
+      on-click="onSubpageArrowClick_" tabindex$="[[tabindex]]"
+      aria-label$="[[buttonLabel]]"
+      disabled$="[[disabled]]">
+  </cr-icon-button>
+</div>

@@ -6,12 +6,35 @@
  * @fileoverview 'settings-ambient-mode-page' is the settings page containing
  * ambient mode settings.
  */
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './topic_source_list.js';
+import '../../prefs/prefs.js';
+import '../../controls/settings_radio_group.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
+import {AmbientModeBrowserProxy, AmbientModeBrowserProxyImpl} from './ambient_mode_browser_proxy.js';
+import {AmbientModeTemperatureUnit, AmbientModeTopicSource, TopicSourceItem} from './constants.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-ambient-mode-page',
 
   behaviors: [
-    DeepLinkingBehavior, I18nBehavior, PrefsBehavior,
-    settings.RouteObserverBehavior, WebUIListenerBehavior
+    DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
+    WebUIListenerBehavior
   ],
 
   properties: {
@@ -91,12 +114,12 @@ Polymer({
     'show-albums': 'onShowAlbums_',
   },
 
-  /** @private {?settings.AmbientModeBrowserProxy} */
+  /** @private {?AmbientModeBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.AmbientModeBrowserProxyImpl.getInstance();
+    this.browserProxy_ = AmbientModeBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -127,8 +150,8 @@ Polymer({
     }
 
     // Wait for element to load.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      Polymer.dom.flush();
+    afterNextRender(this, () => {
+      flush();
 
       const topicList = this.$$('topic-source-list');
       const listItem = topicList && topicList.$$('topic-source-item');
@@ -145,11 +168,11 @@ Polymer({
 
   /**
    * RouteObserverBehavior
-   * @param {!settings.Route} currentRoute
+   * @param {!Route} currentRoute
    * @protected
    */
   currentRouteChanged(currentRoute) {
-    if (currentRoute !== settings.routes.AMBIENT_MODE) {
+    if (currentRoute !== routes.AMBIENT_MODE) {
       return;
     }
 
@@ -205,8 +228,7 @@ Polymer({
   onShowAlbums_(event) {
     const params = new URLSearchParams();
     params.append('topicSource', JSON.stringify(event.detail));
-    settings.Router.getInstance().navigateTo(
-        settings.routes.AMBIENT_MODE_PHOTOS, params);
+    Router.getInstance().navigateTo(routes.AMBIENT_MODE_PHOTOS, params);
   },
 
   /**

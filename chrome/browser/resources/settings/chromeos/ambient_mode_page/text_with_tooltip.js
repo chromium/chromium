@@ -9,7 +9,13 @@
 const TOOLTIP_ANIMATE_IN_DELAY = 500;
 const TOOLTIP_ANIMATE_OUT_DURATION = 500;
 
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../../settings_shared_css.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'text-with-tooltip',
 
   properties: {

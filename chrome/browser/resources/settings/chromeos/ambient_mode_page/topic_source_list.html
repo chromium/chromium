@@ -1,47 +1,32 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared cr-shared-style iron-flex">
+  #topicSourceTitle {
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
 
-<link rel="import" href="topic_source_item.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="./constants.html">
+  topic-source-item {
+    align-items: center;
+    height: 64px;
+  }
 
-<dom-module id="topic-source-list">
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+<h2 id="topicSourceTitle" aria-hidden="true">
+  $i18n{ambientModeTopicSourceTitle}
+</h2>
+
+<iron-list id="topicSourceList" items="[[topicSources]]">
   <template>
-    <style include="settings-shared cr-shared-style iron-flex">
-      #topicSourceTitle {
-        padding-bottom: 16px;
-        padding-top: 16px;
-      }
-
-      topic-source-item {
-        align-items: center;
-        height: 64px;
-      }
-
-      iron-list > *:not(:first-of-type) {
-        border-top: var(--cr-separator-line);
-      }
-
-      iron-list > :focus {
-        background-color: var(--cr-focused-item-color);
-      }
-    </style>
-    <h2 id="topicSourceTitle" aria-hidden="true">
-      $i18n{ambientModeTopicSourceTitle}
-    </h2>
-
-    <iron-list id="topicSourceList" items="[[topicSources]]">
-      <template>
-        <topic-source-item item="[[item]]" disabled$="[[disabled]]"
-            tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"
-            has-google-photos-albums="[[hasGooglePhotosAlbums]]"
-            checked="[[isSelected_(item, selectedTopicSource)]]">
-        </topic-source-item>
-      </template>
-    </iron-list>
+    <topic-source-item item="[[item]]" disabled$="[[disabled]]"
+        tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"
+        has-google-photos-albums="[[hasGooglePhotosAlbums]]"
+        checked="[[isSelected_(item, selectedTopicSource)]]">
+    </topic-source-item>
   </template>
-  <script src="topic_source_list.js"></script>
-</dom-module>
+</iron-list>

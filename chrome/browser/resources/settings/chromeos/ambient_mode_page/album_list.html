@@ -1,46 +1,28 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared cr-shared-style iron-flex">
+  :host {
+    display: block;
+  }
 
-<link rel="import" href="album_item.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../global_scroll_target_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
+  paper-spinner-lite {
+    display: block;
+    height: 28px;
+    margin: 150px auto;
+    width: 28px;
+  }
 
-<dom-module id="album-list">
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+<paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
+</paper-spinner-lite>
+
+<iron-list scroll-target="[[subpageScrollTarget]]"
+  grid items="{{albums}}">
   <template>
-    <style include="settings-shared cr-shared-style iron-flex">
-      :host {
-        display: block;
-      }
-
-      paper-spinner-lite {
-        display: block;
-        height: 28px;
-        margin: 150px auto;
-        width: 28px;
-      }
-
-      iron-list > :focus {
-        background-color: var(--cr-focused-item-color);
-      }
-    </style>
-    <paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
-    </paper-spinner-lite>
-
-    <iron-list scroll-target="[[subpageScrollTarget]]"
-      grid items="{{albums}}">
-      <template>
-        <album-item album="{{item}}" checked="{{item.checked}}"
-            topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
-            role="checkbox">
-        </album-item>
-      </template>
-    </iron-list>
+    <album-item album="{{item}}" checked="{{item.checked}}"
+        topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
+        role="checkbox">
+    </album-item>
   </template>
-  <script src="album_list.js"></script>
-</dom-module>
+</iron-list>

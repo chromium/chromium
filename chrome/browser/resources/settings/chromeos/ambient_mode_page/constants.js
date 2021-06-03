@@ -7,14 +7,14 @@
  * Values need to stay in sync with the enum |ash::AmbientModeTopicSource|.
  * @enum {number}
  */
-/* #export */ const AmbientModeTopicSource = {
+export const AmbientModeTopicSource = {
   UNKNOWN: -1,
   GOOGLE_PHOTOS: 0,
   ART_GALLERY: 1,
 };
 
 /** @enum {string} */
-/* #export */ const AmbientModeTemperatureUnit = {
+export const AmbientModeTemperatureUnit = {
   UNKNOWN: 'unknown',
   FAHRENHEIT: 'fahrenheit',
   CELSIUS: 'celsius',
@@ -28,7 +28,7 @@
  *   hasGooglePhotosAlbums: boolean,
  * }}
  */
-/* #export */ let TopicSourceItem;
+export let TopicSourceItem;
 
 /**
  * Album metadata for UI.
@@ -43,7 +43,7 @@
  *   recentHighlightsUrls: Array<string>,
  * }}
  */
-/* #export */ let AmbientModeAlbum;
+export let AmbientModeAlbum;
 
 /**
  * Settings containing topic source and the albums.
@@ -53,4 +53,4 @@
  *   topicSource: !AmbientModeTopicSource,
  * }}
  */
-/* #export */ let AmbientModeSettings;
+export let AmbientModeSettings;

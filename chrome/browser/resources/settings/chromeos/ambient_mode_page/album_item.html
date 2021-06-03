@@ -1,200 +1,185 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared cr-shared-style iron-flex">
+  :host(:not([disabled])) {
+    cursor: default;
+    display: block;
+    outline: none;
+  }
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="text_with_tooltip.html">
-<link rel="import" href="../../settings_shared_css.html">
+  #albumContainer {
+    /* For a grid iron-list the list template item must have both a fixed
+       width and height. */
+    height: 236px;
+    line-height: 20px;
+  }
 
-<dom-module id="album-item">
-  <template>
-    <style include="settings-shared cr-shared-style iron-flex">
-      :host(:not([disabled])) {
-        cursor: default;
-        display: block;
-        outline: none;
-      }
+  #albumContainer.personal-album {
+    margin: 8px 0;
+    width: 184px;
+  }
 
-      #albumContainer {
-        /* For a grid iron-list the list template item must have both a fixed
-           width and height. */
-        height: 236px;
-        line-height: 20px;
-      }
+  #albumContainer.art-album {
+    margin: 8px auto;
+    width: 280px;
+  }
 
-      #albumContainer.personal-album {
-        margin: 8px 0;
-        width: 184px;
-      }
+  #imageContainer {
+    background-color: rgba(var(--google-blue-50-rgb), .8);
+    border-radius: 8px;
+    display: block;
+    margin: 0 12px;
+    position: relative;
+  }
 
-      #albumContainer.art-album {
-        margin: 8px auto;
-        width: 280px;
-      }
+  #imageContainer.personal-album {
+    height: 160px;
+    width: 160px;
+  }
 
-      #imageContainer {
-        background-color: rgba(var(--google-blue-50-rgb), .8);
-        border-radius: 8px;
-        display: block;
-        margin: 0 12px;
-        position: relative;
-      }
+  #imageContainer.art-album {
+    height: 160px;
+    width: 256px;
+  }
 
-      #imageContainer.personal-album {
-        height: 160px;
-        width: 160px;
-      }
+  #albumInfo {
+    margin: 16px 12px 0 12px;
+  }
 
-      #imageContainer.art-album {
-        height: 160px;
-        width: 256px;
-      }
+  #image {
+    border-radius: 8px;
+    display: block;
+    height: 160px;
+    object-fit: cover;
+    position: absolute;
+    transform: scale(1.0);
+    transition: transform 240ms;
+  }
 
-      #albumInfo {
-        margin: 16px 12px 0 12px;
-      }
+  #image.personal-album {
+    width: 160px;
+  }
 
-      #image {
-        border-radius: 8px;
-        display: block;
-        height: 160px;
-        object-fit: cover;
-        position: absolute;
-        transform: scale(1.0);
-        transition: transform 240ms;
-      }
+  #image.art-album {
+    width: 256px;
+  }
 
-      #image.personal-album {
-        width: 160px;
-      }
+  #rhImages {
+    border-radius: 8px;
+    display: block;
+    height: 160px;
+    position: absolute;
+    transform: scale(1.0);
+    transition: transform 240ms;
+    width: 160px;
+  }
 
-      #image.art-album {
-        width: 256px;
-      }
+  .image-rh {
+    border-radius: 8px;
+    display: block;
+    height: 78px;
+    position: absolute;
+    width: 78px;
+  }
 
-      #rhImages {
-        border-radius: 8px;
-        display: block;
-        height: 160px;
-        position: absolute;
-        transform: scale(1.0);
-        transition: transform 240ms;
-        width: 160px;
-      }
+  .top-left {
+    left: 0;
+    top: 0;
+  }
 
-      .image-rh {
-        border-radius: 8px;
-        display: block;
-        height: 78px;
-        position: absolute;
-        width: 78px;
-      }
+  .top-right {
+    left: 82px;
+    top: 0;
+  }
 
-      .top-left {
-        left: 0;
-        top: 0;
-      }
+  .bottom-left {
+    left: 0;
+    top: 82px;
+  }
 
-      .top-right {
-        left: 82px;
-        top: 0;
-      }
+  .bottom-right {
+    left: 82px;
+    top: 82px;
+  }
 
-      .bottom-left {
-        left: 0;
-        top: 82px;
-      }
+  .check {
+    display: block;
+    position: absolute;
+    z-index: 1;
+  }
 
-      .bottom-right {
-        left: 82px;
-        top: 82px;
-      }
+  .check.personal-album {
+    left: 134px;
+    top: 6px;
+  }
 
-      .check {
-        display: block;
-        position: absolute;
-        z-index: 1;
-      }
+  .check.art-album {
+    left: 230px;
+    top: 0;
+  }
 
-      .check.personal-album {
-        left: 134px;
-        top: 6px;
-      }
+  :host([checked]) #image {
+    box-shadow: 0 4px 8px rgba(32, 33, 36, 0.17);
+    transition: transform 240ms;
+  }
 
-      .check.art-album {
-        left: 230px;
-        top: 0;
-      }
+  :host([checked]) #image.personal-album {
+    transform: scale(0.8);
+  }
 
-      :host([checked]) #image {
-        box-shadow: 0 4px 8px rgba(32, 33, 36, 0.17);
-        transition: transform 240ms;
-      }
+  :host([checked]) #image.art-album {
+    transform: scale(0.875);
+  }
 
-      :host([checked]) #image.personal-album {
-        transform: scale(0.8);
-      }
-
-      :host([checked]) #image.art-album {
-        transform: scale(0.875);
-      }
-
-      :host([checked]) #rhImages {
-        transform: scale(0.8);
-      }
-    </style>
-    <div id="albumContainer" class$="[[computeClass_(topicSource)]]">
-      <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
-          aria-hidden="true">
-        <!-- Only shows the images and icon when the URLs are successfully
-             fetched -->
-        <template is="dom-if" if="[[album.recentHighlightsUrls]]">
-          <div id="rhImages" actionable on-click="onImageClick_">
-            <img class="image-rh top-left"
-                src="[[album.recentHighlightsUrls.0]]"
-                hidden="[[!album.recentHighlightsUrls.0]]">
-            </img>
-            <img class="image-rh top-right"
-                src="[[album.recentHighlightsUrls.1]]"
-                hidden="[[!album.recentHighlightsUrls.1]]">
-            </img>
-            <img class="image-rh bottom-left"
-                src="[[album.recentHighlightsUrls.2]]"
-                hidden="[[!album.recentHighlightsUrls.2]]">
-            </img>
-            <img class="image-rh bottom-right"
-                src="[[album.recentHighlightsUrls.3]]"
-                hidden="[[!album.recentHighlightsUrls.3]]">
-            </img>
-          </div>
-          <iron-icon icon="os-settings:ic-checked-filled"
-              class$="check [[computeClass_(topicSource)]]"
-              hidden="[[!album.checked]]">
-          </iron-icon>
-        </template>
-        <template is="dom-if" if="[[album.url]]">
-          <img id="image" class$="[[computeClass_(topicSource)]]" actionable
-              src="[[album.url]]" on-click="onImageClick_">
-          </img>
-          <iron-icon icon="os-settings:ic-checked-filled"
-              class$="check [[computeClass_(topicSource)]]"
-              hidden="[[!album.checked]]">
-          </iron-icon>
-        </template>
+  :host([checked]) #rhImages {
+    transform: scale(0.8);
+  }
+</style>
+<div id="albumContainer" class$="[[computeClass_(topicSource)]]">
+  <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
+      aria-hidden="true">
+    <!-- Only shows the images and icon when the URLs are successfully
+         fetched -->
+    <template is="dom-if" if="[[album.recentHighlightsUrls]]">
+      <div id="rhImages" actionable on-click="onImageClick_">
+        <img class="image-rh top-left"
+            src="[[album.recentHighlightsUrls.0]]"
+            hidden="[[!album.recentHighlightsUrls.0]]">
+        </img>
+        <img class="image-rh top-right"
+            src="[[album.recentHighlightsUrls.1]]"
+            hidden="[[!album.recentHighlightsUrls.1]]">
+        </img>
+        <img class="image-rh bottom-left"
+            src="[[album.recentHighlightsUrls.2]]"
+            hidden="[[!album.recentHighlightsUrls.2]]">
+        </img>
+        <img class="image-rh bottom-right"
+            src="[[album.recentHighlightsUrls.3]]"
+            hidden="[[!album.recentHighlightsUrls.3]]">
+        </img>
       </div>
+      <iron-icon icon="os-settings:ic-checked-filled"
+          class$="check [[computeClass_(topicSource)]]"
+          hidden="[[!album.checked]]">
+      </iron-icon>
+    </template>
+    <template is="dom-if" if="[[album.url]]">
+      <img id="image" class$="[[computeClass_(topicSource)]]" actionable
+          src="[[album.url]]" on-click="onImageClick_">
+      </img>
+      <iron-icon icon="os-settings:ic-checked-filled"
+          class$="check [[computeClass_(topicSource)]]"
+          hidden="[[!album.checked]]">
+      </iron-icon>
+    </template>
+  </div>
 
-      <div id="albumInfo" class$="[[computeClass_(topicSource)]]"
-          aria-hidden="true">
-        <text-with-tooltip id="albumTitle" text="[[album.title]]"
-          tooltip-is-visible="{{titleTooltipIsVisible}}"></text-with-tooltip>
-        <text-with-tooltip id="albumDescription"
-          text="[[album.description]]" line-clamp="2"
-          tooltip-is-visible="{{descriptionTooltipIsVisible}}"
-          text-style="cr-secondary-text"></text-with-tooltip>
-      </div>
-    </div>
-  </template>
-  <script src="album_item.js"></script>
-</dom-module>
+  <div id="albumInfo" class$="[[computeClass_(topicSource)]]"
+      aria-hidden="true">
+    <text-with-tooltip id="albumTitle" text="[[album.title]]"
+      tooltip-is-visible="{{titleTooltipIsVisible}}"></text-with-tooltip>
+    <text-with-tooltip id="albumDescription"
+      text="[[album.description]]" line-clamp="2"
+      tooltip-is-visible="{{descriptionTooltipIsVisible}}"
+      text-style="cr-secondary-text"></text-with-tooltip>
+  </div>
+</div>

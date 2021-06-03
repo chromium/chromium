@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../prefs/prefs.js';
-import './ambient_mode_page/ambient_mode_page.m.js';
+import './ambient_mode_page/ambient_mode_page.js';
 import './bluetooth_page/bluetooth_device_list_item.js';
 import './bluetooth_page/bluetooth_page.js';
 import './bluetooth_page/bluetooth_subpage.js';
@@ -93,8 +93,8 @@ export {getSearchManager, SearchRequest, SearchResult, setSearchManagerForTestin
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.m.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.m.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.m.js';
-export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.m.js';
-export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.m.js';
+export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.js';
+export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
