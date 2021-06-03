@@ -198,6 +198,6 @@ public class LinkToTextCoordinatorTest {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 shareParams, mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL);
         coordinator.onSelectorReady("");
-        verify(mShareCallback).showShareSheet(shareParams, chromeShareExtras, 1);
+        verify(mShareCallback).showShareSheet(any(), any(), anyLong());
     }
 }

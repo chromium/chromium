@@ -70,6 +70,7 @@ public final class ShareSheetBottomSheetContentTest {
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
                                .setText(sText)
                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                               .setLinkToTextSuccessful(true)
                                .build();
 
         mShareSheetBottomSheetContent = new ShareSheetBottomSheetContent(
