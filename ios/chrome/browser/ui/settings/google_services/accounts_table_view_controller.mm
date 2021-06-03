@@ -445,12 +445,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       "-stopBrowserStateServiceObservers";
 
   [self reloadData];
-  [self popViewIfSignedOut];
   if (![self authService] -> IsAuthenticated() &&
                                  _dimissAccountDetailsViewControllerBlock) {
     _dimissAccountDetailsViewControllerBlock(/*animated=*/YES);
     _dimissAccountDetailsViewControllerBlock = nil;
   }
+  // Only attempt to pop the top-most view controller once the account list
+  // has been dismissed.
+  [self popViewIfSignedOut];
 }
 
 #pragma mark - Authentication operations
