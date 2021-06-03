@@ -100,6 +100,13 @@ void AppServiceProxyChromeOs::Initialize() {
       chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
     standalone_browser_apps_ =
         std::make_unique<StandaloneBrowserApps>(app_service_, profile_);
+
+    auto* browser_manager = crosapi::BrowserManager::Get();
+    // In unit tests, it is possible that the browser manager is not created.
+    if (browser_manager) {
+      keep_alive_ = browser_manager->KeepAlive(
+          crosapi::BrowserManager::Feature::kAppService);
+    }
   }
   web_apps_ = std::make_unique<web_app::WebAppsChromeOs>(app_service_, profile_,
                                                          &instance_registry_);
