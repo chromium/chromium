@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 
 namespace blink {
@@ -17,6 +18,19 @@ LayoutNGSVGText::LayoutNGSVGText(Element* element)
       needs_update_bounding_box_(true),
       needs_text_metrics_update_(true) {
   DCHECK(IsA<SVGTextElement>(element));
+}
+
+void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
+                                     const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
+  SVGResources::UpdatePaints(*GetElement(), old_style, StyleRef());
+}
+
+void LayoutNGSVGText::WillBeDestroyed() {
+  NOT_DESTROYED();
+  SVGResources::ClearPaints(*GetElement(), Style());
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeDestroyed();
 }
 
 const char* LayoutNGSVGText::GetName() const {

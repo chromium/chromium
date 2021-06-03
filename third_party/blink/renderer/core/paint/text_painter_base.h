@@ -25,7 +25,6 @@ class Document;
 class GraphicsContext;
 class GraphicsContextStateSaver;
 class Node;
-class SVGLengthContext;
 class TextDecorationOffsetBase;
 struct PaintInfo;
 
@@ -72,10 +71,6 @@ class CORE_EXPORT TextPainterBase {
   static TextPaintStyle TextPaintingStyle(const Document&,
                                           const ComputedStyle&,
                                           const PaintInfo&);
-  static TextPaintStyle SvgTextPaintingStyle(const Document&,
-                                             const SVGLengthContext&,
-                                             const ComputedStyle&,
-                                             const PaintInfo&);
   static TextPaintStyle SelectionPaintingStyle(
       const Document&,
       const ComputedStyle&,
@@ -89,10 +84,6 @@ class CORE_EXPORT TextPainterBase {
   static AffineTransform Rotation(const PhysicalRect& box_rect, WritingMode);
 
  protected:
-  static void AdjustTextStyleForClip(TextPaintStyle&);
-  static void AdjustTextStyleForPrint(const Document&,
-                                      const ComputedStyle&,
-                                      TextPaintStyle&);
   void UpdateGraphicsContext(const TextPaintStyle& style,
                              GraphicsContextStateSaver& saver) {
     UpdateGraphicsContext(graphics_context_, style, horizontal_, saver);

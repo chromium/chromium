@@ -32,6 +32,8 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   FloatRect ObjectBoundingBox() const override;
   FloatRect StrokeBoundingBox() const override;
   FloatRect VisualRectInLocalSVGCoordinates() const override;
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void WillBeDestroyed() override;
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;

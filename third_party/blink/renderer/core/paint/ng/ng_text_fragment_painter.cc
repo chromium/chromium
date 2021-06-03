@@ -144,10 +144,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const LayoutObject* layout_object = text_item.GetLayoutObject();
   const Document& document = layout_object->GetDocument();
   const bool is_printing = document.Printing();
+  // Don't paint selections when rendering a mask, clip-path (as a mask),
+  // pattern or feImage (element reference.)
+  const bool is_rendering_resource = paint_info.IsRenderingResourceSubtree();
 
   // Determine whether or not we're selected.
   absl::optional<NGHighlightPainter::SelectionPaintState> selection;
-  if (UNLIKELY(!is_printing && paint_info.phase != PaintPhase::kTextClip &&
+  if (UNLIKELY(!is_printing && !is_rendering_resource &&
+               paint_info.phase != PaintPhase::kTextClip &&
                layout_object->IsSelected())) {
     const NGInlineCursor& root_inline_cursor =
         InlineCursorForBlockFlow(cursor_, &inline_cursor_for_block_flow_);
@@ -238,14 +242,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // Determine text colors.
 
   Node* node = layout_object->GetNode();
-  DCHECK(!svg_inline_text ||
-         (!IsA<SVGElement>(node) && IsA<SVGElement>(node->parentNode())));
   TextPaintStyle text_style =
-      svg_inline_text
-          ? TextPainterBase::SvgTextPaintingStyle(
-                document, SVGLengthContext(To<SVGElement>(node->parentNode())),
-                style, paint_info)
-          : TextPainterBase::TextPaintingStyle(document, style, paint_info);
+      TextPainterBase::TextPaintingStyle(document, style, paint_info);
   // TODO(crbug.com/1179585): Support SVG Paint Servers (e.g. Gradient, Pattern)
   if (UNLIKELY(selection)) {
     selection->ComputeSelectionStyle(document, style, node, paint_info,
@@ -261,27 +259,38 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const bool paint_marker_backgrounds =
       paint_info.phase != PaintPhase::kSelectionDragImage &&
       paint_info.phase != PaintPhase::kTextClip && !is_printing;
-  absl::optional<GraphicsContextStateSaver> state_saver;
+  GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   absl::optional<AffineTransform> rotation;
   const WritingMode writing_mode = style.GetWritingMode();
   const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
   int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   PhysicalOffset text_origin(box_rect.offset.left,
                              box_rect.offset.top + ascent);
-  if (svg_inline_text && scaling_factor != 1.0f) {
-    state_saver.emplace(context);
-    context.Scale(1 / scaling_factor, 1 / scaling_factor);
-  }
-  if (text_item.HasSvgTransformForPaint()) {
-    if (!state_saver)
-      state_saver.emplace(context);
-    context.ConcatCTM(text_item.BuildSvgTransformForPaint());
-  }
+
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);
   NGHighlightPainter highlight_painter(
       text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
       box_rect.offset, style, std::move(selection), is_printing);
+
+  if (svg_inline_text) {
+    NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
+        *svg_inline_text, style, paint_info.IsRenderingClipPathAsMaskImage());
+
+    if (scaling_factor != 1.0f) {
+      state_saver.SaveIfNeeded();
+      context.Scale(1 / scaling_factor, 1 / scaling_factor);
+      svg_state.EnsureShaderTransform().Scale(scaling_factor);
+    }
+    if (text_item.HasSvgTransformForPaint()) {
+      state_saver.SaveIfNeeded();
+      const auto fragment_transform = text_item.BuildSvgTransformForPaint();
+      context.ConcatCTM(fragment_transform);
+      DCHECK(fragment_transform.IsInvertible());
+      svg_state.EnsureShaderTransform().PreMultiply(
+          fragment_transform.Inverse());
+    }
+  }
 
   // 1. Paint backgrounds for document markers that don’t participate in the CSS
   // highlight overlay system, such as composition highlights. They use physical
@@ -289,13 +298,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   highlight_painter.Paint(NGHighlightPainter::kBackground);
 
   if (!is_horizontal) {
-    if (!state_saver)
-      state_saver.emplace(context);
+    state_saver.SaveIfNeeded();
     // Because we rotate the GraphicsContext to match the logical direction,
     // transpose the |box_rect| to match to it.
     box_rect.size = PhysicalSize(box_rect.Height(), box_rect.Width());
     rotation.emplace(TextPainterBase::Rotation(box_rect, writing_mode));
     context.ConcatCTM(*rotation);
+    if (NGTextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
+      DCHECK(rotation->IsInvertible());
+      state->EnsureShaderTransform().PreMultiply(rotation->Inverse());
+    }
   }
 
   if (UNLIKELY(highlight_painter.Selection())) {

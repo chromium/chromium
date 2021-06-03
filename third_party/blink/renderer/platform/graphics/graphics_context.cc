@@ -637,6 +637,17 @@ void GraphicsContext::DrawText(const Font& font,
                           : Font::DrawType::kGlyphsOnly);
 }
 
+void GraphicsContext::DrawText(const Font& font,
+                               const NGTextFragmentPaintInfo& text_info,
+                               const FloatPoint& point,
+                               const PaintFlags& flags,
+                               DOMNodeId node_id) {
+  font.DrawText(canvas_, text_info, point, device_scale_factor_, node_id,
+                DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText),
+                printing_ ? Font::DrawType::kGlyphsAndClusters
+                          : Font::DrawType::kGlyphsOnly);
+}
+
 template <typename DrawTextFunc>
 void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
   TextDrawingModeFlags mode_flags = TextDrawingMode();

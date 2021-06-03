@@ -311,6 +311,14 @@ class PLATFORM_EXPORT GraphicsContext {
                 const PaintFlags&,
                 DOMNodeId);
 
+  // TODO(layout-dev): This method is only used by NGTextPainter, see if the
+  // four parameter overload can be removed or if it can wrap this method.
+  void DrawText(const Font&,
+                const NGTextFragmentPaintInfo&,
+                const FloatPoint&,
+                const PaintFlags&,
+                DOMNodeId);
+
   void DrawEmphasisMarks(const Font&,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
