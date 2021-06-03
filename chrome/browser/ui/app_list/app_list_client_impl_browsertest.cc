@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -309,7 +310,11 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
                                  true /* initiated_by_user */);
   ASSERT_TRUE(search_controller->FindSearchResult(app_result_id));
 
+  // Expect that the browser window is not minimized.
+  ASSERT_FALSE(browser()->window()->IsMinimized());
+
   // Open the app result.
+  base::HistogramTester histogram_tester;
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ash::AppListSearchResultType::kInstalledApp,
                            ui::EF_NONE,
@@ -317,8 +322,32 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
                            ash::AppListLaunchType::kAppSearchResult, 0,
                            false /* launch_as_default */);
 
+  // Expect that opening the result from the search box is recorded.
+  histogram_tester.ExpectBucketCount(
+      "Apps.OpenedAppListSearchResultFromSearchBox."
+      "ExistNonAppBrowserWindowOpenAndNotMinimized",
+      static_cast<int>(ash::AppListSearchResultType::kInstalledApp),
+      /*expected_bucket_count=*/1);
+
   // App list should be dismissed.
   EXPECT_FALSE(client->app_list_target_visibility());
+
+  // Minimize the browser. Then show the app list and open the app result.
+  browser()->window()->Minimize();
+  client->ShowAppList();
+  client->OpenSearchResult(model_updater->model_id(), app_result_id,
+                           ash::AppListSearchResultType::kInstalledApp,
+                           ui::EF_NONE,
+                           ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+                           ash::AppListLaunchType::kAppSearchResult, 0,
+                           false /* launch_as_default */);
+
+  // Expect that opening the result from the search box is recorded.
+  histogram_tester.ExpectBucketCount(
+      "Apps.OpenedAppListSearchResultFromSearchBox."
+      "NonAppBrowserWindowsEitherClosedOrMinimized",
+      static_cast<int>(ash::AppListSearchResultType::kInstalledApp),
+      /*expected_bucket_count=*/1);
 
   // Needed to let AppLaunchEventLogger finish its work on worker thread.
   // Otherwise, its |weak_factory_| is released on UI thread and causing

@@ -161,6 +161,11 @@ class AppListClientImpl
   // Maybe records the metrics related to showing the app list.
   void MaybeRecordViewShown();
 
+  // Records the browser window status + the opened search result type when
+  // the result is opened from the search box.
+  void RecordOpenedResultFromSearchBox(
+      ash::AppListSearchResultType result_type);
+
   // The current display id showing the app list.
   int64_t display_id_ = display::kInvalidDisplayId;
 
