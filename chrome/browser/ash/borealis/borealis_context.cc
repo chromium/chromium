@@ -4,10 +4,17 @@
 
 #include "chrome/browser/ash/borealis/borealis_context.h"
 
+#include <memory>
+
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 #include "chrome/browser/ash/borealis/borealis_engagement_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
@@ -21,6 +28,29 @@
 #include "url/gurl.h"
 
 namespace borealis {
+
+namespace {
+
+// Similar to a delayed callback, but can be cancelled by deleting.
+class ScopedDelayedCallback {
+ public:
+  explicit ScopedDelayedCallback(base::OnceClosure callback,
+                                 base::TimeDelta delay)
+      : weak_factory_(this) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ScopedDelayedCallback::OnComplete,
+                       weak_factory_.GetWeakPtr(), std::move(callback)),
+        delay);
+  }
+
+ private:
+  void OnComplete(base::OnceClosure callback) { std::move(callback).Run(); }
+
+  base::WeakPtrFactory<ScopedDelayedCallback> weak_factory_;
+};
+
+}  // namespace
 
 class BorealisLifetimeObserver
     : public BorealisWindowManager::AppWindowLifetimeObserver {
@@ -43,6 +73,10 @@ class BorealisLifetimeObserver
         .ShutdownWithDelay();
   }
 
+  void OnAppStarted(const std::string& app_id) override {
+    app_delayers_.erase(app_id);
+  }
+
   void OnAppFinished(const std::string& app_id,
                      aura::Window* last_window) override {
     // Launch post-game survey.
@@ -51,8 +85,14 @@ class BorealisLifetimeObserver
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_),
         app_id, base::UTF16ToUTF8(last_window->GetTitle()));
     if (url.is_valid()) {
-      ash::NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          url, /*from_user_interaction=*/true);
+      // Unretained is safe here since we transitively own the
+      // ScopedDelayedCallback's weak factory.
+      app_delayers_.emplace(
+          app_id,
+          std::make_unique<ScopedDelayedCallback>(
+              base::BindOnce(&BorealisLifetimeObserver::OnDelayComplete,
+                             base::Unretained(this), std::move(url), app_id),
+              base::TimeDelta::FromSeconds(5)));
     }
   }
 
@@ -62,10 +102,18 @@ class BorealisLifetimeObserver
   }
 
  private:
+  void OnDelayComplete(GURL gurl, std::string app_id) {
+    app_delayers_.erase(app_id);
+    ash::NewWindowDelegate::GetInstance()->NewTabWithUrl(
+        gurl, /*from_user_interaction=*/true);
+  }
+
   Profile* const profile_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       observation_;
+  base::flat_map<std::string, std::unique_ptr<ScopedDelayedCallback>>
+      app_delayers_;
 };
 
 BorealisContext::~BorealisContext() = default;
