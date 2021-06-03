@@ -336,10 +336,6 @@ void ScenicWindow::OnScenicEvents(
 void ScenicWindow::OnViewMetrics(const fuchsia::ui::gfx::Metrics& metrics) {
   device_pixel_ratio_ = std::max(metrics.scale_x, metrics.scale_y);
 
-  ScenicScreen* screen = manager_->screen();
-  if (screen)
-    screen->OnWindowMetrics(window_id_, device_pixel_ratio_);
-
   if (view_properties_)
     UpdateSize();
 }

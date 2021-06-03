@@ -24,7 +24,6 @@ class ScenicScreen : public PlatformScreen {
   // Processes window state change events for the ScenicWindow |window_id_|.
   void OnWindowAdded(int32_t window_id);
   void OnWindowRemoved(int32_t window_id);
-  void OnWindowMetrics(int32_t window_id, float device_pixel_ratio);
   void OnWindowBoundsChanged(int32_t window_id, gfx::Rect bounds);
 
   base::WeakPtr<ScenicScreen> GetWeakPtr();
