@@ -12,7 +12,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -132,9 +131,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       false,         // is_trusted
       frame->GetTopFrameToken(), isolation_info,
       std::move(client_security_state), std::move(coep_reporter),
-      WebContents::FromRenderFrameHost(frame)
-          ->GetOrCreateWebPreferences()
-          .allow_universal_access_from_file_urls,
+      frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
@@ -159,9 +156,7 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->GetTopFrameToken(), isolation_info,
       std::move(client_security_state),
       mojo::NullRemote(),  // coep_reporter
-      WebContents::FromRenderFrameHost(frame)
-          ->GetOrCreateWebPreferences()
-          .allow_universal_access_from_file_urls,
+      frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       true,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
@@ -186,9 +181,7 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       net::IsolationInfo(),  // isolation_info
       std::move(client_security_state),
       mojo::NullRemote(),  // coep_reporter
-      WebContents::FromRenderFrameHost(frame)
-          ->GetOrCreateWebPreferences()
-          .allow_universal_access_from_file_urls,
+      frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
