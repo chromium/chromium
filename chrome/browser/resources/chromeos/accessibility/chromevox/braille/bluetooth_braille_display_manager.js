@@ -52,16 +52,52 @@ BluetoothBrailleDisplayManager = class {
      * utilize Brltty (e.g. BrailleBack).
      * @private {!Array<string|RegExp>}
      */
-    this.displayNames_ = [
-      '"EL12-', 'Esys-', 'Focus 14 BT', 'Focus 40 BT', 'Brailliant BI',
-      /Hansone|HansoneXL|BrailleSense|BrailleEDGE|SmartBeetle/,
-      'Refreshabraille', 'Orbit', 'Baum SuperVario', 'VarioConnect',
-      'VarioUltra', 'HWG Brailliant', 'braillex trio', /Alva BC/i, 'TSM', 'TS5',
-      new RegExp(
-          '(Actilino.*|Active Star.*|Braille Wave( BRW)?|Braillino( BL2)?' +
-          '|Braille Star 40( BS4)?|Easy Braille( EBR)?|Active Braille( AB4)?' +
-          '|Basic Braille BB[3,4,6]?)\\/[a-zA-Z][0-9]-[0-9]{5}'),
-      new RegExp('(BRW|BL2|BS4|EBR|AB4|BB(3|4|6)?)\\/[a-zA-Z][0-9]-[0-9]{5}')
+    this.displayNamePrefixes_ = [
+      'Actilino ALO',
+      'Activator AC4',
+      'Active Braille AB',
+      'Active Star AS',
+      'ALVA BC',
+      'APH Chameleon',
+      'APH Mantis',
+      'Basic Braille BB',
+      'Basic Braille Plus BP',
+      'BAUM Conny',
+      'Baum PocketVario',
+      'Baum SuperVario',
+      'Baum SVario',
+      'BrailleConnect',
+      'BrailleEDGE',
+      'BrailleMe',
+      'BMpk',
+      'BMsmart',
+      'BM32',
+      'BrailleNote Touch',
+      'BrailleSense',
+      'Braille Star',
+      'Braillex',
+      'Brailliant BI',
+      'Brailliant 14',
+      'Brailliant 80',
+      'Braillino BL',
+      'B2G',
+      'Conny',
+      'Easy Braille EBR',
+      'EL12-',
+      'Esys-',
+      'Focus',
+      'Humanware BrailleOne',
+      'HWG Brailliant',
+      'MB248',
+      'NLS eReader',
+      'Orbit Reader',
+      'Pronto!',
+      'Refreshabraille',
+      'SmartBeetle',
+      'SuperVario',
+      'TSM',
+      'VarioConnect',
+      'VarioUltra'
     ];
 
     /**
@@ -187,7 +223,7 @@ BluetoothBrailleDisplayManager = class {
     handleDevicesChanged(opt_device) {
       chrome.bluetooth.getDevices((devices) => {
         const displayList = devices.filter((device) => {
-          return this.displayNames_.some((name) => {
+          return this.displayNamePrefixes_.some((name) => {
             return device.name && device.name.search(name) === 0;
           });
         });

@@ -169,6 +169,14 @@ chrome/browser/extensions/api/braille_display_private/braille_controller_brlapi.
 
 matches the one in the new brltty.
 
+#### ChromeVox
+ChromeVox keeps a list of bluetooth braille display names
+(search for bluetooth_display_manager.js).
+
+Within the brltty sources (as of 6.3), one can find all bluetooth display names
+in:
+brltty/Programs/bluetooth_names.c
+
 ### Testing
 
 Firstly, try to test against brltty on linux. This involves building brltty at
