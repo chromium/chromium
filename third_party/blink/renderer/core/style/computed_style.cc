@@ -300,12 +300,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
   DCHECK_NE(&old_style, &new_style);
   if (old_style.Display() != new_style.Display() &&
       old_style.BlockifiesChildren() != new_style.BlockifiesChildren())
-    return Difference::kDescendantAffecting;
-  // TODO(crbug.com/1213888): Only recalc affected descendants.
-  if ((old_style.ContainerName() != new_style.ContainerName()) ||
-      (old_style.ContainerType() != new_style.ContainerType())) {
-    return Difference::kDescendantAffecting;
-  }
+    return Difference::kDisplayAffectingDescendantStyles;
   if (!old_style.NonIndependentInheritedEqual(new_style))
     return Difference::kInherited;
   if (old_style.JustifyItems() != new_style.JustifyItems())

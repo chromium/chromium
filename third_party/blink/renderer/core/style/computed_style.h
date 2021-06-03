@@ -327,17 +327,11 @@ class ComputedStyle : public ComputedStyleBase,
     // Inherited properties are different which means we need to recalc style
     // for children.
     kInherited,
-    // Properties which can affect descendants changed. This can happen the
-    // following ways:
-    //
     // Display type changes for flex/grid/custom layout affects computed style
     // adjustments for descendants. For instance flex/grid items are blockified
     // at computed style time and such items can be arbitrarily deep down the
     // flat tree in the presence of display:contents.
-    //
-    // The container-name property affects which container is queried by
-    // rules matching descedant elements.
-    kDescendantAffecting,
+    kDisplayAffectingDescendantStyles,
   };
   CORE_EXPORT static Difference ComputeDifference(
       const ComputedStyle* old_style,
