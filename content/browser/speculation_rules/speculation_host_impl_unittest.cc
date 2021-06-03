@@ -4,6 +4,7 @@
 
 #include "content/browser/speculation_rules/speculation_host_impl.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/public/common/content_client.h"
@@ -12,6 +13,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
@@ -192,6 +194,34 @@ TEST_F(SpeculationHostImplTest, PrerenderOnlyOnce) {
   update_prerender_candidate(kSecondPrerenderingUrl);
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kSecondPrerenderingUrl));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kFirstPrerenderingUrl));
+}
+
+// Tests that SpeculationHostImpl crash the renderer process if it receives
+// non-http prerender candidates.
+TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  const GURL kPrerenderingUrl = GURL("blob:https://bar");
+  candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
+
+  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote.FlushForTesting();
+  EXPECT_EQ(bad_message_error, "SH_NON_HTTP");
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
 class TestSpeculationHostDelegate : public SpeculationHostDelegate {

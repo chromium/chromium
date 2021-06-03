@@ -227,7 +227,8 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
       // This includes totally invalid ones and ones with unacceptable schemes.
       R"({"source": "list",
           "urls": [
-            "valid.html", "mailto:alice@example.com", "http://@:"
+            "valid.html", "mailto:alice@example.com", "http://@:",
+            "blob:https://bar"
            ]
          }]})",
       KURL("https://example.com/"));

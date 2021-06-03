@@ -8,10 +8,31 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+// Returns true if all candidates pass the inspection.
+bool InspectCandidates(
+    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+  for (auto& candidate : candidates) {
+    // These non-http candidates should be filtered out in Blink and
+    // SpeculationHostImpl should not see them. If SpeculationHostImpl receives
+    // non-http candidates, it may mean the renderer process has a bug
+    // or is compromised.
+    if (!candidate->url.SchemeIsHTTPOrHTTPS()) {
+      mojo::ReportBadMessage("SH_NON_HTTP");
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 // static
 void SpeculationHostImpl::Bind(
@@ -47,6 +68,8 @@ SpeculationHostImpl::~SpeculationHostImpl() = default;
 void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!InspectCandidates(candidates))
+    return;
 
   // Only handle messages from an active main frame.
   if (!render_frame_host()->IsActive())
