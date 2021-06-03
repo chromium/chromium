@@ -1331,6 +1331,17 @@ API_AVAILABLE(ios(13.0))
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
   DCHECK(self.signinPromoViewMediator);
+  if (![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
+    // Need to remove the sign-in promo view mediator when the section doesn't
+    // exist anymore. The mediator should not be removed each time the section
+    // is removed since the section is replaced at each reload.
+    // Metrics would be recorded too often.
+    [self.signinPromoViewMediator signinPromoViewIsRemoved];
+    self.signinPromoViewMediator.consumer = nil;
+    self.signinPromoViewMediator = nil;
+    return;
+  }
   // Update the TableViewSigninPromoItem configurator. It will be used by the
   // item to configure the cell once |self.tableView| requests a cell on
   // cellForRowAtIndexPath.
