@@ -213,6 +213,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
                                  StringCallback callback,
                                  ErrorCallback error_callback) = 0;
 
+  // Calls the RequestTrafficCounters method.
+  // |callback| is called after the method call succeeds.
+  virtual void RequestTrafficCounters(const dbus::ObjectPath& service_path,
+                                      ListValueCallback callback,
+                                      ErrorCallback error_callback) = 0;
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 
