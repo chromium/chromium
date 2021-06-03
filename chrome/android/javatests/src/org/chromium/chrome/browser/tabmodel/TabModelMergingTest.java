@@ -530,6 +530,7 @@ public class TabModelMergingTest {
         waitForActivityStateChange(ActivityState.RESUMED, mActivity2, false);
         waitForActivityStateChange(ActivityState.RESUMED, mActivity1, true);
 
+        MultiInstanceManager.setTestDisplayIds(Collections.singletonList(0));
         m1.setCurrentDisplayIdForTesting(0);
         m2.setCurrentDisplayIdForTesting(1);
 
