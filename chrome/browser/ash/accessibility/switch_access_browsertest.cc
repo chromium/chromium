@@ -391,8 +391,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
   ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
 }
 
+// Test is flaky: https://crbug.com/1216048.
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
-                       PointScanClickWhenMouseEventsDisabled) {
+                       DISABLED_PointScanClickWhenMouseEventsDisabled) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
 
