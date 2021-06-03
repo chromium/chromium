@@ -37,6 +37,7 @@ enum ProbeCategoryEnum {
   kSystem,
   kNetwork,
   kAudio,
+  kBootPerformance,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -553,6 +554,22 @@ struct AudioInfo {
   uint32 severe_underruns;
 };
 
+// Boot performance result.
+union BootPerformanceResult {
+  // Valid BootPerformanceInfo.
+  BootPerformanceInfo boot_performance_info;
+  // The error that occurred attempting to retrieve the BootPerformanceInfo.
+  ProbeError error;
+};
+
+// Boot performance information.
+struct BootPerformanceInfo {
+  // Total time since power on to login screen prompt.
+  double boot_up_seconds;
+  // The timestamp when power on.
+  double boot_up_timestamp;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -600,4 +617,7 @@ struct TelemetryInfo {
   // Information about the audio devices. Only present when kAudio was included
   // in the categories input to ProbeTelemetryInfo.
   AudioResult? audio_result;
+  // Information about boot performance. Only present when kBootPerformance was
+  // included in the categories input to ProbeTelemetryInfo.
+  BootPerformanceResult? boot_performance_result;
 };
