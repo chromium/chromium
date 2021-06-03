@@ -1271,4 +1271,148 @@
 #define __NR_memfd_create (__NR_Linux + 314)
 #endif
 
+#if !defined(__NR_bpf)
+#define __NR_bpf (__NR_Linux + 315)
+#endif
+
+#if !defined(__NR_execveat)
+#define __NR_execveat (__NR_Linux + 316)
+#endif
+
+#if !defined(__NR_userfaultfd)
+#define __NR_userfaultfd (__NR_Linux + 317)
+#endif
+
+#if !defined(__NR_membarrier)
+#define __NR_membarrier (__NR_Linux + 318)
+#endif
+
+#if !defined(__NR_mlock2)
+#define __NR_mlock2 (__NR_Linux + 319)
+#endif
+
+#if !defined(__NR_copy_file_range)
+#define __NR_copy_file_range (__NR_Linux + 320)
+#endif
+
+#if !defined(__NR_preadv2)
+#define __NR_preadv2 (__NR_Linux + 321)
+#endif
+
+#if !defined(__NR_pwritev2)
+#define __NR_pwritev2 (__NR_Linux + 322)
+#endif
+
+#if !defined(__NR_pkey_mprotect)
+#define __NR_pkey_mprotect (__NR_Linux + 323)
+#endif
+
+#if !defined(__NR_pkey_alloc)
+#define __NR_pkey_alloc (__NR_Linux + 324)
+#endif
+
+#if !defined(__NR_pkey_free)
+#define __NR_pkey_free (__NR_Linux + 325)
+#endif
+
+#if !defined(__NR_statx)
+#define __NR_statx (__NR_Linux + 326)
+#endif
+
+#if !defined(__NR_rseq)
+#define __NR_rseq (__NR_Linux + 327)
+#endif
+
+#if !defined(__NR_io_pgetevents)
+#define __NR_io_pgetevents (__NR_Linux + 328)
+#endif
+
+#if !defined(__NR_pidfd_send_signal)
+#define __NR_pidfd_send_signal (__NR_Linux + 424)
+#endif
+
+#if !defined(__NR_io_uring_setup)
+#define __NR_io_uring_setup (__NR_Linux + 425)
+#endif
+
+#if !defined(__NR_io_uring_enter)
+#define __NR_io_uring_enter (__NR_Linux + 426)
+#endif
+
+#if !defined(__NR_io_uring_register)
+#define __NR_io_uring_register (__NR_Linux + 427)
+#endif
+
+#if !defined(__NR_open_tree)
+#define __NR_open_tree (__NR_Linux + 428)
+#endif
+
+#if !defined(__NR_move_mount)
+#define __NR_move_mount (__NR_Linux + 429)
+#endif
+
+#if !defined(__NR_fsopen)
+#define __NR_fsopen (__NR_Linux + 430)
+#endif
+
+#if !defined(__NR_fsconfig)
+#define __NR_fsconfig (__NR_Linux + 431)
+#endif
+
+#if !defined(__NR_fsmount)
+#define __NR_fsmount (__NR_Linux + 432)
+#endif
+
+#if !defined(__NR_fspick)
+#define __NR_fspick (__NR_Linux + 433)
+#endif
+
+#if !defined(__NR_pidfd_open)
+#define __NR_pidfd_open (__NR_Linux + 434)
+#endif
+
+#if !defined(__NR_clone3)
+#define __NR_clone3 (__NR_Linux + 435)
+#endif
+
+#if !defined(__NR_close_range)
+#define __NR_close_range (__NR_Linux + 436)
+#endif
+
+#if !defined(__NR_openat2)
+#define __NR_openat2 (__NR_Linux + 437)
+#endif
+
+#if !defined(__NR_pidfd_getfd)
+#define __NR_pidfd_getfd (__NR_Linux + 438)
+#endif
+
+#if !defined(__NR_faccessat2)
+#define __NR_faccessat2 (__NR_Linux + 439)
+#endif
+
+#if !defined(__NR_process_madvise)
+#define __NR_process_madvise (__NR_Linux + 440)
+#endif
+
+#if !defined(__NR_epoll_pwait2)
+#define __NR_epoll_pwait2 (__NR_Linux + 441)
+#endif
+
+#if !defined(__NR_mount_setattr)
+#define __NR_mount_setattr (__NR_Linux + 442)
+#endif
+
+#if !defined(__NR_landlock_create_ruleset)
+#define __NR_landlock_create_ruleset (__NR_Linux + 444)
+#endif
+
+#if !defined(__NR_landlock_add_rule)
+#define __NR_landlock_add_rule (__NR_Linux + 445)
+#endif
+
+#if !defined(__NR_landlock_restrict_self)
+#define __NR_landlock_restrict_self (__NR_Linux + 446)
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_MIPS64_LINUX_SYSCALLS_H_

@@ -1119,4 +1119,100 @@
 #define __NR_rseq 293
 #endif
 
+#if !defined(__NR_kexec_file_load)
+#define __NR_kexec_file_load 294
+#endif
+
+#if !defined(__NR_pidfd_send_signal)
+#define __NR_pidfd_send_signal 424
+#endif
+
+#if !defined(__NR_io_uring_setup)
+#define __NR_io_uring_setup 425
+#endif
+
+#if !defined(__NR_io_uring_enter)
+#define __NR_io_uring_enter 426
+#endif
+
+#if !defined(__NR_io_uring_register)
+#define __NR_io_uring_register 427
+#endif
+
+#if !defined(__NR_open_tree)
+#define __NR_open_tree 428
+#endif
+
+#if !defined(__NR_move_mount)
+#define __NR_move_mount 429
+#endif
+
+#if !defined(__NR_fsopen)
+#define __NR_fsopen 430
+#endif
+
+#if !defined(__NR_fsconfig)
+#define __NR_fsconfig 431
+#endif
+
+#if !defined(__NR_fsmount)
+#define __NR_fsmount 432
+#endif
+
+#if !defined(__NR_fspick)
+#define __NR_fspick 433
+#endif
+
+#if !defined(__NR_pidfd_open)
+#define __NR_pidfd_open 434
+#endif
+
+#if !defined(__NR_clone3)
+#define __NR_clone3 435
+#endif
+
+#if !defined(__NR_close_range)
+#define __NR_close_range 436
+#endif
+
+#if !defined(__NR_openat2)
+#define __NR_openat2 437
+#endif
+
+#if !defined(__NR_pidfd_getfd)
+#define __NR_pidfd_getfd 438
+#endif
+
+#if !defined(__NR_faccessat2)
+#define __NR_faccessat2 439
+#endif
+
+#if !defined(__NR_process_madvise)
+#define __NR_process_madvise 440
+#endif
+
+#if !defined(__NR_epoll_pwait2)
+#define __NR_epoll_pwait2 441
+#endif
+
+#if !defined(__NR_mount_setattr)
+#define __NR_mount_setattr 442
+#endif
+
+#if !defined(__NR_quotactl_path)
+#define __NR_quotactl_path 443
+#endif
+
+#if !defined(__NR_landlock_create_ruleset)
+#define __NR_landlock_create_ruleset 444
+#endif
+
+#if !defined(__NR_landlock_add_rule)
+#define __NR_landlock_add_rule 445
+#endif
+
+#if !defined(__NR_landlock_restrict_self)
+#define __NR_landlock_restrict_self 446
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_ARM64_LINUX_SYSCALLS_H_
