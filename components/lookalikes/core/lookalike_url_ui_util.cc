@@ -41,19 +41,18 @@ void ReportUkmForLookalikeUrlBlockingPageIfNeeded(
   }
 }
 
-void PopulateLookalikeUrlBlockingPageStrings(
-    base::DictionaryValue* load_time_data,
-    const GURL& safe_url,
-    const GURL& request_url) {
+void PopulateLookalikeUrlBlockingPageStrings(base::Value* load_time_data,
+                                             const GURL& safe_url,
+                                             const GURL& request_url) {
   CHECK(load_time_data);
 
   PopulateStringsForSharedHTML(load_time_data);
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_TITLE));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
+      "tabTitle", l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_TITLE));
+  load_time_data->SetStringKey(
       "optInLink",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 
@@ -61,60 +60,60 @@ void PopulateLookalikeUrlBlockingPageStrings(
     const std::u16string hostname =
         security_interstitials::common_string_util::GetFormattedHostName(
             safe_url);
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "heading",
         l10n_util::GetStringFUTF16(IDS_LOOKALIKE_URL_HEADING, hostname));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "primaryParagraph",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "proceedButtonText",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_IGNORE));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "primaryButtonText",
         l10n_util::GetStringFUTF16(IDS_LOOKALIKE_URL_CONTINUE, hostname));
   } else {
     // No safe URL available to suggest. This can happen when the navigated
     // domain fails IDN spoof checks but isn't a lookalike of a known domain.
     // TODO: Change to actual strings.
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "heading",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_HEADING_NO_SUGGESTED_URL));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "primaryParagraph",
         l10n_util::GetStringUTF16(
             IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH_NO_SUGGESTED_URL));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "proceedButtonText",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_IGNORE));
-    load_time_data->SetString(
+    load_time_data->SetStringKey(
         "primaryButtonText",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_BACK_TO_SAFETY));
 #if defined(OS_IOS)
     // On iOS, offer to close the page instead of navigating to NTP when the
     // safe URL is empty or invalid, and unable to go back.
-    bool show_close_page = false;
-    load_time_data->GetBoolean("cant_go_back", &show_close_page);
-    if (show_close_page) {
-      load_time_data->SetString(
+    absl::optional<bool> maybe_cant_go_back =
+        load_time_data->FindBoolKey("cant_go_back");
+    if (maybe_cant_go_back && *maybe_cant_go_back) {
+      load_time_data->SetStringKey(
           "primaryButtonText",
           l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_CLOSE_PAGE));
     }
 #endif
   }
-  load_time_data->SetString("lookalikeRequestHostname", request_url.host());
+  load_time_data->SetStringKey("lookalikeRequestHostname", request_url.host());
 }
 
-void PopulateStringsForSharedHTML(base::DictionaryValue* load_time_data) {
-  load_time_data->SetBoolean("lookalike_url", true);
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
+void PopulateStringsForSharedHTML(base::Value* load_time_data) {
+  load_time_data->SetBoolKey("lookalike_url", true);
+  load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
 
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetString("openDetails", "");
-  load_time_data->SetString("explanationParagraph", "");
-  load_time_data->SetString("finalParagraph", "");
+  load_time_data->SetStringKey("recurrentErrorParagraph", "");
+  load_time_data->SetStringKey("openDetails", "");
+  load_time_data->SetStringKey("explanationParagraph", "");
+  load_time_data->SetStringKey("finalParagraph", "");
 
-  load_time_data->SetString("type", "LOOKALIKE");
+  load_time_data->SetStringKey("type", "LOOKALIKE");
 }
