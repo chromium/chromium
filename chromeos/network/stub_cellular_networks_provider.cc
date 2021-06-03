@@ -134,7 +134,7 @@ StubCellularNetworksProvider::GetESimAndSlotMetadata(
 
   // Now, iterate through SIM slots and add metadata for pSIM networks.
   for (const CellularSIMSlotInfo& sim_slot_info :
-       cellular_device->sim_slot_infos()) {
+       cellular_device->GetSimSlotInfos()) {
     // Skip empty SIM slots.
     if (sim_slot_info.iccid.empty())
       continue;
