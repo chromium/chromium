@@ -8,8 +8,6 @@ import android.Manifest;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.text.TextUtils;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -65,11 +63,12 @@ public class UmaSessionStats {
             UmaSessionStatsJni.get().recordPageLoadedWithKeyboard();
         }
 
-        String url = tab.getUrlString();
-        if (!TextUtils.isEmpty(url) && UrlUtilities.isHttpOrHttps(url)) {
+        GURL url = tab.getUrl();
+        if (UrlUtilities.isHttpOrHttps(url)) {
             PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
                 boolean isEligible =
-                        InstantAppsHandler.getInstance().getInstantAppIntentForUrl(url) != null;
+                        InstantAppsHandler.getInstance().getInstantAppIntentForUrl(url.getSpec())
+                        != null;
                 RecordHistogram.recordBooleanHistogram(
                         "Android.InstantApps.EligiblePageLoaded", isEligible);
             });

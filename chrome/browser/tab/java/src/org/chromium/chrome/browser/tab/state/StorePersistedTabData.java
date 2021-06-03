@@ -288,8 +288,8 @@ public class StorePersistedTabData extends PersistedTabData {
                                         build(tab, endpointResponse.getResponseString()));
                             },
                             Profile.getLastUsedRegularProfile(), PERSISTED_TAB_DATA_ID,
-                            String.format(Locale.US, ENDPOINT, tab.getUrlString()), HTTPS_METHOD,
-                            CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
+                            String.format(Locale.US, ENDPOINT, tab.getUrl().getSpec()),
+                            HTTPS_METHOD, CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
                 },
                 StorePersistedTabData.class, callback);
     }

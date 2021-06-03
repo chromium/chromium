@@ -105,7 +105,7 @@ public class ReparentingTask implements UserData {
         }
         intent.setAction(Intent.ACTION_VIEW);
         if (TextUtils.isEmpty(intent.getDataString())) {
-            intent.setData(Uri.parse(mTab.getUrlString()));
+            intent.setData(Uri.parse(mTab.getUrl().getSpec()));
         }
         if (mTab.isIncognito()) {
             intent.putExtra(Browser.EXTRA_APPLICATION_ID,

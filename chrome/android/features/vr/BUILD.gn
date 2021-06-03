@@ -100,6 +100,7 @@ android_library("java") {
     "//third_party/gvr-android-sdk:gvr_common_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

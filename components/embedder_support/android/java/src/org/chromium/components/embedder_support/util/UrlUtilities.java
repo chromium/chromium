@@ -197,6 +197,7 @@ public class UrlUtilities {
      * (i.e. no dots other than leading/trailing ones), or is itself a recognized registry
      * identifier.
      */
+    // TODO(crbug/783819): Convert to GURL.
     public static String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
         if (TextUtils.isEmpty(uri)) return uri;
         return UrlUtilitiesJni.get().getDomainAndRegistry(uri, includePrivateRegistries);

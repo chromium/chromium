@@ -1407,8 +1407,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         boolean loaded = false;
                         if (matchingTabIndex != TabModel.INVALID_TAB_INDEX) {
                             Tab tab = tabModel.getTabAt(matchingTabIndex);
-                            if (tab.getUrlString().equals(url)
-                                    || tab.getUrlString().equals(IntentUtils.safeGetStringExtra(
+                            if (tab.getUrl().getSpec().equals(url)
+                                    || tab.getUrl().getSpec().equals(IntentUtils.safeGetStringExtra(
                                             intent, TabOpenType.REUSE_TAB_ORIGINAL_URL_STRING))) {
                                 tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER);
                                 LoadUrlParams loadUrlParams =

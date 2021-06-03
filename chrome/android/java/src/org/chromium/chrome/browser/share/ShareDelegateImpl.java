@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -232,8 +231,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         WebContents webContents = currentTab.getWebContents();
         if (webContents == null) return false;
         if (webContents.getMainFrame() == null) return false;
-        String url = currentTab.getUrlString();
-        if (TextUtils.isEmpty(url)) return false;
+        if (currentTab.getUrl().isEmpty()) return false;
         if (currentTab.isShowingErrorPage() || SadTab.isShowing(currentTab)) {
             return false;
         }

@@ -442,7 +442,7 @@ public class OfflinePageUtils {
         boolean isPageTemporary =
                 offlinePageBridge.isTemporaryNamespace(offlinePage.getClientId().getNamespace());
         String tabTitle = tab.getTitle();
-        getOfflinePageUriForSharing(tab.getUrlString(), isPageTemporary, offlinePath,
+        getOfflinePageUriForSharing(tab.getUrl().getSpec(), isPageTemporary, offlinePath,
                 (Uri uri)
                         -> maybeShareOfflinePageWithUri(tabTitle, webContents, offlinePageBridge,
                                 offlinePage, isPageTemporary, shareCallback, uri));
@@ -923,7 +923,7 @@ public class OfflinePageUtils {
                     assert false;
                     return;
             }
-            recordTabRestoreHistogram(tabRestoreType, tab.getUrlString());
+            recordTabRestoreHistogram(tabRestoreType, tab.getUrl().getSpec());
         }
 
         /**

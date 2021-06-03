@@ -230,7 +230,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
                             /* buttonAction= */ () -> {
                                 if (sadTab.showSendFeedbackView()) {
-                                    mTab.getActivity().startHelpAndFeedback(mTab.getUrlString(),
+                                    mTab.getActivity().startHelpAndFeedback(mTab.getUrl().getSpec(),
                                             "MobileSadTabFeedback",
                                             Profile.fromWebContents(mTab.getWebContents()));
                                 } else {

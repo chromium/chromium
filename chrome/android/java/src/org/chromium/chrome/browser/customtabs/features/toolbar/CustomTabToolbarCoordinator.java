@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -142,7 +143,7 @@ public class CustomTabToolbarCoordinator {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return;
 
-        sendButtonPendingIntentWithUrlAndTitle(params, tab.getUrlString(), tab.getTitle());
+        sendButtonPendingIntentWithUrlAndTitle(params, tab.getUrl(), tab.getTitle());
 
         RecordUserAction.record("CustomTabsCustomActionButtonClick");
         Resources resources = mActivity.getResources();
@@ -160,9 +161,9 @@ public class CustomTabToolbarCoordinator {
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */
     private void sendButtonPendingIntentWithUrlAndTitle(
-            CustomButtonParams params, String url, String title) {
+            CustomButtonParams params, GURL url, String title) {
         Intent addedIntent = new Intent();
-        addedIntent.setData(Uri.parse(url));
+        addedIntent.setData(Uri.parse(url.getSpec()));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
         try {
             params.getPendingIntent().send(

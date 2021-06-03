@@ -41,6 +41,10 @@ public class JUnitTestGURLs {
     public static final String BLUE_1 = "https://www.blue.com/page1";
     public static final String BLUE_2 = "https://www.blue.com/page2";
     public static final String BLUE_3 = "https://www.blue.com/page3";
+    public static final String AMP_URL =
+            "https://www.google.com/amp/www.nyt.com/ampthml/blogs.html";
+    public static final String AMP_CACHE_URL =
+            "https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -98,6 +102,10 @@ public class JUnitTestGURLs {
                         + "false,false,distiller://url");
         map.put(MAPS_URL,
                 "82,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,0,-1,false,false,https://maps.google.com/");
+        map.put(AMP_URL,
+                "116,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,35,0,-1,0,-1,false,false,https://www.google.com/amp/www.nyt.com/ampthml/blogs.html");
+        map.put(AMP_CACHE_URL,
+                "118,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,37,0,-1,0,-1,false,false,https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

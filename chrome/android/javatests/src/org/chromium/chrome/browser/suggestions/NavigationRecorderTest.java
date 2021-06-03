@@ -72,7 +72,7 @@ public class NavigationRecorderTest {
             @Override
             public void onResult(NavigationRecorder.VisitData visit) {
                 // When the tab is hidden we receive a notification with no end URL.
-                assertEquals(UrlConstants.NTP_URL, visit.endUrl);
+                assertEquals(UrlConstants.NTP_URL, visit.endUrl.getSpec());
                 callback.notifyCalled();
             }
         });

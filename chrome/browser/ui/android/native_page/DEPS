@@ -5,4 +5,5 @@ include_rules = [
   "+components/browser_ui/styles/android",
   "+components/embedder_support/android",
   "+content/public/android",
+  "+url",
 ]

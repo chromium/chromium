@@ -113,15 +113,6 @@ public interface Tab extends TabLifecycle {
     int getId();
 
     /**
-     * @return The URL that is loaded in the current tab. This may not be the same as
-     *         the last committed URL if a new navigation is in progress.
-     *
-     * @deprecated Please use {@link #getUrl()} instead.
-     */
-    @Deprecated
-    String getUrlString();
-
-    /**
      * @return Parameters that should be used for a lazily loaded Tab.  May be null.
      */
     LoadUrlParams getPendingLoadParams();

@@ -33,6 +33,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -232,7 +233,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
         if (currentTab == null) return null;
 
         String label = currentTab.getTitle();
-        String domain = UrlUtilities.getDomainAndRegistry(currentTab.getUrlString(), false);
+        String domain = UrlUtilities.getDomainAndRegistry(currentTab.getUrl().getSpec(), false);
         if (TextUtils.isEmpty(label)) {
             label = domain;
         }
@@ -270,13 +271,12 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
         Tab currentTab = mTabProvider.getTab();
         if (currentTab == null) return;
 
-        final String currentUrl = currentTab.getUrlString();
+        final GURL currentUrl = currentTab.getUrl();
         mFaviconHelper.getLocalFaviconImageForURL(
                 Profile.fromWebContents(currentTab.getWebContents()), currentTab.getUrl(), 0,
                 (image, iconUrl) -> {
                     if (mTabProvider.getTab() == null
-                            || !TextUtils.equals(
-                                    currentUrl, mTabProvider.getTab().getUrlString())) {
+                            || !currentUrl.equals(mTabProvider.getTab().getUrl())) {
                         return;
                     }
 

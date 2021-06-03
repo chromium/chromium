@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -115,8 +116,14 @@ public interface NativePage {
      * @return Whether the host and the scheme of the passed in URL matches one of the supported
      *         native pages.
      */
+    @Deprecated // Use GURL-variant instead.
     public static boolean isNativePageUrl(String url, boolean isIncognito) {
         return nativePageType(url, null, isIncognito) != NativePageType.NONE;
+    }
+
+    public static boolean isNativePageUrl(GURL url, boolean isIncognito) {
+        return url != null
+                && nativePageType(url.getSpec(), null, isIncognito) != NativePageType.NONE;
     }
 
     /**
@@ -125,6 +132,7 @@ public interface NativePage {
      * @param isIncognito Whether the page will be displayed in incognito mode.
      * @return Type of the native page defined in {@link NativePageType}.
      */
+    // TODO(crbug/783819) - Convert to using GURL.
     public static @NativePageType int nativePageType(
             String url, NativePage candidatePage, boolean isIncognito) {
         if (url == null) return NativePageType.NONE;

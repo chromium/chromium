@@ -174,7 +174,7 @@ public class LayerTitleCache implements TitleCache {
     private String getTitleForTab(Tab tab, String defaultTitle) {
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) {
-            title = tab.getUrlString();
+            title = tab.getUrl().getSpec();
             if (TextUtils.isEmpty(title)) {
                 title = defaultTitle;
                 if (TextUtils.isEmpty(title)) {

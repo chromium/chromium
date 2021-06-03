@@ -259,7 +259,7 @@ public class DownloadUtils {
             final OfflinePageBridge bridge =
                     OfflinePageBridge.getForProfile(Profile.fromWebContents(tab.getWebContents()));
             bridge.scheduleDownload(tab.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
-                    tab.getUrlString(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
+                    tab.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
         } else {
             // Otherwise, the download can be started immediately.
             OfflinePageDownloadBridge.startDownload(tab, origin);

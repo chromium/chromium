@@ -213,7 +213,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (!hasTab() || !getTab().isInitialized()) return "";
 
         // Tab.getUrl() returns empty string if it does not have a URL.
-        return getTab().getUrlString().trim();
+        return getTab().getUrl().getSpec().trim();
     }
 
     public void notifyUrlChanged() {

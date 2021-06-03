@@ -312,7 +312,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
             // activity.
-            if (isNativePage()) maybeShowNativePage(getUrlString(), true);
+            if (isNativePage()) maybeShowNativePage(getUrl().getSpec(), true);
         }
 
         // Notify the event to observers only when we do the reparenting task, not when we simply
@@ -359,14 +359,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return mId;
     }
 
-    // TODO(crbug.com/1113249) move getUrl() and getUrlString() to CriticalPersistedTabData
-    @Override
-    public String getUrlString() {
-        return getUrl().getSpec();
-    }
-
     @CalledByNative
     @Override
+    // TODO(crbug.com/1113249) move getUrl() to CriticalPersistedTabData
     public GURL getUrl() {
         if (!isInitialized()) {
             return GURL.emptyGURL();

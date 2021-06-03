@@ -202,8 +202,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 return;
             }
 
-            tabCreating(
-                    getTabModelSelector().getCurrentTabId(), tab.getUrlString(), tab.isIncognito());
+            tabCreating(getTabModelSelector().getCurrentTabId(), tab.isIncognito());
         }
 
         @Override
@@ -710,7 +709,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param url         The url of the created tab.
      * @param isIncognito Whether or not created tab will be incognito.
      */
-    protected void tabCreating(int sourceId, String url, boolean isIncognito) {
+    protected void tabCreating(int sourceId, boolean isIncognito) {
         if (getActiveLayout() != null) getActiveLayout().onTabCreating(sourceId);
     }
 
@@ -808,7 +807,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Whether the tab is ready to display or it should be faded in as it loads.
     private static boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
-                && !NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
+                && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
     }
 
     @Override

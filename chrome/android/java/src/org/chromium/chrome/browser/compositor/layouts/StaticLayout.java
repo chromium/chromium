@@ -396,7 +396,7 @@ public class StaticLayout extends Layout {
     // Whether the tab is ready to display or it should be faded in as it loads.
     private boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
-                && !NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
+                && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
     }
 
     @Override

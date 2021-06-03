@@ -103,7 +103,7 @@ public class AssistantCoordinator {
         Profile profile = Profile.fromWebContents(currentTab.getWebContents());
 
         HelpAndFeedbackLauncherImpl.getInstance().showFeedback(mActivity, profile,
-                currentTab.getUrlString(), FEEDBACK_CATEGORY_TAG, screenshotMode, debugContext);
+                currentTab.getUrl().getSpec(), FEEDBACK_CATEGORY_TAG, screenshotMode, debugContext);
     }
 
     public void show() {

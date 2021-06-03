@@ -121,7 +121,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         } else if (mCurrentState == State.WAITING_LOAD_FINISH) {
             if (mCustomTabsConnection != null) {
                 mCustomTabsConnection.sendNavigationInfo(
-                        mSession, tab.getUrlString(), tab.getTitle(), (Uri) null);
+                        mSession, tab.getUrl().getSpec(), tab.getTitle(), (Uri) null);
             }
             mPageLoadStartedTimestamp = SystemClock.elapsedRealtime();
         }
@@ -206,7 +206,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (tab.getWebContents() == null) return;
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) return;
-        String urlString = tab.getUrlString();
+        String urlString = tab.getUrl().getSpec();
 
         ShareImageFileUtils.captureScreenshotForContents(tab.getWebContents(), mContentBitmapWidth,
                 mContentBitmapHeight, (Uri snapshotPath) -> {

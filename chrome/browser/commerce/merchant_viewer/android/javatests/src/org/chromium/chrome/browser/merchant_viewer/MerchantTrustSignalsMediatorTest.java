@@ -34,6 +34,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests for {@link MerchantTrustSignalsMediator}.
@@ -79,11 +80,11 @@ public class MerchantTrustSignalsMediatorTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
         doReturn(100).when(mMockPrimaryTab).getId();
-        doReturn("fake://url/2").when(mMockPrimaryTab).getUrlString();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mMockPrimaryTab).getUrl();
         doReturn(mMockWebContents).when(mMockPrimaryTab).getWebContents();
 
         doReturn(200).when(mMockSecondaryTab).getId();
-        doReturn("fake://url/2").when(mMockSecondaryTab).getUrlString();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2)).when(mMockSecondaryTab).getUrl();
         doReturn(mMockWebContents).when(mMockSecondaryTab).getWebContents();
     }
 

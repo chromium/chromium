@@ -40,7 +40,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class LoadProgressMediatorTest {
-    private static final String URL_1 = "http://starting.url";
+    private static final GURL URL_1 = new GURL("http://starting.url");
     private static final GURL NATIVE_PAGE_URL = new GURL("chrome-native://newtab");
 
     @Mock
@@ -60,6 +60,7 @@ public class LoadProgressMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
+        when(mTab.getUrl()).thenReturn(URL_1);
     }
 
     private void initMediator() {
@@ -79,7 +80,7 @@ public class LoadProgressMediatorTest {
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
 
-        NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
+        NavigationHandle navigation = new NavigationHandle(0, URL_1, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
@@ -115,7 +116,7 @@ public class LoadProgressMediatorTest {
     @UiThreadTest
     public void switchToLoadedTab() {
         initMediator();
-        NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
+        NavigationHandle navigation = new NavigationHandle(0, URL_1, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
@@ -134,7 +135,7 @@ public class LoadProgressMediatorTest {
     public void loadNativePage() {
         initMediator();
         doReturn(0.1f).when(mTab).getProgress();
-        NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
+        NavigationHandle navigation = new NavigationHandle(0, URL_1, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
@@ -151,7 +152,7 @@ public class LoadProgressMediatorTest {
     @UiThreadTest
     public void switchToTabWithNativePage() {
         initMediator();
-        NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
+        NavigationHandle navigation = new NavigationHandle(0, URL_1, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
@@ -172,7 +173,7 @@ public class LoadProgressMediatorTest {
     @UiThreadTest
     public void pageCrashes() {
         initMediator();
-        NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
+        NavigationHandle navigation = new NavigationHandle(0, URL_1, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
@@ -216,7 +217,7 @@ public class LoadProgressMediatorTest {
     @UiThreadTest
     public void testSameDocumentLoad_afterFinishedLoading() {
         initMediator();
-        GURL gurl = new GURL(URL_1);
+        GURL gurl = URL_1;
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
 

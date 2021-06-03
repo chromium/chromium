@@ -100,7 +100,7 @@ public class TranslateIntentHandler {
             recordTranslateTabResultUMA(TranslateTabIntentResult.INCOGNITO_TAB);
             return;
         }
-        if (expectedUrl == null || !expectedUrl.equals(tab.getUrlString())) {
+        if (expectedUrl == null || !expectedUrl.equals(tab.getUrl().getSpec())) {
             recordTranslateTabResultUMA(TranslateTabIntentResult.EXPECTED_URL_MISMATCH);
             return;
         }
