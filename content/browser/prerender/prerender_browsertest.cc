@@ -479,15 +479,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 }
 
-// TODO(https://crbug.com/1214964): Test this case with speculationrules.
 // Tests that prerendering triggered by prerendered pages is deferred until
 // activation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
   // kInitialUrl prerenders kPrerenderChain1, then kPrerenderChain1 prerenders
   // kPrerenderChain2.
-  const GURL kInitialUrl = GetUrl("/prerender/prerender_chain.html?1");
-  const GURL kPrerenderChain1 = GetUrl("/prerender/prerender_chain.html?2");
-  const GURL kPrerenderChain2 = GetUrl("/prerender/prerender_chain.html?3");
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderChain1 = GetUrl("/prerender/prerender_chain.html?1");
+  const GURL kPrerenderChain2 = GetUrl("/prerender/prerender_chain.html?2");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -499,8 +498,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
   EXPECT_TRUE(AddTestUtilJS(prerender_host));
 
   // Add a prerender trigger to the prerendering page.
-  ExecuteScriptAsync(prerender_host,
-                     JsReplace("add_prerender($1)", kPrerenderChain2));
+  EXPECT_TRUE(ExecJs(prerender_host,
+                     JsReplace("add_speculation_rules($1)", kPrerenderChain2)));
+
+  // Speculation rules is processed by the idle task runner in Blink. To ensure
+  // the speculation candidates has been sent by renderer processes, we should
+  // wait until this runner finishes all tasks.
+  EXPECT_TRUE(ExecJs(prerender_host, R"(
+    const idlePromise = new Promise(resolve => requestIdleCallback(resolve));
+    idlePromise;
+  )"));
 
   // Start a navigation request that should not be deferred, and wait it to
   // reach the server. If the prerender request for kPrerenderChain2 is not
@@ -508,7 +515,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
   // earlier than the non-deferred one, so we can wait until the latest request
   // reaches the sever to prove that the prerender request for kPrerenderChain2
   // is deferred.
-  ExecuteScriptAsync(prerender_host, "add_iframe_async('/title1.html')");
+  EXPECT_TRUE(ExecJs(prerender_host, "add_iframe_async('/title1.html')",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForRequest(GetUrl("/title1.html"), 1);
 
   // The prerender requests were deferred by Mojo capability control, so

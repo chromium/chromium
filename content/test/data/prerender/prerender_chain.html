@@ -2,10 +2,12 @@
 <html>
 <head>
 <title>Prerender Chain Test</title>
-<link rel="prerender">
 <script>
-function add_prerender(url) {
-  document.getElementsByTagName('link')[0].href = url;
+function add_speculation_rules(url) {
+  const script = document.createElement('script');
+  script.type = 'speculationrules';
+  script.text = `{"prerender": [{"source": "list", "urls": ["${url}"] }] }`;
+  document.head.appendChild(script);
 }
 </script>
 </head>
