@@ -19,8 +19,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/examples/animation_builder.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
@@ -63,14 +65,6 @@ AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
   layer()->GetAnimator()->set_tween_type(gfx::Tween::EASE_IN_OUT);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-
-  auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
-  opacity_sequence->set_is_repeating(true);
-  opacity_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      0.4f, base::TimeDelta::FromSeconds(2)));
-  opacity_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      0.9f, base::TimeDelta::FromSeconds(2)));
-  layer()->GetAnimator()->StartAnimation(opacity_sequence.release());
 }
 
 void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {
@@ -155,6 +149,21 @@ void AnimationExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i)
     container->AddChildView(std::make_unique<AnimatingSquare>(i));
+
+  {
+    gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+    AnimationBuilder b;
+    for (auto* view : container->children()) {
+      b.SetDuration(base::TimeDelta::FromSeconds(10))
+          .SetRoundedCorners(view, rounded_corners)
+          .StartSequence()
+          .Repeat()
+          .SetDuration(base::TimeDelta::FromSeconds(2))
+          .SetOpacity(view, 0.4f)
+          .SetOpacity(view, 0.9f)
+          .EndSequence();
+    }
+  }
 }
 
 }  // namespace examples
