@@ -26,29 +26,21 @@ namespace device {
 
 namespace {
 
-float NormalizeAxis(long value, long min, long max) {
-  return (2.f * (value - min) / static_cast<float>(max - min)) - 1.f;
-}
+constexpr uint32_t kGenericDesktopUsagePage = 0x01;
+constexpr uint32_t kGameControlsUsagePage = 0x05;
+constexpr uint32_t kButtonUsagePage = 0x09;
+constexpr uint32_t kConsumerUsagePage = 0x0c;
 
-unsigned long GetBitmask(unsigned short bits) {
-  return (1 << bits) - 1;
-}
-
-const uint32_t kGenericDesktopUsagePage = 0x01;
-const uint32_t kGameControlsUsagePage = 0x05;
-const uint32_t kButtonUsagePage = 0x09;
-const uint32_t kConsumerUsagePage = 0x0c;
-
-const uint32_t kAxisMinimumUsageNumber = 0x30;
-const uint32_t kSystemMainMenuUsageNumber = 0x85;
-const uint32_t kPowerUsageNumber = 0x30;
-const uint32_t kSearchUsageNumber = 0x0221;
-const uint32_t kHomeUsageNumber = 0x0223;
-const uint32_t kBackUsageNumber = 0x0224;
+constexpr uint32_t kAxisMinimumUsageNumber = 0x30;
+constexpr uint32_t kSystemMainMenuUsageNumber = 0x85;
+constexpr uint32_t kPowerUsageNumber = 0x30;
+constexpr uint32_t kSearchUsageNumber = 0x0221;
+constexpr uint32_t kHomeUsageNumber = 0x0223;
+constexpr uint32_t kBackUsageNumber = 0x0224;
 
 // The fetcher will collect all HID usages from the Button usage page and any
 // additional usages listed below.
-struct SpecialUsages {
+constexpr struct SpecialUsages {
   const uint16_t usage_page;
   const uint16_t usage;
 } kSpecialUsages[] = {
@@ -63,7 +55,19 @@ struct SpecialUsages {
     {kConsumerUsagePage, kHomeUsageNumber},
     {kConsumerUsagePage, kBackUsageNumber},
 };
-const size_t kSpecialUsagesLen = base::size(kSpecialUsages);
+constexpr size_t kSpecialUsagesLen = base::size(kSpecialUsages);
+
+// Scales |value| from the range |min| <= x <= |max| to a Standard Gamepad axis
+// value in the range -1.0 <= x <= 1.0.
+template <class T>
+float NormalizeAxis(T value, T min, T max) {
+  return (2.0f * (value - min) / static_cast<float>(max - min)) - 1.0f;
+}
+
+// Returns a 32-bit mask with the lowest |bits| bits set.
+unsigned long GetBitmask(unsigned short bits) {
+  return (1 << bits) - 1;
+}
 
 }  // namespace
 
@@ -175,37 +179,9 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     }
   }
 
-  // Query axis state.
-  ULONG axis_value = 0;
-  LONG scaled_axis_value = 0;
-  for (uint32_t i = 0; i < axes_length_; i++) {
-    RawGamepadAxis* axis = &axes_[i];
-
-    // If the min is < 0 we have to query the scaled value, otherwise we need
-    // the normal unscaled value.
-    if (axis->caps.LogicalMin < 0) {
-      status = HidP_GetScaledUsageValue(
-          HidP_Input, axis->caps.UsagePage, 0, axis->caps.Range.UsageMin,
-          &scaled_axis_value, preparsed_data_,
-          reinterpret_cast<PCHAR>(input->data.hid.bRawData),
-          input->data.hid.dwSizeHid);
-      if (status == HIDP_STATUS_SUCCESS) {
-        axis->value = NormalizeAxis(scaled_axis_value, axis->caps.PhysicalMin,
-                                    axis->caps.PhysicalMax);
-      }
-    } else {
-      status = HidP_GetUsageValue(
-          HidP_Input, axis->caps.UsagePage, 0, axis->caps.Range.UsageMin,
-          &axis_value, preparsed_data_,
-          reinterpret_cast<PCHAR>(input->data.hid.bRawData),
-          input->data.hid.dwSizeHid);
-      if (status == HIDP_STATUS_SUCCESS) {
-        axis->value = NormalizeAxis(axis_value & axis->bitmask,
-                                    axis->caps.LogicalMin & axis->bitmask,
-                                    axis->caps.LogicalMax & axis->bitmask);
-      }
-    }
-  }
+  // Update axis state.
+  for (uint32_t axis_index = 0; axis_index < axes_length_; ++axis_index)
+    UpdateAxisValue(axis_index, *input);
 
   last_update_timestamp_ = GamepadDataFetcher::CurrentTimeInMicroseconds();
 }
@@ -418,62 +394,55 @@ bool RawInputGamepadDeviceWin::QueryDeviceCapabilities() {
 
 void RawInputGamepadDeviceWin::QueryButtonCapabilities(uint16_t button_count) {
   if (button_count > 0) {
-    std::unique_ptr<HIDP_BUTTON_CAPS[]> button_caps(
-        new HIDP_BUTTON_CAPS[button_count]);
-    NTSTATUS status = HidP_GetButtonCaps(HidP_Input, button_caps.get(),
+    std::vector<HIDP_BUTTON_CAPS> button_caps(button_count);
+    NTSTATUS status = HidP_GetButtonCaps(HidP_Input, button_caps.data(),
                                          &button_count, preparsed_data_);
     DCHECK_EQ(HIDP_STATUS_SUCCESS, status);
 
     // Collect all inputs from the Button usage page.
-    QueryNormalButtonCapabilities(button_caps.get(), button_count);
+    QueryNormalButtonCapabilities(button_caps);
 
     // Check for common gamepad buttons that are not on the Button usage page.
-    QuerySpecialButtonCapabilities(button_caps.get(), button_count);
+    QuerySpecialButtonCapabilities(button_caps);
   }
 }
 
 void RawInputGamepadDeviceWin::QueryNormalButtonCapabilities(
-    HIDP_BUTTON_CAPS button_caps[],
-    uint16_t button_count) {
-  DCHECK(button_caps);
-
+    base::span<const HIDP_BUTTON_CAPS> button_caps) {
   // Collect all inputs from the Button usage page and assign button indices
   // based on the usage value.
-  for (size_t i = 0; i < button_count; ++i) {
-    uint16_t usage_page = button_caps[i].UsagePage;
-    uint16_t usage_min = button_caps[i].Range.UsageMin;
-    uint16_t usage_max = button_caps[i].Range.UsageMax;
+  for (const auto& item : button_caps) {
+    uint16_t usage_min = item.Range.UsageMin;
+    uint16_t usage_max = item.Range.UsageMax;
     if (usage_min == 0 || usage_max == 0)
       continue;
     size_t button_index_min = size_t{usage_min - 1};
     size_t button_index_max = size_t{usage_max - 1};
-    if (usage_page == kButtonUsagePage &&
+    if (item.UsagePage == kButtonUsagePage &&
         button_index_min < Gamepad::kButtonsLengthCap) {
       button_index_max =
           std::min(Gamepad::kButtonsLengthCap - 1, button_index_max);
       buttons_length_ = std::max(buttons_length_, button_index_max + 1);
-      for (size_t j = button_index_min; j <= button_index_max; ++j)
-        button_indices_used_[j] = true;
+      for (size_t button_index = button_index_min;
+           button_index <= button_index_max; ++button_index) {
+        button_indices_used_[button_index] = true;
+      }
     }
   }
 }
 
 void RawInputGamepadDeviceWin::QuerySpecialButtonCapabilities(
-    HIDP_BUTTON_CAPS button_caps[],
-    uint16_t button_count) {
-  DCHECK(button_caps);
-
+    base::span<const HIDP_BUTTON_CAPS> button_caps) {
   // Check for common gamepad buttons that are not on the Button usage page.
   std::vector<bool> has_special_usage(kSpecialUsagesLen, false);
   size_t unmapped_button_count = 0;
-  for (size_t i = 0; i < button_count; ++i) {
-    uint16_t usage_page = button_caps[i].UsagePage;
-    uint16_t usage_min = button_caps[i].Range.UsageMin;
-    uint16_t usage_max = button_caps[i].Range.UsageMax;
+  for (const auto& item : button_caps) {
+    uint16_t usage_min = item.Range.UsageMin;
+    uint16_t usage_max = item.Range.UsageMax;
     for (size_t special_index = 0; special_index < kSpecialUsagesLen;
          ++special_index) {
       const auto& special = kSpecialUsages[special_index];
-      if (usage_page == special.usage_page && usage_min <= special.usage &&
+      if (item.UsagePage == special.usage_page && usage_min <= special.usage &&
           usage_max >= special.usage) {
         has_special_usage[special_index] = true;
         ++unmapped_button_count;
@@ -555,6 +524,62 @@ void RawInputGamepadDeviceWin::QueryAxisCapabilities(uint16_t axis_count) {
         break;
     }
   }
+}
+
+void RawInputGamepadDeviceWin::UpdateAxisValue(size_t axis_index,
+                                               RAWINPUT& input) {
+  DCHECK_LT(axis_index, Gamepad::kAxesLengthCap);
+  // RawInput gamepad axes are normalized according to the information provided
+  // in the HID report descriptor. Each HID report item must specify a Logical
+  // Minimum and Logical Maximum to define the domain of allowable values for
+  // the item. An item may optionally specify a Units definition to indicate
+  // that the item represents a real-world value measured in those units. Items
+  // with a Units definition should also specify Physical Minimum and Physical
+  // Maximum, which are the Logical bounds transformed into Physical units.
+  //
+  // For gamepads, it is common for joystick and trigger axis items to not
+  // specify Units. However, D-pad items typically do specify Units. An 8-way
+  // directional pad, when implemented as a Hat Switch axis, reports a logical
+  // value from 0 to 7 that corresponds to a physical value from 0 degrees (N)
+  // clockwise to 315 degrees (NW).
+  //
+  // When a Hat Switch is in its Null State (no interaction) it reports a value
+  // outside the Logical range, often 8. Normalizing the out-of-bounds Null
+  // State value yields an invalid axis value greater than +1.0. This invalid
+  // axis value must be preserved so that downstream consumers can detect when
+  // the Hat Switch is reporting a Null State value.
+  //
+  // When an item provides Physical bounds, prefer to use
+  // HidP_GetScaledUsageValue to retrieve the item's value in real-world units
+  // and normalize using the Physical bounds. If the Physical bounds are invalid
+  // or HidP_GetScaledUsageValue fails, use HidP_GetUsageValue to retrieve the
+  // logical value and normalize using the Logical bounds.
+  auto& axis = axes_[axis_index];
+  if (axis.caps.PhysicalMin < axis.caps.PhysicalMax) {
+    LONG scaled_axis_value = 0;
+    if (HidP_GetScaledUsageValue(
+            HidP_Input, axis.caps.UsagePage, /*LinkCollection=*/0,
+            axis.caps.Range.UsageMin, &scaled_axis_value, preparsed_data_,
+            reinterpret_cast<PCHAR>(input.data.hid.bRawData),
+            input.data.hid.dwSizeHid) == HIDP_STATUS_SUCCESS) {
+      axis.value = NormalizeAxis(scaled_axis_value, axis.caps.PhysicalMin,
+                                 axis.caps.PhysicalMax);
+      return;
+    }
+  }
+
+  ULONG axis_value = 0;
+  if (HidP_GetUsageValue(HidP_Input, axis.caps.UsagePage, /*LinkCollection=*/0,
+                         axis.caps.Range.UsageMin, &axis_value, preparsed_data_,
+                         reinterpret_cast<PCHAR>(input.data.hid.bRawData),
+                         input.data.hid.dwSizeHid) == HIDP_STATUS_SUCCESS) {
+    axis.value = NormalizeAxis(axis_value & axis.bitmask,
+                               axis.caps.LogicalMin & axis.bitmask,
+                               axis.caps.LogicalMax & axis.bitmask);
+    return;
+  }
+
+  axis.value = 0.0f;
 }
 
 base::WeakPtr<AbstractHapticGamepad> RawInputGamepadDeviceWin::GetWeakPtr() {

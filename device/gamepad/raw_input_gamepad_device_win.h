@@ -95,11 +95,15 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   // on the device.
   bool QueryDeviceCapabilities();
   void QueryButtonCapabilities(uint16_t button_count);
-  void QueryNormalButtonCapabilities(HIDP_BUTTON_CAPS button_caps[],
-                                     uint16_t button_count);
-  void QuerySpecialButtonCapabilities(HIDP_BUTTON_CAPS button_caps[],
-                                      uint16_t button_count);
+  void QueryNormalButtonCapabilities(
+      base::span<const HIDP_BUTTON_CAPS> button_caps);
+  void QuerySpecialButtonCapabilities(
+      base::span<const HIDP_BUTTON_CAPS> button_caps);
   void QueryAxisCapabilities(uint16_t axis_count);
+
+  // Reads the value of the axis at index |axis_index| from |input| and scales
+  // to the range [-1.0,+1.0].
+  void UpdateAxisValue(size_t axis_index, RAWINPUT& input);
 
   // True if the device described by this object is a valid RawInput gamepad.
   bool is_valid_ = false;
