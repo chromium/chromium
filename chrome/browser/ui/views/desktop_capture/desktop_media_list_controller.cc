@@ -23,13 +23,16 @@ DesktopMediaListController::DesktopMediaListController(
     std::unique_ptr<DesktopMediaList> media_list)
     : dialog_(parent),
       media_list_(std::move(media_list)),
+      auto_select_tab_(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAutoSelectTabCaptureSourceByTitle)),
       auto_select_source_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectDesktopCaptureSource)),
-      auto_accept_tab_capture_(
+      auto_accept_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoAccept)),
-      auto_reject_tab_capture_(
+      auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoReject)) {}
 
@@ -171,7 +174,13 @@ void DesktopMediaListController::OnViewIsDeleting(views::View* view) {
 bool DesktopMediaListController::ShouldAutoAccept(
     const DesktopMediaList::Source& source) const {
   if (media_list_->GetMediaListType() == DesktopMediaList::Type::kCurrentTab) {
-    return auto_accept_tab_capture_;
+    return auto_accept_this_tab_capture_;
+  } else if (media_list_->GetMediaListType() ==
+                 DesktopMediaList::Type::kWebContents &&
+             !auto_select_tab_.empty() &&
+             source.name.find(base::ASCIIToUTF16(auto_select_tab_)) !=
+                 std::u16string::npos) {
+    return true;
   }
 
   return (!auto_select_source_.empty() &&
@@ -182,7 +191,7 @@ bool DesktopMediaListController::ShouldAutoAccept(
 bool DesktopMediaListController::ShouldAutoReject(
     const DesktopMediaList::Source& source) const {
   if (media_list_->GetMediaListType() == DesktopMediaList::Type::kCurrentTab) {
-    return auto_reject_tab_capture_;
+    return auto_reject_this_tab_capture_;
   }
   return false;
 }

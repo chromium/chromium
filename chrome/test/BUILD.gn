@@ -1444,6 +1444,7 @@ if (!is_android) {
       "../browser/media/test_license_server.h",
       "../browser/media/test_license_server_config.h",
       "../browser/media/unified_autoplay_browsertest.cc",
+      "../browser/media/webrtc/capture_handle_browsertest.cc",
       "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
       "../browser/media/webrtc/media_stream_permission_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary.cc",

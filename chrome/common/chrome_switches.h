@@ -53,6 +53,7 @@ extern const char kAppsGalleryURL[];
 extern const char kAuthServerAllowlist[];
 extern const char kAutoOpenDevToolsForTabs[];
 extern const char kAutoSelectDesktopCaptureSource[];
+extern const char kAutoSelectTabCaptureSourceByTitle[];
 extern const char kCheckForUpdateIntervalSec[];
 extern const char kCipherSuiteBlacklist[];
 extern const char kCloudPrintFile[];
