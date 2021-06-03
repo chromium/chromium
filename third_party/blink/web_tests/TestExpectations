@@ -1490,6 +1490,7 @@ crbug.com/498539 crbug.com/794869 crbug.com/798548 crbug.com/946716 http/tests/d
 crbug.com/889952 fast/selectors/selection-window-inactive.html [ Pass Failure ]
 
 crbug.com/731731 inspector-protocol/layers/paint-profiler-load-empty.js [ Failure Pass ]
+crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Pass Timeout Failure ]
 
 # Script let/const redeclaration errors
 crbug.com/1042162 http/tests/inspector-protocol/console/console-let-const-with-api.js [ Pass Failure ]
@@ -2690,7 +2691,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/basic-auth.any.worker.html?
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-020.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/worklets/paint-worklet-credentials.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.14 ] inspector-protocol/debugger/wasm-streaming-url.js [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-images/image-set/image-set-parsing.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
@@ -5913,8 +5913,6 @@ crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-time/timeline-tim
 # Sheriff 2020-07-22
 crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Pass Failure ]
 crbug.com/1107722 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Pass Failure ]
-crbug.com/1107923 [ Mac10.15 ] inspector-protocol/debugger/wasm-streaming-url.js [ Pass Timeout Failure ]
-crbug.com/1107923 [ Mac11.0 ] inspector-protocol/debugger/wasm-streaming-url.js [ Pass Timeout Failure ]
 # Failing on Webkit Linux Leak
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Failure ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Pass Failure ]
