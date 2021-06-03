@@ -300,8 +300,8 @@ void TestResponseProvider::GetLanguageResponse(
                                   translate::kUnknownLanguageCode)];
 }
 
-// Tests that language detection is not performed when the page specifies that
-// it should not be translated.
+// Tests that language detection is still performed when the page specifies the
+// notranslate meta tag.
 - (void)testLanguageDetectionNoTranslate {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
@@ -315,16 +315,16 @@ void TestResponseProvider::GetLanguageResponse(
   // Load some french page with |content="notranslate"| meta tag.
   [ChromeEarlGrey loadURL:noTranslateContentURL];
 
-  // Check that no language has been detected.
-  GREYAssertFalse([self waitForLanguageDetection],
-                  @"A language has been detected");
+  // Check that the language has been detected.
+  GREYAssertTrue([self waitForLanguageDetection],
+                 @"A language has been detected");
 
   // Load some french page with |value="notranslate"| meta tag.
   [ChromeEarlGrey loadURL:noTranslateValueURL];
 
-  // Check that no language has been detected.
-  GREYAssertFalse([self waitForLanguageDetection],
-                  @"A language has been detected");
+  // Check that the language has been detected.
+  GREYAssertTrue([self waitForLanguageDetection],
+                 @"A language has been detected");
 }
 
 // Tests that history.pushState triggers a new detection.

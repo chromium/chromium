@@ -94,18 +94,14 @@ void LanguageDetectionController::OnTextCaptured(const base::Value& command,
       *text_captured_command != "languageDetection.textCaptured") {
     return;
   }
-  absl::optional<bool> translation_allowed =
-      command.FindBoolKey("translationAllowed");
-  if (!translation_allowed.value_or(false)) {
-    // Translation not allowed by the page. Done processing.
-    return;
-  }
+  absl::optional<bool> has_notranslate = command.FindBoolKey("hasNoTranslate");
   absl::optional<double> capture_text_time =
       command.FindDoubleKey("captureTextTime");
   const std::string* html_lang = command.FindStringKey("htmlLang");
   const std::string* http_content_language =
       command.FindStringKey("httpContentLanguage");
-  if (!capture_text_time.has_value() || !html_lang || !http_content_language) {
+  if (!has_notranslate.has_value() || !capture_text_time.has_value() ||
+      !html_lang || !http_content_language) {
     return;
   }
 
@@ -119,13 +115,14 @@ void LanguageDetectionController::OnTextCaptured(const base::Value& command,
   sender_frame->CallJavaScriptFunction(
       "languageDetection.retrieveBufferedTextContent", {},
       base::BindRepeating(&LanguageDetectionController::OnTextRetrieved,
-                          weak_method_factory_.GetWeakPtr(),
+                          weak_method_factory_.GetWeakPtr(), *has_notranslate,
                           *http_content_language, *html_lang, url),
       base::TimeDelta::FromMilliseconds(
           web::kJavaScriptFunctionCallDefaultTimeout));
 }
 
 void LanguageDetectionController::OnTextRetrieved(
+    const bool has_notranslate,
     const std::string& http_content_language,
     const std::string& html_lang,
     const GURL& url,
@@ -149,6 +146,7 @@ void LanguageDetectionController::OnTextRetrieved(
   LanguageDetectionDetails details;
   details.time = base::Time::Now();
   details.url = url;
+  details.has_notranslate = has_notranslate;
   details.content_language = http_content_language;
   details.model_detected_language = model_detected_language;
   details.is_model_reliable = is_model_reliable;

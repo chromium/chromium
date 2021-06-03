@@ -50,7 +50,8 @@ class LanguageDetectionController : public web::WebStateObserver {
                       web::WebFrame* sender_frame);
 
   // Completion handler used to retrieve the buffered text.
-  void OnTextRetrieved(const std::string& http_content_language,
+  void OnTextRetrieved(const bool has_notranslate,
+                       const std::string& http_content_language,
                        const std::string& html_lang,
                        const GURL& url,
                        const base::Value* text_content);

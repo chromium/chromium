@@ -87,7 +87,8 @@ void IOSTranslateDriver::OnLanguageDetermined(
   translate_manager_->GetLanguageState()->LanguageDetermined(
       details.adopted_language, true);
 
-  if (web_state_)
+  // Don't offer translation on pages with notranslate meta tag.
+  if (web_state_ && !details.has_notranslate)
     translate_manager_->InitiateTranslation(details.adopted_language);
 
   for (auto& observer : language_detection_observers())

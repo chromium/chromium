@@ -59,10 +59,10 @@ class JsLanguageDetectionManagerTest : public ChromeWebTest {
     });
   }
 
-  // Verifies if translation was allowed or not on the page based on
+  // Verifies if the notranslate meta tag is present or not on the page based on
   // |expected_value|.
-  void ExpectTranslationAllowed(BOOL expected_value) {
-    InjectJsAndVerify(@"__gCrWeb.languageDetection.translationAllowed();",
+  void ExpectHasNoTranslate(BOOL expected_value) {
+    InjectJsAndVerify(@"__gCrWeb.languageDetection.hasNoTranslate();",
                       @(expected_value));
   }
 
@@ -91,20 +91,20 @@ class JsLanguageDetectionManagerTest : public ChromeWebTest {
   }
 };
 
-// Tests |__gCrWeb.languageDetection.translationAllowed| JS call.
-TEST_F(JsLanguageDetectionManagerTest, IsTranslationAllowed) {
+// Tests |__gCrWeb.languageDetection.hasNoTranslate| JS call.
+TEST_F(JsLanguageDetectionManagerTest, PageHasNoTranslate) {
   LoadHtml(@"<html></html>");
-  ExpectTranslationAllowed(YES);
+  ExpectHasNoTranslate(NO);
 
   LoadHtml(@"<html><head>"
             "<meta name='google' content='notranslate'>"
             "</head></html>");
-  ExpectTranslationAllowed(NO);
+  ExpectHasNoTranslate(YES);
 
   LoadHtml(@"<html><head>"
             "<meta name='google' value='notranslate'>"
             "</head></html>");
-  ExpectTranslationAllowed(NO);
+  ExpectHasNoTranslate(YES);
 }
 
 // Tests correctness of |document.documentElement.lang| attribute.
@@ -261,11 +261,16 @@ class JsLanguageDetectionManagerDetectLanguageTest
   base::CallbackListSubscription subscription_;
 };
 
-// Tests if |__gCrWeb.languageDetection.detectLanguage| correctly informs the
-// native side when translation is not allowed.
+// Tests if |__gCrWeb.languageDetection.hasNoTranslate| correctly informs the
+// native side when the notranslate meta tag is specified.
 TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
-       DetectLanguageTranslationNotAllowed) {
-  LoadHtml(@"<html></html>");
+       DetectLanguageWithNoTranslateMeta) {
+  // A simple page using the notranslate meta tag.
+  NSString* html = @"<html><head>"
+                   @"<meta http-equiv='content-language' content='en'>"
+                   @"<meta name='google' content='notranslate'>"
+                   @"</head></html>";
+  LoadHtml(html);
   ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
   // Wait until the original injection has received a command.
   base::test::ios::WaitUntilCondition(^bool() {
@@ -275,30 +280,25 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
 
   commands_received_.clear();
 
-  // Stub out translationAllowed.
-  NSString* const kTranslationAllowedJS =
-      @"__gCrWeb.languageDetection.translationAllowed = function() {"
-      @"  return false;"
-      @"}";
-  ExecuteJavaScript(kTranslationAllowedJS);
-  ConditionBlock commands_recieved_block = ^bool {
-    return commands_received_.size();
-  };
-  InjectJSAndWaitUntilCondition(@"__gCrWeb.languageDetection.detectLanguage()",
-                                commands_recieved_block);
+  ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
+  base::test::ios::WaitUntilCondition(^bool() {
+    return !commands_received_.empty();
+  });
   ASSERT_EQ(1U, commands_received_.size());
   const base::Value& value = commands_received_[0];
-  absl::optional<bool> translation_allowed =
-      value.FindBoolKey("translationAllowed");
-  ASSERT_TRUE(translation_allowed);
-  EXPECT_FALSE(*translation_allowed);
+  absl::optional<bool> has_notranslate = value.FindBoolKey("hasNoTranslate");
+  ASSERT_TRUE(has_notranslate);
+  EXPECT_TRUE(value.FindKey("captureTextTime"));
+  EXPECT_TRUE(value.FindKey("htmlLang"));
+  EXPECT_TRUE(value.FindKey("httpContentLanguage"));
+  EXPECT_TRUE(*has_notranslate);
 }
 
 // Tests if |__gCrWeb.languageDetection.detectLanguage| correctly informs the
-// native side when translation is allowed with the right parameters.
+// native side when no notranslate meta tag is specified.
 TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
-       DetectLanguageTranslationAllowed) {
-  // A simple page that allows translation.
+       DetectLanguageWithoutNoTranslateMeta) {
+  // A simple page with no notranslate meta tag.
   NSString* html = @"<html><head>"
                    @"<meta http-equiv='content-language' content='en'>"
                    @"</head></html>";
@@ -319,12 +319,11 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   ASSERT_EQ(1U, commands_received_.size());
   const base::Value& value = commands_received_[0];
 
-  absl::optional<bool> translation_allowed =
-      value.FindBoolKey("translationAllowed");
+  absl::optional<bool> has_notranslate = value.FindBoolKey("hasNoTranslate");
 
-  ASSERT_TRUE(translation_allowed);
+  ASSERT_TRUE(has_notranslate);
   EXPECT_TRUE(value.FindKey("captureTextTime"));
   EXPECT_TRUE(value.FindKey("htmlLang"));
   EXPECT_TRUE(value.FindKey("httpContentLanguage"));
-  EXPECT_TRUE(*translation_allowed);
+  EXPECT_FALSE(*has_notranslate);
 }
