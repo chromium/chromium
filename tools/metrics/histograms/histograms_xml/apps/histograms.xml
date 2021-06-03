@@ -1414,6 +1414,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppListUsageByNewUsers"
+    enum="AppListUsageStateByNewUsers" expires_after="M99">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the launcher usage state during the session started by a new user
+    (i.e. the session completing the OOBE flow). This metric is recorded in the
+    following scenarios: (1) the launcher shows and the current user is new (2)
+    the launcher has never shown before launcher is destructed. Destruction can
+    be triggered by loging out accounts, shuting down the device or system
+    crashes and meanwhile the current user is new (3) the launcher has never
+    shown when the active user has changed and the previous active user was a
+    new user.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"
     expires_after="2021-10-28">
   <owner>dominickn@chromium.org</owner>
