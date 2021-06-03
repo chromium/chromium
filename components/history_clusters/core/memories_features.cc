@@ -26,7 +26,7 @@ const base::FeatureParam<bool> kPersistContextAnnotationsInHistoryDb{
     &kMemories, "MemoriesPersistContextAnnotationsInHistoryDb", false};
 
 const base::FeatureParam<int> kMaxVisitsToCluster{
-    &kMemories, "MemoriesMaxVisitsToCluster", 10};
+    &kMemories, "MemoriesMaxVisitsToCluster", 1000};
 
 const base::FeatureParam<int> kMaxDaysToCluster{&kMemories,
                                                 "MemoriesMaxDaysToCluster", 9};

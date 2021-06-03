@@ -922,13 +922,23 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
-const FeatureEntry::FeatureVariation kMemoriesVariations[] = {{
-    "Persist Context",
-    (FeatureEntry::FeatureParam[]){
-        {"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
-    1,
-    nullptr,
-}};
+const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
+    {
+        "Persist Context + Limit 1k",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
+        1,
+        nullptr,
+    },
+    {
+        "Persist Context + Limit 10k",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesPersistContextAnnotationsInHistoryDb", "true"},
+            {"MemoriesMaxVisitsToCluster", "10000"}},
+        2,
+        nullptr,
+    },
+};
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
