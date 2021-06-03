@@ -266,6 +266,9 @@ if (use_system_harfbuzz) {
 
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
+
+      # https:/crbug.com/1203071
+      "HB_NO_PRAGMA_GCC_DIAGNOSTIC_WARNING",
     ]
 
     if (!is_win && !is_mac) {
