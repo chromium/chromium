@@ -76,7 +76,7 @@ bool IOSChromeNetworkDelegate::OnCanGetCookies(
     return allowed_from_caller;
 
   return allowed_from_caller &&
-         cookie_settings_->IsCookieAccessAllowed(
+         cookie_settings_->IsFullCookieAccessAllowed(
              request.url(), request.site_for_cookies().RepresentativeUrl());
 }
 
@@ -90,7 +90,7 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
     return allowed_from_caller;
 
   return allowed_from_caller &&
-         cookie_settings_->IsCookieAccessAllowed(
+         cookie_settings_->IsFullCookieAccessAllowed(
              request.url(), request.site_for_cookies().RepresentativeUrl());
 }
 
@@ -102,7 +102,7 @@ bool IOSChromeNetworkDelegate::OnForcePrivacyMode(
   if (!cookie_settings_.get())
     return false;
 
-  return !cookie_settings_->IsCookieAccessAllowed(
+  return !cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
 }
 

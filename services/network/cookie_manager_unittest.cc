@@ -2522,25 +2522,25 @@ TEST_F(CookieManagerTest, CloningAndClientDestructVisible) {
 TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   const GURL kThisURL = GURL("http://www.this.com");
   const GURL kThatURL = GURL("http://www.that.com");
-  EXPECT_TRUE(
-      service()->cookie_settings().IsCookieAccessAllowed(kThisURL, kThatURL));
+  EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(kThisURL,
+                                                                     kThatURL));
 
   // Set block third party cookies to true, cookie should now be blocked.
   cookie_service_client()->BlockThirdPartyCookies(true);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(
-      service()->cookie_settings().IsCookieAccessAllowed(kThisURL, kThatURL));
-  EXPECT_TRUE(
-      service()->cookie_settings().IsCookieAccessAllowed(kThisURL, kThisURL));
+  EXPECT_FALSE(service()->cookie_settings().IsFullCookieAccessAllowed(
+      kThisURL, kThatURL));
+  EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(kThisURL,
+                                                                     kThisURL));
 
   // Set block third party cookies back to false, cookie should no longer be
   // blocked.
   cookie_service_client()->BlockThirdPartyCookies(false);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(
-      service()->cookie_settings().IsCookieAccessAllowed(kThisURL, kThatURL));
+  EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(kThisURL,
+                                                                     kThatURL));
 }
 
 // A test class having cookie store with a persistent backing store.

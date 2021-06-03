@@ -44,16 +44,17 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
 
   // The modification should apply to the regular profile and incognito profile.
   EXPECT_FALSE(
-      cookie_settings_->IsCookieAccessAllowed(kBlockedSite, kBlockedSite));
-  EXPECT_FALSE(
-      incognito_settings->IsCookieAccessAllowed(kBlockedSite, kBlockedSite));
+      cookie_settings_->IsFullCookieAccessAllowed(kBlockedSite, kBlockedSite));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(kBlockedSite,
+                                                             kBlockedSite));
 
   // Modify an incognito cookie setting and check that this does not propagate
   // into regular mode.
   incognito_settings->SetCookieSetting(kHttpsSite, CONTENT_SETTING_BLOCK);
-  EXPECT_TRUE(cookie_settings_->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(
+      cookie_settings_->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
   EXPECT_FALSE(
-      incognito_settings->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
+      incognito_settings->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
 }
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
@@ -65,25 +66,26 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   // It should be effective for regular and incognito session.
-  EXPECT_FALSE(cookie_settings_->IsCookieAccessAllowed(kFirstPartySite,
-                                                       kFirstPartySite));
-  EXPECT_FALSE(incognito_settings->IsCookieAccessAllowed(kFirstPartySite,
-                                                         kFirstPartySite));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(kFirstPartySite,
+                                                           kFirstPartySite));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(kFirstPartySite,
+                                                             kFirstPartySite));
 
   // A whitelisted item set in incognito mode should only apply to incognito
   // mode.
   incognito_settings->SetCookieSetting(kAllowedSite, CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(
-      incognito_settings->IsCookieAccessAllowed(kAllowedSite, kAllowedSite));
+  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(kAllowedSite,
+                                                            kAllowedSite));
   EXPECT_FALSE(
-      cookie_settings_->IsCookieAccessAllowed(kAllowedSite, kAllowedSite));
+      cookie_settings_->IsFullCookieAccessAllowed(kAllowedSite, kAllowedSite));
 
   // A whitelisted item set in regular mode should apply to regular and
   // incognito mode.
   cookie_settings_->SetCookieSetting(kHttpsSite, CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(
-      incognito_settings->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
-  EXPECT_TRUE(cookie_settings_->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
+      incognito_settings->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(
+      cookie_settings_->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
 }
 
 // Android does not have guest profiles.

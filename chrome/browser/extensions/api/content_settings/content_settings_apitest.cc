@@ -90,7 +90,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     // Check default content settings by using an unknown URL.
     GURL example_url("http://www.example.com");
     EXPECT_TRUE(
-        cookie_settings->IsCookieAccessAllowed(example_url, example_url));
+        cookie_settings->IsFullCookieAccessAllowed(example_url, example_url));
     EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(example_url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(example_url, example_url,
@@ -122,7 +122,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     // Check content settings for www.google.com
     GURL url("http://www.google.com");
-    EXPECT_FALSE(cookie_settings->IsCookieAccessAllowed(url, url));
+    EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(url, url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
     EXPECT_EQ(
@@ -157,7 +157,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     // Check content settings for www.google.com
     GURL url("http://www.google.com");
-    EXPECT_TRUE(cookie_settings->IsCookieAccessAllowed(url, url));
+    EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(url, url));
     EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
@@ -195,7 +195,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
         CookieSettingsFactory::GetForProfile(profile_).get();
 
     content_settings.push_back(
-        cookie_settings->IsCookieAccessAllowed(url, url));
+        cookie_settings->IsFullCookieAccessAllowed(url, url));
     content_settings.push_back(cookie_settings->IsCookieSessionOnly(url));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::IMAGES));

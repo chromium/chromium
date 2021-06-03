@@ -139,19 +139,20 @@ TEST(CookieSettingsBaseTest, ShouldNotDeleteNoThirdPartyDomainMatch) {
 TEST(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_BLOCK; }));
-  EXPECT_FALSE(settings.IsCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_FALSE(
+      settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
-  EXPECT_TRUE(settings.IsCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithSessionOnlySetting) {
   CallbackCookieSettings settings(base::BindRepeating(
       [](const GURL&) { return CONTENT_SETTING_SESSION_ONLY; }));
-  EXPECT_TRUE(settings.IsCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
 }
 
 TEST(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {

@@ -586,7 +586,7 @@ void RestrictedCookieManager::CookiesEnabledFor(
     return;
   }
 
-  std::move(callback).Run(cookie_settings_->IsCookieAccessAllowed(
+  std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies.RepresentativeUrl(), top_frame_origin));
 }
 

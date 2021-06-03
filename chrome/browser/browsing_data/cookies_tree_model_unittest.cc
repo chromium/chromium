@@ -1552,7 +1552,7 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
       .Times(2);
   origin->CreateContentException(
       cookie_settings, CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_TRUE(cookie_settings->IsCookieAccessAllowed(host, host));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host, host));
   EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(host));
 }
 
