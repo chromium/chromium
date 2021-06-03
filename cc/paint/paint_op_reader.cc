@@ -1086,9 +1086,10 @@ void PaintOpReader::ReadImagePaintFilter(
 void PaintOpReader::ReadRecordPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
-  SkRect record_bounds;
-  gfx::SizeF raster_scale;
-  PaintShader::ScalingBehavior scaling_behavior;
+  SkRect record_bounds = SkRect::MakeEmpty();
+  gfx::SizeF raster_scale = {0.f, 0.f};
+  PaintShader::ScalingBehavior scaling_behavior =
+      PaintShader::ScalingBehavior::kRasterAtScale;
   sk_sp<PaintRecord> record;
   ReadSimple(&record_bounds);
   ReadSimple(&raster_scale);
