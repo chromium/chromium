@@ -14,10 +14,10 @@
 #include <tuple>
 #include <vector>
 
-#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/paged_view_structure.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/time/time.h"
@@ -26,11 +26,13 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
+
+namespace views {
+class BoundsAnimator;
+}  // namespace views
 
 namespace ash {
 
@@ -42,7 +44,9 @@ class AppsGridViewTestApi;
 class ApplicationDragAndDropHost;
 class AppListConfig;
 class AppListItem;
+class AppListItemList;
 class AppListItemView;
+class AppListModel;
 class AppListViewDelegate;
 class AppsGridViewFolderDelegate;
 class ContentsView;

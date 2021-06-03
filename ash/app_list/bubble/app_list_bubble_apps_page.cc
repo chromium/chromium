@@ -9,7 +9,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/bubble/bubble_utils.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

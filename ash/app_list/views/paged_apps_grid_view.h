@@ -11,6 +11,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"

@@ -7,8 +7,10 @@
 #include <limits>
 #include <memory>
 
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view_model_utils.h"
 
 namespace ash {
