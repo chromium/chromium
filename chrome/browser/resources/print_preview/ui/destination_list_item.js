@@ -96,15 +96,6 @@ Polymer({
       type: Object,
       value: DestinationConfigStatus,
     },
-
-    /** @private */
-    printerStatusFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPrinterStatusInDialog');
-      },
-      readOnly: true,
-    },
     // </if>
   },
 
@@ -209,8 +200,7 @@ Polymer({
     }
 
     // <if expr="chromeos or lacros">
-    if (this.printerStatusFlagEnabled_ &&
-        this.destination.origin === DestinationOrigin.CROS) {
+    if (this.destination.origin === DestinationOrigin.CROS) {
       // Don't show status text when destination is configuring.
       if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
         return '';
@@ -243,8 +233,7 @@ Polymer({
     }
 
     // <if expr="chromeos or lacros">
-    if (this.printerStatusFlagEnabled_ &&
-        this.destination.origin === DestinationOrigin.CROS) {
+    if (this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
           this.destination.printerStatusReason,
           this.destination.isEnterprisePrinter);
@@ -261,20 +250,12 @@ Polymer({
    * @private
    */
   computeIsDestinationCrosLocal_: function() {
-    if (!this.printerStatusFlagEnabled_) {
-      return false;
-    }
-
     return this.destination &&
         this.destination.origin === DestinationOrigin.CROS;
   },
 
   /** @private */
   requestPrinterStatus_() {
-    if (!this.printerStatusFlagEnabled_) {
-      return;
-    }
-
     // Requesting printer status only allowed for local CrOS printers.
     if (this.destination.origin !== DestinationOrigin.CROS) {
       return;

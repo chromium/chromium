@@ -4248,11 +4248,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "printer-status-dialog",
-    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "privacy-advisor",
     "owners": [
       "harrisonsean",

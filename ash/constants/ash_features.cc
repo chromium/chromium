@@ -573,11 +573,6 @@ const base::Feature kPluginVmShowCameraPermissions{
 const base::Feature kPluginVmShowMicrophonePermissions{
     "PluginVmShowMicrophonePermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to show printer statuses on the Print Preview destination
-// dialog.
-const base::Feature kPrinterStatusDialog{"PrinterStatusDialog",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Allows print servers to be selected when beyond a specified limit.
 const base::Feature kPrintServerScaling{"PrintServerScaling",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

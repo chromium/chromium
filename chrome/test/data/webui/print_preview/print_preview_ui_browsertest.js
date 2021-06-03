@@ -1124,16 +1124,6 @@ var PrintPreviewDestinationItemTestCros = class extends PrintPreviewTest {
   get suiteName() {
     return destination_item_test_cros.suiteName;
   }
-
-  /** @override */
-  get featureList() {
-    const kPrinterStatusDialog = ['chromeos::features::kPrinterStatusDialog'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrinterStatusDialog) :
-        kPrinterStatusDialog;
-    return featureList;
-  }
 };
 
 TEST_F(
