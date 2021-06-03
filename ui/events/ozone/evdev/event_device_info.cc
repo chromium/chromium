@@ -64,6 +64,11 @@ constexpr struct {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
 
+// Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
+// incorrectly over Bluetooth.
+const uint16_t kSteelSeriesStratusDuoBluetoothVendorId = 0x0111;
+const uint16_t kSteelSeriesStratusDuoBluetoothProductId = 0x1431;
+
 bool GetEventBits(int fd,
                   const base::FilePath& path,
                   unsigned int type,
@@ -526,6 +531,13 @@ bool EventDeviceInfo::HasKeyboard() const {
 }
 
 bool EventDeviceInfo::HasMouse() const {
+  // The SteelSeries Stratus Duo claims to be a mouse over Bluetooth, preventing
+  // it from being set up as a gamepad correctly, so check for its vendor and
+  // product ID. (b/189491809)
+  if (input_id_.vendor == kSteelSeriesStratusDuoBluetoothVendorId &&
+      input_id_.product == kSteelSeriesStratusDuoBluetoothProductId) {
+    return false;
+  }
   return HasRelXY() && !HasProp(INPUT_PROP_POINTING_STICK);
 }
 
