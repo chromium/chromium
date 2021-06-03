@@ -570,7 +570,7 @@ export class Viewport {
    * Sets the zoom of the viewport.
    * Same as setZoomInternal_ but for pinch zoom we have some more operations.
    * @param {number} scaleDelta The zoom delta.
-   * @param {!Point} center The pinch center in content coordinates.
+   * @param {!Point} center The pinch center in plugin coordinates.
    * @private
    */
   setPinchZoomInternal_(scaleDelta, center) {
@@ -580,11 +580,10 @@ export class Viewport {
             'Viewport.mightZoom_.');
     this.internalZoom_ = this.clampZoom_(this.internalZoom_ * scaleDelta);
 
-    const newCenterInContent = this.frameToContent_(center);
-    const delta = {
-      x: (newCenterInContent.x - this.oldCenterInContent_.x),
-      y: (newCenterInContent.y - this.oldCenterInContent_.y)
-    };
+    assert(this.oldCenterInContent_);
+    const delta = vectorDelta(
+        /** @type {!Point} */ (this.oldCenterInContent_),
+        this.pluginToContent_(center));
 
     // Record the scroll position (relative to the pinch center).
     const zoom = this.getZoom();
@@ -599,18 +598,18 @@ export class Viewport {
   }
 
   /**
-   *  Converts a point from frame to content coordinates.
-   *  @param {!Point} framePoint The frame coordinates.
+   *  Converts a point from plugin to content coordinates.
+   *  @param {!Point} pluginPoint The plugin coordinates.
    *  @return {!Point} The content coordinates.
    *  @private
    */
-  frameToContent_(framePoint) {
+  pluginToContent_(pluginPoint) {
     // TODO(mcnee) Add a helper Point class to avoid duplicating operations
     // on plain {x,y} objects.
     const zoom = this.getZoom();
     return {
-      x: (framePoint.x + this.position.x) / zoom,
-      y: (framePoint.y + this.position.y) / zoom
+      x: (pluginPoint.x + this.position.x) / zoom,
+      y: (pluginPoint.y + this.position.y) / zoom
     };
   }
 
@@ -1425,7 +1424,7 @@ export class Viewport {
             y: this.window_.offsetHeight / 2
           };
         } else if (this.keepContentCentered_) {
-          this.oldCenterInContent_ = this.frameToContent_(this.pinchCenter_);
+          this.oldCenterInContent_ = this.pluginToContent_(this.pinchCenter_);
           this.keepContentCentered_ = false;
         }
 
@@ -1481,7 +1480,7 @@ export class Viewport {
       this.pinchPhase_ = PinchPhase.START;
       this.prevScale_ = 1;
       this.oldCenterInContent_ =
-          this.frameToContent_(this.frameToPluginCoordinate_(e.detail.center));
+          this.pluginToContent_(this.frameToPluginCoordinate_(e.detail.center));
 
       const needsScrollbars = this.documentNeedsScrollbars(this.getZoom());
       this.keepContentCentered_ = !needsScrollbars.horizontal;
