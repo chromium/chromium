@@ -221,7 +221,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
 
-  if (!signin::IsSigninAllowed(_browser->GetBrowserState()->GetPrefs())) {
+  if (!signin::IsSigninAllowedByPolicy(
+          _browser->GetBrowserState()->GetPrefs())) {
     // Sign-in is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;

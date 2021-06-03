@@ -71,10 +71,11 @@
 }
 
 - (void)start {
-  // TODO(crbug.com/1189836): The kSigninAllowed pref should be observed in case
-  // the policy is applied while this screen is presented.
+  // TODO(crbug.com/1189836): The kSigninAllowedByPolicy pref should be observed
+  // in case the policy is applied while this screen is presented.
 
-  if (!signin::IsSigninAllowed(self.browser->GetBrowserState()->GetPrefs())) {
+  if (!signin::IsSigninAllowedByPolicy(
+          self.browser->GetBrowserState()->GetPrefs())) {
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
     return;

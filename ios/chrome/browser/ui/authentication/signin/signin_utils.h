@@ -33,7 +33,7 @@ void RecordVersionSeen(PrefService* pref_service,
 bool IsSigninAllowed(const PrefService* prefs);
 
 // Returns a boolean indicating whether policy allows browser sign-in.
-bool IsSigninAllowedByPolicy();
+bool IsSigninAllowedByPolicy(const PrefService* prefs);
 
 }  // namespace signin
 

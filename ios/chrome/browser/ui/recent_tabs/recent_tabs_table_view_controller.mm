@@ -464,9 +464,10 @@ API_AVAILABLE(ios(13.0))
 - (void)addOtherDevicesSectionForState:(SessionsSyncUserState)state {
   // If sign-in is disabled through user Settings, do not show Other Devices
   // section. However, if sign-in is disabled by policy Chrome will
-  // continue to show the Other Devices section with a specialized mesage.
-  if (!signin::IsSigninAllowed(self.browserState->GetPrefs()) &&
-      signin::IsSigninAllowedByPolicy()) {
+  // continue to show the Other Devices section with a specialized message.
+  const PrefService* prefs = self.browserState->GetPrefs();
+  if (!signin::IsSigninAllowed(prefs) &&
+      signin::IsSigninAllowedByPolicy(prefs)) {
     return;
   }
 

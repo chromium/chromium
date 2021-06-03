@@ -212,7 +212,8 @@ TEST_F(SettingsTableViewControllerTest, SyncOn) {
 // item if sign-in is disabled by policy.
 TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
   AddSigninDisabledEnterprisePolicy();
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
   CreateController();
   CheckController();
 

@@ -235,7 +235,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
   const base::Version version_1_0("1.0");
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
@@ -248,8 +249,35 @@ TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
   // Sign-in is allowed by default.
   EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 
-  // When sign-in is disabled by policy, the accessor should return false.
+  // When sign-in is disabled, the accessor should return false.
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_FALSE(
+      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
+}
+
+// signin::IsSigninAllowedByPolicy should respect the kSigninAllowedByPolicy
+// pref.
+TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+      ->AddIdentities(@[ @"foo", @"bar" ]);
+  // Sign-in is allowed by default.
+  EXPECT_TRUE(
+      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
+
+  // When sign-in is disabled by policy, the accessor should return false.
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
+  EXPECT_FALSE(
+      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
+  EXPECT_FALSE(
+      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
+
+  // When sign-in is explicitly enabled by the user, but the policy has not
+  // changed the accessor should return false.
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+
+  EXPECT_FALSE(
+      signin::IsSigninAllowedByPolicy(chrome_browser_state_.get()->GetPrefs()));
   EXPECT_FALSE(
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }

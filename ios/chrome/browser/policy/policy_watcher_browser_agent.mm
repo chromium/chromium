@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -54,7 +55,7 @@ void PolicyWatcherBrowserAgent::Initialize(
     return;
   }
   prefs_change_observer_->Add(
-      prefs::kSigninAllowed,
+      prefs::kSigninAllowedByPolicy,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled,
           base::Unretained(this)));
@@ -66,8 +67,8 @@ void PolicyWatcherBrowserAgent::Initialize(
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(handler_);
-  if (!browser_->GetBrowserState()->GetPrefs()->GetBoolean(
-          prefs::kSigninAllowed)) {
+  if (!signin::IsSigninAllowedByPolicy(
+          browser_->GetBrowserState()->GetPrefs())) {
     AuthenticationService* service =
         AuthenticationServiceFactory::GetForBrowserState(
             browser_->GetBrowserState());

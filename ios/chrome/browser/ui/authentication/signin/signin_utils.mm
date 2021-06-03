@@ -80,7 +80,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (net::NetworkChangeNotifier::IsOffline())
     return false;
 
-  // Sign-in can be disabled by policy.
+  // Sign-in can be disabled by policy or through user Settings.
   if (!signin::IsSigninAllowed(browser_state->GetPrefs()))
     return false;
 
@@ -157,22 +157,12 @@ void RecordVersionSeen(PrefService* pref_service,
 }
 
 bool IsSigninAllowed(const PrefService* prefs) {
-  return prefs->GetBoolean(prefs::kSigninAllowed);
+  return prefs->GetBoolean(prefs::kSigninAllowed) &&
+         prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
 }
 
-bool IsSigninAllowedByPolicy() {
-  NSDictionary* configuration = [[NSUserDefaults standardUserDefaults]
-      dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
-
-  NSValue* value = [configuration
-      valueForKey:base::SysUTF8ToNSString(policy::key::kBrowserSignin)];
-  if (!value) {
-    return true;
-  }
-
-  BrowserSigninMode signin_mode;
-  [value getValue:&signin_mode];
-  return signin_mode == BrowserSigninMode::kEnabled;
+bool IsSigninAllowedByPolicy(const PrefService* prefs) {
+  return prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
 }
 
 }  // namespace signin

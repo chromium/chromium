@@ -583,7 +583,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
             base::mac::ObjCCast<SyncSwitchItem>(item);
-        if (signin::IsSigninAllowedByPolicy()) {
+        if (signin::IsSigninAllowedByPolicy(self.userPrefService)) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
           signinDisabledItem.on = NO;
@@ -692,7 +692,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     NSMutableArray* items = [NSMutableArray array];
     if (signin::IsMobileIdentityConsistencyEnabled()) {
       int detailTextID =
-          signin::IsSigninAllowedByPolicy()
+          signin::IsSigninAllowedByPolicy(self.userPrefService)
               ? IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
               : IDS_IOS_GOOGLE_SERVICES_SETTINGS_SIGNIN_DISABLED_BY_ADMINISTRATOR;
       SyncSwitchItem* allowSigninItem =
