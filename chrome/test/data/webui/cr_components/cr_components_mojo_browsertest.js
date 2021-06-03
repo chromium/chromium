@@ -38,6 +38,7 @@ var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   }
 };
 
-TEST_F('CrComponentsMostVisitedTest', 'All', function() {
+// The test is failing on dbg builds: https://crbug.com/1216019
+TEST_F('CrComponentsMostVisitedTest', 'DISABLED_All', function() {
   mocha.run();
 });
