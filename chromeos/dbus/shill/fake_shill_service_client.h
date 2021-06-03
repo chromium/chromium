@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void RequestTrafficCounters(const dbus::ObjectPath& service_path,
                               ListValueCallback callback,
                               ErrorCallback error_callback) override;
+  void ResetTrafficCounters(const dbus::ObjectPath& service_path,
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) override;
   ShillServiceClient::TestInterface* GetTestInterface() override;
 
   // ShillServiceClient::TestInterface overrides.

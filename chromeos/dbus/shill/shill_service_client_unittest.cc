@@ -330,4 +330,23 @@ TEST_F(ShillServiceClientTest, RequestTrafficCounters) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(ShillServiceClientTest, ResetTrafficCounters) {
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(shill::kResetTrafficCountersFunction,
+                       base::BindRepeating(&ExpectNoArgument), response.get());
+  // Call method.
+  base::MockCallback<base::OnceClosure> mock_closure;
+  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
+  client_->ResetTrafficCounters(dbus::ObjectPath(kExampleServicePath),
+                                mock_closure.Get(), mock_error_callback.Get());
+  EXPECT_CALL(mock_closure, Run()).Times(1);
+  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
+
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace chromeos

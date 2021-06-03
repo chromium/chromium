@@ -383,6 +383,13 @@ void FakeShillServiceClient::RequestTrafficCounters(
       base::Value::AsListValue(std::move(traffic_counters)));
 }
 
+void FakeShillServiceClient::ResetTrafficCounters(
+    const dbus::ObjectPath& service_path,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+}
+
 ShillServiceClient::TestInterface* FakeShillServiceClient::GetTestInterface() {
   return this;
 }
