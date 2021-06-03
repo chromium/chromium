@@ -117,7 +117,15 @@ export class ItemScanManager extends ItemNavigatorInterface {
       this.exitGroup_();
     }
 
-    this.moveToValidNode();
+    chrome.automation.getFocus(focus => {
+      // First, try to move back to the focused node.
+      if (focus) {
+        this.moveTo_(focus);
+      } else {
+        // Otherwise, move to anything that's valid based on the above history.
+        this.moveToValidNode();
+      }
+    });
   }
 
   /** @override */
