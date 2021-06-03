@@ -15,6 +15,12 @@
 #include "base/bits.h"
 
 namespace base {
+
+// Defined in base/allocator/partition_allocator/partition_root.cc
+void PartitionAllocMallocHookOnBeforeForkInParent();
+void PartitionAllocMallocHookOnAfterForkInParent();
+void PartitionAllocMallocHookOnAfterForkInChild();
+
 namespace allocator {
 
 namespace {
@@ -54,18 +60,12 @@ void MallocIntrospectionLog(malloc_zone_t* zone, void* address) {
 
 void MallocIntrospectionForceLock(malloc_zone_t* zone) {
   // Called before fork(2) to acquire the lock.
-  //
-  // PartitionAllocMallocInitOnce() in
-  // //base/allocator/partition_allocator/partition_root.cc has already
-  // registered a set of fork handlers, so it's safe to do nothing here.
+  PartitionAllocMallocHookOnBeforeForkInParent();
 }
 
 void MallocIntrospectionForceUnlock(malloc_zone_t* zone) {
   // Called in the parent process after fork(2) to release the lock.
-  //
-  // PartitionAllocMallocInitOnce() in
-  // //base/allocator/partition_allocator/partition_root.cc has already
-  // registered a set of fork handlers, so it's safe to do nothing here.
+  PartitionAllocMallocHookOnAfterForkInParent();
 }
 
 void MallocIntrospectionStatistics(malloc_zone_t* zone,
@@ -105,10 +105,7 @@ void MallocIntrospectionEnumerateDischargedPointers(
 
 void MallocIntrospectionReinitLock(malloc_zone_t* zone) {
   // Called in a child process after fork(2) to re-initialize the lock.
-  //
-  // PartitionAllocMallocInitOnce() in
-  // //base/allocator/partition_allocator/partition_root.cc has already
-  // registered a set of fork handlers, so it's safe to do nothing here.
+  PartitionAllocMallocHookOnAfterForkInChild();
 }
 
 void MallocIntrospectionPrintTask(task_t task,
@@ -227,7 +224,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   //   version >= 10: claimed_address is supported
   //   version >= 11: introspect.print_task is supported
   //   version >= 12: introspect.task_statistics is supported
-  g_mac_malloc_zone.version = 6;
+  g_mac_malloc_zone.version = 9;
   g_mac_malloc_zone.zone_name = "PartitionAlloc";
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;

@@ -35,9 +35,9 @@
 
 namespace base {
 
-namespace {
-
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+namespace {
 
 #if defined(OS_APPLE) || defined(OS_LINUX)
 
@@ -102,7 +102,7 @@ void PartitionAllocMallocInitOnce() {
   if (!g_global_init_called.compare_exchange_strong(expected, true))
     return;
 
-#if defined(OS_APPLE) || defined(OS_LINUX)
+#if defined(OS_LINUX)
   // When fork() is called, only the current thread continues to execute in the
   // child process. If the lock is held, but *not* by this thread when fork() is
   // called, we have a deadlock.
@@ -127,11 +127,26 @@ void PartitionAllocMallocInitOnce() {
   int err =
       pthread_atfork(BeforeForkInParent, AfterForkInParent, AfterForkInChild);
   PA_CHECK(err == 0);
-#endif  // defined(OS_APPLE) || defined(OS_LINUX)
+#endif  // defined(OS_LINUX)
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
+
+#if defined(OS_APPLE)
+void PartitionAllocMallocHookOnBeforeForkInParent() {
+  BeforeForkInParent();
+}
+
+void PartitionAllocMallocHookOnAfterForkInParent() {
+  AfterForkInParent();
+}
+
+void PartitionAllocMallocHookOnAfterForkInChild() {
+  AfterForkInChild();
+}
+#endif  // defined(OS_APPLE)
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace internal {
 
