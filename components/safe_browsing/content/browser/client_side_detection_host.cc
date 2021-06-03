@@ -313,6 +313,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       is_off_the_record_(is_off_the_record),
       account_signed_in_callback_(account_signed_in_callback) {
   DCHECK(tab);
+  DCHECK(pref_service);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = delegate_->GetClientSideDetectionService();
 
@@ -547,7 +548,8 @@ bool ClientSideDetectionHost::CanGetAccessToken() {
   // primary user account is signed in.
   return base::FeatureList::IsEnabled(kClientSideDetectionWithToken) &&
          IsEnhancedProtectionEnabled(*pref_service_) &&
-         std::move(account_signed_in_callback_).Run();
+         !account_signed_in_callback_.is_null() &&
+         account_signed_in_callback_.Run();
 }
 
 void ClientSideDetectionHost::SendRequest(
