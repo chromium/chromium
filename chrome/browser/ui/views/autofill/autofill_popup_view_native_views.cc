@@ -615,7 +615,7 @@ void AutofillPopupItemView::CreateContent() {
                         /*vertical=*/0,
                         /*horizontal=*/
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+                            DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
 
     first_line_container->AddChildView(std::move(main_text_label));
     first_line_container->AddChildView(std::move(minor_text_label));

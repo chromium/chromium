@@ -241,7 +241,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
     // TODO(crbug.com/1196021): Populate custom_icon with card art if available.
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
-    suggestion.is_value_secondary = true;
   }
 
   return suggestion;
