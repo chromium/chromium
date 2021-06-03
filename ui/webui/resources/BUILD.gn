@@ -158,6 +158,7 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_tooltip_icon.m.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
   "js/i18n_behavior.m.d.ts",
+  "js/list_property_update_behavior.m.d.ts",
   "js/promise_resolver.m.d.ts",
   "js/web_ui_listener_behavior.m.d.ts",
 ]
@@ -212,11 +213,12 @@ ts_library("library") {
     "$root_dir/js/cr/ui/focus_grid.m.d.ts",
     "$root_dir/js/cr/ui/focus_outline_manager.m.d.ts",
     "$root_dir/js/cr/ui/focus_row.m.d.ts",
-    "$root_dir/js/cr/ui/store.m.d.ts",
+    "$root_dir/js/cr/ui/keyboard_shortcut_list.m.d.ts",
     "$root_dir/js/cr/ui/store_client.m.d.ts",
     "$root_dir/js/event_tracker.m.d.ts",
     "$root_dir/js/load_time_data.m.d.ts",
     "$root_dir/js/parse_html_subset.m.d.ts",
+    "$root_dir/js/plural_string_proxy.d.ts",
     "$root_dir/js/icon.m.d.ts",
     "$root_dir/js/util.m.d.ts",
   ]
@@ -264,12 +266,14 @@ ts_definitions("generate_definitions") {
     "js/cr/ui/focus_grid.m.js",
     "js/cr/ui/focus_outline_manager.m.js",
     "js/cr/ui/focus_row.m.js",
-    "js/cr/ui/store_client.m.js",
+    "js/cr/ui/keyboard_shortcut_list.m.js",
     "js/cr/ui/store.m.js",
+    "js/cr/ui/store_client.m.js",
     "js/event_tracker.m.js",
     "js/icon.m.js",
     "js/load_time_data.m.js",
     "js/parse_html_subset.m.js",
+    "js/plural_string_proxy.js",
     "js/util.m.js",
   ]
 

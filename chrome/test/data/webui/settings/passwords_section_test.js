@@ -320,7 +320,7 @@ suite('PasswordsSection', function() {
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     pluralString = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.instance_ = pluralString;
+    SettingsPluralStringProxyImpl.setInstance(pluralString);
 
     PasswordManagerImpl.instance_ = passwordManager;
     elementFactory = new PasswordSectionElementFactory(document);

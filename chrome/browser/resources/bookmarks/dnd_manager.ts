@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './folder_node.js';
+import './item.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isTextInputElement} from 'chrome://resources/js/util.m.js';
 
 import {changeFolderOpen, deselectItems, selectItem} from './actions.js';
@@ -10,75 +14,54 @@ import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {DropPosition, ROOT_NODE_ID} from './constants.js';
 import {Debouncer} from './debouncer.js';
 import {BookmarksFolderNodeElement} from './folder_node.js';
+import {BookmarksItemElement} from './item.js';
 import {Store} from './store.js';
-import {BookmarkElement, BookmarkNode, DragData, DropDestination} from './types.js';
+import {BookmarkElement, BookmarkNode, DragData, DropDestination, NodeMap, ObjectMap} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList, hasChildFolders, isShowingSearch, normalizeNode} from './util.js';
 
-/** @typedef {?{elements: !Array<BookmarkNode>, sameProfile: boolean}} */
-let NormalizedDragData;
+type NormalizedDragData = {
+  elements: BookmarkNode[],
+  sameProfile: boolean,
+};
 
-/** @const {number} */
-const DRAG_THRESHOLD = 15;
+const DRAG_THRESHOLD: number = 15;
 
-/**
- * @param {Element} element
- * @return {boolean}
- */
-function isBookmarkItem(element) {
+function isBookmarkItem(element: Element): boolean {
   return element.tagName === 'BOOKMARKS-ITEM';
 }
 
-/**
- * @param {Element} element
- * @return {boolean}
- */
-function isBookmarkFolderNode(element) {
+function isBookmarkFolderNode(element: Element): boolean {
   return element.tagName === 'BOOKMARKS-FOLDER-NODE';
 }
 
-/**
- * @param {Element} element
- * @return {boolean}
- */
-function isBookmarkList(element) {
+function isBookmarkList(element: Element): boolean {
   return element.tagName === 'BOOKMARKS-LIST';
 }
 
-/**
- * @param {Element} element
- * @return {boolean}
- */
-function isClosedBookmarkFolderNode(element) {
-  return isBookmarkFolderNode(/** @type {BookmarkElement} */ (element)) &&
-      !(/** @type {BookmarksFolderNodeElement} */ (element).isOpen);
+function isClosedBookmarkFolderNode(element: Element): boolean {
+  return isBookmarkFolderNode(element) &&
+      !((element as BookmarksFolderNodeElement).isOpen);
 }
 
-/**
- * @param {Array<!Element>|undefined} path
- * @return {BookmarkElement}
- */
-function getBookmarkElement(path) {
+function getBookmarkElement(path?: EventTarget[]): BookmarkElement|null {
   if (!path) {
     return null;
   }
 
-  for (let i = 0; i < path.length; i++) {
-    if (isBookmarkItem(path[i]) || isBookmarkFolderNode(path[i]) ||
-        isBookmarkList(path[i])) {
-      return /** @type {BookmarkElement} */ (path[i]);
+  for (let i = 0; i < path!.length; i++) {
+    const element = path![i] as Element;
+    if (isBookmarkItem(element) || isBookmarkFolderNode(element) ||
+        isBookmarkList(element)) {
+      return path![i] as BookmarkElement;
     }
   }
   return null;
 }
 
-/**
- * @param {Array<!Element>|undefined} path
- * @return {BookmarkElement}
- */
-function getDragElement(path) {
+function getDragElement(path: EventTarget[]): BookmarkElement|null {
   const dragElement = getBookmarkElement(path);
   for (let i = 0; i < path.length; i++) {
-    if (path[i].tagName === 'BUTTON') {
+    if ((path![i] as Element).tagName === 'BUTTON') {
       return null;
     }
   }
@@ -86,12 +69,8 @@ function getDragElement(path) {
                                                                 null;
 }
 
-/**
- * @param {BookmarkElement} bookmarkElement
- * @return {BookmarkNode}
- */
-function getBookmarkNode(bookmarkElement) {
-  return Store.getInstance().data.nodes[bookmarkElement.itemId];
+function getBookmarkNode(bookmarkElement: BookmarkElement): BookmarkNode {
+  return Store.getInstance().data.nodes[bookmarkElement.itemId]!;
 }
 
 /**
@@ -99,16 +78,12 @@ function getBookmarkNode(bookmarkElement) {
  * bookmarkManagerPrivate API.
  */
 export class DragInfo {
-  constructor() {
-    /** @type {NormalizedDragData} */
-    this.dragData = null;
-  }
+  dragData: NormalizedDragData|null = null;
 
-  /** @param {DragData} newDragData */
-  setNativeDragData(newDragData) {
+  setNativeDragData(newDragData: DragData) {
     this.dragData = {
       sameProfile: newDragData.sameProfile,
-      elements: newDragData.elements.map((x) => normalizeNode(x))
+      elements: newDragData.elements!.map((x) => normalizeNode(x))
     };
   }
 
@@ -116,50 +91,44 @@ export class DragInfo {
     this.dragData = null;
   }
 
-  /** @return {boolean} */
-  isDragValid() {
+  isDragValid(): boolean {
     return !!this.dragData;
   }
 
-  /** @return {boolean} */
-  isSameProfile() {
+  isSameProfile(): boolean {
     return !!this.dragData && this.dragData.sameProfile;
   }
 
-  /** @return {boolean} */
-  isDraggingFolders() {
+  isDraggingFolders(): boolean {
     return !!this.dragData && this.dragData.elements.some(function(node) {
       return !node.url;
     });
   }
 
-  /** @return {boolean} */
-  isDraggingBookmark(bookmarkId) {
+  isDraggingBookmark(bookmarkId: string): boolean {
     return !!this.dragData && this.isSameProfile() &&
         this.dragData.elements.some(function(node) {
           return node.id === bookmarkId;
         });
   }
 
-  /** @return {boolean} */
-  isDraggingChildBookmark(folderId) {
+  isDraggingChildBookmark(folderId: string): boolean {
     return !!this.dragData && this.isSameProfile() &&
         this.dragData.elements.some(function(node) {
           return node.parentId === folderId;
         });
   }
 
-  /** @return {boolean} */
-  isDraggingFolderToDescendant(itemId, nodes) {
+  isDraggingFolderToDescendant(itemId: string, nodes: NodeMap): boolean {
     if (!this.isSameProfile()) {
       return false;
     }
 
-    let parentId = nodes[itemId].parentId;
-    const parents = {};
+    let parentId = nodes[itemId]!.parentId;
+    const parents: ObjectMap<boolean> = {};
     while (parentId) {
       parents[parentId] = true;
-      parentId = nodes[parentId].parentId;
+      parentId = nodes[parentId]!.parentId;
     }
 
     return !!this.dragData && this.dragData.elements.some(function(node) {
@@ -172,26 +141,19 @@ export class DragInfo {
  * Manages auto expanding of sidebar folders on hover while dragging.
  */
 class AutoExpander {
+  EXPAND_FOLDER_DELAY: number = 400;
+  private lastElement_: BookmarkElement|null = null;
+  private debouncer_: Debouncer;
+
   constructor() {
-    /** @const {number} */
-    this.EXPAND_FOLDER_DELAY = 400;
-
-    /** @private {?BookmarkElement} */
-    this.lastElement_ = null;
-
-    /** @type {!Debouncer} */
     this.debouncer_ = new Debouncer(() => {
       const store = Store.getInstance();
-      store.dispatch(changeFolderOpen(this.lastElement_.itemId, true));
+      store.dispatch(changeFolderOpen(this.lastElement_!.itemId, true));
       this.reset();
     });
   }
 
-  /**
-   * @param {Event} e
-   * @param {?BookmarkElement} overElement
-   */
-  update(e, overElement) {
+  update(e: Event, overElement: BookmarkElement|null) {
     const itemId = overElement ? overElement.itemId : null;
     const store = Store.getInstance();
 
@@ -199,7 +161,7 @@ class AutoExpander {
     // expander. Falls through to reset the expander delay.
     if (overElement && overElement !== this.lastElement_ &&
         isClosedBookmarkFolderNode(overElement) &&
-        hasChildFolders(/** @type {string} */ (itemId), store.data.nodes)) {
+        hasChildFolders(itemId as string, store.data.nodes)) {
       this.reset();
       this.lastElement_ = overElement;
     }
@@ -225,45 +187,28 @@ class AutoExpander {
  * between items or highlights folders which are valid drop targets.
  */
 class DropIndicator {
+  private removeDropIndicatorTimeoutId_: number|null;
+  private lastIndicatorElement_: BookmarkElement|null;
+  private lastIndicatorClassName_: string|null;
+  timerProxy: Window;
+
   constructor() {
-    /**
-     * @private {number|null} Timer id used to help minimize flicker.
-     */
     this.removeDropIndicatorTimeoutId_ = null;
-
-    /**
-     * The element that had a style applied it to indicate the drop location.
-     * This is used to easily remove the style when necessary.
-     * @private {BookmarkElement|null}
-     */
     this.lastIndicatorElement_ = null;
-
-    /**
-     * The style that was applied to indicate the drop location.
-     * @private {?string|null}
-     */
     this.lastIndicatorClassName_ = null;
-
-    /**
-     * Used to instantly remove the indicator style in tests.
-     * @private {!Object}
-     */
     this.timerProxy = window;
   }
 
   /**
    * Applies the drop indicator style on the target element and stores that
    * information to easily remove the style in the future.
-   * @param {HTMLElement} indicatorElement
-   * @param {DropPosition} position
    */
-  addDropIndicatorStyle(indicatorElement, position) {
+  addDropIndicatorStyle(indicatorElement: HTMLElement, position: DropPosition) {
     const indicatorStyleName = position === DropPosition.ABOVE ?
         'drag-above' :
         position === DropPosition.BELOW ? 'drag-below' : 'drag-on';
 
-    this.lastIndicatorElement_ =
-        /** @type {BookmarkElement} */ (indicatorElement);
+    this.lastIndicatorElement_ = indicatorElement as BookmarkElement;
     this.lastIndicatorClassName_ = indicatorStyleName;
 
     indicatorElement.classList.add(indicatorStyleName);
@@ -285,13 +230,12 @@ class DropIndicator {
   /**
    * Displays the drop indicator on the current drop target to give the
    * user feedback on where the drop will occur.
-   * @param {DropDestination} dropDest
    */
-  update(dropDest) {
-    this.timerProxy.clearTimeout(this.removeDropIndicatorTimeoutId_);
+  update(dropDest: DropDestination) {
+    this.timerProxy.clearTimeout(this.removeDropIndicatorTimeoutId_!);
     this.removeDropIndicatorTimeoutId_ = null;
 
-    const indicatorElement = dropDest.element.getDropTarget();
+    const indicatorElement = dropDest.element.getDropTarget()!;
     const position = dropDest.position;
 
     this.removeDropIndicatorStyle();
@@ -318,29 +262,20 @@ class DropIndicator {
  * Manages drag and drop events for the bookmarks-app.
  */
 export class DNDManager {
+  private dragInfo_: DragInfo|null;
+  private dropDestination_: DropDestination|null;
+  private dropIndicator_: DropIndicator|null;
+  private eventTracker_: EventTracker = new EventTracker();
+  private autoExpander_: AutoExpander|null;
+  private timerProxy_: any;
+  private lastPointerWasTouch_: boolean;
+
   constructor() {
-    /** @private {DragInfo} */
     this.dragInfo_ = null;
-
-    /** @private {?DropDestination} */
     this.dropDestination_ = null;
-
-    /** @private {DropIndicator} */
     this.dropIndicator_ = null;
-
-    /** @private {Object<string, function(!Event)>} */
-    this.documentListeners_ = null;
-
-    /** @private {?AutoExpander} */
     this.autoExpander_ = null;
-
-    /**
-     * Used to instantly clearDragData in tests.
-     * @private {!Object}
-     */
     this.timerProxy_ = window;
-
-    /** @private {boolean} */
     this.lastPointerWasTouch_ = false;
   }
 
@@ -349,19 +284,14 @@ export class DNDManager {
     this.dropIndicator_ = new DropIndicator();
     this.autoExpander_ = new AutoExpander();
 
-    this.documentListeners_ = {
-      'dragstart': this.onDragStart_.bind(this),
-      'dragenter': this.onDragEnter_.bind(this),
-      'dragover': this.onDragOver_.bind(this),
-      'dragleave': this.onDragLeave_.bind(this),
-      'drop': this.onDrop_.bind(this),
-      'dragend': this.clearDragData_.bind(this),
-      'mousedown': this.onMouseDown_.bind(this),
-      'touchstart': this.onTouchStart_.bind(this),
-    };
-    for (const event in this.documentListeners_) {
-      document.addEventListener(event, this.documentListeners_[event]);
-    }
+    this.eventTracker_.add(document, 'dragstart', e => this.onDragStart_(e));
+    this.eventTracker_.add(document, 'dragenter', e => this.onDragEnter_(e));
+    this.eventTracker_.add(document, 'dragover', e => this.onDragOver_(e));
+    this.eventTracker_.add(document, 'dragleave', () => this.onDragLeave_());
+    this.eventTracker_.add(document, 'drop', e => this.onDrop_(e));
+    this.eventTracker_.add(document, 'dragend', () => this.clearDragData_());
+    this.eventTracker_.add(document, 'mousedown', () => this.onMouseDown_());
+    this.eventTracker_.add(document, 'touchstart', () => this.onTouchStart_());
 
     chrome.bookmarkManagerPrivate.onDragEnter.addListener(
         this.handleChromeDragEnter_.bind(this));
@@ -370,20 +300,14 @@ export class DNDManager {
   }
 
   destroy() {
-    for (const event in this.documentListeners_) {
-      document.removeEventListener(event, this.documentListeners_[event]);
-    }
+    this.eventTracker_.removeAll();
   }
 
   ////////////////////////////////////////////////////////////////////////////
   // DragEvent handlers:
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onDragStart_(e) {
-    const dragElement = getDragElement(e.path);
+  private onDragStart_(e: Event) {
+    const dragElement = getDragElement(e.composedPath());
     if (!dragElement) {
       return;
     }
@@ -406,14 +330,14 @@ export class DNDManager {
       // delay on large amount of bookmark dragging.
       for (const itemId of displayingItems) {
         for (const element of dragData.elements) {
-          if (element.id === itemId) {
-            draggedNodes.push(element.id);
+          if (element!.id === itemId) {
+            draggedNodes.push(element!.id);
             break;
           }
         }
       }
     } else {
-      draggedNodes = dragData.elements.map((item) => item.id);
+      draggedNodes = dragData.elements.map((item) => item!.id);
     }
 
     assert(draggedNodes.length === dragData.elements.length);
@@ -422,22 +346,17 @@ export class DNDManager {
     assert(dragNodeIndex !== -1);
 
     chrome.bookmarkManagerPrivate.startDrag(
-        draggedNodes, dragNodeIndex, this.lastPointerWasTouch_, e.clientX,
-        e.clientY);
+        draggedNodes, dragNodeIndex, this.lastPointerWasTouch_,
+        (e as DragEvent).clientX, (e as DragEvent).clientY);
   }
 
-  /** @private */
-  onDragLeave_() {
-    this.dropIndicator_.finish();
+  private onDragLeave_() {
+    this.dropIndicator_!.finish();
   }
 
-  /**
-   * @private
-   * @param {!Event} e
-   */
-  onDrop_(e) {
+  private onDrop_(e: Event) {
     // Allow normal DND on text inputs.
-    if (isTextInputElement(e.path[0])) {
+    if (isTextInputElement((e.composedPath()[0] as HTMLElement))) {
       return;
     }
 
@@ -459,23 +378,15 @@ export class DNDManager {
     this.clearDragData_();
   }
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onDragEnter_(e) {
+  private onDragEnter_(e: Event) {
     e.preventDefault();
   }
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onDragOver_(e) {
+  private onDragOver_(e: Event) {
     this.dropDestination_ = null;
 
     // Allow normal DND on text inputs.
-    if (isTextInputElement(e.path[0])) {
+    if (isTextInputElement(e.composedPath()[0] as HTMLElement)) {
       return;
     }
 
@@ -483,72 +394,62 @@ export class DNDManager {
     // navigation. We never want to do that for the bookmark manager.
     e.preventDefault();
 
-    if (!this.dragInfo_.isDragValid()) {
+    if (!this.dragInfo_!.isDragValid()) {
       return;
     }
 
     const state = Store.getInstance().data;
-    const items = this.dragInfo_.dragData.elements;
+    const items = this.dragInfo_!.dragData!.elements;
 
-    const overElement = getBookmarkElement(e.path);
-    this.autoExpander_.update(e, overElement);
+    const overElement = getBookmarkElement(e.composedPath());
+    this.autoExpander_!.update(e, overElement);
     if (!overElement) {
-      this.dropIndicator_.finish();
+      this.dropIndicator_!.finish();
       return;
     }
 
     // Now we know that we can drop. Determine if we will drop above, on or
     // below based on mouse position etc.
     this.dropDestination_ =
-        this.calculateDropDestination_(e.clientY, overElement);
+        this.calculateDropDestination_((e as DragEvent).clientY, overElement);
     if (!this.dropDestination_) {
-      this.dropIndicator_.finish();
+      this.dropIndicator_!.finish();
       return;
     }
 
-    this.dropIndicator_.update(this.dropDestination_);
+    this.dropIndicator_!.update(this.dropDestination_);
   }
 
-  /** @private */
-  onMouseDown_() {
+  private onMouseDown_() {
     this.lastPointerWasTouch_ = false;
   }
 
-  /** @private */
-  onTouchStart_() {
+  private onTouchStart_() {
     this.lastPointerWasTouch_ = true;
   }
 
-  /**
-   * @private
-   * @param {DragData} dragData
-   */
-  handleChromeDragEnter_(dragData) {
-    this.dragInfo_.setNativeDragData(dragData);
+  private handleChromeDragEnter_(dragData: DragData) {
+    this.dragInfo_!.setNativeDragData(dragData);
   }
 
   ////////////////////////////////////////////////////////////////////////////
   // Helper methods:
 
-  /** @private */
-  clearDragData_() {
-    this.autoExpander_.reset();
+  private clearDragData_() {
+    this.autoExpander_!.reset();
 
     // Defer the clearing of the data so that the bookmark manager API's drop
     // event doesn't clear the drop data before the web drop event has a
     // chance to execute (on Mac).
     this.timerProxy_.setTimeout(() => {
-      this.dragInfo_.clearDragData();
+      this.dragInfo_!.clearDragData();
       this.dropDestination_ = null;
-      this.dropIndicator_.finish();
+      this.dropIndicator_!.finish();
     }, 0);
   }
 
-  /**
-   * @param {DropDestination} dropDestination
-   * @return {{parentId: string, index: number}}
-   */
-  calculateDropInfo_(dropDestination) {
+  private calculateDropInfo_(dropDestination: DropDestination):
+      {parentId: string, index: number} {
     if (isBookmarkList(dropDestination.element)) {
       return {
         index: 0,
@@ -566,8 +467,8 @@ export class DNDManager {
 
       // Drops between items in the normal list and the sidebar use the drop
       // destination node's parent.
-      parentId = assert(node.parentId);
-      index = state.nodes[parentId].children.indexOf(node.id);
+      parentId = assert(node.parentId!);
+      index = state.nodes[parentId]!.children!.indexOf(node.id);
 
       if (position === DropPosition.BELOW) {
         index++;
@@ -583,10 +484,8 @@ export class DNDManager {
   /**
    * Calculates which items should be dragged based on the initial drag item
    * and the current selection. Dragged items will end up selected.
-   * @param {!BookmarkElement} dragElement
-   * @private
    */
-  calculateDragData_(dragElement) {
+  private calculateDragData_(dragElement: BookmarkElement) {
     const dragId = dragElement.itemId;
     const store = Store.getInstance();
     const state = store.data;
@@ -625,15 +524,10 @@ export class DNDManager {
 
   /**
    * This function determines where the drop will occur.
-   * @private
-   * @param {number} elementClientY
-   * @param {!BookmarkElement} overElement
-   * @return {?DropDestination} If no valid drop position is found, null,
-   *   otherwise:
-   *       element - The target element that will receive the drop.
-   *       position - A |DropPosition| relative to the |element|.
    */
-  calculateDropDestination_(elementClientY, overElement) {
+  private calculateDropDestination_(
+      elementClientY: number,
+      overElement: BookmarkElement): DropDestination|null {
     const validDropPositions = this.calculateValidDropPositions_(overElement);
     if (validDropPositions === DropPosition.NONE) {
       return null;
@@ -642,7 +536,7 @@ export class DNDManager {
     const above = validDropPositions & DropPosition.ABOVE;
     const below = validDropPositions & DropPosition.BELOW;
     const on = validDropPositions & DropPosition.ON;
-    const rect = overElement.getDropTarget().getBoundingClientRect();
+    const rect = overElement.getDropTarget()!.getBoundingClientRect();
     const yRatio = (elementClientY - rect.top) / rect.height;
 
     if (above && (yRatio <= .25 || yRatio <= .5 && (!below || !on))) {
@@ -662,13 +556,9 @@ export class DNDManager {
 
   /**
    * Determines the valid drop positions for the given target element.
-   * @private
-   * @param {!BookmarkElement} overElement The element that we are currently
-   *     dragging over.
-   * @return {number} An bit field enumeration of valid drop locations.
    */
-  calculateValidDropPositions_(overElement) {
-    const dragInfo = this.dragInfo_;
+  private calculateValidDropPositions_(overElement: BookmarkElement): number {
+    const dragInfo = this.dragInfo_!;
     const state = Store.getInstance().data;
     let itemId = overElement.itemId;
 
@@ -701,13 +591,8 @@ export class DNDManager {
     return validDropPositions;
   }
 
-  /**
-   * @private
-   * @param {BookmarkElement} overElement
-   * @return {number}
-   */
-  calculateDropAboveBelow_(overElement) {
-    const dragInfo = this.dragInfo_;
+  private calculateDropAboveBelow_(overElement: BookmarkElement): number {
+    const dragInfo = this.dragInfo_!;
     const state = Store.getInstance().data;
 
     if (isBookmarkList(overElement)) {
@@ -729,7 +614,8 @@ export class DNDManager {
     let validDropPositions = DropPosition.NONE;
 
     // Cannot drop above if the item above is already in the drag source.
-    const previousElem = overElement.previousElementSibling;
+    const previousElem =
+        overElement.previousElementSibling as BookmarksFolderNodeElement;
     if (!previousElem || !dragInfo.isDraggingBookmark(previousElem.itemId)) {
       validDropPositions |= DropPosition.ABOVE;
     }
@@ -741,7 +627,8 @@ export class DNDManager {
       return validDropPositions;
     }
 
-    const nextElement = overElement.nextElementSibling;
+    const nextElement =
+        overElement.nextElementSibling as BookmarksFolderNodeElement;
     // Cannot drop below if the item below is already in the drag source.
     if (!nextElement || !dragInfo.isDraggingBookmark(nextElement.itemId)) {
       validDropPositions |= DropPosition.BELOW;
@@ -752,18 +639,13 @@ export class DNDManager {
 
   /**
    * Determine whether we can drop the dragged items on the drop target.
-   * @private
-   * @param {!BookmarkElement} overElement The element that we are currently
-   *     dragging over.
-   * @return {boolean} Whether we can drop the dragged items on the drop
-   *     target.
    */
-  canDropOn_(overElement) {
+  private canDropOn_(overElement: BookmarkElement): boolean {
     // Allow dragging onto empty bookmark lists.
     if (isBookmarkList(overElement)) {
       const state = Store.getInstance().data;
       return !!state.selectedFolder &&
-          state.nodes[state.selectedFolder].children.length === 0;
+          state.nodes[state.selectedFolder]!.children!.length === 0;
     }
 
     // We can only drop on a folder.
@@ -771,21 +653,16 @@ export class DNDManager {
       return false;
     }
 
-    return !this.dragInfo_.isDraggingChildBookmark(overElement.itemId);
+    return !this.dragInfo_!.isDraggingChildBookmark(overElement.itemId);
   }
 
-  /**
-   * @param {DropDestination} dropDestination
-   * @private
-   */
-  shouldHighlight_(dropDestination) {
+  private shouldHighlight_(dropDestination: DropDestination): boolean {
     return isBookmarkItem(dropDestination.element) ||
         isBookmarkList(dropDestination.element);
   }
 
-  /** @param {!Object} timerProxy */
-  setTimerProxyForTesting(timerProxy) {
+  setTimerProxyForTesting(timerProxy: any) {
     this.timerProxy_ = timerProxy;
-    this.dropIndicator_.timerProxy = timerProxy;
+    this.dropIndicator_!.timerProxy = timerProxy;
   }
 }

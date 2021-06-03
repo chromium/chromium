@@ -31,7 +31,7 @@ suite(header_test.suiteName, function() {
     document.body.innerHTML = '';
 
     pluralString = new TestPluralStringProxy();
-    PrintPreviewPluralStringProxyImpl.instance_ = pluralString;
+    PrintPreviewPluralStringProxyImpl.setInstance(pluralString);
     pluralString.text = '1 sheet of paper';
 
     const model = /** @type {!PrintPreviewModelElement} */ (

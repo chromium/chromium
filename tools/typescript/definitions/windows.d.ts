@@ -53,11 +53,11 @@ declare namespace chrome {
     export const WINDOW_ID_CURRENT: number;
 
     export function get(windowId: number, getInfo: (GetInfo|null),
-                        callback: (Window) => void): void;
+                        callback: (p1: Window) => void): void;
     export function getCurrent(getInfo: (GetInfo|null),
-                               callback: (Window) => void): void;
+                               callback: (p1: Window) => void): void;
     export function getLastFocused(getInfo: (GetInfo|null),
-                                   callback: (Window) => void): void;
+                                   callback: (p1: Window) => void): void;
     export function getAll(getInfo: (GetInfo|null),
                            callback: (p1: Window[]) => void): void;
     type CreateData = {
@@ -75,7 +75,7 @@ declare namespace chrome {
     }
 
     export function create(createData?: CreateData,
-                           callback?: (Window) => void): void;
+                           callback?: (p1: Window) => void): void;
 
     type UpdateInfo = {
       left?: number;
@@ -88,7 +88,7 @@ declare namespace chrome {
     }
 
     export function update(windowId: number, updateInfo: UpdateInfo,
-                           callback?: (Window) => void): void;
+                           callback?: (p1: Window) => void): void;
     export function remove(windowId: number, callback?: () => void): void;
   }
 }

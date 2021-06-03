@@ -4,6 +4,7 @@
 
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {StoreClient as CrUiStoreClient, StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Store} from './store.js';
 import {BookmarksPageState} from './types.js';
@@ -13,51 +14,28 @@ import {BookmarksPageState} from './types.js';
  * element to back-end data from the store.
  */
 
-/**
- * @polymerBehavior
- */
 const BookmarksStoreClientImpl = {
-  /**
-   * @param {string} localProperty
-   * @param {function(Object)} valueGetter
-   */
-  watch(localProperty, valueGetter) {
-    this.watch_(localProperty, valueGetter);
+  watch(localProperty: string, valueGetter: (p: BookmarksPageState) => any) {
+    (this as any).watch_(localProperty, valueGetter);
   },
 
-  /**
-   * @return {BookmarksPageState}
-   */
-  getState() {
+  getState(): BookmarksPageState {
     return this.getStore().data;
   },
 
-  /**
-   * @return {Store}
-   */
-  getStore() {
+  getStore(): Store {
     return Store.getInstance();
   },
 };
 
-export class BookmarksStoreClientInterface {
-  /**
-   * @param {string} localProperty
-   * @param {function(Object)} valueGetter
-   */
-  watch(localProperty, valueGetter) {}
+export interface BookmarksStoreClientInterface extends
+    CrUiStoreClientInterface {
+  watch(localProperty: string,
+        valueGetter: (p: BookmarksPageState) => any): void;
 
-  /** @return {BookmarksPageState} */
-  getState() {}
+  getState(): BookmarksPageState;
 
-  /** @return {Store} */
-  getStore() {}
+  getStore(): Store;
 }
 
-/**
- * @polymerBehavior
- * @implements {BookmarksStoreClientInterface}
- * @implements {CrUiStoreClientInterface}
- * @implements {StoreObserver<BookmarksPageState>}
- */
 export const StoreClient = [CrUiStoreClient, BookmarksStoreClientImpl];

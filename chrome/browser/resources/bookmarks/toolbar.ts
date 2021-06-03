@@ -7,12 +7,13 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.j
 import 'chrome://resources/cr_elements/icons.m.js';
 import './shared_style.js';
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,16 +23,12 @@ import {Command, MenuSource} from './constants.js';
 import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarksPageState} from './types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {BookmarksStoreClientInterface}
- * @implements {CrUiStoreClientInterface}
- * @implements {StoreObserver<BookmarksPageState>}
- */
-const BookmarksToolbarElementBase = mixinBehaviors(StoreClient, PolymerElement);
+const BookmarksToolbarElementBase =
+    mixinBehaviors([StoreClient], PolymerElement) as {
+  new (): PolymerElement & BookmarksStoreClientInterface &
+      StoreObserver<BookmarksPageState>
+}
 
-/** @polymer */
 export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   static get is() {
     return 'bookmarks-toolbar';
@@ -54,52 +51,49 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
         readOnly: true,
       },
 
-      /** @private */
       narrow_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @private */
       searchTerm_: {
         type: String,
         observer: 'onSearchTermChanged_',
       },
 
-      /** @private {!Set<string>} */
       selectedItems_: Object,
 
-      /** @private */
       globalCanEdit_: Boolean,
     };
   }
 
+  sidebarWidth: string;
+  showSelectionOverlay: boolean;
+  private narrow_: boolean;
+  private searchTerm_: string;
+  private selectedItems_: Set<string>;
+  private globalCanEdit_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
-    this.watch('searchTerm_', function(state) {
+    this.watch('searchTerm_', function(state: BookmarksPageState) {
       return state.search.term;
     });
-    this.watch('selectedItems_', function(state) {
+    this.watch('selectedItems_', function(state: BookmarksPageState) {
       return state.selection.items;
     });
-    this.watch('globalCanEdit_', function(state) {
+    this.watch('globalCanEdit_', function(state: BookmarksPageState) {
       return state.prefs.canEdit;
     });
     this.updateFromStore();
   }
 
-  /** @return {CrToolbarSearchFieldElement} */
-  get searchField() {
-    return /** @type {CrToolbarElement} */ (
-               this.shadowRoot.querySelector('cr-toolbar'))
+  get searchField(): CrToolbarSearchFieldElement {
+    return this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
         .getSearchField();
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onMenuButtonOpenTap_(e) {
+  private onMenuButtonOpenTap_(e: Event) {
     this.dispatchEvent(new CustomEvent('open-command-menu', {
       bubbles: true,
       composed: true,
@@ -110,65 +104,45 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
     }));
   }
 
-  /** @private */
-  onDeleteSelectionTap_() {
+  private onDeleteSelectionTap_() {
     const selection = this.selectedItems_;
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(commandManager.canExecute(Command.DELETE, selection));
     commandManager.handle(Command.DELETE, selection);
   }
 
-  /** @private */
-  onClearSelectionTap_() {
+  private onClearSelectionTap_() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(
         commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));
     commandManager.handle(Command.DESELECT_ALL, this.selectedItems_);
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     if (e.detail !== this.searchTerm_) {
       this.dispatch(setSearchTerm(e.detail));
     }
   }
 
-  /** @private */
-  onSidebarWidthChanged_() {
+  private onSidebarWidthChanged_() {
     this.style.setProperty('--sidebar-width', this.sidebarWidth);
   }
 
-  /** @private */
-  onSearchTermChanged_() {
+  private onSearchTermChanged_() {
     this.searchField.setValue(this.searchTerm_ || '');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSelectionOverlay_() {
+  private shouldShowSelectionOverlay_(): boolean {
     return this.selectedItems_.size > 1 && this.globalCanEdit_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  canDeleteSelection_() {
+  private canDeleteSelection_(): boolean {
     return this.showSelectionOverlay &&
         BookmarksCommandManagerElement.getInstance().canExecute(
             Command.DELETE, this.selectedItems_);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getItemsSelectedString_() {
+  private getItemsSelectedString_(): string {
     return loadTimeData.getStringF('itemsSelected', this.selectedItems_.size);
   }
 }

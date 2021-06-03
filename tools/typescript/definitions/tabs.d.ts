@@ -61,6 +61,6 @@ declare namespace chrome {
     }
 
     export function create(createProperties: CreateProperties,
-                           callback?: (Tab) => void): void;
+                           callback?: (p1: Tab) => void): void;
   }
 }

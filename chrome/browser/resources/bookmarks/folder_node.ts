@@ -10,7 +10,6 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,17 +20,19 @@ import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarkNode, BookmarksPageState} from './types.js';
 import {hasChildFolders, isShowingSearch} from './util.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {BookmarksStoreClientInterface}
- * @implements {CrUiStoreClientInterface}
- * @implements {StoreObserver<BookmarksPageState>}
- */
 const BookmarksFolderNodeElementBase =
-    mixinBehaviors(StoreClient, PolymerElement);
+    mixinBehaviors(StoreClient, PolymerElement) as {
+  new (): PolymerElement & BookmarksStoreClientInterface &
+      StoreObserver<BookmarksPageState>;
+}
 
-/** @polymer */
+export interface BookmarksFolderNodeElement {
+  $: {
+    container: HTMLDivElement,
+    descendants: HTMLDivElement,
+  }
+}
+
 export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   static get is() {
     return 'bookmarks-folder-node';
@@ -58,33 +59,36 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
         computed: 'computeIsOpen_(openState_, depth)',
       },
 
-      /** @type {BookmarkNode} */
       item_: Object,
 
-      /** @private {?boolean} */
       openState_: Boolean,
 
-      /** @private */
       selectedFolder_: String,
 
-      /** @private */
       searchActive_: Boolean,
 
-      /** @private */
       isSelectedFolder_: {
         type: Boolean,
-        value: false,
         reflectToAttribute: true,
         computed: 'computeIsSelected_(itemId, selectedFolder_, searchActive_)'
       },
 
-      /** @private */
       hasChildFolder_: {
         type: Boolean,
         computed: 'computeHasChildFolder_(item_.children)',
       },
     };
   }
+
+  depth: number;
+  isOpen: boolean;
+  itemId: string;
+  private item_: BookmarkNode;
+  private openState_: boolean;
+  private selectedFolder_: string;
+  private searchActive_: boolean;
+  private isSelectedFolder_: boolean = false;
+  private hasChildFolder_: boolean;
 
   static get observers() {
     return [
@@ -103,48 +107,37 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   connectedCallback() {
     super.connectedCallback();
     this.watch('item_', state => {
-      return /** @type {!BookmarksPageState} */ (state).nodes[this.itemId];
+      return (state as BookmarksPageState).nodes[this.itemId];
     });
     this.watch('openState_', state => {
-      const bookmarksState = /** @type {!BookmarksPageState} */ (state);
+      const bookmarksState = state as BookmarksPageState;
       return bookmarksState.folderOpenState.has(this.itemId) ?
           bookmarksState.folderOpenState.get(this.itemId) :
           null;
     });
     this.watch('selectedFolder_', state => {
-      return /** @type {!BookmarksPageState} */ (state).selectedFolder;
+      return (state as BookmarksPageState).selectedFolder;
     });
     this.watch('searchActive_', state => {
-      return isShowingSearch(/** @type {!BookmarksPageState} */ (state));
+      return isShowingSearch(state as BookmarksPageState);
     });
 
     this.updateFromStore();
   }
 
-  /**
-   * @param {boolean} isSelectedFolder
-   * @return {string}
-   * @private
-   */
-  getContainerClass_(isSelectedFolder) {
+  private getContainerClass_(isSelectedFolder: boolean): string {
     return isSelectedFolder ? 'selected' : '';
   }
 
-  /** @return {!HTMLElement} */
-  getFocusTarget() {
-    return /** @type {!HTMLDivElement} */ (this.$.container);
+  getFocusTarget(): HTMLElement {
+    return this.$.container;
   }
 
-  /** @return {HTMLElement} */
-  getDropTarget() {
-    return /** @type {!HTMLDivElement} */ (this.$.container);
+  getDropTarget(): HTMLElement {
+    return this.$.container;
   }
 
-  /**
-   * @private
-   * @param {!Event} e
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     let yDirection = 0;
     let xDirection = 0;
     let handled = true;
@@ -167,7 +160,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     }
 
     this.changeKeyboardSelection_(
-        xDirection, yDirection, this.root.activeElement);
+        xDirection, yDirection, this.shadowRoot!.activeElement);
 
     if (!handled) {
       handled = BookmarksCommandManagerElement.getInstance().handleKeyEvent(
@@ -182,16 +175,11 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     e.stopPropagation();
   }
 
-  /**
-   * @private
-   * @param {number} xDirection
-   * @param {number} yDirection
-   * @param {!HTMLElement} currentFocus
-   */
-  changeKeyboardSelection_(xDirection, yDirection, currentFocus) {
+  private changeKeyboardSelection_(
+      xDirection: number, yDirection: number, currentFocus: Element|null) {
     let newFocusFolderNode = null;
-    const isChildFolderNodeFocused =
-        currentFocus && currentFocus.tagName === 'BOOKMARKS-FOLDER-NODE';
+    const isChildFolderNodeFocused = currentFocus &&
+        (currentFocus as HTMLElement)!.tagName === 'BOOKMARKS-FOLDER-NODE';
 
     if (xDirection === 1) {
       // The right arrow opens a folder if closed and goes to the first child
@@ -210,8 +198,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
         this.dispatch(changeFolderOpen(this.item_.id, false));
       } else {
         const parentFolderNode = this.getParentFolderNode_();
-        if (parentFolderNode.itemId !== ROOT_NODE_ID) {
-          parentFolderNode.getFocusTarget().focus();
+        if (parentFolderNode!.itemId !== ROOT_NODE_ID) {
+          parentFolderNode!.getFocusTarget().focus();
         }
       }
     }
@@ -232,8 +220,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // Get the next child folder node if a child is focused.
       if (!newFocusFolderNode) {
         newFocusFolderNode = this.getNextChild_(
-            yDirection === -1,
-            /** @type {!BookmarksFolderNodeElement} */ (currentFocus));
+            yDirection === -1, (currentFocus! as BookmarksFolderNodeElement));
       }
 
       // The first child's predecessor is this node.
@@ -245,7 +232,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     // If there is no newly focused node, allow the parent to handle the change.
     if (!newFocusFolderNode) {
       if (this.itemId !== ROOT_NODE_ID) {
-        this.getParentFolderNode_().changeKeyboardSelection_(
+        this.getParentFolderNode_()!.changeKeyboardSelection_(
             0, yDirection, this);
       }
 
@@ -260,13 +247,9 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
 
   /**
    * Returns the next or previous visible bookmark node relative to |child|.
-   * @private
-   * @param {boolean} reverse
-   * @param {!BookmarksFolderNodeElement} child
-   * @return {BookmarksFolderNodeElement|null} Returns null if there is no child
-   *     before/after |child|.
    */
-  getNextChild_(reverse, child) {
+  private getNextChild_(reverse: boolean, child: BookmarksFolderNodeElement):
+      BookmarksFolderNodeElement|null {
     let newFocus = null;
     const children = this.getChildFolderNodes_();
 
@@ -276,10 +259,10 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // A child node's predecessor is either the previous child's last visible
       // descendant, or this node, which is its immediate parent.
       newFocus =
-          index === 0 ? null : children[index - 1].getLastVisibleDescendant_();
+          index === 0 ? null : children[index - 1]!.getLastVisibleDescendant_();
     } else if (index < children.length - 1) {
       // A successor to a child is the next child.
-      newFocus = children[index + 1];
+      newFocus = children[index + 1]!;
     }
 
     return newFocus;
@@ -287,131 +270,86 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
 
   /**
    * Returns the immediate parent folder node, or null if there is none.
-   * @private
-   * @return {BookmarksFolderNodeElement|null}
    */
-  getParentFolderNode_() {
+  private getParentFolderNode_(): BookmarksFolderNodeElement|null {
     let parentFolderNode = this.parentNode;
     while (parentFolderNode &&
-           parentFolderNode.tagName !== 'BOOKMARKS-FOLDER-NODE') {
-      parentFolderNode = parentFolderNode.parentNode || parentFolderNode.host;
+           (parentFolderNode as HTMLElement).tagName !==
+               'BOOKMARKS-FOLDER-NODE') {
+      parentFolderNode =
+          parentFolderNode.parentNode || (parentFolderNode as ShadowRoot).host;
     }
-    return parentFolderNode || null;
+    return (parentFolderNode as BookmarksFolderNodeElement) || null;
   }
 
-  /**
-   * @private
-   * @return {BookmarksFolderNodeElement}
-   */
-  getLastVisibleDescendant_() {
+  private getLastVisibleDescendant_(): BookmarksFolderNodeElement {
     const children = this.getChildFolderNodes_();
     if (!this.isOpen || children.length === 0) {
       return this;
     }
 
-    return children.pop().getLastVisibleDescendant_();
+    return children.pop()!.getLastVisibleDescendant_();
   }
 
-  /** @private */
-  selectFolder_() {
+  private selectFolder_() {
     if (!this.isSelectedFolder_) {
       this.dispatch(selectFolder(this.itemId, this.getState().nodes));
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onContextMenu_(e) {
+  private onContextMenu_(e: MouseEvent) {
     e.preventDefault();
     this.selectFolder_();
     BookmarksCommandManagerElement.getInstance().openCommandMenuAtPosition(
         e.clientX, e.clientY, MenuSource.TREE, new Set([this.itemId]));
   }
 
-  /**
-   * @private
-   * @return {!Array<!BookmarksFolderNodeElement>}
-   */
-  getChildFolderNodes_() {
-    return Array.from(this.root.querySelectorAll('bookmarks-folder-node'));
+  private getChildFolderNodes_(): BookmarksFolderNodeElement[] {
+    return Array.from(this.shadowRoot!.querySelectorAll(
+        'bookmarks-folder-node'));
   }
 
   /**
    * Toggles whether the folder is open.
-   * @private
-   * @param {!Event} e
    */
-  toggleFolder_(e) {
+  private toggleFolder_(e: Event) {
     this.dispatch(changeFolderOpen(this.itemId, !this.isOpen));
     e.stopPropagation();
   }
 
-  /**
-   * @private
-   * @param {!Event} e
-   */
-  preventDefault_(e) {
+  private preventDefault_(e: Event) {
     e.preventDefault();
   }
 
-  /**
-   * @private
-   * @param {string} itemId
-   * @param {string} selectedFolder
-   * @return {boolean}
-   */
-  computeIsSelected_(itemId, selectedFolder, searchActive) {
+  private computeIsSelected_(
+      itemId: string, selectedFolder: string, searchActive: boolean): boolean {
     return itemId === selectedFolder && !searchActive;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  computeHasChildFolder_() {
+  private computeHasChildFolder_(): boolean {
     return hasChildFolders(this.itemId, this.getState().nodes);
   }
 
-  /** @private */
-  depthChanged_() {
+  private depthChanged_() {
     this.style.setProperty('--node-depth', String(this.depth));
     if (this.depth === -1) {
       this.$.descendants.removeAttribute('role');
     }
   }
 
-  /**
-   * @private
-   * @return {number}
-   */
-  getChildDepth_() {
+  private getChildDepth_(): number {
     return this.depth + 1;
   }
 
-  /**
-   * @param {string} itemId
-   * @private
-   * @return {boolean}
-   */
-  isFolder_(itemId) {
-    return !this.getState().nodes[itemId].url;
+  private isFolder_(itemId: string): boolean {
+    return !this.getState().nodes[itemId]!.url;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isRootFolder_() {
+  private isRootFolder_(): boolean {
     return this.itemId === ROOT_NODE_ID;
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getTabIndex_() {
+  private getTabIndex_(): string {
     // This returns a tab index of 0 for the cached selected folder when the
     // search is active, even though this node is not technically selected. This
     // allows the sidebar to be focusable during a search.
@@ -421,11 +359,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   /**
    * Sets the 'aria-expanded' accessibility on nodes which need it. Note that
    * aria-expanded="false" is different to having the attribute be undefined.
-   * @param {boolean} hasChildFolder
-   * @param {boolean} isOpen
-   * @private
    */
-  updateAriaExpanded_(hasChildFolder, isOpen) {
+  private updateAriaExpanded_(hasChildFolder: boolean, isOpen: boolean) {
     if (hasChildFolder) {
       this.getFocusTarget().setAttribute('aria-expanded', String(isOpen));
     } else {
@@ -435,22 +370,16 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
 
   /**
    * Scrolls the folder node into view when the folder is selected.
-   * @private
    */
-  scrollIntoViewIfNeeded_() {
+  private scrollIntoViewIfNeeded_() {
     if (!this.isSelectedFolder_) {
       return;
     }
 
-    microTask.run(() => this.$.container.scrollIntoViewIfNeeded());
+    microTask.run(() => this.$.container.scrollIntoView());
   }
 
-  /**
-   * @param {?boolean} openState
-   * @param {number} depth
-   * @return {boolean}
-   */
-  computeIsOpen_(openState, depth) {
+  private computeIsOpen_(openState: boolean|null, depth: number): boolean {
     return openState != null ? openState :
                                depth <= FOLDER_OPEN_BY_DEFAULT_DEPTH;
   }
