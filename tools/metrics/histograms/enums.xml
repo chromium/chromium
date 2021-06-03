@@ -32803,6 +32803,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3926" label="FontFaceSizeAdjust"/>
   <int value="3927" label="HiddenBackfaceWith3D"/>
   <int value="3928" label="MainFrameNonSecurePrivateAddressSpace"/>
+  <int value="3929" label="CSSSelectorPseudoHas"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -276,6 +276,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoHighlight,
     kPseudoSpellingError,
     kPseudoGrammarError,
+    kPseudoHas,
   };
 
   enum class AttributeMatchType {

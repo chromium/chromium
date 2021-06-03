@@ -455,6 +455,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoNot:
+    case CSSSelector::kPseudoHas:
       // These pseudo-classes are themselves always valid.
       // CSSSelectorParser::restricting_pseudo_element_ ensures that invalid
       // nested selectors will be dropped if they are invalid according to
@@ -792,6 +793,22 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         if (selector->GetPseudoType() == CSSSelector::kPseudoHostContext)
           return nullptr;
       }
+
+      selector->SetSelectorList(std::move(selector_list));
+      return selector;
+    }
+    case CSSSelector::kPseudoHas: {
+      if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
+        break;
+
+      DisallowPseudoElementsScope scope(this);
+      base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
+
+      std::unique_ptr<CSSSelectorList> selector_list =
+          std::make_unique<CSSSelectorList>();
+      *selector_list = ConsumeNestedSelectorList(block);
+      if (!selector_list->IsValid() || !block.AtEnd())
+        return nullptr;
 
       selector->SetSelectorList(std::move(selector_list));
       return selector;
@@ -1355,6 +1372,10 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
         case CSSSelector::kPseudoDir:
           DCHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
           feature = WebFeature::kCSSSelectorPseudoDir;
+          break;
+        case CSSSelector::kPseudoHas:
+          DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
+          feature = WebFeature::kCSSSelectorPseudoHas;
           break;
         default:
           break;

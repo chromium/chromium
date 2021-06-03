@@ -153,6 +153,7 @@ class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
 class HTMLPopupElement;
+class HasMatchedCacheScope;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IdleRequestOptions;
@@ -1445,6 +1446,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   NthIndexCache* GetNthIndexCache() const { return nth_index_cache_; }
 
+  HasMatchedCacheScope* GetHasMatchedCacheScope() const {
+    return has_matched_cache_scope_;
+  }
+
   CanvasFontCache* GetCanvasFontCache();
 
   // Used by unit tests so that all parsing will be main thread for
@@ -1717,6 +1722,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class ThrowOnDynamicMarkupInsertionCountIncrementer;
   friend class IgnoreOpensDuringUnloadCountIncrementer;
   friend class NthIndexCache;
+  friend class HasMatchedCacheScope;
   friend class CanvasRenderingAPIUkmMetricsTest;
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextSubresourceFilterTest,
@@ -1818,6 +1824,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetNthIndexCache(NthIndexCache* nth_index_cache) {
     DCHECK(!nth_index_cache_ || !nth_index_cache);
     nth_index_cache_ = nth_index_cache;
+  }
+
+  void SetHasMatchedCacheScope(HasMatchedCacheScope* has_matched_cache_scope) {
+    DCHECK(!has_matched_cache_scope_ || !has_matched_cache_scope);
+    has_matched_cache_scope_ = has_matched_cache_scope;
   }
 
   const OriginAccessEntry& AccessEntryFromURL();
@@ -2057,6 +2068,13 @@ class CORE_EXPORT Document : public ContainerNode,
   // the cache object's references will be traced by a stack walk.
   GC_PLUGIN_IGNORE("461878")
   NthIndexCache* nth_index_cache_ = nullptr;
+
+  // This is an untraced pointer to the cache-scoped object that is first
+  // allocated on the stack. It is set upon the first object being allocated
+  // on the stack, and cleared upon leaving its allocated scope. The object's
+  // references will be traced by a stack walk.
+  GC_PLUGIN_IGNORE("669058")
+  HasMatchedCacheScope* has_matched_cache_scope_ = nullptr;
 
   DocumentClassFlags document_classes_;
 

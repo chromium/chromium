@@ -341,6 +341,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoVideoPersistentAncestor:
     case kPseudoXrOverlay:
     case kPseudoModal:
+    case kPseudoHas:
       return kPseudoIdNone;
   }
 
@@ -464,6 +465,7 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
     {"cue", CSSSelector::kPseudoCue},
     {"dir", CSSSelector::kPseudoDir},
+    {"has", CSSSelector::kPseudoHas},
     {"highlight", CSSSelector::kPseudoHighlight},
     {"host", CSSSelector::kPseudoHost},
     {"host-context", CSSSelector::kPseudoHostContext},
@@ -542,6 +544,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
   if ((match->type == CSSSelector::kPseudoSpellingError ||
        match->type == CSSSelector::kPseudoGrammarError) &&
       !RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoHas &&
+      !RuntimeEnabledFeatures::CSSPseudoHasEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -688,6 +695,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoFullScreenAncestor:
     case kPseudoFullscreen:
     case kPseudoFutureCue:
+    case kPseudoHas:
     case kPseudoHorizontal:
     case kPseudoHost:
     case kPseudoHostContext:
@@ -848,6 +856,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
           SerializeIdentifier(simple_selector->Argument(), builder);
           builder.Append(')');
           break;
+        case kPseudoHas:
         case kPseudoNot:
           DCHECK(simple_selector->SelectorList());
           break;

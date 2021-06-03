@@ -32,6 +32,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/has_matched_cache_scope.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -235,8 +236,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   if (sub_result.dynamic_pseudo != kPseudoIdNone)
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
 
-  if (context.selector->IsLastInTagHistory())
+  if (context.selector->IsLastInTagHistory()) {
+    result.has_argument_leftmost_compound_match = context.element;
     return kSelectorMatches;
+  }
 
   MatchStatus match;
   if (context.selector->Relation() != CSSSelector::kSubSelector) {
@@ -314,8 +317,11 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
-          if (context.scope->IsDocumentFragment())
+          if (context.scope->IsDocumentFragment() ||
+              UNLIKELY(context.in_has_argument_selector)) {
+            result.has_argument_leftmost_compound_match = context.element;
             return kSelectorMatches;
+          }
         }
       }
       for (next_context.element = ParentElement(next_context);
@@ -631,6 +637,102 @@ bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
   return true;
 }
 
+bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
+                                     MatchResult& result) const {
+  Document& document = context.element->GetDocument();
+  DCHECK(document.GetHasMatchedCacheScope());
+  Element* element = context.element;
+  SelectorCheckingContext sub_context(element);
+  sub_context.scope = element;
+  sub_context.in_has_argument_selector = true;
+  // sub_context.is_inside_visited_link is false (by default) to disable
+  // :visited matching when it is in the :has argument
+
+  DCHECK(context.selector->SelectorList());
+  for (const CSSSelector* selector = context.selector->SelectorList()->First();
+       selector; selector = CSSSelectorList::Next(*selector)) {
+    ElementHasMatchedMap& map =
+        HasMatchedCacheScope::GetCacheForSelector(&document, selector);
+
+    // Get the cache item of matching ':has(<selector>)' on the element
+    // to skip argument matching on the subtree elements
+    //  - If the element was already marked as matched, return true.
+    //  - If the element was already checked but not matched,
+    //    move to the next argument selector.
+    //  - Otherwise, mark the element as checked but not matched.
+    {  // Limit the the AddResult scope to prevent SECURITY_DCHECK
+      auto cache_result = map.insert(element, false);  // Mark as checked
+      if (!cache_result.is_new_entry) {        // Was already marked as checked
+        if (cache_result.stored_value->value)  // Was already marked as matched
+          return true;
+        continue;
+      }
+    }
+
+    sub_context.selector = selector;
+
+    // TODO(blee@igalia.com)
+    // 1. Need to check how to handle the shadow tree cases
+    //    (e.g. ':has(::slotted(img))', ':has(component::part(my-part))')
+    // 2. Need to add logics for other combinators
+    //    (e.g. ':has(:scope > .a)', ':has(:scope ~ .a)', ':has(:scope + .a)'
+    for (Element& descendant : ElementTraversal::DescendantsOf(*element)) {
+      // Get the cache item of matching ':has(<selector>)' on the descendant.
+      // to skip argument selector matching on the descendant.
+      //  - If the descendant was already marked as matched,
+      //    mark the element as matched, and return true.
+      //  - If the descendant was already checked but not matched,
+      //    move to the next descendant.
+      //  - Otherwise, mark the descendant as checked but not matched.
+      {  // Limit the the AddResult scope to prevent SECURITY_DCHECK
+        auto cache_result = map.insert(&descendant, false);  // Mark as checked
+        if (!cache_result.is_new_entry) {  // Was already marked as checked
+          if (!cache_result.stored_value->value)  // Was not marked as matched
+            continue;
+          map.Set(element, true);  // Mark element as matched
+          return true;
+        }
+      }
+
+      // Match the argument selector <selector> on the descendant element,
+      // and move to the next descendant if not matched.
+      sub_context.element = &descendant;
+      MatchResult sub_result;
+      if (MatchSelector(sub_context, sub_result) != kSelectorMatches)
+        continue;
+
+      if (sub_result.has_argument_leftmost_compound_match) {
+        // Mark the ancestors of the element that matches leftmost compound
+        // of the argument selector <selector>. Make those elements as matched
+        // until it reaches the nullptr or the element(:has scope element).
+        // The reason of stopping at the :has scope element is to avoid
+        // duplicate parent tree traversal.
+        // For example, matching ':has(.a)' with nested .a elements will
+        // generate parent tree traversal for every .a elements when
+        // recalculating the entire document.
+        // With this restriction, we can prevent those redundants. It is
+        // OK not to mark every ancestors for every argument matching because
+        // it is enough to cache the matching status until meet the :has scope
+        // element. After those are cached, the cached status can be used as
+        // the status of :has scope element or descendant elements of the :has
+        // in another selector. (Please refer the above steps to get a cache
+        // item and return/continue early)
+        sub_context.element = sub_result.has_argument_leftmost_compound_match;
+        for (sub_context.element = ParentElement(sub_context);
+             sub_context.element && sub_context.element != element;
+             sub_context.element = ParentElement(sub_context)) {
+          map.Set(sub_context.element, true);  // Mark as matched
+        }
+      }
+
+      if (sub_context.element)
+        map.Set(element, true);  // Mark the element as matched
+      return true;
+    }
+  }
+  return false;
+}
+
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
   Element& element = *context.element;
@@ -647,6 +749,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
   switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoNot:
       return CheckPseudoNot(context, result);
+    case CSSSelector::kPseudoHas:
+      return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoEmpty: {
       bool is_empty = true;
       bool has_whitespace = false;

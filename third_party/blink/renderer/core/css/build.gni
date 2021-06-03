@@ -364,6 +364,8 @@ blink_core_sources_css = [
   "font_size_functions.cc",
   "font_size_functions.h",
   "hash_tools.h",
+  "has_matched_cache_scope.cc",
+  "has_matched_cache_scope.h",
   "inline_css_style_declaration.cc",
   "inline_css_style_declaration.h",
   "invalidation/invalidation_flags.cc",

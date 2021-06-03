@@ -121,6 +121,7 @@ class CORE_EXPORT SelectorChecker {
     Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
+    bool in_has_argument_selector = false;
   };
 
   struct MatchResult {
@@ -128,6 +129,39 @@ class CORE_EXPORT SelectorChecker {
 
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
+
+    // From the shortest argument selector match, we need to get the element
+    // that matches the leftmost compound selector to mark the correct scope
+    // elements of :has() pseudo class having the argument selectors starts
+    // with descendant combinator.
+    //
+    // <main id=main>
+    //   <div id=d1>
+    //     <div id=d2 class="a">
+    //       <div id=d3 class="a">
+    //         <div id=d4>
+    //           <div id=d5 class="b">
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+    // <script>
+    //  main.querySelectorAll('div:has(.a .b)'); // Should return #d1, #d2
+    // </script>
+    //
+    // In case of the above example, div#d5 element matches the argument
+    // selector '.a .b'. Among the ancestors of the div#d5, the div#d3 and
+    // div#d4 is not the correct candidate scope element of ':has(.a .b)'
+    // because those elements don't have .a element as it's descendant.
+    // So instead of marking ancestors of div#d5, we should mark ancestors
+    // of div#d3 to prevent incorrect marking.
+    // In case of the shortest match for the argument selector '.a .b' on
+    // div#d5 element, the div#d3 is the element that matches the leftmost
+    // compound selector '.a'. So the MatchResult will return the div#d3
+    // element for the matching operation.
+    Element* has_argument_leftmost_compound_match{nullptr};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -188,6 +222,7 @@ class CORE_EXPORT SelectorChecker {
                                  MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
 
   ComputedStyle* element_style_;
   CustomScrollbar* scrollbar_;

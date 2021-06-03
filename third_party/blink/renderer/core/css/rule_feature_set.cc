@@ -185,6 +185,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
+    case CSSSelector::kPseudoHas:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
@@ -733,6 +734,13 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     return;
   CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
 
+  // For the :has pseudo class, we should not extract invalidation set features
+  // here because the :has invalidation direction is different with others.
+  // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
+  // TODO(blee@igalia.com) Need to add :has invalidation
+  if (UNLIKELY(pseudo_type == CSSSelector::kPseudoHas))
+    return;
+
   DCHECK(SupportsInvalidationWithSelectorList(pseudo_type));
 
   const CSSSelector* sub_selector = selector_list->First();
@@ -950,7 +958,16 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     return;
   }
 
-  if (simple_selector.GetPseudoType() == CSSSelector::kPseudoPart)
+  CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
+
+  // For the :has pseudo class, we should not extract invalidation set features
+  // here because the :has invalidation direction is different with others.
+  // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
+  // TODO(blee@igalia.com) Need to add :has invalidation
+  if (UNLIKELY(pseudo_type == CSSSelector::kPseudoHas))
+    return;
+
+  if (pseudo_type == CSSSelector::kPseudoPart)
     descendant_features.invalidation_flags.SetInvalidatesParts(true);
 
   AddFeaturesToInvalidationSetsForSelectorList(
@@ -1036,6 +1053,8 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
   for (const CSSSelector* current = &selector; current;
        current = current->TagHistory()) {
     switch (current->GetPseudoType()) {
+      case CSSSelector::kPseudoHas:
+        break;
       case CSSSelector::kPseudoFirstLine:
         metadata.uses_first_line_rules = true;
         break;
