@@ -110,16 +110,24 @@ TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
 }
 
 TEST_F(TestPrintBackendTest, DefaultPrinterName) {
+  std::string default_printer;
+
   // If no printers added then no default.
-  EXPECT_TRUE(GetPrintBackend()->GetDefaultPrinterName().empty());
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(default_printer.empty());
 
   // Once printers are available, should be a default.
   AddPrinters();
-  EXPECT_EQ(GetPrintBackend()->GetDefaultPrinterName(), kDefaultPrinterName);
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_EQ(default_printer, kDefaultPrinterName);
 
   // Changing default should be reflected on next query.
   GetPrintBackend()->SetDefaultPrinterName(kAlternatePrinterName);
-  EXPECT_EQ(GetPrintBackend()->GetDefaultPrinterName(), kAlternatePrinterName);
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_EQ(default_printer, kAlternatePrinterName);
 
   // Adding a new printer to environment which is marked as default should
   // automatically make it the new default.
@@ -130,17 +138,23 @@ TEST_F(TestPrintBackendTest, DefaultPrinterName) {
   printer_info->is_default = true;
   GetPrintBackend()->AddValidPrinter(kNewDefaultPrinterName, std::move(caps),
                                      std::move(printer_info));
-  EXPECT_EQ(GetPrintBackend()->GetDefaultPrinterName(), kNewDefaultPrinterName);
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_EQ(default_printer, kNewDefaultPrinterName);
 
   // Requesting an invalid printer name to be a default should have no effect.
   GetPrintBackend()->SetDefaultPrinterName(kInvalidPrinterName);
-  EXPECT_EQ(GetPrintBackend()->GetDefaultPrinterName(), kNewDefaultPrinterName);
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_EQ(default_printer, kNewDefaultPrinterName);
 
   // Verify that re-adding a printer that was previously the default with null
   // basic info results in no default printer anymore.
   GetPrintBackend()->AddValidPrinter(kNewDefaultPrinterName, /*caps=*/nullptr,
                                      /*info=*/nullptr);
-  EXPECT_TRUE(GetPrintBackend()->GetDefaultPrinterName().empty());
+  ASSERT_EQ(GetPrintBackend()->GetDefaultPrinterName(default_printer),
+            mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(default_printer.empty());
 }
 
 TEST_F(TestPrintBackendTest, PrinterBasicInfo) {

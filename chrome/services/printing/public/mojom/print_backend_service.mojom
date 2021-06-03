@@ -7,6 +7,13 @@ module printing.mojom;
 import "printing/backend/mojom/print_backend.mojom";
 import "printing/mojom/print.mojom";
 
+// The default printer name, or the `ResultCode` if there was an error when
+// trying to retrieve this data.
+union DefaultPrinterNameResult {
+  string default_printer_name;
+  ResultCode result_code;
+};
+
 // The list of installed printers, or the `ResultCode` if there was an error
 // when trying to retrieve this data.
 union PrinterListResult {
@@ -50,9 +57,8 @@ interface PrintBackendService {
     => (PrinterListResult printer_list);
 
   // Gets the default printer name from the data source.
-  // No value for `printer_name` is provided if there is a failure.
   GetDefaultPrinterName()
-    => (string? printer_name);
+    => (DefaultPrinterNameResult printer_name);
 
   // Gets the semantic capabilities and defaults for a specific printer.
   GetPrinterSemanticCapsAndDefaults(string printer_name)

@@ -78,8 +78,13 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
 
   scoped_refptr<PrintBackend> backend =
       PrintBackend::CreateInstance(delegate_->GetAppLocale());
-  std::wstring default_printer =
-      base::UTF8ToWide(backend->GetDefaultPrinterName());
+  std::string default_printer_name;
+  mojom::ResultCode result =
+      backend->GetDefaultPrinterName(default_printer_name);
+  if (result != mojom::ResultCode::kSuccess)
+    return FAILED;
+
+  std::wstring default_printer = base::UTF8ToWide(default_printer_name);
   if (!default_printer.empty()) {
     ScopedPrinterHandle printer;
     if (printer.OpenPrinterWithName(default_printer.c_str())) {

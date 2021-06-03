@@ -24,7 +24,11 @@ class DummyPrintBackend : public PrintBackend {
     return mojom::ResultCode::kFailed;
   }
 
-  std::string GetDefaultPrinterName() override { return std::string(); }
+  mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) override {
+    default_printer = std::string();
+    return mojom::ResultCode::kSuccess;
+  }
 
   mojom::ResultCode GetPrinterBasicInfo(
       const std::string& printer_name,

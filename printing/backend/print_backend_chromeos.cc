@@ -24,7 +24,8 @@ class PrintBackendChromeOS : public PrintBackend {
 
   // PrintBackend implementation.
   mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
-  std::string GetDefaultPrinterName() override;
+  mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
       const std::string& printer_name,
       PrinterBasicInfo* printer_info) override;
@@ -75,8 +76,10 @@ std::string PrintBackendChromeOS::GetPrinterDriverInfo(
   return std::string();
 }
 
-std::string PrintBackendChromeOS::GetDefaultPrinterName() {
-  return std::string();
+mojom::ResultCode PrintBackendChromeOS::GetDefaultPrinterName(
+    std::string& default_printer) {
+  default_printer = std::string();
+  return mojom::ResultCode::kSuccess;
 }
 
 bool PrintBackendChromeOS::IsValidPrinter(const std::string& printer_name) {

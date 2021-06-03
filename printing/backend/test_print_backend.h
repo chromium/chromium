@@ -22,7 +22,8 @@ class TestPrintBackend : public PrintBackend {
 
   // PrintBackend overrides
   mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
-  std::string GetDefaultPrinterName() override;
+  mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
       const std::string& printer_name,
       PrinterBasicInfo* printer_info) override;

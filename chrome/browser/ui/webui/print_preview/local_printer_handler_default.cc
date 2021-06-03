@@ -62,15 +62,16 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 
 void OnDidGetDefaultPrinterName(
     PrinterHandler::DefaultPrinterCallback callback,
-    const absl::optional<std::string>& printer_name) {
-  if (!printer_name.has_value()) {
-    LOG(WARNING) << "Failure getting default printer";
+    mojom::DefaultPrinterNameResultPtr printer_name) {
+  if (printer_name->is_result_code()) {
+    PRINTER_LOG(ERROR) << "Failure getting default printer, result: "
+                       << printer_name->get_result_code();
     std::move(callback).Run(std::string());
     return;
   }
 
-  VLOG(1) << "Default Printer: " << printer_name.value();
-  std::move(callback).Run(printer_name.value());
+  VLOG(1) << "Default Printer: " << printer_name->get_default_printer_name();
+  std::move(callback).Run(printer_name->get_default_printer_name());
 }
 
 void OnDidEnumeratePrinters(
@@ -202,7 +203,14 @@ std::string LocalPrinterHandlerDefault::GetDefaultPrinterAsync(
   scoped_refptr<PrintBackend> print_backend(
       PrintBackend::CreateInstance(locale));
 
-  std::string default_printer = print_backend->GetDefaultPrinterName();
+  std::string default_printer;
+  mojom::ResultCode result =
+      print_backend->GetDefaultPrinterName(default_printer);
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR) << "Failure getting default printer name, result: "
+                       << result;
+    return std::string();
+  }
   VLOG(1) << "Default Printer: " << default_printer;
   return default_printer;
 }

@@ -162,14 +162,21 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
   return mojom::ResultCode::kSuccess;
 }
 
-std::string PrintBackendCUPS::GetDefaultPrinterName() {
+mojom::ResultCode PrintBackendCUPS::GetDefaultPrinterName(
+    std::string& default_printer) {
   // Not using cupsGetDefault() because it lies about the default printer.
   cups_dest_t* dests;
   int num_dests = GetDests(&dests);
   cups_dest_t* dest = cupsGetDest(nullptr, nullptr, num_dests, dests);
-  std::string name = dest ? std::string(dest->name) : std::string();
+  if (!dest) {
+    LOG(ERROR) << "CUPS: Error getting default printer: "
+               << cupsLastErrorString();
+    return mojom::ResultCode::kFailed;
+  }
+
+  default_printer = std::string(dest->name);
   cupsFreeDests(num_dests, dests);
-  return name;
+  return mojom::ResultCode::kSuccess;
 }
 
 mojom::ResultCode PrintBackendCUPS::GetPrinterBasicInfo(

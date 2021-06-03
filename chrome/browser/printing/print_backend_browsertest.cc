@@ -25,7 +25,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -103,9 +102,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   }
 
   void OnDidGetDefaultPrinterName(
-      absl::optional<std::string>& capture_printer_name,
-      const absl::optional<std::string>& printer_name) {
-    capture_printer_name = printer_name;
+      mojom::DefaultPrinterNameResultPtr& capture_printer_name,
+      mojom::DefaultPrinterNameResultPtr printer_name) {
+    capture_printer_name = std::move(printer_name);
     CheckForQuit();
   }
 
@@ -166,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   // Launch the service, but without initializing to desired locale.
   LaunchUninitialized();
 
-  absl::optional<std::string> default_printer_name;
+  mojom::DefaultPrinterNameResultPtr default_printer_name;
   mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
@@ -175,7 +174,9 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
       base::BindOnce(&PrintBackendBrowserTest::OnDidGetDefaultPrinterName,
                      base::Unretained(this), std::ref(default_printer_name)));
   WaitUntilCallbackReceived();
-  EXPECT_FALSE(default_printer_name.has_value());
+  ASSERT_TRUE(default_printer_name->is_result_code());
+  EXPECT_EQ(default_printer_name->get_result_code(),
+            mojom::ResultCode::kFailed);
 
   GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
       kDefaultPrinterName,
@@ -211,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
   LaunchService();
   AddDefaultPrinter();
 
-  absl::optional<std::string> default_printer_name;
+  mojom::DefaultPrinterNameResultPtr default_printer_name;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
@@ -219,8 +220,9 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
       base::BindOnce(&PrintBackendBrowserTest::OnDidGetDefaultPrinterName,
                      base::Unretained(this), std::ref(default_printer_name)));
   WaitUntilCallbackReceived();
-  ASSERT_TRUE(default_printer_name.has_value());
-  EXPECT_EQ(default_printer_name.value(), kDefaultPrinterName);
+  ASSERT_TRUE(default_printer_name->is_default_printer_name());
+  EXPECT_EQ(default_printer_name->get_default_printer_name(),
+            kDefaultPrinterName);
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,

@@ -61,8 +61,10 @@ mojom::ResultCode TestPrintBackend::EnumeratePrinters(
   return mojom::ResultCode::kSuccess;
 }
 
-std::string TestPrintBackend::GetDefaultPrinterName() {
-  return default_printer_name_;
+mojom::ResultCode TestPrintBackend::GetDefaultPrinterName(
+    std::string& default_printer) {
+  default_printer = default_printer_name_;
+  return mojom::ResultCode::kSuccess;
 }
 
 mojom::ResultCode TestPrintBackend::GetPrinterBasicInfo(

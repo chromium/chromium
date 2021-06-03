@@ -40,8 +40,11 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsConnection {
                                                 http_encryption_t encryption,
                                                 bool blocking);
 
-  // Returns a vector of all the printers configure on the CUPS server.
-  virtual std::vector<std::unique_ptr<CupsPrinter>> GetDests() = 0;
+  // Obtain a vector of all the printers configure on the CUPS server.  Returns
+  // true if the list of printers was obtained, and false if an error was
+  // encountered during the query.
+  virtual bool GetDests(
+      std::vector<std::unique_ptr<CupsPrinter>>& printers) = 0;
 
   // Returns a printer for `printer_name` from the connected server.
   virtual std::unique_ptr<CupsPrinter> GetPrinter(

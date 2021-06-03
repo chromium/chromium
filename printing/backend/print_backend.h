@@ -181,8 +181,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   // failure in generating the list.
   virtual mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) = 0;
 
-  // Gets the default printer name. Empty string if no default printer.
-  virtual std::string GetDefaultPrinterName() = 0;
+  // Gets the default printer name.  If there is no default printer then it
+  // will still return success and `default_printer` will be empty.  The result
+  // code will return one of the error result codes when there is a failure in
+  // trying to get the default printer.
+  virtual mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) = 0;
 
   // Gets the basic printer info for a specific printer. Implementations must
   // check `printer_name` validity in the same way as IsValidPrinter().

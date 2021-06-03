@@ -84,7 +84,7 @@ class MockCupsPrinter : public CupsPrinter {
 
 class MockCupsConnection : public CupsConnection {
  public:
-  MOCK_METHOD0(GetDests, std::vector<std::unique_ptr<CupsPrinter>>());
+  MOCK_METHOD1(GetDests, bool(std::vector<std::unique_ptr<CupsPrinter>>&));
   MOCK_METHOD2(GetJobs,
                bool(const std::vector<std::string>& printer_ids,
                     std::vector<QueueStatus>* jobs));

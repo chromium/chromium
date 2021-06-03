@@ -34,23 +34,13 @@ mojom::ResultCode PrintBackendCupsIpp::EnumeratePrinters(
   DCHECK(printer_list);
   printer_list->clear();
 
-  std::vector<std::unique_ptr<CupsPrinter>> printers =
-      cups_connection_->GetDests();
-  if (printers.empty()) {
-    // No destinations could mean the operation failed or that there are simply
-    // no printer drivers installed.  Rely upon CUPS error code to distinguish
-    // between these.
-    const int last_error = cups_connection_->last_error();
-    if (last_error != IPP_STATUS_ERROR_NOT_FOUND) {
-      LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
-                   << ", server: " << cups_connection_->server_name()
-                   << ", error: " << last_error << " - "
-                   << cups_connection_->last_error_message();
-      return mojom::ResultCode::kFailed;
-    }
-    VLOG(1) << "CUPS: No printers found for CUPS server: "
-            << cups_connection_->server_name();
-    return mojom::ResultCode::kSuccess;
+  std::vector<std::unique_ptr<CupsPrinter>> printers;
+  if (!cups_connection_->GetDests(printers)) {
+    LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
+                 << ", server: " << cups_connection_->server_name()
+                 << ", error: " << cups_connection_->last_error() << " - "
+                 << cups_connection_->last_error_message();
+    return mojom::ResultCode::kFailed;
   }
 
   VLOG(1) << "CUPS: found " << printers.size()
@@ -65,16 +55,24 @@ mojom::ResultCode PrintBackendCupsIpp::EnumeratePrinters(
   return mojom::ResultCode::kSuccess;
 }
 
-std::string PrintBackendCupsIpp::GetDefaultPrinterName() {
-  std::vector<std::unique_ptr<CupsPrinter>> printers =
-      cups_connection_->GetDests();
+mojom::ResultCode PrintBackendCupsIpp::GetDefaultPrinterName(
+    std::string& default_printer) {
+  std::vector<std::unique_ptr<CupsPrinter>> printers;
+  if (!cups_connection_->GetDests(printers)) {
+    LOG(ERROR) << "CUPS: unable to get default printer: "
+               << cupsLastErrorString();
+    return mojom::ResultCode::kFailed;
+  }
+
   for (const auto& printer : printers) {
     if (printer->is_default()) {
-      return printer->GetName();
+      default_printer = printer->GetName();
+      return mojom::ResultCode::kSuccess;
     }
   }
 
-  return std::string();
+  default_printer = std::string();
+  return mojom::ResultCode::kSuccess;
 }
 
 mojom::ResultCode PrintBackendCupsIpp::GetPrinterBasicInfo(
