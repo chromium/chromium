@@ -7,7 +7,6 @@
  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="org.chromium.weblayer.shell">
 
     <application android:label="WebLayer shell"
@@ -63,14 +62,6 @@
            websites log PII. -->
       <meta-data
           android:name="org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES" android:value="true"/>
-
-      <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
-      <provider
-          android:authorities="org.chromium.weblayer.shell.androidx-startup"
-          android:name="androidx.startup.InitializationProvider"
-          android:exported="false"
-          tools:node="remove">
-      </provider>
 
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
