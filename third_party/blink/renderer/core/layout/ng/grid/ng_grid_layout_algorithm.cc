@@ -1259,18 +1259,22 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
 
   // Auto-margins take precedence over any alignment properties.
   if (style.MayHaveMargin()) {
-    bool start_auto = is_inline_axis
-                          ? style.MarginStartUsing(container_style).IsAuto()
-                          : style.MarginBeforeUsing(container_style).IsAuto();
-    bool end_auto = is_inline_axis
-                        ? style.MarginEndUsing(container_style).IsAuto()
-                        : style.MarginAfterUsing(container_style).IsAuto();
+    bool is_start_auto =
+        is_inline_axis ? style.MarginStartUsing(container_style).IsAuto()
+                       : style.MarginBeforeUsing(container_style).IsAuto();
+    bool is_end_auto = is_inline_axis
+                           ? style.MarginEndUsing(container_style).IsAuto()
+                           : style.MarginAfterUsing(container_style).IsAuto();
 
-    if (start_auto && end_auto)
+    // 'auto' margin alignment is always "safe".
+    if (is_start_auto || is_end_auto)
+      *is_overflow_safe = true;
+
+    if (is_start_auto && is_end_auto)
       return AxisEdge::kCenter;
-    else if (start_auto)
+    else if (is_start_auto)
       return AxisEdge::kEnd;
-    else if (end_auto)
+    else if (is_end_auto)
       return AxisEdge::kStart;
   }
 
