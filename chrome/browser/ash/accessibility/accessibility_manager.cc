@@ -1283,14 +1283,11 @@ void AccessibilityManager::NotifyAccessibilityStatusChanged(
   if (details.notification_type ==
       AccessibilityNotificationType::kToggleDictation) {
     AccessibilityController::Get()->SetDictationActive(details.enabled);
-    AccessibilityController::Get()->NotifyAccessibilityStatusChanged();
-    return;
   }
 
   // Update system tray menu visibility. Prefs tracked inside ash handle their
   // own updates to avoid race conditions (pref updates are asynchronous between
   // chrome and ash).
-  // TODO(hferreiro): repeated condition
   if (details.notification_type ==
           AccessibilityNotificationType::kToggleScreenMagnifier ||
       details.notification_type ==
