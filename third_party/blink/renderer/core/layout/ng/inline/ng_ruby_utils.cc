@@ -104,9 +104,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
     return overhang;
 
   const auto& run_fragment = item.layout_result->PhysicalFragment();
-  LayoutUnit start_overhang = LayoutUnit::Max();
-  LayoutUnit end_overhang = LayoutUnit::Max();
-  bool found_line = false;
+
   const ComputedStyle* ruby_text_style = nullptr;
   for (const auto& child_link : run_fragment.PostLayoutChildren()) {
     const NGPhysicalFragment& child_fragment = *child_link.get();
@@ -115,43 +113,50 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
       continue;
     if (layout_object->IsRubyText()) {
       ruby_text_style = layout_object->Style();
-      continue;
-    }
-    if (layout_object->IsRubyBase()) {
-      const ComputedStyle& base_style = child_fragment.Style();
-      const auto writing_direction = base_style.GetWritingDirection();
-      const LayoutUnit base_inline_size =
-          NGFragment(writing_direction, child_fragment).InlineSize();
-      // RubyBase's inline_size is always same as RubyRun's inline_size.
-      // Overhang values are offsets from RubyBase's inline edges to
-      // the outmost text.
-      for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
-        const LayoutUnit line_inline_size =
-            NGFragment(writing_direction, *base_child_link).InlineSize();
-        if (line_inline_size == LayoutUnit())
-          continue;
-        found_line = true;
-        const LayoutUnit start =
-            base_child_link.offset
-                .ConvertToLogical(writing_direction, child_fragment.Size(),
-                                  base_child_link.get()->Size())
-                .inline_offset;
-        const LayoutUnit end = base_inline_size - start - line_inline_size;
-        start_overhang = std::min(start_overhang, start);
-        end_overhang = std::min(end_overhang, end);
-      }
+      break;
     }
   }
-
-  if (!found_line || !ruby_text_style)
+  if (!ruby_text_style)
     return overhang;
-  DCHECK_NE(start_overhang, LayoutUnit::Max());
-  DCHECK_NE(end_overhang, LayoutUnit::Max());
+
   // We allow overhang up to the half of ruby text font size.
   const LayoutUnit half_width_of_ruby_font =
       LayoutUnit(ruby_text_style->FontSize()) / 2;
-  overhang.start = std::min(start_overhang, half_width_of_ruby_font);
-  overhang.end = std::min(end_overhang, half_width_of_ruby_font);
+  LayoutUnit start_overhang = half_width_of_ruby_font;
+  LayoutUnit end_overhang = half_width_of_ruby_font;
+  bool found_line = false;
+  for (const auto& child_link : run_fragment.PostLayoutChildren()) {
+    const NGPhysicalFragment& child_fragment = *child_link.get();
+    const LayoutObject* layout_object = child_fragment.GetLayoutObject();
+    if (!layout_object->IsRubyBase())
+      continue;
+    const ComputedStyle& base_style = child_fragment.Style();
+    const auto writing_direction = base_style.GetWritingDirection();
+    const LayoutUnit base_inline_size =
+        NGFragment(writing_direction, child_fragment).InlineSize();
+    // RubyBase's inline_size is always same as RubyRun's inline_size.
+    // Overhang values are offsets from RubyBase's inline edges to
+    // the outmost text.
+    for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
+      const LayoutUnit line_inline_size =
+          NGFragment(writing_direction, *base_child_link).InlineSize();
+      if (line_inline_size == LayoutUnit())
+        continue;
+      found_line = true;
+      const LayoutUnit start =
+          base_child_link.offset
+              .ConvertToLogical(writing_direction, child_fragment.Size(),
+                                base_child_link.get()->Size())
+              .inline_offset;
+      const LayoutUnit end = base_inline_size - start - line_inline_size;
+      start_overhang = std::min(start_overhang, start);
+      end_overhang = std::min(end_overhang, end);
+    }
+  }
+  if (!found_line)
+    return overhang;
+  overhang.start = start_overhang;
+  overhang.end = end_overhang;
   return overhang;
 }
 

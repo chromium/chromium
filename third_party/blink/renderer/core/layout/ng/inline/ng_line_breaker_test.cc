@@ -796,5 +796,25 @@ TEST_F(NGLineBreakerTest, SplitTextByGlyphs) {
       });
 }
 
+// crbug.com/1214232
+TEST_F(NGLineBreakerTest, GetOverhangCrash) {
+  NGInlineNode node = CreateInlineNode(
+      R"HTML(
+<!DOCTYPE html>
+<style>
+* { margin-inline-end: -7%; }
+rb { float: right; }
+rt { margin: 17179869191em; }
+</style>
+<div id="container">
+<ruby>
+<rb>
+C c
+<rt>
+)HTML");
+  // The test passes if we have no DCHECK failures in BreakLines().
+  BreakLines(node, LayoutUnit::Max());
+}
+
 }  // namespace
 }  // namespace blink
