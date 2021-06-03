@@ -1708,7 +1708,6 @@ crbug.com/1050754 external/wpt/ua-client-hints/idlharness.https.any.worker.html 
 crbug.com/1050754 external/wpt/uievents/click/auxclick_event.html [ Timeout ]
 crbug.com/1050754 external/wpt/uievents/click/click_events_on_input.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/uievents/idlharness.window.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Pass ]
 crbug.com/1050754 external/wpt/uievents/keyboard/modifier-keys-combinations.html [ Pass ]
 crbug.com/1050754 external/wpt/uievents/keyboard/modifier-keys.html [ Pass ]
 crbug.com/1050754 external/wpt/uievents/order-of-events/focus-events/focus-contained.html [ Pass Timeout ]
@@ -2281,3 +2280,9 @@ crbug.com/1050754 external/wpt/resource-timing/sizes-cache.any.sharedworker.html
 crbug.com/1050754 external/wpt/resource-timing/sizes-redirect.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/web-bundle/subresource-loading/csp-blocked.https.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/video-rvfc/request-video-frame-callback.html [ Timeout ]
+
+# update on 06/03/2021
+crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.tentative.https.html [ Failure ]
+crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
+crbug.com/1050754 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Pass Failure ]
+crbug.com/1050754 external/wpt/webcodecs/image-decoder.any.html [ Failure ]
