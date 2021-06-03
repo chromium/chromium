@@ -46,7 +46,6 @@ class ImeService : public mojom::ImeService,
   void ConnectToInputMethod(
       const std::string& ime_spec,
       mojo::PendingReceiver<mojom::InputChannel> to_engine,
-      mojo::PendingRemote<mojom::InputChannel> from_engine,
       ConnectToInputMethodCallback callback) override;
 
   // ImeCrosPlatform overrides:

@@ -66,33 +66,23 @@ bool IsModifierKey(const std::string& key_code) {
          key_code == "CapsLock";
 }
 
-}  // namespace
-
-InputEngine::InputEngine() : receiver_(this) {}
-
-InputEngine::~InputEngine() = default;
-
-bool InputEngine::BindRequest(
-    const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputChannel> receiver,
-    mojo::PendingRemote<mojom::InputChannel> remote,
-    const std::vector<uint8_t>& extra) {
-  if (!IsImeSupportedByRulebased(ime_spec))
-    return false;
-
-  engine_ = std::make_unique<rulebased::Engine>();
-  engine_->Activate(GetIdFromImeSpec(ime_spec));
-
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
-
-  return true;
-  // TODO(https://crbug.com/837156): Registry connection error handler.
-}
-
-bool InputEngine::IsImeSupportedByRulebased(const std::string& ime_spec) {
+// Returns whether the given ime_spec is supported by rulebased engine.
+bool IsImeSupportedByRulebased(const std::string& ime_spec) {
   return rulebased::Engine::IsImeSupported(GetIdFromImeSpec(ime_spec));
 }
+
+}  // namespace
+
+std::unique_ptr<InputEngine> InputEngine::Create(
+    const std::string& ime_spec,
+    mojo::PendingReceiver<mojom::InputChannel> receiver) {
+  // InputEngine constructor is private, so have to use WrapUnique here.
+  return IsImeSupportedByRulebased(ime_spec)
+             ? base::WrapUnique(new InputEngine(ime_spec, std::move(receiver)))
+             : nullptr;
+}
+
+InputEngine::~InputEngine() = default;
 
 void InputEngine::ProcessMessage(const std::vector<uint8_t>& message,
                                  ProcessMessageCallback callback) {
@@ -214,6 +204,17 @@ void InputEngine::DisplaySuggestions(
 
 void InputEngine::RecordUkm(mojom::UkmEntryPtr entry) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
+InputEngine::InputEngine(const std::string& ime_spec,
+                         mojo::PendingReceiver<mojom::InputChannel> receiver)
+    : receiver_(this, std::move(receiver)),
+      engine_(std::make_unique<rulebased::Engine>()) {
+  DCHECK(IsImeSupportedByRulebased(ime_spec));
+
+  engine_->Activate(GetIdFromImeSpec(ime_spec));
+
+  // TODO(https://crbug.com/837156): Registry connection error handler.
 }
 
 }  // namespace ime

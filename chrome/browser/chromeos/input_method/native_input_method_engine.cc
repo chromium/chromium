@@ -276,7 +276,6 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     remote_manager_->ConnectToInputMethod(
         new_engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(),
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), new_engine_id));
 
@@ -647,7 +646,7 @@ void NativeInputMethodEngine::ImeObserver::RecordUkm(
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
-  if (remote_to_engine_.is_bound())
+  if (receiver_from_engine_.is_bound())
     receiver_from_engine_.FlushForTesting();
   if (remote_to_engine_.is_bound())
     remote_to_engine_.FlushForTesting();

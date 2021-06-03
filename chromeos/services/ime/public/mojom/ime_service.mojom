@@ -36,12 +36,10 @@ interface InputEngineManager {
 
   // Connects to the native input method identified by |ime_spec|.
   // On success, return |success| as true, and |to_engine| can be used to
-  // interact with the input method. The interface |from_engine| is implemented
-  // on the client and used to receive data sent from the engine.
+  // interact with the input method.
   // On failure (e.g. |ime_spec| is not valid), |success| is false.
   ConnectToInputMethod(string ime_spec,
-                       pending_receiver<InputChannel> to_engine,
-                       pending_remote<InputChannel> from_engine)
+                       pending_receiver<InputChannel> to_engine)
                        => (bool success);
 };
 

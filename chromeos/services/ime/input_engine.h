@@ -22,17 +22,14 @@ class Engine;
 // TODO(https://crbug.com/1019541): Rename this to RuleBasedEngine.
 class InputEngine : public mojom::InputChannel {
  public:
-  InputEngine();
-  InputEngine(const InputEngine&) = delete;
-  InputEngine& operator=(const InputEngine&) = delete;
-  ~InputEngine() override;
+  // Returns nullptr if |ime_spec| is not valid for this InputEngine.
+  static std::unique_ptr<InputEngine> Create(
+      const std::string& ime_spec,
+      mojo::PendingReceiver<mojom::InputChannel> receiver);
 
-  // Binds the mojom::InputChannel interface to this object and returns true if
-  // the given ime_spec is supported by the engine.
-  bool BindRequest(const std::string& ime_spec,
-                   mojo::PendingReceiver<mojom::InputChannel> receiver,
-                   mojo::PendingRemote<mojom::InputChannel> remote,
-                   const std::vector<uint8_t>& extra);
+  InputEngine(const InputEngine& other) = delete;
+  InputEngine& operator=(const InputEngine& other) = delete;
+  ~InputEngine() override;
 
   // mojom::InputChannel overrides:
   void ProcessMessage(const std::vector<uint8_t>& message,
@@ -68,11 +65,10 @@ class InputEngine : public mojom::InputChannel {
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
- protected:
-  // Returns whether the given ime_spec is supported by rulebased engine.
-  bool IsImeSupportedByRulebased(const std::string& ime_spec);
-
  private:
+  InputEngine(const std::string& ime_spec,
+              mojo::PendingReceiver<mojom::InputChannel> receiver);
+
   mojo::Receiver<mojom::InputChannel> receiver_;
   std::unique_ptr<rulebased::Engine> engine_;
 
