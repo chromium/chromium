@@ -225,7 +225,7 @@ class EventRouter
       extensions::api::file_manager_private::CrostiniEvent& event,
       extensions::api::file_manager_private::CrostiniEventType event_type,
       const std::string& vm_name,
-      const std::string& extension_id,
+      const url::Origin& origin,
       const std::string& mount_name,
       const std::string& file_system_name,
       const std::string& full_path);

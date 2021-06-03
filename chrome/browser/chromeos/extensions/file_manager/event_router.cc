@@ -924,16 +924,44 @@ void EventRouter::SendCrostiniEvent(
           path, &mount_name, &file_system_name, &full_path))
     return;
 
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
+  const std::string event_name(
+      file_manager_private::OnCrostiniChanged::kEventName);
+  const extensions::EventListenerMap::ListenerList& listeners =
+      extensions::EventRouter::Get(profile_)
+          ->listeners()
+          .GetEventListenersByName(event_name);
+
+  // We handle two types of listeners, those with extension IDs and those with
+  // listener URL. For listeners with extension IDs we use direct dispatch. For
+  // listeners with listener URL we use a broadcast.
+  std::set<std::string> extension_ids;
+  std::set<url::Origin> origins;
+  for (auto const& listener : listeners) {
+    if (!listener->extension_id().empty()) {
+      extension_ids.insert(listener->extension_id());
+    } else if (listener->listener_url().is_valid()) {
+      origins.insert(url::Origin::Create(listener->listener_url()));
+    }
+  }
+
+  for (const std::string& extension_id : extension_ids) {
+    url::Origin origin = url::Origin::Create(
+        extensions::Extension::GetBaseURLFromExtensionId(extension_id));
     file_manager_private::CrostiniEvent event;
-    PopulateCrostiniEvent(event, event_type, vm_name, extension_id, mount_name,
+    PopulateCrostiniEvent(event, event_type, vm_name, origin, mount_name,
                           file_system_name, full_path);
     DispatchEventToExtension(
         profile_, extension_id,
         extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-        file_manager_private::OnCrostiniChanged::kEventName,
-        file_manager_private::OnCrostiniChanged::Create(event));
+        event_name, file_manager_private::OnCrostiniChanged::Create(event));
+  }
+  for (const url::Origin& origin : origins) {
+    file_manager_private::CrostiniEvent event;
+    PopulateCrostiniEvent(event, event_type, vm_name, origin, mount_name,
+                          file_system_name, full_path);
+    BroadcastEvent(
+        profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+        event_name, file_manager_private::OnCrostiniChanged::Create(event));
   }
 }
 
@@ -942,7 +970,7 @@ void EventRouter::PopulateCrostiniEvent(
     file_manager_private::CrostiniEvent& event,
     file_manager_private::CrostiniEventType event_type,
     const std::string& vm_name,
-    const std::string& extension_id,
+    const url::Origin& origin,
     const std::string& mount_name,
     const std::string& file_system_name,
     const std::string& full_path) {
@@ -951,9 +979,7 @@ void EventRouter::PopulateCrostiniEvent(
   file_manager_private::CrostiniEvent::EntriesType entry;
   entry.additional_properties.SetString(
       "fileSystemRoot",
-      storage::GetExternalFileSystemRootURIString(
-          extensions::Extension::GetBaseURLFromExtensionId(extension_id),
-          mount_name));
+      storage::GetExternalFileSystemRootURIString(origin.GetURL(), mount_name));
   entry.additional_properties.SetString("fileSystemName", file_system_name);
   entry.additional_properties.SetString("fileFullPath", full_path);
   entry.additional_properties.SetBoolean("fileIsDirectory", true);
@@ -1017,18 +1043,14 @@ void EventRouter::NotifyDriveConnectionStatusChanged() {
 }
 
 void EventRouter::DropFailedPluginVmDirectoryNotShared() {
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
-    file_manager_private::CrostiniEvent event;
-    event.vm_name = plugin_vm::kPluginVmName;
-    event.event_type = file_manager_private::
-        CROSTINI_EVENT_TYPE_DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
-    DispatchEventToExtension(
-        profile_, extension_id,
-        extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-        file_manager_private::OnCrostiniChanged::kEventName,
-        file_manager_private::OnCrostiniChanged::Create(event));
-  }
+  file_manager_private::CrostiniEvent event;
+  event.vm_name = plugin_vm::kPluginVmName;
+  event.event_type = file_manager_private::
+      CROSTINI_EVENT_TYPE_DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+                 file_manager_private::OnCrostiniChanged::kEventName,
+                 file_manager_private::OnCrostiniChanged::Create(event));
 }
 
 void EventRouter::DisplayDriveConfirmDialog(
