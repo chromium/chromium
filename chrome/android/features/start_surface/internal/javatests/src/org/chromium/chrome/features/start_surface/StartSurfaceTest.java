@@ -38,6 +38,8 @@ import static org.chromium.chrome.test.util.ViewUtils.waitForStableView;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -230,12 +232,8 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver((manager) -> {
-            if (manager.getActiveLayout() != null) {
-                mCurrentlyActiveLayout = manager.getActiveLayout().getLayoutType();
-            }
-            manager.addObserver(mLayoutObserver);
-        });
+        mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver(
+                (obs) -> { obs.addObserver(mLayoutObserver); });
     }
 
     @Test

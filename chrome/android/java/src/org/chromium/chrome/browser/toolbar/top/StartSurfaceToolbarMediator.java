@@ -29,7 +29,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
-import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -338,14 +337,6 @@ class StartSurfaceToolbarMediator {
                 }
             }
         };
-
-        if (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            new Handler().post(() -> {
-                mLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER, true);
-                mLayoutStateObserver.onFinishedShowing(LayoutType.TAB_SWITCHER);
-            });
-        }
-
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
