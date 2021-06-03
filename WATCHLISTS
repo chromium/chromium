@@ -1444,11 +1444,14 @@
     },
     'omnibox': {
       'filepath': '^chrome/browser/autocomplete/|'\
+                  '^chrome/browser/resources/new_tab_page/realbox/|'\
                   '^chrome/browser/resources/omnibox|'\
                   '^chrome/browser/ui/location_bar/|'\
                   '^chrome/browser/ui/omnibox/|'\
                   '^chrome/browser/ui/.*/location_bar/|'\
                   '^chrome/browser/ui/.*/omnibox/|'\
+                  '^chrome/browser/ui/.*/realbox/|'\
+                  '^chrome/test/data/webui/new_tab_page/realbox/|'\
                   '^components/omnibox/|'\
                   '^components/search_engines/'
     },
