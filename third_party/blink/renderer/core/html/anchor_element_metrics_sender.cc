@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -146,6 +147,13 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
         static_cast<HTMLAnchorElement*>(element);
     auto msg = mojom::blink::AnchorElementEnteredViewport::New();
     msg->anchor_id = AnchorElementId(*anchor_element);
+    base::TimeDelta time_entered_viewport =
+        base::TimeTicks::Now() - GetRootDocument(*anchor_element)
+                                     ->Loader()
+                                     ->GetTiming()
+                                     .NavigationStart();
+    msg->navigation_start_to_entered_viewport_ms =
+        static_cast<uint64_t>(time_entered_viewport.InMilliseconds());
     entered_viewport_messages_.push_back(std::move(msg));
     intersection_observer_->unobserve(element);
   }

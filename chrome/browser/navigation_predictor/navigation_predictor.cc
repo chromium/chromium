@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
@@ -245,6 +246,37 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
         anchor->is_url_incremented_by_one);
     anchor_element_builder.SetContainsImage(anchor->contains_image);
     anchor_element_builder.SetSameOrigin(anchor->is_same_host);
+    anchor_element_builder.SetHasTextSibling(anchor->has_text_sibling ? 1 : 0);
+    anchor_element_builder.SetIsBold(anchor->font_weight > 500 ? 1 : 0);
+    anchor_element_builder.SetNavigationStartToLinkLoggedMs(
+        ukm::GetExponentialBucketMin(
+            element->navigation_start_to_entered_viewport_ms, 1.3));
+
+    uint32_t font_size_bucket;
+    if (anchor->font_size_px < 10) {
+      font_size_bucket = 1;
+    } else if (anchor->font_size_px < 18) {
+      font_size_bucket = 2;
+    } else {
+      font_size_bucket = 3;
+    }
+    anchor_element_builder.SetFontSize(font_size_bucket);
+
+    base::StringPiece path = anchor->target_url.path_piece();
+    int64_t path_length = path.length();
+    path_length = ukm::GetLinearBucketMin(path_length, 10);
+    // Truncate at 100 characters.
+    path_length = std::min(path_length, static_cast<int64_t>(100));
+    anchor_element_builder.SetPathLength(path_length);
+
+    int64_t num_slashes = std::count(path.begin(), path.end(), '/');
+    // Truncate at 5.
+    num_slashes = std::min(num_slashes, static_cast<int64_t>(5));
+    anchor_element_builder.SetPathDepth(num_slashes);
+
+    // 10-bucket hash of the URL's path.
+    uint32_t hash = base::PersistentHash(path.data(), path.length());
+    anchor_element_builder.SetBucketedPathHash(hash % 10);
 
     // Convert the ratio area and ratio distance from [0,1] to [0,100].
     int percent_ratio_area = static_cast<int>(anchor->ratio_area * 100);

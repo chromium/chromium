@@ -94,6 +94,9 @@ class NavigationPredictor
   // UKM recorder
   ukm::UkmRecorder* ukm_recorder_ = nullptr;
 
+  // The time at which the navigation started.
+  base::TimeTicks navigation_start_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(NavigationPredictor);

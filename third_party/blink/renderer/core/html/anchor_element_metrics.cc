@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -131,6 +132,16 @@ IntRect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   return EnclosingIntRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
+bool IsNonEmptyTextNode(Node* node) {
+  if (!node) {
+    return false;
+  }
+  if (!node->IsTextNode()) {
+    return false;
+  }
+  return !To<Text>(node)->wholeText().ContainsOnlyWhitespaceOrEmpty();
+}
+
 }  // anonymous namespace
 
 // Helper function that returns the root document the anchor element is in.
@@ -233,6 +244,15 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
                              (target_visible.Width() / base_width);
   DCHECK_GE(1.0, ratio_visible_area);
   metrics->ratio_visible_area = ratio_visible_area;
+
+  metrics->has_text_sibling =
+      IsNonEmptyTextNode(anchor_element.nextSibling()) ||
+      IsNonEmptyTextNode(anchor_element.previousSibling());
+
+  const ComputedStyle& computed_style = anchor_element.ComputedStyleRef();
+  metrics->font_weight =
+      static_cast<uint32_t>(computed_style.GetFontWeight() + 0.5f);
+  metrics->font_size_px = computed_style.FontSize();
 
   return metrics;
 }
