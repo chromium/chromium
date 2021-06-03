@@ -267,7 +267,14 @@ if (use_system_harfbuzz) {
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
 
-      # https:/crbug.com/1203071
+      # Letting HarfBuzz enable warnings through pragmas can block compiler
+      # upgrades in situations where say a ToT compiler build adds a new
+      # stricter warning under -Wfoowarning-subgroup. HarfBuzz pragma-enables
+      # -Wfoowarning which default-enables -Wfoowarning-subgroup implicitly but
+      # HarfBuzz upstream is not yet clean of warnings produced for
+      # -Wfoowarning-subgroup. Hence disabling pragma warning control here.
+      # See also https:/crbug.com/1203071
+      "HB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR",
       "HB_NO_PRAGMA_GCC_DIAGNOSTIC_WARNING",
     ]
 
