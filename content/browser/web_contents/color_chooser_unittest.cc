@@ -41,12 +41,12 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
   ~OpenColorChooserDelegate() override = default;
 
   // WebContentsDelegate:
-  ColorChooser* OpenColorChooser(
+  std::unique_ptr<ColorChooser> OpenColorChooser(
       WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
       override {
-    return std::move(mock_color_chooser_).release();
+    return std::move(mock_color_chooser_);
   }
 
   bool IsBackForwardCacheSupported() override { return true; }

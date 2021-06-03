@@ -50,7 +50,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
-  content::ColorChooser* OpenColorChooser(
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* source,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)

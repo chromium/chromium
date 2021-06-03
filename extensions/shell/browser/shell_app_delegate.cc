@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_app_delegate.h"
 
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -58,7 +59,7 @@ void ShellAppDelegate::AddNewContents(
   NOTIMPLEMENTED();
 }
 
-content::ColorChooser* ShellAppDelegate::ShowColorChooser(
+std::unique_ptr<content::ColorChooser> ShellAppDelegate::ShowColorChooser(
     content::WebContents* web_contents,
     SkColor initial_color) {
   NOTIMPLEMENTED();

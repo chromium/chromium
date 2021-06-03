@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/cocoa/color_chooser_mac.h"
 
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"
 #include "components/remote_cocoa/browser/application_host.h"
@@ -18,15 +19,16 @@ ColorChooserMac* g_current_color_chooser = nullptr;
 }  // namespace
 
 // static
-ColorChooserMac* ColorChooserMac::Open(content::WebContents* web_contents,
-                                       SkColor initial_color) {
+std::unique_ptr<ColorChooserMac> ColorChooserMac::Open(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   if (g_current_color_chooser)
     g_current_color_chooser->End();
   DCHECK(!g_current_color_chooser);
   // Note that WebContentsImpl::ColorChooser ultimately takes ownership (and
   // deletes) the returned pointer.
   g_current_color_chooser = new ColorChooserMac(web_contents, initial_color);
-  return g_current_color_chooser;
+  return base::WrapUnique(g_current_color_chooser);
 }
 
 ColorChooserMac::ColorChooserMac(content::WebContents* web_contents,
@@ -76,8 +78,9 @@ void ColorChooserMac::SetSelectedColor(SkColor color) {
 }
 
 namespace chrome {
-content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                        SkColor initial_color) {
+std::unique_ptr<content::ColorChooser> ShowColorChooser(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   return ColorChooserMac::Open(web_contents, initial_color);
 }
 }  // namepace chrome

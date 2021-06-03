@@ -4,6 +4,7 @@
 
 #include <windows.h>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "chrome/browser/ui/views/color_chooser_dialog.h"
@@ -17,8 +18,9 @@
 class ColorChooserWin : public content::ColorChooser,
                         public views::ColorChooserListener {
  public:
-  static ColorChooserWin* Open(content::WebContents* web_contents,
-                               SkColor initial_color);
+  static std::unique_ptr<content::ColorChooser> Open(
+      content::WebContents* web_contents,
+      SkColor initial_color);
 
   ColorChooserWin(content::WebContents* web_contents,
                   SkColor initial_color);
@@ -45,12 +47,13 @@ class ColorChooserWin : public content::ColorChooser,
 
 ColorChooserWin* ColorChooserWin::current_color_chooser_ = NULL;
 
-ColorChooserWin* ColorChooserWin::Open(content::WebContents* web_contents,
-                                       SkColor initial_color) {
+std::unique_ptr<content::ColorChooser> ColorChooserWin::Open(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   if (current_color_chooser_)
     return NULL;
   current_color_chooser_ = new ColorChooserWin(web_contents, initial_color);
-  return current_color_chooser_;
+  return base::WrapUnique(current_color_chooser_);
 }
 
 ColorChooserWin::ColorChooserWin(content::WebContents* web_contents,
@@ -98,8 +101,9 @@ void ColorChooserWin::OnColorChooserDialogClosed() {
 
 namespace chrome {
 
-content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                        SkColor initial_color) {
+std::unique_ptr<content::ColorChooser> ShowColorChooser(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   return ColorChooserWin::Open(web_contents, initial_color);
 }
 

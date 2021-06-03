@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/color_chooser.h"
 
+#include "content/public/browser/color_chooser.h"
+
 // The actual android color chooser is at
 // components/embedder_support/android/delegate/color_chooser_android.cc
 
 namespace chrome {
 
-content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                        SkColor initial_color) {
+std::unique_ptr<content::ColorChooser> ShowColorChooser(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   return NULL;
 }
 

@@ -37,7 +37,7 @@ TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
     EXPECT_TRUE([nscolor_panel respondsToSelector:@selector(__target)]);
 
     // Create a ColorPanelCocoa.
-    ColorChooserMac* color_chooser_mac =
+    std::unique_ptr<ColorChooserMac> color_chooser_mac =
         ColorChooserMac::Open(nullptr, SK_ColorBLACK);
     base::RunLoop().RunUntilIdle();
 
@@ -60,7 +60,7 @@ TEST_F(ColorPanelCocoaTest, SetColor) {
   // Create a ColorChooserMac and confirm the NSColorPanel gets its initial
   // color.
   SkColor initial_color = SK_ColorBLACK;
-  ColorChooserMac* color_chooser_mac =
+  std::unique_ptr<ColorChooserMac> color_chooser_mac =
       ColorChooserMac::Open(nullptr, SK_ColorBLACK);
   base::RunLoop().RunUntilIdle();
 

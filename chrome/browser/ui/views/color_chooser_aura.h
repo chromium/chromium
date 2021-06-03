@@ -24,12 +24,13 @@ class ColorChooser;
 class ColorChooserAura : public content::ColorChooser,
                          public views::ColorChooserListener {
  public:
-  static ColorChooserAura* Open(content::WebContents* web_contents,
-                                SkColor initial_color);
+  static std::unique_ptr<ColorChooserAura> Open(
+      content::WebContents* web_contents,
+      SkColor initial_color);
+  ~ColorChooserAura() override;
 
  private:
   ColorChooserAura(content::WebContents* web_contents, SkColor initial_color);
-  ~ColorChooserAura() override;
 
   // content::ColorChooser overrides:
   void End() override;

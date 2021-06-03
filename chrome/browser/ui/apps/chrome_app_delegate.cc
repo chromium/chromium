@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_stream_request.h"
@@ -294,7 +295,7 @@ void ChromeAppDelegate::AddNewContents(
                          target_url, disposition, initial_rect);
 }
 
-content::ColorChooser* ChromeAppDelegate::ShowColorChooser(
+std::unique_ptr<content::ColorChooser> ChromeAppDelegate::ShowColorChooser(
     content::WebContents* web_contents,
     SkColor initial_color) {
   return chrome::ShowColorChooser(web_contents, initial_color);

@@ -1983,8 +1983,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   gfx::Size view_size_before_emulation_;
 
   // Holds information about a current color chooser dialog, if one is visible.
-  class ColorChooser;
-  std::unique_ptr<ColorChooser> color_chooser_;
+  class ColorChooserHolder;
+  std::unique_ptr<ColorChooserHolder> color_chooser_holder_;
 
   // Manages the embedder state for browser plugins, if this WebContents is an
   // embedder; NULL otherwise.

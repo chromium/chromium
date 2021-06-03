@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/color_chooser_aura.h"
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "content/public/browser/web_contents.h"
@@ -49,15 +50,17 @@ void ColorChooserAura::SetSelectedColor(SkColor color) {
 }
 
 // static
-ColorChooserAura* ColorChooserAura::Open(
-    content::WebContents* web_contents, SkColor initial_color) {
-  return new ColorChooserAura(web_contents, initial_color);
+std::unique_ptr<ColorChooserAura> ColorChooserAura::Open(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
+  return base::WrapUnique(new ColorChooserAura(web_contents, initial_color));
 }
 
 namespace chrome {
 
-content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                        SkColor initial_color) {
+std::unique_ptr<content::ColorChooser> ShowColorChooser(
+    content::WebContents* web_contents,
+    SkColor initial_color) {
   return ColorChooserAura::Open(web_contents, initial_color);
 }
 

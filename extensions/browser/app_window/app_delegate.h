@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_APP_WINDOW_APP_DELEGATE_H_
 #define EXTENSIONS_BROWSER_APP_WINDOW_APP_DELEGATE_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -68,7 +70,7 @@ class AppDelegate {
       bool user_gesture) = 0;
 
   // Feature support.
-  virtual content::ColorChooser* ShowColorChooser(
+  virtual std::unique_ptr<content::ColorChooser> ShowColorChooser(
       content::WebContents* web_contents,
       SkColor initial_color) = 0;
   virtual void RunFileChooser(

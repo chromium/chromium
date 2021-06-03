@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "weblayer/browser/i18n_util.h"
@@ -252,7 +253,7 @@ class TabImpl : public Tab,
                               content::InvalidateTypes changed_flags) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* web_contents) override;
-  content::ColorChooser* OpenColorChooser(
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)

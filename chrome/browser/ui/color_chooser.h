@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COLOR_CHOOSER_H_
 #define CHROME_BROWSER_UI_COLOR_CHOOSER_H_
 
+#include <memory>
+
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -14,8 +16,9 @@ class WebContents;
 
 namespace chrome {
 // Shows a color chooser that reports to the given WebContents.
-content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                        SkColor initial_color);
+std::unique_ptr<content::ColorChooser> ShowColorChooser(
+    content::WebContents* web_contents,
+    SkColor initial_color);
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_COLOR_CHOOSER_H_

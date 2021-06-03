@@ -56,11 +56,12 @@ ScopedJavaLocalRef<jobject> WebContentsDelegateAndroid::GetJavaDelegate(
 // WebContentsDelegate methods
 // ----------------------------------------------------------------------------
 
-ColorChooser* WebContentsDelegateAndroid::OpenColorChooser(
+std::unique_ptr<content::ColorChooser>
+WebContentsDelegateAndroid::OpenColorChooser(
     WebContents* source,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return new ColorChooserAndroid(source, color, suggestions);
+  return std::make_unique<ColorChooserAndroid>(source, color, suggestions);
 }
 
 // OpenURLFromTab() will be called when we're performing a browser-intiated

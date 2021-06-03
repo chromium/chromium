@@ -18,6 +18,7 @@
 #include "components/guest_view/common/guest_view_messages.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -632,7 +633,7 @@ void GuestViewBase::LoadingStateChanged(WebContents* source,
       embedder_web_contents(), to_different_document);
 }
 
-content::ColorChooser* GuestViewBase::OpenColorChooser(
+std::unique_ptr<content::ColorChooser> GuestViewBase::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {

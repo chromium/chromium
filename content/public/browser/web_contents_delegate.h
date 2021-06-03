@@ -400,9 +400,8 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Called when color chooser should open. Returns the opened color chooser.
   // Returns nullptr if we failed to open the color chooser (e.g. when there is
-  // a ColorChooserDialog already open on Windows). Ownership of the returned
-  // pointer is transferred to the caller.
-  virtual ColorChooser* OpenColorChooser(
+  // a ColorChooserDialog already open on Windows).
+  virtual std::unique_ptr<ColorChooser> OpenColorChooser(
       WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);

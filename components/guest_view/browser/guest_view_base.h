@@ -344,7 +344,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void ContentsZoomChange(bool zoom_in) final;
   void LoadingStateChanged(content::WebContents* source,
                            bool to_different_document) final;
-  content::ColorChooser* OpenColorChooser(
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) final;

@@ -989,12 +989,12 @@ content::JavaScriptDialogManager* TabImpl::GetJavaScriptDialogManager(
 #endif
 }
 
-content::ColorChooser* TabImpl::OpenColorChooser(
+std::unique_ptr<content::ColorChooser> TabImpl::OpenColorChooser(
     content::WebContents* web_contents,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
 #if defined(OS_ANDROID)
-  return new web_contents_delegate_android::ColorChooserAndroid(
+  return std::make_unique<web_contents_delegate_android::ColorChooserAndroid>(
       web_contents, color, suggestions);
 #else
   return nullptr;

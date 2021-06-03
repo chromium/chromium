@@ -193,6 +193,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/invalidate_type.h"
@@ -1885,7 +1886,7 @@ bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
   return guest_view && guest_view->PluginDoSave();
 }
 
-content::ColorChooser* Browser::OpenColorChooser(
+std::unique_ptr<content::ColorChooser> Browser::OpenColorChooser(
     WebContents* web_contents,
     SkColor initial_color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {

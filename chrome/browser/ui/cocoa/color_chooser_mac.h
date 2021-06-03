@@ -21,8 +21,11 @@ class ColorChooserMac : public content::ColorChooser,
   // call End() when done to free it. Each call to Open() returns a new
   // instance after freeing the previous one (i.e. it does not reuse the
   // previous instance even if it still exists).
-  static ColorChooserMac* Open(content::WebContents* web_contents,
-                               SkColor initial_color);
+  static std::unique_ptr<ColorChooserMac> Open(
+      content::WebContents* web_contents,
+      SkColor initial_color);
+
+  ~ColorChooserMac() override;
 
   // content::ColorChooser.
   void SetSelectedColor(SkColor color) override;
@@ -34,8 +37,6 @@ class ColorChooserMac : public content::ColorChooser,
   void DidCloseColorPanel() override;
 
   ColorChooserMac(content::WebContents* tab, SkColor initial_color);
-
-  ~ColorChooserMac() override;
 
   // The web contents invoking the color chooser.  No ownership because it will
   // outlive this class.

@@ -55,6 +55,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -1372,7 +1373,7 @@ content::JavaScriptDialogManager* DevToolsWindow::GetJavaScriptDialogManager(
   return javascript_dialogs::AppModalDialogManager::GetInstance();
 }
 
-content::ColorChooser* DevToolsWindow::OpenColorChooser(
+std::unique_ptr<content::ColorChooser> DevToolsWindow::OpenColorChooser(
     WebContents* web_contents,
     SkColor initial_color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
