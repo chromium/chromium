@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/bubble_search_page.h"
+#include "ash/app_list/bubble/app_list_bubble_search_page.h"
 
 #include <limits>
 #include <memory>
@@ -18,7 +18,7 @@ using views::BoxLayout;
 
 namespace ash {
 
-BubbleSearchPage::BubbleSearchPage() {
+AppListBubbleSearchPage::AppListBubbleSearchPage() {
   SetUseDefaultFillLayout(true);
 
   // The entire page scrolls.
@@ -50,6 +50,6 @@ BubbleSearchPage::BubbleSearchPage() {
   scroll->SetContents(std::move(scroll_contents));
 }
 
-BubbleSearchPage::~BubbleSearchPage() = default;
+AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
 
 }  // namespace ash

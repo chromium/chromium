@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/bubble_apps_page.h"
+#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 
 #include <limits>
 #include <memory>
@@ -32,7 +32,8 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
 
 }  // namespace
 
-BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
+AppListBubbleAppsPage::AppListBubbleAppsPage(
+    AppListViewDelegate* view_delegate) {
   DCHECK(view_delegate);
 
   SetUseDefaultFillLayout(true);
@@ -97,6 +98,6 @@ BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
   scroll->SetContents(std::move(scroll_contents));
 }
 
-BubbleAppsPage::~BubbleAppsPage() = default;
+AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
 
 }  // namespace ash

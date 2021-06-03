@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/bubble_assistant_page.h"
+#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,7 @@ using views::BoxLayout;
 
 namespace ash {
 
-BubbleAssistantPage::BubbleAssistantPage() {
+AppListBubbleAssistantPage::AppListBubbleAssistantPage() {
   SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
 
@@ -27,6 +27,6 @@ BubbleAssistantPage::BubbleAssistantPage() {
   AddChildView(std::make_unique<views::Label>(u"Assistant"));
 }
 
-BubbleAssistantPage::~BubbleAssistantPage() = default;
+AppListBubbleAssistantPage::~AppListBubbleAssistantPage() = default;
 
 }  // namespace ash

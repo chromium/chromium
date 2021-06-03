@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/app_list/bubble/bubble_apps_page.h"
-#include "ash/app_list/bubble/bubble_assistant_page.h"
-#include "ash/app_list/bubble/bubble_search_page.h"
+#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
+#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
+#include "ash/app_list/bubble/app_list_bubble_search_page.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
@@ -97,12 +97,14 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
       base::BindRepeating(&AppListBubbleView::FlipPage, base::Unretained(this)),
       u"Flip page"));
 
-  apps_page_ = AddChildView(std::make_unique<BubbleAppsPage>(view_delegate));
+  apps_page_ =
+      AddChildView(std::make_unique<AppListBubbleAppsPage>(view_delegate));
 
-  search_page_ = AddChildView(std::make_unique<BubbleSearchPage>());
+  search_page_ = AddChildView(std::make_unique<AppListBubbleSearchPage>());
   search_page_->SetVisible(false);
 
-  assistant_page_ = AddChildView(std::make_unique<BubbleAssistantPage>());
+  assistant_page_ =
+      AddChildView(std::make_unique<AppListBubbleAssistantPage>());
   assistant_page_->SetVisible(false);
 }
 
