@@ -27,13 +27,11 @@
 std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
-  absl::optional<AccountInfo> account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  std::string hosted_domain = account_info.has_value()
-                                  ? account_info.value().hosted_domain
-                                  : std::string();
-  return base::UTF8ToUTF16(hosted_domain);
+  return base::UTF8ToUTF16(
+      identity_manager
+          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync))
+          .hosted_domain);
 }
 
 AlertCoordinator* ErrorCoordinator(NSError* error,

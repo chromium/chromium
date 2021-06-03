@@ -58,12 +58,7 @@ CoreAccountId ChromeIdentityToAccountID(
     signin::IdentityManager* identity_manager,
     ChromeIdentity* identity) {
   std::string gaia_id = base::SysNSStringToUTF8([identity gaiaID]);
-  auto maybe_account =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id);
-  AccountInfo account_info =
-      maybe_account.has_value() ? maybe_account.value() : AccountInfo();
-  return account_info.account_id;
+  return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id).account_id;
 }
 
 }  // namespace
@@ -261,12 +256,10 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
   // from the SSO library and that hosted_domain is set (should be the proper
   // hosted domain or kNoHostedDomainFound that are both non-empty strings).
   CHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
-  const absl::optional<AccountInfo> account_info =
-      identity_manager_
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
-  CHECK(account_info.has_value());
-  CHECK(!account_info->hosted_domain.empty());
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  CHECK(!account_info.IsEmpty());
+  CHECK(!account_info.hosted_domain.empty());
 
   // |PrimaryAccountManager::SetAuthenticatedAccountId| simply ignores the call
   // if there is already a signed in user. Check that there is no signed in
@@ -551,12 +544,8 @@ bool AuthenticationService::IsAuthenticated() const {
 }
 
 bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin));
-  if (!primary_account_info)
-    return false;
-
-  return primary_account_info->IsManaged();
+  return identity_manager_
+      ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin))
+      .IsManaged();
 }

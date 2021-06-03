@@ -263,13 +263,13 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
           ->IsAuthenticatedIdentityManaged()) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForBrowserState(browserState);
-    absl::optional<AccountInfo> primary_account_info =
-        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+    AccountInfo primary_account_info =
+        identity_manager->FindExtendedAccountInfo(
             identity_manager->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSync));
-    DCHECK(primary_account_info);
+    DCHECK(!primary_account_info.IsEmpty());
     NSString* hostedDomain =
-        base::SysUTF8ToNSString(primary_account_info->hosted_domain);
+        base::SysUTF8ToNSString(primary_account_info.hosted_domain);
     [self promptSwitchFromManagedEmail:lastSignedInEmail
                       withHostedDomain:hostedDomain
                                toEmail:[identity userEmail]
