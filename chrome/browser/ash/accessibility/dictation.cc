@@ -16,6 +16,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -221,7 +223,10 @@ void Dictation::DictationOff() {
   if (!speech_recognizer_)
     return;
 
-  CommitCurrentText();
+  // Post commit text delayed to avoid a dcheck.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Dictation::CommitCurrentText,
+                                weak_ptr_factory_.GetWeakPtr()));
   if (!composition_->text.empty()) {
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationEnd));
   } else {
