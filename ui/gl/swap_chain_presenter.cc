@@ -1136,8 +1136,9 @@ void SwapChainPresenter::RecordPresentationStatistics() {
     HRESULT hr = swap_chain_media->GetFrameStatisticsMedia(&stats);
     int mode = -1;
     if (SUCCEEDED(hr)) {
-      base::UmaHistogramSparse("GPU.DirectComposition.CompositionMode",
-                               stats.CompositionMode);
+      base::UmaHistogramSparse(
+          "GPU.DirectComposition.CompositionMode2.VideoOrCanvas",
+          stats.CompositionMode);
       if (frame_rate_ != 0) {
         // [1ms, 10s] covers the fps between [0.1hz, 1000hz].
         base::UmaHistogramTimes("GPU.DirectComposition.ApprovedPresentDuration",

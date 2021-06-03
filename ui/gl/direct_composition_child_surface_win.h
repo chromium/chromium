@@ -34,7 +34,8 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   DirectCompositionChildSurfaceWin(VSyncCallback vsync_callback,
                                    bool use_angle_texture_offset,
                                    size_t max_pending_frames,
-                                   bool force_full_damage);
+                                   bool force_full_damage,
+                                   bool force_full_damage_always);
 
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
@@ -142,6 +143,7 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   const bool use_angle_texture_offset_;
   const size_t max_pending_frames_;
   const bool force_full_damage_;
+  const bool force_full_damage_always_;
 
   VSyncThreadWin* const vsync_thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

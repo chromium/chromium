@@ -53,6 +53,10 @@ IDCompositionSurface* g_current_surface = nullptr;
 
 bool g_direct_composition_swap_chain_failed = false;
 
+// If damage_rect / full_chrome_rect >= kForceFullDamageThreshold, present
+// the swap chain with full damage.
+float kForceFullDamageThreshold = 0.6f;
+
 bool SupportsLowLatencyPresentation() {
   return base::FeatureList::IsEnabled(
       features::kDirectCompositionLowLatencyPresentation);
@@ -74,11 +78,13 @@ DirectCompositionChildSurfaceWin::DirectCompositionChildSurfaceWin(
     VSyncCallback vsync_callback,
     bool use_angle_texture_offset,
     size_t max_pending_frames,
-    bool force_full_damage)
+    bool force_full_damage,
+    bool force_full_damage_always)
     : vsync_callback_(std::move(vsync_callback)),
       use_angle_texture_offset_(use_angle_texture_offset),
       max_pending_frames_(max_pending_frames),
       force_full_damage_(force_full_damage),
+      force_full_damage_always_(force_full_damage_always),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
@@ -154,10 +160,22 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
           first_swap_ || !vsync_enabled_ || use_swap_chain_tearing ? 0 : 1;
       UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-      TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
-                   "interval", interval, "dirty_rect",
-                   force_full_damage_ ? "full_damage" : swap_rect_.ToString());
+      bool actually_force_full_damage = false;
       if (force_full_damage_) {
+        if (force_full_damage_always_) {
+          actually_force_full_damage = true;
+        } else {
+          float percentage = swap_rect_.size().GetArea();
+          percentage /= size_.GetArea();
+          if (percentage >= kForceFullDamageThreshold)
+            actually_force_full_damage = true;
+        }
+      }
+      TRACE_EVENT2(
+          "gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
+          "interval", interval, "dirty_rect",
+          actually_force_full_damage ? "full_damage" : swap_rect_.ToString());
+      if (actually_force_full_damage) {
         hr = swap_chain_->Present(interval, flags);
       } else {
         DXGI_PRESENT_PARAMETERS params = {};
@@ -174,7 +192,7 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
       }
 
       Microsoft::WRL::ComPtr<IDXGISwapChainMedia> swap_chain_media;
-      if (SUCCEEDED(swap_chain_.As(&swap_chain_media))) {
+      if (force_full_damage_ && SUCCEEDED(swap_chain_.As(&swap_chain_media))) {
         DXGI_FRAME_STATISTICS_MEDIA stats = {};
         // GetFrameStatisticsMedia fails with
         // DXGI_ERROR_FRAME_STATISTICS_DISJOINT sometimes, which means an
@@ -184,9 +202,16 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
         // Waiting for the DXGI adapter to finish presenting before calling
         // the function doesn't get rid of the failure.
         if (SUCCEEDED(swap_chain_media->GetFrameStatisticsMedia(&stats))) {
-          base::UmaHistogramSparse(
-              "GPU.DirectComposition.CompositionMode.MainBuffer",
-              stats.CompositionMode);
+          if (actually_force_full_damage) {
+            base::UmaHistogramSparse(
+                "GPU.DirectComposition.CompositionMode2.MainBuffer.FullDamage",
+                stats.CompositionMode);
+          } else {
+            base::UmaHistogramSparse(
+                "GPU.DirectComposition.CompositionMode2.MainBuffer."
+                "PartialDamage",
+                stats.CompositionMode);
+          }
         }
       }
 

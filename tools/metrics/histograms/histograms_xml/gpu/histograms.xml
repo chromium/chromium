@@ -380,7 +380,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode"
-    enum="DxgiFramePresentationMode" expires_after="2021-10-04">
+    enum="DxgiFramePresentationMode" expires_after="M92">
+  <obsolete>
+    Obsoleted after M92. Unused and expired. Replaced by
+    GPU.DirectComposition.CompositionMode2.VideoOrCanvas.
+  </obsolete>
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -390,12 +394,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode.MainBuffer"
-    enum="DxgiFramePresentationMode" expires_after="2021-10-17">
+    enum="DxgiFramePresentationMode" expires_after="M92">
+  <obsolete>
+    Obsoleted after M92. Unused and expired. Replaced by
+    GPU.DirectComposition.CompositionMode2.MainBuffer.FullDamage and
+    GPU.DirectComposition.CompositionMode2.MainBuffer.PartialDamage.
+  </obsolete>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     How the Desktop Window Manager presented Chrome's main DirectComposition
     layer to the screen.
+  </summary>
+</histogram>
+
+<histogram name="GPU.DirectComposition.CompositionMode2.MainBuffer.{Damage}"
+    enum="DxgiFramePresentationMode" expires_after="2021-12-31">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    How the Desktop Window Manager presented Chrome's main DirectComposition
+    layer to the screen using {Damage}. Only recorded on Windows.
+  </summary>
+  <token key="Damage">
+    <variant name="FullDamage" summary="full damage"/>
+    <variant name="PartialDamage" summary="partial damage"/>
+  </token>
+</histogram>
+
+<histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
+    enum="DxgiFramePresentationMode" expires_after="2021-12-31">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    How the Desktop Window Manager presented Chrome's DirectComposition layers
+    of video or canvas elements to the screen. Only recorded on Windows.
   </summary>
 </histogram>
 

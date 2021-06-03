@@ -3693,6 +3693,21 @@
       "features": [
         "disallow_vp9_resilient_dxva_decoding"
       ]
+    },
+    {
+      "id": 375,
+      "cr_bugs": [1212825],
+      "description": "Always force direct composition full damage on older Windows 10 releases",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.19041.508"
+        }
+      },
+      "features": [
+        "force_direct_composition_full_damage_always"
+      ]
     }
   ]
 }

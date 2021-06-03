@@ -34,6 +34,8 @@ CreateDirectCompositionSurfaceSettings(
   settings.force_root_surface_full_damage =
       features::IsUsingSkiaRenderer() &&
       gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
+  settings.force_root_surface_full_damage_always =
+      workarounds.force_direct_composition_full_damage_always;
   return settings;
 }
 }  // namespace
