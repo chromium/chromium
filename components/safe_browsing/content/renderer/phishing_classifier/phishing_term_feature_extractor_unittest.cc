@@ -85,10 +85,22 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
     ResetExtractor(3 /* max shingles per page */);
   }
 
+  bool has_page_term(const std::string& str) const {
+    return term_hashes_.find(str) != term_hashes_.end();
+  }
+
+  bool has_page_word(uint32_t page_word_hash) const {
+    return word_hashes_.find(page_word_hash) != word_hashes_.end();
+  }
+
   void ResetExtractor(size_t max_shingles_per_page) {
     extractor_ = std::make_unique<PhishingTermFeatureExtractor>(
-        &term_hashes_, &word_hashes_, 3 /* max_words_per_term */,
-        kMurmurHash3Seed, max_shingles_per_page, 4 /* shingle_size */);
+        base::BindRepeating(&PhishingTermFeatureExtractorTest::has_page_term,
+                            base::Unretained(this)),
+        base::BindRepeating(&PhishingTermFeatureExtractorTest::has_page_word,
+                            base::Unretained(this)),
+        3 /* max_words_per_term */, kMurmurHash3Seed, max_shingles_per_page,
+        4 /* shingle_size */);
   }
 
   // Runs the TermFeatureExtractor on |page_text|, waiting for the

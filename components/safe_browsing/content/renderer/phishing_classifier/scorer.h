@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This class loads a client-side model and lets you compute a phishing score
-// for a set of previously extracted features.  The phishing score corresponds
-// to the probability that the features are indicative of a phishing site.
+// This abstract class loads a client-side model and lets you compute a phishing
+// score for a set of previously extracted features.  The phishing score
+// corresponds to the probability that the features are indicative of a phishing
+// site.
 //
-// For more details on how the score is actually computed for a given model
-// and a given set of features read the comments in client_model.proto file.
+// For more details on how the score is actually computed, consult the two
+// derived classes protobuf_scorer.h and flatbuffer_scorer.h
 //
 // See features.h for a list of features that are currently used.
 
@@ -24,10 +25,9 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
-#include "components/safe_browsing/core/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,27 +35,37 @@
 namespace safe_browsing {
 class FeatureMap;
 
-// Scorer methods are virtual to simplify mocking of this class.
+// Enum used to keep stats about the status of the Scorer creation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ScorerCreationStatus {
+  SCORER_SUCCESS = 0,
+  SCORER_FAIL_MODEL_OPEN_FAIL = 1,       // Not used anymore
+  SCORER_FAIL_MODEL_FILE_EMPTY = 2,      // Not used anymore
+  SCORER_FAIL_MODEL_FILE_TOO_LARGE = 3,  // Not used anymore
+  SCORER_FAIL_MODEL_PARSE_ERROR = 4,
+  SCORER_FAIL_MODEL_MISSING_FIELDS = 5,
+  SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL = 6,
+  SCORER_FAIL_FLATBUFFER_INVALID_REGION = 7,
+  SCORER_FAIL_FLATBUFFER_INVALID_MAPPING = 8,
+  SCORER_FAIL_FLATBUFFER_FAILED_VERIFY = 9,
+  SCORER_FAIL_FLATBUFFER_BAD_INDICES_OR_FIELDS = 10,
+  SCORER_STATUS_MAX  // Always add new values before this one.
+};
+
+// Scorer methods are virtual to simplify mocking of this class,
+// and to allow inheritance.
 class Scorer {
  public:
   virtual ~Scorer();
-
-  // Factory method which creates a new Scorer object by parsing the given
-  // model. If parsing fails this method returns NULL.
-  // Can use this if model_str is empty.
-  static Scorer* Create(const base::StringPiece& model_str,
-                        base::File visual_tflite_model);
-
-  // Factory method which creates a new Scorer object by parsing the given
-  // flatbuffer or tflite model. If parsing fails this method returns NULL.
-  // Use this only if region is valid.
-  static Scorer* Create(base::ReadOnlySharedMemoryRegion region,
-                        base::File visual_tflite_model);
+  // Most clients should use the factory method.  This constructor is public
+  // to allow for mock implementations.
+  Scorer();
 
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
   // (range is inclusive on both ends).
-  virtual double ComputeScore(const FeatureMap& features) const;
+  virtual double ComputeScore(const FeatureMap& features) const = 0;
 
   // This method matches the given |bitmap| against the visual model. It
   // modifies |request| appropriately, and returns the new request. This expects
@@ -65,84 +75,81 @@ class Scorer {
       const SkBitmap& bitmap,
       std::unique_ptr<ClientPhishingRequest> request,
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-      const;
+      const = 0;
 
   // This method applies the TfLite visual model to the given bitmap. It
   // asynchronously returns the list of scores for each category, in the same
   // order as `tflite_thresholds()`.
-  void ApplyVisualTfLiteModel(
+  virtual void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
-      base::OnceCallback<void(std::vector<double>)> callback) const;
+      base::OnceCallback<void(std::vector<double>)> callback) const = 0;
 
   // Returns the version number of the loaded client model.
-  int model_version() const;
+  virtual int model_version() const = 0;
 
   bool HasVisualTfLiteModel() const;
 
   // -- Accessors used by the page feature extractor ---------------------------
 
-  // Returns a set of hashed page terms that appear in the model in binary
-  // format.
-  const std::unordered_set<std::string>& page_terms() const;
+  // Returns a callback to find if a page word is in the model.
+  virtual base::RepeatingCallback<bool(uint32_t)> find_page_word_callback()
+      const = 0;
 
-  // Returns a set of hashed page words that appear in the model in binary
-  // format.
-  const std::unordered_set<uint32_t>& page_words() const;
+  // Returns a callback to find if a page term is in the model.
+  virtual base::RepeatingCallback<bool(const std::string&)>
+  find_page_term_callback() const = 0;
 
   // Return the maximum number of words per term for the loaded model.
-  size_t max_words_per_term() const;
+  virtual size_t max_words_per_term() const = 0;
 
   // Returns the murmurhash3 seed for the loaded model.
-  uint32_t murmurhash3_seed() const;
+  virtual uint32_t murmurhash3_seed() const = 0;
 
   // Return the maximum number of unique shingle hashes per page.
-  size_t max_shingles_per_page() const;
+  virtual size_t max_shingles_per_page() const = 0;
 
   // Return the number of words in a shingle.
-  size_t shingle_size() const;
+  virtual size_t shingle_size() const = 0;
 
   // Returns the threshold probability above which we send a CSD ping.
-  float threshold_probability() const;
+  virtual float threshold_probability() const = 0;
 
   // Returns the version of the visual TFLite model.
-  int tflite_model_version() const;
+  virtual int tflite_model_version() const = 0;
 
   // Returns the thresholds configured for the visual TFLite model categories.
-  const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
-  tflite_thresholds() const;
+  virtual const google::protobuf::RepeatedPtrField<
+      TfLiteModelMetadata::Threshold>&
+  tflite_thresholds() const = 0;
+
+  // Disable copy and move.
+  Scorer(const Scorer&) = delete;
+  Scorer& operator=(const Scorer&) = delete;
+
+  static void RecordScorerCreationStatus(ScorerCreationStatus status) {
+    UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ScorerCreationStatus", status,
+                              SCORER_STATUS_MAX);
+  }
 
  protected:
-  // Most clients should use the factory method.  This constructor is public
-  // to allow for mock implementations.
-  Scorer();
+  // Helper function which converts log odds to a probability in the range
+  // [0.0,1.0].
+  static double LogOdds2Prob(double log_odds);
+
+  // Apply the tflite model to the bitmap, and return scores.
+  static std::vector<double> ApplyVisualTfLiteModelHelper(
+      const SkBitmap& bitmap,
+      int input_width,
+      int input_height,
+      const std::string& model_data);
+
+  base::MemoryMappedFile visual_tflite_model_;
+  base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 
  private:
   friend class PhishingScorerTest;
-
-  // Computes the score for a given rule and feature map.  The score is computed
-  // by multiplying the rule weight with the product of feature weights for the
-  // given rule.  The feature weights are stored in the feature map.  If a
-  // particular feature does not exist in the feature map we set its weight to
-  // zero.
-  double ComputeRuleScore(const ClientSideModel::Rule& rule,
-                          const FeatureMap& features) const;
-
-  ClientSideModel model_;
-  std::unordered_set<std::string> page_terms_;
-  std::unordered_set<uint32_t> page_words_;
-
-  // Unowned. Points within flatbuffer_mapping_ and should not be free()d.
-  // It remains valid till flatbuffer_mapping_ is valid and should be reassigned
-  // if the mapping is updated.
-  const flat::ClientSideModel* flatbuffer_model_;
-  base::ReadOnlySharedMemoryMapping flatbuffer_mapping_;
-
-  base::MemoryMappedFile visual_tflite_model_;
-
-  base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Scorer);
 };
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_

@@ -67,7 +67,7 @@ void PhishingClassifier::set_phishing_scorer(const Scorer* scorer) {
     url_extractor_ = std::make_unique<PhishingUrlFeatureExtractor>();
     dom_extractor_ = std::make_unique<PhishingDOMFeatureExtractor>();
     term_extractor_ = std::make_unique<PhishingTermFeatureExtractor>(
-        &scorer_->page_terms(), &scorer_->page_words(),
+        scorer_->find_page_term_callback(), scorer_->find_page_word_callback(),
         scorer_->max_words_per_term(), scorer_->murmurhash3_seed(),
         scorer_->max_shingles_per_page(), scorer_->shingle_size());
   } else {

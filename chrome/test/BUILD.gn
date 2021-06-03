@@ -3181,6 +3181,7 @@ if (!is_android) {
         "../renderer/safe_browsing/phishing_dom_feature_extractor_browsertest.cc",
         "../renderer/safe_browsing/threat_dom_details_browsertest.cc",
       ]
+      deps += [ "//components/safe_browsing/core/fbs:client_model" ]
     }
     if (enable_captive_portal_detection) {
       sources += [ "../browser/captive_portal/captive_portal_browsertest.cc" ]
