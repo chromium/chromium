@@ -23793,6 +23793,15 @@ should be able to be added at any place in this file.
   <description>Recorded when user sign in was successful.</description>
 </action>
 
+<action name="Signin_Signin_WipeDataOnChildAccountSignin">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <description>
+    Recorded when wiping data during child account sign-in process. Only
+    recorded on Android.
+  </description>
+</action>
+
 <action name="Signin_Signin_WithAdvancedSyncSettings">
   <owner>gogerald@chromium.org</owner>
   <description>
