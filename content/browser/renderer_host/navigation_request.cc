@@ -887,35 +887,34 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     }
   }
 
-  std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
-      frame_tree_node, std::move(common_params), std::move(navigation_params),
-      std::move(commit_params), browser_initiated,
-      false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
-      entry, std::move(navigation_ui_data), mojo::NullAssociatedRemote(),
-      rfh_restored_from_back_forward_cache, initiator_process_id,
-      was_opener_suppressed));
-
+  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   if (frame_entry) {
-    navigation_request->blob_url_loader_factory_ =
-        frame_entry->blob_url_loader_factory();
+    blob_url_loader_factory = frame_entry->blob_url_loader_factory();
 
-    if (navigation_request->common_params().url.SchemeIsBlob() &&
-        !navigation_request->blob_url_loader_factory_) {
+    if (common_params->url.SchemeIsBlob() && !blob_url_loader_factory) {
       // If this navigation entry came from session history then the blob
       // factory would have been cleared in
       // NavigationEntryImpl::ResetForCommit(). This is avoid keeping large
       // blobs alive unnecessarily and the spec is unclear. So create a new blob
       // factory which will work if the blob happens to still be alive,
       // resolving the blob URL in the site instance it was loaded in.
-      navigation_request->blob_url_loader_factory_ =
+      blob_url_loader_factory =
           ChromeBlobStorageContext::URLLoaderFactoryForUrl(
               frame_tree_node->navigator()
                   .controller()
                   .GetBrowserContext()
                   ->GetStoragePartition(frame_entry->site_instance()),
-              navigation_request->common_params().url);
+              common_params->url);
     }
   }
+
+  std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
+      frame_tree_node, std::move(common_params), std::move(navigation_params),
+      std::move(commit_params), browser_initiated,
+      false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
+      entry, std::move(navigation_ui_data), std::move(blob_url_loader_factory),
+      mojo::NullAssociatedRemote(), rfh_restored_from_back_forward_cache,
+      initiator_process_id, was_opener_suppressed));
 
   return navigation_request;
 }
@@ -1005,21 +1004,19 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
-  std::unique_ptr<NavigationRequest> navigation_request(
-      new NavigationRequest(frame_tree_node, std::move(common_params),
-                            std::move(begin_params), std::move(commit_params),
-                            false,    // browser_initiated
-                            true,     // from_begin_navigation
-                            false,    // is_for_commit
-                            nullptr,  // frame_entry
-                            entry,
-                            nullptr,  // navigation_ui_data
-                            std::move(navigation_client),
-                            nullptr,  // rfh_restored_from_back_forward_cache
-                            initiator_process_id,
-                            /*was_opener_suppressed=*/false));
-  navigation_request->blob_url_loader_factory_ =
-      std::move(blob_url_loader_factory);
+  std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
+      frame_tree_node, std::move(common_params), std::move(begin_params),
+      std::move(commit_params),
+      false,    // browser_initiated
+      true,     // from_begin_navigation
+      false,    // is_for_commit
+      nullptr,  // frame_entry
+      entry,
+      nullptr,  // navigation_ui_data
+      std::move(blob_url_loader_factory), std::move(navigation_client),
+      nullptr,  // rfh_restored_from_back_forward_cache
+      initiator_process_id,
+      /*was_opener_suppressed=*/false));
   navigation_request->prefetched_signed_exchange_cache_ =
       std::move(prefetched_signed_exchange_cache);
   navigation_request->web_bundle_handle_tracker_ =
@@ -1124,7 +1121,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       std::move(commit_params), false /* browser_initiated */,
       false /* from_begin_navigation */, true /* is_for_commit */,
       nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
-      nullptr /* navigation_ui_data */, mojo::NullAssociatedRemote(),
+      nullptr /* navigation_ui_data */, nullptr /* blob_url_loader_factory */,
+      mojo::NullAssociatedRemote(),
       nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */));
@@ -1163,6 +1161,7 @@ NavigationRequest::NavigationRequest(
     const FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
+    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
     int initiator_process_id,
@@ -1174,6 +1173,7 @@ NavigationRequest::NavigationRequest(
       commit_params_(std::move(commit_params)),
       browser_initiated_(browser_initiated),
       navigation_ui_data_(std::move(navigation_ui_data)),
+      blob_url_loader_factory_(std::move(blob_url_loader_factory)),
       restore_type_(entry ? entry->restore_type() : RestoreType::kNotRestored),
       // Some navigations, such as renderer-initiated subframe navigations,
       // won't have a NavigationEntryImpl. Set |reload_type_| if applicable

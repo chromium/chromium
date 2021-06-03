@@ -909,6 +909,7 @@ class CONTENT_EXPORT NavigationRequest
       const FrameNavigationEntry* frame_navigation_entry,
       NavigationEntryImpl* navitation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
+      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
       int initiator_process_id,
@@ -1361,7 +1362,7 @@ class CONTENT_EXPORT NavigationRequest
   std::unique_ptr<NavigationUIData> navigation_ui_data_;
 
   // URLLoaderFactory to facilitate loading blob URLs.
-  scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
+  const scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
 
   NavigationState state_ = NOT_STARTED;
   bool is_navigation_started_ = false;
