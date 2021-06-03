@@ -162,8 +162,12 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     web::NavigationItem* item = [[CRWNavigationItemHolder
         holderForBackForwardListItem:webView.backForwardList.currentItem]
         navigationItem];
-    if (item)
+    if (item) {
       item->SetUserAgentType(userAgentType);
+      if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
+        self.webStateImpl->SetUserAgent(userAgentType);
+      }
+    }
   }
 
   if (userAgentType != web::UserAgentType::NONE) {
