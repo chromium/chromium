@@ -784,9 +784,9 @@ class ServiceWorkerRegistrationObjectHostTest
  protected:
   void SetUp() override {
     ServiceWorkerRegistrationTest::SetUp();
-    mojo::SetDefaultProcessErrorHandler(base::AdaptCallbackForRepeating(
-        base::BindOnce(&ServiceWorkerRegistrationObjectHostTest::OnMojoError,
-                       base::Unretained(this))));
+    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
+        &ServiceWorkerRegistrationObjectHostTest::OnMojoError,
+        base::Unretained(this)));
   }
 
   void TearDown() override {
