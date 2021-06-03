@@ -318,15 +318,22 @@ LayoutUnit ComputeTotalTrackSize(
 
 MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) const {
-  // TODO(janewman): Handle the cases typically done via:
-  // CalculateMinMaxSizesIgnoringChildren.
+  const LayoutUnit override_intrinsic_inline_size =
+      Node().OverrideIntrinsicContentInlineSize();
+  if (override_intrinsic_inline_size != kIndefiniteSize) {
+    MinMaxSizes sizes;
+    sizes =
+        BorderScrollbarPadding().InlineSum() + override_intrinsic_inline_size;
+    return MinMaxSizesResult{sizes,
+                             /* depends_on_block_constraints */ false};
+  }
 
-  // Measure items.
+  // Measure items. If we have inline size containment, ignore all children.
   GridItems grid_items;
-  ConstructAndAppendGridItems(&grid_items);
+  if (!Node().ShouldApplyInlineSizeContainment())
+    ConstructAndAppendGridItems(&grid_items);
 
-  const auto& container_style = Style();
-  NGGridPlacement grid_placement(container_style,
+  NGGridPlacement grid_placement(Style(),
                                  ComputeAutomaticRepetitions(kForColumns),
                                  ComputeAutomaticRepetitions(kForRows));
 

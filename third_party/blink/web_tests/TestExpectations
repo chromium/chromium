@@ -3916,10 +3916,15 @@ virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-rati
 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-contain/contain-size-grid-002.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-contain/contain-size-grid-003.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-contain/contain-size-grid-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-025.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-026.html [ Failure ]
 
 ### Tests *expected* to be failing with LayoutNGGrid enabled:
 crbug.com/1108097 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-004.html [ Failure ]
