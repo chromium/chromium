@@ -2462,6 +2462,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.Survey.DownloadAttemptsBeforeAccepted" units="units"
+    expires_after="2022-06-01">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    The number of survey download request attempts that have been made before
+    the survey is accepted. Note:
+
+    1) The download attempt might not result in a survey download due to
+    different reasons (e.g. download request failed or network failure); 2)
+    Chrome may also successfully download the survey number of times in previous
+    sessions, but the surveys were not able to be shown for min amount of times.
+    In such scenario, the total number of attempts across all sessions will be
+    recorded; 3) If the number of allowed download attempts has been saturated
+    before the survey being accepted, nothing will be recorded.
+
+    Recorded when a survey prompt is accepted. Android Only.
+  </summary>
+</histogram>
+
 <histogram name="Android.Survey.DownloadRequested" enum="BooleanRequested"
     expires_after="2021-06-01">
   <obsolete>
