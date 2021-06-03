@@ -349,7 +349,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.initWithNative(
                 mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinator != null
-                        ? mExploreSurfaceCoordinator.getFeedSurfaceCreator()
+                        ? mExploreSurfaceCoordinator.getFeedSurfaceController()
                         : null,
                 UserPrefs.get(Profile.getLastUsedRegularProfile()));
 

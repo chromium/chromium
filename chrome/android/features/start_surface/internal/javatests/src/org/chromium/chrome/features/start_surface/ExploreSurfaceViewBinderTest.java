@@ -85,8 +85,9 @@ public class ExploreSurfaceViewBinderTest {
                             mActivityTestRule.getActivity().getWindowAndroid(),
                             mActivityTestRule.getActivity().getTabModelSelector());
             mFeedSurfaceCoordinator =
-                    mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
-                            false, /* isPlaceholderShown= */ false, NewTabPageLaunchOrigin.UNKNOWN);
+                    mExploreSurfaceCoordinator.getFeedSurfaceController()
+                            .createFeedSurfaceCoordinator(false, /* isPlaceholderShown= */ false,
+                                    NewTabPageLaunchOrigin.UNKNOWN);
             mFeedSurfaceView = mFeedSurfaceCoordinator.getView();
         });
     }

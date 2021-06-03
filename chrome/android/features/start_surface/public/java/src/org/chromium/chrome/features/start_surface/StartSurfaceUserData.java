@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -15,6 +17,23 @@ public class StartSurfaceUserData implements UserData {
     private boolean mKeepTab;
     private boolean mFocusOnOmnibox;
     private boolean mCreatedAsNtp;
+
+    // Saves the Feeds instance state.
+    private String mFeedsInstanceState;
+
+    /**
+     * Static class that implements the initialization-on-demand holder idiom.
+     */
+    private static class LazyHolder {
+        static final StartSurfaceUserData INSTANCE = new StartSurfaceUserData();
+    }
+
+    /**
+     * Gets the singleton instance for the StartSurfaceUserData.
+     */
+    public static StartSurfaceUserData getInstance() {
+        return LazyHolder.INSTANCE;
+    }
 
     /**
      * Sets the flag of whether to keep the given tab in the TabModel without auto deleting when
@@ -88,5 +107,18 @@ public class StartSurfaceUserData implements UserData {
     public static boolean getCreatedAsNtp(Tab tab) {
         StartSurfaceUserData startSurfaceUserData = get(tab);
         return startSurfaceUserData == null ? false : startSurfaceUserData.mCreatedAsNtp;
+    }
+
+    /** Save the feed instance state if necessary. */
+    public void saveFeedInstanceState(String state) {
+        mFeedsInstanceState = state;
+    }
+
+    /**
+     * @return The saved feed instance state, or null if it is not previously saved.
+     */
+    @Nullable
+    protected String restoreFeedInstanceState() {
+        return mFeedsInstanceState;
     }
 }
