@@ -147,17 +147,6 @@ const base::FeatureParam<std::string>
 const base::Feature kDisableKeepaliveFetch{"DisableKeepaliveFetch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether a |request_initiator| that mismatches
-// |request_initiator_origin_lock| leads to 1) failing the HTTP request and 2)
-// calling mojo::ReportBadMessage (on desktop platforms, where NetworkService
-// is hosted outside of the Browser process, this leads to DumpWithoutCrashing
-// and does *not* lead to a renderer kill).
-//
-// See also https://crbug.com/920634
-const base::Feature kRequestInitiatorSiteLockEnfocement = {
-    "RequestInitiatorSiteLockEnfocement",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)

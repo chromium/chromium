@@ -436,24 +436,10 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 
     case InitiatorLockCompatibility::kIncorrectLock:
       // Requests from the renderer need to always specify a correct initiator.
-      NOTREACHED() << "request_initiator_origin_lock_ = "
-                   << request_initiator_origin_lock_.value_or(
-                          url::Origin::Create(GURL("https://no-lock.com")))
-                   << "; request.request_initiator = "
-                   << request.request_initiator.value_or(url::Origin::Create(
-                          GURL("https://no-initiator.com")));
-      if (base::FeatureList::IsEnabled(
-              features::kRequestInitiatorSiteLockEnfocement)) {
-        url::debug::ScopedOriginCrashKey initiator_lock_crash_key(
-            debug::GetRequestInitiatorOriginLockCrashKey(),
-            base::OptionalOrNullptr(request_initiator_origin_lock_));
-        base::debug::ScopedCrashKeyString debug_tag_crash_key(
-            debug::GetFactoryDebugTagCrashKey(), debug_tag_);
-        mojo::ReportBadMessage(
-            "CorsURLLoaderFactory: lock VS initiator mismatch");
-        return false;
-      }
-      break;
+      NOTREACHED();
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: lock VS initiator mismatch");
+      return false;
   }
 
   if (context_ && !GetAllowAnyCorsExemptHeaderForBrowser() &&

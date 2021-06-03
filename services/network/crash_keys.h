@@ -14,8 +14,9 @@ struct ResourceRequest;
 
 namespace debug {
 
+// TODO(lukasza): Move to //services/network/public/cpp to enable reuse outside
+// of //services/network (e.g. see https://crrev.com/c/2923326).
 base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey();
-base::debug::CrashKeyString* GetFactoryDebugTagCrashKey();
 
 class ScopedRequestCrashKeys {
  public:

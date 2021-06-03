@@ -40,12 +40,6 @@ base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey() {
   return crash_key;
 }
 
-base::debug::CrashKeyString* GetFactoryDebugTagCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "url_loader_factory_debug_tag", base::debug::CrashKeySize::Size64);
-  return crash_key;
-}
-
 ScopedRequestCrashKeys::ScopedRequestCrashKeys(
     const network::ResourceRequest& request)
     : url_(GetRequestUrlCrashKey(), request.url.possibly_invalid_spec()),
