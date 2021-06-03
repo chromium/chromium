@@ -31,4 +31,4 @@ declare_args() {
 # AXPlatformNode to implement a native C++ API, instead it bridges to a Java API.
 has_platform_accessibility_support = has_native_accessibility || is_android
 
-enable_hidpi = is_mac || is_win || is_linux || is_chromeos || is_ios
+enable_hidpi = !is_android
