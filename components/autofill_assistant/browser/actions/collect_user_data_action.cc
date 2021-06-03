@@ -1281,11 +1281,11 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   for (const auto* profile :
        delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
     user_data->available_profiles_.emplace_back(
-        MakeUniqueFromProfile(*profile));
+        user_data::MakeUniqueFromProfile(*profile));
 
     if (selected_profile != nullptr &&
-        CompareContactDetails(*collect_user_data_options_, profile,
-                              selected_profile)) {
+        user_data::CompareContactDetails(*collect_user_data_options_, profile,
+                                         selected_profile)) {
       found_profile = true;
     }
 
@@ -1311,7 +1311,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->contact_details_name,
-          MakeUniqueFromProfile(
+          user_data::MakeUniqueFromProfile(
               *(user_data->available_profiles_[default_selection])),
           user_data);
     }
@@ -1330,7 +1330,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->shipping_address_name,
-          MakeUniqueFromProfile(
+          user_data::MakeUniqueFromProfile(
               *(user_data->available_profiles_[default_selection])),
           user_data);
     }
@@ -1366,7 +1366,7 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
                 card->billing_address_id());
         if (billing_address != nullptr) {
           payment_instrument->billing_address =
-              MakeUniqueFromProfile(*billing_address);
+              user_data::MakeUniqueFromProfile(*billing_address);
         }
       }
 

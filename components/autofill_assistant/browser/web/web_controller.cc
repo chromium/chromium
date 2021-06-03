@@ -707,7 +707,7 @@ void WebController::FillAddressForm(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
   auto data_to_autofill = std::make_unique<FillFormInputData>();
-  data_to_autofill->profile = MakeUniqueFromProfile(*profile);
+  data_to_autofill->profile = user_data::MakeUniqueFromProfile(*profile);
   GetElementFormAndFieldData(
       selector,
       base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,

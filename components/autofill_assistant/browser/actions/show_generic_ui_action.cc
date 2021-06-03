@@ -350,7 +350,7 @@ void ShowGenericUiAction::OnPersonalDataChanged() {
         std::vector<std::unique_ptr<autofill::AutofillProfile>>>();
     for (const auto* profile :
          delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
-      profiles->emplace_back(MakeUniqueFromProfile(*profile));
+      profiles->emplace_back(user_data::MakeUniqueFromProfile(*profile));
     }
     WriteProfilesToUserModel(std::move(profiles),
                              proto_.show_generic_ui().request_profiles(),

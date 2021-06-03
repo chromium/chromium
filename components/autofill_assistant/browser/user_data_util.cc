@@ -27,7 +27,6 @@ namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
-// TODO: Share this helper function with use_address_action.
 std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
   return autofill::data_util::JoinNameParts(
       profile.GetRawInfo(autofill::NAME_FIRST),
@@ -439,8 +438,6 @@ int GetDefaultPaymentInstrument(
   return sorted_indices[0];
 }
 
-}  // namespace user_data
-
 std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
     const autofill::AutofillProfile& profile) {
   auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
@@ -592,4 +589,5 @@ void ResolveTextValue(const TextValue& text_value,
   std::move(callback).Run(status, value);
 }
 
+}  // namespace user_data
 }  // namespace autofill_assistant

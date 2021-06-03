@@ -113,8 +113,9 @@ void SetFormFieldValueAction::InternalProcessAction(
         break;
       case SetFormFieldValueProto_KeyPress::kClientMemoryKey: {
         std::string value;
-        ClientStatus client_memory_status = GetClientMemoryStringValue(
-            keypress.client_memory_key(), delegate_->GetUserData(), &value);
+        ClientStatus client_memory_status =
+            user_data::GetClientMemoryStringValue(
+                keypress.client_memory_key(), delegate_->GetUserData(), &value);
         if (!client_memory_status.ok()) {
           VLOG(1) << "SetFormFieldValueAction: bad |client_memory_key|";
           FailAction(client_memory_status, keypress_index);
@@ -125,7 +126,7 @@ void SetFormFieldValueAction::InternalProcessAction(
       }
       case SetFormFieldValueProto_KeyPress::kAutofillValue: {
         std::string value;
-        ClientStatus autofill_status = GetFormattedAutofillValue(
+        ClientStatus autofill_status = user_data::GetFormattedAutofillValue(
             keypress.autofill_value(), delegate_->GetUserData(), &value);
         if (!autofill_status.ok()) {
           FailAction(autofill_status, keypress_index);
@@ -196,7 +197,7 @@ void SetFormFieldValueAction::SetFieldValueSequentially(
         std::move(next_field_callback));
   } else if (field_input.password_manager_value.credential_type() !=
              PasswordManagerValue::NOT_SET) {
-    GetPasswordManagerValue(
+    user_data::GetPasswordManagerValue(
         field_input.password_manager_value, *element_, delegate_->GetUserData(),
         delegate_->GetWebsiteLoginManager(),
         base::BindOnce(&SetFormFieldValueAction::OnGetPasswordManagerValue,

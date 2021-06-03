@@ -30,6 +30,7 @@
 #include "url/gurl.h"
 
 namespace autofill_assistant {
+namespace user_data {
 namespace {
 
 using ::base::test::RunOnceCallback;
@@ -80,7 +81,7 @@ TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
   std::vector<int> profile_indices =
-      user_data::SortContactsByCompleteness(options, profiles);
+      SortContactsByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(2, 1, 0));
 }
@@ -117,7 +118,7 @@ TEST(UserDataUtilTest, SortsContactsByCompleteness) {
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
 
   std::vector<int> profile_indices =
-      user_data::SortContactsByCompleteness(options, profiles);
+      SortContactsByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(2, 1, 0));
 }
@@ -126,7 +127,7 @@ TEST(UserDataUtilTest, GetDefaultContactSelectionForEmptyProfiles) {
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), -1);
+  EXPECT_THAT(GetDefaultContactProfile(options, profiles), -1);
 }
 
 TEST(UserDataUtilTest,
@@ -152,7 +153,7 @@ TEST(UserDataUtilTest,
   options.required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
-  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), 1);
+  EXPECT_THAT(GetDefaultContactProfile(options, profiles), 1);
 }
 
 TEST(UserDataUtilTest, GetDefaultSelectionForDefaultEmail) {
@@ -188,7 +189,7 @@ TEST(UserDataUtilTest, GetDefaultSelectionForDefaultEmail) {
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
   options.default_email = "adam.west@gmail.com";
 
-  EXPECT_THAT(user_data::GetDefaultContactProfile(options, profiles), 2);
+  EXPECT_THAT(GetDefaultContactProfile(options, profiles), 2);
 }
 
 TEST(UserDataUtilTest, SortsCompleteAddressesAlphabetically) {
@@ -210,7 +211,7 @@ TEST(UserDataUtilTest, SortsCompleteAddressesAlphabetically) {
   CollectUserDataOptions options;
 
   std::vector<int> profile_indices =
-      user_data::SortShippingAddressesByCompleteness(options, profiles);
+      SortShippingAddressesByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
@@ -236,7 +237,7 @@ TEST(UserDataUtilTest, SortsAddressesByEditorCompleteness) {
   CollectUserDataOptions options;
 
   std::vector<int> profile_indices =
-      user_data::SortShippingAddressesByCompleteness(options, profiles);
+      SortShippingAddressesByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
@@ -262,7 +263,7 @@ TEST(UserDataUtilTest, SortsAddressesByAssistantCompleteness) {
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
   std::vector<int> profile_indices =
-      user_data::SortShippingAddressesByCompleteness(options, profiles);
+      SortShippingAddressesByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
   EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
@@ -271,8 +272,7 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForEmptyProfiles) {
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(user_data::GetDefaultShippingAddressProfile(options, profiles),
-              -1);
+  EXPECT_THAT(GetDefaultShippingAddressProfile(options, profiles), -1);
 }
 
 TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
@@ -297,8 +297,7 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
 
   CollectUserDataOptions options;
 
-  EXPECT_THAT(user_data::GetDefaultShippingAddressProfile(options, profiles),
-              1);
+  EXPECT_THAT(GetDefaultShippingAddressProfile(options, profiles), 1);
 }
 
 TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
@@ -328,8 +327,7 @@ TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
       MakeRequiredDataPiece(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH));
 
   std::vector<int> sorted_indices =
-      user_data::SortPaymentInstrumentsByCompleteness(options,
-                                                      payment_instruments);
+      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
@@ -357,8 +355,7 @@ TEST(UserDataUtilTest, SortsEquallyValidCardsByName) {
   CollectUserDataOptions options;
 
   std::vector<int> sorted_indices =
-      user_data::SortPaymentInstrumentsByCompleteness(options,
-                                                      payment_instruments);
+      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
@@ -386,8 +383,7 @@ TEST(UserDataUtilTest, SortsEquallyCompleteCardsByExpirationValidity) {
   CollectUserDataOptions options;
 
   std::vector<int> sorted_indices =
-      user_data::SortPaymentInstrumentsByCompleteness(options,
-                                                      payment_instruments);
+      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
@@ -415,8 +411,7 @@ TEST(UserDataUtilTest, SortsEquallyCompleteCardsByNumberValidity) {
   CollectUserDataOptions options;
 
   std::vector<int> sorted_indices =
-      user_data::SortPaymentInstrumentsByCompleteness(options,
-                                                      payment_instruments);
+      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
@@ -470,8 +465,7 @@ TEST(UserDataUtilTest, SortsCreditCardsByAddressCompleteness) {
       MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
 
   std::vector<int> sorted_indices =
-      user_data::SortPaymentInstrumentsByCompleteness(options,
-                                                      payment_instruments);
+      SortPaymentInstrumentsByCompleteness(options, payment_instruments);
   EXPECT_THAT(sorted_indices, SizeIs(payment_instruments.size()));
   EXPECT_THAT(sorted_indices, ElementsAre(2, 1, 0));
 }
@@ -480,8 +474,7 @@ TEST(UserDataUtilTest, GetDefaultSelectionForEmptyPaymentInstruments) {
   std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
   CollectUserDataOptions options;
 
-  EXPECT_THAT(
-      user_data::GetDefaultPaymentInstrument(options, payment_instruments), -1);
+  EXPECT_THAT(GetDefaultPaymentInstrument(options, payment_instruments), -1);
 }
 
 TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
@@ -506,8 +499,7 @@ TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
 
   CollectUserDataOptions options;
 
-  EXPECT_THAT(
-      user_data::GetDefaultPaymentInstrument(options, payment_instruments), 1);
+  EXPECT_THAT(GetDefaultPaymentInstrument(options, payment_instruments), 1);
 }
 
 TEST(UserDataUtilTest, CompareContactDetailsMatch) {
@@ -622,9 +614,8 @@ TEST(UserDataUtilTest, CompareContactDetailsMatchesForUnqueriedFields) {
 
 TEST(UserDataUtilTest, ContactCompletenessNotRequired) {
   CollectUserDataOptions not_required_options;
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(nullptr, not_required_options),
-      IsEmpty());
+  EXPECT_THAT(GetContactValidationErrors(nullptr, not_required_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequireName) {
@@ -635,27 +626,23 @@ TEST(UserDataUtilTest, ContactCompletenessRequireName) {
   require_name_options.required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::NAME_LAST));
 
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(nullptr, require_name_options),
-      ElementsAre("3", "5"));
+  EXPECT_THAT(GetContactValidationErrors(nullptr, require_name_options),
+              ElementsAre("3", "5"));
   autofill::test::SetProfileInfo(&contact, /* first_name= */ "",
                                  /* middle_name= */ "",
                                  /* last_name= */ "", "adam.west@gmail.com", "",
                                  "", "", "", "", "", "", "+41");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_name_options),
-      ElementsAre("3", "5"));
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_name_options),
+              ElementsAre("3", "5"));
   autofill::test::SetProfileInfo(&contact, "John", /* middle_name= */ "",
                                  /* last_name= */ "", "", "", "", "", "", "",
                                  "", "", "");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_name_options),
-      ElementsAre("5"));
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_name_options),
+              ElementsAre("5"));
   autofill::test::SetProfileInfo(&contact, "John", /* middle_name= */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_name_options),
-      IsEmpty());
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_name_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequireEmail) {
@@ -664,21 +651,18 @@ TEST(UserDataUtilTest, ContactCompletenessRequireEmail) {
   require_email_options.required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
 
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(nullptr, require_email_options),
-      ElementsAre("9"));
+  EXPECT_THAT(GetContactValidationErrors(nullptr, require_email_options),
+              ElementsAre("9"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  /* email= */ "", "", "", "", "", "", "", "",
                                  "+41");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_email_options),
-      ElementsAre("9"));
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_email_options),
+              ElementsAre("9"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  "john.doe@gmail.com", "", "", "", "", "", "",
                                  "", "+41");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_email_options),
-      IsEmpty());
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_email_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, ContactCompletenessRequirePhone) {
@@ -693,34 +677,29 @@ TEST(UserDataUtilTest, ContactCompletenessRequirePhone) {
       MakeRequiredDataPiece(
           autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE));
 
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(nullptr, require_phone_options),
-      ElementsAre("14", "10", "12"));
+  EXPECT_THAT(GetContactValidationErrors(nullptr, require_phone_options),
+              ElementsAre("14", "10", "12"));
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe",
                                  "john.doe@gmail.com", "", "", "", "", "", "",
                                  "",
                                  /* phone= */ "");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_phone_options),
-      ElementsAre("14", "10", "12"));
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_phone_options),
+              ElementsAre("14", "10", "12"));
   autofill::test::SetProfileInfo(&contact, "", "", "", "", "", "", "", "", "",
                                  "", "", "079 123 45 67");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_phone_options),
-      ElementsAre("12"));
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_phone_options),
+              ElementsAre("12"));
   autofill::test::SetProfileInfo(&contact, "", "", "", "", "", "", "", "", "",
                                  "", "", "+41 79 123 45 67");
-  EXPECT_THAT(
-      user_data::GetContactValidationErrors(&contact, require_phone_options),
-      IsEmpty());
+  EXPECT_THAT(GetContactValidationErrors(&contact, require_phone_options),
+              IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteShippingAddressNotRequired) {
   CollectUserDataOptions not_required_options;
   not_required_options.request_shipping = false;
 
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  nullptr, not_required_options),
+  EXPECT_THAT(GetShippingAddressValidationErrors(nullptr, not_required_options),
               IsEmpty());
 }
 
@@ -736,32 +715,32 @@ TEST(UserDataUtilTest, CompleteShippingAddressForAssistant) {
   require_shipping_options.required_shipping_address_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
 
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  nullptr, require_shipping_options),
-              ElementsAre("77", "35", "36"));
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(nullptr, require_shipping_options),
+      ElementsAre("77", "35", "36"));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  "john.doe@gmail.com", "", /* address1= */ "",
                                  /* address2= */ "", /* city= */ "",
                                  /* state=  */ "", /* zip_code=  */ "",
                                  /* country= */ "", /* phone= */ "");
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  &address, require_shipping_options),
-              ElementsAre("77", "35", "36"));
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(&address, require_shipping_options),
+      ElementsAre("77", "35", "36"));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich", /* zip_code= */ "",
                                  "CH",
                                  /* phone= */ "");
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  &address, require_shipping_options),
-              ElementsAre("35"));
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(&address, require_shipping_options),
+      ElementsAre("35"));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich", "8002", "CH",
                                  /* phone= */ "");
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  &address, require_shipping_options),
-              IsEmpty());
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(&address, require_shipping_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteShippingAddressForEditor) {
@@ -769,32 +748,32 @@ TEST(UserDataUtilTest, CompleteShippingAddressForEditor) {
   CollectUserDataOptions require_shipping_options;
   require_shipping_options.request_shipping = true;
 
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  nullptr, require_shipping_options),
-              ElementsAre(_));
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(nullptr, require_shipping_options),
+      ElementsAre(_));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich", /* zip_code= */ "",
                                  "CH",
                                  /* phone= */ "");
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  &address, require_shipping_options),
-              ElementsAre(_));
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(&address, require_shipping_options),
+      ElementsAre(_));
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich", "8002", "CH",
                                  /* phone= */ "");
-  EXPECT_THAT(user_data::GetShippingAddressValidationErrors(
-                  &address, require_shipping_options),
-              IsEmpty());
+  EXPECT_THAT(
+      GetShippingAddressValidationErrors(&address, require_shipping_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteCreditCardNotRequired) {
   CollectUserDataOptions not_required_options;
   not_required_options.request_payment_method = false;
 
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
-                  nullptr, nullptr, not_required_options),
+  EXPECT_THAT(GetPaymentInstrumentValidationErrors(nullptr, nullptr,
+                                                   not_required_options),
               IsEmpty());
 }
 
@@ -808,37 +787,37 @@ TEST(UserDataUtilTest, CompleteCreditCardAddressValidation) {
                                     "2050",
                                     /* billing_address_id= */ "id");
 
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(nullptr, nullptr,
-                                                              payment_options),
-              ElementsAre(_));
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, nullptr,
-                                                              payment_options),
-              ElementsAre(_));
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              ElementsAre(_));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(nullptr, nullptr, payment_options),
+      ElementsAre(_));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, nullptr, payment_options),
+      ElementsAre(_));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      ElementsAre(_));
   // CH addresses require a zip code to be complete. This check outranks the
   // our validation.
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Brandschenkestrasse 110",
                                  "", "Zurich", "Zurich",
                                  /* zipcode= */ "", "CH", /* phone= */ "");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              ElementsAre(_));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      ElementsAre(_));
   // UK addresses do not require a zip code, they are complete without it.
   autofill::test::SetProfileInfo(&address, "John", "", "Doe",
                                  /* email= */ "", "", "Baker Street 221b", "",
                                  "London", /* state= */ "",
                                  /* zipcode= */ "", "UK", /* phone= */ "");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              IsEmpty());
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      IsEmpty());
   payment_options.required_billing_address_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::ADDRESS_HOME_ZIP));
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              ElementsAre("35"));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      ElementsAre("35"));
 }
 
 TEST(UserDataUtilTest, CompleteExpiredCreditCard) {
@@ -855,15 +834,15 @@ TEST(UserDataUtilTest, CompleteExpiredCreditCard) {
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
                                     "2000",
                                     /* billing_address_id= */ "id");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              ElementsAre("expired"));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      ElementsAre("expired"));
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
                                     "2050",
                                     /* billing_address_id= */ "id");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              IsEmpty());
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      IsEmpty());
 }
 
 TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
@@ -890,8 +869,8 @@ TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
       required_data_piece);
   payment_options_mastercard.supported_basic_card_networks.emplace_back(
       "mastercard");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
-                  &card, &address, payment_options_mastercard),
+  EXPECT_THAT(GetPaymentInstrumentValidationErrors(&card, &address,
+                                                   payment_options_mastercard),
               ElementsAre("network"));
 
   required_data_piece.mutable_condition()
@@ -902,8 +881,8 @@ TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
   payment_options_visa.request_payment_method = true;
   payment_options_visa.required_credit_card_data_pieces.push_back(
       required_data_piece);
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(
-                  &card, &address, payment_options_visa),
+  EXPECT_THAT(GetPaymentInstrumentValidationErrors(&card, &address,
+                                                   payment_options_visa),
               IsEmpty());
 }
 
@@ -919,15 +898,15 @@ TEST(UserDataUtilTest, CompleteCreditCardWithInvalidNumber) {
 
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111", "1", "2050",
                                     /* billing_address_id= */ "id");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              ElementsAre(_));
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      ElementsAre(_));
   autofill::test::SetCreditCardInfo(&card, "Adam West", "4111111111111111", "1",
                                     "2050",
                                     /* billing_address_id= */ "id");
-  EXPECT_THAT(user_data::GetPaymentInstrumentValidationErrors(&card, &address,
-                                                              payment_options),
-              IsEmpty());
+  EXPECT_THAT(
+      GetPaymentInstrumentValidationErrors(&card, &address, payment_options),
+      IsEmpty());
 }
 
 class UserDataUtilTextValueTest : public testing::Test {
@@ -1246,4 +1225,5 @@ TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
 }
 
 }  // namespace
+}  // namespace user_data
 }  // namespace autofill_assistant

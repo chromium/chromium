@@ -70,7 +70,7 @@ void UseAddressAction::InternalProcessAction(
         EndAction(ClientStatus(PRECONDITION_FAILED));
         return;
       }
-      profile_ = MakeUniqueFromProfile(*profile);
+      profile_ = user_data::MakeUniqueFromProfile(*profile);
       break;
     }
     case UseAddressProto::kModelIdentifier: {
@@ -103,7 +103,7 @@ void UseAddressAction::InternalProcessAction(
         EndAction(ClientStatus(PRECONDITION_FAILED));
         return;
       }
-      profile_ = MakeUniqueFromProfile(*profile);
+      profile_ = user_data::MakeUniqueFromProfile(*profile);
       break;
     }
     case UseAddressProto::ADDRESS_SOURCE_NOT_SET:

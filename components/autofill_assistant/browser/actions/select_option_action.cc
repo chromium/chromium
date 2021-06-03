@@ -54,9 +54,9 @@ void SelectOptionAction::InternalProcessAction(ProcessActionCallback callback) {
       case_sensitive_ = select_option.text_filter_value().case_sensitive();
       break;
     case SelectOptionProto::kAutofillRegexpValue: {
-      ClientStatus autofill_status =
-          GetFormattedAutofillValue(select_option.autofill_regexp_value(),
-                                    delegate_->GetUserData(), &value_);
+      ClientStatus autofill_status = user_data::GetFormattedAutofillValue(
+          select_option.autofill_regexp_value(), delegate_->GetUserData(),
+          &value_);
       if (!autofill_status.ok()) {
         EndAction(autofill_status);
         return;
