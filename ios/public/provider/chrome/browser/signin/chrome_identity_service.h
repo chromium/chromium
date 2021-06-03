@@ -220,10 +220,10 @@ class ChromeIdentityService {
   virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
 
   // Returns the cached value of the account capability that determines whether
-  // Chrome should apply minor mode restrictions to |identity|.
+  // Chrome should offer extended sync promos to |identity|.
   // This value will have a refresh period of 24 hours, meaning that at
   // retrieval it may be stale or unpopulated, in the case of a fresh install.
-  virtual absl::optional<bool> IsSubjectToMinorModeRestrictions(
+  virtual absl::optional<bool> CanOfferExtendedSyncPromos(
       ChromeIdentity* identity);
 
   // Returns the MDM device status associated with |user_info|.

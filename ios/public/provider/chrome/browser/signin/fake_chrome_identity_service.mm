@@ -299,14 +299,13 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
   return FakeGetHostedDomainForIdentity(identity);
 }
 
-absl::optional<bool>
-FakeChromeIdentityService::IsSubjectToMinorModeRestrictions(
+absl::optional<bool> FakeChromeIdentityService::CanOfferExtendedSyncPromos(
     ChromeIdentity* identity) {
   if (![identities_ containsObject:identity]) {
     return absl::nullopt;
   }
   return absl::make_optional(
-      [identity.userEmail hasSuffix:kMinorModeIdentityEmailSuffix]);
+      ![identity.userEmail hasSuffix:kMinorModeIdentityEmailSuffix]);
 }
 
 void FakeChromeIdentityService::SimulateForgetIdentityFromOtherApp(

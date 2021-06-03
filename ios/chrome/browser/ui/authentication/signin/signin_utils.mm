@@ -116,12 +116,11 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (identities.count == 0)
     return false;
 
-  // Don't show the SSO promo if the default primary account is subject to
-  // minor mode restrictions.
-  absl::optional<bool> isSubjectToMinorModeRestrictions =
-      identity_service->IsSubjectToMinorModeRestrictions(identities[0]);
-  if (isSubjectToMinorModeRestrictions.has_value() &&
-      isSubjectToMinorModeRestrictions.value())
+  // Don't show the SSO promo if the default primary account is cannot display
+  // extended sync promos.
+  absl::optional<bool> canOfferExtendedSyncPromos =
+      identity_service->CanOfferExtendedSyncPromos(identities[0]);
+  if (!canOfferExtendedSyncPromos.value_or(true))
     return false;
 
   // The sign-in promo should be shown twice, even if no account has been added.
