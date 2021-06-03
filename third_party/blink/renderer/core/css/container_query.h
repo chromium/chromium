@@ -14,9 +14,10 @@ namespace blink {
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
  public:
-  explicit ContainerQuery(scoped_refptr<MediaQuerySet>);
+  ContainerQuery(const AtomicString& name, scoped_refptr<MediaQuerySet>);
   ContainerQuery(const ContainerQuery&);
 
+  const AtomicString& Name() const { return name_; }
   PhysicalAxes QueriedAxes() const { return queried_axes_; }
 
   String ToString() const;
@@ -30,6 +31,7 @@ class CORE_EXPORT ContainerQuery final
 
   scoped_refptr<MediaQuerySet> MediaQueries() const { return media_queries_; }
 
+  AtomicString name_;
   // TODO(crbug.com/1214810): Refactor to avoid internal MediaQuerySet.
   scoped_refptr<MediaQuerySet> media_queries_;
   PhysicalAxes queried_axes_{kPhysicalAxisNone};

@@ -40,6 +40,13 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     return evaluator->Eval(*container_query);
   }
 
+  bool ContainerChanged(ContainerQueryEvaluator* evaluator,
+                        PhysicalSize size,
+                        PhysicalAxes axes) {
+    return evaluator->ContainerChanged(size, axes) !=
+           ContainerQueryEvaluator::Change::kNone;
+  }
+
   const PhysicalAxes none{kPhysicalAxisNone};
   const PhysicalAxes both{kPhysicalAxisBoth};
   const PhysicalAxes horizontal{kPhysicalAxisHorizontal};
@@ -92,19 +99,19 @@ TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
   EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
 
-  EXPECT_FALSE(evaluator->ContainerChanged(size_100, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_100, horizontal));
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
   EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
 
-  EXPECT_TRUE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_TRUE(ContainerChanged(evaluator, size_200, horizontal));
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200));
 
-  EXPECT_FALSE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_200, horizontal));
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200));
 
-  EXPECT_TRUE(evaluator->ContainerChanged(size_200, vertical));
+  EXPECT_TRUE(ContainerChanged(evaluator, size_200, vertical));
   EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_100));
   EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
 }
@@ -185,23 +192,23 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   evaluator->EvalAndAdd(*query_max_300px);
   // Updating with the same size as we initially had should not invalidate
   // any query results.
-  EXPECT_FALSE(evaluator->ContainerChanged(size_100, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_100, horizontal));
 
   // Makes no difference for either of (min-width: 200px), (max-width: 300px):
-  EXPECT_FALSE(evaluator->ContainerChanged(size_150, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_150, horizontal));
 
   // (min-width: 200px) becomes true:
-  EXPECT_TRUE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_TRUE(ContainerChanged(evaluator, size_200, horizontal));
 
   evaluator->EvalAndAdd(*query_min_200px);
   evaluator->EvalAndAdd(*query_max_300px);
-  EXPECT_FALSE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_200, horizontal));
 
   // Makes no difference for either of (min-width: 200px), (max-width: 300px):
-  EXPECT_FALSE(evaluator->ContainerChanged(size_300, horizontal));
+  EXPECT_FALSE(ContainerChanged(evaluator, size_300, horizontal));
 
   // (max-width: 300px) becomes false:
-  EXPECT_TRUE(evaluator->ContainerChanged(size_400, horizontal));
+  EXPECT_TRUE(ContainerChanged(evaluator, size_400, horizontal));
 }
 
 TEST_F(ContainerQueryEvaluatorTest, EvaluatorOnDetachLayoutTree) {

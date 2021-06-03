@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>container-name does not establish a container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  div {
+    color: black;
+  }
+
+  #outer {
+    container-name: c1;
+    container-type: inline-size;
+    width: 300px;
+  }
+
+  #inner {
+    container-name: c1;
+    width: 200px;
+  }
+
+  @container c1 (min-width: 300px) {
+    #child { color: green; }
+  }
+
+</style>
+<div id=outer>
+  <div id=inner>
+    <div id=child>Test</div>
+  </div>
+</div>
+<script>
+  test(function(t) {
+    assert_equals(getComputedStyle(child).color, 'rgb(0, 128, 0)');
+  }, 'container-name does not establish a container');
+</script>

@@ -26,8 +26,10 @@ PhysicalAxes ComputeQueriedAxes(const MediaQuerySet& media_queries) {
 
 }  // namespace
 
-ContainerQuery::ContainerQuery(scoped_refptr<MediaQuerySet> media_queries)
-    : media_queries_(media_queries),
+ContainerQuery::ContainerQuery(const AtomicString& name,
+                               scoped_refptr<MediaQuerySet> media_queries)
+    : name_(name),
+      media_queries_(media_queries),
       queried_axes_(ComputeQueriedAxes(*media_queries)) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)

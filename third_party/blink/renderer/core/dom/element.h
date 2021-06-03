@@ -54,6 +54,7 @@ namespace blink {
 class AccessibleNode;
 class Attr;
 class Attribute;
+class ContainerQueryEvaluator;
 class CSSPropertyValueSet;
 class CSSStyleDeclaration;
 class CustomElementDefinition;

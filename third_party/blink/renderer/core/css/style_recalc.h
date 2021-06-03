@@ -9,7 +9,6 @@
 
 namespace blink {
 
-class ContainerQueryEvaluator;
 class Element;
 class Node;
 class PseudoElement;
@@ -18,6 +17,17 @@ class PseudoElement;
 // recompute their computed styles, and marking nodes for layout tree re-
 // attachment during the style recalc phase.
 class StyleRecalcChange {
+ private:
+  enum ContainerQueryDependentFlag {
+    kNoContainerRecalc,
+    // Recalc container query dependent elements within this container,
+    // but not in nested containers.
+    kRecalcContainer,
+    // Recalc container query dependent elements within this container,
+    // and also in nested containers.
+    kRecalcDescendantContainers,
+  };
+
  public:
   enum Propagate {
     // No need to update style of any children.
@@ -30,6 +40,9 @@ class StyleRecalcChange {
     // recalc_container_query_dependent_=true for descendants. We should not
     // recalc style for the container itself.
     kRecalcContainerQueryDependent,
+    // Like kRecalcContainerQueryDependent, but we do not stop traversal on
+    // descendant containers.
+    kRecalcDescendantContainerQueryDependent,
     // Need to update existence and style for pseudo elements.
     kUpdatePseudoElements,
     // Need to recalculate style for children for inheritance. All changed
@@ -48,23 +61,23 @@ class StyleRecalcChange {
 
   StyleRecalcChange ForChildren(const Element& element) const {
     return {RecalcDescendants() ? kRecalcDescendants : kNo, reattach_,
-            RecalcContainerQueryDependentChildren(element)};
+            ContainerQueryDependentFlagForChildren(element)};
   }
   StyleRecalcChange ForPseudoElement() const {
     if (propagate_ == kUpdatePseudoElements)
-      return {kRecalcChildren, reattach_, recalc_container_query_dependent_};
+      return {kRecalcChildren, reattach_, container_query_dependent_flag_};
     return *this;
   }
   StyleRecalcChange EnsureAtLeast(Propagate propagate) const {
     if (propagate > propagate_)
-      return {propagate, reattach_, recalc_container_query_dependent_};
-    return {propagate_, reattach_, recalc_container_query_dependent_};
+      return {propagate, reattach_, container_query_dependent_flag_};
+    return {propagate_, reattach_, container_query_dependent_flag_};
   }
   StyleRecalcChange ForceRecalcDescendants() const {
-    return {kRecalcDescendants, reattach_, recalc_container_query_dependent_};
+    return {kRecalcDescendants, reattach_, container_query_dependent_flag_};
   }
   StyleRecalcChange ForceReattachLayoutTree() const {
-    return {propagate_, true, recalc_container_query_dependent_};
+    return {propagate_, true, container_query_dependent_flag_};
   }
 
   bool ReattachLayoutTree() const { return reattach_; }
@@ -81,22 +94,24 @@ class StyleRecalcChange {
  private:
   StyleRecalcChange(Propagate propagate,
                     bool reattach,
-                    bool recalc_container_query_dependent)
+                    ContainerQueryDependentFlag container_query_dependent_flag)
       : propagate_(propagate),
         reattach_(reattach),
-        recalc_container_query_dependent_(recalc_container_query_dependent) {}
+        container_query_dependent_flag_(container_query_dependent_flag) {}
 
   bool RecalcContainerQueryDependent() const {
-    return recalc_container_query_dependent_;
+    return container_query_dependent_flag_ != kNoContainerRecalc;
   }
-  bool RecalcContainerQueryDependentChildren(const Element&) const;
+  ContainerQueryDependentFlag ContainerQueryDependentFlagForChildren(
+      const Element&) const;
 
   // To what extent do we need to update style for children.
   Propagate propagate_ = kNo;
   // Need to reattach layout tree if true.
   bool reattach_ = false;
   // Force recalc of elements depending on container queries.
-  bool recalc_container_query_dependent_ = false;
+  ContainerQueryDependentFlag container_query_dependent_flag_ =
+      kNoContainerRecalc;
 };
 
 // StyleRecalcContext is an object that is passed on the stack during
@@ -113,10 +128,9 @@ class StyleRecalcContext {
   // resolving the style of the given Element.
   static StyleRecalcContext FromAncestors(Element&);
 
-  // If style is being calculated for an element inside a container,
-  // this ContainerQueryEvaluator may be used to evaluate @container
-  // rules against that container.
-  ContainerQueryEvaluator* cq_evaluator = nullptr;
+  // Set to the nearest container (for container queries), if any.
+  // This is used to evaluate container queries in ElementRuleCollector.
+  Element* container = nullptr;
 };
 
 }  // namespace blink

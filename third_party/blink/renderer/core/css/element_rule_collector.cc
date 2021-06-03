@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -56,6 +57,30 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
   if (inside_link == EInsideLink::kNotInsideLink)
     return CSSSelector::kMatchLink;
   return link_match_type;
+}
+
+ContainerQueryEvaluator* FindContainerQueryEvaluator(
+    const AtomicString& name,
+    const StyleRecalcContext& style_recalc_context) {
+  Element* container = style_recalc_context.container;
+  if (!container)
+    return nullptr;
+
+  if (name == g_null_atom)
+    return container->GetContainerQueryEvaluator();
+
+  // TODO(crbug.com/1213888): Cache results.
+  for (Element* element = container; element;
+       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+    if (auto* evaluator = element->GetContainerQueryEvaluator()) {
+      if (const ComputedStyle* style = element->GetComputedStyle()) {
+        if (style->ContainerName() == name)
+          return evaluator;
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -198,7 +223,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     if (auto* container_query = rule_data->GetContainerQuery()) {
       result_.SetDependsOnContainerQueries();
 
-      auto* evaluator = style_recalc_context_.cq_evaluator;
+      auto* evaluator = FindContainerQueryEvaluator(container_query->Name(),
+                                                    style_recalc_context_);
 
       if (!evaluator || !evaluator->EvalAndAdd(*container_query)) {
         rejected++;

@@ -2923,7 +2923,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
     if (layout_object->IsContainerForContainerQueries())
-      child_recalc_context.cq_evaluator = GetContainerQueryEvaluator();
+      child_recalc_context.container = this;
   }
 
   if (child_change.TraversePseudoElements(*this)) {
@@ -2996,7 +2996,7 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
   if (change.RecalcDescendants() ||
       diff < ComputedStyle::Difference::kPseudoElementStyle)
     return change;
-  if (diff == ComputedStyle::Difference::kDisplayAffectingDescendantStyles)
+  if (diff == ComputedStyle::Difference::kDescendantAffecting)
     return change.ForceRecalcDescendants();
   if (diff == ComputedStyle::Difference::kInherited)
     return change.EnsureAtLeast(StyleRecalcChange::kRecalcChildren);
