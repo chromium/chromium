@@ -43,6 +43,7 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -10979,9 +10980,9 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   auto can_store =
       frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           top_document);
-  TRACE_EVENT1("navigation",
-               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
-               "can_store", can_store.ToString());
+  TRACE_EVENT("navigation",
+              "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
+              "render_frame_host", this, "can_store", can_store.ToString());
 
   if (can_store)
     return;

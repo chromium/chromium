@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -612,8 +613,9 @@ void RenderFrameHostManager::UnloadOldFrame(
 
     auto can_store =
         back_forward_cache.CanStorePageNow(old_render_frame_host.get());
-    TRACE_EVENT1("navigation", "BackForwardCache_MaybeStorePage", "can_store",
-                 can_store.ToString());
+    TRACE_EVENT("navigation", "BackForwardCache_MaybeStorePage",
+                "old_render_frame_host", old_render_frame_host, "can_store",
+                can_store.ToString());
     if (can_store) {
       auto entry = CollectPage(std::move(old_render_frame_host));
       // Ensures RenderViewHosts are not reused while they are in the cache.
