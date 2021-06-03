@@ -71,6 +71,17 @@ enum class HdcpVersion {
   kMaxValue = kHdcpVersion2_3
 };
 
+// Reasons for CDM session closed.
+enum class CdmSessionClosedReason {
+  kUnknown,         // Anything not listed below.
+  kClose,           // Reaction to MediaKeySession close().
+  kCdmUnavailable,  // CDM is no longer usable, e.g. the CDM was disconnected or
+                    // had fatal internal-error.
+  kHardwareContextReset,  // As a result of hardware context reset.
+  kResourceEvicted,  // The CDM resource was evicted, e.g. by newer sessions.
+  kMaxValue = kResourceEvicted
+};
+
 // An interface that represents the Content Decryption Module (CDM) in the
 // Encrypted Media Extensions (EME) spec in Chromium.
 // See http://w3c.github.io/encrypted-media/#cdm
@@ -191,12 +202,14 @@ using SessionMessageCB =
                                  CdmMessageType message_type,
                                  const std::vector<uint8_t>& message)>;
 
-// Called when the session specified by |session_id| is closed. Note that the
+// Called when the session specified by `session_id` is closed. Note that the
 // CDM may close a session at any point, such as in response to a CloseSession()
 // call, when the session is no longer needed, or when system resources are
-// lost. See http://w3c.github.io/encrypted-media/#session-close
+// lost, as specified by `reason`.
+// See http://w3c.github.io/encrypted-media/#session-close
 using SessionClosedCB =
-    base::RepeatingCallback<void(const std::string& session_id)>;
+    base::RepeatingCallback<void(const std::string& session_id,
+                                 CdmSessionClosedReason reason)>;
 
 // Called when there has been a change in the keys in the session or their
 // status. See http://w3c.github.io/encrypted-media/#dom-evt-keystatuseschange

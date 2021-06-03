@@ -109,7 +109,8 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
   void OnSessionKeysChange(const std::string& session_id,
                            bool has_additional_usable_key,
                            CdmKeysInfo keys_info);
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
   void OnSessionExpirationUpdate(const std::string& session_id,
                                  base::Time new_expiry_time);
 

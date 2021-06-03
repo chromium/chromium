@@ -352,9 +352,10 @@ void ClearKeyPersistentSessionCdm::AddPersistentSession(
 }
 
 void ClearKeyPersistentSessionCdm::OnSessionClosed(
-    const std::string& session_id) {
+    const std::string& session_id,
+    CdmSessionClosedReason reason) {
   persistent_sessions_.erase(session_id);
-  session_closed_cb_.Run(session_id);
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void ClearKeyPersistentSessionCdm::OnSessionMessage(

@@ -334,7 +334,9 @@ void ContentDecryptionModuleAdapter::OnSessionClosed(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
   cdm_session_tracker_.RemoveSession(session_id);
-  session_closed_cb_.Run(session_id);
+  // TODO(crbug.com/1208618): Update cdm::mojom::ContentDecryptionModuleClient
+  // to support CdmSessionClosedReason.
+  session_closed_cb_.Run(session_id, media::CdmSessionClosedReason::kClose);
 }
 
 void ContentDecryptionModuleAdapter::OnSessionKeysChange(
@@ -536,7 +538,8 @@ bool ContentDecryptionModuleAdapter::CanAlwaysDecrypt() {
 ContentDecryptionModuleAdapter::~ContentDecryptionModuleAdapter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
-  cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
+  cdm_session_tracker_.CloseRemainingSessions(
+      session_closed_cb_, media::CdmSessionClosedReason::kCdmUnavailable);
 }
 
 void ContentDecryptionModuleAdapter::OnConnectionError() {
@@ -553,7 +556,8 @@ void ContentDecryptionModuleAdapter::OnConnectionError() {
   // any open sessions.
   cdm_promise_adapter_.Clear(
       media::CdmPromiseAdapter::ClearReason::kConnectionError);
-  cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
+  cdm_session_tracker_.CloseRemainingSessions(
+      session_closed_cb_, media::CdmSessionClosedReason::kCdmUnavailable);
 }
 
 void ContentDecryptionModuleAdapter::RejectTrackedPromise(

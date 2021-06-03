@@ -94,7 +94,8 @@ class MojoCdm final : public ContentDecryptionModule,
   void OnSessionMessage(const std::string& session_id,
                         MessageType message_type,
                         const std::vector<uint8_t>& message) final;
-  void OnSessionClosed(const std::string& session_id) final;
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason) final;
   void OnSessionKeysChange(
       const std::string& session_id,
       bool has_additional_usable_key,

@@ -402,36 +402,8 @@ void MediaFoundationCdm::CloseSession(
     std::unique_ptr<SimpleCdmPromise> promise) {
   DVLOG_FUNC(1);
 
-  if (!mf_cdm_) {
-    promise->reject(Exception::INVALID_STATE_ERROR, 0, "CDM Unavailable");
-    return;
-  }
-
-  // Validate that this is a reference to an open session. close() shouldn't
-  // be called if the session is already closed. However, the operation is
-  // asynchronous, so there is a window where close() was called a second time
-  // just before the closed event arrives. As a result it is possible that the
-  // session is already closed, so assume that the session is closed if it
-  // doesn't exist. https://github.com/w3c/encrypted-media/issues/365.
-  //
-  // close() is called from a MediaKeySession object, so it is unlikely that
-  // this method will be called with a previously unseen |session_id|.
-  auto* session = GetSession(session_id);
-  if (!session) {
-    promise->resolve();
-    return;
-  }
-
-  if (FAILED(session->Close())) {
-    sessions_.erase(session_id);
-    promise->reject(Exception::INVALID_STATE_ERROR, 0, "Close failed");
-    return;
-  }
-
-  // EME requires running session closed algorithm before resolving the promise.
-  sessions_.erase(session_id);
-  session_closed_cb_.Run(session_id);
-  promise->resolve();
+  CloseSessionInternal(session_id, CdmSessionClosedReason::kClose,
+                       std::move(promise));
 }
 
 void MediaFoundationCdm::RemoveSession(
@@ -519,6 +491,44 @@ MediaFoundationCdmSession* MediaFoundationCdm::GetSession(
   return itr->second.get();
 }
 
+void MediaFoundationCdm::CloseSessionInternal(
+    const std::string& session_id,
+    CdmSessionClosedReason reason,
+    std::unique_ptr<SimpleCdmPromise> promise) {
+  DVLOG_FUNC(1);
+
+  if (!mf_cdm_) {
+    promise->reject(Exception::INVALID_STATE_ERROR, 0, "CDM Unavailable");
+    return;
+  }
+
+  // Validate that this is a reference to an open session. close() shouldn't
+  // be called if the session is already closed. However, the operation is
+  // asynchronous, so there is a window where close() was called a second time
+  // just before the closed event arrives. As a result it is possible that the
+  // session is already closed, so assume that the session is closed if it
+  // doesn't exist. https://github.com/w3c/encrypted-media/issues/365.
+  //
+  // close() is called from a MediaKeySession object, so it is unlikely that
+  // this method will be called with a previously unseen |session_id|.
+  auto* session = GetSession(session_id);
+  if (!session) {
+    promise->resolve();
+    return;
+  }
+
+  if (FAILED(session->Close())) {
+    sessions_.erase(session_id);
+    promise->reject(Exception::INVALID_STATE_ERROR, 0, "Close failed");
+    return;
+  }
+
+  // EME requires running session closed algorithm before resolving the promise.
+  sessions_.erase(session_id);
+  session_closed_cb_.Run(session_id, reason);
+  promise->resolve();
+}
+
 // When hardware context is reset, all sessions are in a bad state. Close all
 // the sessions and hopefully the player will create new sessions to resume.
 void MediaFoundationCdm::OnHardwareContextReset() {
@@ -530,8 +540,11 @@ void MediaFoundationCdm::OnHardwareContextReset() {
   for (const auto& s : sessions_)
     session_ids.push_back(s.first);
 
-  for (const auto& session_id : session_ids)
-    CloseSession(session_id, std::make_unique<DoNothingCdmPromise<>>());
+  for (const auto& session_id : session_ids) {
+    CloseSessionInternal(session_id,
+                         CdmSessionClosedReason::kHardwareContextReset,
+                         std::make_unique<DoNothingCdmPromise<>>());
+  }
 
   cdm_proxy_.reset();
 

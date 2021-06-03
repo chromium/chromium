@@ -43,8 +43,9 @@ void FakeEncryptedMedia::OnSessionMessage(const std::string& session_id,
   app_->OnSessionMessage(session_id, message_type, message, decryptor_.get());
 }
 
-void FakeEncryptedMedia::OnSessionClosed(const std::string& session_id) {
-  app_->OnSessionClosed(session_id);
+void FakeEncryptedMedia::OnSessionClosed(const std::string& session_id,
+                                         CdmSessionClosedReason reason) {
+  app_->OnSessionClosed(session_id, reason);
 }
 
 void FakeEncryptedMedia::OnSessionKeysChange(const std::string& session_id,

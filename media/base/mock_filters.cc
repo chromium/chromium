@@ -258,8 +258,9 @@ void MockCdm::CallSessionMessageCB(const std::string& session_id,
   session_message_cb_.Run(session_id, message_type, message);
 }
 
-void MockCdm::CallSessionClosedCB(const std::string& session_id) {
-  session_closed_cb_.Run(session_id);
+void MockCdm::CallSessionClosedCB(const std::string& session_id,
+                                  CdmSessionClosedReason reason) {
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void MockCdm::CallSessionKeysChangeCB(const std::string& session_id,

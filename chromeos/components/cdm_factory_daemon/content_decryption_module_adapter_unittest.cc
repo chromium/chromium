@@ -311,7 +311,7 @@ TEST_F(ContentDecryptionModuleAdapterTest,
       media::CdmSessionType::kTemporary, media::EmeInitDataType::CENC,
       ToVector(kFakeEmeInitData), std::move(promise));
   // We should also be getting a session closed callback for any open sessions.
-  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId1));
+  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId1, _));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(session_id, kFakeSessionId1);
 }
@@ -336,7 +336,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, LoadSession_Failure) {
 TEST_F(ContentDecryptionModuleAdapterTest, LoadSession_Success) {
   LoadSession();
   // We should also be getting a session closed callback for any open sessions.
-  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId2));
+  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId2, _));
 }
 
 TEST_F(ContentDecryptionModuleAdapterTest, UpdateSession_Failure) {
@@ -428,7 +428,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, OnSessionMessage) {
 
 TEST_F(ContentDecryptionModuleAdapterTest, OnSessionClosed) {
   LoadSession();
-  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId2));
+  EXPECT_CALL(mock_session_closed_cb_, Run(kFakeSessionId2, _));
   cdm_adapter_->OnSessionClosed(kFakeSessionId2);
 }
 

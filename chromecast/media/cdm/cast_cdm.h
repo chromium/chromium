@@ -77,7 +77,8 @@ class CastCdm : public ::media::ContentDecryptionModule {
   void OnSessionMessage(const std::string& session_id,
                         const std::vector<uint8_t>& message,
                         ::media::CdmMessageType message_type);
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       ::media::CdmSessionClosedReason reason);
   void OnSessionKeysChange(const std::string& session_id,
                            bool newly_usable_keys,
                            ::media::CdmKeysInfo keys_info);

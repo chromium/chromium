@@ -816,7 +816,8 @@ void CdmAdapter::OnSessionClosed(const char* session_id,
   std::string session_id_str(session_id, session_id_size);
   TRACE_EVENT1("media", "CdmAdapter::OnSessionClosed", "session_id",
                session_id_str);
-  session_closed_cb_.Run(session_id_str);
+  // Library CDMs typically only close sessions as a result of `CloseSession()`.
+  session_closed_cb_.Run(session_id_str, CdmSessionClosedReason::kClose);
 }
 
 void CdmAdapter::SendPlatformChallenge(const char* service_id,

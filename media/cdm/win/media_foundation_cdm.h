@@ -88,7 +88,11 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   MediaFoundationCdmSession* GetSession(const std::string& session_id);
 
-  // Closes all outstanding sessions.
+  void CloseSessionInternal(const std::string& session_id,
+                            CdmSessionClosedReason reason,
+                            std::unique_ptr<SimpleCdmPromise> promise);
+
+  // Called when hardware context reset happens.
   void OnHardwareContextReset();
 
   // Callback to create `mf_cdm_`.

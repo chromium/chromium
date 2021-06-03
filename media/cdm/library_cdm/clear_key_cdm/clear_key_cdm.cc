@@ -888,7 +888,8 @@ void ClearKeyCdm::OnSessionKeysChange(const std::string& session_id,
                                        keys_vector.data(), keys_vector.size());
 }
 
-void ClearKeyCdm::OnSessionClosed(const std::string& session_id) {
+void ClearKeyCdm::OnSessionClosed(const std::string& session_id,
+                                  CdmSessionClosedReason /*reason*/) {
   cdm_host_proxy_->OnSessionClosed(session_id.data(), session_id.length());
 }
 

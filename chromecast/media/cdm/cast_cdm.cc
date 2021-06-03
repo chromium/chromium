@@ -149,8 +149,9 @@ void CastCdm::OnSessionMessage(const std::string& session_id,
   session_message_cb_.Run(session_id, message_type, message);
 }
 
-void CastCdm::OnSessionClosed(const std::string& session_id) {
-  session_closed_cb_.Run(session_id);
+void CastCdm::OnSessionClosed(const std::string& session_id,
+                              ::media::CdmSessionClosedReason reason) {
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void CastCdm::OnSessionKeysChange(const std::string& session_id,

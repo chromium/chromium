@@ -99,7 +99,8 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
 
   // When the session is closed, remove it from the list of open persistent
   // sessions if it was a persistent session.
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
 
   void OnSessionMessage(const std::string& session_id,
                         CdmMessageType message_type,

@@ -239,7 +239,8 @@ class KeyProvidingApp : public FakeEncryptedMedia::AppBase {
                              CreatePromise(RESOLVED));
   }
 
-  void OnSessionClosed(const std::string& session_id) override {
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason /*reason*/) override {
     EXPECT_EQ(current_session_id_, session_id);
   }
 
@@ -326,7 +327,8 @@ class NoResponseApp : public FakeEncryptedMedia::AppBase {
     FAIL() << "Unexpected Message";
   }
 
-  void OnSessionClosed(const std::string& session_id) override {
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason /*reason*/) override {
     EXPECT_FALSE(session_id.empty());
     FAIL() << "Unexpected Closed";
   }

@@ -87,7 +87,8 @@ MojoCdm::~MojoCdm() {
 
   // Reject any outstanding promises and close all the existing sessions.
   cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
-  cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
+  cdm_session_tracker_.CloseRemainingSessions(
+      session_closed_cb_, CdmSessionClosedReason::kCdmUnavailable);
 }
 
 // Using base::Unretained(this) below is safe because |this| owns |remote_cdm_|,
@@ -107,7 +108,8 @@ void MojoCdm::OnConnectionError(uint32_t custom_reason,
   // As communication with the remote CDM is broken, reject any outstanding
   // promises and close all the existing sessions.
   cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kConnectionError);
-  cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
+  cdm_session_tracker_.CloseRemainingSessions(
+      session_closed_cb_, CdmSessionClosedReason::kCdmUnavailable);
 }
 
 void MojoCdm::SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -293,12 +295,13 @@ void MojoCdm::OnSessionMessage(const std::string& session_id,
   session_message_cb_.Run(session_id, message_type, message);
 }
 
-void MojoCdm::OnSessionClosed(const std::string& session_id) {
+void MojoCdm::OnSessionClosed(const std::string& session_id,
+                              CdmSessionClosedReason reason) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   cdm_session_tracker_.RemoveSession(session_id);
-  session_closed_cb_.Run(session_id);
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void MojoCdm::OnSessionKeysChange(

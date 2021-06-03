@@ -379,7 +379,8 @@ TEST_F(MediaFoundationCdmTest, CloseSession) {
   CreateSessionAndGenerateRequest();
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
-  EXPECT_CALL(cdm_client_, OnSessionClosed(kSessionId));
+  EXPECT_CALL(cdm_client_,
+              OnSessionClosed(kSessionId, CdmSessionClosedReason::kClose));
 
   cdm_->CloseSession(session_id_,
                      std::make_unique<MockCdmPromise>(/*expect_success=*/true));
@@ -433,7 +434,9 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
   ASSERT_TRUE(mf_cdm_proxy_);
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
-  EXPECT_CALL(cdm_client_, OnSessionClosed(kSessionId));
+  EXPECT_CALL(cdm_client_,
+              OnSessionClosed(kSessionId,
+                              CdmSessionClosedReason::kHardwareContextReset));
   mf_cdm_proxy_->OnHardwareContextReset();
 
   // Create a new session and expect success.
@@ -454,7 +457,9 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
   can_initialize_ = false;
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
-  EXPECT_CALL(cdm_client_, OnSessionClosed(kSessionId));
+  EXPECT_CALL(cdm_client_,
+              OnSessionClosed(kSessionId,
+                              CdmSessionClosedReason::kHardwareContextReset));
   mf_cdm_proxy_->OnHardwareContextReset();
 
   std::vector<uint8_t> init_data = StringToVector("init_data");

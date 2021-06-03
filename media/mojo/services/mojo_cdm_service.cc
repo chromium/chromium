@@ -220,10 +220,11 @@ void MojoCdmService::OnSessionExpirationUpdate(const std::string& session_id,
   }
 }
 
-void MojoCdmService::OnSessionClosed(const std::string& session_id) {
+void MojoCdmService::OnSessionClosed(const std::string& session_id,
+                                     CdmSessionClosedReason reason) {
   DVLOG(2) << __func__;
   if (client_) {
-    client_->OnSessionClosed(session_id);
+    client_->OnSessionClosed(session_id, reason);
   }
 }
 

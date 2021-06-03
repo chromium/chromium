@@ -367,7 +367,7 @@ void AesDecryptor::CloseSession(const std::string& session_id,
 
   // 5.3. Queue a task to run the following steps:
   // 5.3.1. Run the Session Closed algorithm on the session.
-  session_closed_cb_.Run(session_id);
+  session_closed_cb_.Run(session_id, CdmSessionClosedReason::kClose);
   // 5.3.2. Resolve promise.
   promise->resolve();
 }

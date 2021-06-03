@@ -381,7 +381,8 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
 
   // Closes the session specified by |session_id|.
   void CloseSession(const std::string& session_id) {
-    EXPECT_CALL(cdm_client_, OnSessionClosed(session_id));
+    EXPECT_CALL(cdm_client_,
+                OnSessionClosed(session_id, CdmSessionClosedReason::kClose));
     cdm_->CloseSession(session_id, CreatePromise(RESOLVED));
   }
 

@@ -18,6 +18,56 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<media::mojom::CdmSessionClosedReason,
+                  ::media::CdmSessionClosedReason> {
+  static media::mojom::CdmSessionClosedReason ToMojom(
+      ::media::CdmSessionClosedReason input) {
+    switch (input) {
+      case ::media::CdmSessionClosedReason::kUnknown:
+        return media::mojom::CdmSessionClosedReason::kUnknown;
+      case ::media::CdmSessionClosedReason::kClose:
+        return media::mojom::CdmSessionClosedReason::kClose;
+      case ::media::CdmSessionClosedReason::kCdmUnavailable:
+        return media::mojom::CdmSessionClosedReason::kCdmUnavailable;
+      case ::media::CdmSessionClosedReason::kHardwareContextReset:
+        return media::mojom::CdmSessionClosedReason::kHardwareContextReset;
+      case ::media::CdmSessionClosedReason::kResourceEvicted:
+        return media::mojom::CdmSessionClosedReason::kResourceEvicted;
+    }
+
+    NOTREACHED();
+    return static_cast<media::mojom::CdmSessionClosedReason>(input);
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::CdmSessionClosedReason input,
+                        ::media::CdmSessionClosedReason* output) {
+    switch (input) {
+      case media::mojom::CdmSessionClosedReason::kUnknown:
+        *output = ::media::CdmSessionClosedReason::kUnknown;
+        return true;
+      case media::mojom::CdmSessionClosedReason::kClose:
+        *output = ::media::CdmSessionClosedReason::kClose;
+        return true;
+      case media::mojom::CdmSessionClosedReason::kCdmUnavailable:
+        *output = ::media::CdmSessionClosedReason::kCdmUnavailable;
+        return true;
+      case media::mojom::CdmSessionClosedReason::kHardwareContextReset:
+        *output = ::media::CdmSessionClosedReason::kHardwareContextReset;
+        return true;
+      case media::mojom::CdmSessionClosedReason::kResourceEvicted:
+        *output = ::media::CdmSessionClosedReason::kResourceEvicted;
+        return true;
+    }
+
+    NOTREACHED();
+    *output = static_cast<::media::CdmSessionClosedReason>(input);
+    return false;
+  }
+};
+
+template <>
 struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
   static media::mojom::VideoRotation ToMojom(::media::VideoRotation input) {
     switch (input) {

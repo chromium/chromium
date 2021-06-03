@@ -552,6 +552,15 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.CdmSessionClosedReason"
+          cpp = "::media::CdmSessionClosedReason"
+        },
+      ]
+      traits_headers = [ "media_types_enum_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.RendererType"
           cpp = "::media::RendererType"
         },

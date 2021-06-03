@@ -151,7 +151,6 @@ struct VideoColorSpace {
   RangeID range;
 };
 
-
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
 struct AudioDecoderConfig {
@@ -186,6 +185,14 @@ struct VideoDecoderConfig {
 // Native struct media::SubsampleEntry;
 [Native]
 struct SubsampleEntry;
+
+enum CdmSessionClosedReason {
+  kUnknown,
+  kClose,
+  kCdmUnavailable,
+  kHardwareContextReset,
+  kResourceEvicted,
+};
 
 // This defines a mojo transport format for media::DecryptConfig.
 // See media/base/decrypt_config.h for descriptions.

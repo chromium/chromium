@@ -134,7 +134,8 @@ class CdmSessionAdapter : public base::RefCounted<CdmSessionAdapter> {
                            CdmKeysInfo keys_info);
   void OnSessionExpirationUpdate(const std::string& session_id,
                                  base::Time new_expiry_time);
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
 
   // Helper function of the callbacks.
   WebContentDecryptionModuleSessionImpl* GetSession(
