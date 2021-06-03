@@ -86,6 +86,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // Adds |app_launch_info| to |app_id_to_launch_list_|.
   void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
+  // Modify the window id for |app_id| from |old_window_id| to |new_window_id|.
+  // This function is used for ARC ghost window only, to switch the window id
+  // from the session id to the task id.
+  void ModifyWindowId(const std::string& app_id,
+                      int32_t old_window_id,
+                      int32_t new_window_id);
+
   // Modifies the window's information based on |window_info| for the window
   // with |window_id| of the app with |app_id|.
   void ModifyWindowInfo(const std::string& app_id,

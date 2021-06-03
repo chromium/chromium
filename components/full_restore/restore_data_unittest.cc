@@ -28,6 +28,7 @@ constexpr char kAppId2[] = "bbb";
 constexpr int32_t kWindowId1 = 100;
 constexpr int32_t kWindowId2 = 200;
 constexpr int32_t kWindowId3 = 300;
+constexpr int32_t kWindowId4 = 400;
 
 constexpr int64_t kDisplayId1 = 22000000;
 constexpr int64_t kDisplayId2 = 11000000;
@@ -340,6 +341,48 @@ TEST_F(RestoreDataTest, AddAppLaunchInfos) {
   ModifyWindowInfos();
   ModifyThemeColors();
   VerifyRestoreData(restore_data());
+}
+
+// Modify the window id from `kWindowId2` to `kWindowId4` for `kAppId1`. Verify
+// the restore data is correctly updated.
+TEST_F(RestoreDataTest, ModifyWindowId) {
+  AddAppLaunchInfos();
+  ModifyWindowInfos();
+  ModifyThemeColors();
+  VerifyRestoreData(restore_data());
+
+  restore_data().ModifyWindowId(kAppId1, kWindowId2, kWindowId4);
+
+  // Verify for |kAppId1|.
+  const auto launch_list_it1 =
+      app_id_to_launch_list(restore_data()).find(kAppId1);
+  EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list(restore_data()).end());
+  EXPECT_EQ(2u, launch_list_it1->second.size());
+
+  // Verify the restore data for |kAppId1| and |kWindowId1| still exists.
+  EXPECT_TRUE(base::Contains(launch_list_it1->second, kWindowId1));
+
+  // Verify the restore data for |kAppId1| and |kWindowId2| doesn't exist.
+  EXPECT_TRUE(!base::Contains(launch_list_it1->second, kWindowId2));
+
+  // Verify the restore data for |kWindowId2| is migrated to |kWindowId4|.
+  const auto app_restore_data_it4 = launch_list_it1->second.find(kWindowId4);
+  EXPECT_TRUE(app_restore_data_it4 != launch_list_it1->second.end());
+  VerifyAppRestoreData(app_restore_data_it4->second,
+                       apps::mojom::LaunchContainer::kLaunchContainerTab,
+                       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
+                       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
+                       CreateIntent(kIntentActionView, kMimeType, kShareText2),
+                       kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2,
+                       kRestoreBounds2, kCurrentBounds2, kWindowStateType2,
+                       absl::nullopt, kMinSize2, kPrimaryColor2,
+                       kStatusBarColor2);
+
+  // Verify the restore data for |kAppId2| still exists.
+  const auto launch_list_it2 =
+      app_id_to_launch_list(restore_data()).find(kAppId2);
+  EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list(restore_data()).end());
+  EXPECT_EQ(1u, launch_list_it2->second.size());
 }
 
 TEST_F(RestoreDataTest, RemoveAppRestoreData) {

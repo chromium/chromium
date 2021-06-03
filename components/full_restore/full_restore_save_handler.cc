@@ -255,6 +255,22 @@ void FullRestoreSaveHandler::AddAppLaunchInfo(
   MaybeStartSaveTimer();
 }
 
+void FullRestoreSaveHandler::ModifyWindowId(const base::FilePath& profile_path,
+                                            const std::string& app_id,
+                                            int32_t old_window_id,
+                                            int32_t new_window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  profile_path_to_restore_data_[profile_path].ModifyWindowId(
+      app_id, old_window_id, new_window_id);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
 void FullRestoreSaveHandler::ModifyWindowInfo(
     const base::FilePath& profile_path,
     const std::string& app_id,

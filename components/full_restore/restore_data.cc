@@ -98,6 +98,21 @@ void RestoreData::AddAppLaunchInfo(
       std::make_unique<AppRestoreData>(std::move(app_launch_info));
 }
 
+void RestoreData::ModifyWindowId(const std::string& app_id,
+                                 int32_t old_window_id,
+                                 int32_t new_window_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return;
+
+  auto data_it = it->second.find(old_window_id);
+  if (data_it == it->second.end())
+    return;
+
+  it->second[new_window_id] = std::move(data_it->second);
+  it->second.erase(data_it);
+}
+
 void RestoreData::ModifyWindowInfo(const std::string& app_id,
                                    int32_t window_id,
                                    const WindowInfo& window_info) {
