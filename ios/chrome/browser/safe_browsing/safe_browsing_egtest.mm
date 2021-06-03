@@ -314,6 +314,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
 
+  if (@available(iOS 15.1, *)) {
+  } else {
+    if (@available(iOS 14.5, *)) {
+      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
+      // break loading the unsafe page below.
+      return;
+    }
+  }
+
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
@@ -357,6 +366,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
+
+  if (@available(iOS 15.1, *)) {
+  } else {
+    if (@available(iOS 14.5, *)) {
+      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
+      // break loading the unsafe page below.
+      return;
+    }
+  }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
