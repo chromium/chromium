@@ -412,12 +412,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestCreateHidden) {
   }
 }
 
-#if defined(OS_MAC)
 // http://crbug.com/502516
 #define MAYBE_TestFullscreen DISABLED_TestFullscreen
-#else
-#define MAYBE_TestFullscreen TestFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestFullscreen) {
   ASSERT_TRUE(RunAppWindowInteractiveTest("testFullscreen")) << message_;
 }
