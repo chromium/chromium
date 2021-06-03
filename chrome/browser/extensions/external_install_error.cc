@@ -398,11 +398,9 @@ void ExternalInstallError::ShowDialog(Browser* browser) {
   DCHECK(browser);
   content::WebContents* web_contents = NULL;
   web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  install_ui_show_params_.reset(
-      new ExtensionInstallPromptShowParams(web_contents));
   manager_->DidChangeInstallAlertVisibility(this, true);
   ExtensionInstallPrompt::GetDefaultShowDialogCallback().Run(
-      install_ui_show_params_.get(),
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents),
       base::BindOnce(&ExternalInstallError::OnInstallPromptDone,
                      weak_factory_.GetWeakPtr()),
       std::move(prompt_));
@@ -468,7 +466,7 @@ void ExternalInstallError::OnFetchComplete() {
 }
 
 void ExternalInstallError::OnDialogReady(
-    ExtensionInstallPromptShowParams* show_params,
+    std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
     ExtensionInstallPrompt::DoneCallback callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   prompt_ = std::move(prompt);

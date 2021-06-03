@@ -667,7 +667,7 @@ void ExtensionInstallPrompt::ShowConfirmation() {
   // a callback on the stack.
   auto cb = std::move(done_callback_);
   std::move(show_dialog_callback_)
-      .Run(show_params_.get(), std::move(cb), std::move(prompt_));
+      .Run(std::move(show_params_), std::move(cb), std::move(prompt_));
 }
 
 bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
