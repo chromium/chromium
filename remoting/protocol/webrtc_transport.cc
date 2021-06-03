@@ -561,7 +561,12 @@ std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
     const std::string& name) {
   webrtc::DataChannelInit config;
   config.reliable = true;
-  auto data_channel = peer_connection()->CreateDataChannel(name, &config);
+  auto result = peer_connection()->CreateDataChannelOrError(name, &config);
+  if (!result.ok()) {
+    LOG(ERROR) << "CreateDataChannel() failed: " << result.error().message();
+    return nullptr;
+  }
+  auto data_channel = result.MoveValue();
   if (name == kControlChannelName) {
     DCHECK(!control_data_channel_);
     control_data_channel_ = data_channel;
