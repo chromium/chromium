@@ -287,7 +287,14 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     if (icon_url == shortcut_info.splash_image_url.spec()) {
       if (shortcut_info.splash_image_url !=
           shortcut_info.best_primary_icon_url) {
-        image->set_image_data(it->second.unsafe_data);
+        // WebAPK updates uses the image data from fetched bitmap; installs use
+        // the image data from icon_url_to_murmur2_hash.
+        if (!splash_icon.drawsNothing()) {
+          SetImageData(image, splash_icon);
+        } else {
+          image->set_image_data(it->second.unsafe_data);
+        }
+
         if (shortcut_info.is_splash_image_maskable) {
           image->add_purposes(webapk::Image::MASKABLE);
         } else {

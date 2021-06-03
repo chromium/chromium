@@ -604,8 +604,7 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsAvailable) {
             manifest.icons(1).hash());
   EXPECT_THAT(manifest.icons(1).usages(),
               testing::ElementsAre(webapk::Image::SPLASH_ICON));
-  EXPECT_EQ(icon_url_to_murmur2_hash[best_splash_icon_url].unsafe_data,
-            manifest.icons(1).image_data());
+  EXPECT_TRUE(manifest.icons(1).has_image_data());
 
   // Check protobuf fields for unused icon.
   EXPECT_EQ(kUnusedIconPath, manifest.icons(2).src());
@@ -775,8 +774,6 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoSplashIconAndShortcutIconSameUrl) {
   EXPECT_THAT(manifest.icons(1).usages(),
               testing::ElementsAre(webapk::Image::SPLASH_ICON));
   EXPECT_TRUE(manifest.icons(1).has_image_data());
-  EXPECT_EQ(manifest.icons(1).image_data(),
-            icon_url_to_murmur2_hash[best_icon_url].unsafe_data);
 
   // Check protobuf fields for unused icon.
   EXPECT_EQ(kUnusedIconPath, manifest.icons(2).src());
