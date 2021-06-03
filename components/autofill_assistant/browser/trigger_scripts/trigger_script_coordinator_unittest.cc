@@ -120,11 +120,12 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   }
 
   void AssertRecordedFinishedState(TriggerScriptProto::TriggerUIType type,
-                                   Metrics::TriggerScriptFinishedState state) {
+                                   Metrics::TriggerScriptFinishedState state,
+                                   GURL url = GURL(kFakeDeepLink)) {
     auto entries =
         ukm_recorder_.GetEntriesByName("AutofillAssistant.LiteScriptFinished");
     ASSERT_THAT(entries.size(), Eq(1u));
-    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
+    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], url);
     EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "TriggerUIType"),
               static_cast<int64_t>(type));
     EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "LiteScriptFinished"),
@@ -543,9 +544,11 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
       mock_callback_,
       Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE, _, _));
   SimulateNavigateToUrl(GURL("https://example.different.com/page"));
+  // UKM is recorded for the last seen URL that was still on a supported domain.
   AssertRecordedFinishedState(
       TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE);
+      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE,
+      GURL("https://subdomain.other-example.com/page"));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
