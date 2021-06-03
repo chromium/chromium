@@ -13,6 +13,7 @@
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
 #include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
+#include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace client_op = ::assistant::api::client_op;
@@ -317,7 +318,8 @@ void DeviceSettingsController::OnGetDeviceSettings(
   voiceless_options.is_user_initiated = true;
 
   assistant_manager_internal_->SendVoicelessInteraction(
-      CreateGetDeviceSettingInteraction(interaction_id, result),
+      chromeos::libassistant::CreateGetDeviceSettingInteraction(interaction_id,
+                                                                result),
       /*description=*/"get_settings_result", voiceless_options, [](auto) {});
 }
 

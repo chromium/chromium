@@ -11,6 +11,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/display_connection_impl.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
+#include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace chromeos {
@@ -121,8 +122,9 @@ void DisplayController::OnVerifyAndroidApp(
     result_apps_info.emplace_back(result_app_info);
   }
 
-  std::string interaction_proto = CreateVerifyProviderResponseInteraction(
-      interaction.interaction_id, result_apps_info);
+  std::string interaction_proto =
+      chromeos::libassistant::CreateVerifyProviderResponseInteraction(
+          interaction.interaction_id, result_apps_info);
 
   assistant_client::VoicelessOptions options;
   options.obfuscated_gaia_id = interaction.user_id;

@@ -7,13 +7,18 @@
 
 #include <string>
 
-#include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace chromeos {
+namespace assistant {
+struct AndroidAppInfo;
+struct DeviceSetting;
+}  // namespace assistant
+}  // namespace chromeos
 
 namespace chromeos {
 namespace libassistant {
@@ -28,11 +33,11 @@ base::FilePath GetBaseAssistantDir();
 
 std::string CreateVerifyProviderResponseInteraction(
     const int interaction_id,
-    const std::vector<libassistant::mojom::AndroidAppInfoPtr>& apps_info);
+    const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info);
 
 std::string CreateGetDeviceSettingInteraction(
     int interaction_id,
-    const std::vector<libassistant::mojom::DeviceSettingPtr>& device_settings);
+    const std::vector<chromeos::assistant::DeviceSetting>& device_settings);
 
 }  // namespace libassistant
 }  // namespace chromeos

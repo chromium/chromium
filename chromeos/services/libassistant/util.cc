@@ -14,10 +14,12 @@
 #include "build/util/webkit_version.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/constants.h"
+#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 
 using chromeos::assistant::shared::ClientInteraction;
 using chromeos::assistant::shared::ClientOpResult;
@@ -291,22 +293,22 @@ std::string CreateLibAssistantConfig(
 
 std::string CreateVerifyProviderResponseInteraction(
     const int interaction_id,
-    const std::vector<libassistant::mojom::AndroidAppInfoPtr>& apps_info) {
+    const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info) {
   // Construct verify provider result proto.
   VerifyProviderClientOpResult result_proto;
   bool any_provider_available = false;
   for (const auto& android_app_info : apps_info) {
     auto* provider_status = result_proto.add_provider_status();
     provider_status->set_status(
-        GetProviderVerificationStatus(android_app_info->status));
+        GetProviderVerificationStatus(android_app_info.status));
     auto* app_info =
         provider_status->mutable_provider_info()->mutable_android_app_info();
-    app_info->set_package_name(android_app_info->package_name);
-    app_info->set_app_version(android_app_info->version);
-    app_info->set_localized_app_name(android_app_info->localized_app_name);
-    app_info->set_android_intent(android_app_info->intent);
+    app_info->set_package_name(android_app_info.package_name);
+    app_info->set_app_version(android_app_info.version);
+    app_info->set_localized_app_name(android_app_info.localized_app_name);
+    app_info->set_android_intent(android_app_info.intent);
 
-    if (android_app_info->status == AppStatus::kAvailable)
+    if (android_app_info.status == AppStatus::kAvailable)
       any_provider_available = true;
   }
 
@@ -320,11 +322,11 @@ std::string CreateVerifyProviderResponseInteraction(
 
 std::string CreateGetDeviceSettingInteraction(
     int interaction_id,
-    const std::vector<libassistant::mojom::DeviceSettingPtr>& device_settings) {
+    const std::vector<chromeos::assistant::DeviceSetting>& device_settings) {
   GetDeviceSettingsResult result_proto;
   for (const auto& setting : device_settings) {
-    (*result_proto.mutable_settings_info())[setting->setting_id] =
-        ToSettingInfo(setting->is_supported);
+    (*result_proto.mutable_settings_info())[setting.setting_id] =
+        ToSettingInfo(setting.is_supported);
   }
 
   // Construct response interaction.
