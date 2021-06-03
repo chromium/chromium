@@ -191,7 +191,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     base::span<const uint8_t> pixel_data,
     bool using_gmb) {
   bool is_external = context_state->support_vulkan_external_object();
-  bool is_transfer_dst = using_gmb || !pixel_data.empty() || !is_external;
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   VkFormat vk_format = ToVkFormat(format);
@@ -199,7 +198,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
       SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
       SHARED_IMAGE_USAGE_WEBGPU;
-  VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+  VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
+                               VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                               VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   if (usage & kUsageNeedsColorAttachment) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     if (format == viz::ETC1) {
@@ -208,42 +209,16 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
   }
 
-  if (is_transfer_dst)
-    vk_usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-
   // Requested usage flags must be supported.
   DCHECK_EQ(vk_usage & image_usage_cache->optimal_tiling_usage[format],
             vk_usage);
 
-  if (is_external && (usage & SHARED_IMAGE_USAGE_GLES2)) {
-    // Must request all available image usage flags if aliasing GL texture. This
-    // is a spec requirement per EXT_memory_object. However, if
-    // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
-    if (UseMinimalUsageFlags(context_state.get())) {
-      // The following additional usage flags are provided for ANGLE:
-      //
-      // - TRANSFER_SRC: Used for copies from this image.
-      // - TRANSFER_DST: Used for copies to this image or clears.
-      vk_usage |=
-          VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    } else {
-      vk_usage |= image_usage_cache->optimal_tiling_usage[format];
-    }
-  }
-
-  if (is_external && (usage & SHARED_IMAGE_USAGE_WEBGPU)) {
-    // The following additional usage flags are provided for Dawn:
-    //
-    // - TRANSFER_SRC: Used for copies from this image.
-    // - TRANSFER_DST: Used for copies to this image or clears.
-    vk_usage |=
-        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  }
-
-  if (usage & SHARED_IMAGE_USAGE_DISPLAY) {
-    // Skia currently requires all VkImages it uses to support transfers
-    vk_usage |=
-        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  // Must request all available image usage flags if aliasing GL texture. This
+  // is a spec requirement per EXT_memory_object. However, if
+  // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
+  if (is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
+      !UseMinimalUsageFlags(context_state.get())) {
+    vk_usage |= image_usage_cache->optimal_tiling_usage[format];
   }
 
   VkImageCreateFlags vk_flags = 0;

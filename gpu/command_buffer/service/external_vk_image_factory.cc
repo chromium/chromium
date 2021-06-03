@@ -24,19 +24,31 @@ namespace {
 VkImageUsageFlags GetMaximalImageUsageFlags(
     VkFormatFeatureFlags feature_flags) {
   VkImageUsageFlags usage_flags = 0;
+  // The TRANSFER_SRC/DST format features were added in Vulkan 1.1 and their
+  // support is required when SAMPLED_IMAGE is supported. In Vulkan 1.0 all
+  // formats support these features implicitly. See discussion in
+  // https://github.com/KhronosGroup/Vulkan-Docs/issues/1223
   if (feature_flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
-    usage_flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
+    usage_flags |= VK_IMAGE_USAGE_SAMPLED_BIT |
+                   VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                   VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
+  // VUID-VkImageViewCreateInfo-usage-02652: support for INPUT_ATTACHMENT is
+  // implied by both of COLOR_ATTACHNENT and DEPTH_STENCIL_ATTACHMENT
+  if (feature_flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)
+    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                   VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+  if (feature_flags & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+    usage_flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+                   VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+
   if (feature_flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT)
     usage_flags |= VK_IMAGE_USAGE_STORAGE_BIT;
-  if (feature_flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)
-    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  if (feature_flags & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
-    usage_flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
   if (feature_flags & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT)
     usage_flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
   if (feature_flags & VK_FORMAT_FEATURE_TRANSFER_DST_BIT)
     usage_flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  usage_flags |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+
   return usage_flags;
 }
 
