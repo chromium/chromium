@@ -1964,6 +1964,15 @@ bool ChromeContentBrowserClient::MayReuseHost(
   return true;
 }
 
+size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return ChromeContentBrowserClientExtensionsPart::
+      GetProcessCountToIgnoreForLimit();
+#else
+  return 0;
+#endif
+}
+
 bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     content::BrowserContext* browser_context,
     const GURL& url) {

@@ -241,6 +241,10 @@ bool ContentBrowserClient::MayReuseHost(RenderProcessHost* process_host) {
   return true;
 }
 
+size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
+  return 0;
+}
+
 bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(
     BrowserContext* browser_context,
     const GURL& url) {

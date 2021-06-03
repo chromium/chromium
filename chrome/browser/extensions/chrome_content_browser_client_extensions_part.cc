@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -13,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -64,6 +66,7 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
@@ -194,6 +197,26 @@ bool AllowServiceWorker(const GURL& scope,
   const std::string& sw_script =
       extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
   return script_url == extension->GetResourceURL(sw_script);
+}
+
+// Returns the number of processes containing extension background pages across
+// all profiles. If this is large enough (e.g., at browser startup time), it can
+// pose a risk that normal web processes will be overly constrained by the
+// browser's process limit.
+size_t GetExtensionBackgroundProcessCount() {
+  std::set<int> process_ids;
+
+  // Go through all profiles to ensure we have total count of extension
+  // processes containing background pages, otherwise one profile can
+  // starve the other. See https://crbug.com/98737.
+  std::vector<Profile*> profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  for (Profile* profile : profiles) {
+    ProcessManager* epm = ProcessManager::Get(profile);
+    for (ExtensionHost* host : epm->background_hosts())
+      process_ids.insert(host->render_process_host()->GetID());
+  }
+  return process_ids.size();
 }
 
 }  // namespace
@@ -332,6 +355,13 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
+  // When strict extension isolation is enabled, all extension processes should
+  // be locked.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kStrictExtensionIsolation)) {
+    return true;
+  }
+
   if (!effective_site_url.SchemeIs(kExtensionScheme))
     return true;
 
@@ -473,6 +503,13 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
 bool
 ChromeContentBrowserClientExtensionsPart::ShouldTryToUseExistingProcessHost(
     Profile* profile, const GURL& url) {
+  // When strict extension isolation is enabled, no extensions need to reuse an
+  // existing process.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kStrictExtensionIsolation)) {
+    return false;
+  }
+
   // This function is trying to limit the amount of processes used by extensions
   // with background pages. It uses a globally set percentage of processes to
   // run such extensions and if the limit is exceeded, it returns true, to
@@ -490,23 +527,34 @@ ChromeContentBrowserClientExtensionsPart::ShouldTryToUseExistingProcessHost(
   if (!BackgroundInfo::HasBackgroundPage(extension))
     return false;
 
-  std::set<int> process_ids;
+  size_t max_process_count =
+      content::RenderProcessHost::GetMaxRendererProcessCount();
+  return (GetExtensionBackgroundProcessCount() >
+          (max_process_count * chrome::kMaxShareOfExtensionProcesses));
+}
+
+size_t
+ChromeContentBrowserClientExtensionsPart::GetProcessCountToIgnoreForLimit() {
+  // If strict extension isolation is enabled, ignore any extension processes
+  // that are beyond the extension-specific process limit when considering
+  // whether processes should be reused for other types of pages.
+
+  // If this is a unit test with no profile manager, or if strict extension
+  // isolation is disabled, there is no need to ignore any processes.
+  if (!g_browser_process->profile_manager() ||
+      !base::FeatureList::IsEnabled(
+          extensions_features::kStrictExtensionIsolation)) {
+    return 0;
+  }
+
   size_t max_process_count =
       content::RenderProcessHost::GetMaxRendererProcessCount();
 
-  // Go through all profiles to ensure we have total count of extension
-  // processes containing background pages, otherwise one profile can
-  // starve the other.
-  std::vector<Profile*> profiles = g_browser_process->profile_manager()->
-      GetLoadedProfiles();
-  for (size_t i = 0; i < profiles.size(); ++i) {
-    ProcessManager* epm = ProcessManager::Get(profiles[i]);
-    for (ExtensionHost* host : epm->background_hosts())
-      process_ids.insert(host->render_process_host()->GetID());
-  }
-
-  return (process_ids.size() >
-          (max_process_count * chrome::kMaxShareOfExtensionProcesses));
+  // Ignore any extension background processes over the extension portion of the
+  // process limit when deciding whether to reuse other renderer processes.
+  return std::max(0, static_cast<int>(GetExtensionBackgroundProcessCount() -
+                                      (max_process_count *
+                                       chrome::kMaxShareOfExtensionProcesses)));
 }
 
 // static

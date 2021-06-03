@@ -47631,6 +47631,7 @@ from previous Chrome versions.
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
   <int value="426199960" label="Commander:enabled"/>
   <int value="427184788" label="WebFeed:enabled"/>
+  <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
@@ -48154,6 +48155,7 @@ from previous Chrome versions.
   <int value="877238334" label="WebUITabStripTabDragIntegration:enabled"/>
   <int value="877257918"
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:enabled"/>
+  <int value="877907263" label="StrictExtensionIsolation:disabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>

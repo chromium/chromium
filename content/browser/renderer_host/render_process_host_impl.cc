@@ -603,7 +603,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
     // got too many processes. See also ShouldTryToUseExistingProcessHost in
     // this file.
     if (RenderProcessHost::run_renderer_in_process() ||
-        GetAllHosts().size() >=
+        RenderProcessHostImpl::GetProcessCountForLimit() >=
             RenderProcessHostImpl::GetMaxRendererProcessCount())
       return;
 
@@ -703,7 +703,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       // If the spare shouldn't be kept around, then discard it as soon as we
       // find that the current spare was mismatched.
       CleanupSpareRenderProcessHost();
-    } else if (GetAllHosts().size() >=
+    } else if (RenderProcessHostImpl::GetProcessCountForLimit() >=
                RenderProcessHostImpl::GetMaxRendererProcessCount()) {
       // Drop the spare if we are at a process limit and the spare wasn't taken.
       // This helps avoid process reuse.
@@ -4255,6 +4255,17 @@ RenderProcessHost* RenderProcessHost::FromID(int render_process_id) {
 }
 
 // static
+size_t RenderProcessHostImpl::GetProcessCountForLimit() {
+  // Let the embedder specify a number of processes to ignore when checking
+  // against the process limit, to avoid forcing normal pages to reuse processes
+  // too soon.
+  size_t process_count_to_ignore =
+      GetContentClient()->browser()->GetProcessCountToIgnoreForLimit();
+  CHECK_LE(process_count_to_ignore, GetAllHosts().size());
+  return GetAllHosts().size() - process_count_to_ignore;
+}
+
+// static
 bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
     BrowserContext* browser_context,
     const GURL& url) {
@@ -4266,11 +4277,11 @@ bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
   //       a renderer process for a browser context that has no existing
   //       renderers. This is OK in moderation, since the
   //       GetMaxRendererProcessCount() is conservative.
-  if (GetAllHosts().size() >= GetMaxRendererProcessCount()) {
+  size_t process_count = RenderProcessHostImpl::GetProcessCountForLimit();
+  if (process_count >= GetMaxRendererProcessCount()) {
     MAYBEVLOG(4) << __func__
-                 << ": GetAllHosts().size() >= GetMaxRendererProcessCount() ("
-                 << GetAllHosts().size()
-                 << " >= " << GetMaxRendererProcessCount()
+                 << ": process_count >= GetMaxRendererProcessCount() ("
+                 << process_count << " >= " << GetMaxRendererProcessCount()
                  << ") - will try to reuse an existing process";
     return true;
   }

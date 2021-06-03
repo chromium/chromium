@@ -202,6 +202,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsSuitableHost(content::RenderProcessHost* process_host,
                       const GURL& site_url) override;
   bool MayReuseHost(content::RenderProcessHost* process_host) override;
+  size_t GetProcessCountToIgnoreForLimit() override;
   bool ShouldTryToUseExistingProcessHost(
       content::BrowserContext* browser_context,
       const GURL& url) override;

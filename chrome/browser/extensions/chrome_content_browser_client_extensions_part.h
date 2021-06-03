@@ -71,6 +71,7 @@ class ChromeContentBrowserClientExtensionsPart
                              const GURL& site_url);
   static bool ShouldTryToUseExistingProcessHost(Profile* profile,
                                                 const GURL& url);
+  static size_t GetProcessCountToIgnoreForLimit();
   static bool ShouldSubframesTryToReuseExistingProcess(
       content::RenderFrameHost* main_frame);
   static bool ShouldSwapBrowsingInstancesForNavigation(

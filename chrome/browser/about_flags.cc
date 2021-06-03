@@ -5447,6 +5447,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kEnableAssistantSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"strict-extension-isolation",
+     flag_descriptions::kStrictExtensionIsolationName,
+     flag_descriptions::kStrictExtensionIsolationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kStrictExtensionIsolation)},
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     {"strict-origin-isolation", flag_descriptions::kStrictOriginIsolationName,
      flag_descriptions::kStrictOriginIsolationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kStrictOriginIsolation)},
