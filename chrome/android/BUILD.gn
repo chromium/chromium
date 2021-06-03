@@ -581,6 +581,7 @@ android_library("chrome_java") {
   deps += web_feed_deps
 
   srcjar_deps = [
+    ":autofill_verification_status_generated_enum",
     ":chrome_android_java_enums_srcjar",
     ":chrome_android_java_google_api_keys_srcjar",
     ":chrome_strict_mode_switch",
@@ -777,6 +778,10 @@ action_with_pydeps("chrome_android_java_google_api_keys_srcjar") {
     "--srcjar",
     rebase_path(outputs[0], root_build_dir),
   ]
+}
+
+java_cpp_enum("autofill_verification_status_generated_enum") {
+  sources = [ "//components/autofill/core/browser/data_model/autofill_structured_address_component.h" ]
 }
 
 java_cpp_enum("chrome_android_java_enums_srcjar") {

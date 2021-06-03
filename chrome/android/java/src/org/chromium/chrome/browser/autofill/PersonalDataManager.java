@@ -104,43 +104,91 @@ public class PersonalDataManager {
         void onCouldNotNormalize(AutofillProfile profile);
     }
 
+    @VisibleForTesting
+    static class ValueWithStatus {
+        static final ValueWithStatus EMPTY = new ValueWithStatus("", VerificationStatus.NO_STATUS);
+
+        private final String mValue;
+        private final @VerificationStatus int mStatus;
+
+        ValueWithStatus(String value, @VerificationStatus int status) {
+            mValue = value;
+            mStatus = status;
+        }
+
+        String getValue() {
+            return mValue;
+        }
+
+        @VerificationStatus
+        int getStatus() {
+            return mStatus;
+        }
+    }
+
     /**
      * Autofill address information.
+     * The creation and/or modification of an AutofillProfile is assumed to involve the user (e.g.
+     * data reviewed by the user in the {@link
+     * org.chromium.chrome.browser.autofill.settings.AddressEditor}), therefore all new values gain
+     * {@link VerificationStatus.USER_VERIFIED} status.
      */
     public static class AutofillProfile {
         private String mGUID;
         private String mOrigin;
         private boolean mIsLocal;
-        private String mHonorificPrefix;
-        private String mFullName;
-        private String mCompanyName;
-        private String mStreetAddress;
-        private String mRegion;
-        private String mLocality;
-        private String mDependentLocality;
-        private String mPostalCode;
-        private String mSortingCode;
-        private String mCountryCode;
-        private String mPhoneNumber;
-        private String mEmailAddress;
+        private ValueWithStatus mHonorificPrefix;
+        private ValueWithStatus mFullName;
+        private ValueWithStatus mCompanyName;
+        private ValueWithStatus mStreetAddress;
+        private ValueWithStatus mRegion;
+        private ValueWithStatus mLocality;
+        private ValueWithStatus mDependentLocality;
+        private ValueWithStatus mPostalCode;
+        private ValueWithStatus mSortingCode;
+        private ValueWithStatus mCountryCode;
+        private ValueWithStatus mPhoneNumber;
+        private ValueWithStatus mEmailAddress;
         private String mLabel;
         private String mLanguageCode;
 
         @CalledByNative("AutofillProfile")
-        public static AutofillProfile create(String guid, String origin, boolean isLocal,
-                String honorificPrefix, String fullName, String companyName, String streetAddress,
-                String region, String locality, String dependentLocality, String postalCode,
-                String sortingCode, String country, String phoneNumber, String emailAddress,
-                String languageCode) {
-            return new AutofillProfile(guid, origin, isLocal, honorificPrefix, fullName,
-                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
-                    sortingCode, country, phoneNumber, emailAddress, languageCode);
+        private static AutofillProfile create(String guid, String origin, boolean isLocal,
+                String honorificPrefix, @VerificationStatus int honorificPrefixStatus,
+                String fullName, @VerificationStatus int fullNameStatus, String companyName,
+                @VerificationStatus int companyNameStatus, String streetAddress,
+                @VerificationStatus int streetAddressStatus, String region,
+                @VerificationStatus int regionStatus, String locality,
+                @VerificationStatus int localityStatus, String dependentLocality,
+                @VerificationStatus int dependentLocalityStatus, String postalCode,
+                @VerificationStatus int postalCodeStatus, String sortingCode,
+                @VerificationStatus int sortingCodeStatus, String countryCode,
+                @VerificationStatus int countryCodeStatus, String phoneNumber,
+                @VerificationStatus int phoneNumberStatus, String emailAddress,
+                @VerificationStatus int emailAddressStatus, String languageCode) {
+            return new AutofillProfile(guid, origin, isLocal,
+                    new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
+                    new ValueWithStatus(fullName, fullNameStatus),
+                    new ValueWithStatus(companyName, companyNameStatus),
+                    new ValueWithStatus(streetAddress, streetAddressStatus),
+                    new ValueWithStatus(region, regionStatus),
+                    new ValueWithStatus(locality, localityStatus),
+                    new ValueWithStatus(dependentLocality, dependentLocalityStatus),
+                    new ValueWithStatus(postalCode, postalCodeStatus),
+                    new ValueWithStatus(sortingCode, sortingCodeStatus),
+                    new ValueWithStatus(countryCode, countryCodeStatus),
+                    new ValueWithStatus(phoneNumber, phoneNumberStatus),
+                    new ValueWithStatus(emailAddress, emailAddressStatus), languageCode);
         }
 
-        public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
-                String fullName, String companyName, String streetAddress, String region,
-                String locality, String dependentLocality, String postalCode, String sortingCode,
-                String countryCode, String phoneNumber, String emailAddress, String languageCode) {
+        @VisibleForTesting
+        AutofillProfile(String guid, String origin, boolean isLocal,
+                ValueWithStatus honorificPrefix, ValueWithStatus fullName,
+                ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
+                ValueWithStatus locality, ValueWithStatus dependentLocality,
+                ValueWithStatus postalCode, ValueWithStatus sortingCode,
+                ValueWithStatus countryCode, ValueWithStatus phoneNumber,
+                ValueWithStatus emailAddress, String languageCode) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -160,16 +208,46 @@ public class PersonalDataManager {
         }
 
         /**
+         * Builds a profile with the given values, assuming those are reviewed by the user and thus
+         * are marked {@link VerificationStatus.USER_VERIFIED}.
+         */
+        public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
+                String fullName, String companyName, String streetAddress, String region,
+                String locality, String dependentLocality, String postalCode, String sortingCode,
+                String countryCode, String phoneNumber, String emailAddress, String languageCode) {
+            this(guid, origin, isLocal,
+                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(streetAddress, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(region, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(locality, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(dependentLocality, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(postalCode, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(sortingCode, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(countryCode, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(phoneNumber, VerificationStatus.USER_VERIFIED),
+                    new ValueWithStatus(emailAddress, VerificationStatus.USER_VERIFIED),
+                    languageCode);
+        }
+
+        /**
          * Builds an empty local profile with "settings" origin and country code from the default
-         * locale. All other fields are empty strings, because JNI does not handle null strings.
+         * locale. All other fields are empty strings with {@link VerificationStatus.NO_STATUS},
+         * because JNI does not handle null strings.
          */
         public AutofillProfile() {
             this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /* origin */, true /* isLocal */,
-                    "" /* honorificPrefix */, "" /* fullName */, "" /* companyName */,
-                    "" /* streetAddress */, "" /* region */, "" /* locality */,
-                    "" /* dependentLocality */, "" /* postalCode */, "" /* sortingCode */,
-                    Locale.getDefault().getCountry() /* country */, "" /* phoneNumber */,
-                    "" /* emailAddress */, "" /* languageCode */);
+                    ValueWithStatus.EMPTY /* honorificPrefix */,
+                    ValueWithStatus.EMPTY /* fullName */, ValueWithStatus.EMPTY /* companyName */,
+                    ValueWithStatus.EMPTY /* streetAddress */, ValueWithStatus.EMPTY /* region */,
+                    ValueWithStatus.EMPTY /* locality */,
+                    ValueWithStatus.EMPTY /* dependentLocality */,
+                    ValueWithStatus.EMPTY /* postalCode */, ValueWithStatus.EMPTY /* sortingCode */,
+                    new ValueWithStatus(Locale.getDefault().getCountry(),
+                            VerificationStatus.USER_VERIFIED) /* country */,
+                    ValueWithStatus.EMPTY /* phoneNumber */,
+                    ValueWithStatus.EMPTY /* emailAddress */, "" /* languageCode */);
         }
 
         /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
@@ -177,18 +255,27 @@ public class PersonalDataManager {
             mGUID = profile.getGUID();
             mOrigin = profile.getOrigin();
             mIsLocal = profile.getIsLocal();
-            mHonorificPrefix = profile.getHonorificPrefix();
-            mFullName = profile.getFullName();
-            mCompanyName = profile.getCompanyName();
-            mStreetAddress = profile.getStreetAddress();
-            mRegion = profile.getRegion();
-            mLocality = profile.getLocality();
-            mDependentLocality = profile.getDependentLocality();
-            mPostalCode = profile.getPostalCode();
-            mSortingCode = profile.getSortingCode();
-            mCountryCode = profile.getCountryCode();
-            mPhoneNumber = profile.getPhoneNumber();
-            mEmailAddress = profile.getEmailAddress();
+            mHonorificPrefix = new ValueWithStatus(
+                    profile.getHonorificPrefix(), profile.getHonorificPrefixStatus());
+            mFullName = new ValueWithStatus(profile.getFullName(), profile.getFullNameStatus());
+            mCompanyName =
+                    new ValueWithStatus(profile.getCompanyName(), profile.getCompanyNameStatus());
+            mStreetAddress = new ValueWithStatus(
+                    profile.getStreetAddress(), profile.getStreetAddressStatus());
+            mRegion = new ValueWithStatus(profile.getRegion(), profile.getRegionStatus());
+            mLocality = new ValueWithStatus(profile.getLocality(), profile.getLocalityStatus());
+            mDependentLocality = new ValueWithStatus(
+                    profile.getDependentLocality(), profile.getDependentLocalityStatus());
+            mPostalCode =
+                    new ValueWithStatus(profile.getPostalCode(), profile.getPostalCodeStatus());
+            mSortingCode =
+                    new ValueWithStatus(profile.getSortingCode(), profile.getSortingCodeStatus());
+            mCountryCode =
+                    new ValueWithStatus(profile.getCountryCode(), profile.getCountryCodeStatus());
+            mPhoneNumber =
+                    new ValueWithStatus(profile.getPhoneNumber(), profile.getPhoneNumberStatus());
+            mEmailAddress =
+                    new ValueWithStatus(profile.getEmailAddress(), profile.getEmailAddressStatus());
             mLanguageCode = profile.getLanguageCode();
             mLabel = profile.getLabel();
         }
@@ -216,37 +303,81 @@ public class PersonalDataManager {
 
         @CalledByNative("AutofillProfile")
         public String getHonorificPrefix() {
-            return mHonorificPrefix;
+            return mHonorificPrefix.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getHonorificPrefixStatus() {
+            return mHonorificPrefix.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getFullName() {
-            return mFullName;
+            return mFullName.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VisibleForTesting
+        @VerificationStatus
+        int getFullNameStatus() {
+            return mFullName.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getCompanyName() {
-            return mCompanyName;
+            return mCompanyName.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VerificationStatus
+        int getCompanyNameStatus() {
+            return mCompanyName.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getStreetAddress() {
-            return mStreetAddress;
+            return mStreetAddress.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VisibleForTesting
+        @VerificationStatus
+        int getStreetAddressStatus() {
+            return mStreetAddress.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getRegion() {
-            return mRegion;
+            return mRegion.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VisibleForTesting
+        @VerificationStatus
+        int getRegionStatus() {
+            return mRegion.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getLocality() {
-            return mLocality;
+            return mLocality.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VisibleForTesting
+        @VerificationStatus
+        int getLocalityStatus() {
+            return mLocality.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getDependentLocality() {
-            return mDependentLocality;
+            return mDependentLocality.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getDependentLocalityStatus() {
+            return mDependentLocality.getStatus();
         }
 
         public String getLabel() {
@@ -255,27 +386,54 @@ public class PersonalDataManager {
 
         @CalledByNative("AutofillProfile")
         public String getPostalCode() {
-            return mPostalCode;
+            return mPostalCode.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        @VisibleForTesting
+        @VerificationStatus
+        int getPostalCodeStatus() {
+            return mPostalCode.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getSortingCode() {
-            return mSortingCode;
+            return mSortingCode.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getSortingCodeStatus() {
+            return mSortingCode.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getCountryCode() {
-            return mCountryCode;
+            return mCountryCode.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getCountryCodeStatus() {
+            return mCountryCode.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getPhoneNumber() {
-            return mPhoneNumber;
+            return mPhoneNumber.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getPhoneNumberStatus() {
+            return mPhoneNumber.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
         public String getEmailAddress() {
-            return mEmailAddress;
+            return mEmailAddress.getValue();
+        }
+
+        @CalledByNative("AutofillProfile")
+        private @VerificationStatus int getEmailAddressStatus() {
+            return mEmailAddress.getStatus();
         }
 
         @CalledByNative("AutofillProfile")
@@ -300,51 +458,53 @@ public class PersonalDataManager {
         }
 
         public void setHonorificPrefix(String honorificPrefix) {
-            mHonorificPrefix = honorificPrefix;
+            mHonorificPrefix =
+                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
         }
 
         public void setFullName(String fullName) {
-            mFullName = fullName;
+            mFullName = new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED);
         }
 
         public void setCompanyName(String companyName) {
-            mCompanyName = companyName;
+            mCompanyName = new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED);
         }
 
         public void setStreetAddress(String streetAddress) {
-            mStreetAddress = streetAddress;
+            mStreetAddress = new ValueWithStatus(streetAddress, VerificationStatus.USER_VERIFIED);
         }
 
         public void setRegion(String region) {
-            mRegion = region;
+            mRegion = new ValueWithStatus(region, VerificationStatus.USER_VERIFIED);
         }
 
         public void setLocality(String locality) {
-            mLocality = locality;
+            mLocality = new ValueWithStatus(locality, VerificationStatus.USER_VERIFIED);
         }
 
         public void setDependentLocality(String dependentLocality) {
-            mDependentLocality = dependentLocality;
+            mDependentLocality =
+                    new ValueWithStatus(dependentLocality, VerificationStatus.USER_VERIFIED);
         }
 
         public void setPostalCode(String postalCode) {
-            mPostalCode = postalCode;
+            mPostalCode = new ValueWithStatus(postalCode, VerificationStatus.USER_VERIFIED);
         }
 
         public void setSortingCode(String sortingCode) {
-            mSortingCode = sortingCode;
+            mSortingCode = new ValueWithStatus(sortingCode, VerificationStatus.USER_VERIFIED);
         }
 
         public void setCountryCode(String countryCode) {
-            mCountryCode = countryCode;
+            mCountryCode = new ValueWithStatus(countryCode, VerificationStatus.USER_VERIFIED);
         }
 
         public void setPhoneNumber(String phoneNumber) {
-            mPhoneNumber = phoneNumber;
+            mPhoneNumber = new ValueWithStatus(phoneNumber, VerificationStatus.USER_VERIFIED);
         }
 
         public void setEmailAddress(String emailAddress) {
-            mEmailAddress = emailAddress;
+            mEmailAddress = new ValueWithStatus(emailAddress, VerificationStatus.USER_VERIFIED);
         }
 
         public void setLanguageCode(String languageCode) {

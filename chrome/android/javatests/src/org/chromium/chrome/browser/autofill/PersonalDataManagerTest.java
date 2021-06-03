@@ -21,6 +21,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.ValueWithStatus;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.util.LinkedList;
@@ -222,6 +223,55 @@ public class PersonalDataManagerTest {
 
         AutofillProfile storedProfile2 = mHelper.getProfile(profileGuid2);
         Assert.assertEquals("CA", storedProfile2.getCountryCode());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testRespectVerificationStatuses() throws TimeoutException {
+        AutofillProfile profileWithDifferentStatuses = new AutofillProfile("" /* guid */,
+                "" /* origin */, true,
+                new ValueWithStatus("" /* honorific prefix */, VerificationStatus.NO_STATUS),
+                new ValueWithStatus("John Smith", VerificationStatus.PARSED),
+                new ValueWithStatus("" /* company */, VerificationStatus.NO_STATUS),
+                new ValueWithStatus("1 Main\nApt A", VerificationStatus.FORMATTED),
+                new ValueWithStatus("Quebec", VerificationStatus.OBSERVED),
+                new ValueWithStatus("Montreal", VerificationStatus.USER_VERIFIED),
+                new ValueWithStatus("" /* dependent locality */, VerificationStatus.NO_STATUS),
+                new ValueWithStatus("H3B 2Y5", VerificationStatus.SERVER_PARSED),
+                new ValueWithStatus("" /* sorting code */, VerificationStatus.NO_STATUS),
+                new ValueWithStatus("Canada", VerificationStatus.USER_VERIFIED),
+                new ValueWithStatus("" /* phone */, VerificationStatus.NO_STATUS),
+                new ValueWithStatus("" /* email */, VerificationStatus.NO_STATUS),
+                "" /* language code */);
+        String guid = mHelper.setProfile(profileWithDifferentStatuses);
+        Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+
+        AutofillProfile storedProfile = mHelper.getProfile(guid);
+        // When converted to C++ and back the verification statuses for name and address components
+        // should be preserved.
+        Assert.assertEquals(VerificationStatus.PARSED, storedProfile.getFullNameStatus());
+        Assert.assertEquals(VerificationStatus.FORMATTED, storedProfile.getStreetAddressStatus());
+        Assert.assertEquals(VerificationStatus.OBSERVED, storedProfile.getRegionStatus());
+        Assert.assertEquals(VerificationStatus.USER_VERIFIED, storedProfile.getLocalityStatus());
+        Assert.assertEquals(VerificationStatus.SERVER_PARSED, storedProfile.getPostalCodeStatus());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testValuesSetInProfileGainUserVerifiedStatus() {
+        AutofillProfile profile = new AutofillProfile();
+        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getFullNameStatus());
+        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getStreetAddressStatus());
+        Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getLocalityStatus());
+
+        profile.setFullName("Homer Simpson");
+        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getFullNameStatus());
+        profile.setStreetAddress("123 Main St.");
+        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getStreetAddressStatus());
+        profile.setLocality("Springfield");
+        Assert.assertEquals(VerificationStatus.USER_VERIFIED, profile.getLocalityStatus());
     }
 
     @Test
