@@ -11574,6 +11574,41 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
 }
 
+// Tests that doing a form submission that opens a new about:blank tab won't
+// crash.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       FormSubmissionToNewTab) {
+  GURL url_start(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_start));
+
+  // Create and submit a form that will create a new about:blank tab.
+  WebContentsAddedObserver web_contents_added_observer;
+  TestNavigationObserver navigation_observer(nullptr, 1);
+  navigation_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(ExecuteScript(contents(),
+                            R"(let form = document.createElement('form');
+                                 form.method = 'POST';
+                                 form.target = '_blank';
+                                 form.action = 'about:blank';
+                                 document.body.appendChild(form);
+                                 form.submit();)"));
+  WebContentsImpl* popup_contents = static_cast<WebContentsImpl*>(
+      web_contents_added_observer.GetWebContents());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(GURL(url::kAboutBlankURL), popup_contents->GetLastCommittedURL());
+
+  // Ensure that the new tab committed the form submission to about:blank
+  // correctly.
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(popup_contents->GetController());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(GURL(url::kAboutBlankURL), entry->GetURL());
+  EXPECT_TRUE(entry->GetHasPostData());
+  EXPECT_NE(entry->GetPostID(), -1);
+  EXPECT_EQ("POST", popup_contents->GetMainFrame()->last_http_method());
+}
+
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        FormSubmitServerRedirect) {
   NavigationControllerImpl& controller =

@@ -4901,7 +4901,7 @@ void RenderFrameImpl::BeginNavigation(
   CHECK(in_frame_tree_);
 
   // This might be the first navigation in this RenderFrame.
-  const bool first_navigation_in_frame = !had_started_any_navigation_;
+  const bool first_navigation_in_render_frame = !had_started_any_navigation_;
   had_started_any_navigation_ = true;
 
   // This method is only called for renderer initiated navigations, which
@@ -5059,14 +5059,46 @@ void RenderFrameImpl::BeginNavigation(
       mhtml_body_loader_client_.reset();
     }
 
-    // First navigation in a frame to an empty document must be handled
-    // synchronously.
-    bool is_first_real_empty_document_navigation =
+    // In certain cases, Blink re-navigates to about:blank when creating a new
+    // browsing context (when opening a new window or creating an iframe) and
+    // expects the navigation to complete synchronously.
+    // TODO(https://crbug.com/1215096): Remove the synchronous about:blank
+    // navigation.
+    bool should_do_synchronous_about_blank_navigation =
+        // Mainly a proxy for checking about:blank, even though it can match
+        // other things like about:srcdoc (or any empty document schemes that
+        // are registered).
+        // TODO(https://crbug.com/1215096): This should be changed to only check
+        // for about:blank because the navigation triggered by browsing context
+        // creation will always navigate to about:blank.
         WebDocumentLoader::WillLoadUrlAsEmpty(url) &&
-        !frame_->HasCommittedFirstRealLoad() && first_navigation_in_frame;
+        // The navigation method must be "GET". This is to avoid issues like
+        // https://crbug.com/1210653, where a form submits to about:blank
+        // targeting a new window using a POST. The browser never expects this
+        // to happen synchronously because it only expects the synchronous
+        // about:blank navigation to originate from browsing context creation,
+        // which will always be GET requests.
+        info->url_request.HttpMethod().Equals("GET") &&
+        // If the frame has committed or even started a navigation before, this
+        // navigation can't possibly be triggered by browsing context creation,
+        // which would have triggered the navigation synchronously as the first
+        // navigation in this frame. Note that we check both
+        // HasCommittedFirstRealLoad() and `first_navigation_in_render_frame`
+        // here because `first_navigation_in_render_frame` only tracks the state
+        // in this *RenderFrame*, so it will be true even if this navigation
+        // happens on a frame that has existed before in another process (e.g.
+        // an <iframe> pointing to a.com being navigated to a cross-origin
+        // about:blank document that happens in a new frame). Meanwhile,
+        // HasCommittedFirstRealLoad() tracks the state of the frame, so it will
+        // be true in the aforementioned case and we would not do a synchronous
+        // commit here.
+        !frame_->HasCommittedFirstRealLoad() &&
+        first_navigation_in_render_frame &&
+        // If this is a subframe history navigation that should be sent to the
+        // browser, don't commit it synchronously.
+        !is_history_navigation_in_new_child_frame;
 
-    if (is_first_real_empty_document_navigation &&
-        !is_history_navigation_in_new_child_frame) {
+    if (should_do_synchronous_about_blank_navigation) {
       for (auto& observer : observers_)
         observer.DidStartNavigation(url, info->navigation_type);
       SynchronouslyCommitAboutBlankForBug778318(std::move(info));
