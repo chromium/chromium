@@ -536,6 +536,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ACCNAME_BACK" desc="The accessible name for the back button on the window frame.">
         Back button
       </message>
+      <message name="IDS_APP_ACCNAME_CENTER" desc="The accessible name for the center button on the window frame.">
+        Center button
+      </message>
       <message name="IDS_APP_ACCNAME_CLOSE" desc="The accessible name for the Close button.">
         Close
       </message>

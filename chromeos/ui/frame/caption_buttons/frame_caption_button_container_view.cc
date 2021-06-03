@@ -127,6 +127,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_BACK:
       case views::CAPTION_BUTTON_ICON_MENU:
       case views::CAPTION_BUTTON_ICON_ZOOM:
+      case views::CAPTION_BUTTON_ICON_CENTER:
         return false;
       case views::CAPTION_BUTTON_ICON_LOCATION:
         // not used

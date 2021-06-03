@@ -206,6 +206,8 @@ void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
   if (icon_definition_)
     SetImage(icon_, Animate::kNo, *icon_definition_);
   UpdateInkDropBaseColor();
+
+  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
 SkColor FrameCaptionButton::GetBackgroundColor() const {
@@ -223,6 +225,12 @@ int FrameCaptionButton::GetInkDropCornerRadius() const {
   return ink_drop_corner_radius_;
 }
 
+base::CallbackListSubscription
+FrameCaptionButton::AddBackgroundColorChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&background_color_, callback);
+}
+
 void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
   if (paint_as_active == paint_as_active_)
     return;
@@ -232,6 +240,24 @@ void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
 
 bool FrameCaptionButton::GetPaintAsActive() const {
   return paint_as_active_;
+}
+
+void FrameCaptionButton::DrawHighlight(gfx::Canvas* canvas,
+                                       cc::PaintFlags flags) {
+  const gfx::Point center(GetMirroredRect(GetContentsBounds()).CenterPoint());
+  canvas->DrawCircle(center, ink_drop_corner_radius_, flags);
+}
+
+void FrameCaptionButton::DrawIconContents(gfx::Canvas* canvas,
+                                          gfx::ImageSkia image,
+                                          int x,
+                                          int y,
+                                          cc::PaintFlags flags) {
+  canvas->DrawImageInt(image, x, y, flags);
+}
+
+gfx::Size FrameCaptionButton::GetInkDropSize() const {
+  return gfx::Size(2 * GetInkDropCornerRadius(), 2 * GetInkDropCornerRadius());
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -255,8 +281,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setColor(ink_drop()->GetBaseColor());
     flags.setAlpha(highlight_alpha);
-    const gfx::Point center(GetMirroredRect(GetContentsBounds()).CenterPoint());
-    canvas->DrawCircle(center, ink_drop_corner_radius_, flags);
+    DrawHighlight(canvas, flags);
   }
 
   int icon_alpha = swap_images_animation_->CurrentValueBetween(0, 255);
@@ -271,21 +296,21 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     canvas->SaveLayerAlpha(GetAlphaForIcon(alpha_));
     cc::PaintFlags flags;
     flags.setAlpha(icon_alpha);
-    canvas->DrawImageInt(icon_image_, centered_origin_x, centered_origin_y,
-                         flags);
+    DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
+                     flags);
 
     flags.setAlpha(crossfade_icon_alpha);
     flags.setBlendMode(SkBlendMode::kPlus);
-    canvas->DrawImageInt(crossfade_icon_image_, centered_origin_x,
-                         centered_origin_y, flags);
+    DrawIconContents(canvas, crossfade_icon_image_, centered_origin_x,
+                     centered_origin_y, flags);
     canvas->Restore();
   } else {
     if (!swap_images_animation_->is_animating())
       icon_alpha = alpha_;
     cc::PaintFlags flags;
     flags.setAlpha(GetAlphaForIcon(icon_alpha));
-    canvas->DrawImageInt(icon_image_, centered_origin_x, centered_origin_y,
-                         flags);
+    DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
+                     flags);
   }
 }
 
@@ -310,11 +335,8 @@ int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
 
 gfx::Insets FrameCaptionButton::GetInkdropInsets(
     const gfx::Size& button_size) const {
-  const gfx::Size kInkDropHighlightSize{2 * ink_drop_corner_radius_,
-                                        2 * ink_drop_corner_radius_};
-  return gfx::Insets(
-      (button_size.height() - kInkDropHighlightSize.height()) / 2,
-      (button_size.width() - kInkDropHighlightSize.width()) / 2);
+  return gfx::Insets((button_size.height() - GetInkDropSize().height()) / 2,
+                     (button_size.width() - GetInkDropSize().width()) / 2);
 }
 
 void FrameCaptionButton::UpdateInkDropBaseColor() {
@@ -360,6 +382,7 @@ DEFINE_ENUM_CONVERTERS(
      u"CAPTION_BUTTON_ICON_MENU"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_ZOOM,
      u"CAPTION_BUTTON_ICON_ZOOM"},
+    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CENTER,
+     u"CAPTION_BUTTON_ICON_CENTER"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_COUNT,
      u"CAPTION_BUTTON_ICON_COUNT"})
-

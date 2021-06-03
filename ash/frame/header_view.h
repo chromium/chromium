@@ -134,6 +134,7 @@ class ASH_EXPORT HeaderView
   void PaintHeaderContent(gfx::Canvas* canvas);
 
   void UpdateBackButton();
+  void UpdateCenterButton();
   void UpdateCaptionButtonsVisibility();
 
   // The widget that the caption buttons act on.

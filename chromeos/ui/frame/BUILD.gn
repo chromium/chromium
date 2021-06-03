@@ -17,6 +17,8 @@ source_set("frame") {
     "caption_buttons/frame_back_button.h",
     "caption_buttons/frame_caption_button_container_view.cc",
     "caption_buttons/frame_caption_button_container_view.h",
+    "caption_buttons/frame_center_button.cc",
+    "caption_buttons/frame_center_button.h",
     "caption_buttons/frame_size_button.cc",
     "caption_buttons/frame_size_button.h",
     "caption_buttons/frame_size_button_delegate.h",

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
@@ -70,6 +71,9 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   void SetInkDropCornerRadius(int ink_drop_corner_radius);
   int GetInkDropCornerRadius() const;
 
+  base::CallbackListSubscription AddBackgroundColorChangedCallback(
+      PropertyChangedCallback callback);
+
   CaptionButtonIcon GetIcon() const { return icon_; }
 
   const gfx::ImageSkia& icon_image() const { return icon_image_; }
@@ -82,6 +86,15 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // views::Button override:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
+  virtual void DrawHighlight(gfx::Canvas* canvas, cc::PaintFlags flags);
+  virtual void DrawIconContents(gfx::Canvas* canvas,
+                                gfx::ImageSkia image,
+                                int x,
+                                int y,
+                                cc::PaintFlags flags);
+  // Returns the size of the inkdrop ripple.
+  virtual gfx::Size GetInkDropSize() const;
+
  private:
   class HighlightPathGenerator;
 
@@ -90,8 +103,8 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   int GetAlphaForIcon(int base_alpha) const;
 
   // Returns the amount by which the inkdrop ripple and mask should be insetted
-  // from the button size in order to achieve a circular inkdrop with a size
-  // equals to kInkDropHighlightSize.
+  // from the button size in order to draw the inkdrop with a size returned by
+  // GetInkDropSize().
   gfx::Insets GetInkdropInsets(const gfx::Size& button_size) const;
 
   void UpdateInkDropBaseColor();

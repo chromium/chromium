@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
@@ -121,7 +122,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
+  void SetCenterButton(chromeos::FrameCenterButton* view);
   views::FrameCaptionButton* GetBackButton() const;
+  chromeos::FrameCenterButton* GetCenterButton() const;
   const chromeos::CaptionButtonModel* GetCaptionButtonModel() const;
 
   // Updates the frame header painting to reflect a change in frame colors.
@@ -191,6 +194,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
       nullptr;
   FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
+  chromeos::FrameCenterButton* center_button_ = nullptr;  // May remain nullptr.
 
   // The height of the header to paint.
   int painted_height_ = 0;

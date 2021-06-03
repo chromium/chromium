@@ -191,7 +191,8 @@ int FrameHeader::GetMinimumHeaderWidth() const {
   // Ensure we have enough space for the window icon and buttons. We allow
   // the title string to collapse to zero width.
   return GetTitleBounds().x() +
-         caption_button_container_->GetMinimumSize().width();
+         caption_button_container_->GetMinimumSize().width() +
+         (GetCenterButton() ? GetCenterButton()->GetMinimumSize().width() : 0);
 }
 
 void FrameHeader::PaintHeader(gfx::Canvas* canvas) {
@@ -238,6 +239,8 @@ void FrameHeader::SetPaintAsActive(bool paint_as_active) {
   caption_button_container_->SetPaintAsActive(paint_as_active);
   if (back_button_)
     back_button_->SetPaintAsActive(paint_as_active);
+  if (center_button_)
+    center_button_->SetPaintAsActive(paint_as_active);
   UpdateCaptionButtonColors();
 }
 
@@ -262,8 +265,18 @@ void FrameHeader::SetBackButton(views::FrameCaptionButton* back_button) {
   }
 }
 
+void FrameHeader::SetCenterButton(chromeos::FrameCenterButton* center_button) {
+  center_button_ = center_button;
+  if (center_button_)
+    center_button_->SetBackgroundColor(GetCurrentFrameColor());
+}
+
 views::FrameCaptionButton* FrameHeader::GetBackButton() const {
   return back_button_;
+}
+
+chromeos::FrameCenterButton* FrameHeader::GetCenterButton() const {
+  return center_button_;
 }
 
 const chromeos::CaptionButtonModel* FrameHeader::GetCaptionButtonModel() const {
@@ -304,6 +317,8 @@ void FrameHeader::UpdateCaptionButtonColors() {
   caption_button_container_->SetBackgroundColor(frame_color);
   if (back_button_)
     back_button_->SetBackgroundColor(frame_color);
+  if (center_button_)
+    center_button_->SetBackgroundColor(frame_color);
 }
 
 void FrameHeader::PaintTitleBar(gfx::Canvas* canvas) {
@@ -404,6 +419,19 @@ void FrameHeader::LayoutHeaderInternal() {
     constexpr int kLeftViewXInset = 9;
     left_header_view_->SetBounds(kLeftViewXInset + origin, icon_offset_y,
                                  icon_size.width(), icon_size.height());
+    origin = left_header_view_->bounds().right();
+  }
+
+  if (center_button_) {
+    constexpr int kCenterButtonSpacing = 5;
+    int full_width = center_button_->GetPreferredSize().width();
+    const gfx::Range range(
+        std::max((view_->width() - full_width) / 2,
+                 origin + kCenterButtonSpacing),
+        std::min((view_->width() + full_width) / 2,
+                 caption_button_container_->x() - kCenterButtonSpacing));
+    center_button_->SetBounds(range.start(), 0, range.end() - range.start(),
+                              caption_button_container_size.height());
   }
 }
 
