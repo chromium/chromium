@@ -75,7 +75,8 @@ ScenicWindowCanvas::ScenicWindowCanvas(ScenicSurface* scenic_surface)
 
 ScenicWindowCanvas::~ScenicWindowCanvas() = default;
 
-void ScenicWindowCanvas::ResizeCanvas(const gfx::Size& viewport_size) {
+void ScenicWindowCanvas::ResizeCanvas(const gfx::Size& viewport_size,
+                                      float scale) {
   viewport_size_ = viewport_size;
   viewport_size_.SetToMax(gfx::Size(1, 1));
 

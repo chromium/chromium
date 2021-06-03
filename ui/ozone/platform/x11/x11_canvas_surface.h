@@ -33,7 +33,7 @@ class X11CanvasSurface : public SurfaceOzoneCanvas {
 
   // SurfaceOzoneCanvas overrides:
   SkCanvas* GetCanvas() override;
-  void ResizeCanvas(const gfx::Size& viewport_size) override;
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
   bool SupportsAsyncBufferSwap() const override;

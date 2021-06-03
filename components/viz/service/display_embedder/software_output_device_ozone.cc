@@ -30,7 +30,7 @@ void SoftwareOutputDeviceOzone::Resize(const gfx::Size& viewport_pixel_size,
 
   viewport_pixel_size_ = viewport_pixel_size;
 
-  surface_ozone_->ResizeCanvas(viewport_pixel_size_);
+  surface_ozone_->ResizeCanvas(viewport_pixel_size_, scale_factor);
 }
 
 SkCanvas* SoftwareOutputDeviceOzone::BeginPaint(const gfx::Rect& damage_rect) {

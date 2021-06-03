@@ -706,30 +706,40 @@ TEST_P(WaylandSurfaceFactoryTest,
 }
 
 TEST_P(WaylandSurfaceFactoryTest, Canvas) {
-  auto canvas = CreateCanvas(widget_);
-  ASSERT_TRUE(canvas);
+  const std::vector<float> scale_factors = {1, 1.2, 1.3, 1.5, 1.7, 2, 2.3, 2.8};
+  for (auto scale_factor : scale_factors) {
+    auto canvas = CreateCanvas(widget_);
+    ASSERT_TRUE(canvas);
 
-  canvas->ResizeCanvas(window_->GetBounds().size());
-  auto* sk_canvas = canvas->GetCanvas();
-  DCHECK(sk_canvas);
-  canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
+    auto bounds_px = window_->GetBounds();
+    bounds_px = gfx::ScaleToRoundedRect(bounds_px, scale_factor);
 
-  // Wait until the mojo calls are done.
-  base::RunLoop().RunUntilIdle();
+    canvas->ResizeCanvas(bounds_px.size(), scale_factor);
+    auto* sk_canvas = canvas->GetCanvas();
+    DCHECK(sk_canvas);
+    canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
 
-  Expectation damage = EXPECT_CALL(*surface_, DamageBuffer(5, 10, 20, 15));
-  wl_resource* buffer_resource = nullptr;
-  Expectation attach = EXPECT_CALL(*surface_, Attach(_, 0, 0))
-                           .WillOnce(SaveArg<0>(&buffer_resource));
-  EXPECT_CALL(*surface_, Commit()).After(damage, attach);
+    // Wait until the mojo calls are done.
+    base::RunLoop().RunUntilIdle();
 
-  Sync();
+    Expectation damage = EXPECT_CALL(*surface_, DamageBuffer(5, 10, 20, 15));
+    wl_resource* buffer_resource = nullptr;
+    Expectation attach = EXPECT_CALL(*surface_, Attach(_, 0, 0))
+                             .WillOnce(SaveArg<0>(&buffer_resource));
+    EXPECT_CALL(*surface_, Commit()).After(damage, attach);
 
-  ASSERT_TRUE(buffer_resource);
-  wl_shm_buffer* buffer = wl_shm_buffer_get(buffer_resource);
-  ASSERT_TRUE(buffer);
-  EXPECT_EQ(wl_shm_buffer_get_width(buffer), 800);
-  EXPECT_EQ(wl_shm_buffer_get_height(buffer), 600);
+    Sync();
+
+    ASSERT_TRUE(buffer_resource);
+    wl_shm_buffer* buffer = wl_shm_buffer_get(buffer_resource);
+    ASSERT_TRUE(buffer);
+    EXPECT_EQ(wl_shm_buffer_get_width(buffer), bounds_px.width());
+    EXPECT_EQ(wl_shm_buffer_get_height(buffer), bounds_px.height());
+
+    surface_->SendFrameCallback();
+
+    Sync();
+  }
 
   // TODO(forney): We could check that the contents match something drawn to the
   // SkSurface above.
@@ -739,10 +749,10 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
   auto canvas = CreateCanvas(widget_);
   ASSERT_TRUE(canvas);
 
-  canvas->ResizeCanvas(window_->GetBounds().size());
+  canvas->ResizeCanvas(window_->GetBounds().size(), 1);
   auto* sk_canvas = canvas->GetCanvas();
   DCHECK(sk_canvas);
-  canvas->ResizeCanvas(gfx::Size(100, 50));
+  canvas->ResizeCanvas(gfx::Size(100, 50), 1);
   sk_canvas = canvas->GetCanvas();
   DCHECK(sk_canvas);
   canvas->PresentCanvas(gfx::Rect(0, 0, 100, 50));

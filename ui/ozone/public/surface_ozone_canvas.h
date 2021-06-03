@@ -38,7 +38,9 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // Attempts to resize the canvas to match the viewport size. After
   // resizing, the compositor must call GetSurface() to get the next
   // surface - this invalidates any previous surface from GetSurface().
-  virtual void ResizeCanvas(const gfx::Size& viewport_size) = 0;
+  // |viewport_size| is the size of viewport in pixels that is the multiple
+  // of a size in screen dips * |scale|.
+  virtual void ResizeCanvas(const gfx::Size& viewport_size, float scale) = 0;
 
   // Present the current surface. After presenting, the compositor must
   // call GetSurface() to get the next surface - this invalidates any

@@ -207,7 +207,8 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
   return pending_buffer_->sk_surface()->getCanvas();
 }
 
-void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
+void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
+                                        float scale) {
   if (size_ == viewport_size)
     return;
   // TODO(https://crbug.com/930667): We could implement more efficient resizes
@@ -220,6 +221,7 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
   pending_buffer_ = nullptr;
   unsubmitted_buffers_.clear();
   size_ = viewport_size;
+  viewport_scale_ = std::ceil(scale);
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {

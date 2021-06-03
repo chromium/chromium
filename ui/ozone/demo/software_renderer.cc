@@ -45,7 +45,7 @@ bool SoftwareRenderer::Initialize() {
     return false;
   }
 
-  software_surface_->ResizeCanvas(size_);
+  software_surface_->ResizeCanvas(size_, 1.f /*scale_factor*/);
   vsync_provider_ = software_surface_->CreateVSyncProvider();
   RenderFrame();
   return true;

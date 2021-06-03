@@ -23,7 +23,8 @@ SkCanvas* X11CanvasSurface::GetCanvas() {
   return x11_software_bitmap_presenter_.GetSkCanvas();
 }
 
-void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
+void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
+                                    float scale) {
   x11_software_bitmap_presenter_.Resize(viewport_size);
 }
 
