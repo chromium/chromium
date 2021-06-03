@@ -2,8 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//chrome/common/features.gni")
+
 assert(is_chromeos, "File Manager is Chrome OS only")
 assert(!is_official_build, "File Manager is only built for unofficial builds")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "OPTIMIZE_WEBUI=$optimize_webui" ]
+}
 
 static_library("file_manager_ui") {
   sources = [
@@ -17,8 +25,9 @@ static_library("file_manager_ui") {
   ]
 
   deps = [
-    "//ash/components/resources:file_manager_resources",
+    ":buildflags",
     "//ash/content/file_manager/mojom",
+    "//ash/content/file_manager/resources:file_manager_swa_resources",
     "//base",
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",

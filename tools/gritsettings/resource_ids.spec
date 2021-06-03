@@ -376,8 +376,9 @@
   "chromeos/components/diagnostics_ui/resources/diagnostics_app_resources.grd": {
     "includes": [2517],
   },
-  "ash/content/file_manager/resources/file_manager_resources.grd": {
-    "includes": [2518],
+  "<(SHARED_INTERMEDIATE_DIR)/ash/content/file_manager/resources/file_manager_swa_resources.grd": {
+    "META": {"sizes": {"includes": [100]}},
+    "includes": [2519],
   },
   "chromeos/components/help_app_ui/resources/help_app_resources.grd": {
     "includes": [2520],

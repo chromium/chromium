@@ -45,15 +45,21 @@ class FileManagerApp {
   async run() {
     await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
 
-    // Temporarily remove window.cr while the foreground script bundle loads.
-    const origCr = window.cr;
-    delete window.cr;
+    // Temporarily remove window.cr.webUI* while the foreground script loads.
+    const origWebUIResponse = window.webUIResponse;
+    const origWebUIListenerCallback = window.webUIListenerCallback;
+    delete window.cr.webUIResponse;
+    delete window.cr.webUIListenerCallback;
+
     // Avoid double loading the LoadTimeData strings.
     window.loadTimeData.data_ = null;
 
     await new ScriptLoader('foreground/js/main.m.js', {type: 'module'}).load();
-    // Restore the window.cr object.
-    Object.assign(window.cr, origCr);
+
+    // Restore the window.cr.webUI* objects.
+    window.cr.webUIResponse = origWebUIResponse;
+    window.cr.webUIListenerCallback = origWebUIListenerCallback;
+
     console.debug('Files app UI loaded');
   }
 }

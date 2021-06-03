@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "ash/content/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/content/file_manager/url_constants.h"
-#include "ash/grit/ash_file_manager_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -21,8 +21,8 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   // TODO(majewski): Fetch from a resource.
   info->title = u"File Manager";
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url, {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_ICON_192}},
-      *info);
+      info->start_url,
+      {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_IMAGES_ICON192_PNG}}, *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
