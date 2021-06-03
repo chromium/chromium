@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/managed_state.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -156,6 +157,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // Requests all properties for the service or device (called for new items).
   void RequestProperties(ManagedState::ManagedType type,
                          const std::string& path);
+
+  // Requests traffic counters for a Service denoted by |service_path|.
+  // Traffic counters are returned via |callback|.
+  void RequestTrafficCounters(const std::string& service_path,
+                              ShillServiceClient::ListValueCallback callback);
 
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,

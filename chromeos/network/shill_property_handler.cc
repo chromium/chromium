@@ -300,6 +300,24 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
   NOTREACHED();
 }
 
+void ShillPropertyHandler::RequestTrafficCounters(
+    const std::string& service_path,
+    ShillServiceClient::ListValueCallback callback) {
+  ShillServiceClient::Get()->RequestTrafficCounters(
+      dbus::ObjectPath(service_path),
+      base::BindOnce(
+          [](const std::string* sp, ShillServiceClient::ListValueCallback cb,
+             const base::ListValue& traffic_counters) {
+            NET_LOG(EVENT) << "Received traffic counters for "
+                           << NetworkPathId(*sp);
+            std::move(cb).Run(traffic_counters);
+          },
+          &service_path, std::move(callback)),
+      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
+                     "RequestTrafficCounters Failed", service_path,
+                     network_handler::ErrorCallback()));
+}
+
 void ShillPropertyHandler::OnPropertyChanged(const std::string& key,
                                              const base::Value& value) {
   ManagerPropertyChanged(key, value);

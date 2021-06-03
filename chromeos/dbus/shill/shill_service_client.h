@@ -116,6 +116,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     virtual void SetRequireServiceToGetProperties(
         bool require_service_to_get_properties) = 0;
 
+    // Sets a fake traffic counters that can be used in tests.
+    virtual void SetFakeTrafficCounters(base::Value fake_traffic_counters) = 0;
+
    protected:
     virtual ~TestInterface() {}
   };

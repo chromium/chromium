@@ -119,6 +119,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetHoldBackServicePropertyUpdates(bool hold_back) override;
   void SetRequireServiceToGetProperties(
       bool require_service_to_get_properties) override;
+  void SetFakeTrafficCounters(base::Value fake_traffic_counters) override;
 
  private:
   typedef base::ObserverList<ShillPropertyChangedObserver>::Unchecked
@@ -160,6 +161,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   // Whether or not this class should fail if GetProperties() is called for an
   // unknown service.
   bool require_service_to_get_properties_ = false;
+
+  base::Value fake_traffic_counters_{base::Value::Type::LIST};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

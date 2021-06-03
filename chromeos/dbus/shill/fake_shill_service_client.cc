@@ -365,22 +365,8 @@ void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
     ListValueCallback callback,
     ErrorCallback error_callback) {
-  base::Value traffic_counters(base::Value::Type::LIST);
-
-  base::Value chrome_dict(base::Value::Type::DICTIONARY);
-  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
-  chrome_dict.SetKey("rx_bytes", base::Value(12));
-  chrome_dict.SetKey("tx_bytes", base::Value(32));
-  traffic_counters.Append(std::move(chrome_dict));
-
-  base::Value user_dict(base::Value::Type::DICTIONARY);
-  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
-  user_dict.SetKey("rx_bytes", base::Value(90));
-  user_dict.SetKey("tx_bytes", base::Value(87));
-  traffic_counters.Append(std::move(user_dict));
-
   std::move(callback).Run(
-      base::Value::AsListValue(std::move(traffic_counters)));
+      base::Value::AsListValue(fake_traffic_counters_.Clone()));
 }
 
 void FakeShillServiceClient::ResetTrafficCounters(
@@ -812,6 +798,15 @@ void FakeShillServiceClient::ContinueConnect(const std::string& service_path) {
     SetServiceProperty(service_path, shill::kStateProperty,
                        base::Value(shill::kStateOnline));
   }
+}
+
+void FakeShillServiceClient::SetFakeTrafficCounters(
+    base::Value fake_traffic_counters) {
+  if (!fake_traffic_counters.is_list()) {
+    LOG(ERROR) << "Fake traffic counters must be a list";
+    return;
+  }
+  fake_traffic_counters_ = std::move(fake_traffic_counters);
 }
 
 }  // namespace chromeos

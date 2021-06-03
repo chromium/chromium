@@ -32,6 +32,8 @@ namespace chromeos {
 
 namespace {
 
+const char kStubWiFi1[] = "stub_wifi1";
+
 void ErrorCallbackFunction(const std::string& error_name,
                            const std::string& error_message) {
   LOG(ERROR) << "Shill Error: " << error_name << " : " << error_message;
@@ -268,7 +270,7 @@ class ShillPropertyHandlerTest : public testing::Test {
     AddDevice(shill::kTypeCellular, "stub_cellular_device1");
     service_test_->ClearServices();
     AddService(shill::kTypeEthernet, "stub_ethernet", shill::kStateOnline);
-    AddService(shill::kTypeWifi, "stub_wifi1", shill::kStateOnline);
+    AddService(shill::kTypeWifi, kStubWiFi1, shill::kStateOnline);
     AddService(shill::kTypeWifi, "stub_wifi2", shill::kStateIdle);
     AddService(shill::kTypeCellular, "stub_cellular1", shill::kStateIdle);
   }
@@ -577,6 +579,41 @@ TEST_F(ShillPropertyHandlerTest, ProhibitedTechnologies) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       shill_property_handler_->IsTechnologyEnabled(shill::kTypeEthernet));
+}
+
+TEST_F(ShillPropertyHandlerTest, RequestTrafficCounters) {
+  // Set up the traffic counters.
+  base::Value traffic_counters(base::Value::Type::LIST);
+
+  base::Value chrome_dict(base::Value::Type::DICTIONARY);
+  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
+  chrome_dict.SetKey("rx_bytes", base::Value(12));
+  chrome_dict.SetKey("tx_bytes", base::Value(32));
+  traffic_counters.Append(std::move(chrome_dict));
+
+  base::Value user_dict(base::Value::Type::DICTIONARY);
+  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
+  user_dict.SetKey("rx_bytes", base::Value(90));
+  user_dict.SetKey("tx_bytes", base::Value(87));
+  traffic_counters.Append(std::move(user_dict));
+
+  service_test_->SetFakeTrafficCounters(traffic_counters.Clone());
+  ASSERT_TRUE(traffic_counters.is_list());
+
+  base::RunLoop run_loop;
+  shill_property_handler_->RequestTrafficCounters(
+      kStubWiFi1,
+      base::BindOnce(
+          [](base::Value* expected_traffic_counters,
+             base::OnceClosure quit_closure,
+             const base::ListValue& actual_traffic_counters) {
+            EXPECT_EQ(base::Value::AsListValue(*expected_traffic_counters),
+                      actual_traffic_counters);
+            std::move(quit_closure).Run();
+          },
+          &traffic_counters, run_loop.QuitClosure()));
+
+  run_loop.Run();
 }
 
 }  // namespace chromeos
