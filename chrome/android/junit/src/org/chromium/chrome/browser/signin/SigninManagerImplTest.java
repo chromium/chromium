@@ -94,9 +94,8 @@ public class SigninManagerImplTest {
         })
                 .when(mAccountTrackerService)
                 .seedAccountsIfNeeded(any(Runnable.class));
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                NATIVE_IDENTITY_MANAGER, ACCOUNT_INFO.getEmail()))
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                     NATIVE_IDENTITY_MANAGER, ACCOUNT_INFO.getEmail()))
                 .thenReturn(ACCOUNT_INFO);
 
         mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(

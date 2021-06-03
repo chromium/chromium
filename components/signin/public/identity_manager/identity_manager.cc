@@ -522,16 +522,15 @@ IdentityManager::GetPrimaryAccountInfo(JNIEnv* env, jint consent_level) const {
   return ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
-base::android::ScopedJavaLocalRef<jobject> IdentityManager::
-    FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-        JNIEnv* env,
-        const base::android::JavaParamRef<jstring>& j_email) const {
-  auto account_info =
-      FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-          base::android::ConvertJavaStringToUTF8(env, j_email));
-  if (!account_info.has_value())
+base::android::ScopedJavaLocalRef<jobject>
+IdentityManager::FindExtendedAccountInfoByEmailAddress(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_email) const {
+  AccountInfo account_info = FindExtendedAccountInfoByEmailAddress(
+      base::android::ConvertJavaStringToUTF8(env, j_email));
+  if (account_info.IsEmpty())
     return nullptr;
-  return ConvertToJavaAccountInfo(env, account_info.value());
+  return ConvertToJavaAccountInfo(env, account_info);
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

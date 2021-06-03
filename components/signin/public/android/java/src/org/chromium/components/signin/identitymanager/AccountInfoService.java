@@ -84,9 +84,7 @@ public final class AccountInfoService implements IdentityManager.Observer {
         final Promise<AccountInfo> accountInfoPromise = new Promise<>();
         mAccountTrackerService.seedAccountsIfNeeded(() -> {
             accountInfoPromise.fulfill(
-                    mIdentityManager
-                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                    email));
+                    mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
         });
         return accountInfoPromise;
     }

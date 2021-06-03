@@ -157,9 +157,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
                 .when(mAccountTrackerServiceMock)
                 .seedAccountsIfNeeded(any(Runnable.class));
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyLong(), eq(ACCOUNT_EMAIL)))
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                     anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
         mAccountManagerTestRule.addAccount(
                 new ProfileDataSource.ProfileData(ACCOUNT_EMAIL, null, "Full Name", "Given Name"));
@@ -199,9 +198,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
                 .when(mAccountTrackerServiceMock)
                 .seedAccountsIfNeeded(any(Runnable.class));
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyLong(), eq(ACCOUNT_EMAIL)))
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                     anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
 

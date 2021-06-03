@@ -159,11 +159,9 @@ public class IdentityManager {
      * Looks up and returns information for account with given |email|. If the account
      * cannot be found, return a null value.
      */
-    public @Nullable AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-            String email) {
-        return IdentityManagerJni.get()
-                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                        mNativeIdentityManager, email);
+    public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
+        return IdentityManagerJni.get().findExtendedAccountInfoByEmailAddress(
+                mNativeIdentityManager, email);
     }
 
     /**
@@ -208,8 +206,7 @@ public class IdentityManager {
         @Nullable
         CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager, int consentLevel);
         @Nullable
-        AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                long nativeIdentityManager, String email);
+        AccountInfo findExtendedAccountInfoByEmailAddress(long nativeIdentityManager, String email);
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
         void forceRefreshOfExtendedAccountInfo(
                 long nativeIdentityManager, CoreAccountId coreAccountId);

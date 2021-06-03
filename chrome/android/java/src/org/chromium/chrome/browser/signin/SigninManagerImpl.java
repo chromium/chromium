@@ -596,9 +596,7 @@ class SigninManagerImpl
     @Override
     public void isAccountManaged(String email, final Callback<Boolean> callback) {
         assert email != null;
-        CoreAccountInfo account =
-                mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                        email);
+        CoreAccountInfo account = mIdentityManager.findExtendedAccountInfoByEmailAddress(email);
         assert account != null;
         SigninManagerImplJni.get().isAccountManaged(mNativeSigninManagerAndroid, account, callback);
     }
