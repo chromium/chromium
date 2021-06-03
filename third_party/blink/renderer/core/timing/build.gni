@@ -39,6 +39,8 @@ blink_core_sources_timing = [
   "performance_navigation.h",
   "performance_navigation_timing.cc",
   "performance_navigation_timing.h",
+  "performance_navigation_timing_activation_start.cc",
+  "performance_navigation_timing_activation_start.h",
   "performance_observer.cc",
   "performance_observer.h",
   "performance_observer_entry_list.cc",

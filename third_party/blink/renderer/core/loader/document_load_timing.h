@@ -83,6 +83,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
 
+  void MarkActivationStart(base::TimeTicks);
+
   void SetCanRequestFromPreviousDocument(bool value) {
     can_request_from_previous_document_ = value;
   }
@@ -112,6 +114,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks ResponseEnd() const { return response_end_; }
   base::TimeTicks LoadEventStart() const { return load_event_start_; }
   base::TimeTicks LoadEventEnd() const { return load_event_end_; }
+  base::TimeTicks ActivationStart() const { return activation_start_; }
   bool HasCrossOriginRedirect() const { return has_cross_origin_redirect_; }
   bool CanRequestFromPreviousDocument() const {
     return can_request_from_previous_document_;
@@ -152,6 +155,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks response_end_;
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
+  base::TimeTicks activation_start_;
   bool has_cross_origin_redirect_;
   bool can_request_from_previous_document_;
 

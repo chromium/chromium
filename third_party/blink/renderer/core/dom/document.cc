@@ -8078,7 +8078,7 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
   return find_in_page_active_match_node_;
 }
 
-void Document::ActivateForPrerendering() {
+void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
   DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
 
   // For subframes, this can be called before the navigation commit, and this
@@ -8094,7 +8094,7 @@ void Document::ActivateForPrerendering() {
   is_prerendering_ = false;
 
   if (DocumentLoader* loader = Loader())
-    loader->NotifyPrerenderingDocumentActivated();
+    loader->NotifyPrerenderingDocumentActivated(activation_start);
 
   Vector<base::OnceClosure> callbacks;
   callbacks.swap(will_dispatch_prerenderingchange_callbacks_);

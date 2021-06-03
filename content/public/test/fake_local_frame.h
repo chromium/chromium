@@ -124,7 +124,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const GURL& url_before_redirects,
       bool had_redirect,
       network::mojom::SourceLocationPtr source_location) override;
-  void ActivateForPrerendering() override;
+  void ActivateForPrerendering(base::TimeTicks activation_start) override;
   void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)

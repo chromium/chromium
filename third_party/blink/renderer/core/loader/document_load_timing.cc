@@ -281,4 +281,12 @@ void DocumentLoadTiming::MarkCommitNavigationEnd() {
   NotifyDocumentTimingChanged();
 }
 
+void DocumentLoadTiming::MarkActivationStart(base::TimeTicks activation_start) {
+  activation_start_ = activation_start;
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "activationtart",
+                                   activation_start, "frame",
+                                   ToTraceValue(GetFrame()));
+  NotifyDocumentTimingChanged();
+}
+
 }  // namespace blink

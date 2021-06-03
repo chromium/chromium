@@ -684,12 +684,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   const char kCurrentDocumentPrerenderingScript[] = "document.prerendering";
   const char kOnprerenderingchangeObservedScript[] =
       "onprerenderingchange_observed";
+  const char kActivationStartScript[] =
+      "performance.getEntriesByType('navigation')[0].activationStart";
   EXPECT_EQ(true,
             EvalJs(prerender_frame_host, kInitialDocumentPrerenderingScript));
   EXPECT_EQ(false,
             EvalJs(prerender_frame_host, kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(true,
             EvalJs(prerender_frame_host, kOnprerenderingchangeObservedScript));
+  EXPECT_NE(0, EvalJs(prerender_frame_host, kActivationStartScript));
 
   RenderFrameHost* same_origin_render_frame_host =
       FindRenderFrameHost(*prerender_frame_host, kSameOriginSubframeUrl);
@@ -700,6 +703,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                           kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(true, EvalJs(same_origin_render_frame_host,
                          kOnprerenderingchangeObservedScript));
+  EXPECT_NE(0, EvalJs(same_origin_render_frame_host, kActivationStartScript));
 
   RenderFrameHost* cross_origin_render_frame_host =
       FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
@@ -710,6 +714,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                           kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kOnprerenderingchangeObservedScript));
+  EXPECT_EQ(0, EvalJs(cross_origin_render_frame_host, kActivationStartScript));
 }
 
 // Makes sure that subframe navigations are deferred if cross-origin redirects

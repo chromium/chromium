@@ -2635,10 +2635,12 @@ bool DocumentLoader::ConsumeTextFragmentToken() {
   return token_value;
 }
 
-void DocumentLoader::NotifyPrerenderingDocumentActivated() {
+void DocumentLoader::NotifyPrerenderingDocumentActivated(
+    base::TimeTicks activation_start) {
   DCHECK(!frame_->GetDocument()->IsPrerendering());
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
+  GetTiming().MarkActivationStart(activation_start);
 }
 
 ContentSecurityPolicy* DocumentLoader::CreateCSP() {

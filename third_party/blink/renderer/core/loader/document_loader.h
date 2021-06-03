@@ -354,7 +354,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Notifies that the prerendering document this loader is working for is
   // activated.
-  void NotifyPrerenderingDocumentActivated();
+  void NotifyPrerenderingDocumentActivated(base::TimeTicks activation_start);
 
   blink::mojom::CodeCacheHost* GetCodeCacheHost();
   void OnCodeCacheHostClosed();

@@ -3598,6 +3598,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // The Page object associated with the main document. It is nullptr for
     // subframes.
     std::unique_ptr<PageImpl> owned_page;
+
+    // Prerender2:
+    // The activation start time for prerendering which is passed to the
+    // renderer process, and will be accessible in the prerendered page as
+    // PerformanceNavigationTiming.activationStart.
+    absl::optional<base::TimeTicks> activation_start_time_for_prerendering;
   };
 
   std::unique_ptr<DocumentAssociatedData> document_associated_data_;

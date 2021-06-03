@@ -3893,7 +3893,7 @@ void LocalFrame::MixedContentFound(
       url_before_redirects, had_redirect, std::move(source));
 }
 
-void LocalFrame::ActivateForPrerendering() {
+void LocalFrame::ActivateForPrerendering(base::TimeTicks activation_start) {
   DCHECK(features::IsPrerender2Enabled());
 
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
@@ -3903,8 +3903,9 @@ void LocalFrame::ActivateForPrerendering() {
   // networking task source, given bc's active window, to perform the following
   // steps:"
   GetTaskRunner(TaskType::kNetworking)
-      ->PostTask(FROM_HERE, WTF::Bind(&Document::ActivateForPrerendering,
-                                      WrapPersistent(GetDocument())));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&Document::ActivateForPrerendering,
+                           WrapPersistent(GetDocument()), activation_start));
 }
 
 void LocalFrame::BindDevToolsAgent(

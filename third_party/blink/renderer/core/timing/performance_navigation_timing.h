@@ -69,6 +69,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
  private:
+  friend class PerformanceNavigationTimingActivationStart;
+
   static AtomicString GetNavigationType(WebNavigationType, const Document*);
 
   const DocumentTiming* GetDocumentTiming() const;

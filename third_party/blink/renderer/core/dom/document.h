@@ -1678,7 +1678,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
 
-  void ActivateForPrerendering();
+  void ActivateForPrerendering(base::TimeTicks activation_start);
 
   void AddWillDispatchPrerenderingchangeCallback(base::OnceClosure);
 

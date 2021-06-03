@@ -8508,9 +8508,17 @@ void RenderFrameHostImpl::ActivateForPrerendering() {
   DCHECK(!is_notifying_activation_for_prerendering_);
   is_notifying_activation_for_prerendering_ = true;
 
+  // Currently cross origin iframes are deferred. So the origin must be same
+  // as the main frame's origin. But if we will decide not to defer the cross
+  // origin iframes, we need to remove the DCHECK_EQ and change the code not
+  // to send |activation_start_time_for_prerendering| to the renderer.
+  DCHECK_EQ(GetLastCommittedOrigin(), GetMainFrame()->GetLastCommittedOrigin());
+
   // Notify the renderer of activation to update the prerendering state and
   // dispatch the prerenderingchange event.
-  GetAssociatedLocalFrame()->ActivateForPrerendering();
+  GetAssociatedLocalFrame()->ActivateForPrerendering(
+      *GetMainFrame()
+           ->document_associated_data_->activation_start_time_for_prerendering);
 
   for (auto& child : children_)
     child->current_frame_host()->ActivateForPrerendering();
@@ -9609,6 +9617,25 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     DCHECK_EQ(navigation_request->is_overriding_user_agent() &&
                   frame_tree_node_->IsMainFrame(),
               params->is_overriding_user_agent);
+    if (navigation_request->IsPrerenderedPageActivation()) {
+      DCHECK(blink::features::IsPrerender2Enabled());
+      // Set the NavigationStart time for
+      // PerformanceNavigationTiming.activationStart.
+      // https://jeremyroman.github.io/alternate-loading-modes/#performance-navigation-timing-extension
+
+      // Currently, prerendering is only supported on same-origin pages. When
+      // supporting cross-origin prerendering (https://crbug.com/1176054), we
+      // need to change this CHECK to "if ()" not to send the activation start
+      // time to the prerendering page so that it is not used to send
+      // identifiers between origins.
+      CHECK_EQ(GetLastCommittedOrigin(),
+               navigation_request->GetOriginForURLLoaderFactory());
+      DCHECK(
+          !document_associated_data_->activation_start_time_for_prerendering);
+      document_associated_data_->activation_start_time_for_prerendering =
+          navigation_request->NavigationStart();
+    }
+
   } else {
     DCHECK_EQ(is_overriding_user_agent_, params->is_overriding_user_agent);
   }

@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_navigation_timing_activation_start.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -318,5 +320,12 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber("loadEventEnd", loadEventEnd());
   builder.AddString("type", type());
   builder.AddNumber("redirectCount", redirectCount());
+
+  if (RuntimeEnabledFeatures::Prerender2Enabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.AddNumber(
+        "activationStart",
+        PerformanceNavigationTimingActivationStart::activationStart(*this));
+  }
 }
 }  // namespace blink
