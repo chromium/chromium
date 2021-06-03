@@ -99,7 +99,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
                           media::EncryptionScheme::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
-                          media::HdcpVersion::kHdcpVersionMax)
+                          media::HdcpVersion::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
 
