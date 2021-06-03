@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -191,10 +190,6 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   UninstallDialogs uninstall_dialogs_;
 
   std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
-
-  // App service require the Lacros Browser to keep alive for web apps.
-  // TODO(crbug.com/1174246): Support Lacros not keeping alive.
-  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
   base::WeakPtrFactory<AppServiceProxyChromeOs> weak_ptr_factory_{this};
 };
