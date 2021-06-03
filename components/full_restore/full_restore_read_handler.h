@@ -102,10 +102,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   int32_t FetchRestoreWindowId(const std::string& app_id);
 
   // Returns the restore window id for the ARC app's |task_id|.
-  //
-  // TODO(crbug.com/1146900): Handle the scenario that the window is created
-  // first, and OnTaskCreated is called later..
-  int32_t GetArcRestoreWindowId(int32_t task_id);
+  int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
+
+  // Returns the restore window id for the ARC app's |session_id|.
+  int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
   // Modifies `out_params` based on the window info associated with
   // `restore_window_id`.

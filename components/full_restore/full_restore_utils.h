@@ -95,7 +95,11 @@ int32_t FetchRestoreWindowId(const std::string& app_id);
 
 // Returns the restore window id for the ARC app's |task_id|.
 COMPONENT_EXPORT(FULL_RESTORE)
-int32_t GetArcRestoreWindowId(int32_t task_id);
+int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
+
+// Returns the restore window id for the ARC app's |session_id|.
+COMPONENT_EXPORT(FULL_RESTORE)
+int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.

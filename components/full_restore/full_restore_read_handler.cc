@@ -47,13 +47,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     if (window_id == kParentToHiddenContainer ||
         arc_read_handler_->HasRestoreData(window_id)) {
       observed_windows_.AddObservation(window);
-
-      // If |window| is added to a hidden container, that means the ARC task is
-      // not created yet, so add |window| to |arc_window_candidates_| to wait
-      // the task to be created.
-      if (window_id == kParentToHiddenContainer)
-        arc_read_handler_->AddArcWindowCandidate(window);
-
+      arc_read_handler_->AddArcWindowCandidate(window);
       FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
     }
     return;
@@ -182,11 +176,20 @@ int32_t FullRestoreReadHandler::FetchRestoreWindowId(
   return it->second->FetchRestoreWindowId(app_id);
 }
 
-int32_t FullRestoreReadHandler::GetArcRestoreWindowId(int32_t task_id) {
+int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForTaskId(
+    int32_t task_id) {
   if (!arc_read_handler_)
     return 0;
 
-  return arc_read_handler_->GetArcRestoreWindowId(task_id);
+  return arc_read_handler_->GetArcRestoreWindowIdForTaskId(task_id);
+}
+
+int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForSessionId(
+    int32_t session_id) {
+  if (!arc_read_handler_)
+    return 0;
+
+  return arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id);
 }
 
 void FullRestoreReadHandler::ModifyWidgetParams(

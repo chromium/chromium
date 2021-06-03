@@ -54,11 +54,20 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
   return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
 }
 
-int32_t GetArcRestoreWindowId(int32_t task_id) {
+int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
   if (!ash::features::IsFullRestoreEnabled())
     return 0;
 
-  return FullRestoreReadHandler::GetInstance()->GetArcRestoreWindowId(task_id);
+  return FullRestoreReadHandler::GetInstance()->GetArcRestoreWindowIdForTaskId(
+      task_id);
+}
+
+int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return 0;
+
+  return FullRestoreReadHandler::GetInstance()
+      ->GetArcRestoreWindowIdForSessionId(session_id);
 }
 
 bool ShouldRestore(const AccountId& account_id) {

@@ -47,13 +47,26 @@ void ExoAppTypeResolver::PopulateProperties(
   }
 
   auto task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
-  if (!task_id.has_value())
+  auto session_id = arc::GetSessionIdFromWindowAppId(params.app_id);
+
+  // If neither |task_id| nor |session_id| are valid, this is not an ARC window.
+  if (!task_id.has_value() && !session_id.has_value())
     return;
 
   out_properties_container.SetProperty(aura::client::kAppType,
                                        static_cast<int>(ash::AppType::ARC_APP));
-  out_properties_container.SetProperty(full_restore::kWindowIdKey, *task_id);
-  int32_t restore_window_id = full_restore::GetArcRestoreWindowId(*task_id);
+
+  if (task_id.has_value())
+    out_properties_container.SetProperty(full_restore::kWindowIdKey, *task_id);
+
+  int32_t restore_window_id = 0;
+  if (task_id.has_value()) {
+    restore_window_id = full_restore::GetArcRestoreWindowIdForTaskId(*task_id);
+  } else {
+    restore_window_id =
+        full_restore::GetArcRestoreWindowIdForSessionId(*session_id);
+  }
+
   out_properties_container.SetProperty(full_restore::kRestoreWindowIdKey,
                                        restore_window_id);
 

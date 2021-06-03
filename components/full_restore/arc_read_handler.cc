@@ -23,7 +23,12 @@ void ArcReadHandler::AddRestoreData(const std::string& app_id,
 }
 
 void ArcReadHandler::AddArcWindowCandidate(aura::Window* window) {
-  arc_window_candidates_.insert(window);
+  // If the ARC task is not created yet, add |window| to
+  // |arc_window_candidates_| to wait for the task to be created.
+  if (!base::Contains(task_id_to_window_id_,
+                      window->GetProperty(::full_restore::kWindowIdKey))) {
+    arc_window_candidates_.insert(window);
+  }
 }
 
 void ArcReadHandler::OnWindowDestroyed(aura::Window* window) {
@@ -116,7 +121,7 @@ std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
   return window_info;
 }
 
-int32_t ArcReadHandler::GetArcRestoreWindowId(int32_t task_id) {
+int32_t ArcReadHandler::GetArcRestoreWindowIdForTaskId(int32_t task_id) {
   auto it = task_id_to_window_id_.find(task_id);
   if (it != task_id_to_window_id_.end())
     return it->second;
@@ -130,6 +135,12 @@ int32_t ArcReadHandler::GetArcRestoreWindowId(int32_t task_id) {
   // apps launched. Returns -1 to add the ARC app window to the hidden
   // container.
   return kParentToHiddenContainer;
+}
+
+int32_t ArcReadHandler::GetArcRestoreWindowIdForSessionId(int32_t session_id) {
+  // If `session_id` doesn't exist, that means there is no ARC app restored.
+  auto it = session_id_to_window_id_.find(session_id);
+  return it == session_id_to_window_id_.end() ? 0 : it->second;
 }
 
 int32_t ArcReadHandler::GetArcSessionId() {

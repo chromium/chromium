@@ -491,10 +491,15 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   read_handler->SetArcSessionIdForWindowId(kArcSessionId2, kArcTaskId1);
   EXPECT_EQ(1u, read_test_api.GetArcSessionIdMap().size());
 
+  // Before OnTaskCreated is called, return |kArcTaskId1| for |kArcSessionId2|
+  // to simulate the ghost window property setting.
+  EXPECT_EQ(kArcTaskId1,
+            full_restore::GetArcRestoreWindowIdForSessionId(kArcSessionId2));
+
   // Before OnTaskCreated is called, return -1 to add the ARC app window to the
   // hidden container.
   EXPECT_EQ(kParentToHiddenContainer,
-            full_restore::GetArcRestoreWindowId(kArcTaskId2));
+            full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
 
   // Call OnTaskCreated to simulate that the ARC app with |kAppId| has been
   // launched, and the new task id |kArcTaskId2| has been created with
@@ -506,7 +511,8 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // map can be cleared. And verify that we can get the restore window id
   // |kArcTaskId1| with the new |kArcTaskId2|.
   EXPECT_TRUE(read_test_api.GetArcSessionIdMap().empty());
-  EXPECT_EQ(kArcTaskId1, full_restore::GetArcRestoreWindowId(kArcTaskId2));
+  EXPECT_EQ(kArcTaskId1,
+            full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
 
   // Verify |window_info| for |kArcTaskId1|.
   auto window_info = GetArcWindowInfo(kArcTaskId1);
@@ -517,7 +523,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // for |kArcTaskId2|, and verify the task id map is now empty and a invalid
   // value is returned when trying to get the restore window id.
   read_handler->OnTaskDestroyed(kArcTaskId2);
-  EXPECT_EQ(0, full_restore::GetArcRestoreWindowId(kArcTaskId2));
+  EXPECT_EQ(0, full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
   EXPECT_TRUE(read_test_api.GetArcTaskIdMap().empty());
   EXPECT_TRUE(read_test_api.GetArcWindowIdMap().empty());
 }

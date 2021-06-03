@@ -56,7 +56,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcReadHandler {
   std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
 
   // Returns the restore window id for the ARC app's |task_id|.
-  int32_t GetArcRestoreWindowId(int32_t task_id);
+  int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
+
+  // Returns the restore window id for the ARC app's `session_id`.
+  int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
   // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
   // apps.
