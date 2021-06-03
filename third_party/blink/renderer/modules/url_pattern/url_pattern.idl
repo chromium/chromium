@@ -10,7 +10,7 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   Exposed=(Window,Worker),
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
-  [RaisesException] constructor(URLPatternInit init);
+  [RaisesException] constructor(URLPatternInput input, optional USVString baseURL);
 
   [RaisesException]
   boolean test(URLPatternInput input, optional USVString baseURL);

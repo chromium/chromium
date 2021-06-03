@@ -5,6 +5,7 @@ const kComponents = [
   'username',
   'password',
   'hostname',
+  'port',
   'password',
   'pathname',
   'search',
@@ -15,12 +16,12 @@ function runTests(data) {
   for (let entry of data) {
     test(function() {
       if (entry.expected_obj === 'error') {
-        assert_throws_js(TypeError, _ => new URLPattern(entry.pattern),
+        assert_throws_js(TypeError, _ => new URLPattern(...entry.pattern),
                          'URLPattern() constructor');
         return;
       }
 
-      const pattern = new URLPattern(entry.pattern);
+      const pattern = new URLPattern(...entry.pattern);
 
       // If the expected_obj property is not present we will automatically
       // fill it with the most likely expected values.
@@ -36,12 +37,16 @@ function runTests(data) {
 
         // If there is no explicit expected pattern string, then compute
         // the expected value based on the URLPattern constructor args.
-        if (!expected) {
+        if (expected == undefined) {
           // First determine if there is a baseURL present in the pattern
           // input.  A baseURL can be the source for many component patterns.
           let baseURL = null;
-          if (entry.pattern.baseURL)
-            baseURL = new URL(entry.pattern.baseURL);
+          if (entry.pattern[0].baseURL) {
+            baseURL = new URL(entry.pattern[0].baseURL);
+          } else if (entry.pattern.length > 1 &&
+                     typeof entry.pattern[1] === 'string') {
+            baseURL = new URL(entry.pattern[1]);
+          }
 
           // We automatically populate the expected pattern string using
           // the following options in priority order:
@@ -53,8 +58,12 @@ function runTests(data) {
           //     does not provide search/hash component values.
           //  3. Otherwise fall back on the default pattern of `*` for an
           //     empty component pattern.
-          if (entry.pattern[component]) {
-            expected = entry.pattern[component];
+          if (entry.exactly_empty_components &&
+              entry.exactly_empty_components.includes(component)) {
+            expected = '';
+          } else if (typeof entry.pattern[0] === 'object' &&
+              entry.pattern[0][component]) {
+            expected = entry.pattern[0][component];
           } else if (baseURL &&
                      component !== 'search' && component !== 'hash') {
             let base_value = baseURL[component];
@@ -134,8 +143,8 @@ function runTests(data) {
           // string pattern does not.  The expectation object must list which
           // components should be empty instead of wildcards in
           // |exactly_empty_components|.
-          if (!entry.expected_match.exactly_empty_components ||
-              !entry.expected_match.exactly_empty_components.includes(component)) {
+          if (!entry.exactly_empty_components ||
+              !entry.exactly_empty_components.includes(component)) {
             expected_obj.groups['0'] = '';
           }
         }

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
+#include "third_party/blink/renderer/modules/url_pattern/url_pattern_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/tokenize.h"
 
 namespace blink {
 
@@ -179,7 +181,52 @@ void ApplyInit(const URLPatternInit* init,
 
 }  // namespace
 
+URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+                               const String& base_url,
+                               ExceptionState& exception_state) {
+  if (input->GetContentType() ==
+      V8URLPatternInput::ContentType::kURLPatternInit) {
+    exception_state.ThrowTypeError(
+        "Invalid second argument baseURL '" + base_url +
+        "' provided with a URLPatternInit input. Use the "
+        "URLPatternInit.baseURL property instead.");
+    return nullptr;
+  }
+
+  const auto& input_string = input->GetAsUSVString();
+
+  url_pattern::Parser parser(input_string);
+  parser.Parse(exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+
+  URLPatternInit* init = parser.GetResult();
+  if (!base_url && !init->hasProtocol()) {
+    exception_state.ThrowTypeError(
+        "Relative constructor string '" + input_string +
+        "' must have a base URL passed as the second argument.");
+    return nullptr;
+  }
+
+  if (base_url)
+    init->setBaseURL(base_url);
+
+  return Create(init, parser.GetProtocolComponent(), exception_state);
+}
+
+URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+                               ExceptionState& exception_state) {
+  if (input->IsURLPatternInit()) {
+    return URLPattern::Create(input->GetAsURLPatternInit(),
+                              /*precomputed_protocol_component=*/nullptr,
+                              exception_state);
+  }
+
+  return Create(input, /*base_url=*/String(), exception_state);
+}
+
 URLPattern* URLPattern::Create(const URLPatternInit* init,
+                               Component* precomputed_protocol_component,
                                ExceptionState& exception_state) {
   // Each component defaults to a wildcard matching any input.  We use
   // the null string as a shorthand for the default.
@@ -209,9 +256,12 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   // Compile each component pattern into a Component structure that
   // can be used for matching.
 
-  auto* protocol_component =
-      Component::Compile(protocol, Component::Type::kProtocol,
-                         /*protocol_component=*/nullptr, exception_state);
+  auto* protocol_component = precomputed_protocol_component;
+  if (!protocol_component) {
+    protocol_component =
+        Component::Compile(protocol, Component::Type::kProtocol,
+                           /*protocol_component=*/nullptr, exception_state);
+  }
   if (exception_state.HadException())
     return nullptr;
 
@@ -369,11 +419,8 @@ bool URLPattern::Match(
 
   HeapVector<USVStringOrURLPatternInit> inputs;
 
-  bool is_init =
-      input->GetContentType() ==
-      V8URLPatternInput::ContentType::kURLPatternInit;
-
-  if (is_init) {
+  if (input->GetContentType() ==
+      V8URLPatternInput::ContentType::kURLPatternInit) {
     if (base_url) {
       exception_state.ThrowTypeError(
           "Invalid second argument baseURL '" + base_url +

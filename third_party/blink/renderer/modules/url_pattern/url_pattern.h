@@ -26,7 +26,15 @@ class URLPattern : public ScriptWrappable {
   using Component = url_pattern::Component;
 
  public:
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            const String& base_url,
+                            ExceptionState& exception_state);
+
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            ExceptionState& exception_state);
+
   static URLPattern* Create(const URLPatternInit* init,
+                            Component* precomputed_protocol_component,
                             ExceptionState& exception_state);
 
   URLPattern(Component* protocol,
