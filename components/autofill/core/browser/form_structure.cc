@@ -1446,35 +1446,6 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   was_parsed_for_autocomplete_attributes_ = true;
 }
 
-std::set<std::u16string> FormStructure::PossibleValues(ServerFieldType type) {
-  std::set<std::u16string> values;
-  AutofillType target_type(type);
-  for (const auto& field : fields_) {
-    if (field->Type().GetStorableType() != target_type.GetStorableType() ||
-        field->Type().group() != target_type.group()) {
-      continue;
-    }
-
-    // No option values; anything goes.
-    if (field->option_values.empty()) {
-      values.clear();
-      break;
-    }
-
-    for (const std::u16string& val : field->option_values) {
-      if (!val.empty())
-        values.insert(base::i18n::ToUpper(val));
-    }
-
-    for (const std::u16string& content : field->option_contents) {
-      if (!content.empty())
-        values.insert(base::i18n::ToUpper(content));
-    }
-  }
-
-  return values;
-}
-
 const AutofillField* FormStructure::field(size_t index) const {
   if (index >= fields_.size()) {
     NOTREACHED();

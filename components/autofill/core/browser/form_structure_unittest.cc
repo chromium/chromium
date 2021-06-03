@@ -5103,51 +5103,6 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   EXPECT_EQ(expected_query_string, encoded_query_string);
 }
 
-TEST_F(FormStructureTestImpl, PossibleValues) {
-  FormData form_data;
-  form_data.url = GURL("http://www.foo.com/");
-
-  FormFieldData field;
-  field.autocomplete_attribute = "billing country";
-  field.option_contents.push_back(u"Down Under");
-  field.option_values.push_back(u"AU");
-  field.option_contents.push_back(u"Fr");
-  field.option_values.push_back(u"");
-  field.option_contents.push_back(u"Germany");
-  field.option_values.push_back(u"GRMNY");
-  field.unique_renderer_id = MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  FormStructure form_structure(form_data);
-
-  form_structure.ParseFieldTypesFromAutocompleteAttributes();
-
-  // All values in <option> value= or contents are returned, set to upper case.
-  std::set<std::u16string> possible_values =
-      form_structure.PossibleValues(ADDRESS_BILLING_COUNTRY);
-  EXPECT_EQ(5U, possible_values.size());
-  EXPECT_EQ(1U, possible_values.count(u"AU"));
-  EXPECT_EQ(1U, possible_values.count(u"FR"));
-  EXPECT_EQ(1U, possible_values.count(u"DOWN UNDER"));
-  EXPECT_EQ(1U, possible_values.count(u"GERMANY"));
-  EXPECT_EQ(1U, possible_values.count(u"GRMNY"));
-  EXPECT_EQ(0U, possible_values.count(u"Fr"));
-  EXPECT_EQ(0U, possible_values.count(u"DE"));
-
-  // No field for the given type; empty value set.
-  EXPECT_EQ(0U, form_structure.PossibleValues(ADDRESS_HOME_COUNTRY).size());
-
-  // A freeform input (<input>) allows any value (overriding other <select>s).
-  FormFieldData freeform_field;
-  freeform_field.autocomplete_attribute = "billing country";
-  field.unique_renderer_id = MakeFieldRendererId();
-  form_data.fields.push_back(freeform_field);
-
-  FormStructure form_structure2(form_data);
-  form_structure2.ParseFieldTypesFromAutocompleteAttributes();
-  EXPECT_EQ(0U, form_structure2.PossibleValues(ADDRESS_BILLING_COUNTRY).size());
-}
-
 // Test that server predictions get precedence over htmll types if they are
 // overrides.
 TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
