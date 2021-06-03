@@ -43,3 +43,32 @@ source_set("sync_ui") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "sync_screen_coordinator_unittest.mm",
+    "sync_screen_mediator_unittest.mm",
+  ]
+  deps = [
+    ":sync",
+    "//base/test:test_support",
+    "//components/consent_auditor:test_support",
+    "//components/sync/driver:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/public/provider/chrome/browser:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
