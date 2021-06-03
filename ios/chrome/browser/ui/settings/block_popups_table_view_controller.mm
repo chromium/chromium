@@ -292,7 +292,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   for (NSIndexPath* indexPath in indexPaths) {
     size_t urlIndex = indexPath.item;
     std::string urlToRemove;
-    _exceptions.GetString(urlIndex, &urlToRemove);
+    base::Value::ListView exceptions_view = _exceptions.GetList();
+    if (urlIndex < exceptions_view.size() &&
+        exceptions_view[urlIndex].is_string()) {
+      urlToRemove = exceptions_view[urlIndex].GetString();
+    }
 
     // Remove the exception for the site by resetting its popup setting to the
     // default.
@@ -303,7 +307,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
             CONTENT_SETTING_DEFAULT);
 
     // Remove the site from |_exceptions|.
-    _exceptions.Remove(urlIndex, NULL);
+    _exceptions.EraseListIter(exceptions_view.begin() + urlIndex);
   }
   [self.tableView performBatchUpdates:^{
     NSInteger exceptionsSection = [self.tableViewModel
