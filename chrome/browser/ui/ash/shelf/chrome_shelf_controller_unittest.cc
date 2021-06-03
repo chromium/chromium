@@ -3109,7 +3109,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
 
   // Removing |extension1_| from the policy should not be reflected in the
   // shelf and pin will exist.
-  policy_value.Remove(0, nullptr);
+  policy_value.EraseListIter(policy_value.GetList().begin());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps,
       base::Value::ToUniquePtrValue(policy_value.Clone()));

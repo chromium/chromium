@@ -604,7 +604,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     const auto* holding_space_item =
         primary_holding_space_model->items()[0].get();
 
-    persisted_holding_space_items.Remove(0, /*out_value=*/nullptr);
+    persisted_holding_space_items.EraseListIter(
+        persisted_holding_space_items.GetList().begin());
     primary_holding_space_model->RemoveItem(holding_space_item->id());
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(

@@ -67,7 +67,7 @@ void PolicyCertServiceFactory::SetUsedPolicyCertificates(
     return;
   ListPrefUpdate update(g_browser_process->local_state(),
                         prefs::kUsedPolicyCertificates);
-  update->AppendString(user_email);
+  update->Append(user_email);
 }
 
 // static
@@ -75,7 +75,7 @@ void PolicyCertServiceFactory::ClearUsedPolicyCertificates(
     const std::string& user_email) {
   ListPrefUpdate update(g_browser_process->local_state(),
                         prefs::kUsedPolicyCertificates);
-  update->Remove(base::Value(user_email), nullptr);
+  update->EraseListValue(base::Value(user_email));
 }
 
 // static

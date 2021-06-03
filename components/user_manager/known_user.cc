@@ -743,11 +743,12 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
     return;
 
   ListPrefUpdate update(local_state_, kKnownUsers);
-  for (size_t i = 0; i < update->GetSize(); ++i) {
+  base::Value::ListView update_view = update->GetList();
+  for (auto it = update_view.begin(); it != update_view.end(); ++it) {
     base::DictionaryValue* element = nullptr;
-    if (update->GetDictionary(i, &element)) {
+    if (it->GetAsDictionary(&element)) {
       if (UserMatches(account_id, *element)) {
-        update->Remove(i, nullptr);
+        update->EraseListIter(it);
         break;
       }
     }
