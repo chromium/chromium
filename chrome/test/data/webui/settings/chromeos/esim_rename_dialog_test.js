@@ -314,4 +314,25 @@ suite('EsimRenameDialog', function() {
         convertString16ToJSString_(profileProperties.nickname),
         '12345678901234567890');
   });
+
+  test('Done button is disabled when empty input', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+    await init();
+
+    const inputBox = esimRenameDialog.$$('#eSimprofileName');
+    const doneBtn = esimRenameDialog.$$('#done');
+    assertTrue(!!inputBox);
+    assertTrue(!!doneBtn);
+
+    inputBox.value = 'test';
+    assertFalse(doneBtn.disabled);
+
+    inputBox.value = '';
+    assertTrue(doneBtn.disabled);
+
+    inputBox.value = 'test2';
+    assertFalse(doneBtn.disabled);
+  });
 });

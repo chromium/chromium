@@ -5,6 +5,9 @@
 /** @type {number} */
 const MAX_INPUT_LENGTH = 20;
 
+/** @type {number} */
+const MIN_INPUT_LENGTH = 1;
+
 /** @type {RegExp} */
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
@@ -199,8 +202,22 @@ Polymer({
   },
 
   /**
+   * @param {boolean} isRenameInProgress
    * @param {string} esimProfileName
-   * @returns {string}
+   * @return {boolean}
+   * @private
+   */
+  isDoneButtonDisabled_(isRenameInProgress, esimProfileName) {
+    if (isRenameInProgress) {
+      return true;
+    }
+    return esimProfileName.length < MIN_INPUT_LENGTH;
+  },
+
+  /**
+   * @param {string} esimProfileName
+   * @return {string}
+   * @private
    */
   getDoneBtnA11yLabel_(esimProfileName) {
     return this.i18n('eSimRenameProfileDoneBtnA11yLabel', esimProfileName);
