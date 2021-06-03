@@ -106,6 +106,7 @@ class RenderWidgetHostView;
 class SiteInstance;
 class StoragePartition;
 class WebUI;
+class Page;
 
 // The interface provides a communication conduit with a frame in the renderer.
 // The preferred way to keep a reference to a RenderFrameHost is storing a
@@ -671,6 +672,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // use by resource metrics.
   virtual size_t GetProxyCount() = 0;
 
+  // Returns the Page associated with this RenderFrameHost. Both GetPage() and
+  // GetMainFrame()->GetPage() will always return the same value.
+  //
+  // NOTE: For now, the associated Page object might change (when a navigation
+  // is reusing RenderFrameHost and a new document is created in this
+  // RenderFrameHost). The removal of this case is tracked in crbug.com/936696.
+  virtual Page& GetPage() = 0;
+
   // Returns true if the frame has a selection.
   virtual bool HasSelection() = 0;
 
@@ -888,11 +897,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Return true if onload has been executed in the renderer in the main frame.
   virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
-
-  // The GURL for the document's web application manifest. If called on a
-  // subframe, returns the value from the corresponding main frame.  See
-  // https://w3c.github.io/manifest/#web-application-manifest
-  virtual const GURL& ManifestURL() = 0;
 
   // Returns the raw list of favicon candidates as reported to observers via
   // since the last navigation start. If called on a subframe, returns the

@@ -305,6 +305,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderWidgetHostView* GetView() override;
   RenderFrameHostImpl* GetParent() override;
   RenderFrameHostImpl* GetMainFrame() override;
+  PageImpl& GetPage() override;
   std::vector<RenderFrameHost*> GetFramesInSubtree() override;
   bool IsDescendantOf(RenderFrameHost*) override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
@@ -494,14 +495,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Signals that the renderer has requested for this main-frame's window to be
   // shown, at which point we can service navigation requests.
   void Init();
-
-  // Returns the Page associated with this RenderFrameHost. Both GetPage() and
-  // GetMainFrame()->GetPage() will always return the same value.
-  //
-  // NOTE: For now, the associated Page object might change (when a navigation
-  // is reusing RenderFrameHost and a new document is created in this
-  // RenderFrameHost). The removal of this case is tracked in crbug.com/936696.
-  PageImpl* GetPage();
 
   // This needs to be called to make sure that the parent-child relationship
   // between frames is properly established both for cross-process iframes as
@@ -2102,7 +2095,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
   void DisableWebRtcEventLogOutput(int lid) override;
   bool IsDocumentOnLoadCompletedInMainFrame() override;
-  const GURL& ManifestURL() override;
   const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() override;
 
 #if BUILDFLAG(ENABLE_MDNS)

@@ -1,0 +1,66 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_PUBLIC_BROWSER_PAGE_H_
+#define CONTENT_PUBLIC_BROWSER_PAGE_H_
+
+#include "content/common/content_export.h"
+#include "url/gurl.h"
+
+namespace content {
+
+// Page represents a collection of documents with the same main document.
+
+// At the moment some navigations might create a new blink::Document in the
+// existing RenderFrameHost, which will lead to a creation of a new Page
+// associated with the same main RenderFrameHost. See the comment in
+// |RenderDocumentHostUserData| for more details and crbug.com/936696 for the
+// progress on always creating a new RenderFrameHost for each new document.
+
+// Page is created when a main document is created, which can happen in the
+// following ways:
+// 1) Main RenderFrameHost is created.
+// 2) A cross-document non-bfcached navigation is committed in the same
+//    RenderFrameHost.
+// 3) Main RenderFrameHost is re-created after crash.
+
+// Page is deleted in the following cases:
+// 1) Main RenderFrameHost is deleted.
+// 2) A cross-document non-bfcached navigation is committed in the same
+//    RenderFrameHost.
+// 3) Before main RenderFrameHost is re-created after crash.
+
+// If a method can be called only for main RenderFrameHosts or if its behaviour
+// is identical when called on the parent / child RenderFrameHosts, it should
+// be added to Page(Impl).
+
+// With Multiple Page Architecture (MPArch), each WebContents may have
+// additional FrameTrees which will have their own associated Page. Please take
+// into consideration when assuming that Page is appropriate for storing
+// something that's common for all frames you see on a tab.
+
+// NOTE: Depending on the process model, the cross-origin iframes are likely to
+// be hosted in a different renderer process than the main document, so a given
+// page is hosted in multiple renderer processes at the same time.
+// RenderViewHost / RenderView / blink::Page (which are all 1:1:1) represent a
+// part of a given content::Page in a given renderer process (note, however,
+// that like RenderFrameHosts, these objects at the moment can be reused for a
+// new content::Page for a cross-document same-site main-frame navigation).
+class CONTENT_EXPORT Page {
+ public:
+  virtual ~Page() {}
+
+  // The GURL for the page's web application manifest.
+  // See https://w3c.github.io/manifest/#web-application-manifest
+  virtual const GURL& GetManifestURL() = 0;
+
+ private:
+  // This interface should only be implemented inside content.
+  friend class PageImpl;
+  Page() {}
+};
+
+}  // namespace content
+
+#endif  // CONTENT_PUBLIC_BROWSER_PAGE_H_

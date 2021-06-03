@@ -62,9 +62,9 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, AllFramesBelongToTheSamePage) {
 
   // 2) Check Page for RenderFrameHosts a and b, they both should point to same
   // Page object.
-  PageImpl* page_a = rfh_a->GetPage();
-  PageImpl* page_b = rfh_b->GetPage();
-  EXPECT_EQ(page_a, page_b);
+  PageImpl& page_a = rfh_a->GetPage();
+  PageImpl& page_b = rfh_b->GetPage();
+  EXPECT_EQ(&page_a, &page_b);
 }
 
 }  // namespace content

@@ -256,6 +256,7 @@ source_set("browser_sources") {
     "origin_policy_commands.h",
     "overlay_window.h",
     "overscroll_configuration.h",
+    "page.h",
     "page_navigator.cc",
     "page_navigator.h",
     "payment_app_provider.h",

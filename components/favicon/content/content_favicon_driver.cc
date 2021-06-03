@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/image/image.h"
 
@@ -50,7 +51,8 @@ GURL ContentFaviconDriver::GetActiveURL() {
 GURL ContentFaviconDriver::GetManifestURL(content::RenderFrameHost* rfh) {
   DocumentManifestData* document_data =
       DocumentManifestData::GetOrCreateForCurrentDocument(rfh);
-  return document_data->has_manifest_url ? rfh->ManifestURL() : GURL();
+  return document_data->has_manifest_url ? rfh->GetPage().GetManifestURL()
+                                         : GURL();
 }
 
 ContentFaviconDriver::ContentFaviconDriver(content::WebContents* web_contents,

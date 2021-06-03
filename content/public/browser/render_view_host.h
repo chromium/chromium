@@ -40,7 +40,7 @@ class RenderWidgetHost;
 // DEPRECATED: RenderViewHost is being removed as part of the SiteIsolation
 // project. New code should not be added here, but to RenderWidgetHost (if it's
 // about drawing or events), RenderFrameHost (if it's frame specific), or
-// WebContents (if it's page specific).
+// Page (if it's page specific).
 //
 // For context, please see https://crbug.com/467770 and
 // https://www.chromium.org/developers/design-documents/site-isolation.
