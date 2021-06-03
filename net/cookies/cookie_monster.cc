@@ -619,7 +619,6 @@ void CookieMonster::GetCookieListWithOptions(const GURL& url,
     std::sort(cookie_ptrs.begin(), cookie_ptrs.end(), CookieSorter);
 
     included_cookies.reserve(cookie_ptrs.size());
-    std::vector<CanonicalCookie*> included_cookie_ptrs;
     FilterCookiesWithOptions(url, options, &cookie_ptrs, &included_cookies,
                              &excluded_cookies);
   }
