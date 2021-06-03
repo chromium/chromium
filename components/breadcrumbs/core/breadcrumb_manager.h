@@ -59,9 +59,17 @@ class BreadcrumbManager {
   // Creation time of the BreadcrumbManager.
   const base::Time start_time_;
 
-  // List of events, paired with the time which they were logged to minute
-  // resolution. Newer events are at the end of the list.
-  std::list<std::pair<base::Time, std::list<std::string>>> event_buckets_;
+  // List of events, paired with the time they were logged to minute resolution.
+  // Newer events are at the end of the list.
+  struct EventBucket {
+    base::Time time;
+    std::list<std::string> events;
+
+    explicit EventBucket(base::Time bucket_time);
+    EventBucket(const EventBucket&);
+    ~EventBucket();
+  };
+  std::list<EventBucket> event_buckets_;
 
   base::ObserverList<BreadcrumbManagerObserver, /*check_empty=*/true>
       observers_;
