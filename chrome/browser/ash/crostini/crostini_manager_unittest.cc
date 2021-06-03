@@ -511,6 +511,11 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
 TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   const base::FilePath& disk_path = base::FilePath(kVmName);
   NotificationDisplayServiceTester notification_service(nullptr);
+  vm_tools::concierge::StartVmResponse response;
+  response.set_free_bytes(1);
+  response.set_success(true);
+  response.set_status(::vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
+  fake_concierge_client_->set_start_vm_response(response);
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
