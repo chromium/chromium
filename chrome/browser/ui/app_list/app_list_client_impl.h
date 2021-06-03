@@ -139,11 +139,12 @@ class AppListClientImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListClientWithProfileTest, CheckDataRace);
 
-  // TODO(https://crbug.com/1211359): Add a boolean value here to indicate
-  // whether the first launcher action has been recorded.
   struct StateForNewUser {
     // Indicates whether showing the app list has been recorded.
     bool showing_recorded = false;
+
+    // Indicates whether any launcher action has been recorded.
+    bool action_recorded = false;
   };
 
   // session_manager::SessionManagerObserver:
@@ -165,6 +166,11 @@ class AppListClientImpl
   // the result is opened from the search box.
   void RecordOpenedResultFromSearchBox(
       ash::AppListSearchResultType result_type);
+
+  // Maybe records the launcher action. Launcher actions include activating an
+  // app and opening a search result from either a suggestion chip or the search
+  // box. `launched_from` indicates where the launcher action comes from.
+  void MaybeRecordLauncherAction(ash::AppListLaunchedFrom launched_from);
 
   // The current display id showing the app list.
   int64_t display_id_ = display::kInvalidDisplayId;
