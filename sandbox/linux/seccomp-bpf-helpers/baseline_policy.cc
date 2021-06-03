@@ -178,6 +178,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RestrictCloneToThreadsAndEPERMFork();
   }
 
+  // clone3 takes a pointer argument which we cannot examine, so return ENOSYS
+  // to force the libc to use clone. See https://crbug.com/1213452.
+  if (sysno == __NR_clone3) {
+    return Error(ENOSYS);
+  }
+
   if (sysno == __NR_fcntl)
     return RestrictFcntlCommands();
 
