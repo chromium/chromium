@@ -55,7 +55,7 @@ void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
 
 #pragma mark - Signin and syncing status
 
-bool SyncedSessionsObserverBridge::IsSignedIn() {
+bool SyncedSessionsObserverBridge::HasSyncConsent() {
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 

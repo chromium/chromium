@@ -33,12 +33,12 @@ SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
 
-bool SyncedBookmarksObserverBridge::IsSignedIn() {
+bool SyncedBookmarksObserverBridge::HasSyncConsent() {
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
-  if (!IsSignedIn())
+  if (!HasSyncConsent())
     return false;
 
   SyncSetupService* sync_setup_service =

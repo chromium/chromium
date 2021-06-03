@@ -25,8 +25,8 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
   SyncedBookmarksObserverBridge(id<SyncObserverModelBridge> delegate,
                                 ChromeBrowserState* browserState);
   ~SyncedBookmarksObserverBridge() override;
-  // Returns true if user is signed in.
-  bool IsSignedIn();
+  // Returns true if the user has consented to sync.
+  bool HasSyncConsent();
   // Returns true if it is undergoing the first sync cycle.
   bool IsPerformingInitialSync();
 
