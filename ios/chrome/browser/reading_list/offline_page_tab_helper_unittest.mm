@@ -151,14 +151,10 @@ class FakeReadingListModel : public ReadingListModel {
 class OfflinePageTabHelperTest : public web::WebTest {
  public:
   void SetUp() override {
-    web::WebTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-    test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
-    test_cbs_builder.SetPath(test_data_dir);
-    chrome_browser_state_ = test_cbs_builder.Build();
-    fake_web_state_.SetBrowserState(chrome_browser_state_.get());
+    // Ensure that the EXPECT_TRUE in CreateBrowserState() passed.
+    ASSERT_NO_FATAL_FAILURE(web::WebTest::SetUp());
+
+    fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
@@ -170,8 +166,16 @@ class OfflinePageTabHelperTest : public web::WebTest {
                                             reading_list_model_.get());
   }
 
+  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
+    TestChromeBrowserState::Builder test_cbs_builder;
+    base::FilePath test_data_dir;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
+    test_cbs_builder.SetPath(test_data_dir);
+    return test_cbs_builder.Build();
+  }
+
  protected:
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
   web::FakeWebState fake_web_state_;
 };
@@ -180,14 +184,10 @@ class OfflinePageTabHelperTest : public web::WebTest {
 // ReadingListModel.
 class OfflinePageTabHelperDelayedModelTest : public web::WebTest {
   void SetUp() override {
-    web::WebTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-    test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
-    test_cbs_builder.SetPath(test_data_dir);
-    chrome_browser_state_ = test_cbs_builder.Build();
-    fake_web_state_.SetBrowserState(chrome_browser_state_.get());
+    // Ensure that the EXPECT_TRUE in CreateBrowserState() passed.
+    ASSERT_NO_FATAL_FAILURE(web::WebTest::SetUp());
+
+    fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     fake_reading_list_model_ = std::make_unique<FakeReadingListModel>();
@@ -202,8 +202,16 @@ class OfflinePageTabHelperDelayedModelTest : public web::WebTest {
                                             fake_reading_list_model_.get());
   }
 
+  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
+    TestChromeBrowserState::Builder test_cbs_builder;
+    base::FilePath test_data_dir;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
+    test_cbs_builder.SetPath(test_data_dir);
+    return test_cbs_builder.Build();
+  }
+
  protected:
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<FakeReadingListModel> fake_reading_list_model_;
   web::FakeWebState fake_web_state_;
   std::unique_ptr<ReadingListEntry> entry_;

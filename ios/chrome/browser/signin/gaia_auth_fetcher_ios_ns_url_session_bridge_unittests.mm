@@ -159,8 +159,6 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public ChromeWebTest {
 
   friend TestGaiaAuthFetcherIOSNSURLSessionBridge;
 
-  // Browser state for the tests.
-  std::unique_ptr<ChromeBrowserState> browser_state_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
@@ -196,10 +194,11 @@ NSURLSession* TestGaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
 #pragma mark - GaiaAuthFetcherIOSNSURLSessionBridgeTest
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
+  ChromeWebTest::SetUp();
+
   delegate_.reset(new FakeGaiaAuthFetcherIOSBridgeDelegate());
-  browser_state_ = TestChromeBrowserState::Builder().Build();
   ns_url_session_bridge_.reset(new TestGaiaAuthFetcherIOSNSURLSessionBridge(
-      delegate_.get(), browser_state_.get(), this));
+      delegate_.get(), GetBrowserState(), this));
   url_session_configuration_ =
       NSURLSessionConfiguration.ephemeralSessionConfiguration;
   url_session_configuration_.HTTPShouldSetCookies = YES;
@@ -220,6 +219,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::TearDown() {
   ASSERT_OCMOCK_VERIFY((id)url_session_mock_);
+  ChromeWebTest::TearDown();
 }
 
 NSURLSession* GaiaAuthFetcherIOSNSURLSessionBridgeTest::CreateNSURLSession(
@@ -242,7 +242,7 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetCookiesInCookieJar() {
   std::vector<net::CanonicalCookie> cookies_out;
   base::RunLoop run_loop;
   network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+      GetBrowserState()->GetCookieManager();
   cookie_manager->GetAllCookies(base::BindOnce(base::BindLambdaForTesting(
       [&run_loop,
        &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
@@ -301,7 +301,7 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::AddAllCookiesInCookieManager(
 bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetCookiesInCookieManager(
     NSArray<NSHTTPCookie*>* cookies) {
   network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+      GetBrowserState()->GetCookieManager();
   for (NSHTTPCookie* cookie in cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());

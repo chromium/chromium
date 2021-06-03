@@ -36,8 +36,7 @@ const char kTestHostName[] = "https://chromium.test/";
 class IOSSSLErrorHandlerTest : public web::WebTestWithWebState {
  protected:
   IOSSSLErrorHandlerTest()
-      : browser_state_(builder_.Build()),
-        cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
+      : cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       kTestCertFileName)) {}
 
   // web::WebTestWithWebState overrides:
@@ -64,15 +63,17 @@ class IOSSSLErrorHandlerTest : public web::WebTestWithWebState {
     AddPendingItem(GURL(kTestHostName),
                    ui::PageTransition::PAGE_TRANSITION_TYPED);
   }
-  web::BrowserState* GetBrowserState() override { return browser_state_.get(); }
+
+  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
+    TestChromeBrowserState::Builder builder;
+    return builder.Build();
+  }
 
   // Returns certificate for testing.
   scoped_refptr<net::X509Certificate> cert() { return cert_; }
 
  private:
   network::TestURLLoaderFactory test_loader_factory_;
-  TestChromeBrowserState::Builder builder_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<net::X509Certificate> cert_;
 };
 
