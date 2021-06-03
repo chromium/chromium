@@ -1577,7 +1577,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
-                       AllowedPermissionResetToAskOnUpdate) {
+                       FileHandlingPermissionResetsOnUpdate) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -1593,12 +1593,18 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
           }
         }
       ],
-      "icons": $2
+      "icons": [
+        {
+          "src": "launcher-icon-4x.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "theme_color": "$2"
     }
   )";
 
-  OverrideManifest(kFileHandlerManifestTemplate,
-                   {".txt", kInstallableIconList});
+  OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
   AppId app_id = InstallWebApp();
   const WebApp* web_app =
       GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
@@ -1619,16 +1625,64 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
-  // Update manifest.
-  OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
+  // Update manifest, adding an extension to the file handler. Permission should
+  // be downgraded to ASK. The time override is necessary to make sure the
+  // manifest update isn't skipped due to throttling.
+  base::Time time_override = base::Time::Now();
+  SetTimeOverride(time_override);
+  OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "red"});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
             GetResultAfterPageLoad(url, &app_id));
-  const auto& new_file_handler = web_app->file_handlers()[0];
-  auto new_extensions = new_file_handler.accept[0].file_extensions;
+  auto new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
-
-  // Confirm permission is downgraded to ASK after manifest update.
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
   EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Set permission to ALLOW.
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+
+  // Update manifest, but keep same file handlers. Permission should be left on
+  // ALLOW.
+  time_override += base::TimeDelta::FromDays(10);
+  SetTimeOverride(time_override);
+  OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "blue"});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(url, &app_id));
+  new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Update manifest, asking for /fewer/ file types. Permission should be left
+  // on ALLOW.
+  time_override += base::TimeDelta::FromDays(10);
+  SetTimeOverride(time_override);
+  OverrideManifest(kFileHandlerManifestTemplate, {".txt", "blue"});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(url, &app_id));
+  new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
+  EXPECT_FALSE(base::Contains(new_extensions, ".md"));
+  EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Block the permission, update manifest, permission should still be block.
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_BLOCK);
+  OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
+  time_override += base::TimeDelta::FromDays(10);
+  SetTimeOverride(time_override);
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
 }

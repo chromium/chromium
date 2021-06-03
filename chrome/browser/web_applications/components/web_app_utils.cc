@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -150,6 +151,37 @@ bool AreAppsLocallyInstalledBySync() {
 #else
   return false;
 #endif
+}
+
+bool AreFileHandlersAlreadyRegistered(
+    Profile* profile,
+    const GURL& url,
+    const std::vector<blink::Manifest::FileHandler>& new_handlers) {
+  if (new_handlers.empty())
+    return true;
+
+  const apps::FileHandlers old_handlers =
+      GetFileHandlersForAllWebAppsWithOrigin(profile, url);
+  const std::set<std::string> mime_types_set =
+      apps::GetMimeTypesFromFileHandlers(old_handlers);
+  const std::set<std::string> extensions_set =
+      apps::GetFileExtensionsFromFileHandlers(old_handlers);
+
+  for (const blink::Manifest::FileHandler& new_handler : new_handlers) {
+    for (const auto& new_handler_accept : new_handler.accept) {
+      if (!base::Contains(mime_types_set,
+                          base::UTF16ToUTF8(new_handler_accept.first))) {
+        return false;
+      }
+
+      for (const auto& new_extension : new_handler_accept.second) {
+        if (!base::Contains(extensions_set, base::UTF16ToUTF8(new_extension)))
+          return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,

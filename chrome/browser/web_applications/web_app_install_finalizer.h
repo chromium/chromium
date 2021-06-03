@@ -105,7 +105,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer,
       const AppId app_id,
       const WebApplicationInfo& web_app_info,
       std::unique_ptr<ShortcutInfo> old_shortcut);
+
   bool ShouldUpdateOsHooks(const AppId& app_id);
+
   // Checks whether OS registered file handlers need to update, taking into
   // account permission settings, as file handlers should be unregistered
   // when the permission has been denied. Also, downgrades granted file handling
@@ -114,6 +116,15 @@ class WebAppInstallFinalizer final : public InstallFinalizer,
       const AppId app_id,
       const WebApplicationInfo& web_app_info,
       content::WebContents* web_contents);
+
+  // Resets the FILE_HANDLING content setting permission if `web_app_info` is
+  // asking for more file handling types than were previously granted to the
+  // app's origin. Returns the new content setting, which will be either
+  // unchanged, or will have switched from ALLOW to ASK. If the previous setting
+  // was BLOCK, no change is made.
+  ContentSetting MaybeResetFileHandlingPermission(
+      const WebApplicationInfo& web_app_info);
+
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
       AppId app_id,
@@ -123,6 +134,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info,
       bool success);
+
   void OnUninstallOsHooks(const AppId& app_id,
                           webapps::WebappUninstallSource uninstall_source,
                           UninstallWebAppCallback callback,
