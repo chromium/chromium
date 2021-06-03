@@ -4344,7 +4344,7 @@ crbug.com/681468 [ Win ] virtual/scalefactor150/fast/hidpi/static/data-suggestio
 crbug.com/681468 [ Win ] virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 crbug.com/681468 [ Win ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 
-crbug.com/1157857 [ Mac ] virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Pass Timeout ]
+crbug.com/1157857 virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Failure Pass Timeout ]
 
 crbug.com/683800 [ Win7 Debug ] external/wpt/selection/* [ Failure Pass ]
 
