@@ -83,6 +83,25 @@ bool IsValidExternalImageDestinationFormat(
   }
 }
 
+// TODO(crbug.com/1197369)This duplicate code is for supporting deprecated API
+// copyImageBitmapToTexture and should be remove in future.
+bool IsValidCopyIB2TDestinationFormat(WGPUTextureFormat dawn_texture_format) {
+  switch (dawn_texture_format) {
+    case WGPUTextureFormat_RGBA8Unorm:
+    case WGPUTextureFormat_RGBA8UnormSrgb:
+    case WGPUTextureFormat_BGRA8Unorm:
+    case WGPUTextureFormat_BGRA8UnormSrgb:
+    case WGPUTextureFormat_RGB10A2Unorm:
+    case WGPUTextureFormat_RGBA16Float:
+    case WGPUTextureFormat_RGBA32Float:
+    case WGPUTextureFormat_RG8Unorm:
+    case WGPUTextureFormat_RG16Float:
+      return true;
+    default:
+      return false;
+  }
+}
+
 // TODO(crubg.com/dawn/465): Cover more formats.
 bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
                                          WGPUTextureFormat dst_texture_format) {
@@ -91,10 +110,6 @@ bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
       src_color_type != SkColorType::kBGRA_8888_SkColorType) {
     return false;
   }
-
-  // This function should be called after |IsValidCopyEI2TDestinationFormat|.
-  // Use DCHECK to guard this assumption.
-  DCHECK(IsValidExternalImageDestinationFormat(dst_texture_format));
 
   // CopyTextureForBrowser() supports neither RGBA8UnormSrgb nor BGRA8UnormSrgb
   // as dst texture format.
@@ -483,13 +498,15 @@ void GPUQueue::copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
   }
 }
 
+// TODO(crbug.com/1197369): This API contains duplicated code is to stop
+// breaking current workable codes. Will be removed when it is deprecated.
 void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
                                         GPUImageCopyTexture* destination,
                                         const V8GPUExtent3D* copy_size,
                                         ExceptionState& exception_state) {
   device_->AddConsoleWarning(
-      "The copyImageBitmapToTexture has been deprecated in favor of the "
-      "copyExternalImageToTexture"
+      "The copyImageBitmapToTexture() has been deprecated in favor of the "
+      "copyExternalImageToTexture() "
       "and will soon be removed.");
 
   if (!source->imageBitmap()) {
@@ -504,14 +521,63 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
     return;
   }
 
-  GPUImageCopyExternalImage imageCopyExternalImage;
-  imageCopyExternalImage.setSource(
-      ImageBitmapOrHTMLCanvasElementOrOffscreenCanvas::FromImageBitmap(
-          source->imageBitmap()));
-  imageCopyExternalImage.setOrigin(source->origin());
+  scoped_refptr<StaticBitmapImage> image = source->imageBitmap()->BitmapImage();
 
-  this->copyExternalImageToTexture(&imageCopyExternalImage, destination,
-                                   copy_size, exception_state);
+  // TODO(shaobo.yan@intel.com) : Check that the destination GPUTexture has an
+  // appropriate format. Now only support texture format exactly the same. The
+  // compatible formats need to be defined in WebGPU spec.
+
+  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
+
+  // Extract imageBitmap attributes
+  WGPUOrigin3D origin_in_image_bitmap =
+      GPUOrigin2DToWGPUOrigin3D(&(source->origin()));
+
+  // Validate copy depth
+  if (dawn_copy_size.depthOrArrayLayers > 1) {
+    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
+                                 "Copy depth is out of bounds of imageBitmap.");
+    return;
+  }
+
+  // Validate origin value
+  if (static_cast<uint32_t>(image->width()) < origin_in_image_bitmap.x ||
+      static_cast<uint32_t>(image->height()) < origin_in_image_bitmap.y) {
+    GetProcs().deviceInjectError(
+        device_->GetHandle(), WGPUErrorType_Validation,
+        "Copy origin is out of bounds of imageBitmap.");
+    return;
+  }
+
+  // Validate the copy rect is inside the imageBitmap
+  if (image->width() - origin_in_image_bitmap.x < dawn_copy_size.width ||
+      image->height() - origin_in_image_bitmap.y < dawn_copy_size.height) {
+    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
+                                 "Copy rect is out of bounds of imageBitmap.");
+    return;
+  }
+
+  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+
+  if (!IsValidCopyIB2TDestinationFormat(destination->texture()->Format())) {
+    return exception_state.ThrowTypeError("Invalid gpu texture format.");
+    return;
+  }
+
+  bool isNoopCopy = dawn_copy_size.width == 0 || dawn_copy_size.height == 0 ||
+                    dawn_copy_size.depthOrArrayLayers == 0;
+
+  if (image->IsTextureBacked() && !isNoopCopy) {  // Try GPU uploading path.
+    // Fallback to CPU path, GPU uploading requests RENDER_ATTACHMENT usage for
+    // dst texture.
+    image = image->MakeUnaccelerated();
+  }
+  // CPU path is the fallback path and should always work.
+  if (!CopyContentFromCPU(image.get(), origin_in_image_bitmap, dawn_copy_size,
+                          dawn_destination, destination->texture()->Format())) {
+    exception_state.ThrowTypeError("Failed to copy content from imageBitmap.");
+    return;
+  }
 }  // namespace blink
 
 bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
