@@ -49,6 +49,9 @@ class GURL;
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)tableViewStyle NS_UNAVAILABLE;
 
+// Called before the instance is deallocated.
+- (void)shutdown;
+
 // Setter to set _rootNode value.
 - (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode;
 

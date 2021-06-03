@@ -55,6 +55,9 @@ class BookmarkNode;
                          browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Called before the instance is deallocated.
+- (void)shutdown;
+
 // Closes the edit view as if close button was pressed.
 - (void)dismiss;
 

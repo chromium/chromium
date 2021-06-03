@@ -33,6 +33,9 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Called before the instance is deallocated.
+- (void)shutdown;
+
 // Adds a bookmark for |URL| with the given |title|.
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title;
 

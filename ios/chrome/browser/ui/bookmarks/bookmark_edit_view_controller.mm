@@ -219,6 +219,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)dealloc {
+  [self shutdown];
+}
+
+- (void)shutdown {
   _folderViewController.delegate = nil;
 }
 

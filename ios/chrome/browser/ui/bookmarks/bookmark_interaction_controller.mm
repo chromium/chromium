@@ -183,8 +183,19 @@ enum class PresentedState {
 }
 
 - (void)dealloc {
+  [self shutdown];
+}
+
+- (void)shutdown {
+  [self bookmarkBrowserDismissed];
+
   _bookmarkBrowser.homeDelegate = nil;
+  [_bookmarkBrowser shutdown];
+  _bookmarkBrowser = nil;
+
   _bookmarkEditor.delegate = nil;
+  [_bookmarkEditor shutdown];
+  _bookmarkEditor = nil;
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
@@ -305,17 +316,7 @@ enum class PresentedState {
   }
 
   ProceduralBlock completion = ^{
-    // TODO(crbug.com/940856): Make sure navigaton
-    // controller doesn't keep any controllers. Without
-    // this there's a memory leak of (almost) every BHVC
-    // the user visits.
-    [self.bookmarkNavigationController setViewControllers:@[] animated:NO];
-
-    self.bookmarkBrowser.homeDelegate = nil;
-    self.bookmarkBrowser = nil;
-    self.bookmarkTransitioningDelegate = nil;
-    self.bookmarkNavigationController = nil;
-    self.bookmarkNavigationControllerDelegate = nil;
+    [self bookmarkBrowserDismissed];
 
     if (!openUrlsAfterDismissal) {
       return;
@@ -332,6 +333,20 @@ enum class PresentedState {
     completion();
   }
   self.currentPresentedState = PresentedState::NONE;
+}
+
+- (void)bookmarkBrowserDismissed {
+  // TODO(crbug.com/940856): Make sure navigaton
+  // controller doesn't keep any controllers. Without
+  // this there's a memory leak of (almost) every BHVC
+  // the user visits.
+  [self.bookmarkNavigationController setViewControllers:@[] animated:NO];
+
+  self.bookmarkBrowser.homeDelegate = nil;
+  self.bookmarkBrowser = nil;
+  self.bookmarkTransitioningDelegate = nil;
+  self.bookmarkNavigationController = nil;
+  self.bookmarkNavigationControllerDelegate = nil;
 }
 
 - (void)dismissBookmarkEditorAnimated:(BOOL)animated {
