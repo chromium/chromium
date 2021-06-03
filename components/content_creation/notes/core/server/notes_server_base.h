@@ -7,10 +7,10 @@
 
 #include <string>
 
-#import "components/signin/public/identity_manager/access_token_info.h"
-#import "components/signin/public/identity_manager/scope_set.h"
-#import "google_apis/gaia/google_service_auth_error.h"
-#import "services/network/public/cpp/resource_request.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -21,6 +21,8 @@ namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
+
+namespace content_creation {
 
 // Base class for interactions with the Notes Server.
 class NotesServerBase {
@@ -71,5 +73,7 @@ class NotesServerBase {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 };
+
+}  // namespace content_creation
 
 #endif  // COMPONENTS_CONTENT_CREATION_NOTES_CORE_SERVER_NOTES_SERVER_BASE_H_

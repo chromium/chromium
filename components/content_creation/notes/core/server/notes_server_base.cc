@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/content_creation/notes/core/server/notes_server_base.h"
+#include "components/content_creation/notes/core/server/notes_server_base.h"
 
-#import "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#import "google_apis/google_api_keys.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "services/network/public/cpp/simple_url_loader.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+
+namespace content_creation {
 
 NotesServerBase::NotesServerBase(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
@@ -48,3 +50,5 @@ bool NotesServerBase::HasValidNonEmptyResponse(
 void NotesServerBase::StartAccessTokenFetch() {
   NOTIMPLEMENTED();
 }
+
+}  // namespace content_creation

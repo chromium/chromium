@@ -6,8 +6,13 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("server") {
   sources = [
+    "note_data.cc",
+    "note_data.h",
     "notes_server_base.cc",
     "notes_server_base.h",
+    "notes_server_saver.cc",
+    "notes_server_saver.h",
+    "save_note_response.h",
   ]
 
   deps = [
