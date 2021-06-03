@@ -110,6 +110,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void OnActiveToolChanged() override;
   aura::Window* GetWindow() override;
 
+  // Returns true if we're on an internal display or on every
+  // display if requested from the command line.
+  bool ShouldShowOnDisplay();
+
   // Initializes with Shell's local state and starts to observe it.
   void InitializeWithLocalState();
 
