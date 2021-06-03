@@ -4,7 +4,6 @@
 
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 
-#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"

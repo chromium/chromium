@@ -2,15 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("grpc_client") {
+  sources = [
+    "grpc_client_cq_tag.h",
+    "grpc_client_thread.cc",
+    "grpc_client_thread.h",
+    "grpc_state.h",
+  ]
+
+  public_deps = [
+    ":grpc_util",
+    "//third_party/grpc:grpc++",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 source_set("libassistant_client") {
   sources = [
     "grpc_libassistant_client.cc",
     "grpc_libassistant_client.h",
   ]
 
-  public_deps = [ "//third_party/grpc:grpc++" ]
+  public_deps = [ "//chromeos/assistant/internal:support" ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":grpc_client",
+    "//base",
+  ]
 }
 
 source_set("grpc_util") {
@@ -22,6 +44,7 @@ source_set("grpc_util") {
   deps = [
     "//base",
     "//third_party/grpc:grpc++",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 

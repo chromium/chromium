@@ -7,13 +7,31 @@
 
 #include <memory>
 
+#include "chromeos/assistant/internal/util_headers.h"
+#include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
+#include "chromeos/services/libassistant/grpc/grpc_state.h"
+#include "chromeos/services/libassistant/grpc/grpc_util.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 
 namespace chromeos {
 namespace libassistant {
 
-// Defines grpc client for ipc. All client methods should be implemented here to
-// send the requests to server.
+namespace {
+
+// Defines one async client method.
+#define LIBAS_GRPC_CLIENT_INTERFACE(method)                                  \
+  void method(                                                               \
+      const chromeos::assistant::shared::method##Request& request,           \
+      chromeos::libassistant::ResponseCallback<                              \
+          grpc::Status, chromeos::assistant::shared::method##Response> done, \
+      chromeos::libassistant::StateConfig state_config =                     \
+          chromeos::libassistant::StateConfig());
+
+}  // namespace
+
+// Interface for all methods we as a client can invoke from Libassistant gRPC
+// services. All client methods should be implemented here to send the requests
+// to server. We only introduce methods that are currently in use.
 class GrpcLibassistantClient {
  public:
   explicit GrpcLibassistantClient(std::shared_ptr<grpc::Channel> channel);
@@ -24,13 +42,16 @@ class GrpcLibassistantClient {
   // CustomerRegistrationService:
   // Handles CustomerRegistrationRequest sent from libassistant customers to
   // register themselves before allowing to use libassistant services.
-  void RegisterCustomer();
+  LIBAS_GRPC_CLIENT_INTERFACE(RegisterCustomer)
 
  private:
   // This channel will be shared between all stubs used to communicate with
   // multiple services. All channels are reference counted and will be freed
   // automatically.
   std::shared_ptr<grpc::Channel> channel_;
+
+  // Thread running the completion queue.
+  chromeos::libassistant::GrpcClientThread client_thread_;
 };
 
 }  // namespace libassistant
