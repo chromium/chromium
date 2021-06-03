@@ -2316,6 +2316,19 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
+       StartupNotificationNotShownWhenInFirstLogin) {
+  // Set up the shell and controller.
+  SetUpLater(/*improved_shortcuts_enabled=*/true);
+
+  SimulateNewUserFirstLogin("user1@email.com");
+
+  // Notification should not be shown at a new user's first login.
+  auto* notification = message_center()->FindVisibleNotificationById(
+      kStartupNewShortcutNotificationId);
+  EXPECT_FALSE(notification);
+}
+
+TEST_F(AcceleratorControllerStartupNotificationTest,
        StartupNotificationShownOnlyOnce) {
   // Set up the shell and controller.
   SetUpLater(/*improved_shortcuts_enabled=*/true);
