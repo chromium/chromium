@@ -260,22 +260,30 @@ def merge_coverage_files(coverage_dir, output_path):
     return merged_coverage_file.write(json.dumps(coverage_by_path))
 
 
-def write_parsed_scripts(parsed_scripts_dir):
+def write_parsed_scripts(task_output_dir):
   """Extract parsed script contents and write back to original folder structure.
 
   Args:
-    parsed_scripts_dir (str): Directory that contains the raw JavaScript v8
-        coverage files that are identified by their ".js.json" suffix.
+    task_output_dir (str): The output directory for the sharded task. This will
+        contain the raw JavaScript v8 coverage files that are identified by
+        their ".js.json" suffix.
+
+  Returns:
+    The absolute file path to the raw parsed scripts.
   """
-  scripts = _get_paths_with_suffix(parsed_scripts_dir, '.js.json')
-  output_dir = os.path.join(parsed_scripts_dir, 'parsed')
+  scripts = _get_paths_with_suffix(task_output_dir, '.js.json')
+  output_dir = os.path.join(task_output_dir, 'parsed_scripts')
 
   if not scripts:
-    logging.info('No raw scripts found in %s', parsed_scripts_dir)
+    logging.info('No raw scripts found in %s', task_output_dir)
     return
 
   for file_path in scripts:
     script_data = _parse_json_file(file_path)
+
+    if any(key not in script_data for key in ('url', 'text')):
+      logging.info('File %s is missing key url or text', file_path)
+      continue
 
     if not script_data['url'].startswith('//'):
       continue
@@ -286,4 +294,7 @@ def write_parsed_scripts(parsed_scripts_dir):
       os.makedirs(source_directory)
 
     with open(os.path.join(output_dir, source_path), 'w') as f:
-      f.write(script_data['text'])
+      f.write(script_data['text'].encode('utf8'))
+
+  logging.info('Raw parsed scripts written out to %s', output_dir)
+  return output_dir

@@ -471,11 +471,45 @@ class MergeJSLibTest(unittest.TestCase):
         expected_files.append(file_path)
         if test_script['exists']:
           expected_files.append(os.path.join(scripts_dir,
-              'parsed', *test_script['location']))
+              'parsed_scripts', *test_script['location']))
 
       merger.write_parsed_scripts(scripts_dir)
       actual_files = []
 
+      for root, _, files in os.walk(scripts_dir):
+        for file_name in files:
+          actual_files.append(os.path.join(root, file_name))
+
+      self.assertItemsEqual(expected_files, actual_files)
+    finally:
+      shutil.rmtree(scripts_dir)
+
+  def test_write_parsed_scripts_negative_cases(self):
+    test_files = [{
+      'url': '//a/b/c/1.js',
+      'contents': """{
+"url": "%s"
+}"""
+    }, {
+      'url': '//d/e/f/1.js',
+      'contents': """{
+"text": "test\\ncontents\\n%s"
+}"""
+    }]
+
+    scripts_dir = None
+    expected_files = []
+    try:
+      scripts_dir = tempfile.mkdtemp()
+      for i, test_script in enumerate(test_files):
+        file_path = os.path.join(scripts_dir, '%d.js.json' % i)
+        expected_files.append(file_path)
+        with open(file_path, 'w') as f:
+          f.write(test_script['contents'] % test_script['url'])
+
+      merger.write_parsed_scripts(scripts_dir)
+
+      actual_files = []
       for root, _, files in os.walk(scripts_dir):
         for file_name in files:
           actual_files.append(os.path.join(root, file_name))

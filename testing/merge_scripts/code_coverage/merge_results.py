@@ -101,6 +101,9 @@ def main():
       parser.error('--merged-js-cov-filename required when merging '
                    'JavaScript coverage')
 
+    javascript_merger.write_parsed_scripts(
+        os.path.join(params.task_output_dir))
+
     # Ensure JavaScript coverage dir exists.
     if not os.path.exists(params.javascript_coverage_dir):
       os.makedirs(params.javascript_coverage_dir)
