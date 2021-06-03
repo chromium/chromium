@@ -423,6 +423,8 @@ source_set("unit_tests") {
     "trigger_scripts/static_trigger_conditions_unittest.cc",
     "trigger_scripts/trigger_script_coordinator_unittest.cc",
     "trigger_scripts/trigger_script_unittest.cc",
+    "ukm_test_util.cc",
+    "ukm_test_util.h",
     "url_utils_unittest.cc",
     "user_data_util_unittest.cc",
     "user_model_unittest.cc",

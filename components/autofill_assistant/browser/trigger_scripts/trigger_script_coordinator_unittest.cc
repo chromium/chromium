@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
+#include <map>
+#include <vector>
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +19,7 @@
 #include "components/autofill_assistant/browser/trigger_scripts/mock_dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/mock_static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/mock_trigger_script_ui_delegate.h"
+#include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -31,6 +34,7 @@ namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -117,58 +121,8 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     content::NavigationSimulator::NavigateAndCommitFromDocument(
         url, web_contents()->GetMainFrame());
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  }
-
-  void AssertRecordedFinishedState(TriggerScriptProto::TriggerUIType type,
-                                   Metrics::TriggerScriptFinishedState state,
-                                   GURL url = GURL(kFakeDeepLink)) {
-    auto entries =
-        ukm_recorder_.GetEntriesByName("AutofillAssistant.LiteScriptFinished");
-    ASSERT_THAT(entries.size(), Eq(1u));
-    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], url);
-    EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "TriggerUIType"),
-              static_cast<int64_t>(type));
-    EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "LiteScriptFinished"),
-              static_cast<int64_t>(state));
-  }
-
-  // Make sure that an UKM entry with |state| has been recorded
-  // |expected_times|, and has been associated each time with |type|.
-  void AssertRecordedShownToUserState(TriggerScriptProto::TriggerUIType type,
-                                      Metrics::TriggerScriptShownToUser state,
-                                      int expected_times) {
-    auto entries = ukm_recorder_.GetEntriesByName(
-        "AutofillAssistant.LiteScriptShownToUser");
-    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
-    int actual_times = 0;
-    for (const auto* entry : entries) {
-      if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptShownToUser") ==
-          static_cast<int64_t>(state)) {
-        EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entry, "TriggerUIType"),
-                  static_cast<int64_t>(type));
-        actual_times++;
-      }
-    }
-    EXPECT_EQ(expected_times, actual_times);
-  }
-
-  void AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::TriggerUIType type,
-      Metrics::TriggerScriptOnboarding state,
-      int expected_times) {
-    auto entries = ukm_recorder_.GetEntriesByName(
-        "AutofillAssistant.LiteScriptOnboarding");
-    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
-    int actual_times = 0;
-    for (const auto* entry : entries) {
-      if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptOnboarding") ==
-          static_cast<int64_t>(state)) {
-        EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entry, "TriggerUIType"),
-                  static_cast<int64_t>(type));
-        actual_times++;
-      }
-    }
-    EXPECT_EQ(expected_times, actual_times);
+    navigation_ids_.emplace_back(
+        ukm::GetSourceIdForWebContentsDocument(web_contents()));
   }
 
  protected:
@@ -185,6 +139,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<TriggerScriptCoordinator> coordinator_;
   NiceMock<MockStaticTriggerConditions>* mock_static_trigger_conditions_;
   NiceMock<MockDynamicTriggerConditions>* mock_dynamic_trigger_conditions_;
+  std::vector<ukm::SourceId> navigation_ids_;
 };
 
 TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
@@ -247,9 +202,11 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnBackendRequestFailed) {
       Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED);
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
@@ -260,9 +217,12 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
       Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
@@ -274,9 +234,12 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
           _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
@@ -448,9 +411,12 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
           _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
@@ -478,9 +444,12 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
           _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_FOREVER);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
@@ -545,10 +514,12 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
       Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE, _, _));
   SimulateNavigateToUrl(GURL("https://example.different.com/page"));
   // UKM is recorded for the last seen URL that was still on a supported domain.
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE,
-      GURL("https://subdomain.other-example.com/page"));
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[4],
+            {Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
@@ -591,9 +562,12 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
       Run(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE, _,
           _));
   SimulateWebContentsVisibilityChanged(content::Visibility::VISIBLE);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
@@ -614,9 +588,20 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
 
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->OnBottomSheetClosedWithSwipe();
-  AssertRecordedShownToUserState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptShownToUser::SWIPE_DISMISSED, 1);
+  EXPECT_THAT(GetUkmTriggerScriptShownToUsers(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::RUNNING,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}},
+                   {navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::SHOWN_TO_USER,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+                   {navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::SWIPE_DISMISSED,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+                   {navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::NOT_NOW,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
@@ -652,9 +637,12 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
       Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
           _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
@@ -698,9 +686,12 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
       Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
           _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
@@ -772,9 +763,12 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
       Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
           _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
+  EXPECT_THAT(
+      GetUkmTriggerScriptFinished(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT,
+             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
@@ -883,9 +877,11 @@ TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
               Run(Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW);
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
@@ -911,9 +907,12 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
   fake_platform_delegate_.proactive_help_enabled_ = false;
   SimulateWebContentsInteractabilityChanged(false);
   SimulateWebContentsInteractabilityChanged(true);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING);
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::
+                         DISABLED_PROACTIVE_HELP_SETTING,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
@@ -983,12 +982,17 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED, 1);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
+  EXPECT_THAT(
+      GetUkmTriggerScriptOnboarding(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest,
@@ -1034,20 +1038,27 @@ TEST_F(TriggerScriptCoordinatorTest,
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(4));
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED, 1);
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED, 1);
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::
-          ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
-      1);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
+  EXPECT_THAT(
+      GetUkmTriggerScriptOnboarding(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+           {navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_DISMISSED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+           {navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::
+                 ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}},
+           {navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest,
@@ -1080,12 +1091,18 @@ TEST_F(TriggerScriptCoordinatorTest,
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED, 1);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED);
+  EXPECT_THAT(
+      GetUkmTriggerScriptOnboarding(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::
+                         BOTTOMSHEET_ONBOARDING_REJECTED,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
@@ -1111,12 +1128,53 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
   fake_platform_delegate_.show_onboarding_result_shown_ = false;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  AssertRecordedTriggerScriptOnboardingState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptOnboarding::ONBOARDING_ALREADY_ACCEPTED, 1);
-  AssertRecordedFinishedState(
-      TriggerScriptProto::SHOPPING_CART_RETURNING_USER,
-      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
+  EXPECT_THAT(
+      GetUkmTriggerScriptOnboarding(ukm_recorder_),
+      ElementsAreArray(ToHumanReadableMetrics(
+          {{navigation_ids_[0],
+            {Metrics::TriggerScriptOnboarding::ONBOARDING_ALREADY_ACCEPTED,
+             TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, RecordUkmsForCurrentUrlIfPossible) {
+  GetTriggerScriptsResponseProto response;
+  response.add_additional_allowed_domains("other-example.com");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  script->mutable_trigger_condition()->set_path_pattern(".*cart.*");
+  script->set_trigger_ui_type(TriggerScriptProto::SHOPPING_CART_RETURNING_USER);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(0);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Navigating to cart page should trigger.
+  EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              GetPathPatternMatches(".*cart.*"))
+      .WillOnce(Return(true));
+  SimulateNavigateToUrl(GURL("https://example.com/cart"));
+
+  EXPECT_THAT(GetUkmTriggerScriptShownToUsers(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptShownToUser::RUNNING,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}},
+                   {navigation_ids_[1],
+                    {Metrics::TriggerScriptShownToUser::SHOWN_TO_USER,
+                     TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
 }
 
 }  // namespace autofill_assistant
