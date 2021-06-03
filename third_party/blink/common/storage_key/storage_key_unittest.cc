@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -82,15 +83,17 @@ TEST(StorageKeyTest, Deserialize) {
   std::string test = "https://test.example/";
   std::string wrong = "I'm not a valid URL.";
 
-  StorageKey key1 = StorageKey::Deserialize(example);
-  StorageKey key2 = StorageKey::Deserialize(test);
-  StorageKey key3 = StorageKey::Deserialize(wrong);
-  StorageKey key4 = StorageKey::Deserialize(std::string());
+  absl::optional<StorageKey> key1 = StorageKey::Deserialize(example);
+  absl::optional<StorageKey> key2 = StorageKey::Deserialize(test);
+  absl::optional<StorageKey> key3 = StorageKey::Deserialize(wrong);
+  absl::optional<StorageKey> key4 = StorageKey::Deserialize(std::string());
 
-  EXPECT_FALSE(key1.opaque());
-  EXPECT_FALSE(key2.opaque());
-  EXPECT_TRUE(key3.opaque());
-  EXPECT_TRUE(key4.opaque());
+  EXPECT_TRUE(key1.has_value());
+  EXPECT_FALSE(key1->opaque());
+  EXPECT_TRUE(key2.has_value());
+  EXPECT_FALSE(key2->opaque());
+  EXPECT_FALSE(key3.has_value());
+  EXPECT_FALSE(key4.has_value());
 }
 
 // Test that string -> StorageKey test function performs as expected.
@@ -120,8 +123,8 @@ TEST(StorageKeyTest, SerializeDeserialize) {
   std::string key1_string = key1.Serialize();
   std::string key2_string = key2.Serialize();
 
-  StorageKey key1_deserialized = StorageKey::Deserialize(key1_string);
-  StorageKey key2_deserialized = StorageKey::Deserialize(key2_string);
+  StorageKey key1_deserialized = *StorageKey::Deserialize(key1_string);
+  StorageKey key2_deserialized = *StorageKey::Deserialize(key2_string);
 
   EXPECT_EQ(key1, key1_deserialized);
   EXPECT_EQ(key2, key2_deserialized);

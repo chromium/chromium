@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -376,14 +377,15 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
                         service_worker_internals::kUniqueOriginKey, &key_str))
         break;
 
-      blink::StorageKey key = blink::StorageKey::Deserialize(key_str);
-      if (key.opaque()) {
+      absl::optional<blink::StorageKey> key =
+          blink::StorageKey::Deserialize(key_str);
+      if (!key) {
         status = Status::kErrorCorrupted;
         keys->clear();
         break;
       }
 
-      keys->insert(key);
+      keys->insert(*key);
     }
   }
 
@@ -608,14 +610,15 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
     return status;
   }
 
-  blink::StorageKey parsed = blink::StorageKey::Deserialize(value);
-  if (parsed.opaque()) {
+  absl::optional<blink::StorageKey> parsed =
+      blink::StorageKey::Deserialize(value);
+  if (!parsed) {
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;
   }
 
-  *key = std::move(parsed);
+  *key = std::move(*parsed);
   HandleReadResult(FROM_HERE, Status::kOk);
   return Status::kOk;
 }

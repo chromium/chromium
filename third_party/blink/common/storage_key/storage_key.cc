@@ -9,13 +9,16 @@
 namespace blink {
 
 // static
-StorageKey StorageKey::Deserialize(const std::string& in) {
-  return StorageKey(url::Origin::Create(GURL(in)));
+absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
+  StorageKey result(url::Origin::Create(GURL(in)));
+  return result.opaque() ? absl::nullopt
+                         : absl::make_optional(std::move(result));
 }
 
 // static
 StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
-  return Deserialize(origin);
+  absl::optional<StorageKey> result = Deserialize(origin);
+  return result.value_or(StorageKey());
 }
 
 std::string StorageKey::Serialize() const {
