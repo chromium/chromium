@@ -2060,6 +2060,10 @@ if (!is_android) {
     if (enable_soda) {
       sources +=
           [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
+      deps += [
+        "//chrome/services/speech:lib",
+        "//chrome/services/speech/soda",
+      ]
       if (is_mac) {
         data_deps += [ "//third_party/soda-mac64:soda_resources" ]
       } else if (is_win && target_cpu == "x86") {
