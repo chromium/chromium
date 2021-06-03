@@ -191,11 +191,9 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {
-  for (const auto& entry : content_settings_) {
-    if (entry.GetContentSetting() == CONTENT_SETTING_SESSION_ONLY)
-      return true;
-  }
-  return false;
+  return base::ranges::any_of(content_settings_, [](const auto& entry) {
+    return entry.GetContentSetting() == CONTENT_SETTING_SESSION_ONLY;
+  });
 }
 
 }  // namespace network
