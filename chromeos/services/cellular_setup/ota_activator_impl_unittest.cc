@@ -103,10 +103,11 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
       device_test->SetDeviceProperty(
           kTestCellularDevicePath, shill::kMdnProperty,
           base::Value(kTestCellularDeviceMdn), false /* notify_changed */);
-    } else if (has_physical_slots) {
+    } else {
+      std::string eid = has_physical_slots ? std::string() : "test_eid";
       device_test->SetDeviceProperty(
           kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
-          CreateCellularSIMSlotInfo(kTestCellularServiceIccid),
+          CreateCellularSIMSlotInfo(kTestCellularServiceIccid, eid),
           false /* notify_changed */);
     }
 
@@ -254,10 +255,12 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     is_finished_ = true;
   }
 
-  base::Value CreateCellularSIMSlotInfo(const std::string& iccid) {
+  base::Value CreateCellularSIMSlotInfo(
+      const std::string& iccid,
+      const std::string& eid = std::string()) {
     base::Value::ListStorage sim_slot_infos;
     base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, std::string());
+    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, eid);
     slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
     slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
     sim_slot_infos.push_back(std::move(slot_info_item));

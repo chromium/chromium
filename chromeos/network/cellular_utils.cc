@@ -116,7 +116,7 @@ const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
   const base::flat_map<int32_t, std::string> esim_slot_to_eid =
       GetESimSlotToEidMap();
 
-  DeviceState::CellularSIMSlotInfos sim_slot_infos = device->sim_slot_infos();
+  DeviceState::CellularSIMSlotInfos sim_slot_infos = device->GetSimSlotInfos();
   for (auto& sim_slot_info : sim_slot_infos) {
     const std::string shill_provided_eid = sim_slot_info.eid;
 
@@ -140,9 +140,7 @@ const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
 }
 
 bool IsSimPrimary(const std::string& iccid, const DeviceState* device) {
-  const DeviceState::CellularSIMSlotInfos& sim_slot_infos =
-      device->sim_slot_infos();
-  for (auto& sim_slot_info : sim_slot_infos) {
+  for (const auto& sim_slot_info : device->GetSimSlotInfos()) {
     if (sim_slot_info.iccid == iccid && sim_slot_info.primary) {
       return true;
     }

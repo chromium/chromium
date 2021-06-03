@@ -153,6 +153,30 @@ std::string DeviceState::GetName() const {
   return name();
 }
 
+DeviceState::CellularSIMSlotInfos DeviceState::GetSimSlotInfos() const {
+  // If information was provided from Shill, return it directly.
+  if (!sim_slot_infos_.empty())
+    return sim_slot_infos_;
+
+  // Non-cellular types do not have any SIM slots.
+  if (type() != shill::kTypeCellular) {
+    NET_LOG(ERROR) << "Attempted to fetch SIM slots for device of type "
+                   << type() << ". Returning empty list.";
+    return {};
+  }
+
+  // Some devices do not return SIMSlotInfo properties (see b/189874098). If the
+  // list is currently empty, we assume that this is a single-pSIM device and
+  // return one CellularSIMSlotInfo object representing the single pSIM.
+  CellularSIMSlotInfo info;
+  info.slot_id = 1;          // Slot numbers start at 1, not 0.
+  info.eid = std::string();  // Empty EID implies a physical SIM slot.
+  info.iccid = iccid();      // Copy ICCID property.
+  info.primary = true;       // Only one slot, so it must be the primary one.
+
+  return CellularSIMSlotInfos{info};
+}
+
 std::string DeviceState::GetIpAddressByType(const std::string& type) const {
   for (base::DictionaryValue::Iterator iter(ip_configs_); !iter.IsAtEnd();
        iter.Advance()) {
