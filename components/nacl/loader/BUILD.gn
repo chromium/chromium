@@ -140,7 +140,7 @@ if (is_linux || is_chromeos) {
       "//url/ipc:url_ipc",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       # NaCl is not working with compiler-rt in ChromeOS.
       # Force libgcc as a workaround. See https://crbug.com/761103
       ldflags = [
