@@ -98,29 +98,6 @@ js_type_check("test_support_modules_type_check") {
       ]
 }
 
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
-    "//ui/file_manager/file_manager/externs/background/background_base.js",
-    "//ui/file_manager/file_manager/externs/background/file_browser_background_full.js",
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/import_history.js",
-    "//ui/file_manager/file_manager/externs/background/media_import_handler.js",
-    "//ui/file_manager/file_manager/externs/background/media_scanner.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-    "//ui/file_manager/file_manager/externs/background_window.js",
-    "//ui/file_manager/file_manager/externs/css_rule.js",
-    "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
-    "//ui/file_manager/file_manager/externs/progress_center_panel.js",
-    "//ui/file_manager/file_manager/externs/background/task_queue.js",
-    "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
-  ]
-}
-
 js_library("app_window_wrapper") {
   visibility += related_apps
   deps = [

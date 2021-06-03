@@ -51,16 +51,6 @@ js_type_check("closure_compile_polymer") {
   ]
 }
 
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/mediasession.js",
-    "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
-  ]
-}
-
 js_library("audio_player") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
