@@ -906,8 +906,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        // |accelerator_ids|
        {},
        // |shortcut_key_codes|
-       {ui::VKEY_CONTROL, ui::VKEY_UNKNOWN, ui::VKEY_LMENU, ui::VKEY_UNKNOWN,
-        ui::VKEY_UP}},
+       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_LEFT}},
 
       {// |categories|
        {ShortcutCategory::kPageAndBrowser},
@@ -916,8 +915,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        // |accelerator_ids|
        {},
        // |shortcut_key_codes|
-       {ui::VKEY_CONTROL, ui::VKEY_UNKNOWN, ui::VKEY_LMENU, ui::VKEY_UNKNOWN,
-        ui::VKEY_DOWN}},
+       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_RIGHT}},
 
       {// |categories|
        {ShortcutCategory::kPageAndBrowser},
@@ -977,15 +975,6 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {},
        // |shortcut_key_codes|
        {ui::VKEY_LMENU, ui::VKEY_UNKNOWN}},
-
-      {// |categories|
-       {ShortcutCategory::kSystemAndDisplay},
-       IDS_KSV_DESCRIPTION_USE_F_KEYS,
-       IDS_KSV_SHORTCUT_USE_F_KEYS,
-       // |accelerator_ids|
-       {},
-       // |shortcut_key_codes|
-       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN}},
 
       {// |categories|
        {ShortcutCategory::kTextEditing},
