@@ -384,6 +384,10 @@ bool ChromeAutocompleteProviderClient::SearchSuggestEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
 }
 
+bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory);
+}
+
 bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
     const {
   return url_consent_helper_->IsEnabled();

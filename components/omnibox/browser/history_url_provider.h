@@ -106,7 +106,8 @@ struct HistoryURLProviderParams {
                            bool trim_http,
                            const AutocompleteMatch& what_you_typed_match,
                            const TemplateURL* default_search_provider,
-                           const SearchTermsData* search_terms_data);
+                           const SearchTermsData* search_terms_data,
+                           bool allow_deleting_browser_history);
   ~HistoryURLProviderParams();
   HistoryURLProviderParams(const HistoryURLProviderParams&) = delete;
   HistoryURLProviderParams& operator=(const HistoryURLProviderParams&) = delete;
@@ -181,6 +182,10 @@ struct HistoryURLProviderParams {
   // Similarly, we use a std::unique_ptr<SearchTermsData> so that we can store a
   // snapshot of the SearchTermsData accessible from the history thread.
   std::unique_ptr<SearchTermsData> search_terms_data;
+
+  // True if the user is allowed to delete browser history. Stored here because
+  // we aren't allowed to read user preferences from the History sequence.
+  const bool allow_deleting_browser_history;
 };
 
 // This class is an autocomplete provider and is also a pseudo-internal

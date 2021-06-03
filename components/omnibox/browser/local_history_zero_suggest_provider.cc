@@ -227,7 +227,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         template_url_service->search_terms_data(),
         TemplateURLRef::NO_SUGGESTIONS_AVAILABLE,
         /*append_extra_query_params_from_command_line*/ true);
-    match.deletable = true;
+    match.deletable = client_->AllowDeletingBrowserHistory();
 
     matches_.push_back(match);
     if (matches_.size() >= max_matches_)

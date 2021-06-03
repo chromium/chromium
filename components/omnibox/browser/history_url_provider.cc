@@ -452,7 +452,8 @@ HistoryURLProviderParams::HistoryURLProviderParams(
     bool trim_http,
     const AutocompleteMatch& what_you_typed_match,
     const TemplateURL* default_search_provider,
-    const SearchTermsData* search_terms_data)
+    const SearchTermsData* search_terms_data,
+    bool allow_deleting_browser_history)
     : origin_task_runner(base::SequencedTaskRunnerHandle::Get()),
       input(input),
       input_before_fixup(input_before_fixup),
@@ -465,7 +466,8 @@ HistoryURLProviderParams::HistoryURLProviderParams(
           default_search_provider
               ? new TemplateURL(default_search_provider->data())
               : nullptr),
-      search_terms_data(new SearchTermsDataSnapshot(search_terms_data)) {}
+      search_terms_data(new SearchTermsDataSnapshot(search_terms_data)),
+      allow_deleting_browser_history(allow_deleting_browser_history) {}
 
 HistoryURLProviderParams::~HistoryURLProviderParams() {
 }
@@ -574,7 +576,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // 2.
   std::unique_ptr<HistoryURLProviderParams> params(new HistoryURLProviderParams(
       fixed_up_input, input, trim_http, what_you_typed_match,
-      default_search_provider, search_terms_data));
+      default_search_provider, search_terms_data,
+      client()->AllowDeletingBrowserHistory()));
 
   // Pass 1: Get the in-memory URL database, and use it to find and promote
   // the inline autocomplete match, if any.
@@ -917,8 +920,9 @@ bool HistoryURLProvider::FixupExactSuggestion(
       break;
     default:
       DCHECK_EQ(VisitClassifier::VISITED, classifier.type());
+      params->what_you_typed_match.deletable =
+          params->allow_deleting_browser_history;
       // We have data for this match, use it.
-      params->what_you_typed_match.deletable = true;
       auto title = classifier.url_row().title();
       params->what_you_typed_match.description = title;
       params->what_you_typed_match.destination_url = classifier.url_row().url();
@@ -1179,8 +1183,10 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
 
   const history::HistoryMatch& history_match = params.matches[match_number];
   const history::URLRow& info = history_match.url_info;
-  AutocompleteMatch match(this, relevance,
-      !!info.visit_count(), AutocompleteMatchType::HISTORY_URL);
+  bool deletable =
+      !!info.visit_count() && client()->AllowDeletingBrowserHistory();
+  AutocompleteMatch match(this, relevance, deletable,
+                          AutocompleteMatchType::HISTORY_URL);
   match.typed_count = info.typed_count();
   match.destination_url = info.url();
   DCHECK(match.destination_url.is_valid());

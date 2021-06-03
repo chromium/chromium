@@ -41,7 +41,7 @@ class HistoryProvider : public AutocompleteProvider {
   // backing data.
   void DeleteMatchFromMatches(const AutocompleteMatch& match);
 
-  AutocompleteProviderClient* client() { return client_; }
+  AutocompleteProviderClient* client() const { return client_; }
 
  private:
   AutocompleteProviderClient* client_;

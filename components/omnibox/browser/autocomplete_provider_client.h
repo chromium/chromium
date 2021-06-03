@@ -125,6 +125,9 @@ class AutocompleteProviderClient {
   virtual bool IsOffTheRecord() const = 0;
   virtual bool SearchSuggestEnabled() const = 0;
 
+  // True for almost all users except ones with a specific enterprise policy.
+  virtual bool AllowDeletingBrowserHistory() const;
+
   // Returns whether personalized URL data collection is enabled.  I.e.,
   // the user has consented to have URLs recorded keyed by their Google account.
   // In this case, the user has agreed to share browsing data with Google and so
