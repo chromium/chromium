@@ -183,8 +183,17 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             String label, String sublabel, String itemTag, int iconId, boolean isIconAtStart,
             int suggestionId, boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId, isIconAtStart,
-                suggestionId, isDeletable, isLabelMultiline, isLabelBold, /* featureForIPH= */ "");
+        array[index] = new AutofillSuggestion.Builder()
+                               .setLabel(label)
+                               .setSubLabel(sublabel)
+                               .setItemTag(itemTag)
+                               .setIconId(drawableId)
+                               .setIsIconAtStart(isIconAtStart)
+                               .setSuggestionId(suggestionId)
+                               .setIsDeletable(isDeletable)
+                               .setIsMultiLineLabel(isLabelMultiline)
+                               .setIsBoldLabel(isLabelBold)
+                               .build();
     }
 
     @NativeMethods

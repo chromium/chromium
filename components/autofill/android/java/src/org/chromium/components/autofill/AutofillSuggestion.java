@@ -115,4 +115,76 @@ public class AutofillSuggestion extends DropdownItemBase {
     public String getFeatureForIPH() {
         return mFeatureForIPH;
     }
+
+    /**
+     * Builder for the {@link AutofillSuggestion}.
+     */
+    public static final class Builder {
+        private int mIconId;
+        private boolean mIsBoldLabel;
+        private boolean mIsIconAtStart;
+        private boolean mIsDeletable;
+        private boolean mIsMultiLineLabel;
+        private String mFeatureForIPH;
+        private String mItemTag;
+        private String mLabel;
+        private String mSubLabel;
+        private int mSuggestionId;
+
+        public Builder setIconId(int iconId) {
+            this.mIconId = iconId;
+            return this;
+        }
+
+        public Builder setIsBoldLabel(boolean isBoldLabel) {
+            this.mIsBoldLabel = isBoldLabel;
+            return this;
+        }
+
+        public Builder setIsIconAtStart(boolean isIconAtStart) {
+            this.mIsIconAtStart = isIconAtStart;
+            return this;
+        }
+
+        public Builder setIsDeletable(boolean isDeletable) {
+            this.mIsDeletable = isDeletable;
+            return this;
+        }
+
+        public Builder setIsMultiLineLabel(boolean isMultiLineLabel) {
+            this.mIsMultiLineLabel = isMultiLineLabel;
+            return this;
+        }
+
+        public Builder setFeatureForIPH(String featureForIPH) {
+            this.mFeatureForIPH = featureForIPH;
+            return this;
+        }
+
+        public Builder setItemTag(String itemTag) {
+            this.mItemTag = itemTag;
+            return this;
+        }
+
+        public Builder setLabel(String label) {
+            this.mLabel = label;
+            return this;
+        }
+
+        public Builder setSubLabel(String subLabel) {
+            this.mSubLabel = subLabel;
+            return this;
+        }
+
+        public Builder setSuggestionId(int suggestionId) {
+            this.mSuggestionId = suggestionId;
+            return this;
+        }
+
+        public AutofillSuggestion build() {
+            assert !mLabel.isEmpty() : "AutofillSuggestion requires the label to be set.";
+            return new AutofillSuggestion(mLabel, mSubLabel, mItemTag, mIconId, mIsIconAtStart,
+                    mSuggestionId, mIsDeletable, mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH);
+        }
+    }
 }
