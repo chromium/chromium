@@ -3783,6 +3783,21 @@
             ]
         }
     ],
+    "HelpAppLauncherSearch": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HelpAppLauncherSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "HelpAppLocalSearchServiceIntegration": [
         {
             "platforms": [
