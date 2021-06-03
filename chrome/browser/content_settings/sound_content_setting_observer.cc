@@ -84,7 +84,8 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
 
 void SoundContentSettingObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame() && navigation_handle->HasCommitted() &&
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
       !navigation_handle->IsSameDocument()) {
     MuteOrUnmuteIfNecessary();
     logged_site_muted_ukm_ = false;

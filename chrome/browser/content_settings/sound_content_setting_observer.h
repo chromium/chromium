@@ -41,6 +41,8 @@ class SoundContentSettingObserver
                                const ContentSettingsPattern& secondary_pattern,
                                ContentSettingsType content_type) override;
 
+  bool HasLoggedSiteMutedUkmForTesting() { return logged_site_muted_ukm_; }
+
  private:
   explicit SoundContentSettingObserver(content::WebContents* web_contents);
   friend class content::WebContentsUserData<SoundContentSettingObserver>;
