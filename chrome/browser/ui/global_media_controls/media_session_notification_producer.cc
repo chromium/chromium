@@ -91,10 +91,10 @@ MediaSessionNotificationProducer::Session::Session(
     std::unique_ptr<media_message_center::MediaSessionNotificationItem> item,
     content::WebContents* web_contents,
     mojo::Remote<media_session::mojom::MediaController> controller)
-    : content::WebContentsObserver(web_contents),
-      owner_(owner),
+    : owner_(owner),
       id_(id),
       item_(std::move(item)),
+      web_contents_(web_contents),
       presentation_manager_(GetPresentationManager(web_contents)) {
   DCHECK(owner_);
   DCHECK(item_);
@@ -122,13 +122,6 @@ MediaSessionNotificationProducer::Session::~Session() {
 
   RecordDismissReason(dismiss_reason_.value_or(
       GlobalMediaControlsDismissReason::kMediaSessionStopped));
-}
-
-void MediaSessionNotificationProducer::Session::WebContentsDestroyed() {
-  // If the WebContents is destroyed, then we should just remove the item
-  // instead of freezing it.
-  set_dismiss_reason(GlobalMediaControlsDismissReason::kTabClosed);
-  owner_->RemoveItem(id_);
 }
 
 void MediaSessionNotificationProducer::Session::MediaSessionInfoChanged(
@@ -189,6 +182,11 @@ void MediaSessionNotificationProducer::Session::OnMediaRoutesChanged(
     owner_->HideMediaDialog();
     item_->Dismiss();
   }
+}
+
+void MediaSessionNotificationProducer::Session::OnRequestIdReleased() {
+  // The request ID is released when the tab is closed.
+  set_dismiss_reason(GlobalMediaControlsDismissReason::kTabClosed);
 }
 
 void MediaSessionNotificationProducer::Session::SetController(
@@ -427,6 +425,18 @@ void MediaSessionNotificationProducer::OnFocusLost(
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.insert(id);
   service_->OnNotificationChanged();
+}
+
+void MediaSessionNotificationProducer::OnRequestIdReleased(
+    const base::UnguessableToken& request_id) {
+  const std::string id = request_id.ToString();
+  auto it = sessions_.find(id);
+  if (it == sessions_.end())
+    return;
+
+  // When the tab is closed, just remove the item instead of freezing it.
+  it->second.OnRequestIdReleased();
+  RemoveItem(id);
 }
 
 void MediaSessionNotificationProducer::OnContainerClicked(

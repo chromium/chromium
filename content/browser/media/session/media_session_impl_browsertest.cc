@@ -91,6 +91,8 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
 
   MOCK_CONST_METHOD0(request_id, const base::UnguessableToken&());
 
+  MOCK_METHOD(void, ReleaseRequestId, (), (override));
+
   void ResolveRequest(bool result) {
     if (!async_mode_)
       return;

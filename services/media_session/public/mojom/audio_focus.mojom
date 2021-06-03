@@ -7,7 +7,7 @@ module media_session.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 // These are the different modes the AudioFocusManager can enforce audio focus.
 [Stable, Extensible]
@@ -73,6 +73,12 @@ interface AudioFocusObserver {
 
   // The given |session| lost audio focus.
   OnFocusLost@1(AudioFocusRequestState state);
+
+  // The given |request_id| will no longer be used. This is the |request_id|
+  // attribute of the AudioFocusRequestState struct given in |OnFocusGained()|
+  // and |OnFocusLost()|.
+  [MinVersion=8] OnRequestIdReleased@2(
+      mojo_base.mojom.UnguessableToken request_id);
 };
 
 // Controls audio focus for an associated request.
@@ -154,6 +160,12 @@ interface AudioFocusManager {
   [MinVersion=7] GetSourceFocusRequests@8(
       mojo_base.mojom.UnguessableToken source_id)
           => (array<AudioFocusRequestState> requests);
+
+  // Informs the AudioFocusManager that the given request ID will no longer be
+  // used. This is the |request_id| provided by the client in
+  // |RequestGroupedAudioFocus()|.
+  [MinVersion=8] RequestIdReleased@9(
+      mojo_base.mojom.UnguessableToken request_id);
 };
 
 // Provides debug information about audio focus requests.

@@ -264,6 +264,8 @@ MediaSessionAndroid* MediaSessionImpl::GetMediaSessionAndroid() {
 #endif
 
 void MediaSessionImpl::WebContentsDestroyed() {
+  delegate_->ReleaseRequestId();
+
   // This should only work for tests. In production, all the players should have
   // already been removed before WebContents is destroyed.
 

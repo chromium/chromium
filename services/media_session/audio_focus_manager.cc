@@ -84,6 +84,10 @@ class AudioFocusManager::SourceObserverHolder {
     observer_->OnFocusLost(std::move(session));
   }
 
+  void OnRequestIdReleased(const base::UnguessableToken& request_id) {
+    observer_->OnRequestIdReleased(request_id);
+  }
+
  private:
   const base::UnguessableToken identity_;
   mojo::Remote<mojom::AudioFocusObserver> observer_;
@@ -262,6 +266,18 @@ void AudioFocusManager::GetSourceFocusRequests(
   }
 
   std::move(callback).Run(std::move(requests));
+}
+
+void AudioFocusManager::RequestIdReleased(
+    const base::UnguessableToken& request_id) {
+  for (const auto& observer : observers_)
+    observer->OnRequestIdReleased(request_id);
+
+  const base::UnguessableToken& source_id = GetBindingIdentity();
+  for (auto& holder : source_observers_) {
+    if (holder->identity() == source_id)
+      holder->OnRequestIdReleased(request_id);
+  }
 }
 
 void AudioFocusManager::CreateActiveMediaController(

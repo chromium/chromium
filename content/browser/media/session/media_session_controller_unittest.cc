@@ -43,6 +43,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
   const base::UnguessableToken& request_id() const override {
     return base::UnguessableToken::Null();
   }
+  void ReleaseRequestId() override {}
 
  private:
   absl::optional<media_session::mojom::AudioFocusType> audio_focus_type_;

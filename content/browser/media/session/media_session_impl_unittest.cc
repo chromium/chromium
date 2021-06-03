@@ -62,6 +62,8 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
 
   MOCK_CONST_METHOD0(request_id, const base::UnguessableToken&());
 
+  MOCK_METHOD(void, ReleaseRequestId, (), (override));
+
   MediaSessionInfo::SessionState GetState() const {
     DCHECK(!session_info_.is_null());
     return session_info_->state;

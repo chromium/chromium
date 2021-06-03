@@ -46,6 +46,9 @@ class AudioFocusDelegate {
 
   // Retrieves the current request ID for the associated |MediaSession|.
   virtual const base::UnguessableToken& request_id() const = 0;
+
+  // Inform the AudioFocusManager that this request ID will no longer be used.
+  virtual void ReleaseRequestId() = 0;
 };
 
 }  // namespace content

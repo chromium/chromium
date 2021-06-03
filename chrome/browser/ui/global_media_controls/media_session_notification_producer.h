@@ -54,6 +54,7 @@ class MediaSessionNotificationProducer
       media_session::mojom::AudioFocusRequestStatePtr session) override;
   void OnFocusLost(
       media_session::mojom::AudioFocusRequestStatePtr session) override;
+  void OnRequestIdReleased(const base::UnguessableToken& request_id) override;
 
   // MediaNotificationContainerObserver implementation.
   void OnContainerClicked(const std::string& id) override;
@@ -106,8 +107,7 @@ class MediaSessionNotificationProducer
   friend class MediaToolbarButtonControllerTest;
 
   class Session
-      : public content::WebContentsObserver,
-        public media_session::mojom::MediaControllerObserver,
+      : public media_session::mojom::MediaControllerObserver,
         public media_router::WebContentsPresentationManager::Observer {
    public:
     Session(MediaSessionNotificationProducer* owner,
@@ -119,9 +119,6 @@ class MediaSessionNotificationProducer
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
     ~Session() override;
-
-    // content::WebContentsObserver:
-    void WebContentsDestroyed() override;
 
     // media_session::mojom::MediaControllerObserver:
     void MediaSessionInfoChanged(
@@ -140,6 +137,10 @@ class MediaSessionNotificationProducer
     // media_router::WebContentsPresentationManager::Observer:
     void OnMediaRoutesChanged(
         const std::vector<media_router::MediaRoute>& routes) override;
+
+    // Called when the request ID associated with this session is released (i.e.
+    // when the tab is closed).
+    void OnRequestIdReleased();
 
     media_message_center::MediaSessionNotificationItem* item() {
       return item_.get();
@@ -168,6 +169,8 @@ class MediaSessionNotificationProducer
     base::CallbackListSubscription
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback);
+
+    content::WebContents* web_contents() const { return web_contents_; }
 
     void SetPresentationManagerForTesting(
         base::WeakPtr<media_router::WebContentsPresentationManager>
@@ -218,6 +221,8 @@ class MediaSessionNotificationProducer
 
     // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
+
+    content::WebContents* const web_contents_;
 
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager_;

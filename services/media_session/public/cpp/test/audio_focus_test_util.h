@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestAudioFocusObserver
       media_session::mojom::AudioFocusRequestStatePtr session) override;
   void OnFocusLost(
       media_session::mojom::AudioFocusRequestStatePtr session) override;
+  void OnRequestIdReleased(const base::UnguessableToken& request_id) override {}
 
   void WaitForGainedEvent();
   void WaitForLostEvent();

@@ -54,6 +54,7 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
   const base::UnguessableToken& request_id() const override {
     return request_id_;
   }
+  void ReleaseRequestId() override;
 
  private:
   // Finishes an async audio focus request.
@@ -156,6 +157,19 @@ void AudioFocusDelegateDefault::MediaSessionInfoChanged(
     request_client_remote_->MediaSessionInfoChanged(session_info.Clone());
 
   session_info_ = session_info.Clone();
+}
+
+void AudioFocusDelegateDefault::ReleaseRequestId() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(
+          media_session::features::kMediaSessionService)) {
+    return;
+  }
+
+  EnsureServiceConnection();
+
+  audio_focus_->RequestIdReleased(request_id_);
 }
 
 void AudioFocusDelegateDefault::FinishAudioFocusRequest(AudioFocusType type,

@@ -31,6 +31,7 @@ class MediaInternalsAudioFocusHelper
       media_session::mojom::AudioFocusRequestStatePtr session) override;
   void OnFocusLost(
       media_session::mojom::AudioFocusRequestStatePtr session) override;
+  void OnRequestIdReleased(const base::UnguessableToken&) override {}
 
   // Sets whether we should listen to audio focus events.
   void SetEnabled(bool enabled);
