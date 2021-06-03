@@ -309,6 +309,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2979448359891869301">Екранната снимка не може да се разшири. Опитайте отново, когато телефонът не се използва за други цели.</translation>
+<translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2992473221983447149">Описания на изображенията</translation>

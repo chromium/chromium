@@ -309,6 +309,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2979448359891869301">Невозможно расширить скриншот. Освободите память телефона и повторите попытку.</translation>
+<translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
 <translation id="2989523299700148168">Недавние</translation>
 <translation id="2992473221983447149">Описания изображений</translation>

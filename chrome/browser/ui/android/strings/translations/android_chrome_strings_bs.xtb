@@ -309,6 +309,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
 <translation id="2979025552038692506">Odabrana je anonimna kartica</translation>
 <translation id="2979448359891869301">Nije moguće proširiti snimak ekrana. Pokušajte ponovo kada vaš telefon nije zauzet.</translation>
+<translation id="2979639724566107830">Otvori u novom prozoru</translation>
 <translation id="2987620471460279764">Tekst dijeljen s drugog uređaja</translation>
 <translation id="2989523299700148168">Nedavno posjećeno</translation>
 <translation id="2992473221983447149">Opisi slike</translation>

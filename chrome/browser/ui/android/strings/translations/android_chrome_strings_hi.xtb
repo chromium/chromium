@@ -309,6 +309,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2979448359891869301">और बड़ा स्क्रीनशॉट नहीं लिया जा सकता. जब आपका फ़ोन इस्तेमाल न हो रहा हो, तब कोशिश करें.</translation>
+<translation id="2979639724566107830">नई विंडो में खोलें</translation>
 <translation id="2987620471460279764">दूसरी साइटों से शेयर किया गया टेक्स्ट</translation>
 <translation id="2989523299700148168">हाल ही में देखे गए</translation>
 <translation id="2992473221983447149">इमेज के बारे में जानकारी</translation>

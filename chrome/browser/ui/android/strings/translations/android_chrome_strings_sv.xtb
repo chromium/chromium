@@ -309,6 +309,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
 <translation id="2979025552038692506">Vald inkognitoflik</translation>
 <translation id="2979448359891869301">Det går inte att ta en utökad skärmdump. Testa igen senare när telefonen är mindre hårt belastad.</translation>
+<translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2992473221983447149">Bildbeskrivningar</translation>

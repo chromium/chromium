@@ -309,6 +309,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
 <translation id="2979025552038692506">Scheda in incognito selezionata</translation>
 <translation id="2979448359891869301">Non puoi estendere lo screenshot. Riprova quando ci sono meno processi in esecuzione sul telefono.</translation>
+<translation id="2979639724566107830">Apri in un'altra finestra</translation>
 <translation id="2987620471460279764">Testo condiviso da un altro dispositivo</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2992473221983447149">Descrizioni delle immagini</translation>

@@ -309,6 +309,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2979448359891869301">Screenshottet kan ikke udvides. Prøv igen, når din telefon ikke er optaget.</translation>
+<translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
 <translation id="2992473221983447149">Billedbeskrivelser</translation>

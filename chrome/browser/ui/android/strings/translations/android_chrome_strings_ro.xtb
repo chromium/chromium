@@ -309,6 +309,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagină necitită}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagini necitite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> de pagini necitite}}</translation>
 <translation id="2979025552038692506">Fila incognito selectată</translation>
 <translation id="2979448359891869301">Nu se poate extinde captura de ecran. Încearcă din nou atunci când telefonul nu este ocupat cu alte operațiuni.</translation>
+<translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
 <translation id="2987620471460279764">Text trimis de pe alt dispozitiv</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
 <translation id="2992473221983447149">Descrierile imaginilor</translation>
@@ -1180,7 +1181,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8493948351860045254">Eliberează spațiu</translation>
 <translation id="8497726226069778601">Nu este nimic de văzut aici... deocamdată</translation>
 <translation id="8503559462189395349">Parole Chrome</translation>
-<translation id="8503813439785031346">Nume utilizator</translation>
+<translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8514477925623180633">Exportă parolele stocate în Chrome</translation>
 <translation id="8516012719330875537">Editor de imagini</translation>
 <translation id="8523928698583292556">Șterge parola stocată</translation>

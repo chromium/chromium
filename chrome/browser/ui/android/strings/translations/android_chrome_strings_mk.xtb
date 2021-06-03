@@ -309,6 +309,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
 <translation id="2979025552038692506">Избрана инкогнито-картичка</translation>
 <translation id="2979448359891869301">Не може да се прошири сликата од екранот. Обидете се повторно кога вашиот телефон нема да биде зафатен.</translation>
+<translation id="2979639724566107830">Отвори во нов прозорец</translation>
 <translation id="2987620471460279764">Текст споделен од друг уред</translation>
 <translation id="2989523299700148168">Неодамна посетени</translation>
 <translation id="2992473221983447149">Описи на слики</translation>
