@@ -511,15 +511,6 @@ void StartupTracingController::WaitUntilStopped() {
   run_loop.Run();
 }
 
-void StartupTracingController::ShutdownAndWaitForStopIfNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (should_continue_on_shutdown_)
-    return;
-
-  WaitUntilStopped();
-}
-
 // static
 void StartupTracingController::EmergencyStop() {
   if (GetIOThreadTaskRunner({})->RunsTasksInCurrentSequence()) {

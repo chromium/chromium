@@ -31,7 +31,6 @@ class CONTENT_EXPORT StartupTracingController {
 
   void StartIfNeeded();
   void WaitUntilStopped();
-  void ShutdownAndWaitForStopIfNeeded();
 
   // By default, a trace is written into a temporary file which then is renamed,
   // however this can lead to data loss when the browser process crashes.
@@ -69,10 +68,6 @@ class CONTENT_EXPORT StartupTracingController {
 
   bool is_finished_for_testing() const { return state_ == State::kStopped; }
 
-  void set_continue_on_shutdown_for_testing() {
-    should_continue_on_shutdown_ = true;
-  }
-
  private:
   void Stop(base::OnceClosure on_finished_callback);
 
@@ -97,8 +92,6 @@ class CONTENT_EXPORT StartupTracingController {
 
   std::string default_basename_;
   bool basename_for_test_set_ = false;
-  // Used for testing only
-  bool should_continue_on_shutdown_ = false;
 
   TempFilePolicy temp_file_policy_ = TempFilePolicy::kUseTemporaryFile;
 };
