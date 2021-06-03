@@ -21930,6 +21930,8 @@ Called by update_document_policy_enum.py.-->
     portrait dimension has 1 subtracted from the enum index to differentiate it
     from the landscape index value.
   </summary>
+  <int value="345599" label="480 x 720 (deprecated)"/>
+  <int value="345600" label="720 x 480 (deprecated)"/>
   <int value="349183" label="512 x 682"/>
   <int value="349184" label="682 x 512"/>
   <int value="387203" label="492 x 787"/>
@@ -21948,6 +21950,8 @@ Called by update_document_policy_enum.py.-->
   <int value="479037" label="923 x 519"/>
   <int value="482797" label="566 x 853"/>
   <int value="482798" label="853 x 566"/>
+  <int value="497663" label="576 x 864 (deprecated)"/>
+  <int value="497664" label="864 x 576 (deprecated)"/>
   <int value="502865" label="614 x 819"/>
   <int value="502866" label="819 x 614"/>
   <int value="505799" label="562 x 900"/>
@@ -21982,6 +21986,8 @@ Called by update_document_policy_enum.py.-->
   <int value="619500" label="1050 x 590"/>
   <int value="639599" label="600 x 1066"/>
   <int value="639600" label="1066 x 600"/>
+  <int value="641573" label="654 x 981 (deprecated)"/>
+  <int value="641574" label="981 x 654 (deprecated)"/>
   <int value="649139" label="698 x 930"/>
   <int value="649140" label="930 x 698"/>
   <int value="655359" label="640 x 1024"/>
@@ -22016,6 +22022,8 @@ Called by update_document_policy_enum.py.-->
   <int value="760602" label="1163 x 654"/>
   <int value="773534" label="695 x 1113"/>
   <int value="773535" label="1113 x 695"/>
+  <int value="777599" label="720 x 1080 (deprecated)"/>
+  <int value="777600" label="1080 x 720 (deprecated)"/>
   <int value="783731" label="723 x 1084"/>
   <int value="783732" label="1084 x 723"/>
   <int value="784183" label="664 x 1181"/>
@@ -22104,6 +22112,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1183704" label="1333 x 888"/>
   <int value="1189371" label="818 x 1454"/>
   <int value="1189372" label="1454 x 818"/>
+  <int value="1214999" label="900 x 1350 (deprecated)"/>
+  <int value="1215000" label="1350 x 900 (deprecated)"/>
   <int value="1217311" label="872 x 1396"/>
   <int value="1217312" label="1396 x 872"/>
   <int value="1225079" label="830 x 1476"/>
@@ -22150,6 +22160,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1536721" label="1517 x 1013"/>
   <int value="1567190" label="939 x 1669"/>
   <int value="1567191" label="1669 x 939"/>
+  <int value="1585175" label="1028 x 1542 (deprecated)"/>
+  <int value="1585176" label="1542 x 1028 (deprecated)"/>
   <int value="1599999" label="1000 x 1600"/>
   <int value="1600000" label="1600 x 1000"/>
   <int value="1603813" label="1097 x 1462"/>
@@ -22198,6 +22210,8 @@ Called by update_document_policy_enum.py.-->
   <int value="2070350" label="1762 x 1175"/>
   <int value="2073599" label="1080 x 1920"/>
   <int value="2073600" label="1920 x 1080"/>
+  <int value="2159999" label="1200 x 1800 (deprecated)"/>
+  <int value="2160000" label="1800 x 1200 (deprecated)"/>
   <int value="2183679" label="1280 x 1706"/>
   <int value="2183680" label="1706 x 1280"/>
   <int value="2219191" label="1214 x 1828"/>
