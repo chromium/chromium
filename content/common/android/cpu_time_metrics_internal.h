@@ -43,6 +43,25 @@ enum class ProcessTypeForUma {
   kMaxValue = kPpapiBroker,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with power_scheduler::PowerMode.
+enum class PowerModeForUma {
+  kIdle = 0,
+  kAudible = 1,
+  kLoading = 2,
+  kAnimation = 3,
+  kResponse = 4,
+  kNonWebActivity = 5,
+  kBackground = 6,
+  kCharging = 7,
+  kNopAnimation = 8,
+  kVideoPlayback = 9,
+  kLoadingAnimation = 10,
+  kMainThreadAnimation = 11,
+  kMaxValue = kMainThreadAnimation,
+};
+
 // Samples the process's CPU time after a specific number of task were executed
 // on the current thread (process main). The number of tasks is a crude proxy
 // for CPU activity within this process. We sample more frequently when the
@@ -76,7 +95,8 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   void PerformFullCollectionForTesting();
   void WaitForCollectionForTesting() const;
 
-  static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting();
+  static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting(
+      power_scheduler::PowerModeArbiter* arbiter);
   static void SetIgnoreHistogramAllocatorForTesting(bool ignore);
 
  private:
@@ -84,7 +104,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
 
   class DetailedCpuTimeMetrics;
 
-  ProcessCpuTimeMetrics();
+  explicit ProcessCpuTimeMetrics(power_scheduler::PowerModeArbiter* arbiter);
 
   void InitializeOnThreadPool();
   void OnVisibilityChangedOnThreadPool(bool visible);
@@ -97,6 +117,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   static constexpr int kReportAfterEveryNTasksOtherProcess = 1000;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  power_scheduler::PowerModeArbiter* const arbiter_;
 
   // Accessed on main thread.
   SEQUENCE_CHECKER(main_thread_);
