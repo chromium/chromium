@@ -504,34 +504,8 @@ bool GLSupportsFormat(ResourceFormat format) {
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-bool HasVkFormat(ResourceFormat format) {
-  switch (format) {
-    case RGBA_8888:
-    case RGBA_4444:
-    case BGRA_8888:
-    case RED_8:
-    case RGB_565:
-    case BGR_565:
-    case RG_88:
-    case RGBA_F16:
-    case R16_EXT:
-    case RG16_EXT:
-    case RGBX_8888:
-    case BGRX_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case ETC1:
-      return true;
-    default:
-      return false;
-  }
-}
-
-VkFormat ToVkFormat(ResourceFormat format) {
+namespace {
+VkFormat ToVkFormatInternal(ResourceFormat format) {
   switch (format) {
     case RGBA_8888:
       return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
@@ -572,11 +546,22 @@ VkFormat ToVkFormat(ResourceFormat format) {
     case ETC1:
       return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
     case LUMINANCE_F16:
+      return VK_FORMAT_R16_SFLOAT;
     case P010:
       break;
   }
-  NOTREACHED() << "Unsupported format " << format;
   return VK_FORMAT_UNDEFINED;
+}
+}  // namespace
+
+bool HasVkFormat(ResourceFormat format) {
+  return ToVkFormatInternal(format) != VK_FORMAT_UNDEFINED;
+}
+
+VkFormat ToVkFormat(ResourceFormat format) {
+  auto result = ToVkFormatInternal(format);
+  DCHECK_NE(result, VK_FORMAT_UNDEFINED) << "Unsupported format " << format;
+  return result;
 }
 #endif
 
