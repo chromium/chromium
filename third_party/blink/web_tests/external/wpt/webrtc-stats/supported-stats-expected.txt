@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 195 PASS, 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 196 PASS, 114 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -111,7 +111,7 @@ PASS outbound-rtp's totalEncodeTime
 PASS outbound-rtp's totalPacketSendDelay
 FAIL outbound-rtp's averageRtcpInterval assert_true: Is averageRtcpInterval present expected true got false
 PASS outbound-rtp's qualityLimitationReason
-FAIL outbound-rtp's qualityLimitationDurations assert_true: Is qualityLimitationDurations present expected true got false
+PASS outbound-rtp's qualityLimitationDurations
 PASS outbound-rtp's qualityLimitationResolutionChanges
 FAIL outbound-rtp's perDscpPacketsSent assert_true: Is perDscpPacketsSent present expected true got false
 PASS outbound-rtp's nackCount

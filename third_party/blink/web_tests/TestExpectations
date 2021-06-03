@@ -6924,9 +6924,6 @@ crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/bufferedAmount/bu
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/events/018.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 
-# Temporarily disable to unblock a WebRTC roll
-crbug.com/webrtc/10686 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
-
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/css/css-typed-om/idlharness.html [ Failure ]
 crbug.com/1209223 external/wpt/html/dom/idlharness.https.html?exclude=(Document|Window|HTML.\*) [ Failure ]
