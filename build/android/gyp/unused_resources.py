@@ -24,16 +24,21 @@ def main(args):
   parser.add_argument(
       '--dependencies-res-zips',
       required=True,
+      action='append',
       help='Resources zip archives to investigate for unused resources.')
-  parser.add_argument('--dex',
+  parser.add_argument('--dexes',
+                      action='append',
                       required=True,
                       help='Path to dex file, or zip with dex files.')
   parser.add_argument(
       '--proguard-mapping',
-      required=True,
       help='Path to proguard mapping file for the optimized dex.')
-  parser.add_argument('--r-text', required=True, help='Path to R.txt')
-  parser.add_argument('--android-manifest',
+  parser.add_argument('--r-texts',
+                      action='append',
+                      required=True,
+                      help='Path to R.txt')
+  parser.add_argument('--android-manifests',
+                      action='append',
                       required=True,
                       help='Path to AndroidManifest')
   parser.add_argument('--output-config',
@@ -54,20 +59,31 @@ def main(args):
     for dependency_res_zip in options.dependencies_res_zips:
       dep_subdirs += resource_utils.ExtractDeps([dependency_res_zip], temp_dir)
 
-    build_utils.CheckOutput([
-        options.script, '--rtxts', options.r_text, '--manifests',
-        options.android_manifest, '--resourceDirs', ':'.join(dep_subdirs),
-        '--dex', options.dex, '--mapping', options.proguard_mapping,
-        '--outputConfig', options.output_config
-    ])
+    cmd = [
+        options.script,
+        '--rtxts',
+        ':'.join(options.r_texts),
+        '--manifests',
+        ':'.join(options.android_manifests),
+        '--resourceDirs',
+        ':'.join(dep_subdirs),
+        '--dexes',
+        ':'.join(options.dexes),
+        '--outputConfig',
+        options.output_config,
+    ]
+    if options.proguard_mapping:
+      cmd += [
+          '--mapping',
+          options.proguard_mapping,
+      ]
+    build_utils.CheckOutput(cmd)
 
   if options.depfile:
-    depfile_deps = options.dependencies_res_zips + [
-        options.r_text,
-        options.android_manifest,
-        options.dex,
-        options.proguard_mapping,
-    ]
+    depfile_deps = (options.dependencies_res_zips + options.r_texts +
+                    options.android_manifests + options.dexes)
+    if options.proguard_mapping:
+      depfile_deps.append(options.proguard_mapping)
     build_utils.WriteDepfile(options.depfile, options.output_config,
                              depfile_deps)
 

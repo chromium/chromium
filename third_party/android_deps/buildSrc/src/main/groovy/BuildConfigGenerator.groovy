@@ -655,7 +655,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # This target does not come with most of its dependencies and is\n')
                 sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
-                sb.append('  visibility = [ "//build/android/gyp/resources_shrinker:*" ]\n')
+                sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
                sb.append('requires_android = true')
