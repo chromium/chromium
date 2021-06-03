@@ -246,7 +246,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       : load_bidder_worklet_and_generate_bid_callback_(
             std::move(load_bidder_worklet_and_generate_bid_callback)),
         url_loader_factory_(std::move(pending_url_loader_factory)),
-        receiver_(this, std::move(pending_receiver)) {}
+        receiver_(this, std::move(pending_receiver)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &MockBidderWorklet::OnPipeClosed, base::Unretained(this)));
+  }
 
   MockBidderWorklet(const MockBidderWorklet&) = delete;
   const MockBidderWorklet& operator=(const MockBidderWorklet&) = delete;
@@ -315,10 +318,20 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     return url_loader_factory_;
   }
 
+  // Flush the receiver pipe and return whether or not its closed.
+  bool PipeIsClosed() {
+    receiver_.FlushForTesting();
+    return pipe_closed_;
+  }
+
  private:
+  void OnPipeClosed() { pipe_closed_ = true; }
+
   auction_worklet::mojom::AuctionWorkletService::
       LoadBidderWorkletAndGenerateBidCallback
           load_bidder_worklet_and_generate_bid_callback_;
+
+  bool pipe_closed_ = false;
 
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
   ReportWinCallback report_win_callback_;
@@ -441,6 +454,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   mojo::Remote<network::mojom::URLLoaderFactory>& url_loader_factory() {
     return url_loader_factory_;
   }
+
+  void Flush() { receiver_.FlushForTesting(); }
 
  private:
   auction_worklet::mojom::AuctionWorkletService::LoadSellerWorkletCallback
@@ -2115,6 +2130,171 @@ TEST_F(AuctionRunnerTest, UrlRequestProtection) {
   // Reset the service, so the uninvoke worklet loading callbacks can be
   // destroyed without DCHECKing.
   mock_worklet_service_.reset();
+}
+
+// Check that BidderWorklets that don't make a bid are destroyed immediately.
+TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_worklet_service_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder1, kBidder1Name);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder2, kBidder2Name);
+  ASSERT_TRUE(bidder2_worklet);
+
+  seller_worklet->CompleteLoading();
+
+  bidder1_worklet->CompleteLoadingWithoutBid();
+  // Need to flush the service pipe to make sure the AuctionRunner has received
+  // the bid.
+  mock_worklet_service_->Flush();
+  // The AuctionRunner should have closed the pipe.
+  EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
+
+  // Bidder2 returns a bid, which is then scored.
+  bidder2_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad2.com/"));
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
+  EXPECT_EQ(7, score_ad_params->bid);
+  seller_worklet->InvokeScoreAdCallback(11 /* score */);
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  bidder2_worklet->WaitForReportWin();
+  bidder2_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  // Bidder2 won.
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// Check that BidderWorklets are destroyed as soon as there's a higher bid. The
+// first BidderWorklet to have its bid scored is the one that loses the auction.
+TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletFirstBidderLoses) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_worklet_service_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder1, kBidder1Name);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder2, kBidder2Name);
+  ASSERT_TRUE(bidder2_worklet);
+
+  seller_worklet->CompleteLoading();
+
+  // Bidder1 returns a bid, which is then scored.
+  bidder1_worklet->CompleteLoadingAndBid(5 /* bid */, GURL("https://ad1.com/"));
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
+  EXPECT_EQ(5, score_ad_params->bid);
+  seller_worklet->InvokeScoreAdCallback(10 /* score */);
+  // Need to flush the service pipe to make sure the AuctionRunner has received
+  // the score.
+  mock_worklet_service_->Flush();
+  // The AuctionRunner should not have closed the bidder pipe, since it could
+  // still be the winning bid.
+  EXPECT_FALSE(bidder1_worklet->PipeIsClosed());
+
+  // Bidder2 returns a bid, which is then scored.
+  bidder2_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad2.com/"));
+  score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
+  EXPECT_EQ(7, score_ad_params->bid);
+  seller_worklet->InvokeScoreAdCallback(11 /* score */);
+  // Need to flush the service pipe to make sure the AuctionRunner has received
+  // the score.
+  seller_worklet->Flush();
+  // The losing bidder should now be destroyed.
+  EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  bidder2_worklet->WaitForReportWin();
+  bidder2_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  // Bidder2 won.
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// Check that BidderWorklets are destroyed as soon as there's a higher bid. The
+// last BidderWorklet to have its bid scored is the one that loses the auction.
+TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletLastBidderLoses) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_worklet_service_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder1, kBidder1Name);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_worklet_service_->TakeBidderWorklet(kBidder2, kBidder2Name);
+  ASSERT_TRUE(bidder2_worklet);
+
+  seller_worklet->CompleteLoading();
+
+  // Bidder1 returns a bid, which is then scored.
+  bidder1_worklet->CompleteLoadingAndBid(5 /* bid */, GURL("https://ad1.com/"));
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
+  EXPECT_EQ(5, score_ad_params->bid);
+  seller_worklet->InvokeScoreAdCallback(11 /* score */);
+
+  // Bidder2 returns a bid, which is then scored.
+  bidder2_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad2.com/"));
+  score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
+  EXPECT_EQ(7, score_ad_params->bid);
+  seller_worklet->InvokeScoreAdCallback(10 /* score */);
+  // Need to flush the service pipe to make sure the AuctionRunner has received
+  // the score.
+  seller_worklet->Flush();
+  // The losing bidder should now be destroyed.
+  EXPECT_TRUE(bidder2_worklet->PipeIsClosed());
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  // Bidder1 won.
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 }  // namespace

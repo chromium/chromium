@@ -31,19 +31,6 @@ class InterestGroupManager;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
-//
-// At present it initiates all fetches in parallel, running all bidder scripts
-// once they and any trusted signals they need are ready, then when all bids are
-// in runs all the scoring, and finally the reporting worklets.
-//
-// TODO(morlovich): There is no need to wait for all bidders to finish to start
-// scoring.
-//
-// TODO(mmenke): Merge this with `ad_auction`, and provide worklet-specific
-// URLLoaderFactories.
-//
-// TODO(mmenke): Add checking of values returned by auctions (e.g., for bids <=
-// 0).
 class CONTENT_EXPORT AuctionRunner {
  public:
   // Invoked when a FLEDGE auction is complete.
@@ -121,6 +108,30 @@ class CONTENT_EXPORT AuctionRunner {
 
  private:
   struct BidState {
+    enum class State {
+      // Waiting for all the interest groups to load before starting to load
+      // worklets.
+      //
+      // TODO(mmenke): Consider removing this phase.
+      kWaitingToLoadWorklet,
+
+      // Loading the bidder worklet script / trusted data and generating the
+      // bid.
+      kGeneratingBid,
+
+      // Waiting on the seller worklet to load.
+      kWaitingOnSellerWorkletLoad,
+
+      // Waiting on the seller worklet to score the bid.
+      kSellerScoringBid,
+
+      // Seller worklet has completed scoring the bid, or doesn't need to. If
+      // this is not potentially the winning bidder, the worklet has been
+      // unloaded. Otherwise, the worklet is still in memory, as it may still be
+      // necessary to call reporting methods, if this is the winning bidder.
+      kScoringComplete,
+    };
+
     BidState();
     BidState(BidState&&);
     ~BidState();
@@ -130,6 +141,8 @@ class CONTENT_EXPORT AuctionRunner {
     // copiable.
     BidState(BidState&) = delete;
     BidState& operator=(BidState&) = delete;
+
+    State state = State::kWaitingToLoadWorklet;
 
     auction_worklet::mojom::BiddingInterestGroupPtr bidder;
 
@@ -174,38 +187,35 @@ class CONTENT_EXPORT AuctionRunner {
                              const std::vector<std::string>& errors);
 
   // True if all bid results and the seller script load are complete.
-  bool ReadyToScore() const { return outstanding_bids_ == 0 && seller_loaded_; }
+  bool AllBidsScored() const { return outstanding_bids_ == 0; }
   void OnSellerWorkletLoaded(bool load_result,
                              const std::vector<std::string>& errors);
 
-  // Calls into the seller asynchronously to score each outstanding bid, in
-  // series. Once there are no outstanding bids, proceeds to selecting the
-  // winner and running the Worklets reporting methods.
-  void ScoreOne();
-  void ScoreBid(const BidState* state);
+  // Calls into the seller asynchronously to score the passed in bid.
+  void ScoreBid(BidState* state);
   // Callback from ScoreBid().
-  void OnBidScored(double score, const std::vector<std::string>& errors);
+  void OnBidScored(BidState* state,
+                   double score,
+                   const std::vector<std::string>& errors);
 
   std::string AdRenderFingerprint(const BidState* state);
   absl::optional<std::string> PerBuyerSignals(const BidState* state);
 
-  // Completes the auction, invoking `callback_`. Consumer must be able to
-  // safely delete `this` when the callback is invoked.
-  void CompleteAuction();
+  // If there are no `outstanding_bids_`, starts starts completing the auction,
+  // either invoking `callback_` or calling reporting methods on worklets.
+  // Consumer must be able to safely delete `this` when the callback is invoked.
+  void MaybeCompleteAuction();
 
   // Sequence of asynchronous methods to call into the bidder/seller results to
   // report a a win, Will ultimately invoke ReportSuccess(), which will delete
   // the auction.
-  void ReportSellerResult(BidState* state);
+  void ReportSellerResult();
   void OnReportSellerResultComplete(
-      BidState* best_bid,
       const absl::optional<std::string>& signals_for_winner,
       const absl::optional<GURL>& seller_report_url,
       const std::vector<std::string>& error_msgs);
-  void ReportBidWin(BidState* state,
-                    const absl::optional<std::string>& signals_for_winner);
-  void OnReportBidWinComplete(const BidState* best_bid,
-                              const absl::optional<GURL>& bidder_report_url,
+  void ReportBidWin(const absl::optional<std::string>& signals_for_winner);
+  void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
   // These complete the auction, invoking `callback_` and preventing any future
@@ -214,7 +224,7 @@ class CONTENT_EXPORT AuctionRunner {
   void FailAuction();
   // Appends `error` to `errors_` before calling FailAuciton().
   void FailAuctionWithError(std::string error);
-  void ReportSuccess(const BidState* state);
+  void ReportSuccess();
 
   // Closes all open pipes, to avoid receiving any Mojo callbacks after
   // completion.
@@ -234,12 +244,20 @@ class CONTENT_EXPORT AuctionRunner {
   const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
-  // State for the bidding phase.
-  int outstanding_bids_;  // number of bids for which we're waiting on a fetch.
-  std::vector<BidState> bid_states_;  // State of all loaded bidders.
+  // Number of bids which the seller has not yet scored. These bids may be
+  // fetching URLs, generating bids, waiting for the seller worklet to load, or
+  // the seller worklet may be scoring their bids.
+  int outstanding_bids_;
+  // State of all loaded interest groups.
+  std::vector<BidState> bid_states_;
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_ = base::Time::Now();
+
+  // The bidder with the highest scoring bid so far. No other scored bidder
+  // worklet can win the auction, so the other worklets are all unloaded right
+  // after scoring.
+  BidState* top_bidder_ = nullptr;
 
   // URLLoaderFactory proxy class configured only to load the URL the seller
   // needs.
@@ -252,7 +270,6 @@ class CONTENT_EXPORT AuctionRunner {
   // load failed, the entire process is aborted since there is nothing useful
   // that can be done.
   bool seller_loaded_ = false;
-  size_t seller_considering_ = 0;
 
   // Seller script reportResult() results.
   absl::optional<GURL> seller_report_url_;
