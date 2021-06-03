@@ -227,6 +227,12 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
 
   int default_button = ui::DIALOG_BUTTON_CANCEL;
 
+  // If the prompt is related to requesting an extension, set the default button
+  // to OK.
+  if (prompt_->type() ==
+      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT)
+    default_button = ui::DIALOG_BUTTON_OK;
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // When we require parent permission next, we
   // set the default button to OK.

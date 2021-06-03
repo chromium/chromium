@@ -265,6 +265,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
     case REMOTE_INSTALL_PROMPT:
     case REPAIR_PROMPT:
     case DELEGATED_PERMISSIONS_PROMPT:
+    case EXTENSION_REQUEST_PROMPT:
       id = IDS_CANCEL;
       break;
     case PERMISSIONS_PROMPT:
@@ -274,7 +275,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
       id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ABORT_BUTTON;
       break;
     case POST_INSTALL_PERMISSIONS_PROMPT:
-    case EXTENSION_REQUEST_PROMPT:
     case EXTENSION_PENDING_REQUEST_PROMPT:
       id = IDS_CLOSE;
       break;
