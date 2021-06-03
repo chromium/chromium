@@ -20,7 +20,7 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
-import org.chromium.components.autofill.EditableOption;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * @param <T> The type of |EditableOption| that a concrete instance of this class is created for,
  * such as |AutofillContact|, |AutofillPaymentMethod|, etc.
  */
-public abstract class AssistantCollectUserDataSection<T extends EditableOption> {
+public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
     private class Item {
         View mFullView;
         T mOption;
@@ -301,7 +301,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
                         return;
                     }
                     selectItem(item, /*notify=*/true);
-                    if (item.mOption.isComplete()) {
+                    if (item.mOption.mOption.isComplete()) {
                         // Workaround for Android bug: a layout transition may cause the newly
                         // checked radiobutton to not render properly.
                         mSectionExpander.post(() -> mSectionExpander.setExpanded(false));
@@ -325,8 +325,9 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         updateVisibility();
 
         if (mListener != null && notify) {
-            mListener.onResult(
-                    item.mOption != null && item.mOption.isComplete() ? item.mOption : null);
+            mListener.onResult(item.mOption != null && item.mOption.mOption.isComplete()
+                            ? item.mOption
+                            : null);
         }
     }
 

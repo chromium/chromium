@@ -53,29 +53,17 @@ public class AssistantCollectUserDataModel extends PropertyModel {
      * @param <T> The type of |EditableOption| that a concrete instance of this class is created
      * for, such as |AutofillContact|, |AutofillPaymentMethod|, etc.
      */
-    // TODO(b/180705720): Drop the "extends EditableOption" once AssistantLoginChoice has been
-    //  transitioned. Change AssistantCollectUserDataSection to <T extends OptionModel>. Remove
-    //  isComplete from this class.
-    public static class OptionModel<T extends EditableOption> extends EditableOption {
+    public static class OptionModel<T extends EditableOption> {
         public T mOption;
         public List<String> mErrors;
 
         public OptionModel(T option, List<String> errors) {
-            super(option.getIdentifier(), /* label= */ null, /* sublabel= */ null,
-                    /* tertiarylabel= */ null, /* icon= */ null);
             this.mOption = option;
             this.mErrors = errors;
         }
 
         public OptionModel(T option) {
             this(option, new ArrayList<>());
-        }
-
-        @Override
-        public boolean isComplete() {
-            // Evaluate the option's completeness in terms of the editor's expectations. This does
-            // not take our own validation into account.
-            return this.mOption.isComplete();
         }
     }
 
@@ -110,6 +98,13 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
         public PaymentInstrumentModel(AutofillPaymentInstrument paymentInstrument) {
             super(paymentInstrument);
+        }
+    }
+
+    /** Model wrapper for an {@code AssistantLoginChoice}. */
+    public static class LoginChoiceModel extends OptionModel<AssistantLoginChoice> {
+        public LoginChoiceModel(AssistantLoginChoice loginChoice) {
+            super(loginChoice);
         }
     }
 
