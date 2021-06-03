@@ -22,20 +22,22 @@ namespace full_restore {
 class ArcGhostWindowView : public views::View {
  public:
   explicit ArcGhostWindowView(int throbber_diameter,
-                              const std::string& app_id,
                               uint32_t theme_color);
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
 
+  void LoadIcon(const std::string& app_id);
+
  private:
   void InitLayout(uint32_t theme_color, int diameter);
-
-  void LoadIcon(const std::string& app_id);
   void OnIconLoaded(apps::mojom::IconType icon_type,
                     apps::mojom::IconValuePtr icon_value);
 
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
   views::ImageView* icon_view_;
+  base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)>
+      icon_loaded_cb_for_testing_;
 
   base::WeakPtrFactory<ArcGhostWindowView> weak_ptr_factory_{this};
 };

@@ -51,10 +51,8 @@ namespace chromeos {
 namespace full_restore {
 
 ArcGhostWindowView::ArcGhostWindowView(int throbber_diameter,
-                                       const std::string& app_id,
                                        uint32_t theme_color) {
   InitLayout(theme_color, throbber_diameter);
-  LoadIcon(app_id);
 }
 
 ArcGhostWindowView::~ArcGhostWindowView() = default;
@@ -90,12 +88,15 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
 
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+
   apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
       apps::mojom::AppType::kArc, app_id, icon_type,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       /*allow_placeholder_icon=*/false,
-      base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), icon_type));
+      icon_loaded_cb_for_testing_.is_null()
+          ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
+                           weak_ptr_factory_.GetWeakPtr(), icon_type)
+          : std::move(icon_loaded_cb_for_testing_));
 }
 
 void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,

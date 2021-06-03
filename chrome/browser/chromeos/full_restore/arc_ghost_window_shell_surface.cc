@@ -122,8 +122,9 @@ void ArcGhostWindowShellSurface::OverrideInitParams(
 
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
                                                     uint32_t theme_color) {
-  exo::ShellSurfaceBase::OverlayParams overlay_params(
-      std::make_unique<ArcGhostWindowView>(kDiameter, app_id, theme_color));
+  auto view = std::make_unique<ArcGhostWindowView>(kDiameter, theme_color);
+  view->LoadIcon(app_id);
+  exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(view));
   overlay_params.translucent = true;
   overlay_params.overlaps_frame = false;
   AddOverlay(std::move(overlay_params));
