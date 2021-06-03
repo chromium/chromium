@@ -145,7 +145,7 @@ bool g_is_opening_new_window = false;
 // there are only minimized windows), it will unminimize it.
 Browser* ActivateBrowser(Profile* profile) {
   Browser* browser = chrome::FindLastActiveWithProfile(
-      profile->IsGuestSession()
+      (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : profile);
   if (browser)
@@ -1201,8 +1201,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // locked profile needs authentication and the system profile cannot have a
   // browser.
   const PrefService* prefService = g_browser_process->local_state();
+  bool is_last_profile_guest =
+      lastProfile->IsGuestSession() || lastProfile->IsEphemeralGuestProfile();
   if (IsProfileSignedOut(lastProfile) || lastProfile->IsSystemProfile() ||
-      (lastProfile->IsGuestSession() && prefService &&
+      (is_last_profile_guest && prefService &&
        !prefService->GetBoolean(prefs::kBrowserGuestModeEnabled))) {
     ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     return;
@@ -1404,8 +1406,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // to AppKit as there's nothing that it can do either.
     return NO;
   }
-  if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
-      lastProfile->IsSystemProfile()) {
+  if (lastProfile->IsGuestSession() || lastProfile->IsEphemeralGuestProfile() ||
+      IsProfileSignedOut(lastProfile) || lastProfile->IsSystemProfile()) {
     ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
   } else if (ProfilePicker::ShouldShowAtLaunch()) {
     ProfilePicker::Show(
@@ -1543,7 +1545,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   Profile* profile = [self safeLastProfileForNewWindows];
 
   const PrefService* prefs = g_browser_process->local_state();
-  return !profile->IsGuestSession() ||
+  return (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) ||
          prefs->GetBoolean(prefs::kBrowserGuestModeEnabled);
 }
 

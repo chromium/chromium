@@ -2962,6 +2962,24 @@
             ]
         }
     ],
+    "DiceWebSigninInterception": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithEphemeralGuest20210526",
+                    "enable_features": [
+                        "DiceWebSigninInterception",
+                        "EnableEphemeralGuestProfilesOnDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "DirectActions": [
         {
             "platforms": [
@@ -7381,24 +7399,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SmoothnessModeForAnimatedScrolls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SpacesM2": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DiceWebSigninInterception",
-                        "NewProfilePicker"
                     ]
                 }
             ]

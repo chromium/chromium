@@ -58,6 +58,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -403,8 +404,10 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        OpenGuestProfileOnlyIfGuestModeIsEnabled) {
   CreateAndWaitForSystemProfile();
+  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, chrome::kGuestProfileDir);
+  local_state->SetString(prefs::kProfileLastUsed,
+                         guest_profile_path.BaseName().value());
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
 
   AppController* ac = base::mac::ObjCCast<AppController>(
@@ -412,7 +415,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   ASSERT_TRUE(ac);
 
   Profile* profile = [ac lastProfile];
-  EXPECT_TRUE(profile->IsGuestSession());
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(guest_profile_path, profile->GetPath());
+  if (base::FeatureList::IsEnabled(
+          features::kEnableEphemeralGuestProfilesOnDesktop)) {
+    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
+  } else {
+    EXPECT_TRUE(profile->IsGuestSession());
+  }
 
   NSMenu* menu = [ac applicationDockMenu:NSApp];
   ASSERT_TRUE(menu);
@@ -444,15 +454,23 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // Create the guest profile, and set it as the last used profile so the
   // app controller can use it on init.
   CreateAndWaitForSystemProfile();
+  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, chrome::kGuestProfileDir);
+  local_state->SetString(prefs::kProfileLastUsed,
+                         guest_profile_path.BaseName().value());
 
   // Prohibiting guest mode forces the user manager flow for About Chrome.
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
 
-  Profile* guest_profile = [ac lastProfile];
-  EXPECT_EQ(ProfileManager::GetGuestProfilePath(), guest_profile->GetPath());
-  EXPECT_TRUE(guest_profile->IsGuestSession());
+  Profile* profile = [ac lastProfile];
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(guest_profile_path, profile->GetPath());
+  if (base::FeatureList::IsEnabled(
+          features::kEnableEphemeralGuestProfilesOnDesktop)) {
+    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
+  } else {
+    EXPECT_TRUE(profile->IsGuestSession());
+  }
 
   // Tell the browser to open About Chrome.
   EXPECT_EQ(1u, active_browser_list()->size());
@@ -518,15 +536,22 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // Create the system profile. Set the guest as the last used profile so the
   // app controller can use it on init.
   CreateAndWaitForSystemProfile();
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, chrome::kGuestProfileDir);
+  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+  g_browser_process->local_state()->SetString(
+      prefs::kProfileLastUsed, guest_profile_path.BaseName().value());
 
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
 
   Profile* profile = [ac lastProfile];
-  EXPECT_EQ(ProfileManager::GetGuestProfilePath(), profile->GetPath());
-  EXPECT_TRUE(profile->IsGuestSession());
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(guest_profile_path, profile->GetPath());
+  if (base::FeatureList::IsEnabled(
+          features::kEnableEphemeralGuestProfilesOnDesktop)) {
+    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
+  } else {
+    EXPECT_TRUE(profile->IsGuestSession());
+  }
 
   EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
