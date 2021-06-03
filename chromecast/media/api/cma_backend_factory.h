@@ -7,15 +7,24 @@
 
 #include <memory>
 
+namespace service_manager {
+class Connector;
+}  // namespace service_manager
+
 namespace chromecast {
 namespace media {
 
 class CmaBackend;
+class MediaPipelineBackendManager;
 struct MediaPipelineDeviceParams;
 
 // Abstract base class to create CmaBackend.
 class CmaBackendFactory {
  public:
+  static std::unique_ptr<CmaBackendFactory> Create(
+      MediaPipelineBackendManager* media_pipeline_backend_manager,
+      std::unique_ptr<service_manager::Connector> connector);
+
   virtual ~CmaBackendFactory() = default;
 
   // Creates a CMA backend. Must be called on the same thread as
