@@ -4167,7 +4167,7 @@ ci.fyi_ios_builder(
     ),
     schedule = "0 1-23/6 * * *",
     triggered_by = [],
-    xcode = xcode.x11e608cwk,
+    xcode = xcode.x12e262wk,
 )
 
 ci.fyi_ios_builder(
