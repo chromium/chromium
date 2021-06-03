@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
     std::vector<CableEidArray> uuids;
   };
 
-  static const BluetoothUUID& CableAdvertisementUUID();
+  static const BluetoothUUID& GoogleCableUUID();
   static bool IsCableDevice(const BluetoothDevice* device);
 
   // ResultDebugString returns a string containing a hex dump of |eid| and a

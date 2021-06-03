@@ -46,7 +46,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
 
 #if defined(OS_MAC)
   auto list = std::make_unique<BluetoothAdvertisement::UUIDList>();
-  list->emplace_back(kCableAdvertisementUUID16);
+  list->emplace_back(kGoogleCableUUID16);
   list->emplace_back(fido_parsing_utils::ConvertBytesToUuid(client_eid));
   advertisement_data->set_service_uuids(std::move(list));
 
@@ -93,8 +93,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   service_data_value[1] = 1 /* version */;
   std::copy(client_eid.begin(), client_eid.end(),
             service_data_value.begin() + 2);
-  service_data->emplace(kCableAdvertisementUUID128,
-                        std::move(service_data_value));
+  service_data->emplace(kGoogleCableUUID128, std::move(service_data_value));
   advertisement_data->set_service_data(std::move(service_data));
 #endif
 
@@ -102,17 +101,16 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
 }
 
 static bool Is128BitUUID(const CableEidArray& eid) {
-  // Abbreviated UUIDs have a fixed, 12-byte suffix. kCableAdvertisementUUID
+  // Abbreviated UUIDs have a fixed, 12-byte suffix. kGoogleCableUUID
   // is one such abbeviated UUID.
-  static_assert(sizeof(kCableAdvertisementUUID) == EXTENT(eid), "");
-  return memcmp(eid.data() + 4, kCableAdvertisementUUID + 4,
-                sizeof(kCableAdvertisementUUID) - 4) != 0;
+  static_assert(sizeof(kGoogleCableUUID) == EXTENT(eid), "");
+  return memcmp(eid.data() + 4, kGoogleCableUUID + 4,
+                sizeof(kGoogleCableUUID) - 4) != 0;
 }
 
 static bool IsCableUUID(const CableEidArray& eid) {
-  static_assert(sizeof(kCableAdvertisementUUID) == EXTENT(eid), "");
-  return memcmp(eid.data(), kCableAdvertisementUUID,
-                sizeof(kCableAdvertisementUUID)) == 0;
+  static_assert(sizeof(kGoogleCableUUID) == EXTENT(eid), "");
+  return memcmp(eid.data(), kGoogleCableUUID, sizeof(kGoogleCableUUID)) == 0;
 }
 
 }  // namespace
@@ -218,15 +216,15 @@ FidoCableDiscovery::CreateV1HandshakeHandler(
 }
 
 // static
-const BluetoothUUID& FidoCableDiscovery::CableAdvertisementUUID() {
+const BluetoothUUID& FidoCableDiscovery::GoogleCableUUID() {
   static const base::NoDestructor<BluetoothUUID> service_uuid(
-      kCableAdvertisementUUID128);
+      kGoogleCableUUID128);
   return *service_uuid;
 }
 
 // static
 bool FidoCableDiscovery::IsCableDevice(const BluetoothDevice* device) {
-  const auto& uuid = CableAdvertisementUUID();
+  const auto& uuid = GoogleCableUUID();
   return base::Contains(device->GetServiceData(), uuid) ||
          base::Contains(device->GetUUIDs(), uuid);
 }
@@ -563,7 +561,7 @@ void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
 absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
 FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
   const std::vector<uint8_t>* const service_data =
-      device->GetServiceDataForUUID(CableAdvertisementUUID());
+      device->GetServiceDataForUUID(GoogleCableUUID());
   absl::optional<CableEidArray> maybe_eid_from_service_data =
       MaybeGetEidFromServiceData(device);
   std::vector<CableEidArray> uuids = GetUUIDs(device);
@@ -661,7 +659,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
 absl::optional<CableEidArray> FidoCableDiscovery::MaybeGetEidFromServiceData(
     const BluetoothDevice* device) {
   const std::vector<uint8_t>* service_data =
-      device->GetServiceDataForUUID(CableAdvertisementUUID());
+      device->GetServiceDataForUUID(GoogleCableUUID());
   if (!service_data) {
     return absl::nullopt;
   }

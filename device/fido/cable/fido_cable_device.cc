@@ -50,7 +50,7 @@ FidoCableDevice::EncryptionData::~EncryptionData() = default;
 FidoCableDevice::FidoCableDevice(BluetoothAdapter* adapter,
                                  std::string address) {
   connection_ = std::make_unique<FidoBleConnection>(
-      adapter, std::move(address), BluetoothUUID(kCableAdvertisementUUID128),
+      adapter, std::move(address), BluetoothUUID(kGoogleCableUUID128),
       base::BindRepeating(&FidoCableDevice::OnStatusMessage,
                           weak_factory_.GetWeakPtr()));
 }

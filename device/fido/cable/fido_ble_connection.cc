@@ -191,7 +191,7 @@ void FidoBleConnection::Connect(ConnectionCallback callback) {
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&FidoBleConnection::OnCreateGattConnectionError,
                      weak_factory_.GetWeakPtr()),
-      BluetoothUUID(kCableAdvertisementUUID128));
+      BluetoothUUID(kGoogleCableUUID128));
 }
 
 void FidoBleConnection::ReadControlPointLength(

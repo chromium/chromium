@@ -17,11 +17,9 @@ const char kFidoServiceRevisionUUID[] = "00002a28-0000-1000-8000-00805f9b34fb";
 const char kFidoServiceRevisionBitfieldUUID[] =
     "f1d0fff4-deaa-ecee-b42f-c9ba7ed623bb";
 
-const char kCableAdvertisementUUID16[] = "fde2";
-const char kCableAdvertisementUUID128[] =
-    "0000fde2-0000-1000-8000-00805f9b34fb";
-
-const uint8_t kCableAdvertisementUUID[16] = {
+const char kGoogleCableUUID128[] = "0000fde2-0000-1000-8000-00805f9b34fb";
+const char kGoogleCableUUID16[] = "fde2";
+const uint8_t kGoogleCableUUID[16] = {
     0x00, 0x00, 0xfd, 0xe2, 0x00, 0x00, 0x10, 0x00,
     0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb,
 };
