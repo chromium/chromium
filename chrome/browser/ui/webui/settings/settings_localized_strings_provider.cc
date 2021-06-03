@@ -271,6 +271,14 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
       l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, we don't have the concept of channels, in their usual semantics.
+  // Replace the channel string with "Lacros". https://crbug.com/1215734.
+  std::string channel_name = "Lacros";
+#else
+  std::string channel_name =
+      chrome::GetChannelName(chrome::WithExtendedStable(true));
+#endif
   html_source->AddString(
       "aboutBrowserVersion",
       l10n_util::GetStringFUTF16(
@@ -279,8 +287,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
           l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
                                         ? IDS_VERSION_UI_OFFICIAL
                                         : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(
-              chrome::GetChannelName(chrome::WithExtendedStable(true))),
+          base::UTF8ToUTF16(channel_name),
           l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation())));
   html_source->AddString(
       "aboutProductCopyright",
