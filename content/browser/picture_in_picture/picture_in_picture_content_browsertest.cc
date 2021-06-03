@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -285,8 +286,16 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
 }
 
+// Flaky on Linux TSAN: https://crbug.com/1210955.
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_EnterFullscreenThenPictureInPicture \
+  DISABLED_EnterFullscreenThenPictureInPicture
+#else
+#define MAYBE_EnterFullscreenThenPictureInPicture \
+  EnterFullscreenThenPictureInPicture
+#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
-                       EnterFullscreenThenPictureInPicture) {
+                       MAYBE_EnterFullscreenThenPictureInPicture) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
