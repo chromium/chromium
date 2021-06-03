@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Component, ComponentRepairState, ComponentType, RmadErrorCode, RmaState, State} from './shimless_rma_types.js';
+import {Component, ComponentRepairState, ComponentType, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
 
-/** @type {!Array<!State>} */
+/** @type {!Array<!StateResult>} */
 export const fakeStates = [
   {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
   {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},

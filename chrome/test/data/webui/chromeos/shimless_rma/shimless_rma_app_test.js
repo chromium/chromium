@@ -7,7 +7,7 @@ import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js'
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ButtonState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
-import {RmaState, State} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {RmadErrorCode, RmaState, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
@@ -36,7 +36,7 @@ export function shimlessRMAAppTest() {
   });
 
   /**
-   * @param {!Array<!State>} states
+   * @param {!Array<!StateResult>} states
    * @param {string} chromeVersion
    */
   function initializeShimlessRMAApp(states, chromeVersion) {
@@ -138,7 +138,7 @@ export function shimlessRMAAppTest() {
     await clickNext();
     assertFalse(initialPage.hidden);
 
-    resolver.resolve(RmaState.kUpdateChrome);
+    resolver.resolve({state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk});
     await flushTasks();
 
     const updatePage =

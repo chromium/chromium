@@ -22,7 +22,7 @@ export function fakeShimlessRmaServiceTestSuite() {
 
   test('GetCurrentStateDefaultRmaNotRequired', () => {
     return service.getCurrentState().then((state) => {
-      assertEquals(state.currentState, RmaState.kUnknown);
+      assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
@@ -34,7 +34,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.getCurrentState().then((state) => {
-      assertEquals(state.currentState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -46,14 +46,14 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.getCurrentState().then((state) => {
-      assertEquals(state.currentState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kMissingComponent);
     });
   });
 
   test('GetNextStateDefaultRmaNotRequired', () => {
     return service.getNextState().then((state) => {
-      assertEquals(state.nextState, RmaState.kUnknown);
+      assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
@@ -66,7 +66,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.getNextState().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -78,14 +78,14 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.getNextState().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kTransitionFailed);
     });
   });
 
   test('GetPrevStateDefaultRmaNotRequired', () => {
     return service.getPrevState().then((state) => {
-      assertEquals(state.prevState, RmaState.kUnknown);
+      assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
@@ -98,11 +98,11 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     service.getNextState().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
     return service.getPrevState().then((state) => {
-      assertEquals(state.prevState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -114,7 +114,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.getPrevState().then((state) => {
-      assertEquals(state.prevState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kTransitionFailed);
     });
   });
@@ -166,14 +166,14 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setSameOwner().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
   test('SetSameOwnerWhenRmaNotRequired', () => {
     return service.setSameOwner().then((state) => {
-      assertEquals(state.nextState, RmaState.kUnknown);
+      assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
@@ -186,7 +186,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setSameOwner().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -199,7 +199,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setDifferentOwner().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -212,7 +212,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setDifferentOwner().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -228,7 +228,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.chooseManuallyDisableWriteProtect().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -241,7 +241,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.chooseManuallyDisableWriteProtect().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -257,7 +257,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.chooseRsuDisableWriteProtect().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -270,7 +270,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.chooseRsuDisableWriteProtect().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -283,7 +283,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setRsuDisableWriteProtectCode('ignored').then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -296,7 +296,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setRsuDisableWriteProtectCode('ignored').then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -342,7 +342,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setComponentsRepairState(components).then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -365,7 +365,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setComponentsRepairState(components).then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -378,7 +378,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reworkMainboard().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -391,7 +391,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reworkMainboard().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -404,7 +404,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageSkipped().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -417,7 +417,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageSkipped().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -430,7 +430,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageFromDownload().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -443,7 +443,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageFromDownload().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
@@ -456,7 +456,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageFromUsb().then((state) => {
-      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
@@ -469,7 +469,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.reimageFromUsb().then((state) => {
-      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });

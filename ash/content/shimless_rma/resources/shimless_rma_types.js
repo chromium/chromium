@@ -10,6 +10,13 @@
  * re-aliased to the corresponding mojo types, or replaced by them.
  */
 
+/**
+ * Return type from state progression methods.
+ * Convenience type as mojo-lite does not define types for method results and
+ * this is used frequently.
+ * @typedef {{state: !RmaState, error: !RmadErrorCode}}
+ */
+export let StateResult;
 
 /**
  * @enum {number}
@@ -130,29 +137,6 @@ export let ProvisioningStep = {
  * }}
  */
 export let Component;
-
-// TODO(gavindodd): Change the mojo interface to always use
-// (RmaState state, RmadErrorCode error)
-// as the method return signature so *State types are consolidated.
-/**
- * @typedef {{state: !RmaState, error: !RmadErrorCode}}
- */
-export let State;
-
-/**
- * @typedef {{currentState: !RmaState, error: !RmadErrorCode}}
- */
-export let CurrentState;
-
-/**
- * @typedef {{nextState: !RmaState, error: !RmadErrorCode}}
- */
-export let NextState;
-
-/**
- * @typedef {{prevState: !RmaState, error: !RmadErrorCode}}
- */
-export let PrevState;
 
 /**
  * Type alias for ErrorObserver.

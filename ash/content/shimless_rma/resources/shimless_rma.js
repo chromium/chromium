@@ -16,7 +16,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CurrentState, NextState, PrevState, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js'
+import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
 
 /**
  * Enum for button states.
@@ -150,9 +150,10 @@ export class ShimlessRmaElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
 
     // Get the initial state.
-    this.fetchState_().then((state) => {
-      this.initialState_ = state.currentState;
-      this.loadState_(state.currentState);
+    this.fetchState_().then((stateResult) => {
+      // TODO(gavindodd): Handle stateResult.error
+      this.initialState_ = stateResult.state;
+      this.loadState_(stateResult.state);
     });
   }
 
@@ -246,8 +247,8 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onBackButtonClicked_() {
-    // TODO(joonbug): error handling based on state.error
-    this.fetchPrevState_().then((state) => this.loadState_(state.prevState));
+    this.fetchPrevState_().then(
+        (stateResult) => this.loadState_(stateResult.state));
   }
 
   /** @protected */
@@ -256,15 +257,17 @@ export class ShimlessRmaElement extends PolymerElement {
     assert(page);
 
     // Acquire promise to check whether current page is ready for next page.
-    const prepPageAdvance =
-        page.onNextButtonClick || (() => Promise.resolve(RmaState.kUnknown));
+    const prepPageAdvance = page.onNextButtonClick ||
+        (() => Promise.resolve(
+             {state: RmaState.kUnknown, error: RmadErrorCode.kOk}));
     assert(typeof prepPageAdvance === 'function');
 
+    // TODO(gavindodd): Handle stateResult.error
     prepPageAdvance()
         .then(
-            (rmaState) => !!rmaState ? Promise.resolve({nextState: rmaState}) :
-                                       this.fetchNextState_())
-        .then((state) => this.loadState_(state.nextState))
+            (stateResult) => !!stateResult ? Promise.resolve(stateResult) :
+                                             this.fetchNextState_())
+        .then((stateResult) => this.loadState_(stateResult.state))
         .catch((err) => void 0);
   }
 
