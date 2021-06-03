@@ -37,15 +37,12 @@ bool AreSame(const CoreAccountInfo& info, const ListedAccount& account) {
 
 // Returns the extended info for the primary account (no consent required) if
 // available.
-absl::optional<AccountInfo> GetExtendedAccountInfo(
-    signin::IdentityManager* identity_manager) {
+AccountInfo GetExtendedAccountInfo(signin::IdentityManager* identity_manager) {
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty())
-    return absl::nullopt;
-  return identity_manager
-      ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-          account_id);
+    return AccountInfo();
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
 // Returns true if there is primary account (no consent required) but no
@@ -53,7 +50,7 @@ absl::optional<AccountInfo> GetExtendedAccountInfo(
 bool WaitingForExtendedInfo(signin::IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
     return false;
-  return !GetExtendedAccountInfo(identity_manager).has_value();
+  return GetExtendedAccountInfo(identity_manager).IsEmpty();
 }
 
 }  // namespace
@@ -244,10 +241,9 @@ void AccountInvestigator::DoPeriodicReport(
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     const bool is_syncing =
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-    absl::optional<AccountInfo> info =
-        GetExtendedAccountInfo(identity_manager_);
+    AccountInfo info = GetExtendedAccountInfo(identity_manager_);
     signin_metrics::LogSignedInCookiesCountsPerPrimaryAccountType(
-        signed_in_accounts.size(), is_syncing, info->IsManaged());
+        signed_in_accounts.size(), is_syncing, info.IsManaged());
   }
 
   periodic_pending_ = false;

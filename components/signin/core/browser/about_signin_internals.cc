@@ -652,22 +652,15 @@ AboutSigninInternals::SigninStatus::ToValue(
     if (signin_error_controller->HasError()) {
       const CoreAccountId error_account_id =
           signin_error_controller->error_account_id();
-      const absl::optional<AccountInfo> error_account_info =
-          identity_manager
-              ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                  error_account_id);
+      const AccountInfo error_account_info =
+          identity_manager->FindExtendedAccountInfoByAccountId(
+              error_account_id);
       AddSectionEntry(basic_info, "Auth Error",
           signin_error_controller->auth_error().ToString());
       AddSectionEntry(basic_info, "Auth Error Account Id",
                       error_account_id.ToString());
-
-      // The error_account_info optional should never be unset when we reach
-      // this line (as we should have a refresh token, even if in an error
-      // state). However, since this is a debug page, make the code resilient
-      // to avoid rendering the page unavailable to debug if a regression is
-      // introduced (and thus making debugging the regression harder).
       AddSectionEntry(basic_info, "Auth Error Username",
-                      error_account_info ? error_account_info->email : "");
+                      error_account_info.email);
     } else {
       AddSectionEntry(basic_info, "Auth Error", "None");
     }
