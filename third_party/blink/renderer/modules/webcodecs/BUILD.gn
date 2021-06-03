@@ -24,6 +24,7 @@ blink_modules_sources("webcodecs") {
     "codec_logger.h",
     "codec_state_helper.cc",
     "codec_state_helper.h",
+    "codec_trace_names.h",
     "decoder_selector.cc",
     "decoder_selector.h",
     "decoder_template.cc",
