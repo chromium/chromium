@@ -6,45 +6,41 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
 
 
-/** @enum {number} */
-export const Key = {
-  Comma: 188,
-  Del: 46,
-  Down: 40,
-  End: 35,
-  Escape: 27,
-  Home: 36,
-  Ins: 45,
-  Left: 37,
-  MediaNextTrack: 176,
-  MediaPlayPause: 179,
-  MediaPrevTrack: 177,
-  MediaStop: 178,
-  PageDown: 34,
-  PageUp: 33,
-  Period: 190,
-  Right: 39,
-  Space: 32,
-  Tab: 9,
-  Up: 38,
-};
+export enum Key {
+  Comma = 188,
+  Del = 46,
+  Down = 40,
+  End = 35,
+  Escape = 27,
+  Home = 36,
+  Ins = 45,
+  Left = 37,
+  MediaNextTrack = 176,
+  MediaPlayPause = 179,
+  MediaPrevTrack = 177,
+  MediaStop = 178,
+  PageDown = 34,
+  PageUp = 33,
+  Period = 190,
+  Right = 39,
+  Space = 32,
+  Tab = 9,
+  Up = 38,
+}
 
 /**
  * Enum for whether we require modifiers of a keycode.
- * @enum {number}
  */
-const ModifierPolicy = {
-  NOT_ALLOWED: 0,
-  REQUIRED: 1
-};
+enum ModifierPolicy {
+  NOT_ALLOWED = 0,
+  REQUIRED = 1
+}
 
 /**
  * Gets the ModifierPolicy. Currently only "MediaNextTrack", "MediaPrevTrack",
  * "MediaStop", "MediaPlayPause" are required to be used without any modifier.
- * @param {number} keyCode
- * @return {ModifierPolicy}
  */
-function getModifierPolicy(keyCode) {
+function getModifierPolicy(keyCode: number): ModifierPolicy {
   switch (keyCode) {
     case Key.MediaNextTrack:
     case Key.MediaPlayPause:
@@ -59,12 +55,11 @@ function getModifierPolicy(keyCode) {
 /**
  * Returns whether the keyboard event has a key modifier, which could affect
  * how it's handled.
- * @param {!KeyboardEvent} e
- * @param {boolean} countShiftAsModifier Whether the 'Shift' key should be
- *     counted as modifier.
- * @return {boolean} True if the event has any modifiers.
+ * @param countShiftAsModifier Whether the 'Shift' key should be counted as
+ *     modifier.
+ * @return Whether the event has any modifiers.
  */
-function hasModifier(e, countShiftAsModifier) {
+function hasModifier(e: KeyboardEvent, countShiftAsModifier: boolean): boolean {
   return e.ctrlKey || e.altKey ||
       // Meta key is only relevant on Mac and CrOS, where we treat Command
       // and Search (respectively) as modifiers.
@@ -74,15 +69,14 @@ function hasModifier(e, countShiftAsModifier) {
 
 /**
  * Checks whether the passed in |keyCode| is a valid extension command key.
- * @param {number} keyCode
- * @return {boolean} Whether the key is valid.
+ * @return Whether the key is valid.
  */
-export function isValidKeyCode(keyCode) {
+export function isValidKeyCode(keyCode: number): boolean {
   if (keyCode === Key.Escape) {
     return false;
   }
   for (const k in Key) {
-    if (Key[k] === keyCode) {
+    if (Key[k as keyof typeof Key] === keyCode) {
       return true;
     }
   }
@@ -93,10 +87,8 @@ export function isValidKeyCode(keyCode) {
 /**
  * Converts a keystroke event to string form, ignoring invalid extension
  * commands.
- * @param {!KeyboardEvent} e
- * @return {string} The keystroke as a string.
  */
-export function keystrokeToString(e) {
+export function keystrokeToString(e: KeyboardEvent): string {
   const output = [];
   // TODO(devlin): Should this be i18n'd?
   if (isMac && e.metaKey) {
@@ -185,10 +177,10 @@ export function keystrokeToString(e) {
 
 /**
  * Returns true if the event has valid modifiers.
- * @param {!KeyboardEvent} e The keyboard event to consider.
- * @return {boolean} True if the event is valid.
+ * @param e The keyboard event to consider.
+ * @return Wether the event is valid.
  */
-export function hasValidModifiers(e) {
+export function hasValidModifiers(e: KeyboardEvent): boolean {
   switch (getModifierPolicy(e.keyCode)) {
     case ModifierPolicy.REQUIRED:
       return hasModifier(e, false);

@@ -7,41 +7,36 @@ import './strings.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+export enum SourceType {
+  WEBSTORE = 'webstore',
+  POLICY = 'policy',
+  SIDELOADED = 'sideloaded',
+  UNPACKED = 'unpacked',
+  UNKNOWN = 'unknown',
+}
 
-// Closure compiler won't let this be declared inside cr.define().
-/** @enum {string} */
-export const SourceType = {
-  WEBSTORE: 'webstore',
-  POLICY: 'policy',
-  SIDELOADED: 'sideloaded',
-  UNPACKED: 'unpacked',
-  UNKNOWN: 'unknown',
-};
-
-/** @enum {string} */
-export const EnableControl = {
-  RELOAD: 'RELOAD',
-  REPAIR: 'REPAIR',
-  ENABLE_TOGGLE: 'ENABLE_TOGGLE',
-};
+export enum EnableControl {
+  RELOAD = 'RELOAD',
+  REPAIR = 'REPAIR',
+  ENABLE_TOGGLE = 'ENABLE_TOGGLE',
+}
 
 // TODO(tjudkins): This should be extracted to a shared metrics module.
 /** @enum {string} */
-export const UserAction = {
-  ALL_TOGGLED_ON: 'Extensions.Settings.HostList.AllHostsToggledOn',
-  ALL_TOGGLED_OFF: 'Extensions.Settings.HostList.AllHostsToggledOff',
-  SPECIFIC_TOGGLED_ON: 'Extensions.Settings.HostList.SpecificHostToggledOn',
-  SPECIFIC_TOGGLED_OFF: 'Extensions.Settings.HostList.SpecificHostToggledOff',
-  LEARN_MORE: 'Extensions.Settings.HostList.LearnMoreActivated',
-};
+export enum UserAction {
+  ALL_TOGGLED_ON = 'Extensions.Settings.HostList.AllHostsToggledOn',
+  ALL_TOGGLED_OFF = 'Extensions.Settings.HostList.AllHostsToggledOff',
+  SPECIFIC_TOGGLED_ON = 'Extensions.Settings.HostList.SpecificHostToggledOn',
+  SPECIFIC_TOGGLED_OFF = 'Extensions.Settings.HostList.SpecificHostToggledOff',
+  LEARN_MORE = 'Extensions.Settings.HostList.LearnMoreActivated',
+}
 
 /**
  * Returns true if the extension is enabled, including terminated
  * extensions.
- * @param {!chrome.developerPrivate.ExtensionState} state
- * @return {boolean}
  */
-export function isEnabled(state) {
+export function isEnabled(state: chrome.developerPrivate.ExtensionState):
+    boolean {
   switch (state) {
     case chrome.developerPrivate.ExtensionState.ENABLED:
     case chrome.developerPrivate.ExtensionState.TERMINATED:
@@ -51,15 +46,15 @@ export function isEnabled(state) {
       return false;
   }
   assertNotReached();
+  return false;
 }
 
 /**
- * Returns true if the user can change whether or not the extension is
- * enabled.
- * @param {!chrome.developerPrivate.ExtensionInfo} item
- * @return {boolean}
+ * @return {boolean} Whether the user can change whether or not the extension is
+ *     enabled.
  */
-export function userCanChangeEnablement(item) {
+export function userCanChangeEnablement(
+    item: chrome.developerPrivate.ExtensionInfo): boolean {
   // User doesn't have permission.
   if (!item.userMayModify) {
     return false;
@@ -84,11 +79,8 @@ export function userCanChangeEnablement(item) {
   return true;
 }
 
-/**
- * @param {!chrome.developerPrivate.ExtensionInfo} item
- * @return {SourceType}
- */
-export function getItemSource(item) {
+export function getItemSource(item: chrome.developerPrivate.ExtensionInfo):
+    SourceType {
   if (item.controlledInfo) {
     return SourceType.POLICY;
   }
@@ -107,11 +99,7 @@ export function getItemSource(item) {
   assertNotReached(item.location);
 }
 
-/**
- * @param {SourceType} source
- * @return {string}
- */
-export function getItemSourceString(source) {
+export function getItemSourceString(source: SourceType): string {
   switch (source) {
     case SourceType.POLICY:
       return loadTimeData.getString('itemSourcePolicy');
@@ -127,14 +115,14 @@ export function getItemSourceString(source) {
       return '';
   }
   assertNotReached();
+  return '';
 }
 
 /**
  * Computes the human-facing label for the given inspectable view.
- * @param {!chrome.developerPrivate.ExtensionView} view
- * @return {string}
  */
-export function computeInspectableViewLabel(view) {
+export function computeInspectableViewLabel(
+    view: chrome.developerPrivate.ExtensionView): string {
   // Trim the "chrome-extension://<id>/".
   const url = new URL(view.url);
   let label = view.url;
@@ -162,21 +150,17 @@ export function computeInspectableViewLabel(view) {
 }
 
 /**
- * Returns true if the extension is in the terminated state.
- * @param {!chrome.developerPrivate.ExtensionState} state
- * @return {boolean}
- * @private
+ * @return Whether the extension is in the terminated state.
  */
-function isTerminated_(state) {
+function isTerminated_(state: chrome.developerPrivate.ExtensionState): boolean {
   return state === chrome.developerPrivate.ExtensionState.TERMINATED;
 }
 
 /**
  * Determines which enable control to display for a given extension.
- * @param {!chrome.developerPrivate.ExtensionInfo} data
- * @return {EnableControl}
  */
-export function getEnableControl(data) {
+export function getEnableControl(data: chrome.developerPrivate.ExtensionInfo):
+    EnableControl {
   if (isTerminated_(data.state)) {
     return EnableControl.RELOAD;
   }

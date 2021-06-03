@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
-/** @interface */
-export class KeyboardShortcutDelegate {
+export interface KeyboardShortcutDelegate {
   /**
    * Called when shortcut capturing changes in order to suspend or re-enable
    * global shortcut handling. This is important so that the shortcuts aren't
@@ -13,23 +10,19 @@ export class KeyboardShortcutDelegate {
    * TODO(devlin): From very brief experimentation, it looks like preventing
    * the default handling on the event also does this. Investigate more in the
    * future.
-   * @param {boolean} isCapturing
    */
-  setShortcutHandlingSuspended(isCapturing) {}
+  setShortcutHandlingSuspended(isCapturing: boolean): void;
 
   /**
    * Updates an extension command's keybinding.
-   * @param {string} extensionId
-   * @param {string} commandName
-   * @param {string} keybinding
    */
-  updateExtensionCommandKeybinding(extensionId, commandName, keybinding) {}
+  updateExtensionCommandKeybinding(
+      extensionId: string, commandName: string, keybinding: string): void;
 
   /**
    * Updates an extension command's scope.
-   * @param {string} extensionId
-   * @param {string} commandName
-   * @param {chrome.developerPrivate.CommandScope} scope
    */
-  updateExtensionCommandScope(extensionId, commandName, scope) {}
+  updateExtensionCommandScope(
+      extensionId: string, commandName: string,
+      scope: chrome.developerPrivate.CommandScope): void;
 }

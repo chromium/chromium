@@ -20,22 +20,16 @@ import {ToolbarDelegate} from './toolbar.js';
  * @implements {ActivityLogEventDelegate}
  * @implements {ErrorPageDelegate}
  * @implements {ItemDelegate}
- * @implements {KeyboardShortcutDelegate}
  * @implements {LoadErrorDelegate}
  * @implements {PackDialogDelegate}
  * @implements {ToolbarDelegate}
  */
-export class Service {
-  constructor() {
-    /** @private {boolean} */
-    this.isDeleting_ = false;
-
-    /** @private {!Set<string>} */
-    this.eventsToIgnoreOnce_ = new Set();
-  }
+export class Service implements KeyboardShortcutDelegate {
+  private isDeleting_: boolean = false;
+  private eventsToIgnoreOnce_: Set<string> = new Set();
 
   getProfileConfiguration() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       chrome.developerPrivate.getProfileConfiguration(resolve);
     });
   }
@@ -44,20 +38,14 @@ export class Service {
     return chrome.developerPrivate.onItemStateChanged;
   }
 
-  /**
-   * @param {string} extensionId
-   * @param {!chrome.developerPrivate.EventType} eventType
-   * @return {boolean}
-   */
-  shouldIgnoreUpdate(extensionId, eventType) {
+  shouldIgnoreUpdate(
+      extensionId: string,
+      eventType: chrome.developerPrivate.EventType): boolean {
     return this.eventsToIgnoreOnce_.delete(`${extensionId}_${eventType}`);
   }
 
-  /**
-   * @param {string} extensionId
-   * @param {!chrome.developerPrivate.EventType} eventType
-   */
-  ignoreNextEvent(extensionId, eventType) {
+  ignoreNextEvent(
+      extensionId: string, eventType: chrome.developerPrivate.EventType): void {
     this.eventsToIgnoreOnce_.add(`${extensionId}_${eventType}`);
   }
 
@@ -66,21 +54,21 @@ export class Service {
   }
 
   getExtensionsInfo() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       chrome.developerPrivate.getExtensionsInfo(
           {includeDisabled: true, includeTerminated: true}, resolve);
     });
   }
 
   /** @override */
-  getExtensionSize(id) {
-    return new Promise(function(resolve, reject) {
+  getExtensionSize(id: string): Promise<string> {
+    return new Promise(function(resolve) {
       chrome.developerPrivate.getExtensionSize(id, resolve);
     });
   }
 
   /** @override */
-  addRuntimeHostPermission(id, host) {
+  addRuntimeHostPermission(id: string, host: string): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.developerPrivate.addHostPermission(id, host, () => {
         if (chrome.runtime.lastError) {
@@ -93,7 +81,7 @@ export class Service {
   }
 
   /** @override */
-  removeRuntimeHostPermission(id, host) {
+  removeRuntimeHostPermission(id: string, host: string): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.developerPrivate.removeHostPermission(id, host, () => {
         if (chrome.runtime.lastError) {
@@ -106,18 +94,17 @@ export class Service {
   }
 
   /** @override */
-  recordUserAction(metricName) {
+  recordUserAction(metricName: string): void {
     chrome.metricsPrivate.recordUserAction(metricName);
   }
 
   /**
    * Opens a file browser dialog for the user to select a file (or directory).
-   * @param {chrome.developerPrivate.SelectType} selectType
-   * @param {chrome.developerPrivate.FileType} fileType
-   * @return {Promise<string>} The promise to be resolved with the selected
-   *     path.
+   * @return The promise to be resolved with the selected path.
    */
-  chooseFilePath_(selectType, fileType) {
+  chooseFilePath_(
+      selectType: chrome.developerPrivate.SelectType,
+      fileType: chrome.developerPrivate.FileType): Promise<string> {
     return new Promise(function(resolve, reject) {
       chrome.developerPrivate.choosePath(selectType, fileType, function(path) {
         if (chrome.runtime.lastError &&
@@ -132,7 +119,8 @@ export class Service {
   }
 
   /** @override */
-  updateExtensionCommandKeybinding(extensionId, commandName, keybinding) {
+  updateExtensionCommandKeybinding(
+      extensionId: string, commandName: string, keybinding: string) {
     chrome.developerPrivate.updateExtensionCommand({
       extensionId: extensionId,
       commandName: commandName,
@@ -141,7 +129,9 @@ export class Service {
   }
 
   /** @override */
-  updateExtensionCommandScope(extensionId, commandName, scope) {
+  updateExtensionCommandScope(
+      extensionId: string, commandName: string,
+      scope: chrome.developerPrivate.CommandScope): void {
     // The COMMAND_REMOVED event needs to be ignored since it is sent before
     // the command is added back with the updated scope but can be handled
     // after the COMMAND_ADDED event.
@@ -156,17 +146,16 @@ export class Service {
 
 
   /** @override */
-  setShortcutHandlingSuspended(isCapturing) {
+  setShortcutHandlingSuspended(isCapturing: boolean) {
     chrome.developerPrivate.setShortcutHandlingSuspended(isCapturing);
   }
 
   /**
-   * @param {chrome.developerPrivate.LoadUnpackedOptions=} opt_options
-   * @return {!Promise} A signal that loading finished, rejected if any error
-   *     occurred.
-   * @private
+   * @return A signal that loading finished, rejected if any error occurred.
    */
-  loadUnpackedHelper_(opt_options) {
+  private loadUnpackedHelper_(opt_options?:
+                                  chrome.developerPrivate.LoadUnpackedOptions):
+      Promise<boolean> {
     return new Promise(function(resolve, reject) {
       const options = Object.assign(
           {
@@ -193,7 +182,7 @@ export class Service {
   }
 
   /** @override */
-  deleteItem(id) {
+  deleteItem(id: string) {
     if (this.isDeleting_) {
       return;
     }
@@ -209,7 +198,7 @@ export class Service {
   }
 
   /** @override */
-  setItemEnabled(id, isEnabled) {
+  setItemEnabled(id: string, isEnabled: boolean) {
     chrome.metricsPrivate.recordUserAction(
         isEnabled ? 'Extensions.ExtensionEnabled' :
                     'Extensions.ExtensionDisabled');
@@ -217,7 +206,7 @@ export class Service {
   }
 
   /** @override */
-  setItemAllowedIncognito(id, isAllowedIncognito) {
+  setItemAllowedIncognito(id: string, isAllowedIncognito: boolean) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       incognitoAccess: isAllowedIncognito,
@@ -225,7 +214,7 @@ export class Service {
   }
 
   /** @override */
-  setItemAllowedOnFileUrls(id, isAllowedOnFileUrls) {
+  setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       fileAccess: isAllowedOnFileUrls,
@@ -233,7 +222,8 @@ export class Service {
   }
 
   /** @override */
-  setItemHostAccess(id, hostAccess) {
+  setItemHostAccess(id: string, hostAccess: chrome.developerPrivate.HostAccess):
+      void {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       hostAccess: hostAccess,
@@ -241,7 +231,7 @@ export class Service {
   }
 
   /** @override */
-  setItemCollectsErrors(id, collectsErrors) {
+  setItemCollectsErrors(id: string, collectsErrors: boolean): void {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       errorCollection: collectsErrors,
@@ -249,7 +239,8 @@ export class Service {
   }
 
   /** @override */
-  inspectItemView(id, view) {
+  inspectItemView(id: string, view: chrome.developerPrivate.ExtensionView):
+      void {
     chrome.developerPrivate.openDevTools({
       extensionId: id,
       renderProcessId: view.renderProcessId,
@@ -259,16 +250,12 @@ export class Service {
     });
   }
 
-  /**
-   * @param {string} url
-   * @override
-   */
-  openUrl(url) {
+  openUrl(url: string): void {
     window.open(url);
   }
 
   /** @override */
-  reloadItem(id) {
+  reloadItem(id: string): Promise<void> {
     return new Promise(function(resolve, reject) {
       chrome.developerPrivate.reload(
           id, {failQuietly: true, populateErrorForUnpacked: true},
@@ -284,14 +271,14 @@ export class Service {
   }
 
   /** @override */
-  repairItem(id) {
+  repairItem(id: string): void {
     chrome.developerPrivate.repairExtension(id);
   }
 
   /** @override */
-  showItemOptionsPage(extension) {
+  showItemOptionsPage(extension: chrome.developerPrivate.ExtensionInfo): void {
     assert(extension && extension.optionsPage);
-    if (extension.optionsPage.openInTab) {
+    if (extension.optionsPage!.openInTab) {
       chrome.developerPrivate.showOptions(extension.id);
     } else {
       navigation.navigateTo({
@@ -303,51 +290,56 @@ export class Service {
   }
 
   /** @override */
-  setProfileInDevMode(inDevMode) {
+  setProfileInDevMode(inDevMode: boolean) {
     chrome.developerPrivate.updateProfileConfiguration(
         {inDeveloperMode: inDevMode});
   }
 
   /** @override */
-  loadUnpacked() {
+  loadUnpacked(): Promise<boolean> {
     return this.loadUnpackedHelper_();
   }
 
   /** @override */
-  retryLoadUnpacked(retryGuid) {
+  retryLoadUnpacked(retryGuid: string): Promise<boolean> {
     // Attempt to load an unpacked extension, optionally as another attempt at
     // a previously-specified load.
     return this.loadUnpackedHelper_({retryGuid: retryGuid});
   }
 
   /** @override */
-  choosePackRootDirectory() {
+  choosePackRootDirectory(): Promise<string> {
     return this.chooseFilePath_(
         chrome.developerPrivate.SelectType.FOLDER,
         chrome.developerPrivate.FileType.LOAD);
   }
 
   /** @override */
-  choosePrivateKeyPath() {
+  choosePrivateKeyPath(): Promise<string> {
     return this.chooseFilePath_(
         chrome.developerPrivate.SelectType.FILE,
         chrome.developerPrivate.FileType.PEM);
   }
 
   /** @override */
-  packExtension(rootPath, keyPath, flag, callback) {
+  packExtension(
+      rootPath: string, keyPath: string, flag?: number,
+      callback?:
+          (response: chrome.developerPrivate.PackDirectoryResponse) => void):
+      void {
     chrome.developerPrivate.packDirectory(rootPath, keyPath, flag, callback);
   }
 
   /** @override */
-  updateAllExtensions(extensions) {
+  updateAllExtensions(extensions: chrome.developerPrivate.ExtensionInfo[]):
+      Promise<string> {
     /**
      * Attempt to reload local extensions. If an extension fails to load, the
      * user is prompted to try updating the broken extension using loadUnpacked
      * and we skip reloading the remaining local extensions.
      */
-    return new Promise((resolve) => {
-             chrome.developerPrivate.autoUpdate(resolve);
+    return new Promise<void>((resolve) => {
+             chrome.developerPrivate.autoUpdate(() => resolve());
              chrome.metricsPrivate.recordUserAction('Options_UpdateExtensions');
            })
         .then(() => {
@@ -371,7 +363,9 @@ export class Service {
   }
 
   /** @override */
-  deleteErrors(extensionId, errorIds, type) {
+  deleteErrors(
+      extensionId: string, errorIds?: number[],
+      type?: chrome.developerPrivate.ErrorType) {
     chrome.developerPrivate.deleteExtensionErrors({
       extensionId: extensionId,
       errorIds: errorIds,
@@ -380,20 +374,21 @@ export class Service {
   }
 
   /** @override */
-  requestFileSource(args) {
-    return new Promise(function(resolve, reject) {
+  requestFileSource(args: chrome.developerPrivate.RequestFileSourceProperties):
+      Promise<chrome.developerPrivate.RequestFileSourceResponse> {
+    return new Promise(function(resolve) {
       chrome.developerPrivate.requestFileSource(args, resolve);
     });
   }
 
   /** @override */
-  showInFolder(id) {
+  showInFolder(id: string) {
     chrome.developerPrivate.showPath(id);
   }
 
   /** @override */
-  getExtensionActivityLog(extensionId) {
-    return new Promise(function(resolve, reject) {
+  getExtensionActivityLog(extensionId: string) {
+    return new Promise(function(resolve) {
       chrome.activityLogPrivate.getExtensionActivities(
           {
             activityType: chrome.activityLogPrivate.ExtensionActivityFilter.ANY,
@@ -404,7 +399,7 @@ export class Service {
   }
 
   /** @override */
-  getFilteredExtensionActivityLog(extensionId, searchTerm) {
+  getFilteredExtensionActivityLog(extensionId: string, searchTerm: string) {
     const anyType = chrome.activityLogPrivate.ExtensionActivityFilter.ANY;
 
     // Construct one filter for each API call we will make: one for substring
@@ -428,10 +423,13 @@ export class Service {
       }
     ];
 
-    const promises = activityLogFilters.map(
-        filter => new Promise(function(resolve, reject) {
-          chrome.activityLogPrivate.getExtensionActivities(filter, resolve);
-        }));
+    const promises:
+        Array<Promise<chrome.activityLogPrivate.ActivityResultSet>> =
+            activityLogFilters.map(
+                filter => new Promise(function(resolve) {
+                  chrome.activityLogPrivate.getExtensionActivities(
+                      filter, resolve);
+                }));
 
     return Promise.all(promises).then(results => {
       // We may have results that are present in one or more searches, so
@@ -449,15 +447,15 @@ export class Service {
   }
 
   /** @override */
-  deleteActivitiesById(activityIds) {
-    return new Promise(function(resolve, reject) {
+  deleteActivitiesById(activityIds: string[]): Promise<void> {
+    return new Promise(function(resolve) {
       chrome.activityLogPrivate.deleteActivities(activityIds, resolve);
     });
   }
 
   /** @override */
-  deleteActivitiesFromExtension(extensionId) {
-    return new Promise(function(resolve, reject) {
+  deleteActivitiesFromExtension(extensionId: string): Promise<void> {
+    return new Promise(function(resolve) {
       chrome.activityLogPrivate.deleteActivitiesByExtension(
           extensionId, resolve);
     });
@@ -469,7 +467,7 @@ export class Service {
   }
 
   /** @override */
-  downloadActivities(rawActivityData, fileName) {
+  downloadActivities(rawActivityData: string, fileName: string) {
     const blob = new Blob([rawActivityData], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -494,16 +492,13 @@ export class Service {
     chrome.developerPrivate.notifyDragInstallInProgress();
   }
 
-  /** @return {!Service} */
-  static getInstance() {
+  static getInstance(): Service {
     return instance || (instance = new Service());
   }
 
-  /** @param {!Service} obj */
-  static setInstance(obj) {
+  static setInstance(obj: Service) {
     instance = obj;
   }
 }
 
-/** @type {?Service} */
-let instance = null;
+let instance: Service|null = null;

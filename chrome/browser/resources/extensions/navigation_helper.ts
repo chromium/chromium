@@ -8,34 +8,29 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 /**
  * The different pages that can be shown at a time.
  * Note: This must remain in sync with the page ids in manager.html!
- * @enum {string}
  */
-export const Page = {
-  LIST: 'items-list',
-  DETAILS: 'details-view',
-  ACTIVITY_LOG: 'activity-log',
-  SHORTCUTS: 'keyboard-shortcuts',
-  ERRORS: 'error-page',
+export enum Page {
+  LIST = 'items-list',
+  DETAILS = 'details-view',
+  ACTIVITY_LOG = 'activity-log',
+  SHORTCUTS = 'keyboard-shortcuts',
+  ERRORS = 'error-page',
+}
+
+export enum Dialog {
+  OPTIONS = 'options',
+}
+
+export type PageState = {
+  page: Page,
+  extensionId?: string,
+  subpage?: Dialog,
 };
 
-/** @enum {string} */
-export const Dialog = {
-  OPTIONS: 'options',
-};
+type Listener = (pageState: PageState) => void;
 
-/**
- * @typedef {{page: Page,
- *            extensionId: (string|undefined),
- *            subpage: (!Dialog|undefined)}}
- */
-export let PageState;
-
-/**
- * @param {!PageState} a
- * @param {!PageState} b
- * @return {boolean} Whether a and b are equal.
- */
-function isPageStateEqual(a, b) {
+/** @return Whether a and b are equal. */
+function isPageStateEqual(a: PageState, b: PageState): boolean {
   return a.page === b.page && a.subpage === b.subpage &&
       a.extensionId === b.extensionId;
 }
@@ -43,9 +38,8 @@ function isPageStateEqual(a, b) {
 /**
  * Regular expression that captures the leading slash, the content and the
  * trailing slash in three different groups.
- * @const {!RegExp}
  */
-const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
+const CANONICAL_PATH_REGEX: RegExp = /(^\/)([\/-\w]+)(\/$)/;
 
 /**
  * A helper object to manage in-page navigations. Since the extensions page
@@ -53,25 +47,19 @@ const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
  * page), we use this object to manage the history and url conversions.
  */
 export class NavigationHelper {
+  private nextListenerId_: number = 1;
+  private listeners_: Map<number, Listener> = new Map();
+  private previousPage_: PageState;
+
   constructor() {
     this.processRoute_();
-
-    /** @private {number} */
-    this.nextListenerId_ = 1;
-
-    /** @private {!Map<number, function(!PageState)>} */
-    this.listeners_ = new Map();
-
-    /** @private {!PageState} */
-    this.previousPage_;
 
     window.addEventListener('popstate', () => {
       this.notifyRouteChanged_(this.getCurrentPage());
     });
   }
 
-  /** @private */
-  get currentPath_() {
+  private get currentPath_(): string {
     return location.pathname.replace(CANONICAL_PATH_REGEX, '$1$2');
   }
 
@@ -79,9 +67,8 @@ export class NavigationHelper {
    * Going to /configureCommands and /shortcuts should land you on /shortcuts.
    * These are the only two supported routes, so all other cases will redirect
    * you to root path if not already on it.
-   * @private
    */
-  processRoute_() {
+  private processRoute_() {
     if (this.currentPath_ === '/configureCommands' ||
         this.currentPath_ === '/shortcuts') {
       window.history.replaceState(
@@ -92,10 +79,9 @@ export class NavigationHelper {
   }
 
   /**
-   * @return {!PageState} The page that should be displayed for the
-   *     current URL.
+   * @return The page that should be displayed for the current URL.
    */
-  getCurrentPage() {
+  getCurrentPage(): PageState {
     const search = new URLSearchParams(location.search);
     let id = search.get('id');
     if (id) {
@@ -124,9 +110,9 @@ export class NavigationHelper {
   /**
    * Function to add subscribers.
    * @param {!function(!PageState)} listener
-   * @return {number} A numerical ID to be used for removing the listener.
+   * @return A numerical ID to be used for removing the listener.
    */
-  addListener(listener) {
+  addListener(listener: Listener): number {
     const nextListenerId = this.nextListenerId_++;
     this.listeners_.set(nextListenerId, listener);
     return nextListenerId;
@@ -134,28 +120,26 @@ export class NavigationHelper {
 
   /**
    * Remove a previously registered listener.
-   * @param {number} id
-   * @return {boolean} Whether a listener with the given ID was actually found
-   *     and removed.
+   * @return Whether a listener with the given ID was actually found and
+   *   removed.
    */
-  removeListener(id) {
+  removeListener(id: number): boolean {
     return this.listeners_.delete(id);
   }
 
   /**
    * Function to notify subscribers.
-   * @private
    */
-  notifyRouteChanged_(newPage) {
-    this.listeners_.forEach((listener, id) => {
+  private notifyRouteChanged_(newPage: PageState) {
+    for (const listener of this.listeners_.values()) {
       listener(newPage);
-    });
+    }
   }
 
   /**
-   * @param {!PageState} newPage the page to navigate to.
+   * @param newPage the page to navigate to.
    */
-  navigateTo(newPage) {
+  navigateTo(newPage: PageState) {
     const currentPage = this.getCurrentPage();
     if (currentPage && isPageStateEqual(currentPage, newPage)) {
       return;
@@ -166,10 +150,9 @@ export class NavigationHelper {
   }
 
   /**
-   * @param {!PageState} newPage the page to replace the current
-   *     page with.
+   * @param newPage the page to replace the current page with.
    */
-  replaceWith(newPage) {
+  replaceWith(newPage: PageState) {
     this.updateHistory(newPage, true /* replaceState */);
     if (this.previousPage_ && isPageStateEqual(this.previousPage_, newPage)) {
       // Skip the duplicate history entry.
@@ -181,10 +164,8 @@ export class NavigationHelper {
 
   /**
    * Called when a page changes, and pushes state to history to reflect it.
-   * @param {!PageState} entry
-   * @param {boolean} replaceState
    */
-  updateHistory(entry, replaceState) {
+  updateHistory(entry: PageState, replaceState: boolean) {
     let path;
     switch (entry.page) {
       case Page.LIST:
