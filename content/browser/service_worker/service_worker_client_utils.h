@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerContainerHost;
@@ -42,24 +46,26 @@ enum class WindowType {
 void FocusWindowClient(ServiceWorkerContainerHost* container_host,
                        ClientCallback callback);
 
-// Opens a new window and navigates it to |url|. |callback| is called with the
-// window's client information on completion. If |type| is NEW_TAB_WINDOW, we
-// will open a new app window, if there is an app installed that has |url| in
+// Opens a new window and navigates it to `url`. `callback` is called with the
+// window's client information on completion. If `type` is NEW_TAB_WINDOW, we
+// will open a new app window, if there is an app installed that has `url` in
 // its scope. What an "installed app" is depends on the embedder of content. In
 // Chrome's case, it is an installed Progressive Web App. If there is no such
 // app, we will open a new foreground tab instead.
 void OpenWindow(const GURL& url,
                 const GURL& script_url,
+                const blink::StorageKey& key,
                 int worker_id,
                 int worker_process_id,
                 const base::WeakPtr<ServiceWorkerContextCore>& context,
                 WindowType type,
                 NavigationCallback callback);
 
-// Navigates the client specified by |process_id| and |frame_id| to |url|.
-// |callback| is called with the client information on completion.
+// Navigates the client specified by `process_id` and `frame_id` to `url`.
+// `callback` is called with the client information on completion.
 void NavigateClient(const GURL& url,
                     const GURL& script_url,
+                    const blink::StorageKey& key,
                     int process_id,
                     int frame_id,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
@@ -76,12 +82,15 @@ void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
                 blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
                 blink::mojom::ServiceWorkerHost::GetClientsCallback callback);
 
-// Finds the provider host for |origin| in |context| then uses
-// |render_process_id| and |render_process_host| to create a relevant
-// blink::mojom::ServiceWorkerClientInfo struct and calls |callback| with it.
+// Finds the provider host for `key` in `context` then uses
+// `render_process_id` and `render_process_host` to create a relevant
+// blink::mojom::ServiceWorkerClientInfo struct and calls `callback` with it.
 // Must be called on the core thread.
+// TODO(crbug.com/1199077): Remove `origin` once DidGetExecutionReadyClient
+// implements StorageKey.
 void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  const GURL& origin,
+                 const blink::StorageKey& key,
                  NavigationCallback callback,
                  int render_process_id,
                  int render_frame_id);

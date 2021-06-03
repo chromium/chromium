@@ -385,8 +385,6 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   return registration;
 }
 
-// TODO(http://crbug.com/1199077): Update after ServiceWorkerVersion supports
-// StorageKey.
 scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
     ServiceWorkerRegistry* registry,
     scoped_refptr<ServiceWorkerRegistration> registration,

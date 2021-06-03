@@ -544,7 +544,7 @@ size_t ServiceWorkerContextWrapper::CountExternalRequestsForTest(
       GetAllLiveVersionInfo();
   for (const ServiceWorkerVersionInfo& info : live_version_info) {
     ServiceWorkerVersion* version = GetLiveVersion(info.version_id);
-    if (version && version->origin() == origin) {
+    if (version && version->key().origin() == origin) {
       return version->GetExternalRequestCountForTest();  // IN-TEST
     }
   }
@@ -808,7 +808,7 @@ void ServiceWorkerContextWrapper::StopAllServiceWorkersForOrigin(
   std::vector<ServiceWorkerVersionInfo> live_versions = GetAllLiveVersionInfo();
   for (const ServiceWorkerVersionInfo& info : live_versions) {
     ServiceWorkerVersion* version = GetLiveVersion(info.version_id);
-    if (version && version->origin() == origin)
+    if (version && version->key().origin() == origin)
       version->StopWorker(base::DoNothing());
   }
 }

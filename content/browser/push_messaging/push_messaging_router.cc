@@ -179,7 +179,7 @@ void PushMessagingRouter::DeliverMessageToWorker(
     if (payload)
       event_metadata["Payload"] = *payload;
     devtools_context->LogBackgroundServiceEventOnCoreThread(
-        service_worker->registration_id(), service_worker->origin(),
+        service_worker->registration_id(), service_worker->key().origin(),
         DevToolsBackgroundService::kPushMessaging, "Push event dispatched",
         message_id, event_metadata);
   }
@@ -245,7 +245,7 @@ void PushMessagingRouter::DeliverMessageEnd(
       push_event_status !=
           blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR) {
     devtools_context->LogBackgroundServiceEventOnCoreThread(
-        service_worker->registration_id(), service_worker->origin(),
+        service_worker->registration_id(), service_worker->key().origin(),
         DevToolsBackgroundService::kPushMessaging, "Push event completed",
         message_id, {{"Status", status_description}});
   }

@@ -10,6 +10,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -90,9 +91,9 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
   }
   network::ResourceRequest request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
-          version_->script_url(), version_->origin(), /*is_main_script=*/true,
-          version_->script_type(), *fetch_client_settings_object_,
-          *browser_context);
+          version_->script_url(), version_->key().origin(),
+          /*is_main_script=*/true, version_->script_type(),
+          *fetch_client_settings_object_, *browser_context);
   // Request SSLInfo. It will be persisted in service worker storage and may be
   // used by ServiceWorkerMainResourceLoader for navigations handled by this
   // service worker.

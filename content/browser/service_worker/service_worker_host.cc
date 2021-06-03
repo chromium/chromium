@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 
 namespace content {
@@ -64,7 +65,8 @@ ServiceWorkerHost::ServiceWorkerHost(
   container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
-      net::SiteForCookies::FromUrl(version_->script_url()), version_->origin());
+      net::SiteForCookies::FromUrl(version_->script_url()),
+      version_->key().origin());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() {
@@ -97,7 +99,7 @@ void ServiceWorkerHost::CreateWebTransportConnector(
   RunOrPostTaskOnThread(
       FROM_HERE, BrowserThread::UI,
       base::BindOnce(&CreateWebTransportConnectorImpl, worker_process_id_,
-                     version_->origin(), GetNetworkIsolationKey(),
+                     version_->key().origin(), GetNetworkIsolationKey(),
                      std::move(receiver)));
 }
 
@@ -114,7 +116,7 @@ net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // top-level browsing context, which shouldn't be use for ServiceWorkers used
   // in iframes.
   return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
-      version_->origin());
+      version_->key().origin());
 }
 
 const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {

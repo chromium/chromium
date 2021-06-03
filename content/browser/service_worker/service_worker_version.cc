@@ -161,6 +161,7 @@ void OnOpenWindowFinished(
 
 void DidShowPaymentHandlerWindow(
     const GURL& url,
+    const blink::StorageKey& key,
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback callback,
     bool success,
@@ -168,7 +169,7 @@ void DidShowPaymentHandlerWindow(
     int render_frame_id) {
   if (success) {
     service_worker_client_utils::DidNavigate(
-        context, url.GetOrigin(),
+        context, url.GetOrigin(), key,
         base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
         render_process_id, render_frame_id);
   } else {
@@ -244,7 +245,7 @@ ServiceWorkerVersion::ServiceWorkerVersion(
     : version_id_(version_id),
       registration_id_(registration->id()),
       script_url_(script_url),
-      origin_(registration->key().origin()),
+      key_(registration->key()),
       scope_(registration->scope()),
       script_type_(script_type),
       fetch_handler_existence_(FetchHandlerExistence::UNKNOWN),
@@ -384,7 +385,7 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   ServiceWorkerVersionInfo info(
       running_status(), status(), fetch_handler_existence(), script_url(),
-      scope(), origin(), registration_id(), version_id(),
+      scope(), key().origin(), registration_id(), version_id(),
       embedded_worker()->process_id(), embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id());
   for (const auto& controllee : controllee_map_) {
@@ -467,7 +468,7 @@ void ServiceWorkerVersion::StartWorker(ServiceWorkerMetrics::EventType purpose,
   // get associated with it in
   // ServiceWorkerHost::CompleteStartWorkerPreparation.
   context_->registry()->FindRegistrationForId(
-      registration_id_, blink::StorageKey(origin_),
+      registration_id_, key_,
       base::BindOnce(
           &ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker,
           weak_factory_.GetWeakPtr(), purpose, status_,
@@ -585,7 +586,7 @@ void ServiceWorkerVersion::StartUpdate() {
   if (!context_)
     return;
   context_->registry()->FindRegistrationForId(
-      registration_id_, blink::StorageKey(origin_),
+      registration_id_, key_,
       base::BindOnce(&ServiceWorkerVersion::FoundRegistrationForUpdate,
                      weak_factory_.GetWeakPtr()));
 }
@@ -1398,6 +1399,8 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
 
 void ServiceWorkerVersion::OpenNewTab(const GURL& url,
                                       OpenNewTabCallback callback) {
+  // TODO(crbug.com/1199077): After StorageKey implements partitioning update
+  // this to reject with InvalidAccessError if key_ is partitioned.
   OpenWindow(url, service_worker_client_utils::WindowType::NEW_TAB_WINDOW,
              std::move(callback));
 }
@@ -1413,7 +1416,8 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
     return;
   }
 
-  if (!url.is_valid() || !url::Origin::Create(url).IsSameOriginWith(origin_)) {
+  if (!url.is_valid() ||
+      !url::Origin::Create(url).IsSameOriginWith(key_.origin())) {
     mojo::ReportBadMessage(
         "Received PaymentRequestEvent#openWindow() request for a cross-origin "
         "URL.");
@@ -1423,7 +1427,7 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
 
   PaymentHandlerSupport::ShowPaymentHandlerWindow(
       url, context_.get(),
-      base::BindOnce(&DidShowPaymentHandlerWindow, url, context_),
+      base::BindOnce(&DidShowPaymentHandlerWindow, url, key_, context_),
       base::BindOnce(
           &ServiceWorkerVersion::OpenWindow, weak_factory_.GetWeakPtr(), url,
           service_worker_client_utils::WindowType::PAYMENT_HANDLER_WINDOW),
@@ -1579,7 +1583,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   }
 
   service_worker_client_utils::NavigateClient(
-      url, script_url_, container_host->process_id(),
+      url, script_url_, key_, container_host->process_id(),
       container_host->frame_id(), context_,
       base::BindOnce(&DidNavigateClient, std::move(callback), url));
 }
@@ -1675,7 +1679,7 @@ void ServiceWorkerVersion::OpenWindow(
   }
 
   service_worker_client_utils::OpenWindow(
-      url, script_url_, embedded_worker_->embedded_worker_id(),
+      url, script_url_, key_, embedded_worker_->embedded_worker_id(),
       embedded_worker_->process_id(), context_, type,
       base::BindOnce(&OnOpenWindowFinished, std::move(callback)));
 }

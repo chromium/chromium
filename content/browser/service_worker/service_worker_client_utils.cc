@@ -433,10 +433,7 @@ void GetNonWindowClients(
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it = controller->context()->GetClientContainerHostIterator(
-               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
-               // implements StorageKey.
-               blink::StorageKey(controller->origin()),
-               false /* include_reserved_clients */,
+               controller->key(), false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
         AddNonWindowClient(it->GetContainerHost(), options->client_type,
@@ -478,10 +475,7 @@ void GetWindowClients(
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it = controller->context()->GetClientContainerHostIterator(
-               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
-               // implements StorageKey.
-               blink::StorageKey(controller->origin()),
-               false /* include_reserved_clients */,
+               controller->key(), false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
         AddWindowClient(it->GetContainerHost(), &clients_info);
@@ -507,6 +501,8 @@ void GetWindowClients(
                      std::move(clients)));
 }
 
+// TODO(crbug.com/1199077): Update `sane_origin` to StorageKey once
+// ServiceWorkerContainerHost implements StorageKey.
 void DidGetExecutionReadyClient(
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     const std::string& client_uuid,
@@ -553,6 +549,7 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
 
 void OpenWindow(const GURL& url,
                 const GURL& script_url,
+                const blink::StorageKey& key,
                 int worker_id,
                 int worker_process_id,
                 const base::WeakPtr<ServiceWorkerContextCore>& context,
@@ -564,12 +561,13 @@ void OpenWindow(const GURL& url,
       base::BindOnce(
           &OpenWindowOnUI, url, script_url, worker_id, worker_process_id,
           base::WrapRefCounted(context->wrapper()), type,
-          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(),
+          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
                          std::move(callback))));
 }
 
 void NavigateClient(const GURL& url,
                     const GURL& script_url,
+                    const blink::StorageKey& key,
                     int process_id,
                     int frame_id,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
@@ -580,7 +578,7 @@ void NavigateClient(const GURL& url,
       FROM_HERE, BrowserThread::UI,
       base::BindOnce(
           &NavigateClientOnUI, url, script_url, process_id, frame_id,
-          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(),
+          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
                          std::move(callback))));
 }
 
@@ -638,6 +636,7 @@ void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
 
 void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  const GURL& origin,
+                 const blink::StorageKey& key,
                  NavigationCallback callback,
                  int render_process_id,
                  int render_frame_id) {
@@ -658,10 +657,7 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
 
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context->GetClientContainerHostIterator(
-               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
-               // implements StorageKey.
-               blink::StorageKey(url::Origin::Create(origin)),
-               true /* include_reserved_clients */,
+               key, true /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();

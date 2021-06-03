@@ -173,6 +173,8 @@ void ServiceWorkerRegistry::CreateNewRegistration(
                      std::move(callback)));
 }
 
+// TODO(http://crbug.com/1199077): This function doesn't need to take in a
+// StorageKey, it can get it from ServiceWorkerRegistration. Clean up.
 void ServiceWorkerRegistry::CreateNewVersion(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const GURL& script_url,
