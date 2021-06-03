@@ -5254,7 +5254,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
   if (!in_back_forward_cache) {
     TRACE_EVENT0("navigation", "BackForwardCache_EvictAfterDocumentRestored");
     // TODO(carlscab): We should no longer get into this branch thanks to
-    // https://crrev.com/c/2352815. Lets keep this old code for now just in case
+    // https://crrev.com/c/2563674. Lets keep this old code for now just in case
     // and replace with a CHECK once we are confident that is the case.
     base::debug::DumpWithoutCrashing();
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
