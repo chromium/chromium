@@ -10,6 +10,10 @@
   ntp-module-wrapper + ntp-module-wrapper {
     margin-top: 16px;
   }
+
+  #removeModuleToastMessage {
+    flex-grow: 1;
+  }
 </style>
 <template is="dom-repeat" items="[[modules_]]" id="modules"
     on-dom-change="onModulesLoaded_">
