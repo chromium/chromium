@@ -7,7 +7,10 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/prefs/pref_service.h"
+#include "ios/chrome/app/first_run_app_state_agent_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#include "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/main_controller_private.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -22,8 +25,8 @@
 
 @implementation FirstRunAppInterface
 
-+ (void)showLegacyFirstRunUI {
-  [chrome_test_util::GetForegroundActiveSceneController() showLegacyFirstRunUI];
++ (void)showFirstRunUI {
+  [[chrome_test_util::GetMainController() firstRunAppAgent] showFirstRunUI];
 }
 
 + (void)setUMACollectionEnabled:(BOOL)enabled {

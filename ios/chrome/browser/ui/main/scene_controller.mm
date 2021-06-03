@@ -382,6 +382,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 }
 
+- (BOOL)isPresentingSigninView {
+  return self.signinCoordinator != nil;
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -835,7 +839,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   // Only create the restoration helper if the session with the current session
   // id was backed up successfully.
-  if (self.sceneState.appState.sessionRestorationRequired) {
+  if (self.sceneState.appState.sessionRestorationRequired &&
+      !self.sceneState.appState.startupInformation.isFirstRun) {
     Browser* mainBrowser = self.mainInterface.browser;
     if (!base::ios::IsMultiwindowSupported() ||
         [CrashRestoreHelper
@@ -1162,48 +1167,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 #pragma mark - First Run
 
-// Initializes the first run UI and presents it to the user.
-- (void)showLegacyFirstRunUI {
-  DCHECK(!self.signinCoordinator);
-  DCHECK(!_firstRunUIBlocker);
-  _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
-  // Register for the first run dismissal notification to reset
-  // |sceneState.presentingFirstRunUI| flag;
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleFirstRunUIWillFinish)
-             name:kChromeFirstRunUIWillFinishNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleFirstRunUIDidFinish)
-             name:kChromeFirstRunUIDidFinishNotification
-           object:nil];
-
-  Browser* browser = self.mainInterface.browser;
-  id<ApplicationCommands, BrowsingDataCommands> welcomeHandler =
-      static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
-          browser->GetCommandDispatcher());
-
-  WelcomeToChromeViewController* welcomeToChrome =
-      [[WelcomeToChromeViewController alloc]
-          initWithBrowser:browser
-                presenter:self.currentInterface.bvc
-               dispatcher:welcomeHandler];
-  self.welcomeToChromeController = welcomeToChrome;
-  UINavigationController* navController =
-      [[OrientationLimitingNavigationController alloc]
-          initWithRootViewController:welcomeToChrome];
-  [navController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-  navController.modalPresentationStyle = UIModalPresentationFullScreen;
-  CGRect appFrame = [[UIScreen mainScreen] bounds];
-  [[navController view] setFrame:appFrame];
-  self.sceneState.presentingFirstRunUI = YES;
-  [self.currentInterface.viewController presentViewController:navController
-                                                     animated:NO
-                                                   completion:nil];
-}
-
 // Shows the first run UI.
 - (void)showFirstRunUI {
   DCHECK(!_firstRunUIBlocker);
@@ -1250,34 +1213,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       removeObserver:self
                 name:kChromeFirstRunUIWillFinishNotification
               object:nil];
-}
-
-// Handles the notification that first run modal dialog UI completed.
-- (void)handleFirstRunUIDidFinish {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:kChromeFirstRunUIDidFinishNotification
-              object:nil];
-
-  self.welcomeToChromeController = nil;
-
-  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
-      !location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    [self logLocationPermissionsExperimentForGroupShown:
-              LocationPermissionsUI::kFirstRunPromptNotShown];
-    // As soon as First Run has finished, give OmniboxGeolocationController an
-    // opportunity to present the iOS system location alert.
-    [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
-  } else if (location_permissions_field_trial::
-                 IsInRemoveFirstRunPromptGroup()) {
-    // If in RemoveFirstRunPrompt group, the system prompt will be delayed until
-    // the site requests location information.
-    [[OmniboxGeolocationController sharedInstance]
-        systemPromptSkippedForNewUser];
-  }
-  if (![self ignoreFirstRunStageForTesting]) {
-    [self.sceneState.appState queueTransitionToNextInitStage];
-  }
 }
 
 // Presents the sign-in upgrade promo if is relevant and possible.
@@ -3154,10 +3089,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [self interruptSigninCoordinatorAnimated:YES completion:signinInterrupted];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
-  } else if (self.sceneState.presentingFirstRunUI &&
-             self.welcomeToChromeController) {
-    [self.welcomeToChromeController
-        interruptSigninCoordinatorWithCompletion:signinInterrupted];
   }
 }
 

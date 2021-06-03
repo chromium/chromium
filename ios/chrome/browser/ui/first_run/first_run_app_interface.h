@@ -13,7 +13,7 @@
 @interface FirstRunAppInterface : NSObject
 
 // Triggers the display of the first run UI.
-+ (void)showLegacyFirstRunUI;
++ (void)showFirstRunUI;
 
 // Resets the UMA collection enabled pref to |enabled|.
 + (void)setUMACollectionEnabled:(BOOL)enabled;

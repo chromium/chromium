@@ -223,6 +223,7 @@ source_set("eg_app_support+eg2") {
     "//components/metrics",
     "//components/prefs",
     "//ios/chrome/app:app_internal",
+    "//ios/chrome/app:first_run_app_state_agent",
     "//ios/chrome/browser",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/main:scene",

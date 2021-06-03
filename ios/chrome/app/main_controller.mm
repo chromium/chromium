@@ -289,6 +289,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // List of closure to run as part of shutdown. The closure will be called
   // in reverse order of registration.
   std::vector<base::OnceClosure> _cleanupClosures;
+
+  FirstRunAppAgent* _firstRunAppAgent;
 }
 
 // Handles collecting metrics on user triggered screenshots
@@ -644,7 +646,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)addPostSafeModeAgents {
   [self.appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
-  [self.appState addAgent:[[FirstRunAppAgent alloc] init]];
+
+  FirstRunAppAgent* firstRunAppAgent = [[FirstRunAppAgent alloc] init];
+  _firstRunAppAgent = firstRunAppAgent;
+  [self.appState addAgent:firstRunAppAgent];
 }
 
 #pragma mark - Property implementation.
@@ -1289,6 +1294,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #pragma mark - TestingOnly
 
 @implementation MainController (TestingOnly)
+
+- (FirstRunAppAgent*)firstRunAppAgent {
+  return _firstRunAppAgent;
+}
 
 - (void)setStartupParametersWithURL:(const GURL&)launchURL {
   NSString* sourceApplication = @"Fake App";

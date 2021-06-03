@@ -12,7 +12,6 @@
 // App state agent that displays the first run UI when needed and handles the
 // InitStageFirstRun stage.
 @interface FirstRunAppAgent : NSObject <AppStateAgent>
-
 @end
 
 #endif  // IOS_CHROME_APP_FIRST_RUN_APP_STATE_AGENT_H_

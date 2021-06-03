@@ -33,21 +33,20 @@
 @property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
     interfaceProvider;
 
+// YES if incognito mode is forced by enterprise policy.
+@property(nonatomic, readonly, getter=isIncognitoForced) BOOL incognitoForced;
+
+// YES if the scene is presenting the signin view.
+@property(nonatomic, readonly) BOOL isPresentingSigninView;
+
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13));
 
-// Return YES if incognito mode is forced by enterprise policy.
-- (BOOL)isIncognitoForced;
-
 // TODO(crbug.com/1210256): Remove this once it is migrated to the agent.
 // Shows the new first run UI.
 - (void)showFirstRunUI;
-
-// TODO(crbug.com/1210256): Remove this once it is migrated to the agent.
-// Shows the legacy first run UI.
-- (void)showLegacyFirstRunUI;
 
 @end
 
