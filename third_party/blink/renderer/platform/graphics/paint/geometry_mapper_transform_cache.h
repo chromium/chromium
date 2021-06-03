@@ -112,6 +112,8 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
            plane_root_transform_->has_animation;
   }
 
+  bool has_fixed() const { return has_fixed_; }
+
  private:
   friend class GeometryMapperTransformCacheTest;
 
@@ -202,6 +204,9 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     bool has_animation;
   };
   std::unique_ptr<ScreenTransform> screen_transform_;
+
+  // Whether or not there is a fixed position transform to the root.
+  bool has_fixed_ = false;
 
   unsigned cache_generation_ = s_global_generation - 1;
   DISALLOW_COPY_AND_ASSIGN(GeometryMapperTransformCache);

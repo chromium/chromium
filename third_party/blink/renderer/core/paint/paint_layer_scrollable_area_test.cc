@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 
 using testing::_;
@@ -922,7 +923,7 @@ TEST_P(PaintLayerScrollableAreaTest,
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
-       ScrollWithFixedDoesNotNeedCompositingInputsUpdate) {
+       ScrollWithFixedDoesNotNeedCompositingUpdate) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -952,6 +953,9 @@ TEST_P(PaintLayerScrollableAreaTest,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
                                    mojom::blink::ScrollType::kProgrammatic);
   EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(
+      GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
 }

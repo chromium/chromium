@@ -5,9 +5,6 @@
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [8, 200, 100, 100]
-      ],
       "transform": 1
     },
     {

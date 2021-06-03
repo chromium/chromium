@@ -616,6 +616,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     state.direct_compositing_reasons =
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
+    if (state.direct_compositing_reasons & CompositingReason::kFixedPosition &&
+        object_.View()->FirstFragment().PaintProperties()->Scroll()) {
+      state.scroll_translation_for_fixed = object_.View()
+                                               ->FirstFragment()
+                                               .PaintProperties()
+                                               ->ScrollTranslation();
+    }
+
     if (IsA<LayoutView>(object_)) {
       DCHECK(object_.GetFrame());
       state.flags.is_frame_paint_offset_translation = true;
@@ -2166,11 +2174,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
 
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
         scroll_translation->Translation2D() != old_scroll_offset) {
-      // Scrolling can change overlap relationship.
+      // Scrolling can change overlap relationship for sticky positioned or
+      // elements fixed to an overflow: hidden view that programmatically
+      // scrolls via script. In this case the fixed transform doesn't have
+      // enough information to perform the expansion - there is no scroll node
+      // to describe the bounds of the scrollable content.
       auto* frame_view = object_.GetFrameView();
-      if (frame_view->HasViewportConstrainedObjects()) {
-        // TODO(crbug.com/1099379): Implement better fixed/sticky overlap
-        // testing.
+      if (frame_view->HasStickyViewportConstrainedObject()) {
+        // TODO(crbug.com/1099379): Implement better sticky overlap testing.
+        frame_view->SetPaintArtifactCompositorNeedsUpdate();
+      } else if (frame_view->HasViewportConstrainedObjects() &&
+                 !frame_view->GetLayoutView()
+                      ->FirstFragment()
+                      .PaintProperties()
+                      ->Scroll()) {
         frame_view->SetPaintArtifactCompositorNeedsUpdate();
       } else if (!object_.IsStackingContext() &&
                  // TODO(wangxianzhu): for accuracy, this should be something

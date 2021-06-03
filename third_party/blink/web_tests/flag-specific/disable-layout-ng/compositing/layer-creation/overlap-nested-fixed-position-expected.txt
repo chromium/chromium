@@ -1,0 +1,54 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 1061],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed parent'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed nested'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped with-parent'",
+      "position": [8, 208],
+      "bounds": [20, 20],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='overlapped with-nested')",
+      "position": [258, 228],
+      "bounds": [20, 20],
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 0, 0, 1]
+      ]
+    }
+  ]
+}
+

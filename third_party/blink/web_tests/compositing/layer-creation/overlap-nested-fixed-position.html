@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<style>
+.fixed {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  background-color: yellow;
+}
+
+.parent {
+  top: 0px;
+  left: 0px;
+}
+
+.nested {
+  left: 200px;
+}
+
+.overlapped {
+  position: relative;
+  top: 200px;
+  width: 20px;
+  height: 20px;
+  background: blue;
+  z-index: 1;
+}
+
+.with-nested {
+  left: 250px;
+}
+
+.tall {
+  height: 1000px;
+}
+
+</style>
+
+<!-- This test validates that overlap testing for nested fixed (as long as
+     still attached to the viewport) expands fixed rect.
+     In the below markup, the two .overlapped elements should be detected as
+     overlapping with the expanded fixed rects, respectively. -->
+<div class="fixed parent">
+  <div class="fixed nested"></div>
+</div>
+<div class="overlapped with-parent"></div>
+<div class="overlapped with-nested"></div>
+<div class="tall"></div>
+
+<pre></pre>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+if (window.testRunner && window.internals) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+
+runAfterLayoutAndPaint(function() {
+  if (window.testRunner)
+    document.querySelector('pre').textContent = internals.layerTreeAsText(document);
+}, true);
+</script>

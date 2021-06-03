@@ -153,8 +153,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (RequiresCompositingForRootScroller(*layer))
     reasons |= CompositingReason::kRootScroller;
 
-  if (RequiresCompositingForScrollDependentPosition(*layer))
-    reasons |= CompositingReason::kScrollDependentPosition;
+  reasons |= CompositingReasonsForScrollDependentPosition(*layer);
 
   if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(object))
     reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
@@ -280,8 +279,7 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
     }
   }
 
-  if (RequiresCompositingForScrollDependentPosition(layer))
-    direct_reasons |= CompositingReason::kScrollDependentPosition;
+  direct_reasons |= CompositingReasonsForScrollDependentPosition(layer);
 
   if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(layout_object))
     direct_reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
@@ -390,8 +388,10 @@ bool CompositingReasonFinder::RequiresCompositingForRootScroller(
   return layer.GetLayoutObject().IsGlobalRootScroller();
 }
 
-bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+CompositingReasons
+CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
     const PaintLayer& layer) {
+  CompositingReasons reasons = CompositingReason::kNone;
   // Don't promote fixed position elements that are descendants of a non-view
   // container, e.g. transformed elements.  They will stay fixed wrt the
   // container rather than the enclosing frame.
@@ -400,20 +400,19 @@ bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
     // position elements are composited under overflow: hidden, which can still
     // have smooth scroll animations.
     LocalFrameView* frame_view = layer.GetLayoutObject().GetFrameView();
-    return frame_view->LayoutViewport()->HasOverflow();
+    if (frame_view->LayoutViewport()->HasOverflow())
+      reasons |= CompositingReason::kFixedPosition;
   }
 
   // Don't promote sticky position elements that cannot move with scrolls.
-  if (layer.SticksToScroller()) {
-    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
-    // position elements are composited under overflow: hidden, which can still
-    // have smooth scroll animations.
-    return layer.AncestorScrollContainerLayer()
-        ->GetScrollableArea()
-        ->HasOverflow();
-  }
+  // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
+  // position elements are composited under overflow: hidden, which can still
+  // have smooth scroll animations.
+  if (layer.SticksToScroller() &&
+      layer.AncestorScrollContainerLayer()->GetScrollableArea()->HasOverflow())
+    reasons |= CompositingReason::kStickyPosition;
 
-  return false;
+  return reasons;
 }
 
 bool CompositingReasonFinder::

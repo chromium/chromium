@@ -12,11 +12,9 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
   DEFINE_STATIC_REF(
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
-          nullptr,
-          State{
-              FloatSize(), &ScrollPaintPropertyNode::Root(),
-              State::Flags{false /* flattens_inherited_transform */,
-                           false /* in_subtree_of_page_scale */}})));
+          nullptr, State{FloatSize(), &ScrollPaintPropertyNode::Root(), nullptr,
+                         State::Flags{false /* flattens_inherited_transform */,
+                                      false /* in_subtree_of_page_scale */}})));
   return *root;
 }
 
@@ -81,6 +79,12 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   }
   if (state_.scroll)
     json->SetString("scroll", String::Format("%p", state_.scroll.get()));
+
+  if (state_.scroll_translation_for_fixed) {
+    json->SetString(
+        "scroll_translation_for_fixed",
+        String::Format("%p", state_.scroll_translation_for_fixed.get()));
+  }
   return json;
 }
 

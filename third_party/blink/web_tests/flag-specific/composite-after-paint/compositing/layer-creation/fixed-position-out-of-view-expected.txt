@@ -13,6 +13,13 @@
       "backgroundColor": "#C0C0C0"
     },
     {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 13],
+      "bounds": [769, 1000],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
+    },
+    {
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
