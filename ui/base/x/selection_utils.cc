@@ -22,25 +22,21 @@
 namespace ui {
 
 std::vector<x11::Atom> GetTextAtomsFrom() {
-  std::vector<x11::Atom> atoms;
-  atoms.push_back(x11::GetAtom(kMimeTypeLinuxUtf8String));
-  atoms.push_back(x11::GetAtom(kMimeTypeLinuxString));
-  atoms.push_back(x11::GetAtom(kMimeTypeLinuxText));
-  atoms.push_back(x11::GetAtom(kMimeTypeText));
-  atoms.push_back(x11::GetAtom(kMimeTypeTextUtf8));
+  static const std::vector<x11::Atom> atoms = {
+      x11::GetAtom(kMimeTypeLinuxUtf8String),
+      x11::GetAtom(kMimeTypeLinuxString), x11::GetAtom(kMimeTypeLinuxText),
+      x11::GetAtom(kMimeTypeText), x11::GetAtom(kMimeTypeTextUtf8)};
   return atoms;
 }
 
 std::vector<x11::Atom> GetURLAtomsFrom() {
-  std::vector<x11::Atom> atoms;
-  atoms.push_back(x11::GetAtom(kMimeTypeURIList));
-  atoms.push_back(x11::GetAtom(kMimeTypeMozillaURL));
+  static const std::vector<x11::Atom> atoms = {
+      x11::GetAtom(kMimeTypeURIList), x11::GetAtom(kMimeTypeMozillaURL)};
   return atoms;
 }
 
 std::vector<x11::Atom> GetURIListAtomsFrom() {
-  std::vector<x11::Atom> atoms;
-  atoms.push_back(x11::GetAtom(kMimeTypeURIList));
+  static const std::vector<x11::Atom> atoms = {x11::GetAtom(kMimeTypeURIList)};
   return atoms;
 }
 

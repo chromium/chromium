@@ -122,7 +122,7 @@ class XClipboardHelper::TargetList {
 
   bool ContainsText() const {
     for (const auto& atom : GetTextAtomsFrom()) {
-      if (ContainsAtom(atom))
+      if (base::Contains(target_list_, atom))
         return true;
     }
     return false;
@@ -130,10 +130,6 @@ class XClipboardHelper::TargetList {
 
   bool ContainsFormat(const ClipboardFormatType& format_type) const {
     x11::Atom atom = x11::GetAtom(format_type.GetName().c_str());
-    return ContainsAtom(atom);
-  }
-
-  bool ContainsAtom(x11::Atom atom) const {
     return base::Contains(target_list_, atom);
   }
 
