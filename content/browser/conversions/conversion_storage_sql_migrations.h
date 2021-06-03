@@ -70,6 +70,9 @@ class ConversionStorageSqlMigrations {
   static bool MigrateToVersion6(ConversionStorageSql* conversion_storage,
                                 sql::Database* db,
                                 sql::MetaTable* meta_table);
+  static bool MigrateToVersion7(ConversionStorageSql* conversion_storage,
+                                sql::Database* db,
+                                sql::MetaTable* meta_table);
 };
 
 }  // namespace content

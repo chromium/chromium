@@ -57,6 +57,41 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
   return impressions;
 }
 
+struct ImpressionIdAndImpressionOrigin {
+  int64_t impression_id;
+  url::Origin impression_origin;
+};
+
+std::vector<ImpressionIdAndImpressionOrigin>
+GetImpressionIdAndImpressionOrigins(sql::Database* db,
+                                    int64_t start_impression_id,
+                                    int num_impressions) {
+  DCHECK_GE(num_impressions, 0);
+  const char kGetImpressionsSql[] =
+      "SELECT impression_id, impression_origin "
+      "FROM impressions "
+      "WHERE impression_id >= ? "
+      "ORDER BY impression_id "
+      "LIMIT ?";
+
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
+  statement.BindInt64(0, start_impression_id);
+  statement.BindInt(1, num_impressions);
+
+  std::vector<ImpressionIdAndImpressionOrigin> impressions;
+  while (statement.Step()) {
+    int64_t impression_id = statement.ColumnInt64(0);
+    url::Origin impression_origin =
+        DeserializeOrigin(statement.ColumnString(1));
+
+    impressions.push_back({impression_id, std::move(impression_origin)});
+  }
+  if (!statement.Succeeded())
+    return {};
+  return impressions;
+}
+
 }  // namespace
 
 bool ConversionStorageSqlMigrations::UpgradeSchema(
@@ -83,6 +118,10 @@ bool ConversionStorageSqlMigrations::UpgradeSchema(
   }
   if (meta_table->GetVersionNumber() == 5) {
     if (!MigrateToVersion6(conversion_storage, db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 6) {
+    if (!MigrateToVersion7(conversion_storage, db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.
@@ -414,6 +453,132 @@ bool ConversionStorageSqlMigrations::MigrateToVersion6(
     return false;
 
   meta_table->SetVersionNumber(6);
+  return transaction.Commit();
+}
+
+bool ConversionStorageSqlMigrations::MigrateToVersion7(
+    ConversionStorageSql* conversion_storage,
+    sql::Database* db,
+    sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Add new impression_site column to the impressions table. This follows the
+  // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
+  // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
+  // DEFAULT value for the column which is undesirable.
+  const char kNewImpressionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_impressions"
+      "(impression_id INTEGER PRIMARY KEY,"
+      "impression_data TEXT NOT NULL,"
+      "impression_origin TEXT NOT NULL,"
+      "conversion_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "impression_time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL,"
+      "num_conversions INTEGER DEFAULT 0,"
+      "active INTEGER DEFAULT 1,"
+      "conversion_destination TEXT NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attributed_truthfully INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL)";
+  if (!db->Execute(kNewImpressionTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table, inserting placeholder values
+  // for the impression_site column.
+  const char kPopulateNewImpressionTableSql[] =
+      "INSERT INTO new_impressions SELECT "
+      "impression_id,impression_data,impression_origin,"
+      "conversion_origin,reporting_origin,impression_time,"
+      "expiry_time,num_conversions,active,conversion_destination,source_type,"
+      "attributed_truthfully,priority,'' "
+      "FROM impressions";
+  sql::Statement populate_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewImpressionTableSql));
+  if (!populate_statement.Run())
+    return false;
+
+  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  if (!db->Execute(kDropOldImpressionTableSql))
+    return false;
+
+  const char kRenameImpressionTableSql[] =
+      "ALTER TABLE new_impressions RENAME TO impressions";
+  if (!db->Execute(kRenameImpressionTableSql))
+    return false;
+
+  // Update each of the impression rows to have the correct associated
+  // impression_site.
+  //
+  // We update `kNumImpressionsPerUpdate` rows at a time, to avoid pulling the
+  // entire impressions table into memory.
+  int64_t start_impression_id = 0;
+  const size_t kNumImpressionsPerUpdate = 100u;
+  std::vector<ImpressionIdAndImpressionOrigin> impressions =
+      GetImpressionIdAndImpressionOrigins(db, start_impression_id,
+                                          kNumImpressionsPerUpdate);
+
+  const char kUpdateImpressionSiteSql[] =
+      "UPDATE impressions SET impression_site = ? WHERE impression_id = ?";
+  sql::Statement update_impression_site_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kUpdateImpressionSiteSql));
+
+  while (!impressions.empty()) {
+    // Perform the column updates for each row we pulled into memory.
+    for (const auto& impression : impressions) {
+      update_impression_site_statement.Reset(/*clear_bound_vars=*/true);
+
+      // The impression site is derived from the impression origin dynamically.
+      update_impression_site_statement.BindString(
+          0, net::SchemefulSite(impression.impression_origin).Serialize());
+      update_impression_site_statement.BindInt64(1, impression.impression_id);
+      if (!update_impression_site_statement.Run())
+        return false;
+
+      // Track the largest row id. This is more efficient than sorting all the
+      // rows.
+      if (impression.impression_id > start_impression_id)
+        start_impression_id = impression.impression_id;
+    }
+
+    // Fetch the next batch of rows from the database.
+    start_impression_id += 1;
+    impressions = GetImpressionIdAndImpressionOrigins(db, start_impression_id,
+                                                      kNumImpressionsPerUpdate);
+  }
+
+  // Create the pre-existing impression table indices on the new table.
+  const char kImpressionExpiryIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
+      "ON impressions(expiry_time)";
+  if (!db->Execute(kImpressionExpiryIndexSql))
+    return false;
+
+  const char kImpressionOriginIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_origin_idx "
+      "ON impressions(impression_origin)";
+  if (!db->Execute(kImpressionOriginIndexSql))
+    return false;
+
+  const char kConversionDestinationIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
+      "ON impressions(active, conversion_destination, reporting_origin)";
+  if (!db->Execute(kConversionDestinationIndexSql))
+    return false;
+
+  // Create the new impression table index.
+  const char kImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_site_idx "
+      "ON impressions(active, impression_site, source_type)";
+  if (!db->Execute(kImpressionSiteIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(7);
   return transaction.Commit();
 }
 

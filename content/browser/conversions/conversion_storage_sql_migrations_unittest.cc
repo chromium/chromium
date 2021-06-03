@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 6;
+const int kCurrentVersionNumber = 7;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_6.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_7.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -394,6 +394,57 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion5ToCurrent) {
     ASSERT_TRUE(s.Step());
     ASSERT_EQ("https://conversion.test", s.ColumnString(0));
     ASSERT_EQ(0, s.ColumnInt64(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion6ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_6.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_FALSE(db.DoesColumnExist("impressions", "impression_site"));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Check that the relevant schema changes are made.
+    EXPECT_TRUE(db.DoesColumnExist("impressions", "impression_site"));
+
+    // Verify that data is preserved across the migration.
+    size_t rows = 0;
+    sql::test::CountTableRows(&db, "impressions", &rows);
+    EXPECT_EQ(2u, rows);
+
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT impression_origin, impression_site FROM impressions"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://a.impression.test", s.ColumnString(0));
+    ASSERT_EQ("https://impression.test", s.ColumnString(1));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://b.impression.test", s.ColumnString(0));
+    ASSERT_EQ("https://impression.test", s.ColumnString(1));
     ASSERT_FALSE(s.Step());
   }
 

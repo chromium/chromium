@@ -77,8 +77,14 @@ class CONTENT_EXPORT StorableImpression {
   // Returns the schemeful site of |conversion_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
-  // that we avoid unnecessary copies of |conversion_origin|.
+  // that we avoid unnecessary copies of |conversion_origin_|.
   net::SchemefulSite ConversionDestination() const;
+
+  // Returns the schemeful site of |impression_origin|.
+  //
+  // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
+  // that we avoid unnecessary copies of |impression_origin_|.
+  net::SchemefulSite ImpressionSite() const;
 
  private:
   uint64_t impression_data_;

@@ -61,12 +61,16 @@ const base::FilePath::CharType kDatabasePath[] =
 //
 // Version 6 - 2021/05/06 - https://crrev.com/c/2878235
 //
-// Version 6 adds the impression.priority column.
-const int kCurrentVersionNumber = 6;
+// Version 6 adds the impressions.priority column.
+//
+// Version 7 - 2021/06/03 - https://crrev.com/c/2904386
+//
+// Version 7 adds the impressions.impression_site column.
+const int kCurrentVersionNumber = 7;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 6;
+const int kCompatibleVersionNumber = 7;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -168,8 +172,8 @@ void ConversionStorageSql::StoreImpression(
       "(impression_data, impression_origin, conversion_origin, "
       "conversion_destination, "
       "reporting_origin, impression_time, expiry_time, source_type, "
-      "attributed_truthfully, priority) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?)";
+      "attributed_truthfully, priority, impression_site) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindString(
@@ -184,6 +188,7 @@ void ConversionStorageSql::StoreImpression(
   statement.BindInt(
       8, static_cast<int>(delegate_->SelectAttributionLogic(impression)));
   statement.BindInt64(9, impression.priority());
+  statement.BindString(10, impression.ImpressionSite().Serialize());
   statement.Run();
 
   transaction.Commit();
@@ -961,6 +966,8 @@ bool ConversionStorageSql::CreateSchema() {
   // |kNavigation|.
   // |attributed_truthfully| corresponds to the
   // |StorableImpression::AttributionLogic| enum.
+  // |impression_site| is used to optimize the lookup of impressions;
+  // |StorableImpression::ImpressionSite| is always derived from the origin.
   const char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"
@@ -975,7 +982,8 @@ bool ConversionStorageSql::CreateSchema() {
       "conversion_destination TEXT NOT NULL,"
       "source_type INTEGER NOT NULL,"
       "attributed_truthfully INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL)";
+      "priority INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL)";
   if (!db_->Execute(kImpressionTableSql))
     return false;
 
@@ -1005,6 +1013,13 @@ bool ConversionStorageSql::CreateSchema() {
       "CREATE INDEX IF NOT EXISTS impression_origin_idx "
       "ON impressions(impression_origin)";
   if (!db_->Execute(kImpressionOriginIndexSql))
+    return false;
+
+  // Optimizes `EnsureCapacityForPendingDestinationLimit()`.
+  const char kImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_site_idx "
+      "ON impressions(active, impression_site, source_type)";
+  if (!db_->Execute(kImpressionSiteIndexSql))
     return false;
 
   // All columns in this table are const. |impression_id| is the primary key of

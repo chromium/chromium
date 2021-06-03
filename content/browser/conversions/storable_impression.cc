@@ -43,4 +43,8 @@ net::SchemefulSite StorableImpression::ConversionDestination() const {
   return net::SchemefulSite(conversion_origin_);
 }
 
+net::SchemefulSite StorableImpression::ImpressionSite() const {
+  return net::SchemefulSite(impression_origin_);
+}
+
 }  // namespace content

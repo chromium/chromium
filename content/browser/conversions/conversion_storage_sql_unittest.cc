@@ -104,11 +104,11 @@ TEST_F(ConversionStorageSqlTest,
     EXPECT_EQ(4u, sql::test::CountSQLTables(&raw_db));
 
     // [conversion_domain_idx], [impression_expiry_idx],
-    // [impression_origin_idx], [conversion_report_time_idx],
-    // [conversion_impression_id_idx], [rate_limit_origin_type_idx],
-    // [rate_limit_conversion_time_idx], [rate_limit_impression_id_idx] and the
-    // meta table index.
-    EXPECT_EQ(9u, sql::test::CountSQLIndices(&raw_db));
+    // [impression_origin_idx], [impression_site_idx],
+    // [conversion_report_time_idx], [conversion_impression_id_idx],
+    // [rate_limit_origin_type_idx], [rate_limit_conversion_time_idx],
+    // [rate_limit_impression_id_idx] and the meta table index.
+    EXPECT_EQ(10u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 
