@@ -52,7 +52,6 @@ class SigninManager : public KeyedService,
       const GoogleServiceAuthError& error) override;
 
   signin::IdentityManager* identity_manager_;
-  bool unconsented_primary_account_revoked_during_load_ = false;
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 

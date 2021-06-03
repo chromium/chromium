@@ -531,7 +531,8 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
       !user_approved_account_list_manager_.GetApprovedAccountIDList().empty());
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
+          identity_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin));
   if (!keychain_reload) {
     // The changes come from Chrome, so we can approve this new account list,
     // since this change comes from the user.

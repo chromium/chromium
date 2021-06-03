@@ -302,15 +302,18 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountDuringLoad) {
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   EXPECT_TRUE(observer().events().empty());
 
-  // Revoke the unconsented primary account while tokens are not loaded.
+  // Revoking the token of the unconsented primary account while the tokens
+  // are still loading does not change the unconsented primary account.
   identity_test_env()->RemoveRefreshTokenForAccount(main_account.account_id);
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
+  EXPECT_EQ(main_account,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  EXPECT_TRUE(observer().events().empty());
 
-  // Finish the token load.
+  // Finish the token load should clear the primary account as the token of the
+  // primary account was revoked.
   identity_test_env()->ReloadAccountsFromDisk();
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(observer().events().empty());
+  ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
 }
 
 TEST_F(SigninManagerTest,
