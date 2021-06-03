@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_BROWSER_AGENT_H_
 
-#include "base/scoped_observer.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/browser_user_data.h"

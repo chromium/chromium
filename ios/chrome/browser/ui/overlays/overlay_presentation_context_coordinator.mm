@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #import "base/ios/block_types.h"
-#include "base/scoped_observer.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 

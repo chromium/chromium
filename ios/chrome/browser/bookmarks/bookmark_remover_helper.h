@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_REMOVER_HELPER_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 

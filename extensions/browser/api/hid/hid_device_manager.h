@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

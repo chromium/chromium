@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/scoped_observer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_coordinator.h"

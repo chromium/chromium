@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 
-#include "base/scoped_observer.h"
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"

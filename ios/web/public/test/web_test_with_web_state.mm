@@ -6,7 +6,6 @@
 
 #include "base/ios/ios_util.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #import "base/test/ios/wait_util.h"

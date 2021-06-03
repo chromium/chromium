@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 
-#include "base/scoped_observer.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 // Protocol to observe changes on the Password Store.
