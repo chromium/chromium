@@ -8592,7 +8592,7 @@ if (!is_android) {
       "//third_party/blink/web_tests/resources/testharness.js",
     ]
 
-    if (is_win) {
+    if (is_win && enable_vr) {
       deps += [
         "//device/vr",
         "//device/vr:directx_helpers",
