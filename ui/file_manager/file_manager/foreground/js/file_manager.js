@@ -939,10 +939,16 @@
       this.launchParams_ = new LaunchParam(params);
     } else {
       // Used by the select dialog only.
-      const json = location.search ?
-          JSON.parse(decodeURIComponent(location.search.substr(1))) :
-          {};
-      this.launchParams_ = new LaunchParam(json instanceof Object ? json : {});
+      let json = {};
+      if (location.search) {
+        const query = location.search.substr(1);
+        try {
+          json = /** @type {!Object} */ (JSON.parse(decodeURIComponent(query)));
+        } catch (e) {
+          console.debug(`Error parsing location.search "${query}" due to ${e}`);
+        }
+      }
+      this.launchParams_ = new LaunchParam(json);
     }
 
     // Initialize the member variables that depend this.launchParams_.
