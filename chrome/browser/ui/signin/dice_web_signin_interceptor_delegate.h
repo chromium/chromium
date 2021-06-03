@@ -29,6 +29,11 @@ class DiceWebSigninInterceptorDelegate
       base::OnceCallback<void(SigninInterceptionResult)> callback) override;
   void ShowProfileCustomizationBubble(Browser* browser) override;
 
+  void ShowEnterpriseProfileInterceptionDialog(
+      const std::string& email,
+      base::OnceCallback<void(bool)> callback,
+      Browser* browser) override;
+
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
