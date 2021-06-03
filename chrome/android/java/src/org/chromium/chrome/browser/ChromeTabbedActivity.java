@@ -667,9 +667,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         if (getCompositorViewHolder() == null) return null;
                         return getCompositorViewHolder().getLayerTitleCache();
                     },
-                    mOverviewModeBehaviorSupplier,
+                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider);
-            mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
         }
@@ -687,9 +686,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         if (getCompositorViewHolder() == null) return null;
                         return getCompositorViewHolder().getLayerTitleCache();
                     },
-                    mOverviewModeBehaviorSupplier,
+                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider);
-            mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
         }
