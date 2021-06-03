@@ -312,12 +312,6 @@ TEST(
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
-  input = GenerateSamplePrinterSemanticCapsAndDefaults();
-  input.dpis = {kDpi600, kDpi600, kDpi1200};
-
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-               mojom::PrinterSemanticCapsAndDefaults>(input, output));
-
 #if defined(OS_CHROMEOS)
   // Use an advanced capability with same name but different other fields.
   AdvancedCapability advanced_capability1_prime = kAdvancedCapability1;
@@ -330,6 +324,24 @@ TEST(
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 #endif
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowedDuplicatesInArrays) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  PrinterSemanticCapsAndDefaults output;
+
+  // Override sample with arrays containing duplicates where it is allowed.
+  // Duplicate DPIs are known to be possible, seen with the Kyocera KX driver.
+  const std::vector<gfx::Size> kDuplicateDpis{kDpi600, kDpi600, kDpi1200};
+  input.dpis = kDuplicateDpis;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+
+  EXPECT_EQ(kDuplicateDpis, output.dpis);
 }
 
 }  // namespace printing

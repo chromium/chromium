@@ -242,12 +242,6 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  DuplicateChecker<gfx::Size> dpis_dup_checker;
-  if (dpis_dup_checker.HasDuplicates(out->dpis)) {
-    DLOG(ERROR) << "Duplicate dpis detected.";
-    return false;
-  }
-
 #if defined(OS_CHROMEOS)
   DuplicateChecker<printing::AdvancedCapability>
       advanced_capabilities_dup_checker;
