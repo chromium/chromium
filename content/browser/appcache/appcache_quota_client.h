@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/cpp/origin_quota_client.h"
 #include "content/browser/appcache/appcache_storage.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_repeating_callback.h"
@@ -27,12 +27,12 @@ class AppCacheQuotaClientTest;
 class AppCacheServiceImpl;
 class AppCacheStorageImpl;
 
-// A QuotaClient implementation to integrate the appcache service
-// with the quota management system. The QuotaClient interface is
+// An OriginQuotaClient implementation to integrate the appcache service
+// with the quota management system. The OriginQuotaClient interface is
 // used on the IO thread by the quota manager. This class deletes
 // itself when both the quota manager and the appcache service have
 // been destroyed.
-class AppCacheQuotaClient : public storage::mojom::QuotaClient {
+class AppCacheQuotaClient : public storage::OriginQuotaClient {
  public:
   using RequestQueue = base::circular_deque<base::OnceClosure>;
 
@@ -41,7 +41,7 @@ class AppCacheQuotaClient : public storage::mojom::QuotaClient {
 
   ~AppCacheQuotaClient() override;
 
-  // mojom::QuotaClient method overrides
+  // storage::OriginQuotaClient method overrides.
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;

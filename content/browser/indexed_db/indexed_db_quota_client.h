@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/cpp/origin_quota_client.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
@@ -25,7 +25,7 @@ class IndexedDBContextImpl;
 // Integrates IndexedDB with the quota management system.
 //
 // Each instance is owned by an IndexedDBContextImpl.
-class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
+class IndexedDBQuotaClient : public storage::OriginQuotaClient {
  public:
   CONTENT_EXPORT explicit IndexedDBQuotaClient(
       IndexedDBContextImpl& indexed_db_context);
@@ -35,7 +35,7 @@ class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
 
   CONTENT_EXPORT ~IndexedDBQuotaClient() override;
 
-  // QuotaClient implementation:
+  // storage::OriginQuotaClient implementation:
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;

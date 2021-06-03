@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/cpp/origin_quota_client.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -19,7 +19,7 @@ class NativeIOManager;
 // Integrates NativeIO with the quota system.
 //
 // Each NativeIOManager owns exactly one NativeIOQuotaClient.
-class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
+class CONTENT_EXPORT NativeIOQuotaClient : public storage::OriginQuotaClient {
  public:
   explicit NativeIOQuotaClient(NativeIOManager* manager);
   ~NativeIOQuotaClient() override;
@@ -27,7 +27,7 @@ class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
   NativeIOQuotaClient(const NativeIOQuotaClient&) = delete;
   NativeIOQuotaClient& operator=(const NativeIOQuotaClient&) = delete;
 
-  // QuotaClient.
+  // storage::OriginQuotaClient method overrides.
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;

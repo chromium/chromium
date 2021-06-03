@@ -7,6 +7,7 @@ component("cpp") {
 
   public = [
     "constants.h",
+    "origin_quota_client.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
   ]
