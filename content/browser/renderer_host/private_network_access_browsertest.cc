@@ -46,6 +46,9 @@ constexpr char kDefaultPath[] = "/defaultresponse";
 constexpr char kTreatAsPublicAddressPath[] =
     "/set-header?Content-Security-Policy: treat-as-public-address";
 
+// Path to a cacheable response.
+constexpr char kCacheablePath[] = "/cachetime";
+
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
 // The snippet evaluates to a boolean promise which resolves to true iff the
@@ -332,220 +335,12 @@ class PrivateNetworkAccessBrowserTestNoBlocking : public PrivateNetworkAccessBro
             }) {}
 };
 
-// This test verifies that when the right feature is enabled, iframe requests:
-//  - from an insecure page with the "treat-as-public-address" CSP directive
-//  - to a local IP address
-// are blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
-                       IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
-
-  GURL url = InsecureLocalURL("/empty.html");
-
-  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
-
-  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
-    const iframe = document.createElement("iframe");
-    iframe.src = "/empty.html";
-    document.body.appendChild(iframe);
-  )"));
-
-  child_navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe failed to fetch.
-  EXPECT_FALSE(child_navigation_manager.was_successful());
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(GURL(kUnreachableWebDataURL),
-            EvalJs(child_frame, "document.location.href"));
-
-  // The frame committed an error page but retains the original URL so that
-  // reloading the page does the right thing. The committed origin on the other
-  // hand is opaque, which it would not be if the navigation had succeeded.
-  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
-  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
-}
-
-// This test mimics the one above, only it is executed without enabling the
-// BlockInsecurePrivateNetworkRequestsForNavigations feature. It asserts that
-// the navigation is not blocked in this case.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       IframeFromInsecureTreatAsPublicToLocalIsNotBlocked) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
-
-  GURL url = InsecureLocalURL("/empty.html");
-
-  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
-
-  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
-    const iframe = document.createElement("iframe");
-    iframe.src = "/empty.html";
-    document.body.appendChild(iframe);
-  )"));
-
-  child_navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe navigated successfully.
-  EXPECT_TRUE(child_navigation_manager.was_successful());
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
-}
-
-// Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
-// report-only mode. As a result "treat-as-public-address" must be ignored.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       CspReportOnlyTreatAsPublicAddressIgnored) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      InsecureLocalURL("/set-header?Content-Security-Policy-Report-Only: "
-                       "treat-as-public-address")));
-
-  GURL url = InsecureLocalURL("/empty.html");
-
-  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
-
-  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
-    const iframe = document.createElement("iframe");
-    iframe.src = "/empty.html";
-    document.body.appendChild(iframe);
-  )"));
-
-  child_navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe was not blocked.
-  EXPECT_TRUE(child_navigation_manager.was_successful());
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
-  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
-  EXPECT_FALSE(child_frame->GetLastCommittedOrigin().opaque());
-}
-
-// TODO(https://crbug.com/1129326): Revisit this when main-frame navigations are
-// subject to CORS-RFC1918 checks.
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestBlockNavigations,
-    FormSubmissionFromInsecurePublictoLocalIsNotBlockedInMainFrame) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
-
-  GURL url = InsecureLocalURL(kDefaultPath);
-  TestNavigationManager navigation_manager(shell()->web_contents(), url);
-
-  base::StringPiece script_template = R"(
-    const form = document.createElement("form");
-    form.action = $1;
-    form.method = "post";
-    document.body.appendChild(form);
-    form.submit();
-  )";
-
-  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
-
-  navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe was not blocked.
-  EXPECT_TRUE(navigation_manager.was_successful());
-
-  EXPECT_EQ(url, EvalJs(root_frame_host(), "document.location.href"));
-  EXPECT_EQ(url, root_frame_host()->GetLastCommittedURL());
-  EXPECT_FALSE(root_frame_host()->GetLastCommittedOrigin().opaque());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestBlockNavigations,
-    FormSubmissionFromInsecurePublictoLocalIsBlockedInChildFrame) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
-
-  GURL url = InsecureLocalURL(kDefaultPath);
-  TestNavigationManager navigation_manager(shell()->web_contents(), url);
-
-  base::StringPiece script_template = R"(
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
-
-    const childDoc = iframe.contentDocument;
-    const form = childDoc.createElement("form");
-    form.action = $1;
-    form.method = "post";
-    childDoc.body.appendChild(form);
-    form.submit();
-  )";
-
-  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
-
-  navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe was blocked.
-  EXPECT_FALSE(navigation_manager.was_successful());
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-
-  // Failed navigation.
-  EXPECT_EQ(GURL(kUnreachableWebDataURL),
-            EvalJs(child_frame, "document.location.href"));
-
-  // The URL is the form target URL, to allow for reloading.
-  // The origin is opaque though, a symptom of the failed navigation.
-  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
-  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestBlockNavigations,
-    FormSubmissionGetFromInsecurePublictoLocalIsBlockedInChildFrame) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
-
-  GURL target_url = InsecureLocalURL(kDefaultPath);
-
-  // The page navigates to `url` followed by an empty query: '?'.
-  GURL expected_url = GURL(target_url.spec() + "?");
-  TestNavigationManager navigation_manager(shell()->web_contents(),
-                                           expected_url);
-
-  base::StringPiece script_template = R"(
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
-
-    const childDoc = iframe.contentDocument;
-    const form = childDoc.createElement("form");
-    form.action = $1;
-    form.method = "get";
-    childDoc.body.appendChild(form);
-    form.submit();
-  )";
-
-  EXPECT_TRUE(
-      ExecJs(root_frame_host(), JsReplace(script_template, target_url)));
-
-  navigation_manager.WaitForNavigationFinished();
-
-  // Check that the child iframe was blocked.
-  EXPECT_FALSE(navigation_manager.was_successful());
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-
-  // Failed navigation.
-  EXPECT_EQ(GURL(kUnreachableWebDataURL),
-            EvalJs(child_frame, "document.location.href"));
-
-  // The URL is the form target URL, to allow for reloading.
-  // The origin is opaque though, a symptom of the failed navigation.
-  EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
-  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
-}
+// ===========================
+// CLIENT SECURITY STATE TESTS
+// ===========================
+//
+// These tests verify the contents of `ClientSecurityState` for top-level
+// documents in various different circumstances.
 
 // This test verifies the contents of the ClientSecurityState for the initial
 // empty document in a new main frame created by the browser.
@@ -597,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, ClientSecurityStateForDataURL) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       ClientSecurityStateForDataURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -608,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, ClientSecurityStateForDa
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, ClientSecurityStateForFileURL) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       ClientSecurityStateForFileURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "empty.html")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -708,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        ClientSecurityStateForCachedSecureLocalDocument) {
   // Navigate to the cacheable document in order to cache it, then navigate
   // away.
-  const GURL url = SecureLocalURL("/cachetime");
+  const GURL url = SecureLocalURL(kCacheablePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -737,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        ClientSecurityStateForCachedInsecurePublicDocument) {
   // Navigate to the cacheable document in order to cache it, then navigate
   // away.
-  const GURL url = InsecurePublicURL("/cachetime");
+  const GURL url = InsecurePublicURL(kCacheablePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -849,6 +646,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
+
+// ========================
+// INHERITANCE TEST HELPERS
+// ========================
 
 namespace {
 
@@ -1134,6 +935,14 @@ RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
 }
 
 }  // namespace
+
+// ===============================
+// ADDRESS SPACE INHERITANCE TESTS
+// ===============================
+//
+// These tests verify that `ClientSecurityState.ip_address_space` is correctly
+// inherited by child iframes and openee documents for a variety of URLs with
+// local schemes.
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        IframeInheritsAddressSpaceForAboutBlankFromPublic) {
@@ -1748,6 +1557,14 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 }
 
+// ================================
+// SECURE CONTEXT INHERITANCE TESTS
+// ================================
+//
+// These tests verify that `ClientSecurityState.is_web_secure_context` is
+// correctly inherited by child iframes and openee documents for a variety of
+// URLs with local schemes.
+
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        IframeInheritsSecureContextForAboutBlankFromSecure) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
@@ -2257,31 +2074,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
-// This test verifies that even with the blocking feature disabled, an insecure
-// page in the `local` address space cannot fetch a `file:` URL.
+// ====================================
+// PRIVATE NETWORK REQUEST POLICY TESTS
+// ====================================
 //
-// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       InsecurePageCannotRequestFile) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
-
-  // Check that the page cannot load a `file:` URL.
-  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
-                                                 "", "empty.html"))));
-}
-
-// This test verifies that even with the blocking feature disabled, a secure
-// page in the `local` address space cannot fetch a `file:` URL.
-//
-// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       SecurePageCannotRequestFile) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-
-  // Check that the page cannot load a `file:` URL.
-  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
-                                                 "", "empty.html"))));
-}
+// These tests verify the correct setting of
+// `ClientSecurityState.private_network_request_policy` in various situations.
 
 // This test verifies that with the blocking feature disabled, the private
 // network request policy used by RenderFrameHostImpl is to warn about requests
@@ -2315,21 +2113,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
             network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
-// This test mimics the tests below, with the blocking feature disabled. It
-// verifies that by default requests:
-//  - from an insecure page with the "treat-as-public-address" CSP directive
-//  - to a local IP address
-// are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       PrivateNetworkRequestIsNotBlockedByDefault) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
-
-  // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
-}
-
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block requests from non-secure
 // contexts.
@@ -2360,38 +2143,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kWarn);
-}
-
-// This test verifies that when the right feature is enabled but the content
-// browser client overrides it, requests:
-//  - from an insecure page with the "treat-as-public-address" CSP directive
-//  - to a local IP address
-// are not blocked.
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTest,
-    FromInsecureTreatAsPublicToLocalWithPolicySetToAllowIsNotBlocked) {
-  GURL url = InsecureLocalURL(kTreatAsPublicAddressPath);
-
-  PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
-
-  // Register the client before we navigate, so that the navigation commits the
-  // correct PrivateNetworkRequestPolicy.
-  ContentBrowserClientRegistration registration(&client);
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kAllow);
-
-  // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that child frames with distinct origins from their parent
@@ -2503,6 +2254,29 @@ IN_PROC_BROWSER_TEST_F(
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
+// =======================
+// SUBRESOURCE FETCH TESTS
+// =======================
+//
+// These tests verify the behavior of the browser when fetching subresources
+// across IP address spaces. When the right features are enabled, private
+// network requests are blocked.
+
+// This test mimics the tests below, with the blocking feature disabled. It
+// verifies that by default requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
+                       PrivateNetworkRequestIsNotBlockedByDefault) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  // Check that the page can load a local resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+}
+
 // This test verifies that when the right feature is enabled, requests:
 //  - from a secure page with the "treat-as-public-address" CSP directive
 //  - to a local IP address
@@ -2516,6 +2290,38 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   // origin to avoid running afoul of mixed content restrictions.
   EXPECT_EQ(true, EvalJs(root_frame_host(),
                          FetchSubresourceScript(SecureLocalURL("/image.jpg"))));
+}
+
+// This test verifies that when the right feature is enabled but the content
+// browser client overrides it, requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    FromInsecureTreatAsPublicToLocalWithPolicySetToAllowIsNotBlocked) {
+  GURL url = InsecureLocalURL(kTreatAsPublicAddressPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+
+  // Check that the page can load a local resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2617,6 +2423,265 @@ IN_PROC_BROWSER_TEST_F(
   // Check that the iframe cannot load a local resource.
   EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript(
                                            InsecureLocalURL("/image.jpg"))));
+}
+
+// This test verifies that even with the blocking feature disabled, an insecure
+// page in the `local` address space cannot fetch a `file:` URL.
+//
+// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
+                       InsecurePageCannotRequestFile) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
+}
+
+// This test verifies that even with the blocking feature disabled, a secure
+// page in the `local` address space cannot fetch a `file:` URL.
+//
+// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
+                       SecurePageCannotRequestFile) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
+}
+
+// ======================
+// NAVIGATION FETCH TESTS
+// ======================
+//
+// These tests verify the behavior of the browser when navigating across IP
+// address spaces.
+//
+// Iframe navigations are effectively treated as subresource fetches of the
+// parent document: they are handled by checking the resource's address space
+// against the parent document's address space. This is incorrect, as the
+// initiator of the navigation is not always the parent document.
+//
+// TODO(https://crbug.com/1170335): Revisit this when the initiator's address
+// space is used instead.
+//
+// Top-level navigations are never blocked.
+//
+// TODO(https://crbug.com/1129326): Revisit this when top-level navigations are
+// subject to Private Network Access checks.
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
+                       IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  GURL url = InsecureLocalURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+// This test mimics the one above, only it is executed without enabling the
+// BlockInsecurePrivateNetworkRequestsForNavigations feature. It asserts that
+// the navigation is not blocked in this case.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       IframeFromInsecureTreatAsPublicToLocalIsNotBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  GURL url = InsecureLocalURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe navigated successfully.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+}
+
+// Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
+// report-only mode. As a result "treat-as-public-address" must be ignored.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       CspReportOnlyTreatAsPublicAddressIgnored) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      InsecureLocalURL("/set-header?Content-Security-Policy-Report-Only: "
+                       "treat-as-public-address")));
+
+  GURL url = InsecureLocalURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was not blocked.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_FALSE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestBlockNavigations,
+    FormSubmissionFromInsecurePublictoLocalIsNotBlockedInMainFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  GURL url = InsecureLocalURL(kDefaultPath);
+  TestNavigationManager navigation_manager(shell()->web_contents(), url);
+
+  base::StringPiece script_template = R"(
+    const form = document.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    document.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was not blocked.
+  EXPECT_TRUE(navigation_manager.was_successful());
+
+  EXPECT_EQ(url, EvalJs(root_frame_host(), "document.location.href"));
+  EXPECT_EQ(url, root_frame_host()->GetLastCommittedURL());
+  EXPECT_FALSE(root_frame_host()->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestBlockNavigations,
+    FormSubmissionFromInsecurePublictoLocalIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  GURL url = InsecureLocalURL(kDefaultPath);
+  TestNavigationManager navigation_manager(shell()->web_contents(), url);
+
+  base::StringPiece script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestBlockNavigations,
+    FormSubmissionGetFromInsecurePublictoLocalIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  GURL target_url = InsecureLocalURL(kDefaultPath);
+
+  // The page navigates to `url` followed by an empty query: '?'.
+  GURL expected_url = GURL(target_url.spec() + "?");
+  TestNavigationManager navigation_manager(shell()->web_contents(),
+                                           expected_url);
+
+  base::StringPiece script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "get";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(), JsReplace(script_template, target_url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 }  // namespace content
