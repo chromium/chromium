@@ -45,6 +45,17 @@
 
 namespace blink {
 
+namespace {
+
+void ClampBoundsToFinite(FloatRect& bounds) {
+  bounds.SetX(clampTo<float>(bounds.X()));
+  bounds.SetY(clampTo<float>(bounds.Y()));
+  bounds.SetWidth(clampTo<float>(bounds.Width()));
+  bounds.SetHeight(clampTo<float>(bounds.Height()));
+}
+
+}  // namespace
+
 LayoutSVGShape::LayoutSVGShape(SVGGeometryElement* node,
                                StrokeGeometryClass geometry_class)
     : LayoutSVGModelObject(node),
@@ -121,6 +132,7 @@ void LayoutSVGShape::UpdateShapeFromElement() {
   NOT_DESTROYED();
   CreatePath();
   fill_bounding_box_ = GetPath().TightBoundingRect();
+  ClampBoundsToFinite(fill_bounding_box_);
 
   if (HasNonScalingStroke()) {
     // NonScalingStrokeTransform may depend on LocalTransform which in turn may
