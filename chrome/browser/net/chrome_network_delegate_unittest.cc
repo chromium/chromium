@@ -59,8 +59,10 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/Downloads", ""));
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/MyFiles", ""));
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/MyFiles/file.pdf", ""));
-  EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/log", ""));
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/WebRTC Logs", ""));
+  EXPECT_TRUE(
+      IsAccessAllowed("/home/chronos/user/google-assistant-library/log", ""));
+  EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/log", ""));
   EXPECT_TRUE(IsAccessAllowed("/media", ""));
   EXPECT_TRUE(IsAccessAllowed("/opt/oem", ""));
   EXPECT_TRUE(IsAccessAllowed("/usr/share/chromeos-assets", ""));
