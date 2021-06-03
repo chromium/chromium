@@ -463,6 +463,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
     force_bypass_cache_for_scripts_ = force_bypass_cache_for_scripts;
   }
 
+  bool initialize_global_scope_after_main_script_loaded() const {
+    return initialize_global_scope_after_main_script_loaded_;
+  }
+
   void set_initialize_global_scope_after_main_script_loaded() {
     DCHECK(!initialize_global_scope_after_main_script_loaded_);
     initialize_global_scope_after_main_script_loaded_ = true;
@@ -621,6 +625,15 @@ class CONTENT_EXPORT ServiceWorkerVersion
           reporting_observer_receiver) {
     reporting_observer_receiver_ = std::move(reporting_observer_receiver);
   }
+
+  // Initializes the global scope of the ServiceWorker on the renderer side.
+  // This is dependant on a number of internal members and should only be called
+  // at a few select points where those members are valid.
+  void InitializeGlobalScope(
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          script_loader_factories,
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          subresource_loader_factories);
 
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
@@ -890,12 +903,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void GetClientOnExecutionReady(const std::string& client_uuid,
                                  GetClientCallback callback,
                                  bool success);
-
-  void InitializeGlobalScope(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          script_loader_factories,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories);
 
   // When ServiceWorkerTerminationOnNoControlle is enabled and there's no
   // controllee, update the idle delay if the worker is running and we don't

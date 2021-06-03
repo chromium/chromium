@@ -349,6 +349,14 @@ void EmbeddedWorkerInstance::Start(
           coep_reporter_for_subresources.InitWithNewPipeAndPassReceiver());
     }
 
+    // Initialize the global scope now if the worker won't be paused. Otherwise,
+    // delay initialization until the main script is loaded.
+    if (!owner_version_->initialize_global_scope_after_main_script_loaded()) {
+      owner_version_->InitializeGlobalScope(
+          /*script_loader_factories=*/nullptr,
+          /*subresource_loader_factories=*/nullptr);
+    }
+
     // Register to DevTools and update params accordingly.
     const int routing_id = rph->GetNextRoutingID();
     ServiceWorkerDevToolsManager::GetInstance()->WorkerStarting(

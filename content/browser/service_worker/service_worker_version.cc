@@ -1023,7 +1023,9 @@ void ServiceWorkerVersion::InitializeGlobalScope(
         script_loader_factories,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {
-  DCHECK(service_worker_host_);
+  receiver_.reset();
+  receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
+
   scoped_refptr<ServiceWorkerRegistration> registration =
       base::WrapRefCounted(context_->GetLiveRegistration(registration_id_));
   // The registration must exist since we keep a reference to it during
@@ -1894,15 +1896,6 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   CHECK(params->service_worker_receiver.is_valid());
   service_worker_remote_.set_disconnect_handler(
       base::BindOnce(&OnConnectionError, embedded_worker_->AsWeakPtr()));
-  receiver_.reset();
-  receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
-
-  // Initialize the global scope now if the worker won't be paused. Otherwise,
-  // delay initialization until the main script is loaded.
-  if (!initialize_global_scope_after_main_script_loaded_) {
-    InitializeGlobalScope(/*script_loader_factories=*/nullptr,
-                          /*subresource_loader_factories=*/nullptr);
-  }
 
   if (!controller_receiver_.is_valid()) {
     controller_receiver_ = remote_controller_.BindNewPipeAndPassReceiver();

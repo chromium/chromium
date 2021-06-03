@@ -159,7 +159,7 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
     params->script_url = version->script_url();
     params->is_installed = false;
 
-    params->service_worker_receiver = CreateServiceWorker();
+    params->service_worker_receiver = CreateServiceWorker(version);
     params->controller_receiver = CreateController();
     params->installed_scripts_info = GetInstalledScriptsInfoPtr();
     params->provider_info = CreateProviderInfo(std::move(version));
@@ -176,9 +176,10 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
     return provider_info;
   }
 
-  mojo::PendingReceiver<blink::mojom::ServiceWorker> CreateServiceWorker() {
-    service_workers_.emplace_back();
-    return service_workers_.back().BindNewPipeAndPassReceiver();
+  mojo::PendingReceiver<blink::mojom::ServiceWorker> CreateServiceWorker(
+      scoped_refptr<ServiceWorkerVersion> version) {
+    version->service_worker_remote_.reset();
+    return version->service_worker_remote_.BindNewPipeAndPassReceiver();
   }
 
   mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
@@ -206,7 +207,6 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
   ServiceWorkerContextCore* context() { return helper_->context(); }
 
   // Mojo endpoints.
-  std::vector<mojo::Remote<blink::mojom::ServiceWorker>> service_workers_;
   std::vector<mojo::Remote<blink::mojom::ControllerServiceWorker>> controllers_;
   std::vector<mojo::Remote<blink::mojom::ServiceWorkerInstalledScriptsManager>>
       installed_scripts_managers_;
