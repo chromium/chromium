@@ -1,5 +1,9 @@
 # "Lookalike" Warnings in Google Chrome
 
+[TOC]
+
+## What are lookalike warnings?
+
 "Lookalike" domains are domains that are crafted to impersonate the URLs of
 other sites in order to trick users into believing they're on a different site.
 These domains are used in social engineering attacks, from phishing to retail
@@ -82,5 +86,4 @@ heuristic erroneously. After that time, we encourage developers to test their
 new sites in Chrome to ensure that their new domain does not trigger warnings.
 
 If you are a site operator and would like to request an appeal, please fill out
-a
-[request](https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals).
+a [request](https://forms.gle/BxV3JGbCbRjucDxq6).
