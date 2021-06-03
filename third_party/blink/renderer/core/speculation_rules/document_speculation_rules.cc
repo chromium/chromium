@@ -6,6 +6,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -107,6 +108,15 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     if (RuntimeEnabledFeatures::Prerender2Enabled(execution_context)) {
       push_candidates(mojom::blink::SpeculationAction::kPrerender,
                       rule_set->prerender_rules());
+
+      // Set the flag to evict the cached data of Session Storage when the
+      // document is frozen or unload to avoid reusing old data in the cache
+      // after the session storage has been modified by another renderer
+      // process. See crbug.com/1215680 for more details.
+      LocalFrame* frame = GetSupplementable()->GetFrame();
+      if (frame->IsMainFrame()) {
+        frame->SetEvictCachedSessionStorageOnFreezeOrUnload();
+      }
     }
   }
 

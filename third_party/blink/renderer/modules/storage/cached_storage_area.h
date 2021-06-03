@@ -102,6 +102,8 @@ class MODULES_EXPORT CachedStorageArea
     return is_session_storage_for_prerendering_;
   }
 
+  void EvictCachedData();
+
   void SetRemoteAreaForTesting(
       mojo::PendingRemote<mojom::blink::StorageArea> area) {
     remote_area_.Bind(std::move(area));

@@ -825,6 +825,8 @@ class CORE_EXPORT LocalFrame final
 
   void LoadJavaScriptURL(const KURL& url);
 
+  void SetEvictCachedSessionStorageOnFreezeOrUnload();
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -1111,6 +1113,8 @@ class CORE_EXPORT LocalFrame final
   // v8 stack at the time of creation. This is updated in `SetAdEvidence()`,
   // allowing the bit to be propagated when a frame navigates cross-origin.
   bool is_subframe_created_by_ad_script_ = false;
+
+  bool evict_cached_session_storage_on_freeze_or_unload_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

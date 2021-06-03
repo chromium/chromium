@@ -792,4 +792,8 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
   NOTREACHED();
 }
 
+void CachedStorageArea::EvictCachedData() {
+  map_.reset();
+}
+
 }  // namespace blink

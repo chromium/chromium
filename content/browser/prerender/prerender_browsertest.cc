@@ -2366,8 +2366,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Increment the keep alive ref count of the renderer process to keep it alive
   // so it is reused on the back navigation below. The test checks that the
   // session storage state changed in the activated page is correctly propagated
-  // after a back navigation that uses an existing renderer process. (Note: This
-  // is not working correctly now.)
+  // after a back navigation that uses an existing renderer process.
   initial_process_host->IncrementKeepAliveRefCount();
 
   AddPrerender(kPrerenderingUrl);
@@ -2386,13 +2385,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   observer.Wait();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
-  // There is a known issue that when the initial renderer process is reused
-  // after the back navigation, the session storage state changed in the
-  // activated is not correctly propagated to the initial renderer process.
-  // TODO(crbug.com/1197383): Fix this issue.
   EXPECT_EQ(
-      // This should be "activated, initial".
-      "initial",
+      "activated, initial",
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 }
 
@@ -2556,13 +2550,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
   // the test is testing what is intended.
   ASSERT_EQ(shell()->web_contents()->GetMainFrame(), main_frame.get());
 
-  // There is a known issue that when the initial renderer process is reused
-  // after the back navigation, the session storage state changed in the
-  // activated is not correctly propagated to the initial renderer process.
-  // TODO(crbug.com/1197383): Fix this issue.
   EXPECT_EQ(
-      // This should be "activated, initial".
-      "initial",
+      "activated, initial",
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 }
 

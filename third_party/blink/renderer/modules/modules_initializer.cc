@@ -363,6 +363,12 @@ void ModulesInitializer::CloneSessionStorage(
     storage_namespace->CloneTo(WebString::FromLatin1(clone_to_namespace));
 }
 
+void ModulesInitializer::EvictSessionStorageCachedData(Page* page) {
+  StorageNamespace* storage_namespace = StorageNamespace::From(page);
+  if (storage_namespace)
+    storage_namespace->EvictSessionStorageCachedData();
+}
+
 void ModulesInitializer::DidChangeManifest(LocalFrame& frame) {
   ManifestManager::From(*frame.DomWindow())->DidChangeManifest();
 }

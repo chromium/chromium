@@ -119,6 +119,16 @@ scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
       /*is_session_storage_for_prerendering=*/true);
 }
 
+void StorageNamespace::EvictSessionStorageCachedData() {
+  // Currently this is called to evict the cached data only when prerendering
+  // was triggered. TODO(crbug.com/1215680): investigate if more cache eviction
+  // is needed for non-prerender use cases.
+  DCHECK(IsSessionStorage());
+  for (auto& entry : cached_areas_) {
+    entry.value->EvictCachedData();
+  }
+}
+
 void StorageNamespace::CloneTo(const String& target) {
   DCHECK(IsSessionStorage()) << "Cannot clone a local storage namespace.";
   EnsureConnected();

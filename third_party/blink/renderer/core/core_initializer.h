@@ -124,6 +124,13 @@ class CORE_EXPORT CoreInitializer {
       Page* clone_from_page,
       const SessionStorageNamespaceId& clone_to_namespace) = 0;
 
+  // Evicts the cached data of Session Storage. Called after dispatching a
+  // document unload or freeze event to avoid reusing old data in the cache in
+  // case the same renderer process is reused after the session storage has been
+  // modified by another renderer process. (Eg: Back navigation from a
+  // prerendered page.)
+  virtual void EvictSessionStorageCachedData(Page*) = 0;
+
   virtual void DidChangeManifest(LocalFrame&) = 0;
   virtual void NotifyOrientationChanged(LocalFrame&) = 0;
   // Called with an updated set of ScreenInfos for a local root frame

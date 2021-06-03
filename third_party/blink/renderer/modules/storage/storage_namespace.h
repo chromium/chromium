@@ -87,6 +87,8 @@ class MODULES_EXPORT StorageNamespace final
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
       const SecurityOrigin* origin);
 
+  void EvictSessionStorageCachedData();
+
   // Only valid to call this if |this| and |target| are session storage
   // namespaces.
   void CloneTo(const String& target);
