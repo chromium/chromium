@@ -279,9 +279,9 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 # Flaky on AMD Win7
 crbug.com/989050 [ angle-d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
 
-# Passthrough command decoder / Linux / OpenGL / NVIDIA
-crbug.com/766918 [ angle-opengl linux passthrough nvidia ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
+# Win / Intel
+crbug.com/1215624 [ win intel angle-d3d11 ] conformance2/textures/video/* [ RetryOnFailure ]
+crbug.com/1215624 [ win intel angle-d3d11 ] conformance2/textures/webgl_canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
 
 ####################
 # Mac failures     #
@@ -604,6 +604,8 @@ crbug.com/703779 [ angle-opengl linux nvidia-0x1cb3 ] deqp/functional/gles3/fboc
 
 # Linux / OpenGL / NVIDIA failures
 crbug.com/angleproject/4555 [ linux angle-opengl passthrough nvidia ] conformance/misc/type-conversion-test.html [ Skip ]
+crbug.com/766918 [ angle-opengl linux passthrough nvidia ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
 
 # Linux GTX 1660
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
