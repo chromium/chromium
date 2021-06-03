@@ -75248,6 +75248,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SurveyDownloadResponseCodes">
+  <obsolete>
+    Removed as of 05/2021.
+  </obsolete>
   <int value="-1" label="Response code missing"/>
   <int value="0" label="Survey downloaded"/>
   <int value="1" label="No survey available"/>

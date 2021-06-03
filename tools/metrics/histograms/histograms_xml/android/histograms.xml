@@ -2329,6 +2329,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.Survey.DownloadRequested" enum="BooleanRequested"
     expires_after="2021-06-01">
+  <obsolete>
+    Deprecated as of 05/2021. Replaced with Android.Survey.DownloadRequested2
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -2337,16 +2340,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
+    expires_after="2022-06-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded when a survey download is requested. If the download has been
+    attemped, but the download request is not sent (e.g. user is not signed-in),
+    'not requested' will be recorded.
+  </summary>
+</histogram>
+
 <histogram name="Android.Survey.DownloadResponseCode"
     enum="SurveyDownloadResponseCodes" expires_after="2021-06-01">
+  <obsolete>
+    Deprecated as of 05/2021.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>The response code of the completed survey download request.</summary>
 </histogram>
 
 <histogram name="Android.Survey.InfoBarClosingState"
-    enum="InfoBarClosingStates" expires_after="2021-06-01">
+    enum="InfoBarClosingStates" expires_after="2022-06-01">
   <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     If the infobar was visible when it was closed and if it was closed directly
@@ -2355,8 +2374,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurvey" enum="BooleanSuccess"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Whether or not the survey was successfully shown after its download.
@@ -2364,8 +2384,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2021-10-04">
+    enum="SurveyFilteringResult" expires_after="2022-06-01">
   <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the survey filtering process. Each enum represents a different
