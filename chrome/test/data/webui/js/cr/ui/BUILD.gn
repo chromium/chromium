@@ -19,7 +19,6 @@ js_modulizer("modulize") {
     "menu_button_test.js",
     "menu_test.js",
     "position_util_test.js",
-    "splitter_test.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
@@ -144,16 +143,13 @@ js_library("position_util_test.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("splitter_test.m") {
-  sources =
-      [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/splitter_test.m.js" ]
+js_library("splitter_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:splitter.m",
+    "//ui/webui/resources/js/cr/ui:splitter",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_type_check("closure_compile") {
@@ -169,6 +165,6 @@ js_type_check("closure_compile") {
     ":menu_button_test.m",
     ":menu_test.m",
     ":position_util_test.m",
-    ":splitter_test.m",
+    ":splitter_test",
   ]
 }

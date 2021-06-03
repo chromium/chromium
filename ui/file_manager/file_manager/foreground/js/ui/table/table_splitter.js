@@ -11,7 +11,7 @@
  */
 
 // clang-format off
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
+// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 // #import {Table} from './table.m.js';
 // #import {getPropertyDescriptor, dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // clang-format on

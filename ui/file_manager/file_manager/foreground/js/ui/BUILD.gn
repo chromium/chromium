@@ -551,7 +551,7 @@ js_library("file_manager_ui.m") {
     "//ui/webui/resources/js/cr/ui:dialogs.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
     "//ui/webui/resources/js/cr/ui:menu_item.m",
-    "//ui/webui/resources/js/cr/ui:splitter.m",
+    "//ui/webui/resources/js/cr/ui:splitter",
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps.m" ]

@@ -32,7 +32,6 @@ generate_grd("build_grdp") {
     "cr/ui/menu.html",
     "cr/ui/menu_item.html",
     "cr/ui/position_util.html",
-    "cr/ui/splitter.html",
     "cr/ui/store_client.html",
     "cr/ui/store.html",
     "event_tracker.html",

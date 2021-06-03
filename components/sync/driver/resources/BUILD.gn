@@ -101,7 +101,7 @@ js_library("data") {
 js_library("search") {
   deps = [
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:splitter.m",
+    "//ui/webui/resources/js/cr/ui:splitter",
   ]
 }
 

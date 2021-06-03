@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
-// #import {getRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
+import {getRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+
 // clang-format on
 
 function setUp() {
@@ -20,7 +22,7 @@ function setUp() {
 
 function testSplitter_IgnoresRightMouse() {
   const splitter = getRequiredElement('splitter');
-  cr.ui.decorate(splitter, cr.ui.Splitter);
+  decorate(splitter, Splitter);
 
   const downRight = new MouseEvent('mousedown', {button: 1, cancelable: true});
   assertTrue(splitter.dispatchEvent(downRight));
@@ -33,7 +35,7 @@ function testSplitter_IgnoresRightMouse() {
 
 function testSplitter_ResizePreviousElement() {
   const splitter = getRequiredElement('splitter');
-  cr.ui.decorate(splitter, cr.ui.Splitter);
+  decorate(splitter, Splitter);
   splitter.resizeNextElement = false;
 
   const previousElement = document.getElementById('previous');
@@ -62,7 +64,7 @@ function testSplitter_ResizePreviousElement() {
 
 function testSplitter_ResizeNextElement() {
   const splitter = getRequiredElement('splitter');
-  cr.ui.decorate(splitter, cr.ui.Splitter);
+  decorate(splitter, Splitter);
   splitter.resizeNextElement = true;
   const nextElement = document.getElementById('next');
   nextElement.style.width = '0px';

@@ -17,7 +17,7 @@
 // #import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.m.js';
 // #import {DialogFooter} from './dialog_footer.m.js';
 // #import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
+// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 // #import {FilesMenuItem} from './files_menu.m.js';
 // #import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 // #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';

@@ -117,7 +117,7 @@ js_library("table_splitter.m") {
   deps = [
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:splitter.m",
+    "//ui/webui/resources/js/cr/ui:splitter",
   ]
 
   extra_deps = [ ":modulize" ]

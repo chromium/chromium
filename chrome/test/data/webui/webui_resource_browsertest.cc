@@ -175,14 +175,8 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_button_test.m.js");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
-  LoadTestUrl("js/cr/ui/splitter_test.html");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/splitter_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/splitter_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
