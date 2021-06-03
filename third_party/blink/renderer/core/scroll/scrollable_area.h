@@ -227,6 +227,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
         scrollbar_overlay_color_theme_);
   }
 
+  // This getter will create a MacScrollAnimator if it doesn't already exist,
+  // only on MacOS.
   MacScrollbarAnimator* GetMacScrollbarAnimator() const;
 
   // This getter will create a ScrollAnimatorBase if it doesn't already exist.
@@ -634,7 +636,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // using AppKit-specific code (Cocoa APIs). It requires input from
   // ScrollableArea about changes on scrollbars. For other platforms, painting
   // is done by blink, and this member will be a nullptr.
-  mutable Member<MacScrollbarAnimator> scrollbar_animator_;
+  mutable Member<MacScrollbarAnimator> mac_scrollbar_animator_;
 
   mutable Member<ScrollAnimatorBase> scroll_animator_;
   mutable Member<ProgrammaticScrollAnimator> programmatic_scroll_animator_;

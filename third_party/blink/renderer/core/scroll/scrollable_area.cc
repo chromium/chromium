@@ -111,9 +111,6 @@ ScrollableArea::ScrollableArea(
       uses_composited_scrolling_(false),
       compositor_task_runner_(std::move(compositor_task_runner)) {
   DCHECK(compositor_task_runner_);
-#if defined(OS_MAC)
-  scrollbar_animator_ = MacScrollbarAnimator::Create(this);
-#endif
 }
 
 ScrollableArea::~ScrollableArea() = default;
@@ -127,8 +124,8 @@ void ScrollableArea::Dispose() {
 }
 
 void ScrollableArea::ClearScrollableArea() {
-  if (scrollbar_animator_)
-    scrollbar_animator_->Dispose();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->Dispose();
   scroll_animator_.Clear();
   programmatic_scroll_animator_.Clear();
   if (fade_overlay_scrollbars_timer_)
@@ -136,7 +133,13 @@ void ScrollableArea::ClearScrollableArea() {
 }
 
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
-  return scrollbar_animator_;
+#if defined(OS_MAC)
+  if (!mac_scrollbar_animator_) {
+    mac_scrollbar_animator_ =
+        MacScrollbarAnimator::Create(const_cast<ScrollableArea*>(this));
+  }
+#endif
+  return mac_scrollbar_animator_;
 }
 
 ScrollAnimatorBase& ScrollableArea::GetScrollAnimator() const {
@@ -476,23 +479,23 @@ void ScrollableArea::RunScrollCompleteCallbacks() {
 }
 
 void ScrollableArea::ContentAreaWillPaint() const {
-  if (GetMacScrollbarAnimator())
-    GetMacScrollbarAnimator()->ContentAreaWillPaint();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->ContentAreaWillPaint();
 }
 
 void ScrollableArea::MouseEnteredContentArea() const {
-  if (GetMacScrollbarAnimator())
-    GetMacScrollbarAnimator()->MouseEnteredContentArea();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->MouseEnteredContentArea();
 }
 
 void ScrollableArea::MouseExitedContentArea() const {
-  if (GetMacScrollbarAnimator())
-    GetMacScrollbarAnimator()->MouseExitedContentArea();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->MouseExitedContentArea();
 }
 
 void ScrollableArea::MouseMovedInContentArea() const {
-  if (GetMacScrollbarAnimator())
-    GetMacScrollbarAnimator()->MouseMovedInContentArea();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->MouseMovedInContentArea();
 }
 
 void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
@@ -545,17 +548,17 @@ void ScrollableArea::DidAddScrollbar(Scrollbar& scrollbar,
 
 void ScrollableArea::WillRemoveScrollbar(Scrollbar& scrollbar,
                                          ScrollbarOrientation orientation) {
-  if (GetMacScrollbarAnimator()) {
+  if (mac_scrollbar_animator_) {
     if (orientation == kVerticalScrollbar)
-      GetMacScrollbarAnimator()->WillRemoveVerticalScrollbar(scrollbar);
+      mac_scrollbar_animator_->WillRemoveVerticalScrollbar(scrollbar);
     else
-      GetMacScrollbarAnimator()->WillRemoveHorizontalScrollbar(scrollbar);
+      mac_scrollbar_animator_->WillRemoveHorizontalScrollbar(scrollbar);
   }
 }
 
 void ScrollableArea::ContentsResized() {
-  if (GetMacScrollbarAnimator())
-    GetMacScrollbarAnimator()->ContentsResized();
+  if (mac_scrollbar_animator_)
+    mac_scrollbar_animator_->ContentsResized();
 }
 
 void ScrollableArea::InvalidateScrollTimeline() {
@@ -995,7 +998,7 @@ bool ScrollableArea::PerformSnapping(
 
 void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_animator_);
-  visitor->Trace(scrollbar_animator_);
+  visitor->Trace(mac_scrollbar_animator_);
   visitor->Trace(programmatic_scroll_animator_);
   visitor->Trace(fade_overlay_scrollbars_timer_);
 }
