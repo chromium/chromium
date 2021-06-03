@@ -52,8 +52,7 @@ bool IsSupportedHdrMetadata(const gfx::HdrMetadataType& hdr_metadata_type) {
   return false;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
-    (BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA) || defined(OS_WIN))
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 bool IsHevcProfileSupported(VideoCodecProfile profile) {
   // Only encrypted HEVC content is supported, and normally MSE.isTypeSupported
   // returns false for HEVC. The kEnableClearHevcForTesting flag allows it to
@@ -74,7 +73,7 @@ bool IsHevcProfileSupported(VideoCodecProfile profile) {
   }
   return false;
 }
-#endif  // ENABLE_PLATFORM_HEVC && (USE_CHROMEOS_PROTECTED_MEDIA || OS_WIN)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 
 }  // namespace
 
@@ -344,13 +343,12 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return true;
 
     case kCodecHEVC:
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
-    (BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA) || defined(OS_WIN))
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
       return IsColorSpaceSupported(type.color_space) &&
              IsHevcProfileSupported(type.profile);
 #else
       return false;
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
     case kUnknownVideoCodec:
     case kCodecVC1:
     case kCodecMPEG2:

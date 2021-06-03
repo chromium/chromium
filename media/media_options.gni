@@ -52,12 +52,8 @@ declare_args() {
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 
-  # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
-  # platform. Enabled by default for Chromecast, Chrome OS protected media,
-  # Windows with Chrome branding and fuzzer builds.
-  enable_platform_hevc = proprietary_codecs &&
-                         (is_chromecast || use_chromeos_protected_media ||
-                          use_fuzzing_engine || (is_win && is_chrome_branded))
+  enable_platform_encrypted_hevc =
+      use_chromeos_protected_media || (is_win && is_chrome_branded)
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
@@ -81,10 +77,25 @@ declare_args() {
 
 declare_args() {
   enable_av1_decoder = enable_dav1d_decoder || enable_libgav1_decoder
+
+  # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
+  # platform. Enabled by default for Chromecast, fuzzer builds and protected
+  # video on ChromeOS and Windows.
+  enable_platform_hevc =
+      proprietary_codecs &&
+      (is_chromecast || use_fuzzing_engine || enable_platform_encrypted_hevc)
 }
 
-# enable_hls_sample_aes can only be true if enable_mse_mpeg2ts_stream_parser is.
-assert(enable_mse_mpeg2ts_stream_parser || !enable_hls_sample_aes)
+assert(
+    !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
+    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_sample_aes=true.")
+
+assert(!enable_platform_hevc || proprietary_codecs,
+       "proprietary_codecs=true is required for enable_platform_hevc=true.")
+
+assert(
+    !enable_platform_encrypted_hevc || enable_platform_hevc,
+    "enable_platform_hevc=true is required for enable_platform_encrypted_hevc=true.")
 
 # Use a second declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
@@ -234,8 +245,8 @@ declare_args() {
   enable_cast_streaming_renderer = false
 }
 
-# Currently, libcast mirroring is only supported for chromecast.
-assert(!enable_cast_streaming_renderer || is_chromecast)
+assert(!enable_cast_streaming_renderer || is_chromecast,
+       "Currently, libcast mirroring is only supported for chromecast.")
 
 # Do not expand this list without double-checking with OWNERS, this is a list of
 # all targets which roll up into the //media component. It controls visibility
