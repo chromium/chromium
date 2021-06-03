@@ -344,9 +344,15 @@ void GtkUi::Initialize() {
                          G_CALLBACK(OnCursorThemeNameChangedThunk), this);
   g_signal_connect_after(settings, "notify::gtk-cursor-theme-size",
                          G_CALLBACK(OnCursorThemeSizeChangedThunk), this);
-  g_signal_connect_after(settings, "notify::gtk-xft-dpi",
-                         G_CALLBACK(OnDeviceScaleFactorMaybeChangedThunk),
-                         this);
+
+  // Listen for DPI changes.
+  auto* dpi_callback = G_CALLBACK(OnDeviceScaleFactorMaybeChangedThunk);
+  if (GtkCheckVersion(4)) {
+    g_signal_connect_after(settings, "notify::gtk-xft-dpi", dpi_callback, this);
+  } else {
+    GdkScreen* screen = gdk_screen_get_default();
+    g_signal_connect_after(screen, "notify::resolution", dpi_callback, this);
+  }
 
   // Listen for scale factor changes.  We would prefer to listen on
   // a GdkScreen, but there is no scale-factor property, so use an
@@ -1030,11 +1036,18 @@ float GtkUi::GetRawDeviceScaleFactor() {
   float scale = gtk_widget_get_scale_factor(GetDummyWindow());
   DCHECK_GT(scale, 0.0);
 
-  auto* settings = gtk_settings_get_default();
-  int resolution = kDefaultDPI;
-  g_object_get(settings, "gtk-xft-dpi", &resolution, nullptr);
+  double resolution = 0;
+  if (GtkCheckVersion(4)) {
+    auto* settings = gtk_settings_get_default();
+    int dpi = 0;
+    g_object_get(settings, "gtk-xft-dpi", &dpi, nullptr);
+    resolution = dpi / 1024.0;
+  } else {
+    GdkScreen* screen = gdk_screen_get_default();
+    resolution = gdk_screen_get_resolution(screen);
+  }
   if (resolution > 0)
-    scale *= resolution / kDefaultDPI / 1024;
+    scale *= resolution / kDefaultDPI;
 
   // Round to the nearest 64th so that UI can losslessly multiply and divide
   // the scale factor.

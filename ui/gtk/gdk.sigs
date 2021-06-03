@@ -17,3 +17,4 @@ GdkTexture* gdk_memory_texture_new(int width, int height, GdkMemoryFormat format
 int gdk_paintable_get_intrinsic_width(GdkPaintable* paintable);
 int gdk_paintable_get_intrinsic_height(GdkPaintable* paintable);
 GdkScreen* gdk_screen_get_default(void);
+gdouble gdk_screen_get_resolution(GdkScreen *screen);
