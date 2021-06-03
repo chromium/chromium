@@ -186,7 +186,7 @@ class TestImporter(object):
             _log.info('Only manifest was updated; skipping the import.')
             return 0
 
-        with self._expectations_updater.prepare_smoke_tests():
+        with self._expectations_updater.prepare_smoke_tests(self.chromium_git):
             self._commit_changes(commit_message)
             _log.info('Changes imported and committed.')
 
