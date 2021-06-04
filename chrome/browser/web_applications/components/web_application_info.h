@@ -29,6 +29,11 @@ using SquareSizePx = int;
 // Iterates in ascending order (checked in SortedSizesPxIsAscending test).
 using SortedSizesPx = base::flat_set<SquareSizePx, std::less<>>;
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
+constexpr std::array<IconPurpose,
+                     static_cast<int>(IconPurpose::kMaxValue) -
+                         static_cast<int>(IconPurpose::kMinValue) + 1>
+    kIconPurposes{IconPurpose::ANY, IconPurpose::MONOCHROME,
+                  IconPurpose::MASKABLE};
 
 // Icon bitmaps for each IconPurpose.
 struct IconBitmaps {

@@ -155,9 +155,7 @@ class WebAppIconManagerTest : public WebAppTest {
     for (int i = 0; i < num_menu_items; ++i) {
       IconSizes icon_sizes;
 
-      for (int p = static_cast<int>(IconPurpose::kMinValue);
-           p <= static_cast<int>(IconPurpose::kMaxValue); ++p) {
-        auto purpose = static_cast<IconPurpose>(p);
+      for (IconPurpose purpose : kIconPurposes) {
         switch (purpose) {
           case IconPurpose::ANY:
             icon_sizes.SetSizesForPurpose(purpose, sizes_any);
@@ -781,9 +779,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
   EXPECT_EQ(3u, shortcuts_menu_icons_map.size());
 
   for (int i = 0; i < num_menu_items; ++i) {
-    for (int p = static_cast<int>(IconPurpose::kMinValue);
-         p <= static_cast<int>(IconPurpose::kMaxValue); ++p) {
-      auto purpose = static_cast<IconPurpose>(p);
+    for (IconPurpose purpose : kIconPurposes) {
       SCOPED_TRACE(purpose);
 
       const std::vector<int>* expect_sizes;

@@ -316,7 +316,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   web_app_info.icon_infos.push_back(info);
 
   const GURL kShortcutItemUrl("http://www.chromium.org/shortcuts/action");
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 4; ++i) {
     WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
     WebApplicationShortcutsMenuItemInfo::Icon icon;
     shortcuts_menu_item_info.name =
@@ -326,10 +326,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
     icon.url = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.square_size_px = kIconSize;
 
-    ASSERT_LE(static_cast<int>(IconPurpose::kMinValue), i);
-    ASSERT_LE(i, static_cast<int>(IconPurpose::kMaxValue));
-    auto purpose = static_cast<IconPurpose>(i);
-
+    IconPurpose purpose = kIconPurposes[i % kIconPurposes.size()];
     shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(purpose,
                                                             {std::move(icon)});
     web_app_info.shortcuts_menu_item_infos.push_back(
@@ -364,6 +361,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
     url_handler.has_origin_wildcard = true;
     manifest.url_handlers.push_back(url_handler);
   }
+  WebApplicationInfo web_app_info_original{web_app_info};
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
@@ -379,16 +377,9 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   // The shortcuts_menu_item_infos from |web_app_info| should be left as is,
   // since the manifest doesn't have any shortcut information.
-  EXPECT_EQ(3u, web_app_info.shortcuts_menu_item_infos.size());
-  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[0]
-                    .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
-                    .size());
-  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
-                    .GetShortcutIconInfosForPurpose(IconPurpose::MONOCHROME)
-                    .size());
-  EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[2]
-                    .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
-                    .size());
+  EXPECT_EQ(4u, web_app_info.shortcuts_menu_item_infos.size());
+  EXPECT_EQ(web_app_info_original.shortcuts_menu_item_infos,
+            web_app_info.shortcuts_menu_item_infos);
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
@@ -438,6 +429,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(kAppTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
+  // Sanity check that original copy was not changed.
+  EXPECT_EQ(4u, web_app_info_original.shortcuts_menu_item_infos.size());
 
   // We currently duplicate the app icons with multiple Purposes.
   EXPECT_EQ(5u, web_app_info.icon_infos.size());
