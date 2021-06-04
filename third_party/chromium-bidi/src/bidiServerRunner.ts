@@ -30,7 +30,7 @@ export class BidiServerRunner {
     onClose: (stateObject: any) => void
   ) {
     const self = this;
-    const bidiPort: string = process.env.BIDI_PORT || '8080';
+    const bidiPort = parseInt(process.env.PORT) || 8080;
 
     const server = http.createServer(function (request, response) {
       debugInternal(new Date() + ' Received request for ' + request.url);

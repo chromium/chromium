@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./.build",
+    "sourceMap": true,
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": true,
