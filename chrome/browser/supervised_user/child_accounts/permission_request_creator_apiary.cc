@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -38,8 +39,6 @@
 namespace {
 
 const char kPermissionRequestApiPath[] = "people/me/permissionRequests";
-const char kPermissionRequestApiScope[] =
-    "https://www.googleapis.com/auth/kid.permission";
 
 const int kNumPermissionRequestRetries = 1;
 
@@ -115,26 +114,11 @@ void PermissionRequestCreatorApiary::CreateURLAccessRequest(
 }
 
 GURL PermissionRequestCreatorApiary::GetApiUrl() const {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPermissionRequestApiUrl)) {
-    GURL url(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kPermissionRequestApiUrl));
-    LOG_IF(WARNING, !url.is_valid())
-        << "Got invalid URL for " << switches::kPermissionRequestApiUrl;
-    return url;
-  }
-
   return kids_management_api::GetURL(kPermissionRequestApiPath);
 }
 
 std::string PermissionRequestCreatorApiary::GetApiScope() const {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPermissionRequestApiScope)) {
-    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kPermissionRequestApiScope);
-  } else {
-    return kPermissionRequestApiScope;
-  }
+  return GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope;
 }
 
 void PermissionRequestCreatorApiary::CreateRequest(
