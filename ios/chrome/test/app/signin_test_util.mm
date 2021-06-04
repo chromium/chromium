@@ -119,6 +119,12 @@ void ResetSigninPromoPreferences() {
   prefs->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, false);
 }
 
+void ResetUserApprovedAccountListManager() {
+  ChromeBrowserState* browser_state = GetOriginalBrowserState();
+  PrefService* prefs = browser_state->GetPrefs();
+  prefs->ClearPref(prefs::kSigninLastAccounts);
+}
+
 void RevokeSyncConsent() {
   ChromeBrowserState* browser_state = GetOriginalBrowserState();
   PrefService* prefs = browser_state->GetPrefs();
