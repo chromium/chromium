@@ -6544,6 +6544,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="ExtensionContextType" separator=".">
+  <obsolete>
+    Removed 2021/06.
+  </obsolete>
   <suffix name="BlessedExtensionContext" label="Blessed Extension Context"/>
   <suffix name="BlessedWebPageContext" label="Blessed Web Page Context"/>
   <suffix name="ContentScriptContext" label="Content Script Context"/>

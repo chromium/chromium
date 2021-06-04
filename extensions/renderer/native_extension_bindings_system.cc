@@ -372,78 +372,6 @@ bool IsRuntimeAvailableToContext(ScriptContext* context) {
   return false;
 }
 
-// Logs the amount of time taken to update the bindings for a given context
-// (i.e., UpdateBindingsForContext()).
-void LogUpdateBindingsForContextTime(Feature::Context context_type,
-                                     bool is_for_service_worker,
-                                     base::TimeDelta elapsed) {
-  constexpr int kHistogramBucketCount = 50;
-  static const int kTenSecondsInMicroseconds = 10000000;
-  switch (context_type) {
-    case Feature::UNSPECIFIED_CONTEXT:
-      break;
-    case Feature::WEB_PAGE_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime.WebPageContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime."
-          "BlessedWebPageContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::BLESSED_EXTENSION_CONTEXT:
-      if (is_for_service_worker) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Extensions.Bindings.UpdateBindingsForContextTime."
-            "ServiceWorkerContext",
-            elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-            kHistogramBucketCount);
-      } else {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Extensions.Bindings.UpdateBindingsForContextTime."
-            "BlessedExtensionContext",
-            elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-            kHistogramBucketCount);
-      }
-      break;
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime."
-          "LockScreenExtensionContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime."
-          "UnblessedExtensionContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::CONTENT_SCRIPT_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime."
-          "ContentScriptContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::WEBUI_CONTEXT:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Extensions.Bindings.UpdateBindingsForContextTime.WebUIContext",
-          elapsed.InMicroseconds(), 1, kTenSecondsInMicroseconds,
-          kHistogramBucketCount);
-      break;
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
-      // Extension APIs in untrusted WebUIs are temporary so don't bother
-      // recording metrics for them.
-      break;
-  }
-}
-
 // The APIs that could potentially be available to webpage-like contexts.
 // This is the list of possible features; most web pages will not have access
 // to these APIs.
@@ -544,7 +472,6 @@ void NativeExtensionBindingsSystem::WillReleaseScriptContext(
 
 void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     ScriptContext* context) {
-  base::ElapsedTimer timer;
   v8::Isolate* isolate = context->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = context->v8_context();
@@ -599,9 +526,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     if (IsRuntimeAvailableToContext(context) && !set_accessor("runtime"))
       LOG(ERROR) << "Failed to create API on Chrome object.";
 
-    LogUpdateBindingsForContextTime(context->context_type(),
-                                    context->IsForServiceWorker(),
-                                    timer.Elapsed());
     UpdateContentCapabilities(context);
     return;
   }
@@ -634,9 +558,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       return;
     }
   }
-
-  LogUpdateBindingsForContextTime(
-      context->context_type(), context->IsForServiceWorker(), timer.Elapsed());
 }
 
 void NativeExtensionBindingsSystem::DispatchEventInContext(
