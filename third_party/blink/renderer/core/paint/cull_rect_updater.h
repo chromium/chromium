@@ -27,7 +27,8 @@ class CORE_EXPORT CullRectUpdater {
   STACK_ALLOCATED();
 
  public:
-  explicit CullRectUpdater(PaintLayer& root_layer);
+  explicit CullRectUpdater(PaintLayer& starting_layer)
+      : starting_layer_(starting_layer) {}
 
   void Update();
 
@@ -50,8 +51,8 @@ class CORE_EXPORT CullRectUpdater {
                                            const CullRect& cull_rect);
   bool ShouldProactivelyUpdate(const PaintLayer&) const;
 
-  PaintLayer& root_layer_;
-  PropertyTreeState root_state_;
+  PaintLayer& starting_layer_;
+  PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
   bool force_proactive_update_ = false;
 };
 
@@ -69,7 +70,7 @@ class OverriddenCullRectScope {
   ~OverriddenCullRectScope();
 
  private:
-  PaintLayer& root_layer_;
+  PaintLayer& starting_layer_;
   bool updated_ = false;
 };
 

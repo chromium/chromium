@@ -2842,10 +2842,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
-      !ShouldThrottleRendering()) {
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
     CullRectUpdater(*layout_view->Layer()).Update();
-  }
 
   paint_frame_count_++;
   ForAllNonThrottledLocalFrameViews(

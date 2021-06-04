@@ -395,9 +395,37 @@ TEST_P(DataTransferTest, NodeImageOutOfView) {
   EXPECT_EQ(IntSize(100, 100), image->Size());
   Color green(0, 0x80, 0);
   const SkBitmap& bitmap = image->Bitmap();
-  for (int x = 0; x < 10; ++x) {
-    for (int y = 0; y < 10; ++y)
+  for (int x = 0; x < 100; ++x) {
+    for (int y = 0; y < 100; ++y)
       ASSERT_EQ(green, bitmap.getColor(x, y));
+  }
+}
+
+TEST_P(DataTransferTest, NodeImageFixedChild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="drag" style="position: absolute; z-index: 1; top: 100px; left: 0;
+                          width: 50px; height: 100px; background: green">
+      <div style="position: fixed; top: 50px; width: 100px; height: 50px;
+                  background: blue">
+      </div>
+    </div>
+    <div style="height: 2000px"></div>
+  )HTML");
+
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+
+  auto image = DataTransfer::NodeImage(GetFrame(),
+                                       *GetDocument().getElementById("drag"));
+  EXPECT_EQ(IntSize(100, 100), image->Size());
+  Color green(0, 0x80, 0);
+  Color blue(0, 0, 0xFF);
+  const SkBitmap& bitmap = image->Bitmap();
+  for (int x = 0; x < 100; ++x) {
+    for (int y = 0; y < 50; ++y)
+      ASSERT_EQ(x < 50 ? green : Color::kTransparent, bitmap.getColor(x, y));
+    for (int y = 50; y < 100; ++y)
+      ASSERT_EQ(blue, bitmap.getColor(x, y));
   }
 }
 
