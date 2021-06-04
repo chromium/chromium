@@ -296,7 +296,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   mf_controller->Hide();
 #endif
   delegate_->DidAcceptSuggestion(suggestion.value, suggestion.frontend_id,
-                                 index);
+                                 suggestion.backend_id, index);
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {

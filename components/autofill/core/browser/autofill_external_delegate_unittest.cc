@@ -253,7 +253,8 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   // This should trigger a call to hide the popup since we've selected an
   // option.
   external_delegate_->DidAcceptSuggestion(autofill_item[0].value,
-                                          autofill_item[0].frontend_id, 0);
+                                          autofill_item[0].frontend_id,
+                                          autofill_item[0].backend_id, 0);
 }
 
 // Test that our external delegate does not add the signin promo and its
@@ -295,7 +296,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // This should trigger a call to hide the popup since we've selected an
   // option.
   external_delegate_->DidAcceptSuggestion(autofill_item[0].value,
-                                          autofill_item[0].frontend_id, 0);
+                                          autofill_item[0].frontend_id,
+                                          autofill_item[0].backend_id, 0);
 }
 
 // Test that our external delegate properly adds the signin promo and no
@@ -335,7 +337,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // This should trigger a call to start the signin flow and hide the popup
   // since we've selected the sign-in promo option.
   external_delegate_->DidAcceptSuggestion(
-      std::u16string(), POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO, 0);
+      std::u16string(), POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO, std::string(),
+      0);
 }
 
 // Test that data list elements for a node will appear in the Autofill popup.
@@ -596,7 +599,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
-  external_delegate_->DidAcceptSuggestion(std::u16string(), -1, 0);
+  external_delegate_->DidAcceptSuggestion(std::u16string(), -1, std::string(),
+                                          0);
 }
 
 // Test that the ClearPreview call is only sent if the form was being previewed
@@ -644,8 +648,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   std::u16string dummy_string(u"baz qux");
   EXPECT_CALL(*autofill_driver_,
               RendererShouldAcceptDataListSuggestion(field_id_, dummy_string));
-  external_delegate_->DidAcceptSuggestion(dummy_string,
-                                          POPUP_ITEM_ID_DATALIST_ENTRY, 0);
+  external_delegate_->DidAcceptSuggestion(
+      dummy_string, POPUP_ITEM_ID_DATALIST_ENTRY, std::string(), 0);
 }
 
 // Test that an accepted autofill suggestion will fill the form.
@@ -658,6 +662,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
               FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _,
                                 kAutofillProfileId));
   external_delegate_->DidAcceptSuggestion(dummy_string, kAutofillProfileId,
+                                          std::string(),
                                           2);  // Row 2
 }
 
@@ -668,8 +673,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearForm) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_, RendererShouldClearFilledSection());
 
-  external_delegate_->DidAcceptSuggestion(std::u16string(),
-                                          POPUP_ITEM_ID_CLEAR_FORM, 0);
+  external_delegate_->DidAcceptSuggestion(
+      std::u16string(), POPUP_ITEM_ID_CLEAR_FORM, std::string(), 0);
 }
 
 // Test that the client is directed to hide the autofill popup after being
@@ -680,7 +685,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateHideSuggestions) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
   external_delegate_->DidAcceptSuggestion(
-      std::u16string(), POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS, 0);
+      std::u16string(), POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS, std::string(),
+      0);
 }
 
 // Test that autofill client will scan a credit card after use accepted the
@@ -689,8 +695,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
   EXPECT_CALL(autofill_client_, ScanCreditCard(_));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  external_delegate_->DidAcceptSuggestion(std::u16string(),
-                                          POPUP_ITEM_ID_SCAN_CREDIT_CARD, 0);
+  external_delegate_->DidAcceptSuggestion(
+      std::u16string(), POPUP_ITEM_ID_SCAN_CREDIT_CARD, std::string(), 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
@@ -713,8 +719,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
     IssueOnQuery(kRecentQueryId);
     IssueOnSuggestionsReturned(kRecentQueryId);
     external_delegate_->OnPopupShown();
-    external_delegate_->DidAcceptSuggestion(std::u16string(),
-                                            POPUP_ITEM_ID_SCAN_CREDIT_CARD, 0);
+    external_delegate_->DidAcceptSuggestion(
+        std::u16string(), POPUP_ITEM_ID_SCAN_CREDIT_CARD, std::string(), 0);
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                                 AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
@@ -731,8 +737,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
     IssueOnQuery(kRecentQueryId);
     IssueOnSuggestionsReturned(kRecentQueryId);
     external_delegate_->OnPopupShown();
-    external_delegate_->DidAcceptSuggestion(std::u16string(),
-                                            POPUP_ITEM_ID_CLEAR_FORM, 0);
+    external_delegate_->DidAcceptSuggestion(
+        std::u16string(), POPUP_ITEM_ID_CLEAR_FORM, std::string(), 0);
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                                 AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
@@ -761,7 +767,8 @@ TEST_F(AutofillExternalDelegateUnitTest, SigninPromoMenuItem) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   external_delegate_->DidAcceptSuggestion(
-      std::u16string(), POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO, 0);
+      std::u16string(), POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO, std::string(),
+      0);
 }
 
 MATCHER_P(CreditCardMatches, card, "") {
@@ -810,8 +817,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
               OnAutocompleteEntrySelected(dummy_string))
       .Times(1);
   base::HistogramTester histogram_tester;
-  external_delegate_->DidAcceptSuggestion(dummy_string,
-                                          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, 0);
+  external_delegate_->DidAcceptSuggestion(
+      dummy_string, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, std::string(), 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
 }

@@ -307,7 +307,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
   if (delegate_) {
     delegate_->DidAcceptSuggestion(suggestions_[position].value,
                                    suggestions_[position].frontend_id,
-                                   position);
+                                   suggestions_[position].backend_id, position);
   }
 }
 

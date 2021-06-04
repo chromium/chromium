@@ -26,27 +26,35 @@ class AutofillPopupDelegate {
 
   virtual void OnPopupSuppressed() = 0;
 
-  // Called when the autofill suggestion indicated by |identifier| has been
+  // Called when the autofill suggestion indicated by |frontend_id| has been
   // temporarily selected (e.g., hovered).
   virtual void DidSelectSuggestion(const std::u16string& value,
-                                   int identifier) = 0;
+                                   int frontend_id) = 0;
 
-  // Inform the delegate that a row in the popup has been chosen.
+  // Inform the delegate that a row in the popup has been chosen. |value| is the
+  // suggestion's value, and is usually the main text to be shown. |frontend_id|
+  // is the frontend id of the suggestion. Some of the frontend ids have
+  // negative values (see popup_item_ids.h) which have special built-in meanings
+  // while others have positive values which represents the backend data model
+  // this suggestion relates to. See 'MakeFrontendID' in BrowserAutofillManager.
+  // |backend_id| is the guid of the backend data model. |position| refers to
+  // the index of the suggestion in the suggestion list.
   virtual void DidAcceptSuggestion(const std::u16string& value,
-                                   int identifier,
+                                   int frontend_id,
+                                   const std::string& backend_id,
                                    int position) = 0;
 
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.
   virtual bool GetDeletionConfirmationText(const std::u16string& value,
-                                           int identifier,
+                                           int frontend_id,
                                            std::u16string* title,
                                            std::u16string* body) = 0;
 
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.
   virtual bool RemoveSuggestion(const std::u16string& value,
-                                int identifier) = 0;
+                                int frontend_id) = 0;
 
   // Informs the delegate that the Autofill previewed form should be cleared.
   virtual void ClearPreviewedForm() = 0;

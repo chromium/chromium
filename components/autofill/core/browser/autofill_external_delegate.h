@@ -43,15 +43,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int identifier) override;
+                           int frontend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
-                           int identifier,
+                           int frontend_id,
+                           const std::string& backend_id,
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int identifier,
+                                   int frontend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value, int identifier) override;
+  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the

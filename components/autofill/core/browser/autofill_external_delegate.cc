@@ -232,74 +232,76 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(const std::u16string& value,
-                                                   int identifier) {
+                                                   int frontend_id) {
   ClearPreviewedForm();
 
   // Only preview the data if it is a profile.
-  if (identifier > 0)
-    FillAutofillFormData(identifier, true);
-  else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+  if (frontend_id > 0)
+    FillAutofillFormData(frontend_id, true);
+  else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                  value);
 }
 
-void AutofillExternalDelegate::DidAcceptSuggestion(const std::u16string& value,
-                                                   int identifier,
-                                                   int position) {
-  if (identifier == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
+void AutofillExternalDelegate::DidAcceptSuggestion(
+    const std::u16string& value,
+    int frontend_id,
+    const std::string& backend_id,
+    int position) {
+  if (frontend_id == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
     // User selected 'Autofill Options'.
     manager_->ShowAutofillSettings(popup_type_ == PopupType::kCreditCards);
-  } else if (identifier == POPUP_ITEM_ID_CLEAR_FORM) {
+  } else if (frontend_id == POPUP_ITEM_ID_CLEAR_FORM) {
     // User selected 'Clear form'.
     AutofillMetrics::LogAutofillFormCleared();
     driver_->RendererShouldClearFilledSection();
-  } else if (identifier == POPUP_ITEM_ID_PASSWORD_ENTRY ||
-             identifier == POPUP_ITEM_ID_USERNAME_ENTRY ||
-             identifier == POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
-             identifier == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_PASSWORD_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_USERNAME_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY) {
     NOTREACHED();  // Should be handled elsewhere.
-  } else if (identifier == POPUP_ITEM_ID_DATALIST_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_DATALIST_ENTRY) {
     driver_->RendererShouldAcceptDataListSuggestion(query_field_.global_id(),
                                                     value);
-  } else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // User selected an Autocomplete, so we fill directly.
     driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
     AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
     manager_->OnAutocompleteEntrySelected(value);
-  } else if (identifier == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
+  } else if (frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
     manager_->client()->ScanCreditCard(base::BindOnce(
         &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
-  } else if (identifier == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
-    manager_->client()->ExecuteCommand(identifier);
-  } else if (identifier == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+  } else if (frontend_id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
+    manager_->client()->ExecuteCommand(frontend_id);
+  } else if (frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     manager_->OnUserAcceptedCardsFromAccountOption();
-  } else if (identifier == POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS) {
+  } else if (frontend_id == POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS) {
     // No-op as the popup will be closed in the end of the method.
     manager_->OnUserHideSuggestions(query_form_, query_field_);
-  } else if (identifier == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
+  } else if (frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
     manager_->FetchVirtualCardCandidates();
 #else
     NOTREACHED();
 #endif
-  } else if (identifier == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
     // TODO(crbug.com/1196021): Add handling logic.
   } else {
-    if (identifier > 0) {  // Denotes an Autofill suggestion.
+    if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
           position, popup_type_, driver_->IsIncognito());
     }
-    FillAutofillFormData(identifier, false);
+    FillAutofillFormData(frontend_id, false);
   }
 
   if (should_show_scan_credit_card_) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
-        identifier == POPUP_ITEM_ID_SCAN_CREDIT_CARD
+        frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
   }
 
-  if (identifier == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+  if (frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     should_show_cards_from_account_option_ = false;
     manager_->RefetchCardsAndUpdatePopup(query_id_, query_form_, query_field_);
   } else {
@@ -309,18 +311,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const std::u16string& value,
 
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
     const std::u16string& value,
-    int identifier,
+    int frontend_id,
     std::u16string* title,
     std::u16string* body) {
-  return manager_->GetDeletionConfirmationText(value, identifier, title, body);
+  return manager_->GetDeletionConfirmationText(value, frontend_id, title, body);
 }
 
 bool AutofillExternalDelegate::RemoveSuggestion(const std::u16string& value,
-                                                int identifier) {
-  if (identifier > 0)
-    return manager_->RemoveAutofillProfileOrCreditCard(identifier);
+                                                int frontend_id) {
+  if (frontend_id > 0)
+    return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
 
-  if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     manager_->RemoveAutocompleteEntry(query_field_.name, value);
     return true;
   }

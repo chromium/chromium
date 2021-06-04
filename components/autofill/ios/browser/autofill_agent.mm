@@ -421,7 +421,8 @@ void GetFormField(autofill::FormFieldData* field,
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
       _popupDelegate->DidAcceptSuggestion(SysNSStringToUTF16(suggestion.value),
-                                          suggestion.identifier, 0);
+                                          suggestion.identifier, std::string(),
+                                          0);
     }
   } else if (suggestion.identifier ==
              autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {

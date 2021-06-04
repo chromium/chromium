@@ -46,15 +46,16 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int identifier) override;
+                           int frontend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
-                           int identifier,
+                           int frontend_id,
+                           const std::string& backend_id,
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int identifier,
+                                   int frontend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value, int identifier) override;
+  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
   autofill::AutofillDriver* GetAutofillDriver() override;
@@ -182,9 +183,9 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
-  // |identifier| identifies the suggestion that was selected for filling.
+  // |frontend_id| identifies the suggestion that was selected for filling.
   void OnBiometricReauthCompleted(const std::u16string& username_value,
-                                  int identifier,
+                                  int frontend_id,
                                   bool auth_succeded);
 
   // Cancels an ongoing biometric re-authentication. Usually, because
