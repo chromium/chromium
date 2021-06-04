@@ -4,6 +4,7 @@
 
 #include "chromeos/services/network_config/cros_network_config.h"
 
+#include <cmath>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -1843,6 +1844,30 @@ mojom::NetworkCertificatePtr GetMojoCert(
   return result;
 }
 
+mojom::TrafficCounterSource ConvertToTrafficCounterSourceEnum(
+    const std::string& source) {
+  if (source == shill::kTrafficCounterSourceUnknown)
+    return mojom::TrafficCounterSource::kUnknown;
+  if (source == shill::kTrafficCounterSourceChrome)
+    return mojom::TrafficCounterSource::kChrome;
+  if (source == shill::kTrafficCounterSourceUser)
+    return mojom::TrafficCounterSource::kUser;
+  if (source == shill::kTrafficCounterSourceArc)
+    return mojom::TrafficCounterSource::kArc;
+  if (source == shill::kTrafficCounterSourceCrosvm)
+    return mojom::TrafficCounterSource::kCrosvm;
+  if (source == shill::kTrafficCounterSourcePluginvm)
+    return mojom::TrafficCounterSource::kPluginvm;
+  if (source == shill::kTrafficCounterSourceUpdateEngine)
+    return mojom::TrafficCounterSource::kUpdateEngine;
+  if (source == shill::kTrafficCounterSourceVpn)
+    return mojom::TrafficCounterSource::kVpn;
+  if (source == shill::kTrafficCounterSourceSystem)
+    return mojom::TrafficCounterSource::kSystem;
+  NOTREACHED() << "Unknown traffic counter source: " << source;
+  return mojom::TrafficCounterSource::kUnknown;
+}
+
 }  // namespace
 
 CrosNetworkConfig::CrosNetworkConfig()
@@ -2821,6 +2846,77 @@ void CrosNetworkConfig::SetAlwaysOnVpn(
     return;
   }
   network_profile_handler_->SetAlwaysOnVpnService(profile->path, service_path);
+}
+
+void CrosNetworkConfig::RequestTrafficCounters(
+    const std::string& guid,
+    RequestTrafficCountersCallback callback) {
+  std::string service_path = GetServicePathFromGuid(guid);
+  if (service_path.empty()) {
+    NET_LOG(ERROR) << "RequestTrafficCounters: service path for guid " << guid
+                   << " not found";
+    std::move(callback).Run({});
+    return;
+  }
+  network_state_handler_->RequestTrafficCounters(
+      service_path,
+      base::BindOnce(&CrosNetworkConfig::PopulateTrafficCounters,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+// static
+mojom::TrafficCounterSource CrosNetworkConfig::GetTrafficCounterEnumForTesting(
+    const std::string& source) {
+  return ConvertToTrafficCounterSourceEnum(source);
+}
+
+void CrosNetworkConfig::PopulateTrafficCounters(
+    RequestTrafficCountersCallback callback,
+    const base::ListValue& traffic_counters) {
+  if (!traffic_counters.GetList().size()) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::vector<mojom::TrafficCounterPtr> counters;
+  for (const base::Value& tc : traffic_counters.GetList()) {
+    DCHECK(tc.is_dict());
+    const base::Value* source =
+        tc.FindKeyOfType("source", base::Value::Type::STRING);
+    DCHECK(source);
+
+    // Since rx_bytes may be larger than the maximum value representable by
+    // uint32_t, we must check whether it was implicitly converted to a double
+    // during D-Bus deserialization.
+    uint64_t rx_bytes;
+    const base::Value* rb = tc.FindKey("rx_bytes");
+    DCHECK(rb);
+    if (rb->type() == base::Value::Type::INTEGER) {
+      rx_bytes = rb->GetInt();
+    } else if (rb->type() == base::Value::Type::DOUBLE) {
+      rx_bytes = std::floor(rb->GetDouble());
+    } else {
+      NOTREACHED();
+    }
+
+    // Since tx_bytes may be larger than the maximum value representable by
+    // uint32_t, we must check whether it was implicitly converted to a double
+    // during D-Bus deserialization.
+    uint64_t tx_bytes;
+    const base::Value* tb = tc.FindKey("tx_bytes");
+    DCHECK(tb);
+    if (tb->type() == base::Value::Type::INTEGER) {
+      tx_bytes = tb->GetInt();
+    } else if (tb->type() == base::Value::Type::DOUBLE) {
+      tx_bytes = std::floor(tb->GetDouble());
+    } else {
+      NOTREACHED();
+    }
+
+    counters.push_back(mojom::TrafficCounter::New(
+        ConvertToTrafficCounterSourceEnum(source->GetString()), rx_bytes,
+        tx_bytes));
+  }
+  std::move(callback).Run(std::move(counters));
 }
 
 // NetworkStateHandlerObserver

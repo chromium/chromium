@@ -907,6 +907,32 @@ struct AlwaysOnVpnProperties {
   string service_guid;
 };
 
+// Source of the traffic. These sources are kept in sync with
+// third_party/cros_system_api/dbus/shill/dbus-constants.h.
+enum TrafficCounterSource {
+  kUnknown,
+  kChrome,
+  kUser,
+  kArc,
+  kCrosvm,
+  kPluginvm,
+  kUpdateEngine,
+  kVpn,
+  kSystem,
+};
+
+// Information about a traffic counter for a single source.
+struct TrafficCounter {
+  // Source of traffic.
+  TrafficCounterSource source;
+  // Corresponds to the number of bytes received by |source| since the last
+  // reset.
+  uint64 rx_bytes;
+  // Corresponds to the number of bytes transmitted by |source| since the last
+  // reset.
+  uint64 tx_bytes;
+};
+
 // Interface for fetching and setting network configuration properties, e.g.
 // from Settings WebUI or the SystemTray.
 interface CrosNetworkConfig {
@@ -1023,6 +1049,10 @@ interface CrosNetworkConfig {
   // Sets the always-on VPN mode and service with |properties.mode| and
   // |properties.service_guid|. The service GUID must match a VPN service.
   SetAlwaysOnVpn(AlwaysOnVpnProperties properties);
+
+  // Requests traffic counters for a service with ID |guid|.
+  RequestTrafficCounters(string guid) =>
+    (array<TrafficCounter> traffic_counters);
 };
 
 interface CrosNetworkConfigObserver {
