@@ -61,4 +61,4 @@ There are 2 main modules:
 
 ## Contributing
 
-The BiDi commands are processed in the `src/bidiMapper/bidiCommandsProcessor.js`. To add a new command, add it to `processCommand`, write and call processor for it.
+The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a new command, add it to `_processCommand`, write and call processor for it.
