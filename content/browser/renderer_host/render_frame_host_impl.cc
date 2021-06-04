@@ -156,6 +156,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/debug_utils.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
@@ -843,6 +844,19 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   }
 #endif
 
+  // TODO(https://crbug.com/888079): Remove the DwoC below once we are sure that
+  // the `browser_side_origin` is always the same as the `renderer_side_origin`.
+  if (browser_side_origin != renderer_side_origin) {
+    NavigationRequest::ScopedCrashKeys navigation_request_crash_keys(
+        *navigation_request);
+    SCOPED_CRASH_KEY_STRING256("", "browser_side_origin",
+                               browser_side_origin.GetDebugString());
+    SCOPED_CRASH_KEY_STRING256("", "renderer_side_origin",
+                               renderer_side_origin.GetDebugString());
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugBrowserVsRendererOriginToCommit);
+    base::debug::DumpWithoutCrashing();
+  }
   DCHECK_EQ(browser_side_origin, renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
 }

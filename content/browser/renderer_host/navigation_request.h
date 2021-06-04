@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/debug/crash_logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "url/origin.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -891,6 +893,24 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void RenderFallbackContentForObjectTag();
+
+  // Helper for logging crash keys related to a NavigationRequest (e.g.
+  // "navigation_request_url" and "navigation_request_initiator").  The crash
+  // keys will be logged if a ScopedCrashKeys instance exists when a crash or
+  // DumpWithoutCrashing happens.
+  class ScopedCrashKeys {
+   public:
+    explicit ScopedCrashKeys(NavigationRequest& navigation_request);
+    ~ScopedCrashKeys();
+
+    // No copy constructor and no copy assignment operator.
+    ScopedCrashKeys(const ScopedCrashKeys&) = delete;
+    ScopedCrashKeys& operator=(const ScopedCrashKeys&) = delete;
+
+   private:
+    url::debug::ScopedOriginCrashKey initiator_origin_;
+    base::debug::ScopedCrashKeyString url_;
+  };
 
  private:
   friend class NavigationRequestTest;

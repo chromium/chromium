@@ -33,9 +33,13 @@ enum class DebugScenario {
   // Metrics and the bfcache situations do not match.
   kDebugBackForwardCacheMetricsMismatch = 3,
 
+  // Detected a mismatch between the origin to commit as calculated on 1) the
+  // browser-side VS 2) the renderer-side.
+  kDebugBrowserVsRendererOriginToCommit = 4,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugBackForwardCacheMetricsMismatch
+  kMaxValue = kDebugBrowserVsRendererOriginToCommit
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be

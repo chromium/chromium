@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -607,28 +606,6 @@ base::debug::CrashKeyString* GetNavigationRequestInitiatorCrashKey() {
   return crash_key;
 }
 
-class ScopedNavigationRequestCrashKeys {
- public:
-  explicit ScopedNavigationRequestCrashKeys(
-      NavigationRequest* navigation_request)
-      : initiator_origin_(
-            GetNavigationRequestInitiatorCrashKey(),
-            base::OptionalOrNullptr(navigation_request->GetInitiatorOrigin())),
-        url_(GetNavigationRequestUrlCrashKey(),
-             navigation_request->GetURL().possibly_invalid_spec()) {}
-  ~ScopedNavigationRequestCrashKeys() = default;
-
-  // No copy constructor and no copy assignment operator.
-  ScopedNavigationRequestCrashKeys(const ScopedNavigationRequestCrashKeys&) =
-      delete;
-  ScopedNavigationRequestCrashKeys& operator=(
-      const ScopedNavigationRequestCrashKeys&) = delete;
-
- private:
-  url::debug::ScopedOriginCrashKey initiator_origin_;
-  base::debug::ScopedCrashKeyString url_;
-};
-
 // Start a new nested async event with the given name.
 void EnterChildTraceEvent(const char* name, NavigationRequest* request) {
   // Tracing no longer outputs the end event name, so we can simply pass an
@@ -1212,7 +1189,7 @@ NavigationRequest::NavigationRequest(
   // Navigations can't be a replacement and a reload at the same time.
   DCHECK(!common_params_->should_replace_current_entry ||
          !NavigationTypeUtils::IsReload(common_params_->navigation_type));
-  ScopedNavigationRequestCrashKeys crash_keys(this);
+  ScopedCrashKeys crash_keys(*this);
 
   // There should be no navigations to about:newtab, about:version or other
   // similar URLs (see https://crbug.com/1145717):
@@ -1518,7 +1495,7 @@ void NavigationRequest::BeginNavigation() {
   EnterChildTraceEvent("BeginNavigation", this);
   DCHECK(!loader_);
   DCHECK(!render_frame_host_);
-  ScopedNavigationRequestCrashKeys crash_keys(this);
+  ScopedCrashKeys crash_keys(*this);
 
   SetState(WILL_START_NAVIGATION);
 
@@ -2038,7 +2015,7 @@ void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
     const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::URLResponseHeadPtr response_head) {
-  ScopedNavigationRequestCrashKeys crash_keys(this);
+  ScopedCrashKeys crash_keys(*this);
 
   // Sanity check - this can only be set at commit time.
   DCHECK(!auth_challenge_info_);
@@ -2564,7 +2541,7 @@ void NavigationRequest::OnResponseStarted(
     net::NetworkIsolationKey network_isolation_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
-  ScopedNavigationRequestCrashKeys crash_keys(this);
+  ScopedCrashKeys crash_keys(*this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
   // anymore from now.
@@ -3036,7 +3013,7 @@ void NavigationRequest::OnRequestFailedInternal(
   CheckStateTransition(WILL_FAIL_REQUEST);
   DCHECK(!(status.error_code == net::ERR_ABORTED &&
            error_page_content.has_value()));
-  ScopedNavigationRequestCrashKeys crash_keys(this);
+  ScopedCrashKeys crash_keys(*this);
 
   // The request failed, the |loader_| must not call the NavigationRequest
   // anymore from now while the error page is being loaded.
@@ -6340,5 +6317,15 @@ void NavigationRequest::SendDeferredConsoleMessages() {
   }
   console_messages_.clear();
 }
+
+NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
+    NavigationRequest& navigation_request)
+    : initiator_origin_(
+          GetNavigationRequestInitiatorCrashKey(),
+          base::OptionalOrNullptr(navigation_request.GetInitiatorOrigin())),
+      url_(GetNavigationRequestUrlCrashKey(),
+           navigation_request.GetURL().possibly_invalid_spec()) {}
+
+NavigationRequest::ScopedCrashKeys::~ScopedCrashKeys() = default;
 
 }  // namespace content
