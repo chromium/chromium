@@ -1148,6 +1148,11 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-1mbu-compile-fyi-rel",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
     properties = {
         "bot_update_experiments": [
             "no_sync",
