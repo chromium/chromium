@@ -23,7 +23,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1881,13 +1883,12 @@ TEST_F(LayerWithRealCompositorTest, ModifyHierarchy) {
 }
 
 // Checks that basic background blur is working.
-// TODO(crbug.com/1174372) Flaky on Windows
-#if defined(OS_WIN)
-#define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
-#else
-#define MAYBE_BackgroundBlur BackgroundBlur
+TEST_F(LayerWithRealCompositorTest, BackgroundBlur) {
+#if defined(THREAD_SANITIZER)
+  const base::test::ScopedRunLoopTimeout increased_run_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
 #endif
-TEST_F(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
+
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(200, 200),
