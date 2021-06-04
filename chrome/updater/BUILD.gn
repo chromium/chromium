@@ -57,6 +57,8 @@ if (is_win || is_mac) {
       "app/app_uninstall.h",
       "app/app_update.cc",
       "app/app_update.h",
+      "app/app_utils.cc",
+      "app/app_utils.h",
       "app/app_wake.cc",
       "app/app_wake.h",
       "check_for_updates_task.cc",

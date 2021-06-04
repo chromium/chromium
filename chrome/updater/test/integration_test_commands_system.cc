@@ -99,6 +99,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("app_id", app_id), Param("path", path.MaybeAsASCII())});
   }
 
+  void SetServerStarts(int value) const override {
+    RunCommand("set_first_registration_counter",
+               {Param("value", base::NumberToString(value))});
+  }
+
   void ExpectAppUnregisteredExistenceCheckerPath(
       const std::string& app_id) const override {
     RunCommand("expect_app_unregistered_existence_checker_path",

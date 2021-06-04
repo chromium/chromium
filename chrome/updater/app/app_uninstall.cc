@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -80,11 +81,10 @@ void AppUninstall::FirstTaskRun() {
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     CHECK(global_prefs_);
-    const std::vector<std::string> registered_apps =
-        base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService())
-            ->GetAppIds();
-    if (registered_apps.size() == 1 &&
-        base::Contains(registered_apps, kUpdaterAppId)) {
+    if (ShouldUninstall(
+            base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService())
+                ->GetAppIds(),
+            global_prefs_->CountServerStarts())) {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&Uninstall, updater_scope()),

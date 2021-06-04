@@ -219,7 +219,9 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto app_ids = persisted_data_->GetAppIds();
-  DCHECK(base::Contains(app_ids, kUpdaterAppId));
+  // TODO(crbug.com/1216598): Fix updater server crashing if RunPeriodicTasks
+  // happened without an updater registration
+  // DCHECK(base::Contains(app_ids, kUpdaterAppId));
 
   update_client_->Update(
       app_ids, base::BindOnce(&GetComponents, persisted_data_),

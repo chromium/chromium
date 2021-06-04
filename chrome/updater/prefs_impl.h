@@ -49,6 +49,7 @@ class UpdaterPrefsImpl : public LocalPrefs, public GlobalPrefs {
   void SetActiveVersion(std::string value) override;
   bool GetSwapping() const override;
   void SetSwapping(bool value) override;
+  int CountServerStarts() override;
 
  private:
   std::unique_ptr<ScopedPrefsLock> lock_;

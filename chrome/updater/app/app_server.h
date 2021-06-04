@@ -77,6 +77,9 @@ class AppServer : public App {
   // If true, this version of the updater should uninstall itself during
   // shutdown.
   bool uninstall_self_ = false;
+
+  // The number of times the server has started, as read from global prefs.
+  int server_starts_ = 0;
 };
 
 scoped_refptr<App> AppServerInstance();

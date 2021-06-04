@@ -225,6 +225,10 @@ constexpr int kErrorFailedToMoveDownloadedFile = 5;
 constexpr double kInitialDelay = 60;
 constexpr int kServerKeepAliveSeconds = 10;
 
+// The maximum number of server starts before the updater uninstalls itself
+// while waiting for the first app registration.
+constexpr int kMaxServerStartsBeforeFirstReg = 24;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_

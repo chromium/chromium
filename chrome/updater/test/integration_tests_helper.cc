@@ -174,6 +174,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
     {"setup_fake_updater_lower_version",
      WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+    {"set_first_registration_counter",
+     WithSwitch("value", Wrap(&SetServerStarts))},
     {"uninstall", WithSystemScope(Wrap(&Uninstall))},
   };
 

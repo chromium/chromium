@@ -168,6 +168,14 @@ void SetExistenceCheckerPath(const std::string& app_id,
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
+void SetServerStarts(int value) {
+  std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+  for (int i = 0; i <= value; ++i) {
+    global_prefs->CountServerStarts();
+  }
+  PrefsCommitPendingWrites(global_prefs->GetPrefService());
+}
+
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   auto persisted_data =

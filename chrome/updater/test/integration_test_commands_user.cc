@@ -82,6 +82,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetExistenceCheckerPath(app_id, path);
   }
 
+  void SetServerStarts(int value) const override {
+    updater::test::SetServerStarts(value);
+  }
+
   void ExpectAppUnregisteredExistenceCheckerPath(
       const std::string& app_id) const override {
     updater::test::ExpectAppUnregisteredExistenceCheckerPath(app_id);

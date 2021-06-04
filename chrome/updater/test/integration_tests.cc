@@ -124,6 +124,8 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetExistenceCheckerPath(app_id, path);
   }
 
+  void SetServerStarts(int value) { test_commands_->SetServerStarts(value); }
+
   void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
     test_commands_->ExpectAppUnregisteredExistenceCheckerPath(app_id);
   }
@@ -257,6 +259,15 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   ExpectAppUnregisteredExistenceCheckerPath(kTestAppId);
 
   Uninstall();
+}
+
+TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
+  Install();
+  ExpectInstalled();
+  SetServerStarts(24);
+  RunWake(0);
+  SleepFor(13);
+  ExpectClean();
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {

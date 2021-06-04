@@ -16,6 +16,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/version.h"
+#include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
@@ -90,6 +91,8 @@ base::OnceClosure AppServer::ModeCheck() {
     return base::BindOnce(&AppServer::ActiveDutyInternal, this,
                           base::MakeRefCounted<UpdateServiceInternalImpl>());
   }
+
+  server_starts_ = global_prefs->CountServerStarts();
   config_ = base::MakeRefCounted<Configurator>(std::move(global_prefs));
   return base::BindOnce(&AppServer::ActiveDuty, this,
                         base::MakeRefCounted<UpdateServiceImpl>(config_));
@@ -110,10 +113,10 @@ void AppServer::MaybeUninstall() {
   if (!config_)
     return;
 
-  auto persisted_data =
-      base::MakeRefCounted<PersistedData>(config_->GetPrefService());
-  const std::vector<std::string> app_ids = persisted_data->GetAppIds();
-  if (app_ids.size() == 1 && base::Contains(app_ids, kUpdaterAppId)) {
+  if (ShouldUninstall(
+          base::MakeRefCounted<PersistedData>(config_->GetPrefService())
+              ->GetAppIds(),
+          server_starts_)) {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);

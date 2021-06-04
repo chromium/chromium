@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -28,6 +29,7 @@ namespace {
 const char kPrefQualified[] = "qualified";
 const char kPrefSwapping[] = "swapping";
 const char kPrefActiveVersion[] = "active_version";
+const char kPrefServerStarts[] = "server_starts";
 
 }  // namespace
 
@@ -67,6 +69,13 @@ void UpdaterPrefsImpl::SetSwapping(bool value) {
   prefs_->SetBoolean(kPrefSwapping, value);
 }
 
+int UpdaterPrefsImpl::CountServerStarts() {
+  int starts = prefs_->GetInteger(kPrefServerStarts);
+  if (starts <= kMaxServerStartsBeforeFirstReg)
+    prefs_->SetInteger(kPrefServerStarts, ++starts);
+  return starts;
+}
+
 std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
   std::unique_ptr<ScopedPrefsLock> lock =
       AcquireGlobalPrefsLock(base::TimeDelta::FromMinutes(2));
@@ -88,6 +97,7 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
   pref_registry->RegisterBooleanPref(kPrefSwapping, false);
   pref_registry->RegisterStringPref(kPrefActiveVersion, "0");
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
+  pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
 
   return std::make_unique<UpdaterPrefsImpl>(
       std::move(lock), pref_service_factory.Create(pref_registry));

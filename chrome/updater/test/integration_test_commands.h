@@ -38,6 +38,7 @@ class IntegrationTestCommands
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
+  virtual void SetServerStarts(int value) const = 0;
   virtual void ExpectAppUnregisteredExistenceCheckerPath(
       const std::string& app_id) const = 0;
   virtual void RunWake(int exit_code) const = 0;

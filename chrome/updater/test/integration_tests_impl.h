@@ -118,6 +118,8 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
 void SetExistenceCheckerPath(const std::string& app_id,
                              const base::FilePath& path);
 
+void SetServerStarts(int value);
+
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
 
 void RegisterApp(const std::string& app_id);

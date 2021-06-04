@@ -41,6 +41,14 @@ class GlobalPrefs : public UpdaterPrefs {
   virtual void SetActiveVersion(std::string value) = 0;
   virtual bool GetSwapping() const = 0;
   virtual void SetSwapping(bool value) = 0;
+
+  // The server starts counter is a global pref value that counts the number of
+  // active server starts for the updater. If there are no apps registered by
+  // the time that this counter exceeds the max number of starts before
+  // registration, then the updater will uninstall itself as it is seemingly not
+  // being used. The purpose of this value is to prevent the updater from
+  // lingering forever after install if no registration takes place.
+  virtual int CountServerStarts() = 0;
 };
 
 // Open the global prefs. These prefs are protected by a mutex, and shared by
