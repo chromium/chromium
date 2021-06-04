@@ -552,6 +552,7 @@ void ExistingUserController::Observe(
 // ExistingUserController, private:
 
 ExistingUserController::~ExistingUserController() {
+  CHECK(UserSessionManager::GetInstance());
   UserSessionManager::GetInstance()->DelegateDeleted(this);
 }
 
