@@ -43,6 +43,8 @@
 
 namespace blink {
 
+static const int kMaxExpressionDepth = 100;
+
 class CalculationExpressionNode;
 class CSSNumericLiteralValue;
 

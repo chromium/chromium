@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -210,6 +211,85 @@ TEST(CSSCalculationValue, AddToLengthUnitValues) {
       expectation,
       SetLengthArray(
           actual, "calc((1 * 2) * (5px + 20em / 2) - 80% / (3 - 1) + 5px)")));
+}
+
+TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
+  enum Kind {
+    calc,
+    min,
+    max,
+    clamp,
+  };
+
+  // Ref: https://bugs.chromium.org/p/chromium/issues/detail?id=1211283
+  const struct TestCase {
+    const Kind kind;
+    const int nest_num;
+    const bool expected;
+  } test_cases[] = {
+      {calc, 1, true},
+      {calc, 10, true},
+      {calc, kMaxExpressionDepth - 1, true},
+      {calc, kMaxExpressionDepth, false},
+      {calc, kMaxExpressionDepth + 1, false},
+      {min, 1, true},
+      {min, 10, true},
+      {min, kMaxExpressionDepth - 1, true},
+      {min, kMaxExpressionDepth, false},
+      {min, kMaxExpressionDepth + 1, false},
+      {max, 1, true},
+      {max, 10, true},
+      {max, kMaxExpressionDepth - 1, true},
+      {max, kMaxExpressionDepth, false},
+      {max, kMaxExpressionDepth + 1, false},
+      {clamp, 1, true},
+      {clamp, 10, true},
+      {clamp, kMaxExpressionDepth - 1, true},
+      {clamp, kMaxExpressionDepth, false},
+      {clamp, kMaxExpressionDepth + 1, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    std::stringstream ss;
+
+    // Make nested expression as follows:
+    // calc(1px + calc(1px + calc(1px)))
+    // min(1px, 1px + min(1px, 1px + min(1px, 1px)))
+    // max(1px, 1px + max(1px, 1px + max(1px, 1px)))
+    // clamp(1px, 1px, 1px + clamp(1px, 1px, 1px + clamp(1px, 1px, 1px)))
+    for (int i = 0; i < test_case.nest_num; i++) {
+      if (i)
+        ss << " + ";
+      switch (test_case.kind) {
+        case calc:
+          ss << "calc(1px";
+          break;
+        case min:
+          ss << "min(1px, 1px";
+          break;
+        case max:
+          ss << "max(1px, 1px";
+          break;
+        case clamp:
+          ss << "clamp(1px, 1px, 1px";
+          break;
+      }
+    }
+    for (int i = 0; i < test_case.nest_num; i++) {
+      ss << ")";
+    }
+
+    CSSTokenizer tokenizer(String(ss.str().c_str()));
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseCalc(range);
+
+    if (test_case.expected) {
+      EXPECT_TRUE(res);
+    } else {
+      EXPECT_FALSE(res);
+    }
+  }
 }
 
 }  // anonymous namespace

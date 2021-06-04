@@ -39,8 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-static const int maxExpressionDepth = 100;
-
 enum ParseState { OK, TooDeep, NoMoreTokens };
 
 namespace blink {
@@ -1055,15 +1053,6 @@ bool CSSMathExpressionVariadicOperation::InvolvesPercentageComparisons() const {
 
 // ------ End of CSSMathExpressionVariadicOperation member functions
 
-static ParseState CheckDepthAndIndex(int* depth, CSSParserTokenRange tokens) {
-  (*depth)++;
-  if (tokens.AtEnd())
-    return NoMoreTokens;
-  if (*depth > maxExpressionDepth)
-    return TooDeep;
-  return OK;
-}
-
 class CSSMathExpressionNodeParser {
   STACK_ALLOCATED();
 
@@ -1082,7 +1071,7 @@ class CSSMathExpressionNodeParser {
                                        CSSMathOperator op,
                                        int depth) {
     DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax);
-    if (CheckDepthAndIndex(&depth, tokens) != OK)
+    if (tokens.AtEnd())
       return nullptr;
 
     CSSMathExpressionVariadicOperation::Operands operands;
@@ -1108,7 +1097,7 @@ class CSSMathExpressionNodeParser {
   }
 
   CSSMathExpressionNode* ParseClamp(CSSParserTokenRange tokens, int depth) {
-    if (CheckDepthAndIndex(&depth, tokens) != OK)
+    if (tokens.AtEnd())
       return nullptr;
 
     CSSMathExpressionNode* min_operand = ParseValueExpression(tokens, depth);
@@ -1184,7 +1173,7 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenRange& tokens,
                                         int depth) {
-    if (CheckDepthAndIndex(&depth, tokens) != OK)
+    if (tokens.AtEnd())
       return nullptr;
 
     if (tokens.Peek().GetType() == kLeftParenthesisToken ||
@@ -1222,7 +1211,7 @@ class CSSMathExpressionNodeParser {
   CSSMathExpressionNode* ParseValueMultiplicativeExpression(
       CSSParserTokenRange& tokens,
       int depth) {
-    if (CheckDepthAndIndex(&depth, tokens) != OK)
+    if (tokens.AtEnd())
       return nullptr;
 
     CSSMathExpressionNode* result = ParseValueTerm(tokens, depth);
@@ -1253,7 +1242,7 @@ class CSSMathExpressionNodeParser {
   CSSMathExpressionNode* ParseAdditiveValueExpression(
       CSSParserTokenRange& tokens,
       int depth) {
-    if (CheckDepthAndIndex(&depth, tokens) != OK)
+    if (tokens.AtEnd())
       return nullptr;
 
     CSSMathExpressionNode* result =
@@ -1290,6 +1279,8 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseValueExpression(CSSParserTokenRange& tokens,
                                               int depth) {
+    if (++depth > kMaxExpressionDepth)
+      return nullptr;
     return ParseAdditiveValueExpression(tokens, depth);
   }
 };
