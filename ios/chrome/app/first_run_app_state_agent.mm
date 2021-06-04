@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
@@ -48,7 +50,8 @@ enum class LocationPermissionsUI {
 }
 
 @interface FirstRunAppAgent () <AppStateObserver,
-                                PolicyWatcherBrowserAgentObserving>
+                                PolicyWatcherBrowserAgentObserving,
+                                FirstRunCoordinatorDelegate>
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
@@ -58,6 +61,9 @@ enum class LocationPermissionsUI {
 
 // The scene that is chosen for presenting the FRE on.
 @property(nonatomic, strong) SceneState* presentingSceneState;
+
+// Coordinator of the new First Run UI.
+@property(nonatomic, strong) FirstRunCoordinator* firstRunCoordinator;
 
 @end
 
@@ -175,7 +181,7 @@ enum class LocationPermissionsUI {
   [self setUpPolicyWatcher];
 
   if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-    [self.presentingSceneState.controller showFirstRunUI];
+    [self showNewFirstRunUI];
   } else {
     [self showLegacyFirstRunUI];
   }
@@ -230,7 +236,31 @@ enum class LocationPermissionsUI {
                  completion:nil];
 }
 
+// Shows the new first run UI.
+- (void)showNewFirstRunUI {
+  DCHECK(!_firstRunUIBlocker);
+  _firstRunUIBlocker =
+      std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
+
+  FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
+
+  self.firstRunCoordinator = [[FirstRunCoordinator alloc]
+      initWithBaseViewController:self.presentingSceneState.interfaceProvider
+                                     .mainInterface.bvc
+                         browser:self.presentingSceneState.interfaceProvider
+                                     .mainInterface.browser
+                   syncPresenter:self.presentingSceneState.interfaceProvider
+                                     .mainInterface.bvc
+                  screenProvider:provider];
+  self.firstRunCoordinator.delegate = self;
+  self.presentingSceneState.presentingFirstRunUI = YES;
+  [self.firstRunCoordinator start];
+}
+
 - (void)handleFirstRunUIWillFinish {
+  if (![self ignoreFirstRunStageForTesting]) {
+    DCHECK(self.appState.initStage == InitStageFirstRun);
+  }
   DCHECK(self.presentingSceneState.presentingFirstRunUI);
   _firstRunUIBlocker.reset();
   self.presentingSceneState.presentingFirstRunUI = NO;
@@ -280,9 +310,39 @@ enum class LocationPermissionsUI {
   }
 }
 
-// TODO(crbug.com/1210246): Remove this hook once the chrome test fixture is
-// adapted to startup testing.
-//
+#pragma mark - FirstRunCoordinatorDelegate
+
+- (void)willFinishPresentingScreens {
+  [self handleFirstRunUIWillFinish];
+
+  [self.firstRunCoordinator stop];
+}
+
+- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
+    (BOOL)actionsTriggered {
+  // Triggers all the events after the first run is dismissed. Note that the
+  // below logic should be removed after the new first run UI supports location
+  // permission page.
+  [self maybePromptLocationWithSystemAlert];
+
+  // Only show the location permission if no additional actions were taken.
+  if (!actionsTriggered &&
+      location_permissions_field_trial::IsInFirstRunModalGroup()) {
+    id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
+        self.presentingSceneState.interfaceProvider.mainInterface.browser
+            ->GetCommandDispatcher());
+    [handler showLocationPermissionsFromViewController:self.presentingSceneState
+                                                           .interfaceProvider
+                                                           .mainInterface.bvc];
+  }
+  if (![self ignoreFirstRunStageForTesting]) {
+    [self.appState queueTransitionToNextInitStage];
+  }
+}
+
+#pragma mark - Test hooks
+
+// TODO(crbug.com/1178821): Move this to the FRE agent.
 // Determines whether the First Run stage has to be ignored because of
 // testing. When testing with first_run_egtest.mm, the First Run UI is
 // manually triggered after the browser is fully initialized, in which

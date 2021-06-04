@@ -44,10 +44,6 @@
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13));
 
-// TODO(crbug.com/1210256): Remove this once it is migrated to the agent.
-// Shows the new first run UI.
-- (void)showFirstRunUI;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_SCENE_CONTROLLER_H_

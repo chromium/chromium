@@ -84,9 +84,6 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
@@ -185,7 +182,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
-                               FirstRunCoordinatorDelegate,
                                LocationPermissionsCommands,
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
@@ -268,15 +264,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @property(nonatomic, weak)
     WelcomeToChromeViewController* welcomeToChromeController;
 
-// Coordinator of the new first run UI.
-@property(nonatomic, strong) FirstRunCoordinator* firstRunCoordinator;
-
 @end
 
-@implementation SceneController {
-  // UI blocker used while FRE is shown in the scene controlled by this object.
-  std::unique_ptr<ScopedUIBlocker> _firstRunUIBlocker;
-}
+@implementation SceneController
+
 @synthesize startupParameters = _startupParameters;
 @synthesize startupParametersAreBeingHandled =
     _startupParametersAreBeingHandled;
@@ -922,10 +913,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   [self.mainCoordinator setActivePage:[self activePage]];
 
-  // Decide if the First Run UI needs to run.
-  const bool firstRun = ShouldPresentFirstRunExperience();
-
-  if (!firstRun) {
+  if (!self.sceneState.appState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
   }
 
@@ -1167,28 +1155,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 #pragma mark - First Run
 
-// Shows the first run UI.
-- (void)showFirstRunUI {
-  DCHECK(!_firstRunUIBlocker);
-  _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
-
-  FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
-
-  self.firstRunCoordinator = [[FirstRunCoordinator alloc]
-      initWithBaseViewController:self.mainInterface.bvc
-                         browser:self.mainInterface.browser
-                   syncPresenter:self.mainInterface.bvc
-                  screenProvider:provider];
-  self.firstRunCoordinator.delegate = self;
-  self.sceneState.presentingFirstRunUI = YES;
-  [self.firstRunCoordinator start];
-}
-
 // Sets a LocalState pref marking the TOS EULA as accepted.
 // If this function is called, the EULA flag is not set but the FRE was not
 // displayed.
 // This can only happen if the EULA flag has not been set correctly on a
-// previous
+// previous session.
 - (void)reconcileEulaAsAccepted {
   static dispatch_once_t once_token = 0;
   dispatch_once(&once_token, ^{
@@ -1200,19 +1171,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       base::UmaHistogramBoolean("IOS.ReconcileEULAPref", true);
     }
   });
-}
-
-- (void)handleFirstRunUIWillFinish {
-  if (![self ignoreFirstRunStageForTesting]) {
-    DCHECK(self.sceneState.appState.initStage == InitStageFirstRun);
-  }
-  DCHECK(self.sceneState.presentingFirstRunUI);
-  _firstRunUIBlocker.reset();
-  self.sceneState.presentingFirstRunUI = NO;
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:kChromeFirstRunUIWillFinishNotification
-              object:nil];
 }
 
 // Presents the sign-in upgrade promo if is relevant and possible.
@@ -3022,60 +2980,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.incognitoInterface.bvc;
 }
 
-#pragma mark - FirstRunCoordinatorDelegate
-
-- (void)willFinishPresentingScreens {
-  // Reset |sceneState.presentingFirstRunUI| flag.
-  [self handleFirstRunUIWillFinish];
-
-  [self.firstRunCoordinator stop];
-}
-
-- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
-    (BOOL)actionsTriggered {
-  // Triggers all the events after the first run is dismissed. Note that the
-  // below logic should be removed after the new first run UI supports location
-  // permission page.
-  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
-      !location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    [self logLocationPermissionsExperimentForGroupShown:
-              LocationPermissionsUI::kFirstRunPromptNotShown];
-    // As soon as First Run has finished, give OmniboxGeolocationController an
-    // opportunity to present the iOS system location alert.
-    [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
-  } else if (location_permissions_field_trial::
-                 IsInRemoveFirstRunPromptGroup()) {
-    // If in RemoveFirstRunPrompt group, the system prompt will be delayed until
-    // the site requests location information.
-    [[OmniboxGeolocationController sharedInstance]
-        systemPromptSkippedForNewUser];
-  }
-
-  // Only show the location permission if no additional actions were taken.
-  if (!actionsTriggered &&
-      location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
-        self.mainInterface.browser->GetCommandDispatcher());
-    [handler showLocationPermissionsFromViewController:self.mainInterface.bvc];
-  }
-
-  if (![self ignoreFirstRunStageForTesting]) {
-    [self.sceneState.appState queueTransitionToNextInitStage];
-  }
-}
-
 #pragma mark - Test hooks
-
-// TODO(crbug.com/1178821): Move this to the FRE agent.
-// Determines whether the First Run stage has to be ignored because of
-// testing. When testing with first_run_egtest.mm, the First Run UI is
-// manually triggered after the browser is fully initialized, in which
-// case the code that assumes that the app is in the First Run stage when
-// showing the FRE has to be ignored to avoid unexepted failures (e.g., DCHECKs,
-// unexpected init stage transition).
-- (BOOL)ignoreFirstRunStageForTesting {
-  return tests_hook::DisableFirstRun();
-}
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
 
