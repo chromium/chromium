@@ -2425,10 +2425,49 @@ IN_PROC_BROWSER_TEST_F(
                                            InsecureLocalURL("/image.jpg"))));
 }
 
+// This test verifies that even when the right feature is enabled, requests:
+//  - from a non-secure context in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  are not blocked.
+//
+// TODO(https://crbug.com/1124340): Decide whether this is bad and either change
+// this test or delete this todo.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromInsecurePublicToCachedLocalIsBlocked) {
+  GURL cached_url = SecureLocalURL(kCacheablePath);
+
+  // Cache the resource first, by fetching it from a document in the same IP
+  // address space.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+
+  // Now navigate to a document in the `public` address space belonging to the
+  // same site as the previous document (this will use the same cache key).
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ResourceLoadObserver observer(shell());
+
+  // Check that the page can still load the subresource. This fetch would fail
+  // were the subresource not cached.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+
+  observer.WaitForResourceCompletion(cached_url);
+
+  // And that the resource was loaded from the cache.
+  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(cached_url);
+  ASSERT_TRUE(info);
+  ASSERT_TRUE(*info);
+  EXPECT_TRUE((*info)->was_cached);
+}
+
 // This test verifies that even with the blocking feature disabled, an insecure
 // page in the `local` address space cannot fetch a `file:` URL.
 //
-// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+// This is relevant to Private Network Access, since `file:` URLs are considered
+// to be in the `local` IP address space.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
                        InsecurePageCannotRequestFile) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
@@ -2441,7 +2480,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 // This test verifies that even with the blocking feature disabled, a secure
 // page in the `local` address space cannot fetch a `file:` URL.
 //
-// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+// This is relevant to Private Network Access, since `file:` URLs are considered
+// to be in the `local` IP address space.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
                        SecurePageCannotRequestFile) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
