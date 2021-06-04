@@ -130,6 +130,8 @@ class SharesheetService : public KeyedService {
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
   void RecordShareActionMetrics(const std::u16string& target_name);
+  // Makes |intent| related UMA recordings.
+  void RecordShareDataMetrics(const apps::mojom::IntentPtr& intent);
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;

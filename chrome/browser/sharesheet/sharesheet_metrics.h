@@ -57,6 +57,13 @@ class SharesheetMetrics {
   static void RecordSharesheetFormFactor(const FormFactor form_factor);
 
   static void RecordSharesheetLaunchSource(const LaunchSource source);
+
+  static void RecordSharesheetFilesSharedCount(const int file_count);
+  // Records true if the data being shared is a drive folder. False otherwise.
+  static void RecordSharesheetIsDriveFolder(const bool is_drive_folder);
+  // Records true if the image preview was pressed in the current invocation.
+  // False otherwise.
+  static void RecordSharesheetImagePreviewPressed(const bool is_pressed);
 };
 
 }  // namespace sharesheet

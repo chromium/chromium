@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
@@ -149,7 +150,11 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
   SharesheetImagePreview(const SharesheetImagePreview&) = delete;
   SharesheetImagePreview& operator=(const SharesheetImagePreview&) = delete;
-  ~SharesheetImagePreview() override = default;
+
+  ~SharesheetImagePreview() override {
+    ::sharesheet::SharesheetMetrics::RecordSharesheetImagePreviewPressed(
+        was_pressed_);
+  }
 
   views::ImageView* GetImageViewAt(size_t index) {
     if (index >= image_views_.size()) {
@@ -168,6 +173,17 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   }
 
  private:
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    was_pressed_ = true;
+    return false;
+  }
+
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    if (event->type() == ui::ET_GESTURE_TAP)
+      was_pressed_ = true;
+  }
+
   void AddRowToImageContainerView() {
     auto* row = AddChildView(std::make_unique<views::View>());
     row->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -204,6 +220,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   }
 
   std::vector<views::ImageView*> image_views_;
+
+  // Used for recording UMA to indicate whether or not a user tried to interact
+  // with the image preview.
+  bool was_pressed_ = false;
 };
 
 BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview, views::View)
