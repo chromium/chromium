@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -181,6 +182,30 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
       }));
   run_loop.Run();
   EXPECT_FALSE(provider->registrar().IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, PrefsRemovedAfterUninstall) {
+  const GURL app_url = GetSecureAppURL();
+  const url::Origin origin = url::Origin::Create(app_url);
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->is_storage_isolated = true;
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  {
+    const std::string* storage_isolation_key =
+        GetStorageIsolationKey(profile()->GetPrefs(), origin);
+    EXPECT_EQ(*storage_isolation_key, app_id);
+  }
+
+  UninstallWebApp(app_id);
+
+  {
+    const std::string* storage_isolation_key =
+        GetStorageIsolationKey(profile()->GetPrefs(), origin);
+    EXPECT_EQ(storage_isolation_key, nullptr);
+  }
 }
 
 }  // namespace web_app

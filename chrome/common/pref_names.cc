@@ -1979,6 +1979,10 @@ const char kWebAppsUninstalledDefaultChromeApps[] =
 // outlive the app installation and uninstallation.
 const char kWebAppsPreferences[] = "web_apps.web_app_ids";
 
+// Dictionary that maps the origin of a web app to other preferences related to
+// its isolation requirements.
+const char kWebAppsIsolationState[] = "web_apps.isolation_state";
+
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 // Dictionary that maps origins to web apps that can act as URL handlers.

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -480,6 +481,13 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
     OsHooksResults os_hooks_info) {
+  WebAppRegistrar* web_app_registrar = registrar().AsWebAppRegistrar();
+  DCHECK(web_app_registrar);
+  const WebApp* web_app = web_app_registrar->GetAppById(app_id);
+  DCHECK(web_app);
+  RemoveAppIsolationState(profile_->GetPrefs(),
+                          url::Origin::Create(web_app->scope()));
+
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);
 
@@ -569,6 +577,11 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
     std::move(commit_callback).Run(success);
     return;
   }
+
+  // Save the isolation state to prefs. On browser startup we may need access
+  // to the isolation state before WebAppDatabase has finished loading, so we
+  // duplicate this state in a pref to prevent blocking startup.
+  RecordOrRemoveAppIsolationState(profile_->GetPrefs(), *web_app);
 
   AppId app_id = web_app->app_id();
 
