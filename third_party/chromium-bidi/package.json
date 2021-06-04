@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "bidi-server": "npm run build && node ./src/.build/server.js",
     "build": "npm run prettier && npm run clean && tsc -b src/tsconfig.json",
-    "clean": "rm -rf ./src/.build",
+    "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
   },
   "author": "",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/ws": "^7.4.4",
-    "prettier": "2.3.0"
+    "prettier": "2.3.0",
+    "rimraf": "^3.0.2"
   }
 }
