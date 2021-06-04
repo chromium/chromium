@@ -2027,20 +2027,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
       is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
-#if DCHECK_IS_ON()
-  // Ensure that display-locked text is pruned from the tree. This means that
-  // they will be missed in the virtual buffer; therefore, it may be a rule
-  // subject to change. Note that changing the rule would potentially cause a
-  // lot of display-locked whitespace to be exposed.
-  if (is_ignored && RoleValue() == ax::mojom::blink::Role::kStaticText &&
-      GetNode() &&
-      DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
-    DCHECK(!cached_is_ignored_but_included_in_tree_)
-        << "Display locked text should not be included in the tree (subject to "
-           "future rule change): "
-        << ToString(true, true);
-  }
-#endif
   bool included_in_tree_changed = false;
 
   // If the child's "included in tree" state changes, we will be notifying the
