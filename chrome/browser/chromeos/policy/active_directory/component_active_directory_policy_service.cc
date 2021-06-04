@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/component_active_directory_policy_service.h"
+#include "chrome/browser/chromeos/policy/active_directory/component_active_directory_policy_service.h"
 
 #include <iterator>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/policy/component_active_directory_policy_service.h"
+#include "chrome/browser/chromeos/policy/active_directory/component_active_directory_policy_service.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -240,4 +240,4 @@ class DeviceActiveDirectoryPolicyManager : public ActiveDirectoryPolicyManager {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_ACTIVE_DIRECTORY_ACTIVE_DIRECTORY_POLICY_MANAGER_H_

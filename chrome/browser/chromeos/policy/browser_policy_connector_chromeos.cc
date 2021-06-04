@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
+#include "chrome/browser/chromeos/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"

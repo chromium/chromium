@@ -180,7 +180,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/locale_change_guard.h"
-#include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
+#include "chrome/browser/chromeos/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/user_policy_manager_builder_chromeos.h"
 #include "chrome/browser/chromeos/preferences.h"
