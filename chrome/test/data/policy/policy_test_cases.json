@@ -930,6 +930,7 @@
 
   "AlwaysOpenPdfExternally": {
     "os": ["win", "linux", "mac"],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
         "policies": { "AlwaysOpenPdfExternally": true },
