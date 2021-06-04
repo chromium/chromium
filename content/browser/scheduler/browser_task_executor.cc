@@ -234,8 +234,18 @@ void BrowserTaskExecutor::ResetForTesting() {
 void BrowserTaskExecutor::PostFeatureListSetup() {
   DCHECK(Get()->browser_ui_thread_handle_);
   DCHECK(Get()->browser_io_thread_handle_);
+  DCHECK(Get()->ui_thread_executor_);
   Get()->browser_ui_thread_handle_->PostFeatureListInitializationSetup();
   Get()->browser_io_thread_handle_->PostFeatureListInitializationSetup();
+  Get()->ui_thread_executor_->PostFeatureListSetup();
+}
+
+// static
+absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+BrowserTaskExecutor::OnUserInputStart() {
+  DCHECK(Get()->ui_thread_executor_);
+  return absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>(
+      Get()->ui_thread_executor_->OnUserInputStart());
 }
 
 // static
@@ -344,6 +354,17 @@ BrowserTaskExecutor::UIThreadExecutor::~UIThreadExecutor() {
 void BrowserTaskExecutor::UIThreadExecutor::BindToCurrentThread() {
   bound_to_thread_ = true;
   base::SetTaskExecutorForCurrentThread(this);
+}
+
+absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+BrowserTaskExecutor::UIThreadExecutor::OnUserInputStart() {
+  DCHECK(browser_ui_thread_scheduler_);
+  return browser_ui_thread_scheduler_->OnUserInputStart();
+}
+
+void BrowserTaskExecutor::UIThreadExecutor::PostFeatureListSetup() {
+  DCHECK(browser_ui_thread_scheduler_);
+  browser_ui_thread_scheduler_->PostFeatureListSetup();
 }
 
 scoped_refptr<BrowserUIThreadScheduler::Handle>

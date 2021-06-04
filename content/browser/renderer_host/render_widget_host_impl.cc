@@ -2398,6 +2398,9 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::OnInputEventAckTimeout() {
+  // Since input has timed out, let the BrowserUiThreadScheduler know we are
+  // done with input currently.
+  user_input_active_handle_.reset();
   RendererIsUnresponsive(base::BindRepeating(
       &RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary,
       weak_factory_.GetWeakPtr()));
@@ -2993,8 +2996,10 @@ blink::mojom::InputEventResultState RenderWidgetHostImpl::FilterInputEvent(
 
 void RenderWidgetHostImpl::IncrementInFlightEventCount() {
   ++in_flight_event_count_;
-  if (in_flight_event_count_ == 1)
+  if (in_flight_event_count_ == 1) {
     power_mode_input_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
+    user_input_active_handle_ = BrowserTaskExecutor::OnUserInputStart();
+  }
   if (!is_hidden_)
     StartInputEventAckTimeout();
 }
@@ -3007,6 +3012,7 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
     StopInputEventAckTimeout();
     power_mode_input_voter_->ResetVoteAfterTimeout(
         power_scheduler::PowerModeVoter::kResponseTimeout);
+    user_input_active_handle_.reset();
   } else {
     // Only restart the hang monitor timer if we got a response from the
     // main thread.
@@ -3465,6 +3471,9 @@ device::mojom::WakeLock* RenderWidgetHostImpl::GetWakeLock() {
 
 void RenderWidgetHostImpl::SetupInputRouter() {
   in_flight_event_count_ = 0;
+  // We are resetting in_flight_event_count_ so also inform the
+  // BrowserUIThreadScheduler that we are no longer processing input.
+  user_input_active_handle_.reset();
   suppress_events_until_keydown_ = false;
   monitoring_composition_info_ = false;
   StopInputEventAckTimeout();

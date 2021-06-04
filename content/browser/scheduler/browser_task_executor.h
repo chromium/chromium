@@ -152,6 +152,12 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // for scheduling experiments to function.
   static void PostFeatureListSetup();
 
+  // Called when some part of the browser begins handling input. Must be called
+  // from the browser UI thread and the value must be reset once input is
+  // finished.
+  static absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+  OnUserInputStart();
+
   // Winds down the BrowserTaskExecutor, after this no tasks can be executed
   // and the base::TaskExecutor APIs are non-functional but won't crash if
   // called. In unittests however we need to clean up, so
@@ -192,6 +198,11 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
         scoped_refptr<BrowserUIThreadScheduler::Handle> io_thread_handle);
 
     void BindToCurrentThread();
+
+    absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+    OnUserInputStart();
+
+    void PostFeatureListSetup();
 
    private:
     std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler_;

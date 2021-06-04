@@ -160,6 +160,36 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   message_pump_->Run(&delegate);
 }
 
+TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
+  // The handling of the "yield_to_native" boolean in the NextWorkInfo is only
+  // implemented on the MessagePumpForUI on android. However since we inject a
+  // fake one for testing this is hard to test. This test ensures that setting
+  // this boolean doesn't cause any MessagePump to explode.
+  testing::InSequence sequence;
+  testing::StrictMock<MockMessagePumpDelegate> delegate;
+
+  // Return an immediate task with |yield_to_native| set.
+  AddPreDoWorkExpectations(delegate);
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
+    return MessagePump::Delegate::NextWorkInfo{TimeTicks(), TimeTicks(),
+                                               /* yield_to_native = */ true};
+  }));
+  AddPostDoWorkExpectations(delegate);
+
+  // Return a delayed task with |yield_to_native| set, and exit.
+  AddPreDoWorkExpectations(delegate);
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+    message_pump_->Quit();
+    auto now = TimeTicks::Now();
+    return MessagePump::Delegate::NextWorkInfo{
+        now + TimeDelta::FromMilliseconds(1), now, true};
+  }));
+  EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
+
+  message_pump_->ScheduleWork();
+  message_pump_->Run(&delegate);
+}
+
 namespace {
 
 class TimerSlackTestDelegate : public MessagePump::Delegate {

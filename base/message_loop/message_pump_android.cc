@@ -215,6 +215,14 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
       return;
 
     next_work_info = delegate_->DoWork();
+    // If we are prioritizing native, and the next work would normally run
+    // immediately, skip the next work and let the native tasks have a chance to
+    // run. This is useful when user input is waiting for native to have a
+    // chance to run.
+    if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
+      ScheduleWork();
+      return;
+    }
   } while (next_work_info.is_immediate());
 
   // Do not resignal |non_delayed_fd_| if we're quitting (this pump doesn't

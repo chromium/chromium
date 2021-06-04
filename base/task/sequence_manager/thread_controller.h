@@ -106,6 +106,14 @@ class ThreadController {
   virtual void DetachFromMessagePump() = 0;
 #endif
 
+  // Currently only overridden on ThreadControllerWithMessagePumpImpl.
+  //
+  // While Now() is less than |prioritize_until| we will alternate between
+  // |work_batch_size| tasks before setting |yield_to_native| on the
+  // NextWorkInfo and yielding to the underlying sequence (e.g. the message
+  // pump).
+  virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
+
   // Sets the SingleThreadTaskRunner that will be returned by
   // ThreadTaskRunnerHandle::Get on the thread controlled by this
   // ThreadController.
