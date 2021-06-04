@@ -23,11 +23,11 @@
     <path
         android:pathData="M115.319,81.951L88.681,97.331C86.472,98.606 83.685,97.918 82.457,95.791L46.903,34.209C45.675,32.083 46.472,29.324 48.681,28.049L75.319,12.669C77.529,11.394 80.316,12.083 81.544,14.209L117.098,75.791C118.326,77.918 117.53,80.675 115.319,81.951Z"
         android:strokeWidth="2"
-        android:fillColor="@color/modern_grey_800"
+        android:fillColor="@color/modern_grey_900"
         android:strokeColor="@color/incognito_history_placeholder_stroke_color"/>
     <path
         android:pathData="M50.68,40.751L85.321,20.751L81.631,14.36C80.355,12.151 77.529,11.394 75.319,12.669L48.681,28.049C46.472,29.324 45.714,32.151 46.99,34.36L50.68,40.751ZM52.809,31.439C51.613,32.129 51.203,33.658 51.894,34.854C52.584,36.05 54.113,36.459 55.309,35.769L78.691,22.269C79.887,21.579 80.297,20.05 79.607,18.854C78.916,17.658 77.387,17.249 76.191,17.939L52.809,31.439Z"
-        android:fillColor="@color/modern_grey_700"
+        android:fillColor="@color/incognito_history_placeholder_stroke_color"
         android:fillType="evenOdd"/>
     <group>
       <clip-path

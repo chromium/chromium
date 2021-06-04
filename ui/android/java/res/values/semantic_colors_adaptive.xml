@@ -110,7 +110,7 @@
 
     <!-- IncognitoHistoryPlaceholderView  colors -->
     <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_500</color>
-    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_700</color>
+    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_300</color>
 
     <!-- Colors of adaptive toolbar -->
     <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_light</color>
