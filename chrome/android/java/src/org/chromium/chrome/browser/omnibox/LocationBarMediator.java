@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -657,6 +658,11 @@ class LocationBarMediator
         mShouldShowLensButtonWhenUnfocused = shouldShow;
     }
 
+    /* package */ void setShouldShowMicButtonWhenUnfocusedForTesting(boolean shouldShow) {
+        assert mIsTablet;
+        mShouldShowMicButtonWhenUnfocused = shouldShow;
+    }
+
     /**
      * @param shouldShow Whether buttons should be displayed in the URL bar when it's not
      *                          focused.
@@ -972,12 +978,16 @@ class LocationBarMediator
     private boolean shouldShowMicButton() {
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
             return mVoiceRecognitionHandler != null
-                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && mNativeInitialized
+                    && mVoiceRecognitionHandler.isVoiceSearchEnabled()
+                    && !VoiceToolbarButtonController.isToolbarMicEnabled() && mNativeInitialized
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
         } else {
             boolean deleteButtonVisible = shouldShowDeleteButton();
+            boolean canShowMicButton =
+                    !mIsTablet || !VoiceToolbarButtonController.isToolbarMicEnabled();
             return mVoiceRecognitionHandler != null
-                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && !deleteButtonVisible
+                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && canShowMicButton
+                    && !deleteButtonVisible
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                             || mShouldShowMicButtonWhenUnfocused);
         }
