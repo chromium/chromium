@@ -124,6 +124,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.CacheHit"
+    enum="BooleanCacheHit" expires_after="2021-10-25">
+  <owner>cclem@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether the cache was used to satisfy the GetIceServers request.
+    Emitted when GetIceServers is called.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.FailureReason"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-10-25">
+  <owner>cclem@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the HTTP response code or net error code of the GetIceServers API
+    call to the Tachyon server. Emitted only on failure or timeout.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.OAuthTokenFetchResult"
+    enum="BooleanSuccess" expires_after="2021-10-25">
+  <owner>cclem@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether the Tachyon OAuth token was successfully fetched. Emitted
+    when the token fetcher request returns.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.Result"
+    enum="BooleanSuccess" expires_after="2021-10-25">
+  <owner>cclem@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of the GetIceServers API call to the Tachyon server.
+    Emitted when the http response is received or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.InstantMessaging.{Direction}Express.OAuthTokenFetchResult"
     enum="BooleanSuccess" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>

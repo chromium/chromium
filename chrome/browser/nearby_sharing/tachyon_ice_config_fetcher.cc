@@ -5,11 +5,14 @@
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/duration.pb.h"
 #include "chrome/browser/nearby_sharing/proto/ice.pb.h"
 #include "chrome/browser/nearby_sharing/proto/tachyon.pb.h"
@@ -116,32 +119,49 @@ tachyon_proto::GetICEServerRequest BuildRequest() {
   return request;
 }
 
-// TODO(crbug.com/1207567) Add metrics
+void RecordResultMetric(const NearbyShareHttpStatus& http_status) {
+  bool success = http_status.IsSuccess();
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.Result",
+      success);
+  if (!success) {
+    base::UmaHistogramSparse(
+        "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher."
+        "FailureReason",
+        http_status.GetResultCodeForMetrics());
+  }
+}
+
+void RecordCacheHitMetric(bool cache_hit) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.CacheHit",
+      cache_hit);
+}
+
+void RecordTokenFetchSuccessMetric(bool token_fetch_successful) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher."
+      "OAuthTokenFetchResult",
+      token_fetch_successful);
+}
+
 bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
                         const std::string& request_id) {
   DCHECK(loader);
+  NearbyShareHttpStatus status =
+      NearbyShareHttpStatus(loader->NetError(), loader->ResponseInfo());
 
-  if (loader->NetError() != net::OK) {
-    LOG(ERROR) << "TachyonIceConfigFetcher (request_id=" << request_id
-               << ") url loader network error: " << loader->NetError();
+  RecordResultMetric(status);
+
+  if (!status.IsSuccess()) {
+    NS_LOG(ERROR) << "TachyonIceConfigFetcher (request_id=" << request_id
+                  << ") " << status << " " << status.GetResultCodeForMetrics();
     return false;
   }
 
-  if (!loader->ResponseInfo() || !loader->ResponseInfo()->headers) {
-    LOG(ERROR) << "TachyonIceConfigFetcher (request_id=" << request_id
-               << ") invalid response or missing headers";
-    return false;
-  }
-
-  // Success response codes are 2xx.
-  bool is_successful_response_code =
-      (loader->ResponseInfo()->headers->response_code() / 100) == 2;
-  if (!is_successful_response_code) {
-    LOG(ERROR) << "TachyonIceConfigFetcher (request_id=" << request_id
-               << ") non-successful response code: "
-               << loader->ResponseInfo()->headers->response_code();
-  }
-  return is_successful_response_code;
+  NS_LOG(VERBOSE) << "TachyonIceConfigFetcher (request_id=" << request_id
+                  << ") GetIceServers succeeded";
+  return true;
 }
 
 std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
@@ -175,6 +195,7 @@ void OnOAuthTokenFetched(
   // It is safe to reset the token fetcher now.
   token_fetcher.reset();
   // Note: We do not do anything special for empty tokens.
+  RecordTokenFetchSuccessMetric(/*token_fetch_successful=*/!token.empty());
   std::move(callback).Run(token);
 }
 
@@ -206,8 +227,9 @@ void TachyonIceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
   // If a previous request cached the ICE servers and the expiration time hasn't
   // lapsed, return a copy of the cached servers immediately.
   if (ice_server_cache_ && ice_server_cache_expiration_ >= base::Time::Now()) {
-    VLOG(1) << "TachyonIceConfigFetcher returning cached ice servers";
+    NS_LOG(VERBOSE) << "TachyonIceConfigFetcher returning cached ice servers";
     std::move(callback).Run(CloneIceServerList(*ice_server_cache_));
+    RecordCacheHitMetric(/*cache_hit=*/true);
     return;
   }
 
@@ -215,14 +237,16 @@ void TachyonIceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
       identity_manager_,
       base::BindOnce(&TachyonIceConfigFetcher::GetIceServersWithToken,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  RecordCacheHitMetric(/*cache_hit=*/false);
 }
 
 void TachyonIceConfigFetcher::GetIceServersWithToken(
     GetIceServersCallback callback,
     const std::string& token) {
   if (token.empty()) {
-    LOG(ERROR) << "TachyonIceConfigFetcher failed to fetch OAuth access token, "
-                  "returning default ICE servers";
+    NS_LOG(ERROR)
+        << "TachyonIceConfigFetcher failed to fetch OAuth access token, "
+           "returning default ICE servers";
     std::move(callback).Run(GetDefaultIceServers());
     return;
   }
@@ -246,9 +270,9 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
   url_loader->AttachStringForUpload(request.SerializeAsString(),
                                     "application/x-protobuf");
 
-  VLOG(1) << __func__
-          << ": Requesting ICE Servers from Tachyon (request_id=" << request_id
-          << ")";
+  NS_LOG(VERBOSE) << __func__
+                  << ": Requesting ICE Servers from Tachyon (request_id="
+                  << request_id << ")";
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&TachyonIceConfigFetcher::OnIceServersResponse,
@@ -270,8 +294,8 @@ void TachyonIceConfigFetcher::OnIceServersResponse(
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 
   if (ice_servers.empty()) {
-    VLOG(1) << "TachyonIceConfigFetcher (request_id=" << request_id
-            << ") empty response, returning default ICE servers";
+    NS_LOG(VERBOSE) << "TachyonIceConfigFetcher (request_id=" << request_id
+                    << ") empty response, returning default ICE servers";
     ice_servers = GetDefaultIceServers();
   }
 
@@ -285,8 +309,8 @@ TachyonIceConfigFetcher::ParseIceServersResponse(
   std::vector<sharing::mojom::IceServerPtr> servers_mojo;
   tachyon_proto::GetICEServerResponse response;
   if (!response.ParseFromString(serialized_proto)) {
-    LOG(ERROR) << __func__ << ": (request_id=" << request_id
-               << ") Failed to parse response";
+    NS_LOG(ERROR) << __func__ << ": (request_id=" << request_id
+                  << ") Failed to parse response";
     return servers_mojo;
   }
 
