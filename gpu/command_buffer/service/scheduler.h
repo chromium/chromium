@@ -64,8 +64,13 @@ class GPU_EXPORT Scheduler {
   // Create a sequence with given priority. Returns an identifier for the
   // sequence that can be used with SyncPointManager for creating sync point
   // release clients. Sequences start off as enabled (see |EnableSequence|).
-  // Sequence could be created outside of GPU thread.
-  SequenceId CreateSequence(SchedulingPriority priority);
+  // Sequence is bound to the provided |task_runner|.
+  SequenceId CreateSequence(
+      SchedulingPriority priority,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  // Should be only used for tests.
+  SequenceId CreateSequenceForTesting(SchedulingPriority priority);
 
   // Destroy the sequence and run any scheduled tasks immediately. Sequence
   // could be destroyed outside of GPU thread.
@@ -135,7 +140,7 @@ class GPU_EXPORT Scheduler {
    public:
     Sequence(Scheduler* scheduler,
              SequenceId sequence_id,
-             base::PlatformThreadId thread_id,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              SchedulingPriority priority,
              scoped_refptr<SyncPointOrderData> order_data);
 
@@ -147,7 +152,9 @@ class GPU_EXPORT Scheduler {
       return order_data_;
     }
 
-    base::PlatformThreadId thread_id() const { return thread_id_; }
+    base::SingleThreadTaskRunner* task_runner() const {
+      return task_runner_.get();
+    }
 
     bool enabled() const { return enabled_; }
 
@@ -312,7 +319,7 @@ class GPU_EXPORT Scheduler {
 
     Scheduler* const scheduler_;
     const SequenceId sequence_id_;
-    const base::PlatformThreadId thread_id_;
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
     const SchedulingPriority default_priority_;
     SchedulingPriority current_priority_;
@@ -351,7 +358,7 @@ class GPU_EXPORT Scheduler {
   // If the scheduling queue needs to be rebuild because a sequence changed
   // priority.
   std::vector<SchedulingState>& RebuildSchedulingQueueIfNeeded(
-      base::PlatformThreadId thread_id);
+      base::SingleThreadTaskRunner* task_runner);
 
   Sequence* GetSequence(SequenceId sequence_id);
 
@@ -373,11 +380,10 @@ class GPU_EXPORT Scheduler {
     // SchedulingState with highest priority (lowest order) in front.
     std::vector<SchedulingState> scheduling_queue;
     bool rebuild_scheduling_queue = false;
-
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
     bool running = false;
   };
-  base::flat_map<base::PlatformThreadId, PerThreadState> per_thread_state_map_;
+  base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
+      per_thread_state_map_;
 
   // Accumulated time the thread was blocked during running task
   base::TimeDelta total_blocked_time_;

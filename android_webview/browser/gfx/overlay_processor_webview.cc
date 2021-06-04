@@ -176,7 +176,7 @@ void OverlayProcessorWebView::CheckOverlaySupport(
       return;
 
     gpu_thread_sequence_ = std::make_unique<gpu::SchedulerSequence>(
-        gpu_service->GetGpuScheduler());
+        gpu_service->GetGpuScheduler(), gpu_service->main_runner());
 
     render_thread_sequence_->ScheduleGpuTask(
         base::BindOnce(&OverlayProcessorWebView::Manager::SetGpuService,

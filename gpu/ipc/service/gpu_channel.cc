@@ -903,7 +903,8 @@ void GpuChannel::CreateCommandBuffer(
 
   SequenceId sequence_id = stream_sequences_[stream_id];
   if (sequence_id.is_null()) {
-    sequence_id = scheduler_->CreateSequence(init_params->stream_priority);
+    sequence_id =
+        scheduler_->CreateSequence(init_params->stream_priority, task_runner_);
     stream_sequences_[stream_id] = sequence_id;
   }
 

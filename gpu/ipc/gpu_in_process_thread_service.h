@@ -69,9 +69,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
   scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
  private:
-  void CreateSequenceOnThread(std::unique_ptr<SingleTaskSequence>* sequence,
-                              base::WaitableEvent* completion);
-
   GpuInProcessThreadServiceDelegate* const delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Scheduler* scheduler_;

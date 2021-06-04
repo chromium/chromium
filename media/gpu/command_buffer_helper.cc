@@ -49,7 +49,8 @@ class CommandBufferHelperImpl
 #else
         gpu::SchedulingPriority::kNormal
 #endif  // defined(OS_MAC)
-    );
+        ,
+        stub_->channel()->task_runner());
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
   }
 

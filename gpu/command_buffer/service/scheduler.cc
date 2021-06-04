@@ -95,14 +95,15 @@ Scheduler::PerThreadState::~PerThreadState() = default;
 Scheduler::PerThreadState& Scheduler::PerThreadState::operator=(
     PerThreadState&& other) = default;
 
-Scheduler::Sequence::Sequence(Scheduler* scheduler,
-                              SequenceId sequence_id,
-                              base::PlatformThreadId thread_id,
-                              SchedulingPriority priority,
-                              scoped_refptr<SyncPointOrderData> order_data)
+Scheduler::Sequence::Sequence(
+    Scheduler* scheduler,
+    SequenceId sequence_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    SchedulingPriority priority,
+    scoped_refptr<SyncPointOrderData> order_data)
     : scheduler_(scheduler),
       sequence_id_(sequence_id),
-      thread_id_(thread_id),
+      task_runner_(std::move(task_runner)),
       default_priority_(priority),
       current_priority_(priority),
       order_data_(std::move(order_data)) {}
@@ -154,7 +155,7 @@ bool Scheduler::Sequence::IsRunnable() const {
 }
 
 bool Scheduler::Sequence::ShouldYieldTo(const Sequence* other) const {
-  if (thread_id() != other->thread_id())
+  if (task_runner() != other->task_runner())
     return false;
   if (!running() || !other->scheduled())
     return false;
@@ -393,18 +394,23 @@ Scheduler::~Scheduler() {
     DCHECK(!per_thread_state.second.running);
 }
 
-SequenceId Scheduler::CreateSequence(SchedulingPriority priority) {
+SequenceId Scheduler::CreateSequence(
+    SchedulingPriority priority,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   base::AutoLock auto_lock(lock_);
   scoped_refptr<SyncPointOrderData> order_data =
       sync_point_manager_->CreateSyncPointOrderData();
   SequenceId sequence_id = order_data->sequence_id();
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
-  auto thread_id = base::PlatformThread::CurrentId();
-  auto sequence = std::make_unique<Sequence>(this, sequence_id, thread_id,
-                                             priority, std::move(order_data));
+  auto sequence =
+      std::make_unique<Sequence>(this, sequence_id, std::move(task_runner),
+                                 priority, std::move(order_data));
   sequence_map_.emplace(sequence_id, std::move(sequence));
-  per_thread_state_map_[thread_id].task_runner = task_runner;
   return sequence_id;
+}
+
+SequenceId Scheduler::CreateSequenceForTesting(SchedulingPriority priority) {
+  // This will create the sequence on the thread on which this method is called.
+  return CreateSequence(priority, base::ThreadTaskRunnerHandle::Get());
 }
 
 void Scheduler::DestroySequence(SequenceId sequence_id) {
@@ -415,7 +421,7 @@ void Scheduler::DestroySequence(SequenceId sequence_id) {
     Sequence* sequence = GetSequence(sequence_id);
     DCHECK(sequence);
     if (sequence->scheduled()) {
-      per_thread_state_map_[sequence->thread_id()].rebuild_scheduling_queue =
+      per_thread_state_map_[sequence->task_runner()].rebuild_scheduling_queue =
           true;
     }
 
@@ -479,7 +485,7 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  auto task_runner = per_thread_state_map_[sequence->thread_id()].task_runner;
+  auto* task_runner = sequence->task_runner();
   uint32_t order_num = sequence->ScheduleTask(std::move(task.closure),
                                               std::move(task.report_callback));
 
@@ -507,7 +513,7 @@ void Scheduler::ContinueTask(SequenceId sequence_id,
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
-  DCHECK_EQ(base::PlatformThread::CurrentId(), sequence->thread_id());
+  DCHECK(sequence->task_runner()->BelongsToCurrentThread());
   sequence->ContinueTask(std::move(closure));
 }
 
@@ -517,10 +523,10 @@ bool Scheduler::ShouldYield(SequenceId sequence_id) {
   Sequence* running_sequence = GetSequence(sequence_id);
   DCHECK(running_sequence);
   DCHECK(running_sequence->running());
-  DCHECK_EQ(base::PlatformThread::CurrentId(), running_sequence->thread_id());
+  DCHECK(running_sequence->task_runner()->BelongsToCurrentThread());
 
   const auto& scheduling_queue =
-      RebuildSchedulingQueueIfNeeded(running_sequence->thread_id());
+      RebuildSchedulingQueueIfNeeded(running_sequence->task_runner());
 
   if (scheduling_queue.empty())
     return false;
@@ -546,8 +552,8 @@ void Scheduler::SyncTokenFenceReleased(const SyncToken& sync_token,
 void Scheduler::TryScheduleSequence(Sequence* sequence) {
   lock_.AssertAcquired();
 
-  auto thread_id = sequence->thread_id();
-  auto& thread_state = per_thread_state_map_[thread_id];
+  auto* task_runner = sequence->task_runner();
+  auto& thread_state = per_thread_state_map_[task_runner];
 
   if (sequence->running()) {
     // Update priority of running sequence because of sync token releases.
@@ -557,11 +563,12 @@ void Scheduler::TryScheduleSequence(Sequence* sequence) {
     // Rebuild scheduling queue if priority changed for a scheduled sequence.
     DCHECK(thread_state.running);
     DCHECK(sequence->IsRunnable());
-    per_thread_state_map_[thread_id].rebuild_scheduling_queue = true;
+    per_thread_state_map_[task_runner].rebuild_scheduling_queue = true;
   } else if (!sequence->scheduled() && sequence->IsRunnable()) {
     // Insert into scheduling queue if sequence isn't already scheduled.
     SchedulingState scheduling_state = sequence->SetScheduled();
-    auto& scheduling_queue = per_thread_state_map_[thread_id].scheduling_queue;
+    auto& scheduling_queue =
+        per_thread_state_map_[task_runner].scheduling_queue;
     scheduling_queue.push_back(scheduling_state);
     std::push_heap(scheduling_queue.begin(), scheduling_queue.end(),
                    &SchedulingState::Comparator);
@@ -569,18 +576,18 @@ void Scheduler::TryScheduleSequence(Sequence* sequence) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu", "Scheduler::Running", this);
       thread_state.running = true;
       run_next_task_scheduled_ = base::TimeTicks::Now();
-      thread_state.task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&Scheduler::RunNextTask, base::Unretained(this)));
+      task_runner->PostTask(FROM_HERE, base::BindOnce(&Scheduler::RunNextTask,
+                                                      base::Unretained(this)));
     }
   }
 }
 
 std::vector<Scheduler::SchedulingState>&
-Scheduler::RebuildSchedulingQueueIfNeeded(base::PlatformThreadId thread_id) {
+Scheduler::RebuildSchedulingQueueIfNeeded(
+    base::SingleThreadTaskRunner* task_runner) {
   lock_.AssertAcquired();
 
-  auto& thread_state = per_thread_state_map_[thread_id];
+  auto& thread_state = per_thread_state_map_[task_runner];
   auto& scheduling_queue = thread_state.scheduling_queue;
 
   if (!thread_state.rebuild_scheduling_queue)
@@ -591,7 +598,7 @@ Scheduler::RebuildSchedulingQueueIfNeeded(base::PlatformThreadId thread_id) {
   for (const auto& kv : sequence_map_) {
     Sequence* sequence = kv.second.get();
     if (!sequence->IsRunnable() || sequence->running() ||
-        sequence->thread_id() != thread_id) {
+        sequence->task_runner() != task_runner) {
       continue;
     }
     SchedulingState scheduling_state = sequence->SetScheduled();
@@ -610,14 +617,14 @@ void Scheduler::RunNextTask() {
       base::TimeTicks::Now() - run_next_task_scheduled_,
       base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
       100);
-  auto thread_id = base::PlatformThread::CurrentId();
+  auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
 
   SchedulingState state;
   {
-    auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(thread_id);
+    auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(task_runner);
     if (scheduling_queue.empty()) {
       TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "Scheduler::Running", this);
-      per_thread_state_map_[thread_id].running = false;
+      per_thread_state_map_[task_runner].running = false;
       return;
     }
 
@@ -631,7 +638,7 @@ void Scheduler::RunNextTask() {
 
   Sequence* sequence = GetSequence(state.sequence_id);
   DCHECK(sequence);
-  DCHECK_EQ(sequence->thread_id(), thread_id);
+  DCHECK_EQ(sequence->task_runner(), task_runner);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Scheduler.TaskDependencyTime",
@@ -688,7 +695,7 @@ void Scheduler::RunNextTask() {
     sequence->FinishTask();
     if (sequence->IsRunnable()) {
       auto& scheduling_queue =
-          per_thread_state_map_[thread_id].scheduling_queue;
+          per_thread_state_map_[task_runner].scheduling_queue;
 
       SchedulingState scheduling_state = sequence->SetScheduled();
       scheduling_queue.push_back(scheduling_state);
@@ -703,17 +710,16 @@ void Scheduler::RunNextTask() {
       100);
 
   // Avoid scheduling another RunNextTask if we're done with all tasks.
-  auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(thread_id);
+  auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(task_runner);
   if (scheduling_queue.empty()) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "Scheduler::Running", this);
-    per_thread_state_map_[thread_id].running = false;
+    per_thread_state_map_[task_runner].running = false;
     return;
   }
 
   run_next_task_scheduled_ = base::TimeTicks::Now();
-  per_thread_state_map_[thread_id].task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Scheduler::RunNextTask, base::Unretained(this)));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&Scheduler::RunNextTask,
+                                                  base::Unretained(this)));
 }
 
 base::TimeDelta Scheduler::TakeTotalBlockingTime() {
@@ -727,9 +733,7 @@ base::TimeDelta Scheduler::TakeTotalBlockingTime() {
 base::SingleThreadTaskRunner* Scheduler::GetTaskRunnerForTesting(
     SequenceId sequence_id) {
   base::AutoLock auto_lock(lock_);
-  return (per_thread_state_map_[GetSequence(sequence_id)->thread_id()]
-              .task_runner)
-      .get();
+  return GetSequence(sequence_id)->task_runner();
 }
 
 }  // namespace gpu

@@ -44,10 +44,13 @@ void SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread() {
 #endif
 }
 
-SchedulerSequence::SchedulerSequence(Scheduler* scheduler)
+SchedulerSequence::SchedulerSequence(
+    Scheduler* scheduler,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : SingleTaskSequence(),
       scheduler_(scheduler),
-      sequence_id_(scheduler->CreateSequence(SchedulingPriority::kHigh)) {}
+      sequence_id_(scheduler->CreateSequence(SchedulingPriority::kHigh,
+                                             std::move(task_runner))) {}
 
 // Note: this drops tasks not executed yet.
 SchedulerSequence::~SchedulerSequence() {

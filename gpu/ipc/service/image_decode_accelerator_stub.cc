@@ -99,7 +99,8 @@ ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
     int32_t route_id)
     : worker_(worker),
       channel_(channel),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow)),
+      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                                     channel->task_runner())),
       sync_point_client_state_(
           channel->sync_point_manager()->CreateSyncPointClientState(
               CommandBufferNamespace::GPU_IO,

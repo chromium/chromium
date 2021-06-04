@@ -94,8 +94,8 @@ StreamTexture::StreamTexture(GpuChannel* channel,
       route_id_(route_id),
       has_listener_(false),
       context_state_(std::move(context_state)),
-      sequence_(
-          channel_->scheduler()->CreateSequence(SchedulingPriority::kLow)),
+      sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                                      channel_->task_runner())),
       sync_point_client_state_(
           channel_->sync_point_manager()->CreateSyncPointClientState(
               CommandBufferNamespace::GPU_IO,

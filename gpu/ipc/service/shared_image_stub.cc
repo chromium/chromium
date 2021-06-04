@@ -31,7 +31,8 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow)),
+      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                                     channel_->task_runner())),
       sync_point_client_state_(
           channel->sync_point_manager()->CreateSyncPointClientState(
               CommandBufferNamespace::GPU_IO,

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
@@ -62,7 +63,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   // allow ScheduleTask.
   static void DefaultDisallowScheduleTaskOnCurrentThread();
 
-  explicit SchedulerSequence(Scheduler* scheduler);
+  SchedulerSequence(Scheduler* scheduler,
+                    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Note: this drops tasks not executed yet.
   ~SchedulerSequence() override;
