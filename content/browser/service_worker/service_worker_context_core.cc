@@ -108,19 +108,18 @@ class RegistrationDeletionListener
 void SuccessReportingCallback(
     int* expected_calls,
     std::vector<std::unique_ptr<RegistrationDeletionListener>>* listeners,
-    const base::RepeatingCallback<void(blink::ServiceWorkerStatusCode)>&
-        callback,
+    base::OnceCallback<void(blink::ServiceWorkerStatusCode)>& callback,
     blink::ServiceWorkerStatusCode status) {
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     *expected_calls = -1;
     listeners->clear();
-    callback.Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
     return;
   }
   (*expected_calls)--;
   if (*expected_calls == 0) {
     listeners->clear();
-    callback.Run(blink::ServiceWorkerStatusCode::kOk);
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
   }
 }
 
@@ -627,7 +626,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
   base::RepeatingCallback<void(blink::ServiceWorkerStatusCode)> barrier =
       base::BindRepeating(SuccessReportingCallback, base::Owned(expected_calls),
                           base::Owned(listeners),
-                          base::AdaptCallbackForRepeating(std::move(callback)));
+                          base::OwnedRef(std::move(callback)));
   for (const auto& registration : registrations) {
     DCHECK(registration);
     if (*expected_calls != -1) {
