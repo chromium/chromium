@@ -9,6 +9,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/side_panel/app.js';
 
 import {assertEquals} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 suite('SidePanelAppElementTest', () => {
   /** @type {!SidePanelAppElement} */
@@ -36,5 +37,20 @@ suite('SidePanelAppElementTest', () => {
     // changed.
     tabs.selected = 0;
     assertEquals('readingList', window.localStorage[LOCAL_STORAGE_TAB_ID_KEY]);
+  });
+
+  test('LazilyLoadsTabContents', async () => {
+    const tabs = sidePanelApp.shadowRoot.querySelector('cr-tabs');
+    tabs.selected = 0;
+    await flushTasks();
+    assertEquals(
+        1, sidePanelApp.shadowRoot.querySelectorAll('read-later-app').length);
+    assertEquals(
+        0, sidePanelApp.shadowRoot.querySelectorAll('bookmarks-list').length);
+
+    tabs.selected = 1;
+    await flushTasks();
+    assertEquals(
+        1, sidePanelApp.shadowRoot.querySelectorAll('bookmarks-list').length);
   });
 });

@@ -62,7 +62,15 @@
 
 <div id="content">
   <iron-pages selected="[[selectedTab_]]">
-    <read-later-app side-panel></read-later-app>
-    <bookmarks-list></bookmarks-list>
+    <div>
+      <template is="dom-if" if="[[isSelectedTab_(selectedTab_, 0)]]">
+        <read-later-app side-panel></read-later-app>
+      </template>
+    </div>
+    <div>
+      <template is="dom-if" if="[[isSelectedTab_(selectedTab_, 1)]]">
+        <bookmarks-list></bookmarks-list>
+      </template>
+    </div>
   </iron-pages>
 </div>

@@ -67,6 +67,9 @@ export class SidePanelAppElement extends PolymerElement {
     if (lastActiveTab) {
       this.selectedTab_ = Object.keys(this.tabs_).indexOf(lastActiveTab) || 0;
     }
+
+    // Show the UI as soon as the app is connected.
+    this.apiProxy_.showUI();
   }
 
   /**
@@ -75,6 +78,16 @@ export class SidePanelAppElement extends PolymerElement {
    */
   getTabNames_() {
     return Object.values(this.tabs_);
+  }
+
+  /**
+   * @param {number} selectedTab
+   * @param {number} index
+   * @return {boolean}
+   * @private
+   */
+  isSelectedTab_(selectedTab, index) {
+    return selectedTab === index;
   }
 
   /** @private */
