@@ -46,6 +46,12 @@ void ProjectorControllerImpl::OnTranscription(
   }
 }
 
+void ProjectorControllerImpl::OnTranscriptionError() {
+  // TODO(http://1206720): Stop recording if there is an error that occurred
+  // during transcription.
+  OnRecordingEnded();
+}
+
 void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
   // available.

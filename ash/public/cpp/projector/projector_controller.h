@@ -35,6 +35,9 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   virtual void OnTranscription(
       const media::SpeechRecognitionResult& result) = 0;
 
+  // Called when there is an error in transcription.
+  virtual void OnTranscriptionError() = 0;
+
   // Sets projector toolbar visibility.
   virtual void SetProjectorToolsVisible(bool is_visible) = 0;
 
