@@ -3179,6 +3179,15 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     return;
   }
 
+  // This check only fails on validating decoder since clear tracking for
+  // passthrough textures is done by ANGLE. Nonetheless the check is important
+  // so that clients cannot use uninitialized textures with validating decoder.
+  if (!needs_clear && !shared_image_->IsCleared()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
+                       "SharedImage not cleared before use.");
+    return;
+  }
+
   DCHECK(locked_handles_.empty());
   DCHECK(!raster_canvas_);
   shared_context_state_->set_need_context_state_reset(true);
