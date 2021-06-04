@@ -188,11 +188,10 @@ void ChildProcessHostImpl::CreateChannelMojo() {
     DCHECK_EQ(ipc_mode_, IpcMode::kNormal);
     DCHECK(child_process_);
 
-    mojo::PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
-    auto bootstrap_receiver = bootstrap.InitWithNewPipeAndPassReceiver();
-    child_process_->BootstrapLegacyIpc(std::move(bootstrap_receiver));
+    mojo::ScopedMessagePipeHandle bootstrap =
+        mojo_invitation_->AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
     channel_ = IPC::ChannelMojo::Create(
-        bootstrap.PassPipe(), IPC::Channel::MODE_SERVER, this,
+        std::move(bootstrap), IPC::Channel::MODE_SERVER, this,
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(),
         mojo::internal::MessageQuotaChecker::MaybeCreate());

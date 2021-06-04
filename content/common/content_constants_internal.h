@@ -45,6 +45,7 @@ CONTENT_EXPORT extern const char kFrameAcceptHeaderValue[];
 // initialize child processes.
 extern const int kChildProcessReceiverAttachmentName;
 extern const int kChildProcessHostRemoteAttachmentName;
+extern const int kLegacyIpcBootstrapAttachmentName;
 
 } // namespace content
 

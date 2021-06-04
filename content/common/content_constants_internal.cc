@@ -31,5 +31,6 @@ const char kFrameAcceptHeaderValue[] =
 
 const int kChildProcessReceiverAttachmentName = 0;
 const int kChildProcessHostRemoteAttachmentName = 1;
+const int kLegacyIpcBootstrapAttachmentName = 2;
 
 } // namespace content

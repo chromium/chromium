@@ -53,9 +53,6 @@ interface ChildProcess {
   // cleanup, generating a crash report).
   CrashHungProcess();
 
-  // Binds the legacy IPC Channel bootstrapping pipe.
-  BootstrapLegacyIpc(pending_receiver<IPC.mojom.ChannelBootstrap> receiver);
-
   // Tells the child process to run an instance of a service named
   // |service_name|, binding it to |receiver|. This is used by the browser to
   // support launching of packaged services within Utility or GPU processes.

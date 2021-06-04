@@ -2036,12 +2036,11 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
           kChildProcessHostRemoteAttachmentName));
 
   // Bootstrap the IPC Channel.
-  mojo::PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
-  child_process_->BootstrapLegacyIpc(
-      bootstrap.InitWithNewPipeAndPassReceiver());
+  mojo::ScopedMessagePipeHandle bootstrap =
+      mojo_invitation_.AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
   std::unique_ptr<IPC::ChannelFactory> channel_factory =
       IPC::ChannelMojo::CreateServerFactory(
-          bootstrap.PassPipe(), io_task_runner,
+          std::move(bootstrap), io_task_runner,
           base::ThreadTaskRunnerHandle::Get());
 
   ResetChannelProxy();

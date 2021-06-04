@@ -33,5 +33,6 @@ interface Channel {
 };
 
 // A strictly nominal interface used to identify Channel bootstrap requests.
+// This is only used in `AgentSchedulingGroup` initialization.
 interface ChannelBootstrap {};
 

@@ -270,14 +270,6 @@ class ChildThreadImpl::IOThreadState
     receiver_.Bind(std::move(receiver));
   }
 
-  // Used in non-Service Manager IPC mode.
-  void BindChildProcessReceiverAndLegacyIpc(
-      mojo::PendingReceiver<mojom::ChildProcess> receiver,
-      mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap) {
-    legacy_ipc_bootstrap_ = std::move(legacy_ipc_bootstrap);
-    receiver_.Bind(std::move(receiver));
-  }
-
   void ExposeInterfacesToBrowser(mojo::BinderMap binders) {
     DCHECK(wait_for_interface_binders_);
     wait_for_interface_binders_ = false;
@@ -346,12 +338,6 @@ class ChildThreadImpl::IOThreadState
     IMMEDIATE_CRASH();
   }
 
-  void BootstrapLegacyIpc(
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> receiver) override {
-    DCHECK(legacy_ipc_bootstrap_);
-    mojo::FusePipes(std::move(receiver), std::move(legacy_ipc_bootstrap_));
-  }
-
   void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) override {
@@ -417,11 +403,6 @@ class ChildThreadImpl::IOThreadState
   mojo::BinderMap interface_binders_;
   bool wait_for_interface_binders_ = true;
   mojo::Receiver<mojom::ChildProcess> receiver_{this};
-
-  // The pending legacy IPC channel endpoint to fuse with one we will eventually
-  // receive on the ChildProcess interface. Only used when not in the deprecated
-  // Service Manager IPC mode.
-  mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap_;
 
   // Binding requests which should be handled by |interface_binders|, but which
   // have been queued because |allow_interface_binders_| is still |false|.
@@ -575,6 +556,7 @@ void ChildThreadImpl::Init(const Options& options) {
 
   mojo::ScopedMessagePipeHandle child_process_pipe_for_receiver;
   mojo::ScopedMessagePipeHandle child_process_host_pipe_for_remote;
+  mojo::ScopedMessagePipeHandle legacy_ipc_bootstrap_pipe;
   if (!IsInBrowserProcess()) {
     // If using a shared Mojo Core library, IPC support is already initialized.
     if (!IsMojoCoreSharedLibraryEnabled()) {
@@ -594,6 +576,8 @@ void ChildThreadImpl::Init(const Options& options) {
         invitation.ExtractMessagePipe(kChildProcessReceiverAttachmentName);
     child_process_host_pipe_for_remote =
         invitation.ExtractMessagePipe(kChildProcessHostRemoteAttachmentName);
+    legacy_ipc_bootstrap_pipe =
+        invitation.ExtractMessagePipe(kLegacyIpcBootstrapAttachmentName);
   } else {
     child_process_pipe_for_receiver =
         options.mojo_invitation->ExtractMessagePipe(
@@ -601,6 +585,8 @@ void ChildThreadImpl::Init(const Options& options) {
     child_process_host_pipe_for_remote =
         options.mojo_invitation->ExtractMessagePipe(
             kChildProcessHostRemoteAttachmentName);
+    legacy_ipc_bootstrap_pipe = options.mojo_invitation->ExtractMessagePipe(
+        kLegacyIpcBootstrapAttachmentName);
   }
 
   // Now that we've recovered the message pipe for the ChildProcessHost, build
@@ -658,11 +644,9 @@ void ChildThreadImpl::Init(const Options& options) {
   }
 
   DCHECK(child_process_pipe_for_receiver.is_valid());
-  mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap;
-  mojo::ScopedMessagePipeHandle legacy_ipc_channel_handle =
-      legacy_ipc_bootstrap.InitWithNewPipeAndPassReceiver().PassPipe();
+  DCHECK(legacy_ipc_bootstrap_pipe.is_valid());
   channel_->Init(IPC::ChannelMojo::CreateClientFactory(
-                     std::move(legacy_ipc_channel_handle),
+                     std::move(legacy_ipc_bootstrap_pipe),
                      ChildProcess::current()->io_task_runner(),
                      ipc_task_runner_ ? ipc_task_runner_
                                       : base::ThreadTaskRunnerHandle::Get()),
@@ -670,11 +654,9 @@ void ChildThreadImpl::Init(const Options& options) {
 
   ChildThreadImpl::GetIOTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&IOThreadState::BindChildProcessReceiverAndLegacyIpc,
-                     io_thread_state_,
+      base::BindOnce(&IOThreadState::BindChildProcessReceiver, io_thread_state_,
                      mojo::PendingReceiver<mojom::ChildProcess>(
-                         std::move(child_process_pipe_for_receiver)),
-                     std::move(legacy_ipc_bootstrap)));
+                         std::move(child_process_pipe_for_receiver))));
 
   int connection_timeout = kConnectionTimeoutS;
   std::string connection_override =
