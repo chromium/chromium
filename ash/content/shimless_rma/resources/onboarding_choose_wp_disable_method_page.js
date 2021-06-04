@@ -40,7 +40,7 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextBtnClicked that will:
+  // TODO(gavindodd): Implement onNextButtonClicked that will:
   //  - call shimlessRmaService_.chooseManuallyDisableWriteProtect() if manual
   //    chosen.
   //  - call shimlessRmaService_.chooseRsuDisableWriteProtect(code) if RSU

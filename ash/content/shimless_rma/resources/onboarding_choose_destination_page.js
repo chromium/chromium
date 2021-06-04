@@ -40,7 +40,7 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextBtnClicked that will:
+  // TODO(gavindodd): Implement onNextButtonClicked that will:
   //  - call shimlessRmaService_.setSameOwner() if original owner chosen.
   //  - call shimlessRmaService_.setDifferentOwner() if different owner chosen.
 };

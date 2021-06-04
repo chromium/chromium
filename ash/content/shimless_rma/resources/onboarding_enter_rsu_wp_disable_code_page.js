@@ -40,7 +40,7 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
-  // TODO(gavindodd): Implement onNextBtnClicked that will:
+  // TODO(gavindodd): Implement onNextButtonClicked that will:
   //  - call shimlessRmaService_.rsuDisableWriteProtect(code) when code entered.
 };
 

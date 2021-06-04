@@ -122,7 +122,7 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
   }
 
   /** @protected */
-  onReworkFlowBtnClicked_(e) {
+  onReworkFlowButtonClicked_(e) {
     // TODO(gavindodd): Debug, remove when onNext implemented.
     console.log('Components repair state:');
     this.getComponentRepairStateList_().forEach(item => {
