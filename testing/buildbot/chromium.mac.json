@@ -7985,7 +7985,6 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -8741,7 +8740,6 @@
         "args": [
           "--num-retries=3"
         ],
-        "ci_only": true,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {

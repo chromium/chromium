@@ -273,7 +273,6 @@
         },
       },
       'Mac10.15 Tests': {
-        'ci_only': True,
         'swarming': {
           'dimension_sets': [
             {
@@ -1796,9 +1795,6 @@
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
-      },
-      'Mac10.15 Tests': {
-        'ci_only': True,
       },
       'Mac11 Tests': {
         # TODO(crbug.com/1206401): Restore to defaults when there is enough
