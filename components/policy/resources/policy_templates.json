@@ -18108,7 +18108,10 @@
       isolated context. Chrome will require cross-origin isolation when using
       SharedArrayBuffers from Chrome 91 onward (2021-05-25) for Web Compatibility
       reasons. Additional details can be found on:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.''',
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+      When set to True, sites can use SharedArrayBuffer with no restrictions.
+      When set to False or not set, sites can only use SharedArrayBuffers when
+      cross-origin isolated.''',
     },
     {
       'name': 'WebDriverOverridesIncompatiblePolicies',
