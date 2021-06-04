@@ -114,8 +114,9 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
       remotes_;
 };
 
+// Disabled due to flaky crashes; https://crbug.com/1216304.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
-                       DestroysWithoutCrashing) {
+                       DISABLED_DestroysWithoutCrashing) {
   content::RenderFrameHost* frame_host =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
