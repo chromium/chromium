@@ -1798,7 +1798,7 @@ class OopTextBlobPixelTest
       avg_error = std::max(is_record_filter ? 50.f : 2.f, avg_error);
     } else if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
       error_pixels_percentage =
-          std::max(is_record_filter ? 12.f : 4.f, error_pixels_percentage);
+          std::max(is_record_filter ? 13.f : 4.f, error_pixels_percentage);
       max_abs_error = std::max(is_record_filter ? 255 : 36, max_abs_error);
       avg_error = std::max(is_record_filter ? 60.f : 36.f, avg_error);
     }
