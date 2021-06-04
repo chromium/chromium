@@ -654,8 +654,9 @@ class KioskTest : public OobeBaseTest {
 
     // Check that the app had been informed that it is running in a kiosk
     // session.
-    if (check_launch_data)
-      EXPECT_TRUE(launch_data_check_listener.was_satisfied());
+    if (check_launch_data) {
+      EXPECT_TRUE(launch_data_check_listener.WaitUntilSatisfied());
+    }
   }
 
   void WaitForAppLaunchSuccess() {
@@ -1136,8 +1137,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 }
 
-// TODO(crbug.com/1201207): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(KioskTest, DISABLED_AutolaunchWarningConfirm) {
+IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningConfirm) {
   EnableConsumerKioskMode();
 
   WizardController::SkipPostLoginScreensForTesting();
