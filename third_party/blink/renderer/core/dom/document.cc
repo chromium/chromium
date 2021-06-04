@@ -6543,13 +6543,11 @@ KURL Document::CompleteURLWithOverride(const String& url,
 bool Document::ShouldInheritSecurityOriginFromOwner(const KURL& url) {
   // https://html.spec.whatwg.org/C/#origin
   //
-  // If a Document is the initial "about:blank" document The origin and
-  // effective script origin of the Document are those it was assigned when its
-  // browsing context was created.
-  //
-  // Note: We generalize this to all "blank" URLs and invalid URLs because we
-  // treat all of these URLs as about:blank.
-  return url.IsEmpty() || url.ProtocolIsAbout();
+  // In some cases, the Document's origin might be inherited from the owner
+  // document (the creator of the document for the initial empty documents, the
+  // initiator of the navigation for "about:blank", or the parent for
+  // "about:srcdoc".
+  return url.IsEmpty() || url.IsAboutBlankURL() || url.IsAboutSrcdocURL();
 }
 
 KURL Document::OpenSearchDescriptionURL() {

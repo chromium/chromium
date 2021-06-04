@@ -126,6 +126,7 @@
 namespace blink {
 
 namespace {
+
 Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
     const WebVector<int>& initiator_origin_trial_features) {
   Vector<OriginTrialFeature> result;
@@ -1735,6 +1736,52 @@ void DocumentLoader::DidCommitNavigation() {
   }
 }
 
+Frame* DocumentLoader::CalculateOwnerFrame() {
+  // For "about:srcdoc", the parent is the owner frame.
+  if (url_.IsAboutSrcdocURL())
+    return frame_->Tree().Parent();
+
+  // Consider the parent or the opener for 1) about:blank" and 2) the initial
+  // empty document.
+  DCHECK(url_.IsAboutBlankURL() || url_.IsEmpty()) << "url_ = " << url_;
+  Frame* owner_frame = frame_->Tree().Parent();
+  if (!owner_frame)
+    owner_frame = frame_->Loader().Opener();
+
+  // No other checks are needed for the initial empty document.
+  if (url_.IsEmpty())
+    return owner_frame;
+
+  // For about:blank the owner frame should be the actual initiator/requestor of
+  // the navigation - see:
+  // https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
+  //
+  // This requires a few extra checks below.
+  DCHECK(url_.IsAboutBlankURL());
+
+  // Browser-initiated navigations to about:blank should always commit with an
+  // opaque origin (i.e. they should not inherit the origin and other properties
+  // of the `owner_frame`).
+  if (!requestor_origin_)
+    return nullptr;
+
+  // The parent-or-owner heuristic above might not find the actual initiator of
+  // the navigation (e.g. see the SameSiteSiblingToAboutBlank_CrossSiteTop
+  // testcase).  To limit (but not eliminate :-/) incorrect cases we require
+  // that `owner_frame`'s origin is same origin with `requestor_origin_`.
+  //
+  // TODO(https://crbug.com/1176291): Improve heuristics for finding the
+  // correct initiator, to properly inherit/alias `document.domain` in more
+  // cases.
+  if (owner_frame &&
+      owner_frame->GetSecurityContext()->GetSecurityOrigin()->IsSameOriginWith(
+          requestor_origin_.get())) {
+    return owner_frame;
+  } else {
+    return nullptr;
+  }
+}
+
 scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     Document* owner_document) {
   scoped_refptr<SecurityOrigin> origin;
@@ -2060,33 +2107,9 @@ void DocumentLoader::CommitNavigation() {
   // Calculate `owner_document` from which the committing navigation should
   // inherit the cookie URL and inherit/alias the SecurityOrigin.
   if (Document::ShouldInheritSecurityOriginFromOwner(Url())) {
-    // Base `owner_frame` on parent-or-opener heuristic.
-    Frame* owner_frame = frame_->Tree().Parent();
-    if (!owner_frame && !url_.IsAboutSrcdocURL())
-      owner_frame = frame_->Loader().Opener();
-
-    // `owner_document` has to come from a local frame and
-    // 1) for "about:srcdoc" has to be the parent
-    // 2) for other cases ("about:blank" and initial empty document) has to be
-    //    the initiator/requestor of the navigation - see:
-    //    https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
-    // The parent-or-owner heuristic above might not find the actual initiator
-    // of the navigation in the 2nd case (e.g. see the
-    // SameSiteSiblingToAboutBlank_CrossSiteTop testcase).  To limit (but not
-    // eliminate :-/) incorrect cases we require that `owner_document`'s origin
-    // is same origin with `requestor_origin`.
-    //
-    // TODO(https://crbug.com/1176291): Improve heuristics for finding the
-    // correct initiator, to properly inherit/alias `document.domain` in more
-    // cases.
-    auto* owner_local_frame = DynamicTo<LocalFrame>(owner_frame);
-    if (owner_local_frame &&
-        (url_.IsAboutSrcdocURL() || !requestor_origin_ ||
-         owner_local_frame->GetSecurityContext()
-             ->GetSecurityOrigin()
-             ->IsSameOriginWith(requestor_origin_.get()))) {
+    Frame* owner_frame = CalculateOwnerFrame();
+    if (auto* owner_local_frame = DynamicTo<LocalFrame>(owner_frame))
       owner_document = owner_local_frame->GetDocument();
-    }
   }
 
   LocalDOMWindow* previous_window = frame_->DomWindow();

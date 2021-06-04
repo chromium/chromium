@@ -805,16 +805,6 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (renderer_side_origin.opaque() && browser_side_origin.opaque())
     return;
 
-#if defined(OS_ANDROID)
-  // TODO(lukasza): Investigate why about:blank navigations on Android sometimes
-  // have an opaque, unique `browser_side_origin` that doesn't match a regular,
-  // tuple `renderer_side_origin` - see webview_cts_tests,
-  // android.webkit.cts.WebViewTest#testJavascriptInterfaceForClientPopup on
-  // android-pie-arm64-rel.
-  if (navigation_request->GetURL().IsAboutBlank())
-    return;
-#endif
-
   // Navigating to file://localhost/... on windows causes `browser_side_origin`
   // and `renderer_side_origin` to be different (file://localhost/ vs file:///).
   // In particular, without the following block the test

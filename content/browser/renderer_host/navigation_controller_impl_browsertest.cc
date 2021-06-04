@@ -2878,9 +2878,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // This case is not enabled for browser-initiated navigation because the
   // browser-calculated vs renderer-calculated origin doesn't match, leading to
   // a crash.
-  // TODO(https://crbug.com/1190088): Enable this for browser-initiated
-  // navigations too once the bug is fixed.
-  if (renderer_initiated()) {
+  {
     SCOPED_TRACE(testing::Message() << " Testing case 2.");
 
     // Create a new blank window that won't create a NavigationEntry.
