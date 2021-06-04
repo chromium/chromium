@@ -10,8 +10,13 @@
   <template>
     <style include="cr-shared-style iron-flex">
       :host {
+        --cr-dialog-body-padding-horizontal: 24px;
+        --cr-dialog-button-container-padding-bottom: 20px;
+        --cr-dialog-button-container-padding-horizontal: 24px;
         --cr-dialog-width: 320px;
         --cr-dialog-title-slot-padding-bottom: 12px;
+        --cr-dialog-title-slot-padding-end: 24px;
+        --cr-dialog-title-slot-padding-start: 24px;
         --cr-dialog-title-font-size: calc(16 / 13 * 100%);
       }
 
@@ -33,6 +38,9 @@
       #qrCodeCanvas {
         display: block;
         margin: 20px auto 16px auto;
+        max-width: calc(var(--cr-dialog-width) -
+            var(--cr-dialog-title-slot-padding-start) -
+            var(--cr-dialog-title-slot-padding-end));
       }
 
       #eid {
