@@ -74,7 +74,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.CCT_INCOGNITO,
                 ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY,
                 ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS,
-                ChromeFeatureList.CHROME_STARTUP_DELEGATE,
                 ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN,
                 ChromeFeatureList.CLOSE_TAB_SUGGESTIONS,
                 ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,

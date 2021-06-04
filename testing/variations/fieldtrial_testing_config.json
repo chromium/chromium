@@ -1879,24 +1879,6 @@
             ]
         }
     ],
-    "ChromeStartupDelegate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enforced_20210304",
-                    "params": {
-                        "enabled": "true"
-                    },
-                    "enable_features": [
-                        "ChromeStartupDelegate"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeTipsInMainMenu": [
         {
             "platforms": [

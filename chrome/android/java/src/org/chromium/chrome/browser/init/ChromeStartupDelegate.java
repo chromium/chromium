@@ -8,7 +8,5 @@ package org.chromium.chrome.browser.init;
  * Delegate for Chrome startup initialization, implemented downstream.
  */
 public class ChromeStartupDelegate {
-    public static final String ENABLED_PARAM = "enabled";
-
     public void init() {}
 }
