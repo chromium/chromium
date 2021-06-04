@@ -157,6 +157,10 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
       case PRODUCT_BUSINESS_N:
         version_type_ = SUITE_ENTERPRISE;
         break;
+      case PRODUCT_PRO_FOR_EDUCATION:
+      case PRODUCT_PRO_FOR_EDUCATION_N:
+        version_type_ = SUITE_EDUCATION_PRO;
+        break;
       case PRODUCT_EDUCATION:
       case PRODUCT_EDUCATION_N:
         version_type_ = SUITE_EDUCATION;

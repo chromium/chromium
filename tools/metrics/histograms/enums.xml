@@ -59655,6 +59655,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Windows Server Edition"/>
   <int value="3" label="Windows Enterprise Edition"/>
   <int value="4" label="Windows Education Edition"/>
+  <int value="5" label="Windows Pro Education Edition">
+    Extracted from home/unknown editions in M93.
+  </int>
 </enum>
 
 <enum name="OSXExceptionHandlerEvents">
