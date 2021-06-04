@@ -1991,15 +1991,21 @@ void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
 
   bool had_no_effect = compositor_property_animations_have_no_effect_;
   compositor_property_animations_have_no_effect_ = false;
-  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get())) {
-    Element* target = keyframe_effect->EffectTarget();
-    if (target && keyframe_effect->Model()) {
-      compositor_property_animations_have_no_effect_ =
-          CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
-              *target, *keyframe_effect->Model(), paint_artifact_compositor);
-    }
+
+  auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+  if (!keyframe_effect || !keyframe_effect->IsCurrent()) {
+    // If the animation is not running, we can skip checking for having no
+    // effect. We can also skip the call to |SetCompositorPending| to avoid
+    // marking finished animations as pending.
+    return;
   }
 
+  Element* target = keyframe_effect->EffectTarget();
+  if (target && keyframe_effect->Model()) {
+    compositor_property_animations_have_no_effect_ =
+        CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
+            *target, *keyframe_effect->Model(), paint_artifact_compositor);
+  }
   if (compositor_property_animations_have_no_effect_ != had_no_effect)
     SetCompositorPending();
 }
