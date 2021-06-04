@@ -59,8 +59,7 @@ class PrefChangeWatcher {
   DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
-PrefChangeWatcher::PrefChangeWatcher(const char* pref_name,
-                                     PrefService* prefs)
+PrefChangeWatcher::PrefChangeWatcher(const char* pref_name, PrefService* prefs)
     : pref_changed_(false) {
   registrar_.Init(prefs);
   registrar_.Add(pref_name,
@@ -131,12 +130,11 @@ class LoginScreenDefaultPolicyInSessionBrowsertest
 };
 
 LoginScreenDefaultPolicyBrowsertestBase::
-    LoginScreenDefaultPolicyBrowsertestBase() : login_profile_(NULL) {
-}
+    LoginScreenDefaultPolicyBrowsertestBase()
+    : login_profile_(NULL) {}
 
 LoginScreenDefaultPolicyBrowsertestBase::
-    ~LoginScreenDefaultPolicyBrowsertestBase() {
-}
+    ~LoginScreenDefaultPolicyBrowsertestBase() {}
 
 void LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
@@ -152,12 +150,10 @@ void LoginScreenDefaultPolicyBrowsertestBase::
 }
 
 LoginScreenDefaultPolicyLoginScreenBrowsertest::
-    LoginScreenDefaultPolicyLoginScreenBrowsertest() {
-}
+    LoginScreenDefaultPolicyLoginScreenBrowsertest() {}
 
 LoginScreenDefaultPolicyLoginScreenBrowsertest::
-    ~LoginScreenDefaultPolicyLoginScreenBrowsertest() {
-}
+    ~LoginScreenDefaultPolicyLoginScreenBrowsertest() {}
 
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -201,12 +197,10 @@ void LoginScreenDefaultPolicyLoginScreenBrowsertest::
 }
 
 LoginScreenDefaultPolicyInSessionBrowsertest::
-    LoginScreenDefaultPolicyInSessionBrowsertest() {
-}
+    LoginScreenDefaultPolicyInSessionBrowsertest() {}
 
 LoginScreenDefaultPolicyInSessionBrowsertest::
-    ~LoginScreenDefaultPolicyInSessionBrowsertest() {
-}
+    ~LoginScreenDefaultPolicyInSessionBrowsertest() {}
 
 void LoginScreenDefaultPolicyInSessionBrowsertest::SetUpOnMainThread() {
   LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread();
@@ -232,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
   // Enable the large cursor through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_large_cursor_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_large_cursor_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityLargeCursorEnabled);
 
@@ -256,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
   // Enable spoken feedback through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_spoken_feedback_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_spoken_feedback_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
@@ -280,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
   // Enable high contrast mode through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_high_contrast_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_high_contrast_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityHighContrastEnabled);
 
@@ -304,8 +298,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
   // Set the screen magnifier through device policy and wait for the change
   // to take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_screen_magnifier_type(kFullScreenMagnifier);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_screen_magnifier_type(kFullScreenMagnifier);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityScreenMagnifierEnabled);
 
@@ -329,8 +323,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   // Enable the large cursor through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_large_cursor_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_large_cursor_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityLargeCursorEnabled);
 
@@ -353,8 +347,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   // Enable spoken feedback through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_spoken_feedback_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_spoken_feedback_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
@@ -377,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   // Enable high contrast mode through device policy and wait for the change to
   // take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_high_contrast_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_high_contrast_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityHighContrastEnabled);
 
@@ -400,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyInSessionBrowsertest,
   // Set the screen magnifier through device policy and wait for the change
   // to take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_screen_magnifier_type(kFullScreenMagnifier);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_screen_magnifier_type(kFullScreenMagnifier);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityScreenMagnifierEnabled);
 
@@ -423,8 +417,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenDefaultPolicyLoginScreenBrowsertest,
   // Enable the on-screen keyboard through device policy and wait for the change
   // to take effect.
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_accessibility_settings()->
-      set_login_screen_default_virtual_keyboard_enabled(true);
+  proto.mutable_accessibility_settings()
+      ->set_login_screen_default_virtual_keyboard_enabled(true);
   RefreshDevicePolicyAndWaitForPrefChange(
       ash::prefs::kAccessibilityVirtualKeyboardEnabled);
 

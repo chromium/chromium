@@ -92,8 +92,7 @@ class BlockingLoginTest
       public content::NotificationObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
-  BlockingLoginTest() : profile_added_(NULL) {
-  }
+  BlockingLoginTest() : profile_added_(NULL) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
@@ -104,8 +103,7 @@ class BlockingLoginTest
   }
 
   void SetUpOnMainThread() override {
-    registrar_.Add(this,
-                   chrome::NOTIFICATION_PROFILE_ADDED,
+    registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
                    content::NotificationService::AllSources());
 
     OobeBaseTest::SetUpOnMainThread();
@@ -129,9 +127,7 @@ class BlockingLoginTest
     profile_added_ = content::Source<Profile>(source).ptr();
   }
 
-  void RunUntilIdle() {
-    base::RunLoop().RunUntilIdle();
-  }
+  void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
   void EnrollDevice(const std::string& domain) {
     base::RunLoop loop;

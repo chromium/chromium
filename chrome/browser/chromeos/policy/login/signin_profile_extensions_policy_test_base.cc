@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
+#include "chrome/browser/chromeos/policy/login/signin_profile_extensions_policy_test_base.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"

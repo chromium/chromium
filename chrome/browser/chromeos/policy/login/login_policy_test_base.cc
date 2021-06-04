@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/login_policy_test_base.h"
+#include "chrome/browser/chromeos/policy/login/login_policy_test_base.h"
 
 #include <memory>
 
@@ -83,12 +83,10 @@ Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
 }
 
 void LoginPolicyTestBase::GetMandatoryPoliciesValue(
-    base::DictionaryValue* policy) const {
-}
+    base::DictionaryValue* policy) const {}
 
 void LoginPolicyTestBase::GetRecommendedPoliciesValue(
-    base::DictionaryValue* policy) const {
-}
+    base::DictionaryValue* policy) const {}
 
 void LoginPolicyTestBase::SetMergeSessionParams() {
   FakeGaia::MergeSessionParams params;

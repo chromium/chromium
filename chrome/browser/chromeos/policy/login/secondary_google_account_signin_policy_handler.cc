@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/secondary_google_account_signin_policy_handler.h"
+#include "chrome/browser/chromeos/policy/login/secondary_google_account_signin_policy_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "components/policy/core/common/policy_map.h"

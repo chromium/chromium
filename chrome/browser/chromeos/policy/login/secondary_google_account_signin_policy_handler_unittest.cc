@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/policy/secondary_google_account_signin_policy_handler.h"
+#include "chrome/browser/chromeos/policy/login/secondary_google_account_signin_policy_handler.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"

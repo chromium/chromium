@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
-#include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
+#include "chrome/browser/chromeos/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"

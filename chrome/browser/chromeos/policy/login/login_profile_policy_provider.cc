@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/login_profile_policy_provider.h"
+#include "chrome/browser/chromeos/policy/login/login_profile_policy_provider.h"
 
 #include <memory>
 #include <string>
