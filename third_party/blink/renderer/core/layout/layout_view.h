@@ -134,8 +134,6 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   LayoutUnit ViewLogicalHeightForPercentages() const;
 
-  float ZoomFactor() const;
-
   LocalFrameView* GetFrameView() const {
     NOT_DESTROYED();
     return frame_view_;

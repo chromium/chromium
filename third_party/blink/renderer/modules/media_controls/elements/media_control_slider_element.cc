@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_slider_element.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
@@ -153,9 +154,8 @@ int MediaControlSliderElement::TrackWidth() {
 }
 
 float MediaControlSliderElement::ZoomFactor() const {
-  if (!GetDocument().GetLayoutView())
-    return 1;
-  return GetDocument().GetLayoutView()->ZoomFactor();
+  const LocalFrame* frame = GetDocument().GetFrame();
+  return frame ? frame->PageZoomFactor() : 1;
 }
 
 void MediaControlSliderElement::NotifyElementSizeChanged() {

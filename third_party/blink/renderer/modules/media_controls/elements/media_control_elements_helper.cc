@@ -7,9 +7,10 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -95,8 +96,8 @@ gfx::Size MediaControlElementsHelper::GetSizeOrDefault(
     height = box->LogicalHeight().Round();
   }
 
-  if (element.GetDocument().GetLayoutView())
-    zoom_factor = element.GetDocument().GetLayoutView()->ZoomFactor();
+  if (const LocalFrame* frame = element.GetDocument().GetFrame())
+    zoom_factor = frame->PageZoomFactor();
 
   return gfx::Size(round(width / zoom_factor), round(height / zoom_factor));
 }

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
+
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 namespace blink {
@@ -189,7 +190,7 @@ bool SelectionBoundsRecorder::IsVisible(const LayoutObject& rect_layout_object,
     return true;
 
   const PhysicalOffset sample_point = GetSamplePointForVisibility(
-      edge_start, edge_end, rect_layout_object.View()->ZoomFactor());
+      edge_start, edge_end, rect_layout_object.GetFrame()->PageZoomFactor());
 
   auto* const text_control_object = To<LayoutBox>(layout_object);
   const PhysicalOffset position_in_input =
