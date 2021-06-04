@@ -29,7 +29,20 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void HandleAuthenticatorLoaded(const base::ListValue*);
   void HandleUpdateUserPassword(const base::ListValue*);
 
+  bool IsAuthenticatorLoaded(base::OnceClosure callback);
+  bool IsJsReadyForTesting(base::OnceClosure js_ready_callback);
+
+  void force_saml_redirect_for_testing() {
+    force_saml_redirect_for_testing_ = true;
+  }
+
  private:
+  enum class AuthenticatorState {
+    NOT_LOADED,
+    LOADING,
+    LOADED
+  };
+
   void LoadAuthenticatorParam();
 
   void LoadGaia(const login::GaiaContext& context);
@@ -46,10 +59,14 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void OnCookieWaitTimeout();
 
+  void OnJsReadyForTesting();
+
   void CheckCredentials(const UserContext& user_context);
 
-  // True if the authenticator is still loading.
-  bool authenticator_being_loaded_ = false;
+  AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
+
+  // For testing only. Forces SAML redirect regardless of email.
+  bool force_saml_redirect_for_testing_ = false;
 
   // User non-canonicalized email for display
   std::string email_;
@@ -64,6 +81,13 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
       extension_provided_client_cert_usage_observer_;
 
   std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+
+  // A test may be waiting for the authenticator to load.
+  base::OnceClosure waiting_caller_;
+
+  // Tests need to wait until the renderer is ready to execute JavaScript.
+  bool js_ready_ = false;
+  base::OnceClosure initialization_callback_for_testing_;
 
   base::WeakPtrFactory<LockScreenReauthHandler> weak_factory_{this};
 };

@@ -156,7 +156,7 @@
         }
       </style>
       <div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
-          aria-modal="true"
+          aria-modal="true" id="verifyAccountScreen"
           aria-label="$i18n{loginWelcomeMessage}">
         <div class="header">
           <iron-icon class="title-icon" icon="oobe-32:avatar"></iron-icon>
@@ -176,7 +176,7 @@
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
+          <cr-button id="nextButtonVerifyScreen" class="action-button" on-click="onVerify_">
             $i18n{lockScreenVerifyButton}
           </cr-button>
         </div>

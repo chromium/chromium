@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,7 +32,10 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUILockScreenStartReauthHost);
 
-  web_ui->AddMessageHandler(std::make_unique<LockScreenReauthHandler>(email));
+  auto main_handler = std::make_unique<LockScreenReauthHandler>(email);
+  main_handler_ = main_handler.get();
+  web_ui->AddMessageHandler(std::move(main_handler));
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();

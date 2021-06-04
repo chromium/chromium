@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_START_REAUTH_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_START_REAUTH_UI_H_
 
+#include "base/callback_list.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
@@ -14,6 +16,14 @@ class LockScreenStartReauthUI : public ui::WebDialogUI {
  public:
   explicit LockScreenStartReauthUI(content::WebUI* web_ui);
   ~LockScreenStartReauthUI() override;
+
+  LockScreenReauthHandler* GetMainHandlerForTests() { return main_handler_; }
+
+ private:
+  // The main message handler.
+  LockScreenReauthHandler* main_handler_;
+
+  base::WeakPtrFactory<LockScreenStartReauthUI> weak_factory_{this};
 };
 
 }  // namespace chromeos

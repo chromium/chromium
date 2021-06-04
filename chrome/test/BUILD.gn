@@ -3092,6 +3092,7 @@ if (!is_android) {
         "../browser/ash/login/saml/password_change_extension_browsertest.cc",
         "../browser/ash/login/saml/password_change_success_detection_browsertest.cc",
         "../browser/ash/login/saml/saml_browsertest.cc",
+        "../browser/ash/login/saml/saml_lockscreen_browsertest.cc",
         "../browser/ash/login/saml/security_token_saml_browsertest.cc",
         "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.cc",
         "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.h",
