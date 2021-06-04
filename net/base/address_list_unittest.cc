@@ -4,7 +4,7 @@
 
 #include "net/base/address_list.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "net/base/ip_address.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"

@@ -4,7 +4,7 @@
 
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"

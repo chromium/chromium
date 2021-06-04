@@ -4,7 +4,7 @@
 
 #include "net/ntlm/ntlm_buffer_writer.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

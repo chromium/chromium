@@ -17,9 +17,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/request_priority.h"

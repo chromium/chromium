@@ -15,9 +15,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"

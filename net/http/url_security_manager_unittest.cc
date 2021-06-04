@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"

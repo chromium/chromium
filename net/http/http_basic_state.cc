@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "net/proxy_resolution/proxy_config.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
 #include "net/proxy_resolution/proxy_info.h"

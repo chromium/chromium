@@ -15,7 +15,7 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/io_buffer.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/test_completion_callback.h"

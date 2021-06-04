@@ -4,7 +4,7 @@
 
 #include "net/proxy_resolution/win/proxy_config_service_win.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
