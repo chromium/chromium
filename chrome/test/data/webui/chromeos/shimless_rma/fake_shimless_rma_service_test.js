@@ -377,15 +377,11 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('SetComponentsRepairStateOK', () => {
+  test('SetComponentListOk', () => {
     let components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairState.kOriginal
-      },
-      {
-        component: ComponentType.kTrackpad,
-        state: ComponentRepairState.kMissing
       },
     ];
     let states = [
@@ -394,21 +390,17 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.setComponentsRepairState(components).then((state) => {
+    return service.setComponentList(components).then((state) => {
       assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('SetComponentsRepairStateWrongStateFails', () => {
+  test('SetComponentListWrongStateFails', () => {
     let components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairState.kOriginal
-      },
-      {
-        component: ComponentType.kTrackpad,
-        state: ComponentRepairState.kMissing
       },
     ];
     let states = [
@@ -417,7 +409,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.setComponentsRepairState(components).then((state) => {
+    return service.setComponentList(components).then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });

@@ -288,9 +288,9 @@ export class FakeShimlessRmaService {
    * @param {!Array<!Component>} components
    * @return {!Promise<!StateResult>}
    */
-  setComponentsRepairState(components) {
+  setComponentList(components) {
     return this.getNextStateForMethod_(
-        'setComponentsRepairState', RmaState.kSelectComponents);
+      'setComponentList', RmaState.kSelectComponents);
   }
 
   /**
@@ -698,7 +698,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('setRsuDisableWriteProtectCode');
 
     this.methods_.register('getComponentList');
-    this.methods_.register('setComponentsRepairState');
+    this.methods_.register('setComponentList');
     this.methods_.register('reworkMainboard');
 
     this.methods_.register('reimageRequired');
