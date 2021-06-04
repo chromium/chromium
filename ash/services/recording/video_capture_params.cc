@@ -16,6 +16,14 @@ namespace recording {
 
 namespace {
 
+// Returns a rect that is the result of intersecting the given two rects.
+gfx::Rect GetIntersectionRect(const gfx::Rect& rect_a,
+                              const gfx::Rect& rect_b) {
+  auto result = rect_a;
+  result.Intersect(rect_b);
+  return result;
+}
+
 // -----------------------------------------------------------------------------
 // FullscreenCaptureParams:
 
@@ -60,9 +68,22 @@ class WindowCaptureParams : public VideoCaptureParams {
   ~WindowCaptureParams() override = default;
 
   // VideoCaptureParams:
+  void SetCapturerResolutionConstraints(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer)
+      const override {
+    DCHECK(capturer);
+
+    // To avoid receiving letterboxed video frames from the capturer, we ask it
+    // to give us an exact resolution matching the window's size.
+    capturer->SetResolutionConstraints(/*min_size=*/current_window_size_,
+                                       /*max_size=*/current_window_size_,
+                                       /*use_fixed_aspect_ratio=*/true);
+  }
+
   gfx::Rect GetVideoFrameVisibleRect(
       const gfx::Rect& original_frame_visible_rect) const override {
-    return gfx::Rect(current_window_size_);
+    return GetIntersectionRect(original_frame_visible_rect,
+                               gfx::Rect(current_window_size_));
   }
 
   gfx::Size GetVideoSize() const override { return current_window_size_; }
@@ -74,20 +95,16 @@ class WindowCaptureParams : public VideoCaptureParams {
     DCHECK(new_frame_sink_id.is_valid());
     DCHECK_NE(frame_sink_id_, new_frame_sink_id);
 
-    // The video encoder deals with video frames. Changing the frame sink ID
-    // doesn't affect the encoder. What affects it is a change in the video
-    // frames size.
-    const bool should_reconfigure_video_encoder =
-        current_frame_sink_size_ != new_frame_sink_size;
-
     current_frame_sink_size_ = new_frame_sink_size;
     frame_sink_id_ = new_frame_sink_id;
-    capturer->SetResolutionConstraints(/*min_size=*/current_frame_sink_size_,
-                                       /*max_size=*/current_frame_sink_size_,
-                                       /*use_fixed_aspect_ratio=*/true);
     capturer->ChangeTarget(frame_sink_id_, subtree_capture_id_);
 
-    return should_reconfigure_video_encoder;
+    // Changing the frame sink (i.e. changing the root window) should not lead
+    // to reconfiguring the encoder, even if the new frame sink size is
+    // different. This is because the video size matches the recorded window's
+    // size (i.e. |current_window_size_|). This is already handled in
+    // OnRecordedWindowSizeChanged() below.
+    return false;
   }
 
   bool OnRecordedWindowSizeChanged(
@@ -96,6 +113,7 @@ class WindowCaptureParams : public VideoCaptureParams {
     if (current_window_size_ == new_window_size)
       return false;
     current_window_size_ = new_window_size;
+    SetCapturerResolutionConstraints(capturer);
     return true;
   }
 
@@ -124,9 +142,7 @@ class RegionCaptureParams : public VideoCaptureParams {
       const gfx::Rect& original_frame_visible_rect) const override {
     // We can't crop the video frame by an invalid bounds. The crop bounds must
     // be contained within the original frame bounds.
-    gfx::Rect visible_rect = original_frame_visible_rect;
-    visible_rect.Intersect(crop_region_);
-    return visible_rect;
+    return GetIntersectionRect(original_frame_visible_rect, crop_region_);
   }
 
   gfx::Size GetVideoSize() const override {
@@ -176,14 +192,21 @@ void VideoCaptureParams::InitializeVideoCapturer(
 
   capturer->SetMinCapturePeriod(kMinCapturePeriod);
   capturer->SetMinSizeChangePeriod(kMinPeriodForResizeThrottling);
-  capturer->SetResolutionConstraints(/*min_size=*/current_frame_sink_size_,
-                                     /*max_size=*/current_frame_sink_size_,
-                                     /*use_fixed_aspect_ratio=*/true);
+  SetCapturerResolutionConstraints(capturer);
   capturer->SetAutoThrottlingEnabled(false);
   // TODO(afakhry): Discuss with //media/ team the implications of color space
   // conversions.
   capturer->SetFormat(media::PIXEL_FORMAT_I420, kColorSpace);
   capturer->ChangeTarget(frame_sink_id_, subtree_capture_id_);
+}
+
+void VideoCaptureParams::SetCapturerResolutionConstraints(
+    mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const {
+  DCHECK(capturer);
+
+  capturer->SetResolutionConstraints(/*min_size=*/current_frame_sink_size_,
+                                     /*max_size=*/current_frame_sink_size_,
+                                     /*use_fixed_aspect_ratio=*/true);
 }
 
 gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(
@@ -213,9 +236,7 @@ bool VideoCaptureParams::OnFrameSinkSizeChanged(
     return false;
 
   current_frame_sink_size_ = new_frame_sink_size;
-  capturer->SetResolutionConstraints(/*min_size=*/current_frame_sink_size_,
-                                     /*max_size=*/current_frame_sink_size_,
-                                     /*use_fixed_aspect_ratio=*/true);
+  SetCapturerResolutionConstraints(capturer);
   return true;
 }
 

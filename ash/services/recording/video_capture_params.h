@@ -70,6 +70,12 @@ class VideoCaptureParams {
   void InitializeVideoCapturer(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const;
 
+  // Sets the desired resolution constraints on the given |capturer|. By default
+  // the size of the recorded frame sink is used. Sub classes can override this
+  // behavior if needed.
+  virtual void SetCapturerResolutionConstraints(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const;
+
   // Returns the bounds to which a video frame, whose
   // |original_frame_visible_rect| is given, should be cropped. If no cropping
   // is desired, |original_frame_visible_rect| is returned. All bounds are in
