@@ -137,6 +137,16 @@ class DatabaseQuotaClientTest : public testing::Test {
         kOriginOther(url::Origin::Create(GURL("http://other"))),
         mock_tracker_(base::MakeRefCounted<MockDatabaseTracker>()) {}
 
+  void TearDown() override {
+    base::RunLoop run_loop;
+    mock_tracker_->task_runner()->PostTask(FROM_HERE,
+                                           base::BindLambdaForTesting([&]() {
+                                             mock_tracker_->Shutdown();
+                                             run_loop.Quit();
+                                           }));
+    run_loop.Run();
+  }
+
   static int64_t GetOriginUsage(QuotaClient& client,
                                 const url::Origin& origin,
                                 blink::mojom::StorageType type) {

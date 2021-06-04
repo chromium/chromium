@@ -25,6 +25,7 @@
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "storage/browser/database/database_tracker.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
@@ -54,18 +55,24 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     render_process_host_ =
         std::make_unique<MockRenderProcessHost>(&browser_context_);
 
-    scoped_refptr<storage::DatabaseTracker> db_tracker =
+    db_tracker_ =
         storage::DatabaseTracker::Create(base::FilePath(),
                                          /*is_incognito=*/false,
                                          /*special_storage_policy=*/nullptr,
                                          /*quota_manager_proxy=*/nullptr);
-
-    task_runner_ = db_tracker->task_runner();
-    host_ = std::make_unique<WebDatabaseHostImpl>(process_id(),
-                                                  std::move(db_tracker));
+    // Raw pointer usage is safe because `host_` stores a reference to the
+    // DatabaseTracker, keeping it alive for the duration of the test.
+    task_runner_ = db_tracker_->task_runner();
+    host_ = std::make_unique<WebDatabaseHostImpl>(process_id(), db_tracker_);
   }
 
   void TearDown() override {
+    base::RunLoop run_loop;
+    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                             db_tracker_->Shutdown();
+                             run_loop.Quit();
+                           }));
+    run_loop.Run();
     task_runner_->DeleteSoon(FROM_HERE, std::move(host_));
     RunUntilIdle();
   }
@@ -121,6 +128,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
+  scoped_refptr<storage::DatabaseTracker> db_tracker_;
   std::unique_ptr<WebDatabaseHostImpl> host_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

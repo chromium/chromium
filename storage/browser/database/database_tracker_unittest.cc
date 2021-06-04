@@ -168,7 +168,7 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
            modifications_[origin].second == amount;
   }
 
-  void reset() {
+  void ResetRecordedTestState() {
     accesses_.clear();
     modifications_.clear();
   }
@@ -302,6 +302,8 @@ class DatabaseTracker_TestHelper_Test {
 
           tracker->DatabaseClosed(kOrigin2, kDB3);
           tracker->RemoveObserver(&observer);
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -448,6 +450,8 @@ class DatabaseTracker_TestHelper_Test {
           origin1_info = tracker->GetCachedOriginInfo(kOrigin1);
           EXPECT_TRUE(origin1_info);
           EXPECT_EQ(0, origin1_info->TotalSize());
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -482,7 +486,7 @@ class DatabaseTracker_TestHelper_Test {
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
           EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           base::FilePath db_file(tracker->GetFullDBFilePath(kOriginId, kName));
           EXPECT_FALSE(
@@ -492,12 +496,12 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           tracker->DatabaseModified(kOriginId, kName);
           EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 10));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           EXPECT_TRUE(EnsureFileOfSize(db_file, 100));
           tracker->DatabaseModified(kOriginId, kName);
           EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 90));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           tracker->DatabaseClosed(kOriginId, kName);
           EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
@@ -507,7 +511,7 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(delete_database_callback.have_result());
           EXPECT_EQ(net::OK, delete_database_callback.WaitForResult());
           EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, -100));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           EXPECT_FALSE(
               base::PathExists(tracker->GetOriginDirectory(kOriginId)));
@@ -519,7 +523,7 @@ class DatabaseTracker_TestHelper_Test {
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
           EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           db_file = tracker->GetFullDBFilePath(kOriginId, kName);
           EXPECT_FALSE(
@@ -529,7 +533,7 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           tracker->DatabaseModified(kOriginId, kName);
           EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 100));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           net::TestCompletionCallback delete_database_callback2;
           tracker->DeleteDatabase(kOriginId, kName,
@@ -546,7 +550,7 @@ class DatabaseTracker_TestHelper_Test {
               base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           EXPECT_TRUE(delete_database_callback2.have_result());
           EXPECT_EQ(net::OK, delete_database_callback2.WaitForResult());
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
 
           // Create a database and up the file size without telling
           // the tracker about the modification, than simulate a
@@ -556,7 +560,7 @@ class DatabaseTracker_TestHelper_Test {
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
           EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
-          test_quota_proxy->reset();
+          test_quota_proxy->ResetRecordedTestState();
           db_file = tracker->GetFullDBFilePath(kOriginId, kName);
           EXPECT_FALSE(
               base::PathExists(tracker->GetOriginDirectory(kOriginId)));
@@ -572,6 +576,8 @@ class DatabaseTracker_TestHelper_Test {
           // Cleanup.
           crashed_renderer_connections.RemoveAllConnections();
           test_quota_proxy->SimulateQuotaManagerDestroyed();
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -666,6 +672,8 @@ class DatabaseTracker_TestHelper_Test {
           // of kOrigin2 is deleted.
           EXPECT_TRUE(base::PathExists(origin1_db_dir));
           EXPECT_FALSE(base::PathExists(origin2_db_dir));
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -758,6 +766,8 @@ class DatabaseTracker_TestHelper_Test {
 
           EXPECT_TRUE(base::PathExists(origin1_db_dir));
           EXPECT_TRUE(base::PathExists(origin2_db_dir));
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -815,6 +825,8 @@ class DatabaseTracker_TestHelper_Test {
           infos.clear();
           EXPECT_TRUE(tracker->GetAllOriginsInfo(&infos));
           EXPECT_TRUE(infos.empty());
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
@@ -903,6 +915,8 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_FALSE(base::PathExists(spoof_db_file2));
 
           tracker->RemoveObserver(&observer);
+
+          tracker->Shutdown();
         }));
     run_loop.Run();
   }
