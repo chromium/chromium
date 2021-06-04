@@ -39,16 +39,23 @@ inline void InlineSizesFromStyle(
     *inline_size = LayoutUnit(length.Value());
     if (is_content_box)
       *inline_size = **inline_size + inline_border_padding;
+    else
+      *inline_size = std::max(**inline_size, inline_border_padding);
   }
   if (min_length.IsFixed()) {
     *min_inline_size = LayoutUnit(min_length.Value());
     if (is_content_box)
       *min_inline_size = **min_inline_size + inline_border_padding;
+    else
+      *min_inline_size = std::max(**min_inline_size, inline_border_padding);
   }
   if (max_length.IsFixed()) {
     *max_inline_size = LayoutUnit(max_length.Value());
     if (is_content_box)
       *max_inline_size = **max_inline_size + inline_border_padding;
+    else
+      *max_inline_size = std::max(**max_inline_size, inline_border_padding);
+
     if (*min_inline_size)
       *max_inline_size = std::max(**min_inline_size, **max_inline_size);
   }

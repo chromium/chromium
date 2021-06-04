@@ -79,6 +79,19 @@
   </tbody>
 </table>
 
+<p>box-sizing: border-box;padding: px, width px</p>
+<li>td's intrinsic width must be >= border + padding</li>
+
+<table style="width:300px;table-layout:fixed">
+  <tbody>
+    <tr>
+      <td style="box-sizing:border-box;padding-left:50px;padding-right:50px;width:30px" data-expected-width=100></td>
+      <td>auto</td>
+      <td>auto</td>
+    </tr>
+  </tbody>
+</table>
+
 <p>box-sizing: border-box; border px; padding %.</p>
 <li>intrinsic size of % padding is 0.
 <li>final size of % padding is computed against table's width.
@@ -127,6 +140,8 @@
     </td>
   </tr>
 </table>
+
+
 </main>
 <script>
   checkLayout("table");
