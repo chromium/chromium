@@ -1259,7 +1259,7 @@ class FailingSocketFactory : public MDnsSocketFactory {
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override {
     auto socket =
         std::make_unique<MockMDnsDatagramServerSocket>(ADDRESS_FAMILY_IPV4);
-    EXPECT_CALL(*socket, RecvFromInternal(_, _, _, _))
+    EXPECT_CALL(*socket, RecvFrom(_, _, _, _))
         .WillRepeatedly(Return(ERR_FAILED));
     sockets->push_back(std::move(socket));
   }
@@ -1372,9 +1372,9 @@ class MDnsConnectionTest : public TestWithTaskEnvironment {
 
 TEST_F(MDnsConnectionTest, ReceiveSynchronous) {
   socket_ipv6_->SetResponsePacket(sample_packet_);
-  EXPECT_CALL(*socket_ipv4_, RecvFromInternal(_, _, _, _))
+  EXPECT_CALL(*socket_ipv4_, RecvFrom(_, _, _, _))
       .WillOnce(Return(ERR_IO_PENDING));
-  EXPECT_CALL(*socket_ipv6_, RecvFromInternal(_, _, _, _))
+  EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
       .WillOnce(
           Invoke(socket_ipv6_, &MockMDnsDatagramServerSocket::HandleRecvNow))
       .WillOnce(Return(ERR_IO_PENDING));
@@ -1386,9 +1386,9 @@ TEST_F(MDnsConnectionTest, ReceiveSynchronous) {
 TEST_F(MDnsConnectionTest, ReceiveAsynchronous) {
   socket_ipv6_->SetResponsePacket(sample_packet_);
 
-  EXPECT_CALL(*socket_ipv4_, RecvFromInternal(_, _, _, _))
+  EXPECT_CALL(*socket_ipv4_, RecvFrom(_, _, _, _))
       .WillOnce(Return(ERR_IO_PENDING));
-  EXPECT_CALL(*socket_ipv6_, RecvFromInternal(_, _, _, _))
+  EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
       .Times(2)
       .WillOnce(
           Invoke(socket_ipv6_, &MockMDnsDatagramServerSocket::HandleRecvLater))
@@ -1402,17 +1402,20 @@ TEST_F(MDnsConnectionTest, ReceiveAsynchronous) {
 }
 
 TEST_F(MDnsConnectionTest, Error) {
-  CompletionRepeatingCallback callback;
+  CompletionOnceCallback callback;
 
-  EXPECT_CALL(*socket_ipv4_, RecvFromInternal(_, _, _, _))
+  EXPECT_CALL(*socket_ipv4_, RecvFrom(_, _, _, _))
       .WillOnce(Return(ERR_IO_PENDING));
-  EXPECT_CALL(*socket_ipv6_, RecvFromInternal(_, _, _, _))
-      .WillOnce(DoAll(SaveArg<3>(&callback), Return(ERR_IO_PENDING)));
+  EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
+      .WillOnce([&](auto, auto, auto, auto cb) {
+        callback = std::move(cb);
+        return ERR_IO_PENDING;
+      });
 
   ASSERT_THAT(InitConnection(), test::IsOk());
 
   EXPECT_CALL(delegate_, OnConnectionError(ERR_SOCKET_NOT_CONNECTED));
-  callback.Run(ERR_SOCKET_NOT_CONNECTED);
+  std::move(callback).Run(ERR_SOCKET_NOT_CONNECTED);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1420,9 +1423,9 @@ class MDnsConnectionSendTest : public MDnsConnectionTest {
  protected:
   void SetUp() override {
     MDnsConnectionTest::SetUp();
-    EXPECT_CALL(*socket_ipv4_, RecvFromInternal(_, _, _, _))
+    EXPECT_CALL(*socket_ipv4_, RecvFrom(_, _, _, _))
         .WillOnce(Return(ERR_IO_PENDING));
-    EXPECT_CALL(*socket_ipv6_, RecvFromInternal(_, _, _, _))
+    EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
         .WillOnce(Return(ERR_IO_PENDING));
     EXPECT_THAT(InitConnection(), test::IsOk());
   }
@@ -1456,11 +1459,14 @@ TEST_F(MDnsConnectionSendTest, SendQueued) {
       .Times(2)
       .WillRepeatedly(Return(OK));
 
-  CompletionRepeatingCallback callback;
+  CompletionOnceCallback callback;
   // Delay sending data. Only the first call should be made.
   EXPECT_CALL(*socket_ipv6_,
               SendToInternal(sample_packet_, "[ff02::fb]:5353", _))
-      .WillOnce(DoAll(SaveArg<2>(&callback), Return(ERR_IO_PENDING)));
+      .WillOnce([&](auto, auto, auto cb) {
+        callback = std::move(cb);
+        return ERR_IO_PENDING;
+      });
 
   connection_.Send(sample_buffer_, sample_packet_.size());
   connection_.Send(sample_buffer_, sample_packet_.size());
@@ -1473,7 +1479,7 @@ TEST_F(MDnsConnectionSendTest, SendQueued) {
   EXPECT_CALL(*socket_ipv6_,
               SendToInternal(sample_packet_, "[ff02::fb]:5353", _))
       .WillOnce(Return(OK));
-  callback.Run(OK);
+  std::move(callback).Run(OK);
 }
 
 TEST(MDnsSocketTest, CreateSocket) {

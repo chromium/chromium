@@ -152,13 +152,9 @@ class MockFailingMdnsSocketFactory : public net::MDnsSocketFactory {
   // primitive but failed sending;
   int FailToSend(const std::string& packet,
                  const std::string& address,
-                 net::CompletionRepeatingCallback callback) {
+                 net::CompletionOnceCallback callback) {
     OnSendTo(packet);
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](net::CompletionRepeatingCallback callback) { callback.Run(-1); },
-            callback));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback), -1));
     return -1;
   }
 
@@ -167,17 +163,14 @@ class MockFailingMdnsSocketFactory : public net::MDnsSocketFactory {
   // called.
   int MaybeBlockSend(const std::string& packet,
                      const std::string& address,
-                     net::CompletionRepeatingCallback callback) {
+                     net::CompletionOnceCallback callback) {
     OnSendTo(packet);
     if (block_send_) {
       blocked_packet_size_ = packet.size();
       blocked_send_callback_ = std::move(callback);
     } else {
       task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce([](net::CompletionRepeatingCallback callback,
-                            size_t packet_size) { callback.Run(packet_size); },
-                         callback, packet.size()));
+          FROM_HERE, base::BindOnce(std::move(callback), packet.size()));
     }
     return -1;
   }
@@ -190,7 +183,7 @@ class MockFailingMdnsSocketFactory : public net::MDnsSocketFactory {
   void ResumeSend() {
     DCHECK(block_send_);
     block_send_ = false;
-    blocked_send_callback_.Run(blocked_packet_size_);
+    std::move(blocked_send_callback_).Run(blocked_packet_size_);
   }
 
   // Emulates the asynchronous contract of invoking |callback| in the RecvFrom
@@ -198,20 +191,16 @@ class MockFailingMdnsSocketFactory : public net::MDnsSocketFactory {
   int FailToRecv(net::IOBuffer* buffer,
                  int size,
                  net::IPEndPoint* address,
-                 net::CompletionRepeatingCallback callback) {
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(
-                               [](net::CompletionRepeatingCallback callback) {
-                                 callback.Run(net::ERR_FAILED);
-                               },
-                               callback));
+                 net::CompletionOnceCallback callback) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
     return net::ERR_IO_PENDING;
   }
 
  private:
   bool block_send_ = false;
   size_t blocked_packet_size_ = 0;
-  net::CompletionRepeatingCallback blocked_send_callback_;
+  net::CompletionOnceCallback blocked_send_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
@@ -996,8 +985,7 @@ TEST_F(MdnsResponderTest, AnnouncementRetriedAfterSendFailure) {
         ON_CALL(*socket, SendToInternal(_, _, _))
             .WillByDefault(Invoke(&failing_socket_factory_,
                                   &MockFailingMdnsSocketFactory::FailToSend));
-        ON_CALL(*socket, RecvFromInternal(_, _, _, _))
-            .WillByDefault(Return(-1));
+        ON_CALL(*socket, RecvFrom(_, _, _, _)).WillByDefault(Return(-1));
 
         sockets->push_back(std::move(socket));
       };
@@ -1372,7 +1360,7 @@ TEST_F(MdnsResponderTest, ManagerCanRestartAfterAllSocketHandlersFailToRead) {
                 net::ADDRESS_FAMILY_IPV4);
 
         ON_CALL(*socket, SendToInternal(_, _, _)).WillByDefault(Return(0));
-        ON_CALL(*socket, RecvFromInternal(_, _, _, _))
+        ON_CALL(*socket, RecvFrom(_, _, _, _))
             .WillByDefault(Invoke(&failing_socket_factory_,
                                   &MockFailingMdnsSocketFactory::FailToRecv));
 
@@ -1406,8 +1394,7 @@ TEST_F(MdnsResponderTest, IncompleteSendBlocksFollowingSends) {
             .WillByDefault(
                 Invoke(&failing_socket_factory_,
                        &MockFailingMdnsSocketFactory::MaybeBlockSend));
-        ON_CALL(*socket, RecvFromInternal(_, _, _, _))
-            .WillByDefault(Return(-1));
+        ON_CALL(*socket, RecvFrom(_, _, _, _)).WillByDefault(Return(-1));
 
         sockets->push_back(std::move(socket));
       };
