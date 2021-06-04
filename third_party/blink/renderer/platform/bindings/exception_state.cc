@@ -194,7 +194,7 @@ void ExceptionState::PushContextScope(ContextScope* scope) {
 }
 
 void ExceptionState::PopContextScope() {
-  DCHECK(!context_stack_top_);
+  DCHECK(context_stack_top_);
   context_stack_top_ = context_stack_top_->GetParent();
 }
 
