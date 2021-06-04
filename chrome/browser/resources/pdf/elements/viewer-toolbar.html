@@ -293,17 +293,14 @@
     $i18n{annotationsShowToggle}
   </button>
 
-  <template is="dom-if" if="[[presentationModeEnabled]]">
-    <hr>
-    <button id="present-button" class="dropdown-item"
-        on-click="onPresentClick_">
-      <span class="check-container" aria-hidden="true"></span>
-      $i18n{present}
-    </button>
-  </template>
+  <hr>
+
+  <button id="present-button" class="dropdown-item" on-click="onPresentClick_">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{present}
+  </button>
 
   <template is="dom-if" if="[[documentPropertiesEnabled]]">
-    <hr hidden="[[presentationModeEnabled]]">
     <button id="properties-button" class="dropdown-item"
         on-click="onPropertiesClick_">
       <span class="check-container" aria-hidden="true"></span>

@@ -4753,11 +4753,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfViewerDocumentPropertiesName,
      flag_descriptions::kPdfViewerDocumentPropertiesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfViewerDocumentProperties)},
-
-    {"pdf-viewer-presentation-mode",
-     flag_descriptions::kPdfViewerPresentationModeName,
-     flag_descriptions::kPdfViewerPresentationModeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfViewerPresentationMode)},
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)

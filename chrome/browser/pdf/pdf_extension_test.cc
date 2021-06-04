@@ -403,9 +403,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // Hooks to set up feature flags.
   virtual const std::vector<base::Feature> GetEnabledFeatures() const {
     std::vector<base::Feature> enabled;
-    if (ShouldEnablePdfViewerPresentationMode()) {
-      enabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
-    }
     if (ShouldEnablePdfViewerDocumentProperties()) {
       enabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
     }
@@ -414,17 +411,11 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
   virtual const std::vector<base::Feature> GetDisabledFeatures() const {
     std::vector<base::Feature> disabled;
-    if (!ShouldEnablePdfViewerPresentationMode()) {
-      disabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
-    }
     if (!ShouldEnablePdfViewerDocumentProperties()) {
       disabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
     }
     return disabled;
   }
-
-  // Hook to set up whether the PdfViewerPresentationMode feature is enabled.
-  virtual bool ShouldEnablePdfViewerPresentationMode() const { return false; }
 
   // Hook to set up whether the PdfViewerDocumentProperties feature is enabled.
   virtual bool ShouldEnablePdfViewerDocumentProperties() const { return false; }
@@ -917,20 +908,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionDocumentPropertiesEnabledTest,
   RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
-class PDFExtensionPresentationModeEnabledTest : public PDFExtensionJSTestBase {
- public:
-  ~PDFExtensionPresentationModeEnabledTest() override = default;
-
- protected:
-  bool ShouldEnablePdfViewerPresentationMode() const override { return true; }
-};
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionPresentationModeEnabledTest, Fullscreen) {
-  // Use a PDF document with multiple pages, to exercise navigating between
-  // pages.
-  RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
-}
-
 class PDFExtensionJSTest : public PDFExtensionJSTestBase {
  public:
   ~PDFExtensionJSTest() override = default;
@@ -1051,6 +1028,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerThumbnail) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Fullscreen) {
+  // Use a PDF document with multiple pages, to exercise navigating between
+  // pages.
+  RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

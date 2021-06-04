@@ -228,12 +228,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
-      presentationModeEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @private */
       printingEnabled_: {
         type: Boolean,
         value: false,
@@ -600,8 +594,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   onPresentClick_() {
-    assert(this.presentationModeEnabled_);
-
     const onWheel = e => {
       e.deltaY > 0 ? this.viewport.goToNextPage() :
                      this.viewport.goToPreviousPage();
@@ -759,8 +751,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         loadTimeData.getBoolean('documentPropertiesEnabled');
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
-    this.presentationModeEnabled_ =
-        loadTimeData.getBoolean('presentationModeEnabled');
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;
     this.zoomBounds_.min = Math.round(presetZoomFactors[0] * 100);

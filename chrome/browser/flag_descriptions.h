@@ -2967,9 +2967,6 @@ extern const char kPaintPreviewStartupDescription[];
 #if BUILDFLAG(ENABLE_PLUGINS)
 extern const char kPdfViewerDocumentPropertiesName[];
 extern const char kPdfViewerDocumentPropertiesDescription[];
-
-extern const char kPdfViewerPresentationModeName[];
-extern const char kPdfViewerPresentationModeDescription[];
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

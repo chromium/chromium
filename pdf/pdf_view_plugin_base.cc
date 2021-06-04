@@ -815,7 +815,6 @@ void PdfViewPluginBase::HandleSetBackgroundColorMessage(
 }
 
 void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode));
   engine()->SetReadOnly(message.FindBoolKey("enableReadOnly").value());
 }
 

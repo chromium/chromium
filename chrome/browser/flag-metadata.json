@@ -4151,11 +4151,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "pdf-viewer-presentation-mode",
-    "owners": [ "dpapad" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "pdf-xfa-forms",
     "owners": [ "carlosil", "tsepez" ],
     "expiry_milestone": 94

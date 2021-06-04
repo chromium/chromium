@@ -64,7 +64,6 @@ export class ViewerToolbarElement extends PolymerElement {
 
       pageNo: Number,
       pdfAnnotationsEnabled: Boolean,
-      presentationModeEnabled: Boolean,
       printingEnabled: Boolean,
       rotated: Boolean,
       viewportZoom: Number,
@@ -220,7 +219,6 @@ export class ViewerToolbarElement extends PolymerElement {
 
   /** @private */
   onPresentClick_() {
-    assert(this.presentationModeEnabled);
     record(UserAction.PRESENT);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('present-click'));
