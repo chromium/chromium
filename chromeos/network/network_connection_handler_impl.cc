@@ -550,8 +550,7 @@ void NetworkConnectionHandlerImpl::StartConnectTimer(
     const std::string& service_path,
     base::TimeDelta timeout) {
   ConnectRequest* request = GetPendingRequest(service_path);
-  if (!request)
-    return;
+  DCHECK(request);
 
   request->timer = std::make_unique<base::OneShotTimer>();
   request->timer->Start(
