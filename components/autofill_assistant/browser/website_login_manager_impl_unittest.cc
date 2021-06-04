@@ -14,7 +14,9 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -94,17 +96,14 @@ PasswordForm MakeSimplePasswordFormWithoutUsername() {
 
 }  // namespace
 
-class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
+class WebsiteLoginManagerImplTest : public testing::Test {
  public:
-  WebsiteLoginManagerImplTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~WebsiteLoginManagerImplTest() override = default;
+  WebsiteLoginManagerImplTest() = default;
 
  protected:
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
     profile_store_ = new password_manager::MockPasswordStore;
     ON_CALL(*profile_store_, IsAccountStore()).WillByDefault(Return(false));
     ASSERT_TRUE(profile_store_->Init(/*prefs=*/nullptr));
@@ -122,8 +121,8 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
           .WillByDefault(Return(account_store_.get()));
     }
 
-    manager_ =
-        std::make_unique<WebsiteLoginManagerImpl>(&client_, web_contents());
+    manager_ = std::make_unique<WebsiteLoginManagerImpl>(&client_,
+                                                         web_contents_.get());
   }
 
   void TearDown() override {
@@ -131,15 +130,18 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
       account_store_->ShutdownOnUIThread();
     }
     profile_store_->ShutdownOnUIThread();
-    RenderViewHostTestHarness::TearDown();
   }
 
   WebsiteLoginManagerImpl* manager() { return manager_.get(); }
   password_manager::MockPasswordStore* store() { return profile_store_.get(); }
 
-  void WaitForPasswordStore() { task_environment()->RunUntilIdle(); }
+  void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   std::unique_ptr<WebsiteLoginManagerImpl> manager_;
   scoped_refptr<password_manager::MockPasswordStore> profile_store_;

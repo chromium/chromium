@@ -15,6 +15,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
@@ -88,16 +89,13 @@ struct MockCollectUserDataOptions : public CollectUserDataOptions {
 
 }  // namespace
 
-class ControllerTest : public content::RenderViewHostTestHarness {
+class ControllerTest : public testing::Test {
  public:
-  ControllerTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ControllerTest() override {}
+  ControllerTest() = default;
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
 
     scoped_feature_list_.InitAndEnableFeature(
         features::kAutofillAssistantChromeEntry);
@@ -147,7 +145,12 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   void TearDown() override {
     controller_->RemoveObserver(&mock_observer_);
     controller_.reset();
-    RenderViewHostTestHarness::TearDown();
+  }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
  protected:
@@ -245,8 +248,11 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     return required_data_piece;
   }
 
-  // |task_environment_| must be the first field, to make sure that everything
-  // runs in the same task environment.
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::TimeTicks now_;
   std::vector<AutofillAssistantState> states_;

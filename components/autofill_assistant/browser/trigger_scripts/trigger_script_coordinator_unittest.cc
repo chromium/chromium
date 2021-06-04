@@ -25,6 +25,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
@@ -53,16 +54,13 @@ const char kFakeDeepLink[] = "https://example.com/q?data=test";
 const char kFakeServerUrl[] =
     "https://www.fake.backend.com/trigger_script_server";
 
-class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
+class TriggerScriptCoordinatorTest : public testing::Test {
  public:
-  TriggerScriptCoordinatorTest()
-      : content::RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~TriggerScriptCoordinatorTest() override = default;
+  TriggerScriptCoordinatorTest() = default;
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
 
     auto mock_request_sender =
@@ -103,9 +101,12 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
         ukm::GetSourceIdForWebContentsDocument(web_contents()));
   }
 
-  void TearDown() override {
-    coordinator_.reset();
-    RenderViewHostTestHarness::TearDown();
+  void TearDown() override { coordinator_.reset(); }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
   void SimulateWebContentsVisibilityChanged(content::Visibility visibility) {
@@ -126,6 +127,11 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   NiceMock<MockServiceRequestSender>* mock_request_sender_;
   NiceMock<MockWebController>* mock_web_controller_;

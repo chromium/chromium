@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -56,16 +57,13 @@ using ::testing::WithArgs;
 
 const char kExampleDeeplink[] = "https://www.example.com";
 
-class StarterTest : public content::RenderViewHostTestHarness {
+class StarterTest : public testing::Test {
  public:
-  StarterTest()
-      : content::RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~StarterTest() override = default;
+  StarterTest() = default;
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
     SimulateNavigateToUrl(GURL(kExampleDeeplink));
     PrepareTriggerScriptUiDelegate();
@@ -106,7 +104,12 @@ class StarterTest : public content::RenderViewHostTestHarness {
     // Note: it is important to reset the starter explicitly here to ensure that
     // destructors are called on the right thread, as required by devtools.
     starter_.reset();
-    RenderViewHostTestHarness::TearDown();
+  }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
   base::HashingMRUCache<std::string, base::TimeTicks>*
@@ -220,6 +223,11 @@ class StarterTest : public content::RenderViewHostTestHarness {
     });
   }
 
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   NiceMock<MockTriggerScriptUiDelegate>* mock_trigger_script_ui_delegate_ =
       nullptr;
   NiceMock<MockServiceRequestSender>*
