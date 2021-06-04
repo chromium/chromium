@@ -25,6 +25,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/database/database_connections.h"
 #include "url/origin.h"
@@ -36,6 +38,8 @@ class MetaTable;
 
 namespace storage {
 
+class DatabaseQuotaClient;
+class QuotaClientCallbackWrapper;
 class QuotaManagerProxy;
 class SpecialStoragePolicy;
 
@@ -329,6 +333,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // Sequence where file I/O is allowed.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  std::unique_ptr<DatabaseQuotaClient> quota_client_;
+  std::unique_ptr<storage::QuotaClientCallbackWrapper> quota_client_wrapper_;
+
   // When in Incognito mode, store a DELETE_ON_CLOSE handle to each
   // main DB and journal file that was accessed. When the Incognito profile
   // goes away (or when the browser crashes), all these handles will be
@@ -343,6 +350,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // this information.
   std::map<std::string, std::u16string> incognito_origin_directories_;
   int incognito_origin_directories_generator_ = 0;
+
+  mojo::Receiver<mojom::QuotaClient> quota_client_receiver_;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseTracker, TestHelper);
 };

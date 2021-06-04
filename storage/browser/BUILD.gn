@@ -234,6 +234,7 @@ component("browser") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/services/storage/public/cpp",
+    "//components/services/storage/public/cpp/filesystem",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network:network_service",

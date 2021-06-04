@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/database/database_quota_client.h"
@@ -147,7 +148,7 @@ class DatabaseQuotaClientTest : public testing::Test {
     run_loop.Run();
   }
 
-  static int64_t GetOriginUsage(QuotaClient& client,
+  static int64_t GetOriginUsage(mojom::QuotaClient& client,
                                 const url::Origin& origin,
                                 blink::mojom::StorageType type) {
     int result = -1;
@@ -163,7 +164,7 @@ class DatabaseQuotaClientTest : public testing::Test {
   }
 
   static std::vector<url::Origin> GetOriginsForType(
-      QuotaClient& client,
+      mojom::QuotaClient& client,
       blink::mojom::StorageType type) {
     std::vector<url::Origin> result;
     base::RunLoop loop;
@@ -178,7 +179,7 @@ class DatabaseQuotaClientTest : public testing::Test {
   }
 
   static std::vector<url::Origin> GetOriginsForHost(
-      QuotaClient& client,
+      mojom::QuotaClient& client,
       blink::mojom::StorageType type,
       const std::string& host) {
     std::vector<url::Origin> result;
@@ -194,7 +195,7 @@ class DatabaseQuotaClientTest : public testing::Test {
   }
 
   static blink::mojom::QuotaStatusCode DeleteOriginData(
-      QuotaClient& client,
+      mojom::QuotaClient& client,
       blink::mojom::StorageType type,
       const url::Origin& origin) {
     blink::mojom::QuotaStatusCode result =
@@ -216,62 +217,62 @@ class DatabaseQuotaClientTest : public testing::Test {
 };
 
 TEST_F(DatabaseQuotaClientTest, GetOriginUsage) {
-  auto client = base::MakeRefCounted<DatabaseQuotaClient>(mock_tracker_);
+  DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_EQ(0, GetOriginUsage(*client, kOriginA, kTemp));
+  EXPECT_EQ(0, GetOriginUsage(client, kOriginA, kTemp));
 
   mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  EXPECT_EQ(1000, GetOriginUsage(*client, kOriginA, kTemp));
+  EXPECT_EQ(1000, GetOriginUsage(client, kOriginA, kTemp));
 
-  EXPECT_EQ(0, GetOriginUsage(*client, kOriginB, kTemp));
+  EXPECT_EQ(0, GetOriginUsage(client, kOriginB, kTemp));
 }
 
 TEST_F(DatabaseQuotaClientTest, GetOriginsForHost) {
-  auto client = base::MakeRefCounted<DatabaseQuotaClient>(mock_tracker_);
+  DatabaseQuotaClient client(*mock_tracker_);
 
   EXPECT_EQ(kOriginA.host(), kOriginB.host());
   EXPECT_NE(kOriginA.host(), kOriginOther.host());
 
   std::vector<url::Origin> origins =
-      GetOriginsForHost(*client, kTemp, kOriginA.host());
+      GetOriginsForHost(client, kTemp, kOriginA.host());
   EXPECT_TRUE(origins.empty());
 
   mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  origins = GetOriginsForHost(*client, kTemp, kOriginA.host());
+  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
   EXPECT_EQ(origins.size(), 1ul);
   EXPECT_THAT(origins, testing::Contains(kOriginA));
 
   mock_tracker_->AddMockDatabase(kOriginB, "barDB", 1000);
-  origins = GetOriginsForHost(*client, kTemp, kOriginA.host());
+  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
   EXPECT_EQ(origins.size(), 2ul);
   EXPECT_THAT(origins, testing::Contains(kOriginA));
   EXPECT_THAT(origins, testing::Contains(kOriginB));
 
-  EXPECT_TRUE(GetOriginsForHost(*client, kTemp, kOriginOther.host()).empty());
+  EXPECT_TRUE(GetOriginsForHost(client, kTemp, kOriginOther.host()).empty());
 }
 
 TEST_F(DatabaseQuotaClientTest, GetOriginsForType) {
-  auto client = base::MakeRefCounted<DatabaseQuotaClient>(mock_tracker_);
+  DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
+  EXPECT_TRUE(GetOriginsForType(client, kTemp).empty());
 
   mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  std::vector<url::Origin> origins = GetOriginsForType(*client, kTemp);
+  std::vector<url::Origin> origins = GetOriginsForType(client, kTemp);
   EXPECT_EQ(origins.size(), 1ul);
   EXPECT_THAT(origins, testing::Contains(kOriginA));
 }
 
 TEST_F(DatabaseQuotaClientTest, DeleteOriginData) {
-  auto client = base::MakeRefCounted<DatabaseQuotaClient>(mock_tracker_);
+  DatabaseQuotaClient client(*mock_tracker_);
 
   mock_tracker_->set_async_delete(false);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteOriginData(client, kTemp, kOriginA));
   EXPECT_EQ(1, mock_tracker_->delete_called_count());
 
   mock_tracker_->set_async_delete(true);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteOriginData(client, kTemp, kOriginA));
   EXPECT_EQ(2, mock_tracker_->delete_called_count());
 }
 

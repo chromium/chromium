@@ -17,6 +17,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +26,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -112,22 +117,44 @@ DatabaseTracker::DatabaseTracker(
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      quota_client_(std::make_unique<DatabaseQuotaClient>(*this)),
+      quota_client_wrapper_(
+          std::make_unique<QuotaClientCallbackWrapper>(quota_client_.get())),
+      quota_client_receiver_(quota_client_wrapper_.get()) {}
 
 DatabaseTracker::~DatabaseTracker() {
   // base::RefCountedThreadSafe inserts the appropriate barriers to ensure
   // member access in the destructor does not introduce data races.
   DCHECK(dbs_to_be_deleted_.empty());
   DCHECK(deletion_callbacks_.empty());
+
+  DCHECK(!quota_client_);
+  DCHECK(!quota_client_wrapper_);
+  DCHECK(!quota_client_receiver_.is_bound());
 }
 
 void DatabaseTracker::RegisterQuotaClient() {
-  if (quota_manager_proxy_) {
-    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy_->RegisterLegacyClient(
-        base::MakeRefCounted<DatabaseQuotaClient>(this),
-        QuotaClientType::kDatabase, {blink::mojom::StorageType::kTemporary});
-  }
+  if (!quota_manager_proxy_)
+    return;
+
+  // QuotaManagerProxy::RegisterClient() must be called synchronously during
+  // DatabaseTracker creation until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+      quota_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
+                                       storage::QuotaClientType::kDatabase,
+                                       {blink::mojom::StorageType::kTemporary});
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<DatabaseTracker> self,
+             mojo::PendingReceiver<storage::mojom::QuotaClient> receiver) {
+            self->quota_client_receiver_.Bind(std::move(receiver));
+          },
+          base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
 void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
@@ -924,6 +951,13 @@ void DatabaseTracker::Shutdown() {
     return;
   }
   shutting_down_ = true;
+
+  // The mojo receiver must be reset before the instance it calls into is
+  // destroyed.
+  quota_client_receiver_.reset();
+  quota_client_wrapper_.reset();
+  quota_client_.reset();
+
   if (is_incognito_)
     DeleteIncognitoDBDirectory();
   else if (!force_keep_session_state_)

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -95,25 +96,27 @@ void CheckNotificationReceived(TestObserver* observer,
   EXPECT_EQ(expected_database_size, observer->GetNotificationDatabaseSize());
 }
 
+// Must be destroyed on the sequence that called RegisterClient() most recently.
 class TestQuotaManagerProxy : public QuotaManagerProxy {
  public:
   TestQuotaManagerProxy()
-      : QuotaManagerProxy(nullptr, base::SequencedTaskRunnerHandle::Get()),
-        registered_client_(nullptr) {}
+      : QuotaManagerProxy(
+            /*quota_manager_impl=*/nullptr,
+            base::SequencedTaskRunnerHandle::Get()) {}
 
   void RegisterLegacyClient(
       scoped_refptr<QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {
-    EXPECT_FALSE(registered_client_);
-    registered_client_ = client;
+    NOTREACHED();
   }
 
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {
-    NOTREACHED();
+    EXPECT_FALSE(registered_client_);
+    registered_client_.Bind(std::move(client));
   }
 
   void NotifyStorageAccessed(const url::Origin& origin,
@@ -152,13 +155,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {}
 
-  void SimulateQuotaManagerDestroyed() {
-    if (registered_client_) {
-      registered_client_->OnQuotaManagerDestroyed();
-      registered_client_ = nullptr;
-    }
-  }
-
   bool WasAccessNotified(const url::Origin& origin) {
     return accesses_[origin] != 0;
   }
@@ -173,7 +169,7 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
     modifications_.clear();
   }
 
-  scoped_refptr<QuotaClient> registered_client_;
+  mojo::Remote<mojom::QuotaClient> registered_client_;
 
   // Map from origin to count of access notifications.
   std::map<url::Origin, int> accesses_;
@@ -182,7 +178,7 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   std::map<url::Origin, std::pair<int, int64_t>> modifications_;
 
  protected:
-  ~TestQuotaManagerProxy() override { EXPECT_FALSE(registered_client_); }
+  ~TestQuotaManagerProxy() override = default;
 };
 
 bool EnsureFileOfSize(const base::FilePath& file_path, int64_t length) {
@@ -575,8 +571,6 @@ class DatabaseTracker_TestHelper_Test {
 
           // Cleanup.
           crashed_renderer_connections.RemoveAllConnections();
-          test_quota_proxy->SimulateQuotaManagerDestroyed();
-
           tracker->Shutdown();
         }));
     run_loop.Run();
