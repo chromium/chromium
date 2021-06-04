@@ -85,6 +85,9 @@ std::string GetSharingAPIKey();
 // Retrieves the Speech On-Device API (SODA) API Key.
 std::string GetSodaAPIKey();
 
+// Retrieves the ReadAloud API Key.
+std::string GetReadAloudAPIKey();
+
 #if defined(OS_IOS) || defined(OS_FUCHSIA)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
