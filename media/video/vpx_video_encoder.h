@@ -36,7 +36,7 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
 
  private:
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);
-  void DrainOutputs(int temporal_id);
+  void DrainOutputs(int temporal_id, base::TimeDelta ts);
 
   using vpx_codec_unique_ptr =
       std::unique_ptr<vpx_codec_ctx_t, void (*)(vpx_codec_ctx_t*)>;
