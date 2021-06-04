@@ -97,6 +97,12 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool HasCapacityForStoringImpression(const std::string& serialized_origin);
   int GetCapacityForStoringConversion(const std::string& serialized_origin);
 
+  // When storing an event-source impression, deletes active event-source
+  // impressions in order by |impression_time| until there are sufficiently few
+  // unique conversion destinations for the same |impression_site|.
+  bool EnsureCapacityForPendingDestinationLimit(
+      const StorableImpression& impression);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.

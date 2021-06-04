@@ -115,6 +115,10 @@ int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {
 int ConfigurableStorageDelegate::GetMaxConversionsPerOrigin() const {
   return max_conversions_per_origin_;
 }
+int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
+    const {
+  return max_attribution_destinations_per_event_source_;
+}
 ConversionStorage::Delegate::RateLimitConfig
 ConfigurableStorageDelegate::GetRateLimits() const {
   return rate_limits_;

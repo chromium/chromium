@@ -149,6 +149,9 @@ void ConversionStorageSql::StoreImpression(
   if (!transaction.Begin())
     return;
 
+  if (!EnsureCapacityForPendingDestinationLimit(impression))
+    return;
+
   const std::string serialized_conversion_destination =
       impression.ConversionDestination().Serialize();
   const std::string serialized_reporting_origin =
@@ -1100,6 +1103,109 @@ void ConversionStorageSql::DatabaseErrorCallback(int extended_error,
   // Consider the  database closed if we did not attempt to recover so we did
   // not produce further errors.
   db_init_status_ = DbStatus::kClosed;
+}
+
+bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
+    const StorableImpression& impression) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(apaseltiner): Add metrics for how this behaves so we can see how often
+  // sites are hitting the limit.
+
+  if (impression.source_type() != StorableImpression::SourceType::kEvent)
+    return true;
+
+  const std::string serialized_conversion_destination =
+      impression.ConversionDestination().Serialize();
+
+  const char kSelectImpressionsSql[] =
+      "SELECT impression_id, conversion_destination "
+      "FROM impressions "
+      "WHERE impression_site = ? AND source_type = ? "
+      "AND active = 1 AND num_conversions = 0 "
+      "ORDER BY impression_time ASC";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSelectImpressionsSql));
+  statement.BindString(0, impression.ImpressionSite().Serialize());
+  statement.BindInt(1,
+                    static_cast<int>(StorableImpression::SourceType::kEvent));
+
+  base::flat_map<std::string, size_t> conversion_destinations;
+
+  struct ImpressionData {
+    int64_t impression_id;
+    std::string conversion_destination;
+  };
+  std::vector<ImpressionData> impressions_by_impression_time;
+
+  while (statement.Step()) {
+    ImpressionData impression_data = {
+        .impression_id = statement.ColumnInt64(0),
+        .conversion_destination = statement.ColumnString(1),
+    };
+
+    // If there's already an impression matching the to-be-stored
+    // `impression_site` and `conversion_destination`, then the unique count
+    // won't be changed, so there's nothing else to do.
+    if (impression_data.conversion_destination ==
+        serialized_conversion_destination) {
+      return true;
+    }
+
+    conversion_destinations[impression_data.conversion_destination]++;
+    impressions_by_impression_time.push_back(std::move(impression_data));
+  }
+
+  if (!statement.Succeeded())
+    return false;
+
+  const int max = delegate_->GetMaxAttributionDestinationsPerEventSource();
+  // TODO(apaseltiner): We could just make
+  // `GetMaxAttributionDestinationsPerEventSource()` return `size_t`, but it
+  // would be inconsistent with the other `ConversionStorage::Delegate` methods.
+  DCHECK_GT(max, 0);
+
+  // Otherwise, if there's capacity for the new `conversion_destination` to be
+  // stored for the `impression_site`, there's nothing else to do.
+  if (conversion_destinations.size() < static_cast<size_t>(max))
+    return true;
+
+  // Otherwise, delete impressions in order by `impression_time` until the
+  // number of distinct `conversion_destination`s is under `max`.
+  std::vector<int64_t> impression_ids_to_delete;
+  for (const auto& impression_data : impressions_by_impression_time) {
+    auto it =
+        conversion_destinations.find(impression_data.conversion_destination);
+    DCHECK(it != conversion_destinations.end());
+    it->second--;
+    if (it->second == 0)
+      conversion_destinations.erase(it);
+    impression_ids_to_delete.push_back(impression_data.impression_id);
+    if (conversion_destinations.size() < static_cast<size_t>(max))
+      break;
+  }
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
+
+  const char kDeleteImpressionSql[] =
+      "DELETE FROM impressions WHERE impression_id = ?";
+  sql::Statement delete_impression_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteImpressionSql));
+
+  for (int64_t impression_id : impression_ids_to_delete) {
+    delete_impression_statement.Reset(/*clear_bound_vars=*/true);
+    delete_impression_statement.BindInt64(0, impression_id);
+    if (!delete_impression_statement.Run())
+      return false;
+  }
+
+  // Because this is limited to active impressions with `num_conversions = 0`,
+  // we should be guaranteed that there is not any corresponding data in the
+  // rate limit table or the report table.
+
+  return transaction.Commit();
 }
 
 }  // namespace content

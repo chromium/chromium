@@ -59,12 +59,18 @@ class ConversionStorage {
     // Returns the maximum number of impressions that can be in storage at any
     // time for an impression top-level origin.
     virtual int GetMaxImpressionsPerOrigin() const = 0;
+
     //  Returns the maximum number of conversions that can be in storage at any
     //  time for a conversion top-level origin. Note that since reporting
     //  origins are the actual entities that invoke conversion registration, we
     //  could consider changing this limit to be keyed by a <conversion origin,
     //  reporting origin> tuple.
     virtual int GetMaxConversionsPerOrigin() const = 0;
+
+    // Returns the maximum number of distinct conversion destinations that can
+    // be in storage at any time for event-source impressions with a given
+    // reporting origin.
+    virtual int GetMaxAttributionDestinationsPerEventSource() const = 0;
 
     struct RateLimitConfig {
       base::TimeDelta time_window;

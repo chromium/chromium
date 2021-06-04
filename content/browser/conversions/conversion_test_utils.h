@@ -91,6 +91,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   RateLimitConfig GetRateLimits() const override;
   StorableImpression::AttributionLogic SelectAttributionLogic(
       const StorableImpression& impression) const override;
+  int GetMaxAttributionDestinationsPerEventSource() const override;
 
   void set_max_conversions_per_impression(int max) {
     max_conversions_per_impression_ = max;
@@ -102,6 +103,10 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
 
   void set_max_conversions_per_origin(int max) {
     max_conversions_per_origin_ = max;
+  }
+
+  void set_max_attribution_destinations_per_event_source(int max) {
+    max_attribution_destinations_per_event_source_ = max;
   }
 
   void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
@@ -119,6 +124,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int max_conversions_per_impression_ = INT_MAX;
   int max_impressions_per_origin_ = INT_MAX;
   int max_conversions_per_origin_ = INT_MAX;
+  int max_attribution_destinations_per_event_source_ = INT_MAX;
 
   RateLimitConfig rate_limits_ = {
       .time_window = base::TimeDelta::Max(),
