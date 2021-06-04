@@ -7316,6 +7316,7 @@
       'lacros_fyi_tast_tests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
+          'LACROS_EVE',
         ]
       },
     },
