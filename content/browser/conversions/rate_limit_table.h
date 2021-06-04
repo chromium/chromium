@@ -29,11 +29,6 @@ namespace content {
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
  public:
-  enum class AttributionType {
-    kNavigation = 0,
-    kMaxValue = kNavigation,
-  };
-
   RateLimitTable(const ConversionStorage::Delegate* delegate,
                  const base::Clock* clock);
   RateLimitTable(const RateLimitTable& other) = delete;

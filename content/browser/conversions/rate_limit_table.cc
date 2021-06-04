@@ -29,7 +29,8 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All columns in this table are const.
-  // |attribution_type| is the type of the report, currently always kNavigation.
+  // |attribution_type| corresponds to the `StorableImpression::SourceType`
+  // of the impression.
   // |impression_id| is the primary key of a row in the |impressions| table,
   // though the row may not exist.
   // |impression_site| is the eTLD+1 of the impression.
@@ -87,7 +88,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
       "VALUES(?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
-  statement.BindInt(0, static_cast<int>(AttributionType::kNavigation));
+  statement.BindInt(0, static_cast<int>(report.impression.source_type()));
   statement.BindInt64(1, *report.impression.impression_id());
   statement.BindString(
       2, net::SchemefulSite(report.impression.impression_origin()).Serialize());
@@ -116,7 +117,7 @@ bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
       "AND conversion_time > ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
-  statement.BindInt(0, static_cast<int>(AttributionType::kNavigation));
+  statement.BindInt(0, static_cast<int>(report.impression.source_type()));
   statement.BindString(
       1, net::SchemefulSite(report.impression.impression_origin()).Serialize());
   statement.BindString(2,

@@ -775,6 +775,44 @@ TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
   EXPECT_TRUE(ReportsEqual({expected_report, expected_report}, actual_reports));
 }
 
+TEST_F(ConversionStorageTest,
+       MaxAttributionReportsBetweenSites_RespectsSourceType) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_attributions_per_window = 1,
+  });
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetSourceType(StorableImpression::SourceType::kNavigation)
+          .Build());
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetSourceType(StorableImpression::SourceType::kEvent)
+          .Build());
+  // This would fail if the source types had a combined limit or the incorrect
+  // source type were stored.
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetSourceType(StorableImpression::SourceType::kEvent)
+          .Build());
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetSourceType(StorableImpression::SourceType::kNavigation)
+          .Build());
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+}
+
 TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
   delegate()->set_attribution_logic(
       StorableImpression::AttributionLogic::kNever);
