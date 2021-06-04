@@ -110,7 +110,11 @@ static bool Is128BitUUID(const CableEidArray& eid) {
 
 static bool IsCableUUID(const CableEidArray& eid) {
   static_assert(sizeof(kGoogleCableUUID) == EXTENT(eid), "");
-  return memcmp(eid.data(), kGoogleCableUUID, sizeof(kGoogleCableUUID)) == 0;
+  static_assert(sizeof(kFIDOCableUUID) == EXTENT(eid), "");
+
+  return (memcmp(eid.data(), kGoogleCableUUID, sizeof(kGoogleCableUUID)) ==
+          0) ||
+         (memcmp(eid.data(), kFIDOCableUUID, sizeof(kFIDOCableUUID)) == 0);
 }
 
 }  // namespace
@@ -217,16 +221,23 @@ FidoCableDiscovery::CreateV1HandshakeHandler(
 
 // static
 const BluetoothUUID& FidoCableDiscovery::GoogleCableUUID() {
-  static const base::NoDestructor<BluetoothUUID> service_uuid(
-      kGoogleCableUUID128);
-  return *service_uuid;
+  static const base::NoDestructor<BluetoothUUID> kUUID(kGoogleCableUUID128);
+  return *kUUID;
+}
+
+const BluetoothUUID& FidoCableDiscovery::FIDOCableUUID() {
+  static const base::NoDestructor<BluetoothUUID> kUUID(kFIDOCableUUID128);
+  return *kUUID;
 }
 
 // static
 bool FidoCableDiscovery::IsCableDevice(const BluetoothDevice* device) {
-  const auto& uuid = GoogleCableUUID();
-  return base::Contains(device->GetServiceData(), uuid) ||
-         base::Contains(device->GetUUIDs(), uuid);
+  const auto& uuid1 = GoogleCableUUID();
+  const auto& uuid2 = FIDOCableUUID();
+  return base::Contains(device->GetServiceData(), uuid1) ||
+         base::Contains(device->GetUUIDs(), uuid1) ||
+         base::Contains(device->GetServiceData(), uuid2) ||
+         base::Contains(device->GetUUIDs(), uuid2);
 }
 
 void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
@@ -560,8 +571,11 @@ void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
 
 absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
 FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
-  const std::vector<uint8_t>* const service_data =
+  const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(GoogleCableUUID());
+  if (!service_data) {
+    service_data = device->GetServiceDataForUUID(FIDOCableUUID());
+  }
   absl::optional<CableEidArray> maybe_eid_from_service_data =
       MaybeGetEidFromServiceData(device);
   std::vector<CableEidArray> uuids = GetUUIDs(device);

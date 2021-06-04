@@ -78,6 +78,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   };
 
   static const BluetoothUUID& GoogleCableUUID();
+  static const BluetoothUUID& FIDOCableUUID();
   static bool IsCableDevice(const BluetoothDevice* device);
 
   // ResultDebugString returns a string containing a hex dump of |eid| and a

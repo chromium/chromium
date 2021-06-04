@@ -34,6 +34,11 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGoogleCableUUID16[];
 // |kGoogleCableUUID128|, the UUID allocated to Google for caBLE adverts.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kGoogleCableUUID[16];
 
+// kFIDOCableUUID128 is a 16-bit UUID assigned to FIDO that is used for
+// caBLEv2. (For now, caBLEv2 devices can also use |kGoogleCableUUID|.)
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kFIDOCableUUID128[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kFIDOCableUUID[16];
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_CABLE_FIDO_BLE_UUIDS_H_
