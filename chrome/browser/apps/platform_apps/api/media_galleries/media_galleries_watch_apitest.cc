@@ -214,8 +214,16 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
     ExecuteCmdAndCheckReply(kRemoveGalleryWatchCmd, kRemoveGalleryWatchOK);
 }
 
+// TODO(crbug.com/1047645): Flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_CorrectResponseOnModifyingWatchedGallery \
+  DISABLED_CorrectResponseOnModifyingWatchedGallery
+#else
+#define MAYBE_CorrectResponseOnModifyingWatchedGallery \
+  CorrectResponseOnModifyingWatchedGallery
+#endif
 IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
-                       CorrectResponseOnModifyingWatchedGallery) {
+                       MAYBE_CorrectResponseOnModifyingWatchedGallery) {
   if (!GalleryWatchesSupported())
     return;
 
