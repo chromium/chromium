@@ -60,7 +60,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -993,10 +992,9 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1215465")
     public void testCreateAndEnterShippingAddress() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
                                          .setShippingAddressName("shipping")
@@ -1004,7 +1002,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                  buildRequiredDataPiece("Requires valid state", 34))
                                          .setRequestTermsAndConditions(false))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setUseAddress(
                                  UseAddressProto.newBuilder()
                                          .setName("shipping")
@@ -1012,12 +1010,12 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                  SelectorProto.Filter.newBuilder().setCssSelector(
                                                          "#address_name"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Address")))
@@ -1058,6 +1056,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Edit address")).perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
+        Espresso.closeSoftKeyboard();
         onView(withContentDescription("State*"))
                 .perform(scrollTo(), clearText(), typeText("California"));
         Espresso.closeSoftKeyboard();
