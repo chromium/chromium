@@ -24,7 +24,8 @@ var cartItemTextContentRegex = new RegExp(
 var moveToCartRegex = new RegExp('move to (cart|bag)', 'i');
 var addToCartRegex = new RegExp('add to cart', 'i');
 var productIdHTMLRegex = new RegExp('<a href="#modal-(\\w+)', 'i');
-var productIdURLRegex = new RegExp('(\\w+)-\\d+-medium', 'i');
+var productIdURLRegex = new RegExp(
+    '((\\w+)-\\d+-medium)|(images.cymax.com/Images/\\d+/(\\w+)-)', 'i');
 
 function getLazyLoadingURL(image) {
   // FIXME: some lazy images in Nordstrom and Staples don't have URLs in the
@@ -510,6 +511,22 @@ function extractPrice(item) {
   return choosePrice(captured_prices);
 }
 
+function extractProductId(item, imageUrl) {
+  productIdMatches = item.outerHTML.match(productIdHTMLRegex);
+  if (productIdMatches === null) {
+    productIdMatches = imageUrl.match(productIdURLRegex);
+  }
+  // Return the last valid match result.
+  if (productIdMatches !== null) {
+    for (var i = productIdMatches.length - 1; i >= 0; i--) {
+      if (productIdMatches[i] !== undefined) {
+        return productIdMatches[i];
+      }
+    }
+  }
+  return null;
+}
+
 function extractItem(item) {
   imageUrl = extractImage(item);
   if (imageUrl == null) {
@@ -543,14 +560,9 @@ function extractItem(item) {
   let extractionResult =
       {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
   // productId is an optional field for extraction.
-  productId = item.outerHTML.match(productIdHTMLRegex);
-  if (productId !== null && productId.length >= 2) {
-    extractionResult['productId'] = productId[1];
-    return extractionResult;
-  }
-  productId = imageUrl.match(productIdURLRegex);
-  if (productId !== null && productId.length >= 2) {
-    extractionResult['productId'] = productId[1];
+  const productId = extractProductId(item, imageUrl);
+  if (productId !== null) {
+    extractionResult['productId'] = productId;
   }
   return extractionResult;
 }

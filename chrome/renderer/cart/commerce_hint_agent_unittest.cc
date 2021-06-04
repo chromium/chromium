@@ -149,6 +149,7 @@ const char* kVisitCart[] = {
     "https://www.harborfreight.com/checkout/cart",
     "https://www.hmhco.com/hmhstorefront/cart",
     "https://www.homedepot.com/mycart/home",
+    "https://www.homesquare.com/Checkout/Cart.aspx",
     "https://www.hottopic.com/cart",
     "https://www.hsn.com/checkout/bag",
     "https://www.ikea.com/us/en/shoppingcart/",
