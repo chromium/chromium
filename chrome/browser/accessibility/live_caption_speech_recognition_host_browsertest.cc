@@ -7,10 +7,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/accessibility/live_caption_controller.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -65,7 +68,7 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
                                            std::string text,
                                            bool expected_success) {
     remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
-        media::mojom::SpeechRecognitionResult::New(text, /*final=*/true),
+        media::mojom::SpeechRecognitionResult::New(text, /*is_final=*/false),
         base::BindOnce(&LiveCaptionSpeechRecognitionHostTest::
                            DispatchTranscriptionCallback,
                        base::Unretained(this), expected_success));
@@ -91,6 +94,15 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
+  void ExpectIsWidgetVisible(bool visible) {
+#if defined(TOOLKIT_VIEWS)
+    CaptionBubbleController* bubble_controller =
+        LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+            ->caption_bubble_controller_.get();
+    EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
+#endif
+  }
+
  private:
   void DispatchTranscriptionCallback(bool expected_success, bool success) {
     EXPECT_EQ(expected_success, success);
@@ -114,15 +126,23 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
       "Pandas' coloring helps them camouflage in snowy environments.",
       /* expected_success= */ true);
   base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
 
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com"));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
+  content::RenderFrameHost* new_frame_host =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  // After navigating to a new URL, the main frame should be different from the
+  // former frame host.
+  CreateLiveCaptionSpeechRecognitionHost(new_frame_host);
+  ExpectIsWidgetVisible(false);
   // Test passes if the following line runs without crashing.
-  OnSpeechRecognitionRecognitionEvent(frame_host,
+  OnSpeechRecognitionRecognitionEvent(new_frame_host,
                                       "Pandas have vertical slits for pupils.",
                                       /* expected_success= */ true);
   base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
@@ -136,6 +156,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                                       "Pandas learn to climb at 5 months old.",
                                       /* expected_success= */ true);
   base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
 
   SetLiveCaptionEnabled(false);
   OnSpeechRecognitionRecognitionEvent(
