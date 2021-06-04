@@ -125,7 +125,6 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       Storage* storage,
       UploaderInterfaceResultCb start_uploader_cb) {
     storage->async_start_upload_cb_.Run(
-        priority,
         /*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
             storage->encryption_module_->need_encryption_key(),
         base::BindOnce(&QueueUploaderInterface::WrapInstantiatedUploader,
@@ -214,7 +213,6 @@ class Storage::KeyDelivery {
         base::BindOnce(&KeyDelivery::EncryptionKeyReceiverReady,
                        base::Unretained(this));
     async_start_upload_cb_.Run(
-        /*priority=*/MANUAL_BATCH,  // Any priority would do.
         /*need_encryption_key=*/true,
         base::BindOnce(&KeyDelivery::WrapInstantiatedKeyUploader,
                        /*priority=*/MANUAL_BATCH,

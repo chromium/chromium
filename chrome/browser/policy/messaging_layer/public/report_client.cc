@@ -55,18 +55,13 @@ const base::FilePath::CharType kReportingDirectory[] =
 }  // namespace
 
 ReportingClient::AsyncStartUploaderRequest::AsyncStartUploaderRequest(
-    Priority priority,
     bool need_encryption_key,
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb)
-    : priority_(priority),
-      need_encryption_key_(need_encryption_key),
+    : need_encryption_key_(need_encryption_key),
       start_uploader_cb_(std::move(start_uploader_cb)) {}
 ReportingClient::AsyncStartUploaderRequest::~AsyncStartUploaderRequest() =
     default;
 
-Priority ReportingClient::AsyncStartUploaderRequest::priority() const {
-  return priority_;
-}
 bool ReportingClient::AsyncStartUploaderRequest::need_encryption_key() const {
   return need_encryption_key_;
 }
@@ -381,23 +376,21 @@ StatusOr<std::unique_ptr<ReportQueue>> ReportingClient::CreateNewQueue(
 
 // static
 void ReportingClient::AsyncStartUploader(
-    Priority priority,
     bool need_encryption_key,
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
   ReportingClient* const instance =
       static_cast<ReportingClient*>(GetInstance());
-  instance->DeliverAsyncStartUploader(priority, need_encryption_key,
+  instance->DeliverAsyncStartUploader(need_encryption_key,
                                       std::move(start_uploader_cb));
 }
 
 void ReportingClient::DeliverAsyncStartUploader(
-    Priority priority,
     bool need_encryption_key,
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
   uploaders_queue_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](Priority priority, bool need_encryption_key,
+          [](bool need_encryption_key,
              UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
              ReportingClient* instance) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -413,9 +406,9 @@ void ReportingClient::DeliverAsyncStartUploader(
             }
             // Not set yet. Enqueue it.
             instance->async_start_uploaders_queue_.emplace(
-                priority, need_encryption_key, std::move(start_uploader_cb));
+                need_encryption_key, std::move(start_uploader_cb));
           },
-          priority, need_encryption_key, std::move(start_uploader_cb),
+          need_encryption_key, std::move(start_uploader_cb),
           base::Unretained(this)));
 }
 

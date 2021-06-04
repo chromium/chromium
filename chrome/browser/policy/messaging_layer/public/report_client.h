@@ -115,7 +115,6 @@ class ReportingClient : public ReportQueueProvider {
   class AsyncStartUploaderRequest {
    public:
     AsyncStartUploaderRequest(
-        Priority priority,
         bool need_encryption_key,
         UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
     AsyncStartUploaderRequest(const AsyncStartUploaderRequest& other) = delete;
@@ -123,12 +122,10 @@ class ReportingClient : public ReportQueueProvider {
         const AsyncStartUploaderRequest& other) = delete;
     ~AsyncStartUploaderRequest();
 
-    Priority priority() const;
     bool need_encryption_key() const;
     UploaderInterface::UploaderInterfaceResultCb& start_uploader_cb();
 
    private:
-    const Priority priority_;
     const bool need_encryption_key_;
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb_;
   };
@@ -149,14 +146,11 @@ class ReportingClient : public ReportQueueProvider {
   void OnInitState(bool reporting_client_configured);
   void OnInitializationComplete(Status init_status);
 
-  // TODO(b/183666933) Priority is used only for testing, remove it if possible.
   static void AsyncStartUploader(
-      Priority priority,
       bool need_encryption_key,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
   void DeliverAsyncStartUploader(
-      Priority priority,
       bool need_encryption_key,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 

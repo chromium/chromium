@@ -26,7 +26,6 @@ class UploaderInterface {
  public:
   // using AsyncStartUploaderCb =
   //     base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
-  //         Priority priority,
   //         bool need_encryption_key)>;
   // Asynchronous callback that instantiates uploader.
   // To start upload, call |AsyncStartUploaderCb| on a thread pool. Once
@@ -35,12 +34,9 @@ class UploaderInterface {
   // key is needed (initially or periodically).
   using UploaderInterfaceResultCb =
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploaderInterface>>)>;
-  // Callback type for asynchronous UploadInterface provider. |priority|
-  // identifies which queue is going to upload the data.
-  // TODO(b/183666933): |priority| is only used by tests, remove it if possible.
+  // Callback type for asynchronous UploadInterface provider.
   using AsyncStartUploaderCb =
-      base::RepeatingCallback<void(Priority priority,
-                                   bool need_encryption_key,
+      base::RepeatingCallback<void(bool need_encryption_key,
                                    UploaderInterfaceResultCb)>;
 
   UploaderInterface(const UploaderInterface& other) = delete;
