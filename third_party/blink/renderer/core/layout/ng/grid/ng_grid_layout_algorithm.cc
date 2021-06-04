@@ -29,6 +29,26 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
   grid_available_size_ = grid_min_available_size_ = grid_max_available_size_ =
       ChildAvailableSize();
 
+  // Firstly if block-size containment applies compute the block-size ignoring
+  // children (just based on the row definitions).
+  if (grid_available_size_.block_size == kIndefiniteSize &&
+      Node().ShouldApplyBlockSizeContainment()) {
+    // We always need a definite min block-size in order to run the track
+    // sizing algorithm.
+    grid_min_available_size_.block_size = BorderScrollbarPadding().BlockSum();
+    contain_intrinsic_block_size_ = ComputeIntrinsicBlockSizeIgnoringChildren();
+
+    // Resolve the block-size, and set the available sizes.
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        ConstraintSpace(), Style(), BorderPadding(),
+        *contain_intrinsic_block_size_, border_box_size_.inline_size);
+
+    grid_available_size_.block_size = grid_min_available_size_.block_size =
+        grid_max_available_size_.block_size =
+            (block_size - BorderScrollbarPadding().BlockSum())
+                .ClampNegativeToZero();
+  }
+
   // Next if our inline-size is indefinite, compute the min/max inline-sizes.
   if (grid_available_size_.inline_size == kIndefiniteSize) {
     const LayoutUnit border_scrollbar_padding =
@@ -183,27 +203,28 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   ComputeGrid();
 
-  // Intrinsic block size is based on the final row offset. Because gutters
-  // are included in row offsets, subtract out the final gutter (if present).
-  LayoutUnit intrinsic_block_size =
-      grid_geometry.row_geometry.sets.back().offset -
-      grid_geometry.row_geometry.FinalGutterSize() +
-      BorderScrollbarPadding().block_end;
+  LayoutUnit intrinsic_block_size;
+  if (contain_intrinsic_block_size_) {
+    intrinsic_block_size = *contain_intrinsic_block_size_;
+  } else {
+    // Intrinsic block size is based on the final row offset. Because gutters
+    // are included in row offsets, subtract out the final gutter (if present).
+    intrinsic_block_size = grid_geometry.row_geometry.sets.back().offset -
+                           grid_geometry.row_geometry.FinalGutterSize() +
+                           BorderScrollbarPadding().block_end;
 
-  // TODO(layout-dev): This isn't great but matches legacy. Ideally this would
-  // only apply when we have only flexible track(s).
-  if (grid_items.IsEmpty() && Node().HasLineIfEmpty()) {
+    // TODO(layout-dev): This isn't great but matches legacy. Ideally this
+    // would only apply when we have only flexible track(s).
+    if (grid_items.IsEmpty() && Node().HasLineIfEmpty()) {
+      intrinsic_block_size =
+          std::max(intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
+                                             Node().EmptyLineBlockSize());
+    }
+
     intrinsic_block_size =
-        std::max(intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
-                                           Node().EmptyLineBlockSize());
+        ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                                BorderScrollbarPadding(), intrinsic_block_size);
   }
-
-  // TODO(layout-dev): ClampIntrinsicBlockSize might not be correct for grid.
-  // Specifically do we need to run the sizing algorithm assuming no children
-  // for size containment.
-  intrinsic_block_size =
-      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                              BorderScrollbarPadding(), intrinsic_block_size);
 
   const LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), container_style, BorderPadding(), intrinsic_block_size,
@@ -865,6 +886,47 @@ LayoutUnit NGGridLayoutAlgorithm::GridGeometry::Baseline(
                ? major_block_baselines[set_index]
                : minor_block_baselines[set_index];
   }
+}
+
+LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
+    const {
+  DCHECK(Node().ShouldApplyBlockSizeContainment());
+
+  // First check 'contain-intrinsic-size'.
+  const LayoutUnit override_intrinsic_block_size =
+      Node().OverrideIntrinsicContentBlockSize();
+  if (override_intrinsic_block_size != kIndefiniteSize)
+    return BorderScrollbarPadding().BlockSum() + override_intrinsic_block_size;
+
+  // Don't append any children for this calculation.
+  GridItems grid_items;
+  NGGridPlacement grid_placement(Style(),
+                                 ComputeAutomaticRepetitions(kForColumns),
+                                 ComputeAutomaticRepetitions(kForRows));
+
+  // Build block track collections.
+  NGGridBlockTrackCollection column_block_track_collection(kForColumns);
+  NGGridBlockTrackCollection row_block_track_collection(kForRows);
+  BuildBlockTrackCollections(&grid_items, &column_block_track_collection,
+                             &row_block_track_collection, &grid_placement);
+
+  // Build algorithm row track collection from the block track collection.
+  NGGridLayoutAlgorithmTrackCollection row_track_collection(
+      row_block_track_collection,
+      grid_available_size_.block_size == kIndefiniteSize);
+
+  GridGeometry grid_geometry(SetGeometry(),
+                             InitializeTrackSizes(&row_track_collection));
+
+  // Resolve the rows.
+  bool unused_needs_additional_pass = false;
+  grid_geometry.row_geometry = ComputeUsedTrackSizes(
+      SizingConstraint::kLayout, grid_geometry, &row_track_collection,
+      &grid_items, &unused_needs_additional_pass);
+
+  return grid_geometry.row_geometry.sets.back().offset -
+         grid_geometry.row_geometry.FinalGutterSize() +
+         BorderScrollbarPadding().block_end;
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(

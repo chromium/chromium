@@ -315,6 +315,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
+  LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
+
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
   LayoutUnit ContributionSizeForGridItem(
@@ -497,6 +499,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   LogicalSize grid_available_size_;
   LogicalSize grid_min_available_size_;
   LogicalSize grid_max_available_size_;
+
+  absl::optional<LayoutUnit> contain_intrinsic_block_size_;
 };
 
 }  // namespace blink
