@@ -74,6 +74,7 @@ struct TargetInfo {
 };
 
 using DeliveredCallback = base::OnceCallback<void(SharesheetResult success)>;
+using CloseCallback = base::OnceCallback<void()>;
 
 }  // namespace sharesheet
 

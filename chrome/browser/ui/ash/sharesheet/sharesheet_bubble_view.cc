@@ -255,7 +255,9 @@ void SharesheetBubbleView::ShowBubble(
 
 void SharesheetBubbleView::ShowNearbyShareBubble(
     apps::mojom::IntentPtr intent,
-    ::sharesheet::DeliveredCallback delivered_callback) {
+    ::sharesheet::DeliveredCallback delivered_callback,
+    ::sharesheet::CloseCallback close_callback) {
+  close_callback_ = std::move(close_callback);
   ShowBubble({}, std::move(intent), std::move(delivered_callback));
   if (delivered_callback_) {
     std::move(delivered_callback_)
@@ -703,6 +705,9 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
       base::TimeDelta::FromMilliseconds(80);
 
   is_bubble_closing_ = true;
+  if (close_callback_) {
+    std::move(close_callback_).Run();
+  }
   ui::Layer* layer = View::GetWidget()->GetLayer();
 
   auto scoped_settings =

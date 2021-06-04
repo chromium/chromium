@@ -44,16 +44,21 @@ void SharesheetServiceDelegate::ShowBubble(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharesheetServiceDelegate::ShowNearbyShareBubble(
     apps::mojom::IntentPtr intent,
-    sharesheet::DeliveredCallback delivered_callback) {
+    sharesheet::DeliveredCallback delivered_callback,
+    sharesheet::CloseCallback close_callback) {
   if (is_bubble_open_) {
     if (delivered_callback) {
       std::move(delivered_callback)
           .Run(sharesheet::SharesheetResult::kErrorAlreadyOpen);
     }
+    if (close_callback) {
+      std::move(close_callback).Run();
+    }
     return;
   }
   sharesheet_bubble_view_->ShowNearbyShareBubble(std::move(intent),
-                                                 std::move(delivered_callback));
+                                                 std::move(delivered_callback),
+                                                 std::move(close_callback));
   is_bubble_open_ = true;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

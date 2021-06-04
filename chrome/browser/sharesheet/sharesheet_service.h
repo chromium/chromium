@@ -75,7 +75,8 @@ class SharesheetService : public KeyedService {
   void ShowNearbyShareBubble(content::WebContents* web_contents,
                              apps::mojom::IntentPtr intent,
                              SharesheetMetrics::LaunchSource source,
-                             sharesheet::DeliveredCallback delivered_callback);
+                             sharesheet::DeliveredCallback delivered_callback,
+                             sharesheet::CloseCallback close_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnBubbleClosed(gfx::NativeWindow native_window,
                       const std::u16string& active_action);

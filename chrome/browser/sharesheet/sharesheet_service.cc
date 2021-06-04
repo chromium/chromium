@@ -80,7 +80,8 @@ void SharesheetService::ShowNearbyShareBubble(
     content::WebContents* web_contents,
     apps::mojom::IntentPtr intent,
     SharesheetMetrics::LaunchSource source,
-    sharesheet::DeliveredCallback delivered_callback) {
+    sharesheet::DeliveredCallback delivered_callback,
+    sharesheet::CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
 
@@ -95,7 +96,8 @@ void SharesheetService::ShowNearbyShareBubble(
   auto* sharesheet_service_delegate =
       GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
   sharesheet_service_delegate->ShowNearbyShareBubble(
-      std::move(intent), std::move(delivered_callback));
+      std::move(intent), std::move(delivered_callback),
+      std::move(close_callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

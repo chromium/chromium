@@ -50,7 +50,8 @@ class SharesheetServiceDelegate : public SharesheetController {
                   sharesheet::DeliveredCallback delivered_callback);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
-                             sharesheet::DeliveredCallback delivered_callback);
+                             sharesheet::DeliveredCallback delivered_callback,
+                             sharesheet::CloseCallback close_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
