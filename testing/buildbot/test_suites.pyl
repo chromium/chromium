@@ -5991,7 +5991,7 @@
       'web_engine_gtests',
     ],
 
-    'fuchsia_x64_isolated_scripts': [
+    'fuchsia_isolated_scripts': [
       'chromium_webkit_isolated_scripts',
       'gpu_angle_fuchsia_unittests_isolated_scripts'
     ],
