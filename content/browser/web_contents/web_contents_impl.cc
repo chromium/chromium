@@ -2312,6 +2312,7 @@ void WebContentsImpl::AttachInnerWebContents(
   auto* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
   DCHECK_EQ(this, render_frame_host_impl->delegate()->GetAsWebContents());
+  DCHECK(render_frame_host_impl->GetParent());
 
   // Mark |render_frame_host_impl| as outer delegate frame.
   render_frame_host_impl->SetIsOuterDelegateFrame(true);
@@ -2332,6 +2333,16 @@ void WebContentsImpl::AttachInnerWebContents(
       GetContentClient()->browser()->GetWebContentsViewDelegate(
           inner_web_contents_impl),
       &inner_web_contents_impl->render_view_host_delegate_view_);
+  // On platforms where destroying the WebContents' view does not also destroy
+  // the platform RenderWidgetHostView, we need to destroy it if it exists.
+  // TODO(mcnee): Should all platforms' WebContentsView destroy the platform
+  // RWHV?
+  if (RenderWidgetHostViewBase* prev_rwhv =
+          inner_render_manager->GetRenderWidgetHostView()) {
+    if (!prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
+      prev_rwhv->Destroy();
+    }
+  }
 
   // When the WebContents being initialized has an opener, the  browser side
   // Render{View,Frame}Host must be initialized and the RenderWidgetHostView
@@ -2478,8 +2489,11 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
   auto* render_manager = GetRenderManager();
   auto* parent_frame =
       node_.OuterContentsFrameTreeNode()->current_frame_host()->GetParent();
+  auto* child_rwhv = render_manager->GetRenderWidgetHostView();
+  DCHECK(child_rwhv);
+  DCHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
   render_manager->SetRWHViewForInnerContents(
-      render_manager->GetRenderWidgetHostView());
+      static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
   RecursivelyRegisterFrameSinkIds();
 

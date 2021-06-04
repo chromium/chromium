@@ -226,23 +226,15 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
 }
 
 void RenderFrameProxyHost::SetChildRWHView(
-    RenderWidgetHostView* view,
+    RenderWidgetHostViewChildFrame* view,
     const gfx::Size* initial_frame_size) {
-  cross_process_frame_connector_->SetView(
-      static_cast<RenderWidgetHostViewChildFrame*>(view));
+  cross_process_frame_connector_->SetView(view);
   if (initial_frame_size)
     cross_process_frame_connector_->SetLocalFrameSize(*initial_frame_size);
 }
 
 RenderViewHostImpl* RenderFrameProxyHost::GetRenderViewHost() {
   return render_view_host_.get();
-}
-
-RenderWidgetHostView* RenderFrameProxyHost::GetRenderWidgetHostView() {
-  return frame_tree_node_->parent()
-      ->frame_tree_node()
-      ->render_manager()
-      ->GetRenderWidgetHostView();
 }
 
 bool RenderFrameProxyHost::Send(IPC::Message* msg) {

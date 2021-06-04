@@ -6217,11 +6217,10 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
 
   // |frame_sink_id| should be set to the associated frame. See
   // https://crbug.com/966119 for details.
-  viz::FrameSinkId frame_sink_id =
-      static_cast<RenderWidgetHostViewBase*>(proxy_host->frame_tree_node()
-                                                 ->render_manager()
-                                                 ->GetRenderWidgetHostView())
-          ->GetFrameSinkId();
+  viz::FrameSinkId frame_sink_id = proxy_host->frame_tree_node()
+                                       ->render_manager()
+                                       ->GetRenderWidgetHostView()
+                                       ->GetFrameSinkId();
   proxy_host->GetAssociatedRemoteFrame()->SetFrameSinkId(frame_sink_id);
 
   std::move(callback).Run(

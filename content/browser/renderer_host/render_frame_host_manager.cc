@@ -44,6 +44,8 @@
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
@@ -283,9 +285,11 @@ void RenderFrameHostManager::InitChild(
       /*renderer_initiated_creation=*/false));
 }
 
-RenderWidgetHostView* RenderFrameHostManager::GetRenderWidgetHostView() const {
+RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
+    const {
   if (render_frame_host_)
-    return render_frame_host_->GetView();
+    return static_cast<RenderWidgetHostViewBase*>(
+        render_frame_host_->GetView());
   return nullptr;
 }
 
@@ -2793,8 +2797,9 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
 }
 
 void RenderFrameHostManager::SetRWHViewForInnerContents(
-    RenderWidgetHostView* child_rwhv) {
+    RenderWidgetHostViewChildFrame* child_rwhv) {
   DCHECK(IsMainFrameForInnerDelegate());
+  DCHECK(GetProxyToOuterDelegate());
   GetProxyToOuterDelegate()->SetChildRWHView(child_rwhv, nullptr);
 }
 
@@ -3347,8 +3352,11 @@ void RenderFrameHostManager::CommitPending(
   // Note: We do this after unloading the old RFH because that may create
   // the proxy we're looking for.
   RenderFrameProxyHost* proxy_to_parent = GetProxyToParent();
-  if (proxy_to_parent)
-    proxy_to_parent->SetChildRWHView(new_view, old_size ? &*old_size : nullptr);
+  if (proxy_to_parent) {
+    proxy_to_parent->SetChildRWHView(
+        static_cast<RenderWidgetHostViewChildFrame*>(new_view),
+        old_size ? &*old_size : nullptr);
+  }
 
   if (render_frame_host_->is_local_root()) {
     // RenderFrames are created with a hidden RenderWidgetHost. When navigation

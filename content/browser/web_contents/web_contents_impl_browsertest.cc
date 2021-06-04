@@ -3602,44 +3602,70 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetVisibilityBeforeLoad) {
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        AttachNestedInnerWebContents) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL main_url(embedded_test_server()->GetURL(
+  const GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
+  const GURL url_b(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(b)"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
   auto* root_web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = root_web_contents->GetFrameTree()->root();
-  ASSERT_EQ(1u, root->child_count());
-  FrameTreeNode* child_to_replace = root->child_at(0);
-  auto* child_to_replace_rfh = child_to_replace->current_frame_host();
 
+  // Create a child WebContents but don't attach it to the root contents yet.
   WebContents::CreateParams inner_params(
       root_web_contents->GetBrowserContext());
-
   std::unique_ptr<WebContents> child_contents_ptr =
       WebContents::Create(inner_params);
-  auto* child_rfh =
-      static_cast<RenderFrameHostImpl*>(child_contents_ptr->GetMainFrame());
+  WebContents* child_contents = child_contents_ptr.get();
+  // Navigate the child to a page with a subframe, at which we will attach the
+  // grandchild.
+  ASSERT_TRUE(NavigateToURL(child_contents, url_b));
 
+  // Create and attach grandchild to child.
   std::unique_ptr<WebContents> grandchild_contents_ptr =
       WebContents::Create(inner_params);
-
-  // Attach grandchild to child.
-  child_contents_ptr->AttachInnerWebContents(
-      std::move(grandchild_contents_ptr), child_rfh, false /* is_full_page */);
+  WebContents* grandchild_contents = grandchild_contents_ptr.get();
+  RenderFrameHost* child_contents_subframe =
+      ChildFrameAt(child_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(child_contents_subframe);
+  child_contents->AttachInnerWebContents(std::move(grandchild_contents_ptr),
+                                         child_contents_subframe,
+                                         false /* is_full_page */);
 
   // At this point the child hasn't been attached to the root.
-  EXPECT_EQ(1U, root_web_contents->GetInputEventRouter()
-                    ->RegisteredViewCountForTesting());
+  {
+    auto* root_view = static_cast<RenderWidgetHostViewBase*>(
+        root_web_contents->GetRenderWidgetHostView());
+    ASSERT_TRUE(root_view);
+    auto* root_event_router = root_web_contents->GetInputEventRouter();
+    EXPECT_EQ(1U, root_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(root_event_router->IsViewInMap(root_view));
+  }
 
   // Attach child+grandchild subtree to root.
+  RenderFrameHost* root_contents_subframe =
+      ChildFrameAt(root_web_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(root_contents_subframe);
   root_web_contents->AttachInnerWebContents(std::move(child_contents_ptr),
-                                            child_to_replace_rfh,
+                                            root_contents_subframe,
                                             false /* is_full_page */);
 
   // Verify views registered for both child and grandchild.
-  EXPECT_EQ(3U, root_web_contents->GetInputEventRouter()
-                    ->RegisteredViewCountForTesting());
+  {
+    auto* root_view = static_cast<RenderWidgetHostViewBase*>(
+        root_web_contents->GetRenderWidgetHostView());
+    auto* child_view = static_cast<RenderWidgetHostViewBase*>(
+        child_contents->GetRenderWidgetHostView());
+    auto* grandchild_view = static_cast<RenderWidgetHostViewBase*>(
+        grandchild_contents->GetRenderWidgetHostView());
+    ASSERT_TRUE(root_view);
+    ASSERT_TRUE(child_view);
+    ASSERT_TRUE(grandchild_view);
+    auto* root_event_router = root_web_contents->GetInputEventRouter();
+    EXPECT_EQ(3U, root_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(root_event_router->IsViewInMap(root_view));
+    EXPECT_TRUE(root_event_router->IsViewInMap(child_view));
+    EXPECT_TRUE(root_event_router->IsViewInMap(grandchild_view));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

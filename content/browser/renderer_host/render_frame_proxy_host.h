@@ -37,7 +37,7 @@ class CrossProcessFrameConnector;
 class FrameTreeNode;
 class RenderProcessHost;
 class RenderViewHostImpl;
-class RenderWidgetHostView;
+class RenderWidgetHostViewChildFrame;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
 // full copy of the frame tree. It has full RenderFrames for the frames it is
@@ -127,11 +127,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // the child frame will wait until the CrossProcessFrameConnector
   // receives its size from the parent via FrameHostMsg_UpdateResizeParams
   // before it begins parsing the content.
-  void SetChildRWHView(RenderWidgetHostView* view,
+  void SetChildRWHView(RenderWidgetHostViewChildFrame* view,
                        const gfx::Size* initial_frame_size);
 
   RenderViewHostImpl* GetRenderViewHost();
-  RenderWidgetHostView* GetRenderWidgetHostView();
 
   // IPC::Sender
   bool Send(IPC::Message* msg) override;

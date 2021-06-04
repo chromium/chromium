@@ -391,16 +391,7 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
     // Note that guest views can simultaneously have openers *and* be embedded.
   }
   DCHECK_NE(PageNode::EmbeddingType::kInvalid, embedding_type);
-  if (!frame) {
-    DCHECK(!render_frame_host->IsRenderFrameCreated());
-    DCHECK(!inner_web_contents->IsPortal());
-    // TODO(crbug.com/1133361):
-    // WebContentsImplBrowserTest.AttachNestedInnerWebContents calls
-    // WebContents::AttachInnerWebContents without creating RenderFrame.
-    // Removing this conditional once either the test is fixed or this function
-    // is adjusted to handle the case without the render frame.
-    return;
-  }
+  DCHECK(frame);
 
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
