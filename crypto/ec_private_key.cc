@@ -151,22 +151,16 @@ bool ECPrivateKey::ExportPublicKey(std::vector<uint8_t>* output) const {
 bool ECPrivateKey::ExportRawPublicKey(std::string* output) const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  // Export the x and y field elements as 32-byte, big-endian numbers. (This is
-  // the same as X9.62 uncompressed form without the leading 0x04 byte.)
+  std::array<uint8_t, 65> buf;
   EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_.get());
-  bssl::UniquePtr<BIGNUM> x(BN_new());
-  bssl::UniquePtr<BIGNUM> y(BN_new());
-  uint8_t buf[64];
-  if (!x || !y ||
-      !EC_POINT_get_affine_coordinates_GFp(EC_KEY_get0_group(ec_key),
-                                           EC_KEY_get0_public_key(ec_key),
-                                           x.get(), y.get(), nullptr) ||
-      !BN_bn2bin_padded(buf, 32, x.get()) ||
-      !BN_bn2bin_padded(buf + 32, 32, y.get())) {
+  if (!EC_POINT_point2oct(EC_KEY_get0_group(ec_key),
+                          EC_KEY_get0_public_key(ec_key),
+                          POINT_CONVERSION_UNCOMPRESSED, buf.data(), buf.size(),
+                          /*ctx=*/nullptr)) {
     return false;
   }
 
-  output->assign(reinterpret_cast<const char*>(buf), sizeof(buf));
+  output->assign(buf.begin(), buf.end());
   return true;
 }
 

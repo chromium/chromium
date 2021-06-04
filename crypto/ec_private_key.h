@@ -69,7 +69,8 @@ class CRYPTO_EXPORT ECPrivateKey {
   // Exports the public key to an X.509 SubjectPublicKeyInfo block.
   bool ExportPublicKey(std::vector<uint8_t>* output) const;
 
-  // Exports the public key as an EC point in the uncompressed point format.
+  // Exports the public key as an EC point in X9.62 uncompressed form. Note this
+  // includes the leading 0x04 byte.
   bool ExportRawPublicKey(std::string* output) const;
 
  private:

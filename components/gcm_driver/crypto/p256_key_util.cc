@@ -21,9 +21,6 @@ namespace gcm {
 
 namespace {
 
-// The first byte in an uncompressed P-256 point per SEC1 2.3.3.
-const char kUncompressedPointForm = 0x04;
-
 // A P-256 field element consists of 32 bytes.
 const size_t kFieldBytes = 32;
 
@@ -38,17 +35,14 @@ bool GetRawPublicKey(const crypto::ECPrivateKey& key, std::string* public_key) {
   std::string candidate_public_key;
 
   // ECPrivateKey::ExportRawPublicKey() returns the EC point in the uncompressed
-  // point format, but does not include the leading byte of value 0x04 that
-  // indicates usage of uncompressed points, per SEC1 2.3.3.
+  // point format.
   if (!key.ExportRawPublicKey(&candidate_public_key) ||
-      candidate_public_key.size() != 2 * kFieldBytes) {
+      candidate_public_key.size() != kUncompressedPointBytes) {
     DLOG(ERROR) << "Unable to export the public key.";
     return false;
   }
-  // Concatenate the leading 0x04 byte and the two uncompressed points.
   public_key->erase();
   public_key->reserve(kUncompressedPointBytes);
-  public_key->push_back(kUncompressedPointForm);
   public_key->append(candidate_public_key);
   return true;
 }
@@ -79,11 +73,10 @@ bool ComputeSharedP256Secret(crypto::ECPrivateKey& key,
   bssl::UniquePtr<EC_POINT> point(
       EC_POINT_new(EC_KEY_get0_group(ec_private_key)));
 
-  if (!point ||
-      !EC_POINT_oct2point(
-          EC_KEY_get0_group(ec_private_key), point.get(),
-          reinterpret_cast<const uint8_t*>(peer_public_key.data()),
-          peer_public_key.size(), nullptr)) {
+  if (!point || !EC_POINT_oct2point(
+                    EC_KEY_get0_group(ec_private_key), point.get(),
+                    reinterpret_cast<const uint8_t*>(peer_public_key.data()),
+                    peer_public_key.size(), nullptr)) {
     DLOG(ERROR) << "Can't convert peer public value to curve point.";
     return false;
   }

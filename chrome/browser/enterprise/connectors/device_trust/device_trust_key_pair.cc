@@ -175,6 +175,10 @@ std::string DeviceTrustKeyPair::ExportPEMPublicKey() {
   std::string raw_public_key;
   if (!key_pair_->ExportRawPublicKey(&raw_public_key))
     return std::string();
+  // This is intentionally using a non-standard format for the uncompressed
+  // point length, so we trim the leading 0x04 byte. See
+  // https://crbug.com/1212786
+  raw_public_key.erase(0, 1);
   std::string public_key;
   if (!CreatePEMKey(raw_public_key, KeyType::PUBLIC_KEY, public_key))
     return std::string();

@@ -20,6 +20,10 @@ source_set("trust_tokens") {
     "boringssl_trust_token_issuance_cryptographer.h",
     "boringssl_trust_token_redemption_cryptographer.cc",
     "boringssl_trust_token_redemption_cryptographer.h",
+    "ecdsa_p256_key_pair_generator.cc",
+    "ecdsa_p256_key_pair_generator.h",
+    "ecdsa_sha256_trust_token_request_signer.cc",
+    "ecdsa_sha256_trust_token_request_signer.h",
     "ed25519_key_pair_generator.cc",
     "ed25519_key_pair_generator.h",
     "ed25519_trust_token_request_signer.cc",
@@ -132,8 +136,8 @@ source_set("tests") {
 
   sources = [
     "boringssl_trust_token_issuance_cryptographer_unittest.cc",
+    "ecdsa_p256_key_pair_generator_unittest.cc",
     "ed25519_key_pair_generator_unittest.cc",
-    "ed25519_trust_token_request_signer_unittest.cc",
     "expiry_inspecting_record_expiry_delegate_unittest.cc",
     "has_trust_tokens_answerer_unittest.cc",
     "local_trust_token_operation_delegate_impl_unittest.cc",
@@ -153,6 +157,7 @@ source_set("tests") {
     "trust_token_request_helper_factory_unittest.cc",
     "trust_token_request_issuance_helper_unittest.cc",
     "trust_token_request_redemption_helper_unittest.cc",
+    "trust_token_request_signer_unittest.cc",
     "trust_token_request_signing_helper_unittest.cc",
     "trust_token_store_unittest.cc",
     "types_unittest.cc",
