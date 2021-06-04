@@ -21,6 +21,7 @@ android_library("base_module_java") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java",
     "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
     "java/src/org/chromium/chrome/browser/language/settings/AddLanguageFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
@@ -78,6 +79,8 @@ android_resources("java_resources") {
     "java/res/layout/accept_languages_item.xml",
     "java/res/layout/accept_languages_list.xml",
     "java/res/layout/add_languages_main.xml",
+    "java/res/layout/app_language_prompt_content.xml",
+    "java/res/layout/app_language_prompt_row.xml",
     "java/res/layout/language_ask_prompt_content.xml",
     "java/res/layout/language_ask_prompt_row.xml",
     "java/res/layout/language_ask_prompt_row_separator.xml",

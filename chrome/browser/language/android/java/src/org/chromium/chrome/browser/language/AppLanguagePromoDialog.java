@@ -1,0 +1,334 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.language;
+
+import android.app.Activity;
+import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.settings.LanguageItem;
+import org.chromium.chrome.browser.language.settings.LanguagesManager;
+import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.language.GeoLanguageProviderBridge;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+/**
+ * Implements a modal dialog that prompts the user to change their UI language. Displayed once at
+ * browser startup when no other promo or modals are shown.
+ */
+public class AppLanguagePromoDialog implements ModalDialogProperties.Controller {
+    private Activity mActivity;
+    private ModalDialogManager mModalDialogManager;
+    private PropertyModel mAppLanguageModal;
+    private LanguageItemAdapter mAdapter;
+
+    @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ItemType {
+        int LANGUAGE = 0;
+        int SEPARATOR = 1;
+    }
+
+    public AppLanguagePromoDialog(
+            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        mActivity = activity;
+        mModalDialogManager = modalDialogManagerSupplier.get();
+
+        Resources resources = mActivity.getResources();
+        mAppLanguageModal =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, resources, R.string.languages_srp_title)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                R.string.languages_srp_accept_title)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                R.string.languages_srp_cancel_title)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .build();
+    }
+
+    /**
+     * Internal class for managing a list of languages in a RecyclerView.
+     */
+    private class LanguageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private List<LanguageItem> mTopLanguages;
+        private List<LanguageItem> mOtherLanguages;
+        private LanguageItem mCurrentLanguage;
+
+        /**
+         * @param topLanguages - LanguageItems to appear at the top of the adapter list.
+         * @param otherLanguages - LanguageItems to appear below the top languages.
+         * @param currentLanguage - The currently selected app language.
+         */
+        public LanguageItemAdapter(Collection<LanguageItem> topLanguages,
+                Collection<LanguageItem> otherLanguages, LanguageItem currentLanguage) {
+            mTopLanguages = new ArrayList<LanguageItem>(topLanguages);
+            mOtherLanguages = new ArrayList<LanguageItem>(otherLanguages);
+            mCurrentLanguage = currentLanguage;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            // The seperator is between top and other languages.
+            return (position == mTopLanguages.size()) ? ItemType.SEPARATOR : ItemType.LANGUAGE;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case ItemType.LANGUAGE:
+                    View row = LayoutInflater.from(parent.getContext())
+                                       .inflate(R.layout.app_language_prompt_row, parent, false);
+                    return new AppLanguagePromptRowViewHolder(row);
+                case ItemType.SEPARATOR:
+                    return new SeparatorViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.language_ask_prompt_row_separator, parent,
+                                            false));
+                default:
+                    assert false : "No matching viewType";
+                    return null;
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            switch (getItemViewType(position)) {
+                case ItemType.LANGUAGE:
+                    LanguageItem languageItem = getLanguageItemAt(position);
+                    ((AppLanguagePromptRowViewHolder) holder)
+                            .bindViewHolder(languageItem, languageItem.equals(mCurrentLanguage));
+                    break;
+                case ItemType.SEPARATOR:
+                    // No binding necessary for the separator.
+                    break;
+                default:
+                    assert false : "No matching viewType";
+            }
+        }
+
+        /**
+         * Set the currently selected LanguageItem based on the position.
+         * @param postion Offset of the LanguageItem to select.
+         */
+        public void setSelectedLanguage(int position) {
+            mCurrentLanguage = getLanguageItemAt(position);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemCount() {
+            // Sum of both lists + a separator.
+            return mTopLanguages.size() + mOtherLanguages.size() + 1;
+        }
+
+        public LanguageItem getSelectedLanguage() {
+            return mCurrentLanguage;
+        }
+
+        private LanguageItem getLanguageItemAt(int position) {
+            if (position < mTopLanguages.size()) {
+                return mTopLanguages.get(position);
+            } else if (position > mTopLanguages.size()) {
+                // Other languages are offset by one from the seperator.
+                return mOtherLanguages.get(position - mTopLanguages.size() - 1);
+            }
+            assert false : "The language item at the separator can not be accessed";
+            return null;
+        }
+    }
+
+    /**
+     * Internal class representing an individual langauge row.
+     */
+    private class AppLanguagePromptRowViewHolder
+            extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView mDisplayNameTextView;
+        private TextView mNativeNameTextView;
+        private RadioButton mRadioButton;
+
+        AppLanguagePromptRowViewHolder(View view) {
+            super(view);
+            mDisplayNameTextView = ((TextView) itemView.findViewById(R.id.display_language_name));
+            mNativeNameTextView = ((TextView) itemView.findViewById(R.id.native_language_name));
+            mRadioButton =
+                    ((RadioButton) itemView.findViewById(R.id.app_language_prompt_radiobutton));
+
+            view.setOnClickListener(this);
+            mRadioButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
+            adapter.setSelectedLanguage(getBindingAdapterPosition());
+        }
+
+        public void bindViewHolder(LanguageItem languageItem, boolean checked) {
+            mRadioButton.setChecked(checked);
+            mDisplayNameTextView.setText(languageItem.getDisplayName());
+            mNativeNameTextView.setText(languageItem.getNativeDisplayName());
+        }
+    }
+
+    /**
+     * Internal class representing the separator row.
+     */
+    private class SeparatorViewHolder extends RecyclerView.ViewHolder {
+        SeparatorViewHolder(View view) {
+            super(view);
+        }
+    }
+
+    /**
+     * Show the app language modal and add a custom view holding a list of languages with the
+     * current location's and users preferred languages at the top.
+     */
+    protected void showAppLanguageModal() {
+        // Setup initial language lists.
+        LanguageItem currentLanguage =
+                LanguagesManager.getInstance().getLanguageItem(AppLocaleUtils.getAppLanguagePref());
+        LinkedHashSet<LanguageItem> uiLanguages =
+                new LinkedHashSet<>(LanguagesManager.getInstance().getPotentialUiLanguages());
+        LinkedHashSet<LanguageItem> topLanguages = getTopLanguages(uiLanguages, currentLanguage);
+        uiLanguages.removeAll(topLanguages);
+        mAdapter = new LanguageItemAdapter(topLanguages, uiLanguages, currentLanguage);
+        // Release all static LanguagesManager resources since they are no longer needed.
+        LanguagesManager.recycle();
+
+        // Setup RecyclerView.
+        View customView = LayoutInflater.from(mActivity).inflate(
+                R.layout.app_language_prompt_content, null, false);
+        RecyclerView list = customView.findViewById(R.id.app_language_prompt_content_recycler_view);
+        list.setAdapter(mAdapter);
+        list.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        list.setLayoutManager(linearLayoutManager);
+
+        // Make top and bottom shadow visible when needed.
+        ImageView topShadow = customView.findViewById(R.id.top_shadow);
+        ImageView bottomShadow = customView.findViewById(R.id.bottom_shadow);
+        list.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (recyclerView.canScrollVertically(-1)) {
+                    topShadow.setVisibility(View.VISIBLE);
+                } else {
+                    topShadow.setVisibility(View.GONE);
+                }
+
+                if (recyclerView.canScrollVertically(1)) {
+                    bottomShadow.setVisibility(View.VISIBLE);
+                } else {
+                    bottomShadow.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        mAppLanguageModal.set(ModalDialogProperties.CUSTOM_VIEW, customView);
+        mModalDialogManager.showDialog(mAppLanguageModal, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    @Override
+    public void onClick(PropertyModel model, int buttonType) {
+        if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        } else {
+            saveAppLanguage();
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        }
+    }
+
+    @Override
+    public void onDismiss(PropertyModel model, int dismissalCause) {
+        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+            saveAppLanguage();
+        }
+        TranslateBridge.setAppLanguagePromptShown();
+    }
+
+    /**
+     * Return an ordered set of LanguageItems that should be shown at the top of the list. These
+     * languages come from the user's currently location and preferred languages.
+     * @param uiLanguages Collection of possible UI langauges.
+     * @param currentLanguage The LanguageItem representing the current UI language.
+     * @return An ordered set of LangaugeItems.
+     */
+    private LinkedHashSet<LanguageItem> getTopLanguages(
+            Collection<LanguageItem> uiLanguages, LanguageItem currentLanguage) {
+        LinkedHashSet<String> topLanguageCodes =
+                new LinkedHashSet<>(GeoLanguageProviderBridge.getCurrentGeoLanguages());
+        topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes());
+        LinkedHashSet<LanguageItem> topLanguages = new LinkedHashSet<>();
+        topLanguages.add(currentLanguage);
+        // Only add top languages that can be UI languages.
+        for (LanguageItem item : uiLanguages) {
+            if (topLanguageCodes.contains(item.getCode())) topLanguages.add(item);
+        }
+        return topLanguages;
+    }
+
+    /**
+     * Save the currently selected language as the app language. Setting the app language preference
+     * will start a downloaded for the correct language split if needed.
+     */
+    private void saveAppLanguage() {
+        AppLocaleUtils.setAppLanguagePref(mAdapter.getSelectedLanguage().getCode());
+    }
+
+    /**
+     * Displays starts showing the App language prompt if the experiment is enabled.
+     * @param activity The current activity to display the prompt into.
+     * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
+     * @return Whether the prompt was shown or not.
+     */
+    public static boolean maybeShowPrompt(
+            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (!shouldShowPrompt()) return false;
+
+        AppLanguagePromoDialog prompt =
+                new AppLanguagePromoDialog(activity, modalDialogManagerSupplier);
+        prompt.showAppLanguageModal();
+        return true;
+    }
+
+    /**
+     * @return Whether the app language prompt should be shown or not.
+     */
+    private static boolean shouldShowPrompt() {
+        // This switch is only used for testing so it is ok to override all other checks.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) return true;
+
+        // Don't show the prompt if not enabled or already shown.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
+        if (TranslateBridge.getAppLanguagePromptShown()) return false;
+
+        return true;
+    }
+}

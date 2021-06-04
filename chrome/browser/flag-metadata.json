@@ -125,7 +125,12 @@
   {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
+  },
+  {
+    "name": "android-force-app-language-prompt",
+    "owners": [" perrier", "chrome-language@google.com"],
+    "expiry_milestone": 95
   },
   {
     "name": "android-multiple-display",

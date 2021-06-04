@@ -2752,6 +2752,12 @@ const char kAndroidDetailedLanguageSettingsName[] =
 const char kAndroidDetailedLanguageSettingsDescription[] =
     "Enable the new detailed language settings page";
 
+const char kAndroidForceAppLanguagePromptName[] =
+    "Force second run app language prompt";
+const char kAndroidForceAppLanguagePromptDescription[] =
+    "When enabled the app language prompt to change the UI language will"
+    "always be shown.";
+
 const char kAndroidLayoutChangeTabReparentingName[] =
     "Android Chrome UI phone/tablet layout change tab reparenting";
 const char kAndroidLayoutChangeTabReparentingDescription[] =

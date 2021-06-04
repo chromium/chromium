@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
@@ -51,6 +52,11 @@ void LanguagePrefs::RegisterProfilePrefs(
   registry->RegisterListPref(language::prefs::kFluentLanguages,
                              LanguagePrefs::GetDefaultFluentLanguages(),
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(
+      language::prefs::kAppLanguagePromptShown, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif
 }
 
 LanguagePrefs::LanguagePrefs(PrefService* user_prefs) : prefs_(user_prefs) {

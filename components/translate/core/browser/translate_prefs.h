@@ -276,6 +276,11 @@ class TranslatePrefs {
   // prompt was displayed to the user already.
   bool GetExplicitLanguageAskPromptShown() const;
   void SetExplicitLanguageAskPromptShown(bool shown);
+
+  // These methods are used to determine whether the app language prompt was
+  // displayed to the user already. Once shown it can not be unset.
+  bool GetAppLanguagePromptShown() const;
+  void SetAppLanguagePromptShown();
 #endif
 
   // Gets the full (policy-forced and user selected) language list from language

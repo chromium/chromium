@@ -20,6 +20,10 @@ const base::Feature kOverrideTranslateTriggerInIndia{
     "OverrideTranslateTriggerInIndia", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kExplicitLanguageAsk{"ExplicitLanguageAsk",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAppLanguagePrompt{"AppLanguagePrompt",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kForceAppLanguagePrompt{"ForceAppLanguagePrompt",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kUseFluentLanguageModel {
   "UseFluentLanguageModel",
 #if defined(OS_IOS)

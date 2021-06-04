@@ -13,9 +13,14 @@ namespace language {
 // the baseline model is used instead.
 extern const base::Feature kUseHeuristicLanguageModel;
 
-// The feature that enables explicitly asking for user preferences on startup on
-// Android.
+// The feature that enables explicitly asking for user preferred
+// Accept-Languages on second run on Android. Replaced by kAppLanguagePrompt.
 extern const base::Feature kExplicitLanguageAsk;
+// The feature that enables a second run prompt to select the app UI language on
+// Android.
+extern const base::Feature kAppLanguagePrompt;
+// This feature forces the app UI prompt even if it has already been shown.
+extern const base::Feature kForceAppLanguagePrompt;
 
 // This feature controls the activation of the experiment to trigger Translate
 // in India on English pages independent of the user's UI language. The params

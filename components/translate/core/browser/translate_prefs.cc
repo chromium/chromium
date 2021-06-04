@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/language_prefs.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
@@ -721,6 +722,14 @@ bool TranslatePrefs::GetExplicitLanguageAskPromptShown() const {
 
 void TranslatePrefs::SetExplicitLanguageAskPromptShown(bool shown) {
   prefs_->SetBoolean(kPrefExplicitLanguageAskShown, shown);
+}
+
+bool TranslatePrefs::GetAppLanguagePromptShown() const {
+  return prefs_->GetBoolean(language::prefs::kAppLanguagePromptShown);
+}
+
+void TranslatePrefs::SetAppLanguagePromptShown() {
+  prefs_->SetBoolean(language::prefs::kAppLanguagePromptShown, true);
 }
 #endif  // defined(OS_ANDROID)
 

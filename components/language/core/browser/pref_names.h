@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_PREF_NAMES_H_
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_PREF_NAMES_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace language {
@@ -30,6 +31,10 @@ extern const char kUserLanguageProfile[];
 extern const char kApplicationLocale[];
 
 extern const char kFluentLanguages[];
+
+#if defined(OS_ANDROID)
+extern const char kAppLanguagePromptShown[];
+#endif
 
 }  // namespace prefs
 }  // namespace language

@@ -214,7 +214,7 @@ public class LanguagesManager {
      * The current Accept-Languages are added to the front of the the list.
      * @return List of LanguageItems.
      */
-    private List<LanguageItem> getPotentialUiLanguages() {
+    public List<LanguageItem> getPotentialUiLanguages() {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         LanguageItem currentUiLanguage = getLanguageItem(AppLocaleUtils.getAppLanguagePref());
 

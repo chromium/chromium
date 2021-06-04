@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -724,7 +725,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity, mActivity.getWindowAndroid())) {
             return true;
         }
-
+        if (AppLanguagePromoDialog.maybeShowPrompt(
+                    mActivity, mActivity.getModalDialogManagerSupplier())) {
+            return true;
+        }
         return LanguageAskPrompt.maybeShowLanguageAskPrompt(
                 mActivity, mActivity.getModalDialogManagerSupplier());
     }

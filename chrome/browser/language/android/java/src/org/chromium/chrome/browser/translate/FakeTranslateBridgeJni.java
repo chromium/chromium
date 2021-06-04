@@ -187,6 +187,16 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
+    public boolean getAppLanguagePromptShown() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setAppLanguagePromptShown() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void setIgnoreMissingKeyForTesting(boolean ignore) {
         throw new UnsupportedOperationException();
     }

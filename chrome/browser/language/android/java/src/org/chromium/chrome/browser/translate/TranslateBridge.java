@@ -168,8 +168,8 @@ public class TranslateBridge {
     }
 
     /**
-     * @return A sorted list of LanguageItems representing the Chrome accept languages with details.
-     *         Languages that are not supported on Android have been filtered out.
+     * @return A list of LanguageItems sorted by display name that represent all languages that can
+     * be on the Chrome accept languages list.
      */
     public static List<LanguageItem> getChromeLanguageList() {
         List<LanguageItem> list = new ArrayList<>();
@@ -265,6 +265,20 @@ public class TranslateBridge {
         TranslateBridgeJni.get().setExplicitLanguageAskPromptShown(shown);
     }
 
+    /**
+     * @return Whether the app language prompt has been shown or not.
+     */
+    public static boolean getAppLanguagePromptShown() {
+        return TranslateBridgeJni.get().getAppLanguagePromptShown();
+    }
+
+    /**
+     * Set the pref indicating the app language prompt has been shown to the user.
+     */
+    public static void setAppLanguagePromptShown() {
+        TranslateBridgeJni.get().setAppLanguagePromptShown();
+    }
+
     public static void setIgnoreMissingKeyForTesting(boolean ignore) {
         TranslateBridgeJni.get().setIgnoreMissingKeyForTesting(ignore); // IN-TEST
     }
@@ -294,6 +308,8 @@ public class TranslateBridge {
         void setLanguageBlockedState(String language, boolean blocked);
         boolean getExplicitLanguageAskPromptShown();
         void setExplicitLanguageAskPromptShown(boolean shown);
+        boolean getAppLanguagePromptShown();
+        void setAppLanguagePromptShown();
         void setIgnoreMissingKeyForTesting(boolean ignore);
     }
 }

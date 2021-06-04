@@ -42,7 +42,8 @@ import java.util.TreeSet;
 
 /**
  * Implements a modal dialog that prompts the user about the languages they can read. Displayed
- * once at browser startup when no other promo or modals are shown.
+ * once at browser startup when no other promo or modals are shown. Selected languages are added to
+ * the user Accept-Languages.
  */
 public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     // Enum values for the Translate.ExplicitLanguageAsk.Event histogram.
@@ -245,6 +246,8 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
      */
     public static boolean maybeShowLanguageAskPrompt(
             Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        // Do not show the Accept-Language prompt if the App Language prompt was shown.
+        if (TranslateBridge.getAppLanguagePromptShown()) return false;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.EXPLICIT_LANGUAGE_ASK)) return false;
         if (TranslateBridge.getExplicitLanguageAskPromptShown()) return false;
 
