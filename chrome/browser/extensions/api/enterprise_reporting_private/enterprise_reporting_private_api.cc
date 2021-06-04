@@ -207,7 +207,7 @@ void EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse(
       return;
     case RetrieveDeviceDataStatus::kDataRecordNotFound:
       VLOG(1) << "The Endpoint Verification data is not present.";
-      Respond(NoArguments());
+      Respond(OneArgument(base::Value(base::Value::BlobStorage())));
       return;
     default:
       VLOG(1) << "Endpoint Verification data retrieval error: "
