@@ -1257,18 +1257,28 @@ TEST_P(RemoteTest, RemoteSet) {
   {
     base::RunLoop loop;
     constexpr double kValue = 42.0;
-    auto on_add = base::BarrierClosure(3, loop.QuitClosure());
+    auto on_add = base::BarrierClosure(6, loop.QuitClosure());
     for (auto& remote : remotes) {
       remote->Add(kValue, base::BindLambdaForTesting([&](double total) {
                     EXPECT_EQ(kValue, total);
                     on_add.Run();
                   }));
     }
+
+    // Use Get() to get a specified remote from RemoteSet.
+    std::vector<mojo::RemoteSetElementId> ids = {id0, id1, id2};
+    for (auto& id : ids) {
+      remotes.Get(id)->Add(kValue,
+                           base::BindLambdaForTesting([&](double total) {
+                             EXPECT_EQ(kValue * 2, total);
+                             on_add.Run();
+                           }));
+    }
     loop.Run();
 
-    EXPECT_EQ(kValue, impls[0]->total());
-    EXPECT_EQ(kValue, impls[1]->total());
-    EXPECT_EQ(kValue, impls[2]->total());
+    EXPECT_EQ(kValue * 2, impls[0]->total());
+    EXPECT_EQ(kValue * 2, impls[1]->total());
+    EXPECT_EQ(kValue * 2, impls[2]->total());
   }
 
   EXPECT_FALSE(remotes.empty());

@@ -122,7 +122,7 @@ class RemoteSetImpl {
   // Returns an `Interface*` for the given ID, that can be used to issue
   // interface calls.
   Interface* Get(RemoteSetElementId id) {
-    auto* it = storage_.find(id);
+    auto it = storage_.find(id);
     if (it == storage_.end())
       return nullptr;
     return it->second.get();
@@ -148,7 +148,7 @@ class RemoteSetImpl {
 
   void FlushForTesting() {
     for (auto& it : storage_) {
-        it.second.FlushForTesting();
+      it.second.FlushForTesting();
     }
   }
 
