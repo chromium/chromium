@@ -4244,7 +4244,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
     event_recorder_->ListenToEvents(*callback);
   } else {
     if (event_recorder_) {
-      event_recorder_->FlushAsyncEvents();
+      event_recorder_->WaitForDoneRecording();
       event_recorder_.reset(nullptr);
     }
   }

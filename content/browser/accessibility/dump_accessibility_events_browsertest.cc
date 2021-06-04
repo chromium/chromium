@@ -105,24 +105,6 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   std::string final_tree_;
 };
 
-bool IsRecordingComplete(ui::AXEventRecorder& event_recorder,
-                         std::vector<std::string>& run_until) {
-  // If no @*-RUN-UNTIL-EVENT directives, then having any events is enough.
-  LOG(ERROR) << "=== IsRecordingComplete#1 run_until size=" << run_until.size();
-  if (run_until.empty())
-    return true;
-
-  std::vector<std::string> event_logs = event_recorder.EventLogs();
-  LOG(ERROR) << "=== IsRecordingComplete#2 Logs size=" << event_logs.size();
-
-  for (size_t i = 0; i < event_logs.size(); ++i)
-    for (size_t j = 0; j < run_until.size(); ++j)
-      if (event_logs[i].find(run_until[j]) != std::string::npos)
-        return true;
-
-  return false;
-}
-
 std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     std::vector<std::string>& run_until) {
   WebContentsImpl* web_contents =
@@ -168,7 +150,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
       // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
       // when |event_recorder| records a platform event.
       waiter->WaitForNotification();
-      if (IsRecordingComplete(*event_recorder, run_until))
+      if (event_recorder->IsRunUntilEventSatisfied(run_until))
         break;
     }
 
@@ -185,6 +167,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
         web_contents->GetRootBrowserAccessibilityManager();
     manager->SignalEndOfTest();
     waiter->WaitForNotification();
+    event_recorder->WaitForDoneRecording();
 
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.
@@ -192,8 +175,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
 
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
-    event_recorder->FlushAsyncEvents();
-    std::vector<std::string> event_logs = event_recorder->EventLogs();
+    std::vector<std::string> event_logs = event_recorder->GetEventLogs();
 
     // Sort the logs so that results are predictable. There are too many
     // nondeterministic things that affect the exact order of events fired,

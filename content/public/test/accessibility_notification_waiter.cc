@@ -30,7 +30,8 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     : WebContentsObserver(web_contents),
       event_to_wait_for_(ax::mojom::Event::kNone),
       generated_event_to_wait_for_(absl::nullopt),
-      loop_runner_(std::make_unique<base::RunLoop>()) {
+      loop_runner_(std::make_unique<base::RunLoop>()),
+      loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
 }
 
@@ -41,7 +42,8 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     : WebContentsObserver(web_contents),
       event_to_wait_for_(event_type),
       generated_event_to_wait_for_(absl::nullopt),
-      loop_runner_(std::make_unique<base::RunLoop>()) {
+      loop_runner_(std::make_unique<base::RunLoop>()),
+      loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
   static_cast<WebContentsImpl*>(web_contents)
       ->AddAccessibilityMode(accessibility_mode);
@@ -59,7 +61,8 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     : WebContentsObserver(web_contents),
       event_to_wait_for_(absl::nullopt),
       generated_event_to_wait_for_(event_type),
-      loop_runner_(std::make_unique<base::RunLoop>()) {
+      loop_runner_(std::make_unique<base::RunLoop>()),
+      loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
   static_cast<WebContentsImpl*>(web_contents)
       ->AddAccessibilityMode(accessibility_mode);
@@ -111,6 +114,7 @@ void AccessibilityNotificationWaiter::WaitForNotification() {
   // Each loop runner can only be called once. Create a new one in case
   // the caller wants to call this again to wait for the next notification.
   loop_runner_ = std::make_unique<base::RunLoop>();
+  loop_runner_quit_closure_ = loop_runner_->QuitClosure();
 }
 
 void AccessibilityNotificationWaiter::WaitForNotificationWithTimeout(
@@ -150,7 +154,7 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
       event_to_wait_for_ == event_type) {
     event_target_id_ = event_target_id;
     event_render_frame_host_ = rfhi;
-    loop_runner_->Quit();
+    loop_runner_quit_closure_.Run();
   }
 }
 
@@ -176,7 +180,7 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
     event_render_frame_host_ = static_cast<RenderFrameHostImpl*>(delegate);
-    loop_runner_->Quit();
+    loop_runner_quit_closure_.Run();
   }
 }
 
@@ -209,7 +213,7 @@ void AccessibilityNotificationWaiter::RenderFrameHostChanged(
 }
 
 void AccessibilityNotificationWaiter::Quit() {
-  loop_runner_->Quit();
+  loop_runner_quit_closure_.Run();
 }
 
 }  // namespace content

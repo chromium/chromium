@@ -94,7 +94,7 @@ AccessibilityEventRecorderUia::~AccessibilityEventRecorderUia() {
   base::subtle::NoBarrier_AtomicExchange(&instantiated_, 0);
 }
 
-void AccessibilityEventRecorderUia::FlushAsyncEvents() {
+void AccessibilityEventRecorderUia::WaitForDoneRecording() {
   // Pump messages via |shutdown_loop_| until the thread is complete.
   shutdown_loop_.Run();
   base::PlatformThread::Join(thread_handle_);
@@ -197,12 +197,6 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
   // Wait for shutdown signal
   shutdown_signal_.Wait();
 
-  {
-    base::AutoLock lock{on_event_lock_};
-    for (const std::string& event : event_logs_)
-      owner_->OnEvent(event);
-  }
-
   // Cleanup
   uia_->RemoveAllEventHandlers();
   uia_event_handler_->CleanUp();
@@ -221,10 +215,8 @@ void AccessibilityEventRecorderUia::Thread::SendShutdownSignal() {
 }
 
 void AccessibilityEventRecorderUia::Thread::OnEvent(const std::string& event) {
-  // We need to synchronize event logging, since UIA event callbacks can be
-  // coming from multiple threads.
-  base::AutoLock lock{on_event_lock_};
-  event_logs_.push_back(event);
+  // Pass the event to the thread-safe owner_.
+  owner_->OnEvent(event);
 }
 
 AccessibilityEventRecorderUia::Thread::EventHandler::EventHandler() {

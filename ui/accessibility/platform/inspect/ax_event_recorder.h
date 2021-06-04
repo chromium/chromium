@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/synchronization/lock.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -49,10 +50,15 @@ class AX_EXPORT AXEventRecorder {
   void StopListeningToEvents();
 
   // Called to ensure the event recorder has finished recording async events.
-  virtual void FlushAsyncEvents() {}
+  virtual void WaitForDoneRecording() {}
 
   // Access the vector of human-readable event logs, one string per event.
-  const std::vector<std::string>& EventLogs() { return event_logs_; }
+  std::vector<std::string> GetEventLogs() const;
+
+  // Returns true if the @*-RUN-UNTIL-EVENT directive is satisfied by the
+  // currently recorded events for the events in |run_until|.
+  bool IsRunUntilEventSatisfied(
+      const std::vector<std::string>& run_until) const;
 
  protected:
   // Called by a derived class which implements platform event handling on
@@ -62,6 +68,7 @@ class AX_EXPORT AXEventRecorder {
   bool only_web_events_ = false;
 
  private:
+  mutable base::Lock on_event_lock_;
   std::vector<std::string> event_logs_;
   AXEventCallback callback_;
 

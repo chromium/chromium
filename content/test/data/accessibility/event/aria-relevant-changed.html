@@ -14,38 +14,44 @@
   <div id="d7" tabindex='0' aria-label="Div7" aria-live="polite" aria-relevant="true">Div7</div>
   <div id="d8" tabindex='0' aria-label="Div8" aria-live="polite" aria-relevant="true">Div8</div>
   <script>
-    function go() {
+    var go_passes = [
       // Set aria-relevant from default 'additions text'->'all' on a non-live region;
       // should not fire an event.
-      document.getElementById('d1').setAttribute('aria-relevant', 'all');
+      () => document.getElementById('d1').setAttribute('aria-relevant', 'all'),
 
       // Set aria-relevant from default 'additions text'->'additions text';
       // should not fire an event.
-      document.getElementById('d2').setAttribute('aria-relevant', 'additions text');
+      () => document.getElementById('d2').setAttribute('aria-relevant', 'additions text'),
 
       // Set aria-relevant from default 'additions text'->'additions';
       // should fire an event.
-      document.getElementById('d3').setAttribute('aria-relevant', 'additions');
+      () => document.getElementById('d3').setAttribute('aria-relevant', 'additions'),
 
       // Set aria-relevant from default 'additions text'->'all';
       // should fire an event.
-      document.getElementById('d4').setAttribute('aria-relevant', 'all');
+      () => document.getElementById('d4').setAttribute('aria-relevant', 'all'),
 
       // Set aria-relevant from default 'additions text'->'removals';
       // should fire an event.
-      document.getElementById('d5').setAttribute('aria-relevant', 'removals');
+      () => document.getElementById('d5').setAttribute('aria-relevant', 'removals'),
 
       // Set aria-relevant from default 'additions text'->'text';
       // should fire an event.
-      document.getElementById('d6').setAttribute('aria-relevant', 'text');
+      () => document.getElementById('d6').setAttribute('aria-relevant', 'text'),
 
       // Set aria-relevant from 'additions'->'additions text';
       // should fire an event.
-      document.getElementById('d7').setAttribute('aria-relevant', 'additions text');
+      () => document.getElementById('d7').setAttribute('aria-relevant', 'additions text'),
 
       // Set aria-relevant from 'additions'->[removed];
       // should fire an event.
-      document.getElementById('d8').removeAttribute('aria-relevant');
+      () => document.getElementById('d8').removeAttribute('aria-relevant'),
+    ];
+
+    let current_pass = 0;
+    function go() {
+      go_passes[current_pass++].call();
+      return current_pass < go_passes.length;
     }
   </script>
 </body>

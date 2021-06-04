@@ -111,6 +111,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   absl::optional<ax::mojom::Event> event_to_wait_for_;
   absl::optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
+  base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
   RenderFrameHostImpl* event_render_frame_host_ = nullptr;
 
