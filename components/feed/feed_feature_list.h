@@ -53,6 +53,9 @@ extern const base::Feature kDiscoFeedEndpoint;
 // xsurface feed.
 extern const base::Feature kXsurfaceMetricsReporting;
 
+// Whether to log reliability events.
+extern const base::Feature kReliabilityLogging;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed

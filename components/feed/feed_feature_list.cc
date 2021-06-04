@@ -59,6 +59,8 @@ const base::Feature kDiscoFeedEndpoint{"DiscoFeedEndpoint",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kXsurfaceMetricsReporting{
     "XsurfaceMetricsReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kReliabilityLogging{"FeedReliabilityLogging",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
