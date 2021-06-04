@@ -7137,7 +7137,7 @@
       'owners': [ 'yusuyoutube@google.com', 'benwgold@google.com', 'wylieb@chromium.org', 'fgorski@chromium.org', 'lens-chrome@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['android'],
+      'supported_on': ['android:91-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
