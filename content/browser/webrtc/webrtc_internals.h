@@ -134,8 +134,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   static WebRTCInternals* g_webrtc_internals;
 
-  void SendUpdate(const std::string& event_name,
-                  std::unique_ptr<base::Value> event_data);
+  void SendUpdate(const std::string& event_name, base::Value event_data);
 
   // RenderProcessHostObserver implementation.
   void RenderProcessExited(RenderProcessHost* host,
@@ -156,10 +155,10 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   // Updates the number of open PeerConnections. Called when a PeerConnection
   // is stopped or removed.
-  void MaybeClosePeerConnection(base::DictionaryValue* record);
+  void MaybeClosePeerConnection(base::Value* record);
 
-  void MaybeMarkPeerConnectionAsConnected(base::DictionaryValue* record);
-  void MaybeMarkPeerConnectionAsNotConnected(base::DictionaryValue* record);
+  void MaybeMarkPeerConnectionAsConnected(base::Value* record);
+  void MaybeMarkPeerConnectionAsNotConnected(base::Value* record);
 
   // Called whenever a PeerConnection is created or stopped in order to
   // request/cancel a wake lock on suspending the current application for power
@@ -174,9 +173,11 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // notifications.
   void ProcessPendingUpdates();
 
-  base::DictionaryValue* FindRecord(GlobalFrameRoutingId frame_id,
-                                    int lid,
-                                    size_t* index = nullptr);
+  // Returns an iterator for peer_connection_data_.GetList (an end() iterator
+  // if not found).
+  base::CheckedContiguousIterator<base::Value> FindRecord(
+      GlobalFrameRoutingId frame_id,
+      int lid);
 
   base::ObserverList<WebRTCInternalsUIObserver>::Unchecked observers_;
 
@@ -248,8 +249,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // thread.
   class PendingUpdate {
    public:
-    PendingUpdate(const std::string& event_name,
-                  std::unique_ptr<base::Value> event_data);
+    PendingUpdate(const std::string& event_name, base::Value event_data);
     PendingUpdate(PendingUpdate&& other);
     ~PendingUpdate();
 
@@ -259,7 +259,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
    private:
     base::ThreadChecker thread_checker_;
     const std::string event_name_;
-    std::unique_ptr<base::Value> event_data_;
+    base::Value event_data_;
     DISALLOW_COPY_AND_ASSIGN(PendingUpdate);
   };
 
