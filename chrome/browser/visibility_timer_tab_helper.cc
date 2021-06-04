@@ -14,6 +14,12 @@
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper)
 
+struct VisibilityTimerTabHelper::Task {
+  base::TimeDelta visible_delay;
+  base::Location from_here;
+  base::OnceClosure task;
+};
+
 VisibilityTimerTabHelper::~VisibilityTimerTabHelper() = default;
 
 void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
@@ -23,20 +29,11 @@ void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
   if (web_contents()->IsBeingDestroyed())
     return;
 
-  // Safe to use Unretained, as destroying |this| will destroy task_queue_,
-  // hence cancelling all timers.
-  // RetainingOneShotTimer is used which needs a RepeatingCallback, but we
-  // only have it run this callback a single time, and destroy it after.
-  task_queue_.push_back(std::make_unique<base::RetainingOneShotTimer>(
-      from_here, visible_delay,
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&VisibilityTimerTabHelper::RunTask,
-                         base::Unretained(this), std::move(task)))));
-  DCHECK(!task_queue_.back()->IsRunning());
+  task_queue_.push_back({visible_delay, from_here, std::move(task)});
 
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE &&
       task_queue_.size() == 1) {
-    task_queue_.front()->Reset();
+    StartNextTaskTimer();
   }
 }
 
@@ -44,9 +41,9 @@ void VisibilityTimerTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (!task_queue_.empty()) {
     if (visibility == content::Visibility::VISIBLE)
-      task_queue_.front()->Reset();
+      StartNextTaskTimer();
     else
-      task_queue_.front()->Stop();
+      timer_.Stop();
   }
 }
 
@@ -59,7 +56,24 @@ void VisibilityTimerTabHelper::RunTask(base::OnceClosure task) {
 
   task_queue_.pop_front();
   if (!task_queue_.empty())
-    task_queue_.front()->Reset();
+    StartNextTaskTimer();
 
   std::move(task).Run();
+}
+
+void VisibilityTimerTabHelper::StartNextTaskTimer() {
+  Task& task = task_queue_.front();
+  DCHECK(task.task);
+
+  // Split the callback, as we might need to use it again if the timer is
+  // stopped.
+  auto callback_pair = base::SplitOnceCallback(std::move(task.task));
+  task.task = std::move(callback_pair.first);
+
+  // Safe to use Unretained, as destroying |this| will destroy timer_,
+  // hence cancelling the callback.
+  timer_.Start(
+      task.from_here, task.visible_delay,
+      base::BindOnce(&VisibilityTimerTabHelper::RunTask, base::Unretained(this),
+                     std::move(callback_pair.second)));
 }

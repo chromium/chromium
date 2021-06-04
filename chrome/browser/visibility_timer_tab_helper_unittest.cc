@@ -62,3 +62,36 @@ TEST_F(VisibilityTimerTabHelperTest, Delay) {
 
   EXPECT_TRUE(task_executed);
 }
+
+TEST_F(VisibilityTimerTabHelperTest, TasksAreQueuedInDormantState) {
+  std::string tasks_executed;
+  VisibilityTimerTabHelper::CreateForWebContents(web_contents());
+
+  VisibilityTimerTabHelper::FromWebContents(web_contents())
+      ->PostTaskAfterVisibleDelay(
+          FROM_HERE, base::BindLambdaForTesting([&] { tasks_executed += "1"; }),
+          base::TimeDelta::FromSecondsD(1));
+  web_contents()->WasShown();
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+
+  // Add second task. Its timer does not advance until after the first task
+  // completes.
+  VisibilityTimerTabHelper::FromWebContents(web_contents())
+      ->PostTaskAfterVisibleDelay(
+          FROM_HERE, base::BindLambdaForTesting([&] { tasks_executed += "2"; }),
+          base::TimeDelta::FromSecondsD(1));
+
+  web_contents()->WasHidden();
+  web_contents()->WasShown();
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(990));
+
+  EXPECT_EQ("", tasks_executed);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(11));
+
+  EXPECT_EQ("1", tasks_executed);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+
+  EXPECT_EQ("12", tasks_executed);
+}
