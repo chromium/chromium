@@ -5177,6 +5177,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "use-passthrough-command-decoder",
+    "owners": [ "//third_party/angle/OWNERS" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro", "cros-peripherals@google.com" ],
     "expiry_milestone": 95
