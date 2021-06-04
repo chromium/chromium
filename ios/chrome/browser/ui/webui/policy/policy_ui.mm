@@ -63,6 +63,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
       {"policiesPushOff", IDS_POLICY_PUSH_POLICIES_OFF},
       {"policiesPushOn", IDS_POLICY_PUSH_POLICIES_ON},
+      {"policyCopyValue", IDS_POLICY_COPY_VALUE},
       {"policyLearnMore", IDS_POLICY_LEARN_MORE},
       {"reloadPolicies", IDS_POLICY_RELOAD_POLICIES},
       {"showExpandedStatus", IDS_POLICY_SHOW_EXPANDED_STATUS},
