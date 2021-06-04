@@ -276,6 +276,10 @@ void SuggestionView::SetMinWidth(int min_width) {
   min_width_ = min_width;
 }
 
+std::u16string SuggestionView::GetSuggestionForTesting() {
+  return suggestion_label_->GetText();
+}
+
 BEGIN_METADATA(SuggestionView, views::Button)
 END_METADATA
 

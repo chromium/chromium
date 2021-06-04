@@ -4,9 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/ui/grammar_suggestion_window.h"
 
-// #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/input_method/ui/border_factory.h"
-#include "components/vector_icons/vector_icons.h"
+#include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -14,15 +13,20 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/vector_icons.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ui {
 namespace ime {
 
 namespace {
-constexpr SkColor kButtonHighlightColor =
-    SkColorSetA(SK_ColorBLACK, 0x0F);  // 6% Black.
 constexpr SkColor kSecondaryIconColor = gfx::kGoogleGrey500;
+
+bool ShouldHighlight(const views::Button& button) {
+  return button.GetState() == views::Button::STATE_HOVERED ||
+         button.GetState() == views::Button::STATE_PRESSED;
+}
+
 }  // namespace
 
 GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
@@ -39,7 +43,7 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
       views::BoxLayout::Orientation::kHorizontal));
 
   suggestion_button_ =
-      AddChildView(std::make_unique<views::LabelButton>(base::BindRepeating(
+      AddChildView(std::make_unique<SuggestionView>(base::BindRepeating(
           &AssistiveDelegate::AssistiveWindowButtonClicked,
           base::Unretained(delegate_),
           AssistiveWindowButton{
@@ -61,7 +65,24 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
           })));
   ignore_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   ignore_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  ignore_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   ignore_button_->SetVisible(true);
+
+  // Highlights buttons when they are hovered or pressed.
+  const auto update_button_highlight = [](views::Button* button) {
+    button->SetBackground(
+        ShouldHighlight(*button)
+            ? views::CreateSolidBackground(kButtonHighlightColor)
+            : nullptr);
+  };
+  subscriptions_.insert(
+      {suggestion_button_,
+       suggestion_button_->AddStateChangedCallback(base::BindRepeating(
+           update_button_highlight, base::Unretained(suggestion_button_)))});
+  subscriptions_.insert(
+      {ignore_button_,
+       ignore_button_->AddStateChangedCallback(base::BindRepeating(
+           update_button_highlight, base::Unretained(ignore_button_)))});
 }
 
 GrammarSuggestionWindow::~GrammarSuggestionWindow() = default;
@@ -73,7 +94,7 @@ void GrammarSuggestionWindow::OnThemeChanged() {
 
   ignore_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(vector_icons::kCloseIcon, kSecondaryIconColor));
+      gfx::CreateVectorIcon(views::kCloseIcon, kSecondaryIconColor));
 
   BubbleDialogDelegateView::OnThemeChanged();
 }
@@ -99,7 +120,7 @@ void GrammarSuggestionWindow::Hide() {
 }
 
 void GrammarSuggestionWindow::SetSuggestion(const std::u16string& suggestion) {
-  suggestion_button_->SetText(suggestion);
+  suggestion_button_->SetView(SuggestionDetails{.text = suggestion});
 }
 
 void GrammarSuggestionWindow::SetButtonHighlighted(
@@ -128,7 +149,7 @@ void GrammarSuggestionWindow::SetButtonHighlighted(
   }
 }
 
-views::LabelButton* GrammarSuggestionWindow::GetSuggestionButtonForTesting() {
+SuggestionView* GrammarSuggestionWindow::GetSuggestionButtonForTesting() {
   return suggestion_button_;
 }
 

@@ -129,9 +129,9 @@ TEST_F(GrammarSuggestionWindowTest, SetsSuggestion) {
   grammar_suggestion_window_->Show();
   grammar_suggestion_window_->SetSuggestion(test_suggestion);
 
-  EXPECT_EQ(
-      grammar_suggestion_window_->GetSuggestionButtonForTesting()->GetText(),
-      test_suggestion);
+  EXPECT_EQ(grammar_suggestion_window_->GetSuggestionButtonForTesting()
+                ->GetSuggestionForTesting(),
+            test_suggestion);
 }
 
 }  // namespace ime

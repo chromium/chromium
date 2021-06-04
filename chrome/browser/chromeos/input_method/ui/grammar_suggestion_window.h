@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_GRAMMAR_SUGGESTION_WINDOW_H_
 
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/chromeos/input_method/ui/suggestion_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -36,7 +37,7 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
   void SetButtonHighlighted(const AssistiveWindowButton& button,
                             bool highlighted);
 
-  views::LabelButton* GetSuggestionButtonForTesting();
+  SuggestionView* GetSuggestionButtonForTesting();
   views::Button* GetIgnoreButtonForTesting();
 
  protected:
@@ -44,10 +45,12 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
 
  private:
   AssistiveDelegate* delegate_;
-  views::LabelButton* suggestion_button_;
+  SuggestionView* suggestion_button_;
   views::ImageButton* ignore_button_;
 
   ButtonId current_highlighted_button_id_ = ButtonId::kNone;
+
+  base::flat_map<views::View*, base::CallbackListSubscription> subscriptions_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

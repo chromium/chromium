@@ -58,6 +58,8 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   void SetHighlighted(bool highlighted);
   void SetMinWidth(int width);
 
+  std::u16string GetSuggestionForTesting();
+
  private:
   friend class SuggestionWindowViewTest;
   FRIEND_TEST_ALL_PREFIXES(SuggestionWindowViewTest, ShortcutSettingTest);
