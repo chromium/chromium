@@ -57,8 +57,6 @@ void BulkLeakCheckService::MetricsReporter::OnCredentialChecked(
 }
 
 void BulkLeakCheckService::MetricsReporter::OnCancelCheck() {
-  base::UmaHistogramCounts1000("PasswordManager.BulkCheck.CanceledCredentials",
-                               credential_count_);
   base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.CanceledTime",
                                 timer_since_start_.Elapsed());
 

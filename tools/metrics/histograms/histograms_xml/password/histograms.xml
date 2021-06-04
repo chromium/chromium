@@ -810,6 +810,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.BulkCheck.CanceledCredentials"
     units="credentials" expires_after="2021-07-01">
+  <obsolete>
+    Deprecated in M93.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
