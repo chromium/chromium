@@ -23861,6 +23861,21 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Reused lock"/>
 </enum>
 
+<enum name="EnterpriseFilesystemUploadAttemptCount">
+  <int value="0" label="File not renamed"/>
+  <int value="1" label="Appended with suffix (1)"/>
+  <int value="2" label="Appended with suffix (2)"/>
+  <int value="3" label="Appended with suffix (3)"/>
+  <int value="4" label="Appended with suffix (4)"/>
+  <int value="5" label="Appended with suffix (5)"/>
+  <int value="6" label="Appended with suffix (6)"/>
+  <int value="7" label="Appended with suffix (7)"/>
+  <int value="8" label="Appended with suffix (8)"/>
+  <int value="9" label="Appended with suffix (9)"/>
+  <int value="1000" label="Appended timestamp to name"/>
+  <int value="2000" label="Abandoned upload"/>
+</enum>
+
 <enum name="EnterpriseInitialEnrollmentRequirement">
   <obsolete>
     Removed in M91 since the data is not monitored.

@@ -5,8 +5,12 @@
 // A complete set of unit tests for BoxUploader.
 
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
-
+#include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
 
@@ -64,6 +68,8 @@ class BoxUploaderForTest : public BoxUploader {
   explicit BoxUploaderForTest(download::DownloadItem* download_item,
                               base::OnceCallback<void(void)> preupload_cb)
       : BoxUploader(download_item), preupload_cb_(std::move(preupload_cb)) {}
+
+  using BoxUploader::GetTargetFileName;
 
  protected:
   // These 2 methods are overridden to intercept the upload API call to test the
@@ -242,19 +248,92 @@ TEST_F(BoxUploader_PreflightCheckTest, Success) {
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
-TEST_F(BoxUploader_PreflightCheckTest, Conflict) {
-  // Preflight check implies a conflict (dummy body since not reading from it):
+TEST_F(BoxUploader_PreflightCheckTest, ConflictAndSuccessAfterkMaxUniqueTries) {
+  // Preflight check implies a conflict until retries time out.
+  base::HistogramTester histogram_tester;
+
+  for (int i = 0; i < 10; i++) {
+    AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl,
+                             net::HTTP_CONFLICT);
+  }
+  AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+  base::test::ScopedRestoreICUDefaultLocale restore_locale;
+  base::i18n::SetICUDefaultLocale("en_ZA");
+  base::test::ScopedRestoreDefaultTimezone sast_time("Africa/Johannesburg");
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  ASSERT_TRUE(upload_initiated_);
+
+  // TODO(http://crbug.com/1215562): Remove this hack once this bug is resolved.
+  base::Time expected_start;
+  DCHECK(base::Time::FromLocalExploded(kTestDateTime, &expected_start));
+  base::Time::Exploded exploded;
+  expected_start.LocalExplode(&exploded);
+  std::string expected_name = base::StringPrintf(
+      "box_uploader_test - %04d-%02d-%02dT%02d%02d%02d.%03d UTC+2h00.txt",
+      exploded.year, exploded.month, exploded.day_of_month, exploded.hour,
+      exploded.minute, exploded.second, exploded.millisecond);
+  // ---------------------------------------------------------------------------
+
+  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(), expected_name);
+  histogram_tester.ExpectUniqueSample(
+      kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kTimestampBasedName,
+      1);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+}
+
+TEST_F(BoxUploader_PreflightCheckTest, ConflictEvenWithTimestamp) {
+  // Preflight check implies a conflict  including even for the timestamp based
+  // filename. The upload should finally fail.
+  base::HistogramTester histogram_tester;
+
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT);
+  base::test::ScopedRestoreICUDefaultLocale restore_locale;
+  base::i18n::SetICUDefaultLocale("en_ZA");
+  base::test::ScopedRestoreDefaultTimezone sast_time("Africa/Johannesburg");
+
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
+  ASSERT_FALSE(upload_initiated_);
+
+  // The last tried filename is timestamp based even though it also fails.
+  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(),
+            "box_uploader_test.abandoned.txt");
+  histogram_tester.ExpectUniqueSample(
+      kUniquifierUmaLabel, BoxUploader::UploadAttemptCount::kAbandonedUpload,
+      1);
+  EXPECT_TRUE(download_thread_cb_called_)
+      << "Conflict, including with timestamp, should terminate flow.";
+}
+
+TEST_F(BoxUploader_PreflightCheckTest, ConflictThenSuccess) {
+  // Preflight check results for successive filenames:
+  base::HistogramTester histogram_tester;
+
+  // box_uploader_test.txt
+  AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT);
+
+  // box_uploader_test (1).txt
+  AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT);
+
+  // box_uploader_test (2).txt
+  AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
-  ASSERT_FALSE(upload_initiated_);
-  EXPECT_TRUE(download_thread_cb_called_) << "Conflict should terminate flow.";
-  // Currently the upload is abandoned.
-  // TODO(https://crbug.com/1198617): Update once the conflict is handled.
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_EQ(uploader_->GetTargetFileName().MaybeAsASCII(),
+            "box_uploader_test (2).txt");
+  histogram_tester.ExpectUniqueSample(kUniquifierUmaLabel, 2, 1);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
 }
 
 TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404_ButFound) {

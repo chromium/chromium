@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 #include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
