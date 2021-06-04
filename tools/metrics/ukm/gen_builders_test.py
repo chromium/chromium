@@ -25,8 +25,8 @@ class GenBuildersTest(unittest.TestCase):
 
   def testGenerateCode(self):
     relpath = '.'
-    data = ukm_model.UKM_XML_TYPE.Parse(
-        open('../../tools/metrics/ukm/ukm.xml').read())
+    with open('../../tools/metrics/ukm/ukm.xml') as f:
+      data = ukm_model.UKM_XML_TYPE.Parse(f.read())
     event = data[ukm_model._EVENT_TYPE.tag][0]
     metric = event[ukm_model._METRIC_TYPE.tag][0]
     self.assertIsNotNone(event)
