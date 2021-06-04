@@ -45,8 +45,8 @@ class UndoStep final : public GarbageCollected<UndoStep> {
            const SelectionForUndoStep& starting_selection,
            const SelectionForUndoStep& ending_selection);
 
-  // Returns true if associated root editable elements are connected.
-  bool IsConnected() const;
+  // Returns true if is owned by |element|
+  bool IsOwnedBy(const Element& element) const;
   void Unapply();
   void Reapply();
   void Append(SimpleEditCommand*);

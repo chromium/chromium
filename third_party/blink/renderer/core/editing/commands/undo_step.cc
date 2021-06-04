@@ -33,9 +33,8 @@ UndoStep::UndoStep(Document* document,
   // See |TypingCommand::ForwardDeleteKeyPressed()|
 }
 
-bool UndoStep::IsConnected() const {
-  return EndingRootEditableElement() &&
-         EndingRootEditableElement()->isConnected();
+bool UndoStep::IsOwnedBy(const Element& element) const {
+  return EndingRootEditableElement() == &element;
 }
 
 void UndoStep::Unapply() {

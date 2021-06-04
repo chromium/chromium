@@ -41,7 +41,6 @@ static const size_t kMaximumUndoStackDepth = 1000;
 UndoStack::UndoStack() = default;
 
 void UndoStack::RegisterUndoStep(UndoStep* step) {
-  EnsureListeningMemoryPressure();
   if (!undo_stack_.IsEmpty())
     DCHECK_GE(step->SequenceNumber(), undo_stack_.back()->SequenceNumber());
   if (undo_stack_.size() == kMaximumUndoStackDepth) {
@@ -51,10 +50,14 @@ void UndoStack::RegisterUndoStep(UndoStep* step) {
   if (!in_redo_)
     redo_stack_.clear();
   undo_stack_.push_back(step);
+  DidSetEndingSelection(step);
 }
 
 void UndoStack::RegisterRedoStep(UndoStep* step) {
-  EnsureListeningMemoryPressure();
+#if DCHECK_IS_ON()
+  if (auto* element = step->EndingRootEditableElement())
+    DCHECK(element->HasUndoStack()) << element;
+#endif
   redo_stack_.push_back(step);
 }
 
@@ -90,7 +93,6 @@ void UndoStack::Redo() {
 void UndoStack::Clear() {
   undo_stack_.clear();
   redo_stack_.clear();
-  StopListeningMemoryPressure();
 }
 
 void UndoStack::Trace(Visitor* visitor) const {
@@ -109,24 +111,13 @@ UndoStack::UndoStepRange UndoStack::UndoSteps() const {
   return UndoStepRange(undo_stack_);
 }
 
-void UndoStack::EnsureListeningMemoryPressure() {
-  if (is_listen_memory_pressure_)
-    return;
-  MemoryPressureListenerRegistry::Instance().RegisterClient(this);
-  is_listen_memory_pressure_ = true;
+void UndoStack::DidSetEndingSelection(UndoStep* step) {
+  if (auto* element = step->EndingRootEditableElement())
+    element->SetHasUndoStack(true);
 }
 
-void UndoStack::StopListeningMemoryPressure() {
-  if (!is_listen_memory_pressure_)
-    return;
-  DCHECK(undo_stack_.IsEmpty());
-  DCHECK(redo_stack_.IsEmpty());
-  MemoryPressureListenerRegistry::Instance().UnregisterClient(this);
-  is_listen_memory_pressure_ = false;
-}
-
-void UndoStack::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel) {
+void UndoStack::ElementRemoved(Element* element) {
+  DCHECK(element->HasUndoStack()) << element;
   // In design mode, every root editable elements can be reinserted.
   if (!undo_stack_.IsEmpty() &&
       undo_stack_.front()->GetDocument().InDesignMode())
@@ -135,17 +126,19 @@ void UndoStack::OnMemoryPressure(
       redo_stack_.front()->GetDocument().InDesignMode())
     return;
 
-  const auto is_disconnected = [](const UndoStep* undo_step) {
-    return !undo_step->IsConnected();
+  const auto should_be_erased = [&element](const UndoStep* undo_step) {
+    return undo_step->IsOwnedBy(*element);
   };
 
   undo_stack_.erase(
-      std::remove_if(undo_stack_.begin(), undo_stack_.end(), is_disconnected),
+      std::remove_if(undo_stack_.begin(), undo_stack_.end(), should_be_erased),
       undo_stack_.end());
 
   redo_stack_.erase(
-      std::remove_if(redo_stack_.begin(), redo_stack_.end(), is_disconnected),
+      std::remove_if(redo_stack_.begin(), redo_stack_.end(), should_be_erased),
       redo_stack_.end());
+
+  element->SetHasUndoStack(false);
 }
 
 }  // namespace blink

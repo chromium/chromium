@@ -158,6 +158,8 @@ class ElementRareData : public NodeRareData {
   bool ShouldForceLegacyLayoutForChild() const {
     return should_force_legacy_layout_for_child_;
   }
+  bool HasUndoStack() const { return has_undo_stack_; }
+  void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
 
   AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
@@ -246,6 +248,7 @@ class ElementRareData : public NodeRareData {
   bool did_attach_internals_ = false;
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;
+  bool has_undo_stack_ = false;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

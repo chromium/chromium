@@ -956,6 +956,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // information.
   bool ShouldCompositeForDocumentTransition() const;
 
+  // For undo stack cleanup
+  bool HasUndoStack() const;
+  void SetHasUndoStack(bool);
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

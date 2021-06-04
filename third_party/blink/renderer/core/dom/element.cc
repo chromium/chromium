@@ -94,7 +94,9 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
+#include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
@@ -2685,8 +2687,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     DCHECK(!data->HasPseudoElements());
   }
 
-  if (GetDocument().GetFrame())
-    GetDocument().GetFrame()->GetEventHandler().ElementRemoved(this);
+  if (auto* const frame = GetDocument().GetFrame()) {
+    if (UNLIKELY(HasUndoStack()))
+      frame->GetEditor().GetUndoStack().ElementRemoved(this);
+    frame->GetEventHandler().ElementRemoved(this);
+  }
 }
 
 void Element::AttachLayoutTree(AttachContext& context) {
@@ -4269,6 +4274,14 @@ bool Element::ShouldForceLegacyLayoutForChildInternal() const {
 
 void Element::SetShouldForceLegacyLayoutForChildInternal(bool force) {
   EnsureElementRareData().SetShouldForceLegacyLayoutForChild(force);
+}
+
+bool Element::HasUndoStack() const {
+  return HasRareData() && GetElementRareData()->HasUndoStack();
+}
+
+void Element::SetHasUndoStack(bool value) {
+  EnsureElementRareData().SetHasUndoStack(value);
 }
 
 void Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,

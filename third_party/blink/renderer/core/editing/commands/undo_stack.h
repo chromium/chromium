@@ -34,19 +34,17 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class Element;
 class LocalFrame;
 class UndoStep;
 
 // |UndoStack| is owned by and always 1:1 to |Editor|. Since |Editor| is 1:1 to
 // |LocalFrame|, |UndoStack| is also 1:1 to |LocalFrame|.
-class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack>,
-                                    public MemoryPressureListener {
+class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
   using UndoStepStack = HeapVector<Member<UndoStep>>;
 
  public:
@@ -77,20 +75,19 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack>,
   UndoStepRange RedoSteps() const;
   UndoStepRange UndoSteps() const;
 
-  void Trace(Visitor*) const final;
+  // Called when set ending selection inf |undo_step|.
+  void DidSetEndingSelection(UndoStep* step);
+
+  // Called when |element| is removed by |Node::RemovedFrom()|. |element|
+  // should be root editable element and be in undo/redo stack.
+  void ElementRemoved(Element* element);
+
+  void Trace(Visitor*) const;
 
  private:
-  void EnsureListeningMemoryPressure();
-  void StopListeningMemoryPressure();
-
-  // Implementation of MemoryPressureListener
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel) final;
-
   UndoStepStack undo_stack_;
   UndoStepStack redo_stack_;
   bool in_redo_ = false;
-  bool is_listen_memory_pressure_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(UndoStack);
 };

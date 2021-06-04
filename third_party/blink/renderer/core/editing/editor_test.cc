@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -140,14 +139,7 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   ASSERT_EQ(1, SizeOfRedoStack());
   ASSERT_EQ(0, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(1, SizeOfRedoStack());
-  ASSERT_EQ(0, SizeOfUndoStack());
-
   target.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack())
       << "We don't need to have redo steps for removed <input>";
   EXPECT_EQ(0, SizeOfUndoStack());
@@ -167,14 +159,7 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
   ASSERT_EQ(1, SizeOfRedoStack());
   ASSERT_EQ(0, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(1, SizeOfRedoStack());
-  ASSERT_EQ(0, SizeOfUndoStack());
-
   input.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack())
       << "We don't need to have redo steps for removed <input>";
   EXPECT_EQ(0, SizeOfUndoStack());
@@ -191,14 +176,7 @@ TEST_F(EditorTest, UndoWithDisconnectedEditable) {
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(0, SizeOfRedoStack());
-  ASSERT_EQ(1, SizeOfUndoStack());
-
   target.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack());
   EXPECT_EQ(0, SizeOfUndoStack())
       << "We don't need to have undo steps for removed editable";
@@ -214,14 +192,8 @@ TEST_F(EditorTest, UndoWithDisconnectedInput) {
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(0, SizeOfRedoStack());
-  ASSERT_EQ(1, SizeOfUndoStack());
 
   input.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack());
   EXPECT_EQ(0, SizeOfUndoStack())
       << "We don't need to have undo steps for removed <input>";
