@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 
 namespace device {
 namespace {

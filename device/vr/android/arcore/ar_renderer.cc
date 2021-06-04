@@ -4,7 +4,7 @@
 
 #include "device/vr/android/arcore/ar_renderer.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "device/vr/vr_gl_util.h"
 
 namespace device {

@@ -15,9 +15,9 @@
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/usb/USB.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/gamepad/gamepad_id_list.h"
 

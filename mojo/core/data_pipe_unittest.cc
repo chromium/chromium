@@ -9,9 +9,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"

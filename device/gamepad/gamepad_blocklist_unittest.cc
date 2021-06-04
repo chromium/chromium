@@ -4,7 +4,7 @@
 
 #include "device/gamepad/gamepad_blocklist.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

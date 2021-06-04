@@ -8,11 +8,11 @@
 #include <winioctl.h>
 #include <wlanapi.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"

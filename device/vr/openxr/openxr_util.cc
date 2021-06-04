@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"

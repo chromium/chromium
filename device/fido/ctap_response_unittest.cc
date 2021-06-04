@@ -5,7 +5,7 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"

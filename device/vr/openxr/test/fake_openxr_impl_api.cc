@@ -4,7 +4,7 @@
 
 #include <wrl.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"

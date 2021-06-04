@@ -4,7 +4,7 @@
 
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/pattern.h"
 
 using ::perfetto::protos::pbzero::ChromeProcessDescriptor;

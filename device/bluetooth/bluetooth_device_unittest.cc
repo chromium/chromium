@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
