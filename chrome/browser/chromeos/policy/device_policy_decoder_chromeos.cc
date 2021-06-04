@@ -1951,6 +1951,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
+
+  if (policy.has_device_scheduled_reboot()) {
+    const em::DeviceScheduledRebootProto& container(
+        policy.device_scheduled_reboot());
+    if (container.has_device_scheduled_reboot_settings()) {
+      SetJsonDevicePolicy(key::kDeviceScheduledReboot,
+                          container.device_scheduled_reboot_settings(),
+                          policies);
+    }
+  }
 }
 
 }  // namespace

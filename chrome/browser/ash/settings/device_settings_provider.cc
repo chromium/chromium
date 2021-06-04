@@ -97,6 +97,7 @@ const char* const kKnownSettings[] = {
     kDevicePowerwashAllowed,
     kDeviceQuirksDownloadEnabled,
     kDeviceRebootOnUserSignout,
+    kDeviceScheduledReboot,
     kDeviceScheduledUpdateCheck,
     kDeviceSecondFactorAuthenticationMode,
     kDeviceUnaffiliatedCrostiniAllowed,
@@ -1075,6 +1076,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       list.Append(service_uuid);
     new_values_cache->SetValue(kDeviceAllowedBluetoothServices,
                                std::move(list));
+  }
+
+  if (policy.has_device_scheduled_reboot()) {
+    const em::DeviceScheduledRebootProto& scheduled_reboot_policy =
+        policy.device_scheduled_reboot();
+    if (scheduled_reboot_policy.has_device_scheduled_reboot_settings()) {
+      SetJsonDeviceSetting(
+          kDeviceScheduledReboot, policy::key::kDeviceScheduledReboot,
+          scheduled_reboot_policy.device_scheduled_reboot_settings(),
+          new_values_cache);
+    }
   }
 }
 

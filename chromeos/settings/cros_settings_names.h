@@ -292,6 +292,9 @@ extern const char kDevicePeripheralDataAccessEnabled[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceAllowedBluetoothServices[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kDeviceScheduledReboot[];
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
@@ -351,6 +354,7 @@ using ::chromeos::kDevicePrintersAllowlist;
 using ::chromeos::kDevicePrintersBlocklist;
 using ::chromeos::kDeviceQuirksDownloadEnabled;
 using ::chromeos::kDeviceRebootOnUserSignout;
+using ::chromeos::kDeviceScheduledReboot;
 using ::chromeos::kDeviceScheduledUpdateCheck;
 using ::chromeos::kDeviceSecondFactorAuthenticationMode;
 using ::chromeos::kDeviceShowLowDiskSpaceNotification;

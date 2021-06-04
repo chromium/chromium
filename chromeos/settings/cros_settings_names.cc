@@ -509,4 +509,6 @@ const char kUsbDetachableAllowlistKeyPid[] = "pid";
 const char kDeviceAllowedBluetoothServices[] =
     "cros.device.allowed_bluetooth_services";
 
+// A dictionary pref specifying the recurring schedule for device reboot.
+const char kDeviceScheduledReboot[] = "cros.device.device_scheduled_reboot";
 }  // namespace chromeos
