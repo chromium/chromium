@@ -7191,6 +7191,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-generated-webapks", flag_descriptions::kEnableGeneratedWebApksName,
      flag_descriptions::kEnableGeneratedWebApksDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWebApkGenerator)},
+
+    {"enable-projector-feature-pod",
+     flag_descriptions::kProjectorFeaturePodName,
+     flag_descriptions::kProjectorFeaturePodDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorFeaturePod)},
+
+    {"enable-projector-feature", flag_descriptions::kProjectorName,
+     flag_descriptions::kProjectorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjector)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"use-passthrough-command-decoder",

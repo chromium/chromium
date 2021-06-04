@@ -2662,6 +2662,12 @@ extern const char kLimitShelfItemsToActiveDeskDescription[];
 extern const char kListAllDisplayModesName[];
 extern const char kListAllDisplayModesDescription[];
 
+extern const char kProjectorFeaturePodName[];
+extern const char kProjectorFeaturePodDescription[];
+
+extern const char kProjectorName[];
+extern const char kProjectorDescription[];
+
 extern const char kEnableHardwareMirrorModeName[];
 extern const char kEnableHardwareMirrorModeDescription[];
 
