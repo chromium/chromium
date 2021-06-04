@@ -117,12 +117,12 @@ class AssociatedInterfaceTest : public testing::Test {
   void CreateRouterPair(scoped_refptr<MultiplexRouter>* router0,
                         scoped_refptr<MultiplexRouter>* router1) {
     MessagePipe pipe;
-    *router0 = MultiplexRouter::Create(std::move(pipe.handle0),
-                                       MultiplexRouter::MULTI_INTERFACE, true,
-                                       main_runner_);
-    *router1 = MultiplexRouter::Create(std::move(pipe.handle1),
-                                       MultiplexRouter::MULTI_INTERFACE, false,
-                                       main_runner_);
+    *router0 = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle0), MultiplexRouter::MULTI_INTERFACE, true,
+        main_runner_);
+    *router1 = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle1), MultiplexRouter::MULTI_INTERFACE, false,
+        main_runner_);
   }
 
   void CreateIntegerSenderWithExistingRouters(

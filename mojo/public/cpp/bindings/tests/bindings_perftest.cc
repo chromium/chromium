@@ -189,11 +189,11 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
 TEST_F(MojoBindingsPerftest, MultiplexRouterPingPong) {
   MessagePipe pipe;
   scoped_refptr<internal::MultiplexRouter> router0(
-      internal::MultiplexRouter::Create(
+      internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle0), internal::MultiplexRouter::SINGLE_INTERFACE,
           true, base::ThreadTaskRunnerHandle::Get()));
   scoped_refptr<internal::MultiplexRouter> router1(
-      internal::MultiplexRouter::Create(
+      internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle1), internal::MultiplexRouter::SINGLE_INTERFACE,
           false, base::ThreadTaskRunnerHandle::Get()));
 

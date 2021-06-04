@@ -145,7 +145,7 @@ void MessagePort::start() {
     return;
 
   started_ = true;
-  connector_->ResumeIncomingMethodCallProcessing();
+  connector_->StartReceiving(task_runner_);
 }
 
 void MessagePort::close() {
@@ -168,8 +168,7 @@ void MessagePort::Entangle(MessagePortDescriptor port) {
   port_ = std::move(port);
   connector_ = std::make_unique<mojo::Connector>(
       port_.TakeHandleToEntangle(GetExecutionContext()),
-      mojo::Connector::SINGLE_THREADED_SEND, task_runner_);
-  connector_->PauseIncomingMethodCallProcessing();
+      mojo::Connector::SINGLE_THREADED_SEND);
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
       WTF::Bind(&MessagePort::close, WrapWeakPersistent(this)));

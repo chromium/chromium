@@ -98,6 +98,14 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
       // The version is only queried from the client so the value passed here
       // will not be used.
       0u, interface_name);
+
+  // Note that we defer this until after attaching the endpoint. This is in case
+  // `runner_` does not run tasks in the current sequence but MultiplexRouter is
+  // in SINGLE_INTERFACE mode. In that case, MultiplexRouter elides some
+  // internal synchronization, so we need to ensure that messages aren't
+  // processed by the router before the endpoint above is fully attached.
+  router_->StartReceiving();
+
   return true;
 }
 

@@ -107,11 +107,11 @@ class PendingAssociatedReceiver {
 
     MessagePipe pipe;
     scoped_refptr<internal::MultiplexRouter> router0 =
-        internal::MultiplexRouter::Create(
+        internal::MultiplexRouter::CreateAndStartReceiving(
             std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
             false, base::SequencedTaskRunnerHandle::Get());
     scoped_refptr<internal::MultiplexRouter> router1 =
-        internal::MultiplexRouter::Create(
+        internal::MultiplexRouter::CreateAndStartReceiving(
             std::move(pipe.handle1), internal::MultiplexRouter::MULTI_INTERFACE,
             true, base::SequencedTaskRunnerHandle::Get());
 

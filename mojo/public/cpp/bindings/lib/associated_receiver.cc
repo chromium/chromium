@@ -74,7 +74,7 @@ void AssociatedReceiverBase::BindImpl(
 void AssociateWithDisconnectedPipe(ScopedInterfaceEndpointHandle handle) {
   MessagePipe pipe;
   scoped_refptr<internal::MultiplexRouter> router =
-      internal::MultiplexRouter::Create(
+      internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
           false, base::SequencedTaskRunnerHandle::Get());
   router->AssociateInterface(std::move(handle));

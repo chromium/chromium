@@ -168,7 +168,7 @@ class ChannelAssociatedGroupController
     DCHECK(task_runner_->BelongsToCurrentThread());
 
     connector_ = std::make_unique<mojo::Connector>(
-        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND, task_runner_,
+        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
         "IPC Channel");
     connector_->set_incoming_receiver(&dispatcher_);
     connector_->set_connection_error_handler(
@@ -185,6 +185,8 @@ class ChannelAssociatedGroupController
     // operation would only introduce a redundant scheduling step for most
     // messages.
     connector_->set_force_immediate_dispatch(true);
+
+    connector_->StartReceiving(task_runner_);
   }
 
   void Pause() {
@@ -1144,7 +1146,7 @@ std::unique_ptr<MojoBootstrap> MojoBootstrap::Create(
     const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
     const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker) {
   return std::make_unique<MojoBootstrapImpl>(
-      std::move(handle), new ChannelAssociatedGroupController(
+      std::move(handle), base::MakeRefCounted<ChannelAssociatedGroupController>(
                              mode == Channel::MODE_SERVER, ipc_task_runner,
                              proxy_task_runner, quota_checker));
 }

@@ -338,16 +338,22 @@ scoped_refptr<MultiplexRouter> MultiplexRouter::Create(
     bool set_interface_id_namespace_bit,
     scoped_refptr<base::SequencedTaskRunner> runner,
     const char* primary_interface_name) {
-  auto router = base::MakeRefCounted<MultiplexRouter>(
+  return base::MakeRefCounted<MultiplexRouter>(
       base::PassKey<MultiplexRouter>(), std::move(message_pipe), config,
       set_interface_id_namespace_bit, runner, primary_interface_name);
-  if (runner->RunsTasksInCurrentSequence()) {
-    router->BindToCurrentSequence();
-  } else {
-    runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MultiplexRouter::BindToCurrentSequence, router));
-  }
+}
+
+// static
+scoped_refptr<MultiplexRouter> MultiplexRouter::CreateAndStartReceiving(
+    ScopedMessagePipeHandle message_pipe,
+    Config config,
+    bool set_interface_id_namespace_bit,
+    scoped_refptr<base::SequencedTaskRunner> runner,
+    const char* primary_interface_name) {
+  auto router =
+      Create(std::move(message_pipe), config, set_interface_id_namespace_bit,
+             runner, primary_interface_name);
+  router->StartReceiving();
   return router;
 }
 
@@ -365,31 +371,13 @@ MultiplexRouter::MultiplexRouter(
       connector_(std::move(message_pipe),
                  config == MULTI_INTERFACE ? Connector::MULTI_THREADED_SEND
                                            : Connector::SINGLE_THREADED_SEND,
-                 std::move(runner),
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
   if (config_ == MULTI_INTERFACE)
     lock_.emplace();
-}
 
-void MultiplexRouter::BindToCurrentSequence() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (config_ == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
-      config_ == MULTI_INTERFACE) {
-    // Always participate in sync handle watching in multi-interface mode,
-    // because even if it doesn't expect sync requests during sync handle
-    // watching, it may still need to dispatch messages to associated endpoints
-    // on a different sequence.
-    connector_.AllowWokenUpBySyncWatchOnSameThread();
-  }
   connector_.set_incoming_receiver(&dispatcher_);
-  connector_.set_connection_error_handler(
-      base::BindOnce(&MultiplexRouter::OnPipeConnectionError,
-                     base::Unretained(this), false /* force_async_dispatch */));
 
   scoped_refptr<internal::MessageQuotaChecker> quota_checker =
       internal::MessageQuotaChecker::MaybeCreate();
@@ -401,13 +389,29 @@ void MultiplexRouter::BindToCurrentSequence() {
   header_validator_ = header_validator.get();
   dispatcher_.SetValidator(std::move(header_validator));
 
-  const char* primary_interface_name = connector_.interface_name();
   if (primary_interface_name) {
     header_validator_->SetDescription(base::JoinString(
         {primary_interface_name, "[primary] MessageHeaderValidator"}, " "));
     control_message_handler_.SetDescription(base::JoinString(
         {primary_interface_name, "[primary] PipeControlMessageHandler"}, " "));
   }
+}
+
+void MultiplexRouter::StartReceiving() {
+  connector_.set_connection_error_handler(
+      base::BindOnce(&MultiplexRouter::OnPipeConnectionError,
+                     base::Unretained(this), false /* force_async_dispatch */));
+
+  // Always participate in sync handle watching in multi-interface mode,
+  // because even if it doesn't expect sync requests during sync handle
+  // watching, it may still need to dispatch messages to associated endpoints
+  // on a different sequence.
+  const bool allow_woken_up_by_others =
+      config_ == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
+      config_ == MULTI_INTERFACE;
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  connector_.StartReceiving(task_runner_, allow_woken_up_by_others);
 }
 
 MultiplexRouter::~MultiplexRouter() {

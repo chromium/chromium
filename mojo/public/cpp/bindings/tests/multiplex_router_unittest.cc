@@ -33,12 +33,12 @@ class MultiplexRouterTest : public testing::Test {
 
   void SetUp() override {
     MessagePipe pipe;
-    router0_ = MultiplexRouter::Create(std::move(pipe.handle0),
-                                       MultiplexRouter::MULTI_INTERFACE, false,
-                                       base::ThreadTaskRunnerHandle::Get());
-    router1_ = MultiplexRouter::Create(std::move(pipe.handle1),
-                                       MultiplexRouter::MULTI_INTERFACE, true,
-                                       base::ThreadTaskRunnerHandle::Get());
+    router0_ = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle0), MultiplexRouter::MULTI_INTERFACE, false,
+        base::ThreadTaskRunnerHandle::Get());
+    router1_ = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle1), MultiplexRouter::MULTI_INTERFACE, true,
+        base::ThreadTaskRunnerHandle::Get());
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&endpoint0_,
                                                                 &endpoint1_);
     auto id = router0_->AssociateInterface(std::move(endpoint1_));

@@ -81,11 +81,21 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
     kSerializeBeforeDispatchForTesting,
   };
 
-  // The Connector takes ownership of |message_pipe|.
+  // The Connector takes ownership of `message_pipe`. A Connector is essentially
+  // inert upon construction, though it may be used to send messages
+  // immediately. In order to receive incoming messages or error events,
+  // StartReceiving() must be called.
+  Connector(ScopedMessagePipeHandle message_pipe,
+            ConnectorConfig config,
+            const char* interface_name = "unknown interface");
+
+  // Same as above but automatically calls StartReceiving() with `runner` before
+  // returning.
   Connector(ScopedMessagePipeHandle message_pipe,
             ConnectorConfig config,
             scoped_refptr<base::SequencedTaskRunner> runner,
             const char* interface_name = "unknown interface");
+
   ~Connector() override;
 
   const char* interface_name() const { return interface_name_; }
@@ -130,6 +140,18 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return error_;
   }
+
+  // Starts receiving on the Connector's message pipe, allowing incoming
+  // messages and error events to be dispatched. Once called, the Connector is
+  // effectively bound to `task_runner`. Initialization methods like
+  // `set_incoming_receiver` may be called before this, but if called after they
+  // must be called from the same sequence as `task_runner`.
+  //
+  // If `allow_woken_up_by_others` is true, the receiving sequence will allow
+  // this connector to process incoming messages during any sync wait by any
+  // Mojo object on the same sequence.
+  void StartReceiving(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                      bool allow_woken_up_by_others = false);
 
   // Closes the pipe. The connector is put into a quiescent state.
   //
@@ -303,8 +325,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // The quota checker associate with this connector, if any.
   scoped_refptr<internal::MessageQuotaChecker> quota_checker_;
 
-  base::Lock connected_lock_;
-  bool connected_ = true;
+  // Indicates whether the Connector is configured to actively read from its
+  // message pipe. As long as this is true, the Connector is only safe to
+  // destroy in sequence with `task_runner_` tasks.
+  bool is_receiving_ = false;
 
   // The tag used to track heap allocations that originated from a Watcher
   // notification.

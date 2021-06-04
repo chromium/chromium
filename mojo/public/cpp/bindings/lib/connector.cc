@@ -148,10 +148,8 @@ void Connector::ActiveDispatchTracker::NotifyBeginNesting() {
 
 Connector::Connector(ScopedMessagePipeHandle message_pipe,
                      ConnectorConfig config,
-                     scoped_refptr<base::SequencedTaskRunner> runner,
                      const char* interface_name)
     : message_pipe_(std::move(message_pipe)),
-      task_runner_(std::move(runner)),
       error_(false),
       force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
@@ -166,17 +164,14 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
 #endif
 
   weak_self_ = weak_factory_.GetWeakPtr();
+}
 
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  // Even though we don't have an incoming receiver, we still want to monitor
-  // the message pipe to know if is closed or encounters an error.
-  if (task_runner_->RunsTasksInCurrentSequence()) {
-    WaitToReadMore();
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Connector::WaitToReadMore, weak_self_));
-  }
+Connector::Connector(ScopedMessagePipeHandle message_pipe,
+                     ConnectorConfig config,
+                     scoped_refptr<base::SequencedTaskRunner> runner,
+                     const char* interface_name)
+    : Connector(std::move(message_pipe), config, interface_name) {
+  StartReceiving(std::move(runner));
 }
 
 Connector::~Connector() {
@@ -187,16 +182,10 @@ Connector::~Connector() {
                             quota_checker_->GetMaxQuotaUsage());
   }
 
-  {
-    // Allow for quick destruction on any sequence if the pipe is already
-    // closed.
-    base::AutoLock lock(connected_lock_);
-    if (!connected_)
-      return;
+  if (is_receiving_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CancelWait();
   }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelWait();
 }
 
 void Connector::SetOutgoingSerializationMode(OutgoingSerializationMode mode) {
@@ -207,6 +196,22 @@ void Connector::SetOutgoingSerializationMode(OutgoingSerializationMode mode) {
 void Connector::SetIncomingSerializationMode(IncomingSerializationMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   incoming_serialization_mode_ = mode;
+}
+
+void Connector::StartReceiving(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool allow_woken_up_by_others) {
+  DCHECK(!task_runner_);
+  task_runner_ = std::move(task_runner);
+  allow_woken_up_by_others_ = allow_woken_up_by_others;
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    WaitToReadMore();
+  } else {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Connector::WaitToReadMore, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void Connector::CloseMessagePipe() {
@@ -223,8 +228,6 @@ ScopedMessagePipeHandle Connector::PassMessagePipe() {
   weak_factory_.InvalidateWeakPtrs();
   sync_handle_watcher_callback_count_ = 0;
 
-  base::AutoLock lock(connected_lock_);
-  connected_ = false;
   return message_pipe;
 }
 
@@ -331,9 +334,11 @@ bool Connector::Accept(Message* message) {
   if (!message->is_serialized()) {
     // The caller is sending an unserialized message. If we haven't set up a
     // remoteness tracker yet, do so now. See PrefersSerializedMessages() above
-    // for more details.
+    // for more details. Note that if the Connector is not yet bound to a
+    // TaskRunner and activaly reading the pipe, we don't bother setting this up
+    // yet.
     DCHECK_EQ(outgoing_serialization_mode_, OutgoingSerializationMode::kLazy);
-    if (!peer_remoteness_tracker_) {
+    if (!peer_remoteness_tracker_ && task_runner_) {
       peer_remoteness_tracker_.emplace(
           message_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_REMOTE, task_runner_);
     }
@@ -437,6 +442,7 @@ void Connector::OnHandleReadyInternal(MojoResult result) {
 }
 
 void Connector::WaitToReadMore() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!paused_);
   DCHECK(!handle_watcher_);
 
@@ -466,6 +472,8 @@ void Connector::WaitToReadMore() {
     EnsureSyncWatcherExists();
     sync_watcher_->AllowWokenUpBySyncWatchOnSameThread();
   }
+
+  is_receiving_ = true;
 }
 
 uint64_t Connector::QueryPendingMessageCount() const {
@@ -627,6 +635,8 @@ void Connector::ReadAllAvailableMessages() {
 }
 
 void Connector::CancelWait() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_receiving_ = false;
   peer_remoteness_tracker_.reset();
   handle_watcher_.reset();
   sync_watcher_.reset();
