@@ -135,7 +135,6 @@ class CORE_EXPORT NGInkOverflow {
 
  private:
   static LayoutRect ComputeTextDecorationOverflow(
-      const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const LayoutRect& ink_overflow);
 
