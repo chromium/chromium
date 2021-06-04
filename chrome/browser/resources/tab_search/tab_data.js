@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Tab} from './tab_search.mojom-webui.js';
+import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+
+import {Tab, TabGroup} from './tab_search.mojom-webui.js';
 
 /** @enum {number} */
 export const TabItemType = {
@@ -37,7 +39,20 @@ export class TabData {
 
     /** @type {string} */
     this.a11yTypeText;
+
+    /** @type {?TabGroup} */
+    this.tabGroup;
   }
+}
+
+/**
+ * Converts a token to a string by combining the high and low values as strings
+ * with a hashtag as the separator.
+ * @param {!Token} token
+ * @return {string}
+ */
+export function tokenToString(token) {
+  return `${token.high.toString()}#${token.low.toString()}`;
 }
 
 /**
@@ -45,6 +60,7 @@ export class TabData {
  * @return {string}
  */
 export function ariaLabel(tabData) {
-  return `${tabData.tab.title} ${tabData.hostname} ${
+  const groupTitleOrEmpty = tabData.tabGroup ? tabData.tabGroup.title : '';
+  return `${tabData.tab.title} ${groupTitleOrEmpty} ${tabData.hostname} ${
       tabData.tab.lastActiveElapsedText} ${tabData.a11yTypeText}`;
 }

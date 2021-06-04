@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -136,12 +137,6 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
   return absl::nullopt;
 }
 
-void TabSearchPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
-  // TODO(crbug.com/1096120): Implement this when we can get theme color from
-  // browser
-  NOTIMPLEMENTED();
-}
-
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
   absl::optional<TabDetails> optional_details =
@@ -188,6 +183,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     if (!ShouldTrackBrowser(browser))
       continue;
     TabStripModel* tab_strip_model = browser->tab_strip_model();
+
     auto window = tab_search::mojom::Window::New();
     window->active = (browser == active_browser);
     window->height = browser->window()->GetContentsSize().height();
@@ -198,6 +194,19 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
       window->tabs.push_back(std::move(tab));
     }
     profile_data->windows.push_back(std::move(window));
+
+    for (auto tab_group_id : tab_strip_model->group_model()->ListTabGroups()) {
+      const tab_groups::TabGroupVisualData* tab_group_visual_data =
+          tab_strip_model->group_model()
+              ->GetTabGroup(tab_group_id)
+              ->visual_data();
+
+      auto tab_group = tab_search::mojom::TabGroup::New();
+      tab_group->id = tab_group_id.token();
+      tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
+      tab_group->color = tab_group_visual_data->color();
+      profile_data->tab_groups.push_back(std::move(tab_group));
+    }
   }
 
   AddRecentlyClosedTabs(profile_data->recently_closed_tabs, tab_urls);
@@ -289,7 +298,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const absl::optional<tab_groups::TabGroupId> group_id =
       tab_strip_model->GetTabGroupForTab(index);
   if (group_id.has_value()) {
-    tab_data->group_id = group_id.value().ToString();
+    tab_data->group_id = group_id.value().token();
   }
   TabRendererData tab_renderer_data =
       TabRendererData::FromTabInModel(tab_strip_model, index);

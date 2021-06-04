@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+
 /** @type {number} */
 export const SAMPLE_WINDOW_HEIGHT = 448;
 
@@ -89,7 +91,7 @@ export const SAMPLE_RECENTLY_CLOSED_DATA = [
 
 /** @return {!Array} */
 export function sampleData() {
-  return {windows: SAMPLE_WINDOW_DATA, recentlyClosedTabs: []};
+  return {windows: SAMPLE_WINDOW_DATA, recentlyClosedTabs: [], tabGroups: []};
 }
 
 /**
@@ -136,6 +138,21 @@ export function generateSampleDataFromSiteNames(siteNames) {
       height: SAMPLE_WINDOW_HEIGHT,
       tabs: generateSampleTabsFromSiteNames(siteNames)
     }],
-    recentlyClosedTabs: []
+    recentlyClosedTabs: [],
+    tabGroups: [],
   };
+}
+
+/**
+ * @param {!bigint} high
+ * @param {!bigint} low
+ * @return {!Token}
+ */
+export function sampleToken(high, low) {
+  const token = new Token();
+  token.high = high;
+  token.low = low;
+  Object.freeze(token);
+
+  return token;
 }

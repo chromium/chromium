@@ -7,6 +7,9 @@ import {quoteString} from 'chrome://resources/js/util.m.js';
 import Fuse from './fuse.js';
 import {TabData} from './tab_data.js';
 
+// TODO(crbug.com/215325): Add support for fuzzy search matching on tab group
+// title.
+
 /**
  * @param {string} input
  * @param {!Array<!TabData>} records

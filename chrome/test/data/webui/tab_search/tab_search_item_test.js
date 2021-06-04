@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Tab, TabData, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {Tab, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+
 import {assertDeepEquals, assertEquals, assertNotEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
+
+import {sampleToken} from './tab_search_test_data.js';
 
 suite('TabSearchItemTest', () => {
   /** @type {!TabSearchItem} */
@@ -103,5 +106,39 @@ suite('TabSearchItemTest', () => {
     tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
         tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
     assertEquals(null, tabSearchItemCloseButton);
+  });
+
+  test('GroupDetailsPresence', async () => {
+    const token = sampleToken(1, 1);
+    const tab = /** @type {!Tab} */ ({
+      active: true,
+      index: 0,
+      isDefaultFavicon: true,
+      lastActiveTimeTicks: {internalValue: BigInt(0)},
+      pinned: false,
+      showIcon: true,
+      tabId: 0,
+      groupId: token,
+      url: 'https://example.com',
+      title: 'Example.com site',
+    });
+
+    const tabGroup = /** @type {!TabGroup} */ ({
+      id: token,
+      color: TabGroupColor.kBlue,
+      title: 'Examples',
+    });
+
+    await setupTest(/** @type {!TabData} */ (
+        {hostname: 'example', tab, type: TabItemType.OPEN, tabGroup}));
+    const groupDotElement = tabSearchItem.shadowRoot.querySelector('#groupDot');
+    assertNotEquals(null, groupDotElement);
+    const groupDotComputedStyle = getComputedStyle(groupDotElement);
+    assertEquals(
+        groupDotComputedStyle.getPropertyValue('--tab-group-color-blue'),
+        groupDotComputedStyle.getPropertyValue('--group-dot-color'));
+
+    assertNotEquals(
+        null, tabSearchItem.shadowRoot.querySelector('#groupTitle'));
   });
 });

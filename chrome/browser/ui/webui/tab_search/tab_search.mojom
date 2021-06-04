@@ -5,11 +5,14 @@
 module tab_search.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
 
 // Collection of window details associated with a profile.
 struct ProfileData {
   array<Window> windows;
   array<RecentlyClosedTab> recently_closed_tabs;
+  array<TabGroup> tab_groups;
 };
 
 // Properties and tabs associated with a window.
@@ -31,7 +34,7 @@ struct Tab {
   int32 tab_id;
 
   // The group identifier of the tab.
-  string? group_id;
+  mojo_base.mojom.Token? group_id;
 
   // Whether the tab is pinned.
   bool pinned;
@@ -80,15 +83,15 @@ struct RecentlyClosedTab {
   string last_active_elapsed_text;
 };
 
-// Collection of tab groups.
-struct TabGroups {
-  map<string, TabGroup> groups;
-};
-
 // Information about a tab group.
 struct TabGroup {
-  string color;
-  string text_color;
+  // The unique identifier of the tab group.
+  mojo_base.mojom.Token id;
+
+  // The color of the tab group.
+  tab_groups.mojom.Color color;
+
+  // The title of the tab group.
   string title;
 };
 
@@ -111,9 +114,6 @@ interface PageHandler {
 
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
-
-  // Get tab groups for the current profile.
-  GetTabGroups() => (TabGroups tab_groups);
 
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);

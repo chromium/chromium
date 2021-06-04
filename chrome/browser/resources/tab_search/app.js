@@ -20,8 +20,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
-import {ariaLabel, TabData, TabItemType} from './tab_data.js';
-import {Tab, Window} from './tab_search.mojom-webui.js';
+import {ariaLabel, TabData, TabItemType, tokenToString} from './tab_data.js';
+import {Tab, TabGroup, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
 
@@ -126,6 +126,9 @@ export class TabSearchAppElement extends PolymerElement {
     /** @private {!Array<number>} */
     this.listenerIds_ = [];
 
+    /** @private {!Map<string, !TabGroup>} */
+    this.tabGroupsMap_ = new Map();
+
     /** @private {!Function} */
     this.visibilityChangedListener_ = () => {
       // Refresh Tab Search's tab data when transitioning into a visible state.
@@ -181,7 +184,8 @@ export class TabSearchAppElement extends PolymerElement {
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(
             profileData => this.tabsChanged_(
-                profileData.windows, profileData.recentlyClosedTabs)),
+                profileData.windows, profileData.recentlyClosedTabs,
+                profileData.tabGroups)),
         callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));
@@ -256,7 +260,9 @@ export class TabSearchAppElement extends PolymerElement {
       });
 
       this.availableHeight_ = profileData.windows.find((t) => t.active).height;
-      this.tabsChanged_(profileData.windows, profileData.recentlyClosedTabs);
+      this.tabsChanged_(
+          profileData.windows, profileData.recentlyClosedTabs,
+          profileData.tabGroups);
     });
   }
 
@@ -269,7 +275,8 @@ export class TabSearchAppElement extends PolymerElement {
     for (let i = 0; i < this.openTabs_.length; ++i) {
       if (this.openTabs_[i].tab.tabId === updatedTab.tabId) {
         this.openTabs_[i] = this.tabData_(
-            updatedTab, this.openTabs_[i].inActiveWindow, TabItemType.OPEN);
+            updatedTab, this.openTabs_[i].inActiveWindow, TabItemType.OPEN,
+            this.tabGroupsMap_);
         this.updateFilteredTabs_(this.openTabs_, this.recentlyClosedTabs_);
         return;
       }
@@ -408,15 +415,22 @@ export class TabSearchAppElement extends PolymerElement {
   /**
    * @param {!Array<!Window>} newOpenWindows
    * @param {!Array<!Tab>} recentlyClosedTabs
+   * @param {!Array<!TabGroup>} tabGroups
    * @private
    */
-  tabsChanged_(newOpenWindows, recentlyClosedTabs) {
+  tabsChanged_(newOpenWindows, recentlyClosedTabs, tabGroups) {
+    this.tabGroupsMap_ = tabGroups.reduce((map, tabGroup) => {
+      map.set(tokenToString(tabGroup.id), tabGroup);
+      return map;
+    }, new Map());
     this.openTabs_ = newOpenWindows.reduce(
-        (acc, {active, tabs}) => acc.concat(
-            tabs.map(tab => this.tabData_(tab, active, TabItemType.OPEN))),
+        (acc, {active, tabs}) => acc.concat(tabs.map(
+            tab => this.tabData_(
+                tab, active, TabItemType.OPEN, this.tabGroupsMap_))),
         []);
     this.recentlyClosedTabs_ = recentlyClosedTabs.map(
-        tab => this.tabData_(tab, false, TabItemType.RECENTLY_CLOSED));
+        tab => this.tabData_(
+            tab, false, TabItemType.RECENTLY_CLOSED, this.tabGroupsMap_));
     this.updateFilteredTabs_(this.openTabs_, this.recentlyClosedTabs_);
 
     // If there was no previously selected index, set the first item as
@@ -556,10 +570,11 @@ export class TabSearchAppElement extends PolymerElement {
    * @param {!Tab} tab
    * @param {boolean} inActiveWindow
    * @param {!TabItemType} type
+   * @param {!Map<string, !TabGroup>} tabGroupsMap
    * @return {!TabData}
    * @private
    */
-  tabData_(tab, inActiveWindow, type) {
+  tabData_(tab, inActiveWindow, type, tabGroupsMap) {
     const tabData = new TabData();
     try {
       tabData.hostname = new URL(tab.url).hostname;
@@ -570,6 +585,11 @@ export class TabSearchAppElement extends PolymerElement {
     }
     tabData.inActiveWindow = inActiveWindow;
     tabData.tab = tab;
+
+    if (tab.groupId) {
+      tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));
+    }
+
     tabData.type = type;
     tabData.a11yTypeText = loadTimeData.getStringF(
         type === TabItemType.OPEN ? 'a11yOpenTab' : 'a11yRecentlyClosedTab');

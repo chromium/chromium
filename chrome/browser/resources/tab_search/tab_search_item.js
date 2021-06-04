@@ -14,8 +14,8 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {ariaLabel, TabData, TabItemType} from './tab_data.js';
+import {colorName} from './tab_group_color_helper.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
 /**
@@ -84,9 +84,7 @@ export class TabSearchItem extends TabSearchItemBase {
             tab.isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
   }
 
-  /**
-   * @private
-   */
+  /** @private */
   dataChanged_() {
     this.highlightText_(
         /** @type {!HTMLElement} */ (this.$.primaryText), this.data.tab.title,
@@ -110,13 +108,19 @@ export class TabSearchItem extends TabSearchItemBase {
           .prepend(document.createTextNode('chrome://'));
       secondaryLabel = `chrome://${secondaryLabel}`;
     }
+
+    if (this.data.tabGroup) {
+      this.style.setProperty(
+          '--group-dot-color',
+          `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+    }
   }
 
   /**
-   *
    * @param {!HTMLElement} container
    * @param {string} text
    * @param {!Array<!{start:number, length:number}>|undefined} ranges
+   * @private
    */
   highlightText_(container, text, ranges) {
     container.textContent = '';

@@ -18,6 +18,9 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/color_utils.h"
@@ -287,6 +290,42 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
             ExpectProfileTabs(profile_tabs.get());
           });
   handler()->GetProfileData(std::move(callback3));
+}
+
+TEST_F(TabSearchPageHandlerTest, GetTabsAndGroups) {
+  // Add tabs to a browser.
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  // Associate a tab to a given tab group.
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+
+  std::u16string sample_title = u"Sample title";
+  const tab_groups::TabGroupColorId sample_color =
+      tab_groups::TabGroupColorId::kGrey;
+  tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
+  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+
+  // Get Tabs and Tab Group details.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_TRUE(window1->active);
+            ASSERT_EQ(2u, window1->tabs.size());
+
+            ASSERT_EQ(1u, profile_tabs->tab_groups.size());
+            auto* tab_group = profile_tabs->tab_groups[0].get();
+            ASSERT_EQ(sample_color, tab_group->color);
+            ASSERT_EQ(base::UTF16ToUTF8(sample_title), tab_group->title);
+          });
+  handler()->GetProfileData(std::move(callback1));
 }
 
 // Ensure that repeated tab model changes do not result in repeated calls to
