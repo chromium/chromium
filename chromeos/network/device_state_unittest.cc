@@ -33,10 +33,10 @@ base::Value GenerateTestSimSlotInfos() {
   sim_slot_infos.push_back(std::move(psim_slot_info));
 
   base::Value esim_slot_info(base::Value::Type::DICTIONARY);
-  psim_slot_info.SetStringKey(shill::kSIMSlotInfoICCID, kTestCellularESimIccid);
-  psim_slot_info.SetStringKey(shill::kSIMSlotInfoEID, kTestCellularEid);
-  psim_slot_info.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
-  sim_slot_infos.push_back(std::move(psim_slot_info));
+  esim_slot_info.SetStringKey(shill::kSIMSlotInfoICCID, kTestCellularESimIccid);
+  esim_slot_info.SetStringKey(shill::kSIMSlotInfoEID, kTestCellularEid);
+  esim_slot_info.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
+  sim_slot_infos.push_back(std::move(esim_slot_info));
 
   return base::Value(sim_slot_infos);
 }
