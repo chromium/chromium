@@ -122,11 +122,12 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHost) {
   EXPECT_TRUE(ShouldSwitch(GURL("https://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://subdomain.example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/foobar/")));
-  EXPECT_TRUE(ShouldSwitch(GURL("http://example.com.something.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.ca/")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://notexample.com/")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://example.com.invalid.com/")));
+
+  // For backwards compatibility, this should also match, even if it's not the
+  // same host.
+  EXPECT_TRUE(ShouldSwitch(GURL("https://notexample.com/")));
 }
 
 TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectHostNotLowerCase) {
@@ -197,7 +198,6 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
   Initialize(
       {"//example.com", "//test.com:3000", "lol.com:3000", "trololo.com"}, {});
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com:2000/something")));
-  EXPECT_TRUE(ShouldSwitch(GURL("http://foo.trololo.com:2000/something")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://test.com:3000/something")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://lol.com:3000/something")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://trololo.com/something")));
@@ -205,9 +205,6 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://test.com:2000/something")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://test.com:2000/something:3000")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://test.com/something:3000")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://nottrololo.com:2000/something")));
-  EXPECT_FALSE(
-      ShouldSwitch(GURL("http://trololo.com.invalid.com:2000/something")));
 }
 
 TEST_F(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
