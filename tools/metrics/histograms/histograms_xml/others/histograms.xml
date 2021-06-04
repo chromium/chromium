@@ -8947,7 +8947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Debian version number (eg. 8: Jessie, 9: Stretch). Logged once on
-    startup if Linux.Distro is Debian.
+    startup if Linux.Distro2 is Debian.
   </summary>
 </histogram>
 
@@ -8957,7 +8957,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Fedora version number (eg. 27, 28) Logged once on startup if
-    Linux.Distro is Fedora.
+    Linux.Distro2 is Fedora.
   </summary>
 </histogram>
 
@@ -8967,7 +8967,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The openSUSE Leap version number, logged as 1000*major + minor (eg. 15001 =
-    15.1). Logged once on startup if Linux.Distro is openSUSE Leap.
+    15.1). Logged once on startup if Linux.Distro2 is openSUSE Leap.
   </summary>
 </histogram>
 
@@ -8977,7 +8977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Ubuntu version number, logged as 1000*year + month (eg. 16004 = 16.04
-    Xenial). Logged once on startup if Linux.Distro is Ubuntu.
+    Xenial). Logged once on startup if Linux.Distro2 is Ubuntu.
   </summary>
 </histogram>
 
