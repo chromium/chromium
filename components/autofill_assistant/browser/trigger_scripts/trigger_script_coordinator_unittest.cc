@@ -35,6 +35,7 @@ namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::NiceMock;
@@ -1181,6 +1182,33 @@ TEST_F(TriggerScriptCoordinatorTest, RecordUkmsForCurrentUrlIfPossible) {
                    {navigation_ids_[1],
                     {Metrics::TriggerScriptShownToUser::SHOWN_TO_USER,
                      TriggerScriptProto::SHOPPING_CART_RETURNING_USER}}})));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  auto* param_1 = response.add_script_parameters();
+  param_1->set_name("name_1");
+  param_1->set_value("new_value_1");
+  auto* param_2 = response.add_script_parameters();
+  param_2->set_name("name_2");
+  param_2->set_value("new_value_2");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  coordinator_->Start(
+      GURL(kFakeDeepLink),
+      std::make_unique<TriggerContext>(
+          std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+              {"name_1", "old_value_1"}, {"name_3", "value_3"}}),
+          TriggerContext::Options()),
+      mock_callback_.Get());
+  EXPECT_THAT(coordinator_->GetTriggerContext().GetScriptParameters().ToProto(),
+              ElementsAre(std::make_pair("name_1", "new_value_1"),
+                          std::make_pair("name_2", "new_value_2")));
 }
 
 }  // namespace autofill_assistant

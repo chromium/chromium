@@ -94,15 +94,19 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
   additional_allowed_domains_.clear();
   absl::optional<int> timeout_ms;
   int check_interval_ms;
-  if (!ProtocolUtils::ParseTriggerScripts(response, &trigger_scripts_,
-                                          &additional_allowed_domains_,
-                                          &check_interval_ms, &timeout_ms)) {
+  absl::optional<std::unique_ptr<ScriptParameters>> script_parameters;
+  if (!ProtocolUtils::ParseTriggerScripts(
+          response, &trigger_scripts_, &additional_allowed_domains_,
+          &check_interval_ms, &timeout_ms, &script_parameters)) {
     Stop(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR);
     return;
   }
   if (trigger_scripts_.empty()) {
     Stop(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
     return;
+  }
+  if (script_parameters.has_value()) {
+    trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
   trigger_condition_check_interval_ =
       base::TimeDelta::FromMilliseconds(check_interval_ms);
