@@ -1046,14 +1046,15 @@
   },
   {
     "prefix": "force-renderer-accessibility",
-    "bases": ["accessibility/slot-poison.html",
-              "accessibility/details-summary-crash.html",
+    "bases": ["accessibility/details-summary-crash.html",
+              "accessibility/slot-poison.html",
               "accessibility/virtual-node-child-removal.html",
               "accessibility/virtual-node-parent-removal.html",
               "accessibility/virtual-node-build-parent.html",
               "accessibility/virtual-node-build-parent-multiple.html",
               "accessibility/virtual-node-removed-from-document.html",
-              "accessibility/virtual-node-repair-document.html"],
+              "accessibility/virtual-node-repair-document.html",
+              "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
