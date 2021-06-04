@@ -354,7 +354,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   bool focused_node_was_last_clicked_ = false;
   bool was_focused_before_now_ = false;
-  blink::WebFormControlElement last_clicked_form_control_element_for_testing_;
+  FieldRendererId last_clicked_form_control_element_for_testing_;
   bool last_clicked_form_control_element_was_focused_for_testing_ = false;
 
   FormTracker form_tracker_;
