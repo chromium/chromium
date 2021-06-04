@@ -2919,6 +2919,16 @@ void CrosNetworkConfig::PopulateTrafficCounters(
   std::move(callback).Run(std::move(counters));
 }
 
+void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
+  std::string service_path = GetServicePathFromGuid(guid);
+  if (service_path.empty()) {
+    NET_LOG(ERROR) << "ResetTrafficCounters: service path for guid " << guid
+                   << " not found";
+    return;
+  }
+  network_state_handler_->ResetTrafficCounters(service_path);
+}
+
 // NetworkStateHandlerObserver
 void CrosNetworkConfig::NetworkListChanged() {
   for (auto& observer : observers_)

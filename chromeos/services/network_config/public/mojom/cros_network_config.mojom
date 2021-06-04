@@ -1053,6 +1053,9 @@ interface CrosNetworkConfig {
   // Requests traffic counters for a service with ID |guid|.
   RequestTrafficCounters(string guid) =>
     (array<TrafficCounter> traffic_counters);
+
+  // Resets traffic counters for a service with ID |guid|.
+  ResetTrafficCounters(string guid);
 };
 
 interface CrosNetworkConfigObserver {

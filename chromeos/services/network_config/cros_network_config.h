@@ -96,6 +96,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) override;
   void RequestTrafficCounters(const std::string& guid,
                               RequestTrafficCountersCallback callback) override;
+  void ResetTrafficCounters(const std::string& guid) override;
 
   // static
   static mojom::TrafficCounterSource GetTrafficCounterEnumForTesting(
