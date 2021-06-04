@@ -27,6 +27,8 @@ const ARGBColor kGrey900Color = 0xFF202124;
 const ARGBColor kRed500Color = 0xFFEA4335;
 const ARGBColor kYellow400Color = 0xFFFCC934;
 
+const ARGBColor kLightYellowColor = 0xFFFCEF94;
+
 const ARGBColor kWhiteColor = 0xFFFFFFFF;
 const ARGBColor kBlackColor = 0xFF000000;
 
@@ -112,7 +114,8 @@ NoteTemplate GetImpactfulTemplate() {
       Background(/*color=*/kGrey200Color),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true, TextAlignment::kCenter),
+                /*all_caps=*/true, TextAlignment::kCenter,
+                /*highlight_color=*/kWhiteColor),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -162,7 +165,8 @@ NoteTemplate GetBoldTemplate() {
       Background(/*color=*/kWhiteColor),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true, TextAlignment::kCenter),
+                /*all_caps=*/true, TextAlignment::kCenter,
+                /*highlight_color=*/kLightYellowColor),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 

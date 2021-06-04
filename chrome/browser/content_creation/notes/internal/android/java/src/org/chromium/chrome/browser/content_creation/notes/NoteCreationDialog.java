@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
-import org.chromium.components.content_creation.notes.models.TextAlignment;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -92,17 +91,17 @@ public class NoteCreationDialog extends DialogFragment {
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
-        Typeface typeface = model.get(NoteProperties.TYPEFACE);
 
         View background = parent.findViewById(R.id.background);
         template.mainBackground.apply(background);
         background.setClipToOutline(true);
+        ((TextView) parent.findViewById(R.id.title)).setText(template.localizedName);
+
+        Typeface typeface = model.get(NoteProperties.TYPEFACE);
         TextView noteText = (TextView) parent.findViewById(R.id.text);
-        noteText.setText(mSelectedText);
-        noteText.setTextColor(template.textStyle.fontColor);
-        noteText.setAllCaps(template.textStyle.allCaps);
-        noteText.setGravity(TextAlignment.toGravity(template.textStyle.alignment));
         noteText.setTypeface(typeface);
+
+        template.textStyle.apply(noteText, mSelectedText);
 
         setLeftPadding(model.get(NoteProperties.IS_FIRST), parent.findViewById(R.id.item));
     }
@@ -111,11 +110,11 @@ public class NoteCreationDialog extends DialogFragment {
     // following item is slightlight peaking from the right. For that, set left padding exactly
     // what is needed to push the first item to the center, but set a smaller padding for the
     // following items.
-    private void setLeftPadding(boolean is_first, View itemView) {
+    private void setLeftPadding(boolean isFirst, View itemView) {
         int dialogWidth = mContentView.getWidth();
         int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
         int paddingLeft = (int) ((dialogWidth - templateWidth)
-                        * (is_first ? FIRST_NOTE_PADDING_RATIO : NOTE_PADDING_RATIO)
+                        * (isFirst ? FIRST_NOTE_PADDING_RATIO : NOTE_PADDING_RATIO)
                 + 0.5f);
         itemView.setPadding(paddingLeft, itemView.getPaddingTop(), itemView.getPaddingRight(),
                 itemView.getPaddingBottom());
