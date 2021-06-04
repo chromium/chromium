@@ -44,7 +44,7 @@ class LiveCaptionSpeechRecognitionHost
 
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
-      media::mojom::SpeechRecognitionResultPtr result,
+      const media::SpeechRecognitionResult& result,
       OnSpeechRecognitionRecognitionEventCallback reply) override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;

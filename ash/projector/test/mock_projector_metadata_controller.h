@@ -26,11 +26,8 @@ class ASH_EXPORT MockProjectorMetadataController
 
   // ProjectorMetadataController:
   MOCK_METHOD0(OnRecordingStarted, void());
-  MOCK_METHOD4(RecordTranscription,
-               void(const std::string& transcription,
-                    const base::TimeDelta start_time,
-                    const base::TimeDelta end_time,
-                    const std::vector<base::TimeDelta>& word_alignments));
+  MOCK_METHOD1(RecordTranscription,
+               void(const media::SpeechRecognitionResult& speech_result));
   MOCK_METHOD0(RecordKeyIdea, void());
   MOCK_METHOD1(SaveMetadata, void(const base::FilePath& video_file_path));
 };

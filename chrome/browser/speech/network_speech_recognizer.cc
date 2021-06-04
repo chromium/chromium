@@ -225,7 +225,7 @@ void NetworkSpeechRecognizer::EventListener::OnRecognitionResults(
       FROM_HERE,
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechResult, delegate_,
                      result_str, final_count == results.size(),
-                     absl::nullopt /* word offsets */));
+                     /* full_result = */ absl::nullopt));
 
   last_result_str_ = result_str;
 }

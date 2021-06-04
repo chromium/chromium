@@ -58,7 +58,7 @@ class LiveCaptionController : public KeyedService,
   // this returns false.
   bool DispatchTranscription(
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-      const media::mojom::SpeechRecognitionResultPtr& result);
+      const media::SpeechRecognitionResult& result);
 
   void OnLanguageIdentificationEvent(
       const media::mojom::LanguageIdentificationEventPtr& event);

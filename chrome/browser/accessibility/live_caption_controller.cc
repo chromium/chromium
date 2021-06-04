@@ -211,7 +211,7 @@ void LiveCaptionController::UpdateAccessibilityCaptionHistograms() {
 
 bool LiveCaptionController::DispatchTranscription(
     LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-    const media::mojom::SpeechRecognitionResultPtr& result) {
+    const media::SpeechRecognitionResult& result) {
   if (!caption_bubble_controller_)
     return false;
   return caption_bubble_controller_->OnTranscription(

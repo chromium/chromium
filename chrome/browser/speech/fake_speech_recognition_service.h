@@ -61,7 +61,7 @@ class FakeSpeechRecognitionService
 
   // Methods for testing plumbing to SpeechRecognitionRecognizerClient.
   void SendSpeechRecognitionResult(
-      media::mojom::SpeechRecognitionResultPtr result);
+      const media::SpeechRecognitionResult& result);
   void SendSpeechRecognitionError();
 
   void WaitForRecognitionStarted();

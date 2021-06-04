@@ -39,7 +39,7 @@ class CaptionBubbleController {
   // Transcriptions will halt if this returns false.
   virtual bool OnTranscription(
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-      const media::mojom::SpeechRecognitionResultPtr& result) = 0;
+      const media::SpeechRecognitionResult& result) = 0;
 
   // Called when the speech service has an error.
   virtual void OnError(LiveCaptionSpeechRecognitionHost*

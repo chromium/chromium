@@ -38,11 +38,10 @@ class Dictation : public SpeechRecognizerDelegate,
   friend class DictationTest;
 
   // SpeechRecognizerDelegate:
-  void OnSpeechResult(
-      const std::u16string& transcription,
-      bool is_final,
-      const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>&
-          word_offsets) override;
+  void OnSpeechResult(const std::u16string& transcription,
+                      bool is_final,
+                      const absl::optional<media::SpeechRecognitionResult>&
+                          full_result) override;
   void OnSpeechSoundLevelChanged(int16_t level) override;
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;

@@ -131,18 +131,18 @@ void OnDeviceSpeechRecognizer::Stop() {
 }
 
 void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
-    media::mojom::SpeechRecognitionResultPtr result,
+    const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Returning true ensures the speech recognition continues.
   std::move(reply).Run(true);
 
-  if (!result->transcription.size())
+  if (!result.transcription.size())
     return;
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_IN_SPEECH);
-  delegate()->OnSpeechResult(base::UTF8ToUTF16(result->transcription),
-                             result->is_final, absl::nullopt);
+  delegate()->OnSpeechResult(base::UTF8ToUTF16(result.transcription),
+                             result.is_final, result);
 }
 
 void OnDeviceSpeechRecognizer::OnSpeechRecognitionError() {

@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace base {
 class Value;
@@ -21,9 +22,9 @@ namespace ash {
 // Base class to describe a metadata item.
 class MetadataItem {
  public:
-  explicit MetadataItem(const base::TimeDelta start_time,
-                        const base::TimeDelta end_time,
-                        const std::string& text);
+  MetadataItem(const base::TimeDelta start_time,
+               const base::TimeDelta end_time,
+               const std::string& text);
   MetadataItem(const MetadataItem&) = delete;
   MetadataItem& operator=(const MetadataItem&) = delete;
   virtual ~MetadataItem();
@@ -48,9 +49,9 @@ class MetadataItem {
 // Class to describe a key idea.
 class ASH_EXPORT ProjectorKeyIdea : public MetadataItem {
  public:
-  explicit ProjectorKeyIdea(const base::TimeDelta start_time,
-                            const base::TimeDelta end_time,
-                            const std::string& text = std::string());
+  ProjectorKeyIdea(const base::TimeDelta start_time,
+                   const base::TimeDelta end_time,
+                   const std::string& text = std::string());
   ProjectorKeyIdea(const ProjectorKeyIdea&) = delete;
   ProjectorKeyIdea& operator=(const ProjectorKeyIdea&) = delete;
   ~ProjectorKeyIdea() override;
@@ -61,11 +62,11 @@ class ASH_EXPORT ProjectorKeyIdea : public MetadataItem {
 // Class to describe a transcription.
 class ASH_EXPORT ProjectorTranscript : public MetadataItem {
  public:
-  explicit ProjectorTranscript(
+  ProjectorTranscript(
       const base::TimeDelta start_time,
       const base::TimeDelta end_time,
       const std::string& text,
-      const std::vector<base::TimeDelta>& word_alignments);
+      const std::vector<media::HypothesisParts>& hypothesis_parts);
   ProjectorTranscript(const ProjectorTranscript&) = delete;
   ProjectorTranscript& operator=(const ProjectorTranscript&) = delete;
   ~ProjectorTranscript() override;
@@ -73,14 +74,14 @@ class ASH_EXPORT ProjectorTranscript : public MetadataItem {
   base::Value ToJson() override;
 
  private:
-  std::vector<base::TimeDelta> word_alignments_;
+  std::vector<media::HypothesisParts> hypothesis_parts_;
 };
 
 // Class to describe a projector metadata of a screencast session, including
 // name, transcriptions, key_ideas, etc
 class ASH_EXPORT ProjectorMetadata {
  public:
-  explicit ProjectorMetadata();
+  ProjectorMetadata();
   ProjectorMetadata(const ProjectorMetadata&) = delete;
   ProjectorMetadata& operator=(const ProjectorMetadata&) = delete;
   ~ProjectorMetadata();

@@ -15,6 +15,7 @@ include_rules = [
   "+components/quirks",
   "+components/services/app_service/public",
   "+components/session_manager",
+  "+components/soda",
   "+components/strings",
   "+components/sync",
   "+components/ui_devtools",

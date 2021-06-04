@@ -8,6 +8,30 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace {
+
+media::SpeechRecognitionResult GetSpeechRecognitionResultFromFinalEvent(
+    const chromeos::machine_learning::mojom::FinalResultPtr& final_event) {
+  media::SpeechRecognitionResult result;
+  result.transcription = final_event->final_hypotheses.front();
+  result.is_final = true;
+
+  if (!final_event->timing_event || !final_event->hypothesis_part)
+    return result;
+
+  const auto& timing_event = final_event->timing_event;
+  media::TimingInformation timing;
+  timing.audio_start_time = timing_event->audio_start_time;
+  timing.audio_end_time = timing_event->event_end_time;
+  timing.hypothesis_parts = std::vector<media::HypothesisParts>();
+
+  for (const auto& part : final_event->hypothesis_part.value())
+    timing.hypothesis_parts->emplace_back(part->text, part->alignment);
+
+  return result;
+}
+
+}  // namespace
 namespace soda {
 CrosSodaClient::CrosSodaClient() : soda_client_(this) {}
 CrosSodaClient::~CrosSodaClient() = default;
@@ -30,7 +54,7 @@ void CrosSodaClient::AddAudio(const char* audio_buffer,
 
 void CrosSodaClient::Reset(
     chromeos::machine_learning::mojom::SodaConfigPtr soda_config,
-    base::RepeatingCallback<void(const std::string&, bool)> callback) {
+    CrosSodaClient::TranscriptionResultCallback callback) {
   sample_rate_ = soda_config->sample_rate;
   channel_count_ = soda_config->channel_count;
   if (is_initialized_) {
@@ -67,15 +91,13 @@ void CrosSodaClient::OnSpeechRecognizerEvent(
     chromeos::machine_learning::mojom::SpeechRecognizerEventPtr event) {
   if (event->is_final_result()) {
     auto& final_result = event->get_final_result();
-    if (!final_result->final_hypotheses.empty()) {
-      const std::string final_hyp = final_result->final_hypotheses.front();
-      callback_.Run(final_hyp, true);
-    }
+    if (!final_result->final_hypotheses.empty())
+      callback_.Run(GetSpeechRecognitionResultFromFinalEvent(final_result));
   } else if (event->is_partial_result()) {
     auto& partial_result = event->get_partial_result();
     if (!partial_result->partial_text.empty()) {
       const std::string partial_hyp = partial_result->partial_text.front();
-      callback_.Run(partial_hyp, false);
+      callback_.Run(media::SpeechRecognitionResult(partial_hyp, false));
     }
   } else if (!event->is_endpointer_event() || !event->is_audio_event()) {
     LOG(ERROR) << "Some kind of other soda event, ignoring completely. Tag is '"

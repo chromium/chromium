@@ -16,6 +16,7 @@
 #include "components/speech/downstream_loader_client.h"
 #include "components/speech/upstream_loader.h"
 #include "components/speech/upstream_loader_client.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace speech {
@@ -38,8 +39,7 @@ class CloudSpeechRecognitionClient : public speech::UpstreamLoaderClient,
                                      public speech::DownstreamLoaderClient {
  public:
   using OnRecognitionEventCallback =
-      base::RepeatingCallback<void(const std::string& result,
-                                   const bool is_final)>;
+      base::RepeatingCallback<void(media::SpeechRecognitionResult)>;
 
   explicit CloudSpeechRecognitionClient(
       OnRecognitionEventCallback callback,

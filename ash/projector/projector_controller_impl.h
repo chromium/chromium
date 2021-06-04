@@ -34,12 +34,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // ProjectorController:
   void SetClient(ash::ProjectorClient* client) override;
   void OnSpeechRecognitionAvailable(bool available) override;
-  void OnTranscription(
-      const std::u16string& text,
-      absl::optional<base::TimeDelta> start_time,
-      absl::optional<base::TimeDelta> end_time,
-      const absl::optional<std::vector<base::TimeDelta>>& word_offsets,
-      bool is_final) override;
+  void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void SetProjectorToolsVisible(bool is_visible) override;
   bool IsEligible() const override;
 

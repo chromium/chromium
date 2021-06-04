@@ -26,11 +26,12 @@ class SpeechRecognitionRecognizerImpl
     : public media::mojom::SpeechRecognitionRecognizer {
  public:
   using OnRecognitionEventCallback =
-      base::RepeatingCallback<void(const std::string& result,
-                                   const bool is_final)>;
+      base::RepeatingCallback<void(media::SpeechRecognitionResult event)>;
+
   using OnLanguageIdentificationEventCallback = base::RepeatingCallback<void(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level)>;
+
   SpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
@@ -78,7 +79,8 @@ class SpeechRecognitionRecognizerImpl
 
   // Return the transcribed audio from the recognition event back to the caller
   // via the recognition event client.
-  void OnRecognitionEvent(const std::string& result, const bool is_final);
+  void OnRecognitionEvent(media::SpeechRecognitionResult event);
+
   void OnLanguageIdentificationEvent(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level);

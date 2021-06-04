@@ -20,6 +20,7 @@ source_set("soda") {
   deps = [
     ":soda_api_proto",
     "//base",
+    "//media/mojo/mojom",
   ]
 
   if (is_chromeos_ash) {

@@ -4,6 +4,7 @@
 
 #include "ash/projector/projector_controller_impl.h"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,46 +16,44 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 namespace {
-
-using chromeos::machine_learning::mojom::FinalResult;
-using chromeos::machine_learning::mojom::PartialResult;
-using chromeos::machine_learning::mojom::SpeechRecognizerEvent;
-using chromeos::machine_learning::mojom::SpeechRecognizerEventPtr;
-using chromeos::machine_learning::mojom::TimingInfo;
 using testing::_;
 using testing::ElementsAre;
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
-  controller->OnTranscription(
-      u"transcript text 1",
-      base::TimeDelta::FromMilliseconds(0) /* audio_start_time */,
-      base::TimeDelta::FromMilliseconds(3000) /* audio_end_time */,
-      {{base::TimeDelta::FromMilliseconds(1000),
-        base::TimeDelta::FromMilliseconds(2000),
-        base::TimeDelta::FromMilliseconds(2500)}} /* word_offsets*/,
-      true /* is_final */);
+  media::SpeechRecognitionResult result;
+  result.transcription = "transcript text 1";
+  result.is_final = true;
+  result.timing_information = media::TimingInformation();
+  result.timing_information->audio_start_time =
+      base::TimeDelta::FromMilliseconds(0);
+  result.timing_information->audio_end_time =
+      base::TimeDelta::FromMilliseconds(3000);
+
+  std::vector<media::HypothesisParts> hypothesis_parts;
+  std::string hypothesis_text[3] = {"transcript", "text", "1"};
+  int hypothesis_time[3] = {1000, 2000, 2500};
+  for (int i = 0; i < 3; i++) {
+    hypothesis_parts.emplace_back(
+        std::vector<std::string>({hypothesis_text[i]}),
+        base::TimeDelta::FromMilliseconds(hypothesis_time[i]));
+  }
+
+  result.timing_information->hypothesis_parts = std::move(hypothesis_parts);
+  controller->OnTranscription(result);
 }
 
 void NotifyControllerForPartialSpeechResult(
     ProjectorControllerImpl* controller) {
   controller->OnTranscription(
-      u"transcript partial text 1",
-      base::TimeDelta::FromMilliseconds(0) /* audio_start_time */,
-      base::TimeDelta::FromMilliseconds(3000) /* audio_end_time */,
-      {{base::TimeDelta::FromMilliseconds(1000),
-        base::TimeDelta::FromMilliseconds(2000),
-        base::TimeDelta::FromMilliseconds(2500),
-        base::TimeDelta::FromMilliseconds(3000)}} /* word_offsets*/,
-      false /* is_final */);
+      media::SpeechRecognitionResult("transcript partial text 1", false));
 }
 
 }  // namespace
@@ -125,15 +124,7 @@ TEST_F(ProjectorControllerTest, SaveScreencast) {
 TEST_F(ProjectorControllerTest, OnTranscription) {
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is
   // called to record the transcript.
-  EXPECT_CALL(
-      *mock_metadata_controller_,
-      RecordTranscription("transcript text 1",
-                          testing::Eq(base::TimeDelta::FromMilliseconds(0)),
-                          testing::Eq(base::TimeDelta::FromMilliseconds(3000)),
-                          ElementsAre(base::TimeDelta::FromMilliseconds(1000),
-                                      base::TimeDelta::FromMilliseconds(2000),
-                                      base::TimeDelta::FromMilliseconds(2500))))
-      .Times(1);
+  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_)).Times(1);
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since capton is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
@@ -143,8 +134,7 @@ TEST_F(ProjectorControllerTest, OnTranscription) {
 TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is not
   // called since it is not a final result.
-  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_)).Times(0);
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since caption is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
@@ -154,15 +144,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
   // Verify that |SaveMetadata| in |ProjectorMetadataController| is called to
   // record the transcript.
-  EXPECT_CALL(
-      *mock_metadata_controller_,
-      RecordTranscription("transcript text 1",
-                          testing::Eq(base::TimeDelta::FromMilliseconds(0)),
-                          testing::Eq(base::TimeDelta::FromMilliseconds(3000)),
-                          ElementsAre(base::TimeDelta::FromMilliseconds(1000),
-                                      base::TimeDelta::FromMilliseconds(2000),
-                                      base::TimeDelta::FromMilliseconds(2500))))
-      .Times(1);
+  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_)).Times(1);
   // Verify that |OnTranscription| in |ProjectorUiController| is called since
   // capton is on.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription("transcript text 1", true))
@@ -172,10 +154,9 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
-  // Verify that |RecordTranscription| in |ProjectorMetadataController| is
-  // called.
-  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_, _, _, _))
-      .Times(0);
+  // Verify that |RecordTranscription| in |ProjectorMetadataController| is not
+  // called since it is not a final result.
+  EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_)).Times(0);
   // Verify that |OnTranscription| in |ProjectorUiController| is called since
   // capton is on.
   EXPECT_CALL(*mock_ui_controller_,

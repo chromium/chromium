@@ -73,18 +73,9 @@ bool ProjectorClientImpl::IsSelfieCamVisible() const {
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
-    const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>& timing) {
-  DCHECK(timing.has_value() || ShouldUseWebSpeechFallback());
-
-  if (timing.has_value()) {
-    ash::ProjectorController::Get()->OnTranscription(
-        text, timing->audio_start_time, timing->audio_end_time,
-        timing->word_offsets, is_final);
-  } else {
-    // This is only used for development.
-    ash::ProjectorController::Get()->OnTranscription(
-        text, absl::nullopt, absl::nullopt, absl::nullopt, is_final);
-  }
+    const absl::optional<media::SpeechRecognitionResult>& full_result) {
+  DCHECK(full_result.has_value());
+  ash::ProjectorController::Get()->OnTranscription(full_result.value());
 }
 
 void ProjectorClientImpl::OnSpeechRecognitionStateChanged(

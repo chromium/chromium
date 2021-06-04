@@ -115,7 +115,8 @@ void CloudSpeechRecognitionClient::OnDownstreamDataReceived(
       result = previous_result_;
 
     previous_result_ = result;
-    recognition_event_callback().Run(result, is_final);
+    recognition_event_callback().Run(
+        media::SpeechRecognitionResult(result, is_final));
   }
 }
 

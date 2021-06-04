@@ -127,7 +127,7 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
   bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
         GetLiveCaptionSpeechRecognitionHost(),
-        media::mojom::SpeechRecognitionResult::New(text, false /* is_final */));
+        media::SpeechRecognitionResult(text, /* is_final */ false));
   }
 
   void OnError() { OnErrorOnProfile(browser()->profile()); }

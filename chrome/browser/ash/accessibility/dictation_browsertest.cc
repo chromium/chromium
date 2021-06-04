@@ -153,7 +153,7 @@ class DictationTest : public InProcessBrowserTest,
       EXPECT_TRUE(fake_service_->is_capturing_audio());
       base::RunLoop loop;
       fake_service_->SendSpeechRecognitionResult(
-          media::mojom::SpeechRecognitionResult::New(result, is_final));
+          media::SpeechRecognitionResult(result, is_final));
       loop.RunUntilIdle();
     }
   }

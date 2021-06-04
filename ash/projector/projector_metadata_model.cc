@@ -18,10 +18,24 @@ using base::Value;
 constexpr base::StringPiece kStartOffsetKey = "startOffset";
 constexpr base::StringPiece kEndOffsetKey = "endOffset";
 constexpr base::StringPiece kTextKey = "text";
-constexpr base::StringPiece kWordAlignmentKey = "wordAlignment";
+constexpr base::StringPiece kHypothesisPartsKey = "hypothesisParts";
 constexpr base::StringPiece kNameKey = "name";
 constexpr base::StringPiece kCaptionsKey = "captions";
 constexpr base::StringPiece kKeyIdeasKey = "tableOfContent";
+constexpr base::StringPiece kOffset = "offset";
+
+base::Value HypothesisPartsToValue(
+    const media::HypothesisParts& hypothesis_parts) {
+  base::Value text_value(base::Value::Type::LIST);
+  for (auto& part : hypothesis_parts.text)
+    text_value.Append(part);
+
+  base::Value hypothesis_part_value(base::Value::Type::DICTIONARY);
+  hypothesis_part_value.SetKey(kTextKey, std::move(text_value));
+  hypothesis_part_value.SetIntKey(
+      kOffset, hypothesis_parts.hypothesis_part_offset.InMilliseconds());
+  return hypothesis_part_value;
+}
 
 }  // namespace
 
@@ -63,9 +77,9 @@ ProjectorTranscript::ProjectorTranscript(
     const base::TimeDelta start_time,
     const base::TimeDelta end_time,
     const std::string& text,
-    const std::vector<base::TimeDelta>& word_alignments)
+    const std::vector<media::HypothesisParts>& hypothesis_parts)
     : MetadataItem(start_time, end_time, text),
-      word_alignments_(word_alignments) {}
+      hypothesis_parts_(hypothesis_parts) {}
 
 ProjectorTranscript::~ProjectorTranscript() = default;
 
@@ -73,10 +87,17 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //  {
 //      "startOffset": 100
 //      "endOffset": 2100
-//      "text": "Today I'd like to teach..."
-//      "wordAlignments": [
-//         100,
-//         1500,
+//      "text": "Today I would like to teach..."
+//      "hypothesisParts": [
+//        {
+//           "text": ["Today"]
+//           "offset": 100
+//         },
+//         {
+//           "text": ["I"]
+//           "offset": 200
+//         },
+//         ...
 //      ]
 //  }
 //
@@ -85,17 +106,19 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //   "startOffset": INT
 //   "endOffset": INT
 //   "text": STRING
-//   "wordAlignments": LIST
+//   "hypothesisParts": DICT LIST
+//
 base::Value ProjectorTranscript::ToJson() {
   base::Value transcript(base::Value::Type::DICTIONARY);
   transcript.SetIntKey(kStartOffsetKey, start_time_.InMilliseconds());
   transcript.SetIntKey(kEndOffsetKey, end_time_.InMilliseconds());
   transcript.SetStringKey(kTextKey, text_);
 
-  base::Value word_alignments_value(base::Value::Type::LIST);
-  for (auto& word_alignment : word_alignments_)
-    word_alignments_value.Append((int)word_alignment.InMilliseconds());
-  transcript.SetKey(kWordAlignmentKey, std::move(word_alignments_value));
+  base::Value hypothesis_parts_value(base::Value::Type::LIST);
+  for (auto& hypothesis_part : hypothesis_parts_)
+    hypothesis_parts_value.Append(HypothesisPartsToValue(hypothesis_part));
+
+  transcript.SetKey(kHypothesisPartsKey, std::move(hypothesis_parts_value));
   return transcript;
 }
 
@@ -134,9 +157,16 @@ std::string ProjectorMetadata::Serialize() {
 //      "endOffset": 2100
 //      "text": "Today I'd like to teach you about a central pillar of a
 //      construction learning theory it's called the debugging Loop...",
-//      "wordAlignments": [
-//         100,
-//         1500,
+//      "hypothesisParts": [
+//          {
+//            "text" : ["Today"],
+//            "offset": 100,
+//          },
+//          {
+//            "text": ["I"],
+//            "offset": 1500,
+//          }
+//          ...
 //      ]
 //    }],
 //    "tableOfContent": [

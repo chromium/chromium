@@ -42,7 +42,7 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
-    media::mojom::SpeechRecognitionResultPtr result,
+    const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (!live_caption_controller) {

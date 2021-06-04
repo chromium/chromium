@@ -42,7 +42,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // Transcriptions will halt if this returns false.
   bool OnTranscription(
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-      const media::mojom::SpeechRecognitionResultPtr& result) override;
+      const media::SpeechRecognitionResult& result) override;
 
   // Called when the speech service has an error.
   void OnError(LiveCaptionSpeechRecognitionHost*

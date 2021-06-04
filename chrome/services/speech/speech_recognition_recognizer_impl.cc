@@ -63,9 +63,10 @@ void OnSodaResponse(const char* serialized_proto,
     DCHECK(result.hypothesis_size());
     static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
         ->recognition_event_callback()
-        .Run(
-            std::string(result.hypothesis(0)),
-            result.result_type() == soda::chrome::SodaRecognitionResult::FINAL);
+        .Run(media::SpeechRecognitionResult(
+            result.hypothesis(0),
+            result.result_type() ==
+                soda::chrome::SodaRecognitionResult::FINAL));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
@@ -129,12 +130,12 @@ bool SpeechRecognitionRecognizerImpl::IsMultichannelSupported() {
 }
 
 void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
-    const std::string& result,
-    const bool is_final) {
+    media::SpeechRecognitionResult event) {
   if (!client_remote_.is_bound())
     return;
+
   client_remote_->OnSpeechRecognitionRecognitionEvent(
-      media::mojom::SpeechRecognitionResult::New(result, is_final),
+      std::move(event),
       base::BindOnce(&SpeechRecognitionRecognizerImpl::
                          OnSpeechRecognitionRecognitionEventCallback,
                      weak_factory_.GetWeakPtr()));

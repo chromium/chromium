@@ -149,7 +149,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
     return GetController()->OnTranscription(
         live_caption_speech_recognition_host,
-        media::mojom::SpeechRecognitionResult::New(text, false));
+        media::SpeechRecognitionResult(text, false));
   }
 
   bool OnFinalTranscription(std::string text) {
@@ -161,7 +161,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
     return GetController()->OnTranscription(
         live_caption_speech_recognition_host,
-        media::mojom::SpeechRecognitionResult::New(text, true));
+        media::SpeechRecognitionResult(text, true));
   }
 
   void OnError() { OnError(GetLiveCaptionSpeechRecognitionHost()); }

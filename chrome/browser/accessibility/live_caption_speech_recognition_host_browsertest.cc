@@ -68,7 +68,7 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
                                            std::string text,
                                            bool expected_success) {
     remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
-        media::mojom::SpeechRecognitionResult::New(text, /*is_final=*/false),
+        media::SpeechRecognitionResult(text, /*is_final=*/false),
         base::BindOnce(&LiveCaptionSpeechRecognitionHostTest::
                            DispatchTranscriptionCallback,
                        base::Unretained(this), expected_success));

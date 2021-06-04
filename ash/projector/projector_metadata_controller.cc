@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -47,13 +48,13 @@ void ProjectorMetadataController::OnRecordingStarted() {
 }
 
 void ProjectorMetadataController::RecordTranscription(
-    const std::string& transcription,
-    const base::TimeDelta start_time,
-    const base::TimeDelta end_time,
-    const std::vector<base::TimeDelta>& word_alignments) {
+    const media::SpeechRecognitionResult& speech_result) {
   DCHECK(metadata_);
+
+  const auto& timing = speech_result.timing_information;
   metadata_->AddTranscript(std::make_unique<ProjectorTranscript>(
-      start_time, end_time, transcription, word_alignments));
+      timing->audio_start_time, timing->audio_end_time,
+      speech_result.transcription, timing->hypothesis_parts.value()));
 }
 
 void ProjectorMetadataController::RecordKeyIdea() {

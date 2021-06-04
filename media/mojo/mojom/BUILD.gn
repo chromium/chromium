@@ -569,6 +569,36 @@ mojom("mojom") {
     },
   ]
 
+  if (!is_android) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "media.mojom.HypothesisParts"
+            cpp = "::media::HypothesisParts"
+          },
+          {
+            mojom = "media.mojom.TimingInformation"
+            cpp = "::media::TimingInformation"
+          },
+          {
+            mojom = "media.mojom.SpeechRecognitionResult"
+            cpp = "::media::SpeechRecognitionResult"
+          },
+        ]
+        traits_headers = [
+          "speech_recognition_result_mojom_traits.h",
+          "speech_recognition_result.h",
+        ]
+        traits_sources = [
+          "speech_recognition_result.cc",
+          "speech_recognition_result_mojom_traits.cc",
+        ]
+        traits_public_deps = [ "//base" ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_typemaps
   blink_cpp_typemaps = shared_typemaps
 
@@ -623,6 +653,10 @@ source_set("unit_tests") {
     "video_frame_metadata_mojom_traits_unittest.cc",
     "video_frame_mojom_traits_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [ "speech_recognition_result_mojom_traits_unittest.cc" ]
+  }
 
   deps = [
     "//base",
