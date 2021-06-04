@@ -62684,6 +62684,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Started"/>
 </enum>
 
+<enum name="PlatformCellularConnectResult">
+  <summary>
+    The return status as a result of a call to connect to a cellular device at
+    the shill layer.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Wrong State"/>
+  <int value="3" label="Operation Failed"/>
+  <int value="4" label="Already Connected"/>
+  <int value="5" label="Not Registered"/>
+  <int value="6" label="Not On Home Network"/>
+  <int value="7" label="Incorrect Pin"/>
+  <int value="8" label="Pin Required"/>
+  <int value="9" label="Pin Blocked"/>
+  <int value="10" label="Invalid APN"/>
+</enum>
+
 <enum name="PlatformFileError">
   <summary>Errors from base::File::Error</summary>
   <int value="0" label="OK"/>
