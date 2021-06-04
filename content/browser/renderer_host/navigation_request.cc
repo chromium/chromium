@@ -1477,8 +1477,7 @@ NavigationRequest::~NavigationRequest() {
     }
 
     // Abandon the prerender host reserved for activation if it exists.
-    if (blink::features::IsPrerender2Enabled() &&
-        IsPrerenderedPageActivation()) {
+    if (IsPrerenderedPageActivation()) {
       GetPrerenderHostRegistry().AbandonReservedHost(
           prerender_frame_tree_node_id_.value());
     }
@@ -4225,8 +4224,8 @@ net::Error NavigationRequest::CheckCSPDirectives(
       }
 
       // [prefetch-src]
-      if (blink::features::IsPrerender2Enabled() &&
-          frame_tree_node_->frame_tree()->is_prerendering()) {
+      if (frame_tree_node_->frame_tree()->is_prerendering()) {
+        DCHECK(blink::features::IsPrerender2Enabled());
         if (!IsAllowedByCSPDirective(
                 initiator_policies->content_security_policies,
                 &initiator_context,

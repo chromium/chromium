@@ -1363,16 +1363,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     set_nav_entry_id(parent_->nav_entry_id());
   }
 
-  if (blink::features::IsPrerender2Enabled()) {
-    if (frame_tree_->is_prerendering()) {
-      // TODO(https://crbug.com/1132752): Check the prerendering page is
-      // same-origin to the prerender trigger page.
-      broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-              base::BindOnce(
-                  &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
-                  base::Unretained(this))));
-    }
+  if (frame_tree_->is_prerendering()) {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    // TODO(https://crbug.com/1132752): Check the prerendering page is
+    // same-origin to the prerender trigger page.
+    broker_.ApplyMojoBinderPolicies(
+        MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
+            &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
+            base::Unretained(this))));
   }
 
   if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
@@ -4400,8 +4398,8 @@ void RenderFrameHostImpl::DownloadURL(
   // TODO(crbug.com/1205359): We should defer the download until the
   // prerendering page is activated, and it will comply with the prerendering
   // spec.
-  if (blink::features::IsPrerender2Enabled() &&
-      frame_tree()->is_prerendering()) {
+  if (frame_tree()->is_prerendering()) {
+    DCHECK(blink::features::IsPrerender2Enabled());
     CancelPrerendering(PrerenderHost::FinalStatus::kDownload);
     return;
   }
@@ -5760,20 +5758,18 @@ void RenderFrameHostImpl::SetModalCloseListener(
 void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   DCHECK(receiver.is_valid());
-  if (blink::features::IsPrerender2Enabled()) {
-    if (frame_tree()->is_prerendering()) {
-      // RenderFrameHostImpl will rebind the receiver end of
-      // BrowserInterfaceBroker if it receives a new one sent from renderer
-      // processes. It happens when renderer processes navigate to a new
-      // document, see RenderFrameImpl::DidCommitNavigation() and
-      // RenderFrameHostImpl::DidCommitNavigation().
-      // So before binding a new receiver end of BrowserInterfaceBroker,
-      // RenderFrameHostImpl should drop all deferred binders to avoid
-      // connecting Mojo pipes with old documents.
-      auto* applier = broker_.GetMojoBinderPolicyApplier();
-      DCHECK(applier) << "prerendering pages should have a policy applier";
-      applier->DropDeferredBinders();
-    }
+  if (frame_tree()->is_prerendering()) {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    // RenderFrameHostImpl will rebind the receiver end of
+    // BrowserInterfaceBroker if it receives a new one sent from renderer
+    // processes. It happens when renderer processes navigate to a new document,
+    // see RenderFrameImpl::DidCommitNavigation() and
+    // RenderFrameHostImpl::DidCommitNavigation(). So before binding a new
+    // receiver end of BrowserInterfaceBroker, RenderFrameHostImpl should drop
+    // all deferred binders to avoid connecting Mojo pipes with old documents.
+    auto* applier = broker_.GetMojoBinderPolicyApplier();
+    DCHECK(applier) << "prerendering pages should have a policy applier";
+    applier->DropDeferredBinders();
   }
   broker_receiver_.Bind(std::move(receiver));
   broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
