@@ -171,6 +171,7 @@ source_set("platform_base_logging") {
   public_deps = [
     ":platform_api_platform",
     ":platform_api_types",
+    "//base:base",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
