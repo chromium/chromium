@@ -42,7 +42,7 @@ void WindowControlsOverlayInputRoutingMac::Enable() {
 void WindowControlsOverlayInputRoutingMac::Disable() {
   if (!host_)
     return;
-  // TODO(crbug.com/937121): Implement when toggle button is added.
+  host_->RemoveRemoteWindowControlsOverlayView(overlay_type_);
 }
 
 void WindowControlsOverlayInputRoutingMac::UpdateNSViewPosition() {

@@ -83,6 +83,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   if (app_controller->AppUsesWindowControlsOverlay()) {
     window_controls_overlay_toggle_button_ = AddChildView(
         std::make_unique<WindowControlsOverlayToggleButton>(browser_view_));
+    views::SetHitTestComponent(window_controls_overlay_toggle_button_,
+                               static_cast<int>(HTCLIENT));
   }
 
   if (app_controller->HasTitlebarContentSettings()) {

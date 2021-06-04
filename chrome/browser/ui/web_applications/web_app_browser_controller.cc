@@ -74,14 +74,8 @@ bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
 }
 
 bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
-  // TODO(crbug.com/937121): Remove special casing for Mac once toggle is
-  // supported for BrowserNonClientFrameViewMac.
-#if defined(OS_MAC)
-  return AppUsesWindowControlsOverlay();
-#else
   return AppUsesWindowControlsOverlay() &&
          registrar().GetWindowControlsOverlayEnabled(GetAppId());
-#endif
 }
 
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {

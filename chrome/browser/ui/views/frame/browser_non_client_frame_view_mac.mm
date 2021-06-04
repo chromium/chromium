@@ -82,17 +82,8 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
       if (browser_view->IsWindowControlsOverlayEnabled()) {
         caption_button_placeholder_container_ =
             AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
-        caption_buttons_overlay_input_routing_view_ =
-            std::make_unique<WindowControlsOverlayInputRoutingMac>(
-                this, caption_button_placeholder_container_,
-                remote_cocoa::mojom::WindowControlsOverlayNSViewType::
-                    kCaptionButtonContainer);
 
-        web_app_frame_toolbar_overlay_routing_view_ =
-            std::make_unique<WindowControlsOverlayInputRoutingMac>(
-                this, web_app_frame_toolbar(),
-                remote_cocoa::mojom::WindowControlsOverlayNSViewType::
-                    kWebAppFrameToolbar);
+        AddRoutingForWindowControlsOverlayViews();
       }
     }
 
@@ -323,6 +314,30 @@ void BrowserNonClientFrameViewMac::UpdateMinimumSize() {
   GetWidget()->OnSizeConstraintsChanged();
 }
 
+void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    caption_button_placeholder_container_ =
+        AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
+    UpdateCaptionButtonPlaceholderContainerBackground();
+
+    AddRoutingForWindowControlsOverlayViews();
+
+    caption_buttons_overlay_input_routing_view_->Enable();
+    web_app_frame_toolbar_overlay_routing_view_->Enable();
+  } else {
+    caption_buttons_overlay_input_routing_view_->Disable();
+    web_app_frame_toolbar_overlay_routing_view_->Disable();
+
+    RemoveChildView(caption_button_placeholder_container_);
+    caption_button_placeholder_container_ = nullptr;
+
+    caption_buttons_overlay_input_routing_view_ = nullptr;
+    web_app_frame_toolbar_overlay_routing_view_ = nullptr;
+  }
+
+  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
+  frame()->client_view()->InvalidateLayout();
+}
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, views::View implementation:
 
@@ -548,4 +563,18 @@ void BrowserNonClientFrameViewMac::
     caption_button_placeholder_container_->SetBackground(
         views::CreateSolidBackground(GetFrameColor()));
   }
+}
+
+void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
+  caption_buttons_overlay_input_routing_view_ =
+      std::make_unique<WindowControlsOverlayInputRoutingMac>(
+          this, caption_button_placeholder_container_,
+          remote_cocoa::mojom::WindowControlsOverlayNSViewType::
+              kCaptionButtonContainer);
+
+  web_app_frame_toolbar_overlay_routing_view_ =
+      std::make_unique<WindowControlsOverlayInputRoutingMac>(
+          this, web_app_frame_toolbar(),
+          remote_cocoa::mojom::WindowControlsOverlayNSViewType::
+              kWebAppFrameToolbar);
 }

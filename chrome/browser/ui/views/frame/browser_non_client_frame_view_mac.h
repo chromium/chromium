@@ -50,6 +50,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   void UpdateMinimumSize() override;
+  void WindowControlsOverlayEnabledChanged() override;
 
   // views::View:
   gfx::Size GetMinimumSize() const override;
@@ -96,6 +97,8 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   void LayoutWindowControlsOverlay();
 
   void UpdateCaptionButtonPlaceholderContainerBackground();
+
+  void AddRoutingForWindowControlsOverlayViews();
 
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;

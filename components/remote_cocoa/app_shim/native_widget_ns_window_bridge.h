@@ -254,6 +254,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void UpdateWindowControlsOverlayNSView(
       const gfx::Rect& bounds,
       const mojom::WindowControlsOverlayNSViewType overlay_type) override;
+  void RemoveWindowControlsOverlayNSView(
+      const mojom::WindowControlsOverlayNSViewType overlay_type) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.

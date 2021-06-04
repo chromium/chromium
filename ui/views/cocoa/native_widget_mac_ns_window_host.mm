@@ -753,6 +753,10 @@ void NativeWidgetMacNSWindowHost::UpdateRemoteWindowControlsOverlayView(
   GetNSWindowMojo()->UpdateWindowControlsOverlayNSView(bounds, overlay_type);
 }
 
+void NativeWidgetMacNSWindowHost::RemoveRemoteWindowControlsOverlayView(
+    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
+  GetNSWindowMojo()->RemoveWindowControlsOverlayNSView(overlay_type);
+}
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::BridgedNativeWidgetHostHelper:
 

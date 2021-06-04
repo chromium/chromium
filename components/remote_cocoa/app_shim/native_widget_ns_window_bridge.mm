@@ -1173,6 +1173,20 @@ void NativeWidgetNSWindowBridge::UpdateWindowControlsOverlayNSView(
   }
 }
 
+void NativeWidgetNSWindowBridge::RemoveWindowControlsOverlayNSView(
+    const mojom::WindowControlsOverlayNSViewType overlay_type) {
+  switch (overlay_type) {
+    case mojom::WindowControlsOverlayNSViewType::kCaptionButtonContainer:
+      [caption_buttons_overlay_nsview_ removeFromSuperview];
+      caption_buttons_overlay_nsview_.reset();
+      break;
+    case mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar:
+      [web_app_frame_toolbar_overlay_nsview_ removeFromSuperview];
+      web_app_frame_toolbar_overlay_nsview_.reset();
+      break;
+  }
+}
+
 NSWindow* NativeWidgetNSWindowBridge::ns_window() {
   return window_.get();
 }
