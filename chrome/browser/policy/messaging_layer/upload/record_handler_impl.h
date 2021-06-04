@@ -47,10 +47,6 @@ class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
   // |report_queue_|, and uploading those events with the |client_|.
   class ReportUploader;
 
-  // Processes last JSON response received from the server in case of success,
-  // or nullopt in case of failures on all attempts.
-  void ProcessResponse(const base::Value& response);
-
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 

@@ -123,10 +123,6 @@ class DmServerUploadService {
     // to upload to DmServer.
     void HandleRecords();
 
-    // Called at the end of HandleRecords determines if all records have been
-    // processed and calls Complete.
-    void OnRecordsHandled();
-
     // Complete schedules |Response| with the provided |completion_response|.
     void Complete(CompletionResponse completion_response);
 
@@ -135,23 +131,10 @@ class DmServerUploadService {
                          const int64_t expected_generation_id,
                          const int64_t expected_sequencing_id) const;
 
-    // Helper function for tracking the highest sequencing information per
-    // generation id. Schedules ProcessSuccessfulUploadAddition.
-    void AddSuccessfulUpload(
-        base::RepeatingClosure done_cb,
-        const SequencingInformation& sequencing_information);
-
-    // Processes successful uploads on sequence.
-    void ProcessSuccessfulUploadAddition(
-        base::RepeatingClosure done_cb,
-        SequencingInformation sequencing_information);
-
     const bool need_encryption_key_;
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
     EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     RecordHandler* handler_;
-
-    absl::optional<SequencingInformation> highest_successful_sequence_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };

@@ -14,8 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 
-class PrefService;
-
 namespace policy {
 
 // Implementation of BrowserDMTokenStorage delegate for Android.
@@ -41,7 +39,6 @@ class BrowserDMTokenStorageAndroid : public BrowserDMTokenStorage::Delegate {
       const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
-  PrefService* local_state_ = nullptr;
   scoped_refptr<base::TaskRunner> task_runner_;
 
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageAndroidTest, InitClientId);

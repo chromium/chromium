@@ -21,7 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
-class DMAuth;
 class EnrollmentStatus;
 
 // Implements the logic that initializes device account during enrollment.
@@ -96,9 +95,6 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   void OnNetworkError(int response_code) override;
 
  private:
-  // Initiates storing of robot auth token.
-  void StartStoreRobotAuth();
-
   // Handles completion of the robot token store operation.
   void HandleStoreRobotAuthTokenResult(bool result);
 
@@ -111,7 +107,6 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   Delegate* delegate_;
 
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-  std::unique_ptr<DMAuth> dm_auth_;
 
   // Flag that undicates if there are requests that were not completed yet.
   // It is used to ignore CloudPolicyClient errors that are not relevant to
