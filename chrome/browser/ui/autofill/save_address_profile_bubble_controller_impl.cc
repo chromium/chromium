@@ -51,8 +51,6 @@ SaveAddressProfileBubbleControllerImpl::GetProfileToSave() const {
 
 void SaveAddressProfileBubbleControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  set_bubble_view(nullptr);
-
   std::move(address_profile_save_prompt_callback_)
       .Run(decision, address_profile_);
 }
