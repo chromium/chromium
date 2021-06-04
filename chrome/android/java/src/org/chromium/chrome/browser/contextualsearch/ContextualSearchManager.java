@@ -213,6 +213,9 @@ public class ContextualSearchManager
     @NonNull
     private RelatedSearchesList mRelatedSearches;
 
+    /** Whether any current Search shown in the SERP is from Related Searches. */
+    private boolean mIsRelatedSearchesSerp;
+
     /** Whether the Accessibility Mode is enabled. */
     private boolean mIsAccessibilityModeEnabled;
 
@@ -488,6 +491,7 @@ public class ContextualSearchManager
 
         mSearchRequest = null;
         mRelatedSearches = null;
+        mIsRelatedSearchesSerp = false;
 
         mInProductHelp.onCloseContextualSearch(Profile.getLastUsedRegularProfile());
 
@@ -549,6 +553,7 @@ public class ContextualSearchManager
             mTranslateController.forceAutoDetectTranslateUnlessDisabled(mSearchRequest);
             mDidStartLoadingResolvedSearchRequest = false;
             mSearchPanel.setSearchTerm(selection);
+            mIsRelatedSearchesSerp = false;
             ensureCaption();
             if (shouldPrefetch) loadSearchUrl();
         } else {
@@ -1130,7 +1135,7 @@ public class ContextualSearchManager
         @Override
         public void onContentViewSeen() {
             assert mSearchPanel != null;
-            mSearchPanel.setWasSearchContentViewSeen();
+            if (!mIsRelatedSearchesSerp) mSearchPanel.setWasSearchContentViewSeen();
         }
 
         @Override
@@ -1360,10 +1365,12 @@ public class ContextualSearchManager
     public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
         // TODO(donnd): update metrics and the stamp for Related Searches (use params).
         assert suggestionIndex < mRelatedSearches.getQueries().size();
+        // TODO(donnd): Does the index reflect the default query? See https://crbug.com/1216593.
         String searchQuery = mRelatedSearches.getQueries().get(suggestionIndex);
         // TODO(donnd): use the returned URL instead of building one here.
         mSearchRequest = new ContextualSearchRequest(searchQuery);
         mSearchPanel.setSearchTerm(searchQuery);
+        mIsRelatedSearchesSerp = true;
         // TODO(donnd): determine what to show in the Caption.
         loadSearchUrl();
     }
@@ -1608,6 +1615,7 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             if (selectionValid) {
                 mSearchPanel.setSearchTerm(selection);
+                mIsRelatedSearchesSerp = false;
                 ensureCaption();
             } else {
                 hideContextualSearch(StateChangeReason.INVALID_SELECTION);
@@ -1638,6 +1646,7 @@ public class ContextualSearchManager
     private void showSelectionAsSearchInBar(String selection) {
         if (isSearchPanelShowing()) {
             mSearchPanel.setSearchTerm(selection);
+            mIsRelatedSearchesSerp = false;
             ensureCaption();
         }
     }

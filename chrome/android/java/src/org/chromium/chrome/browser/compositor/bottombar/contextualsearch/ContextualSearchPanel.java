@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.scene_layer.ContextualSearchSceneLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
@@ -574,6 +575,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public void maximizePanelThenPromoteToTab(@StateChangeReason int reason) {
         mShouldPromoteToTabAfterMaximizing = true;
         super.maximizePanel(reason);
+        if (reason == StateChangeReason.SERP_NAVIGATION) {
+            ContextualSearchUma.logSerpResultClicked(
+                    getRelatedSearchesControl().isShowingRelatedSearchSerp());
+        }
     }
 
     @Override
@@ -594,6 +599,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public void closePanel(@StateChangeReason int reason, boolean animate) {
         super.closePanel(reason, animate);
         mHasContentBeenTouched = false;
+        if (reason == StateChangeReason.TAB_PROMOTION) {
+            ContextualSearchUma.logTabPromotion(
+                    getRelatedSearchesControl().isShowingRelatedSearchSerp());
+        }
+        destroyRelatedSearchesControl();
     }
 
     @Override
@@ -1106,7 +1116,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /**
      * Creates the RelatedSearchesControl, if needed.
      */
-    private RelatedSearchesControl getRelatedSearchesControl() {
+    @VisibleForTesting
+    public RelatedSearchesControl getRelatedSearchesControl() {
         if (mRelatedSearchesControl == null) {
             mRelatedSearchesControl = new RelatedSearchesControl(this,
                     getRelatedSearchesSectionHost(), mContext, mContainerView, mResourceLoader);

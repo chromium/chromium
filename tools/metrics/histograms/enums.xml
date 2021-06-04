@@ -8290,6 +8290,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Blocked"/>
 </enum>
 
+<enum name="BooleanBottomSearchKind">
+  <int value="0" label="Contextual Search"/>
+  <int value="1" label="Related Searches"/>
+</enum>
+
 <enum name="BooleanBounced">
   <int value="0" label="Not Bounced"/>
   <int value="1" label="Bounced"/>

@@ -655,9 +655,12 @@ class ContextualSearchFakeServer
         rSearch1.put("title", "Related Search 1");
         JSONObject rSearch2 = new JSONObject();
         rSearch2.put("title", "Related Search 2");
+        JSONObject rSearch3 = new JSONObject();
+        rSearch3.put("title", "Related Search 3");
         JSONArray rSearches = new JSONArray();
         rSearches.put(rSearch1);
         rSearches.put(rSearch2);
+        rSearches.put(rSearch3);
         JSONObject suggestions = new JSONObject();
         suggestions.put("content", rSearches);
         ResolvedSearchTerm intelligenceWithRelatedSearches =

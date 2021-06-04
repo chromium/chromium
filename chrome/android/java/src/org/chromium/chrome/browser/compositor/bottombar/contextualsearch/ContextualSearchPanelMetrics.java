@@ -155,6 +155,12 @@ public class ContextualSearchPanelMetrics {
                 ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
+            if (mWasSearchContentViewSeen) {
+                // TODO(donnd): check that this does not get logged when Related Searches are
+                // shown in the Bar and a user clicks one while in peeking state.
+                // Tracking bug for RS in the Bar: https://crbug.com/1210674.
+                ContextualSearchUma.logAllSearches(/* wasRelatedSearches */ false);
+            }
 
             // Notifications to Feature Engagement.
             ContextualSearchIPH.doSearchFinishedNotifications(profile, mWasSearchContentViewSeen,

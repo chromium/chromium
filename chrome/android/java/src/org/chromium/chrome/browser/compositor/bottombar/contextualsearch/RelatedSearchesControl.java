@@ -17,6 +17,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
+import org.chromium.chrome.browser.contextualsearch.RelatedSearchesUma;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.Chip;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
@@ -36,6 +38,16 @@ import java.util.List;
  */
 public class RelatedSearchesControl {
     private static final int INVALID_VIEW_ID = 0;
+    private static final int NO_SELECTED_CHIP = -1;
+
+    /**
+     * Whether the UI is displaying the TTS query that's based on the selection
+     * in the first position of the RS carousel. See https://crbug.com/1216593.
+     */
+    private static final boolean DO_DISPLAY_DEFAULT_SELECTION_QUERY = false;
+    /** The position of the first Related Searches suggestion in the carousel UI. */
+    private static final int FIRST_RELATED_SEARCHES_CAROUSEL_INDEX =
+            DO_DISPLAY_DEFAULT_SELECTION_QUERY ? 1 : 0;
 
     private final boolean mIsEnabled;
     private final OverlayPanel mOverlayPanel;
@@ -73,6 +85,15 @@ public class RelatedSearchesControl {
     /** The reference to the host for this part of the panel (callbacks to the Panel). */
     private RelatedSearchesSectionHost mPanelSectionHost;
 
+    /** The number of chips that have been selected so far. */
+    private int mChipsSelected;
+
+    /** Whether any suggestions were actually shown to the user. */
+    private boolean mDidShowAnySuggestions;
+
+    /** Which chip is selected (if any) */
+    private int mSelectedChip = NO_SELECTED_CHIP;
+
     /**
      * @param panel             The panel.
      * @param panelSectionHost  A reference to the host of this panel section for notifications.
@@ -91,6 +112,7 @@ public class RelatedSearchesControl {
                 ? new RelatedSearchesControlView(panel, context, container, resourceLoader)
                 : null;
         mPanelSectionHost = panelSectionHost;
+        // mChipsSelected is default-initialized to 0.
     }
 
     // ============================================================================================
@@ -116,6 +138,12 @@ public class RelatedSearchesControl {
         return mControlView != null ? mControlView.getViewId() : INVALID_VIEW_ID;
     }
 
+    /** Returns whether the SERP is showing due to a Related Searches suggestion. */
+    public boolean isShowingRelatedSearchSerp() {
+        if (!mIsEnabled) return false;
+        return mSelectedChip >= FIRST_RELATED_SEARCHES_CAROUSEL_INDEX;
+    }
+
     // ============================================================================================
     // Package-private API
     // ============================================================================================
@@ -124,10 +152,7 @@ public class RelatedSearchesControl {
      * Shows the View. This includes inflating the View and setting its initial state.
      */
     void show() {
-        if (mIsVisible || mRelatedSearchesSuggestions == null
-                || mRelatedSearchesSuggestions.length == 0) {
-            return;
-        }
+        if (mIsVisible || !hasReleatedSearchesToShow()) return;
 
         // Invalidates the View in order to generate a snapshot, but do not show the View yet.
         if (mControlView != null) mControlView.invalidate();
@@ -156,13 +181,23 @@ public class RelatedSearchesControl {
         mRelatedSearchesSuggestions = relatedSearches;
         show();
         calculateHeight();
-        // TODO(donnd): add metrics to track usage here or in the caller.
+        assert mChipsSelected == 0;
+        mSelectedChip = NO_SELECTED_CHIP;
     }
 
     @VisibleForTesting
     @Nullable
     String[] getRelatedSearchesSuggestions() {
         return mRelatedSearchesSuggestions;
+    }
+
+    // ============================================================================================
+    // Test support API
+    // ============================================================================================
+
+    @VisibleForTesting
+    public void selectChipForTest(int chipIndex) {
+        mControlView.selectChipForTest(chipIndex);
     }
 
     // ============================================================================================
@@ -206,6 +241,10 @@ public class RelatedSearchesControl {
      * Destroys as much of this instance as possible.
      */
     void destroy() {
+        if (hasReleatedSearchesToShow()) {
+            RelatedSearchesUma.logNumberOfSuggestionsClicked(mChipsSelected);
+            if (mDidShowAnySuggestions) RelatedSearchesUma.logCtr(mChipsSelected > 0);
+        }
         if (mControlView != null) mControlView.destroy();
         mControlView = null;
     }
@@ -232,7 +271,7 @@ public class RelatedSearchesControl {
         if (percentage == 1.f) {
             showView();
         } else {
-            // If the View is still showing capture a new snapshot in case anything changed.
+            // If the View is still showing, capture a new snapshot in case anything changed.
             // TODO(donnd): grab snapshots when the view changes instead.
             // See https://crbug.com/1184308 for details.
             if (mIsShowingView) {
@@ -312,10 +351,7 @@ public class RelatedSearchesControl {
      * whenever the the size of the View changes.
      */
     private void calculateHeight() {
-        if (mControlView == null || mRelatedSearchesSuggestions == null
-                || mRelatedSearchesSuggestions.length == 0) {
-            return;
-        }
+        if (mControlView == null || !hasReleatedSearchesToShow()) return;
 
         mControlView.setRelatedSearches(mRelatedSearchesSuggestions);
         mControlView.layoutView();
@@ -333,12 +369,27 @@ public class RelatedSearchesControl {
 
     /**
      * Notifies that the user has clicked on a suggestions in this section of the panel.
+     * See https://crbug.com/1216593.
      * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
      *        and presented in the UI. E.g. if the user clicked the second chip this
      *        value would be 1.
      */
     private void onSuggestionClicked(int suggestionIndex) {
         mPanelSectionHost.onSuggestionClicked(suggestionIndex);
+        RelatedSearchesUma.logSelectedCarouselIndex(suggestionIndex);
+        // TODO(donnd): check the computation once we're showing the default query. That will
+        // not need to be logged using the call below since it's not an RS suggestion.
+        // See https://crbug.com/1216593.
+        RelatedSearchesUma.logSelectedSuggestionIndex(
+                suggestionIndex + (DO_DISPLAY_DEFAULT_SELECTION_QUERY ? 0 : 1));
+        mChipsSelected++;
+        ContextualSearchUma.logAllSearches(/* isRelatedSearches */ true);
+    }
+
+    /** Returns whether we have Related Searches to show or not.  */
+    private boolean hasReleatedSearchesToShow() {
+        return mIsEnabled && mRelatedSearchesSuggestions != null
+                && mRelatedSearchesSuggestions.length > 0;
     }
 
     // ============================================================================================
@@ -346,9 +397,7 @@ public class RelatedSearchesControl {
     // ============================================================================================
 
     private class RelatedSearchesChipsProvider implements ChipsProvider {
-        private static final int NO_SELECTED_CHIP = -1;
         private final ObserverList<Observer> mObservers = new ObserverList<>();
-        private int mSelectedChip = NO_SELECTED_CHIP;
 
         @Override
         public void addObserver(Observer observer) {
@@ -363,7 +412,7 @@ public class RelatedSearchesControl {
         @Override
         public List<Chip> getChips() {
             mChips = new ArrayList<>();
-            if (mRelatedSearchesSuggestions != null && mRelatedSearchesSuggestions.length > 0) {
+            if (hasReleatedSearchesToShow()) {
                 for (String suggestion : mRelatedSearchesSuggestions) {
                     final int index = mChips.size();
                     Chip chip = new Chip(index, suggestion, ChipView.INVALID_ICON_ID,
@@ -371,6 +420,7 @@ public class RelatedSearchesControl {
                     chip.enabled = true;
                     mChips.add(chip);
                 }
+                mDidShowAnySuggestions = true;
             }
 
             return mChips;
@@ -383,6 +433,11 @@ public class RelatedSearchesControl {
             mChips.get(tappedChipIndex).selected = true;
             // TODO(donnd): force the check icon to be shown and removed from these chips.
             // See https://crbug.com/1184308 for details.
+        }
+
+        @VisibleForTesting
+        void selectChipForTest(int chipIndex) {
+            handleChipTapped(chipIndex);
         }
     }
 
@@ -399,6 +454,8 @@ public class RelatedSearchesControl {
     private class RelatedSearchesControlView extends OverlayPanelInflater {
         private final ChipsCoordinator mChipsCoordinator;
         private final RelatedSearchesChipsProvider mChipsProvider;
+        // TODO(donnd): track the offset of the carousel here, so we can use it for snapshotting
+        // and log that the user has scrolled it.
         private float mLastOffset;
 
         /**
@@ -477,6 +534,11 @@ public class RelatedSearchesControl {
         @Override
         protected boolean shouldDetachViewAfterCapturing() {
             return false;
+        }
+
+        @VisibleForTesting
+        void selectChipForTest(int chipIndex) {
+            mChipsProvider.selectChipForTest(chipIndex);
         }
     }
 }

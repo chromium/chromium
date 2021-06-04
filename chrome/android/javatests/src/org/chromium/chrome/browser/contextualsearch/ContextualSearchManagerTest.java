@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchQuickActionControl;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.ContextualSearchTestHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
@@ -223,6 +224,7 @@ public class ContextualSearchManagerTest {
     private ContextualSearchSelectionController mSelectionController;
     private EmbeddedTestServer mTestServer;
     private ContextualSearchManagerTestHost mTestHost;
+    private UserActionTester mActionTester;
 
     private float mDpToPx;
 
@@ -315,6 +317,8 @@ public class ContextualSearchManagerTest {
         InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
         mActivityMonitor = null;
         mLatestSlowResolveSearch = null;
+        if (mActionTester != null) mActionTester.tearDown();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> forgetHistograms());
     }
 
     private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
@@ -1383,6 +1387,114 @@ public class ContextualSearchManagerTest {
     }
 
     //============================================================================================
+    // UMA assertions
+    //============================================================================================
+
+    private void assertUserActionRecorded(String userActionFullName) throws Exception {
+        Assert.assertTrue(mActionTester.getActions().contains(userActionFullName));
+    }
+
+    /**
+     * UMA assertions for a sequence of user actions that peek and expand the panel with
+     * Related Searches showing and then close the panel without selecting any suggestion.
+     */
+    private void assertUmaForPeekAndExpandWithRSearchesEnabled() throws Exception {
+        assertUmaForPeekAndExpandWithRSearchesEnabled(-1);
+    }
+
+    /**
+     * UMA assertions for a sequence of user actions that peek and expand the panel with
+     * Related Searches showing and then close the panel.
+     * @param whichSuggestion Which suggestion was selected. A value of -1 means none.
+     */
+    private void assertUmaForPeekAndExpandWithRSearchesEnabled(int whichSuggestion)
+            throws Exception {
+        final int relatedSearchesCount = whichSuggestion > -1 ? 1 : 0;
+        Assert.assertEquals(
+                "Some entry in the Search.ContextualSearch.All.Searches histogram was not logged "
+                        + "as expected!",
+                1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.ContextualSearch.All.ResultsSeen"));
+        Assert.assertEquals(
+                "Failed to log a search seen in the Search.ContextualSearch.All.Searches "
+                        + "histogram!",
+                relatedSearchesCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.ContextualSearch.All.Searches", 1));
+        Assert.assertEquals("Failed to log a search that was not seen in the "
+                        + "Search.ContextualSearch.All.Searches histogram!",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.ContextualSearch.All.Searches", 0));
+        Assert.assertEquals(
+                "Failed to log the correct number of searches seen from Related Searches and/or "
+                        + "Contextual Search in the Search.ContextualSearch.All.Searches "
+                        + "histogram",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.ContextualSearch.All.Searches", relatedSearchesCount));
+        Assert.assertEquals(
+                "Failed to log the correct count of Related Searches suggestions clicked in the "
+                        + "Search.RelatedSearches.NumberOfSuggestionsClicked histogram!",
+                1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.NumberOfSuggestionsClicked"));
+        Assert.assertEquals("Failed to log all the right Related Searches chips as clicked in the "
+                        + "Search.RelatedSearches.SelectedCarouselIndex histogram!",
+                relatedSearchesCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.SelectedCarouselIndex"));
+        if (relatedSearchesCount > 0) {
+            Assert.assertEquals(
+                    "Failed to find the expected Related Searches chip logged as clicked in the "
+                            + "Search.RelatedSearches.SelectedCarouselIndex histogram that tracks "
+                            + "which chip was clicked!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.SelectedCarouselIndex", whichSuggestion));
+        }
+        Assert.assertEquals(
+                "Failed to log all the right Related Searches suggestions as selected in the "
+                        + "Search.RelatedSearches.SelectedSuggestionIndex histogram!",
+                relatedSearchesCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.SelectedSuggestionIndex"));
+        if (relatedSearchesCount > 0) {
+            Assert.assertEquals(
+                    "Failed to find the expected Related Searches suggestion logged as selected "
+                            + "in the Search.RelatedSearches.SelectedSuggestionIndex histogram "
+                            + "that tracks which suggestion was selected!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.SelectedSuggestionIndex", whichSuggestion + 1));
+        }
+        Assert.assertEquals(
+                "Failed to log that Related Searches were shown but none selected in the "
+                        + "Search.RelatedSearches.CTR histogram!",
+                1 - relatedSearchesCount,
+                RecordHistogram.getHistogramValueCountForTesting("Search.RelatedSearches.CTR", 0));
+        Assert.assertEquals(
+                "Failed to log that Related Searches were shown and at least one was selected "
+                        + "in the Search.RelatedSearches.CTR histogram!",
+                relatedSearchesCount,
+                RecordHistogram.getHistogramValueCountForTesting("Search.RelatedSearches.CTR", 1));
+    }
+
+    /** Forgets all the histograms that we care about. */
+    private void forgetHistograms() {
+        RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.ResultsSeen");
+        RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.Searches");
+        RecordHistogram.forgetHistogramForTesting(
+                "Search.RelatedSearches.NumberOfSuggestionsClicked");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedCarouselIndex");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedSuggestionIndex");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CTR");
+        RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.TranslationNeeded");
+        RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.OutcomesDuration");
+    }
+
+    //============================================================================================
     // Test Cases
     //============================================================================================
 
@@ -1959,6 +2071,8 @@ public class ContextualSearchManagerTest {
             }
         };
         sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer);
+        // Track User Actions
+        mActionTester = new UserActionTester();
 
         // -------- TEST ---------
         // Start a slow-resolve search and maximize the Panel.
@@ -1983,6 +2097,9 @@ public class ContextualSearchManagerTest {
 
         // Make sure a tab was created.
         tabCreatedHelper.waitForCallback(tabCreatedHelperCallCount);
+
+        // Make sure we captured the promotion in UMA.
+        assertUserActionRecorded("ContextualSearch.TabPromotion");
 
         // -------- CLEAN UP ---------
         sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
@@ -3770,27 +3887,51 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    public void testRelatedSearchesRequestedWhenEnabled() throws Exception {
+    public void testRelatedSearchesItemNotSelected() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
-        simulateResolveSearch("search");
+        FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
                 mFakeServer.getSearchContext().getRelatedSearchesStamp().isEmpty());
+        ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
+        Assert.assertTrue("Related Searches results should have been returned but were not!",
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
+        // Expand the panel and assert that it ends up in the right place.
+        tapPeekingBarToExpandAndAssert();
+
+        // Don't select any Related Searches suggestion, and close the panel
+        closePanel();
+        assertUmaForPeekAndExpandWithRSearchesEnabled();
     }
 
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
-    public void testRelatedSearchesResponseWhenEnabled() throws Exception {
+    public void testRelatedSearchesItemSelected() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_UI);
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
         Assert.assertTrue("Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
-        // TODO(donnd): Add a check that the searches appeared in the Panel once the Panel can.
+        // Expand the panel and assert that it ends up in the right place.
+        tapPeekingBarToExpandAndAssert();
+
+        // Select a Related Searches suggestion.
+        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesControl();
+        final int chipToSelect = 2;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> relatedSearchesControl.selectChipForTest(chipToSelect));
+
+        // Close the panel
+        closePanel();
+        assertUmaForPeekAndExpandWithRSearchesEnabled(chipToSelect);
     }
+
+    // --------------------------------------------------------------------------------------------
+    // Forced Caption Feature tests.
+    // --------------------------------------------------------------------------------------------
 
     /**
      * Tests that a caption is shown on a non intelligent search when the force-caption feature is

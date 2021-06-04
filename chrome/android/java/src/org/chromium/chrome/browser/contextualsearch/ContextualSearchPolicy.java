@@ -340,7 +340,7 @@ class ContextualSearchPolicy {
      */
     void logCurrentState() {
         ContextualSearchUma.logPreferenceState();
-        ContextualSearchUma.logRelatedSearchesPermissionsForAllUsers(
+        RelatedSearchesUma.logRelatedSearchesPermissionsForAllUsers(
                 hasSendUrlPermissions(), canSendSurroundings());
 
         // Log the number of promo taps remaining.
@@ -387,7 +387,7 @@ class ContextualSearchPolicy {
      */
     void logRelatedSearchesQualifiedUsers(String basePageLanguage) {
         if (isQualifiedForRelatedSearches(basePageLanguage)) {
-            ContextualSearchUma.logRelatedSearchesQualifiedUsers();
+            RelatedSearchesUma.logRelatedSearchesQualifiedUsers();
         }
     }
 

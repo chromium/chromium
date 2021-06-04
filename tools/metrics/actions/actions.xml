@@ -5401,6 +5401,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualSearch.SerpResultClicked">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <description>
+    The user clicked on a search result in the Search Result Page that was shown
+    due to a Contextual Search.
+  </description>
+</action>
+
 <action name="ContextualSearch.SmartSelectionSuppressed">
   <owner>donnd@chromium.org</owner>
   <description>
@@ -5436,6 +5445,16 @@ should be able to be added at any place in this file.
   <description>
     The user did a swip or fling to move the Contextual Search panel to the peek
     position.
+  </description>
+</action>
+
+<action name="ContextualSearch.TabPromotion">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <description>
+    The user took an action that promotes the bottom sheet from an overlay into
+    its own separate Tab. The bottom sheet was showing results from a Contextual
+    Search.
   </description>
 </action>
 
@@ -20970,6 +20989,25 @@ should be able to be added at any place in this file.
 <action name="RegisterProtocolHandler.InfoBar_Shown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="RelatedSearches.SerpResultClicked">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <description>
+    The user clicked on a search result in the Search Result Page that was shown
+    due to a Related Searches suggestion.
+  </description>
+</action>
+
+<action name="RelatedSearches.TabPromotion">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <description>
+    The user took an action that promotes the bottom sheet from an overlay into
+    its own separate Tab. The bottom sheet was showing results from a Related
+    Searches suggestion.
+  </description>
 </action>
 
 <action name="RelaunchRecommended_Accept">

@@ -42,6 +42,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearch.All.Searches"
+    enum="BooleanBottomSearchKind" expires_after="M95">
+<!-- TODO(donnd): change expires_after to never once established and
+       approved. -->
+
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Records that a Search Result page was shown in a bottom sheet for either
+    Contextual Search or Related Searches. Each entry corresponds to exactly one
+    search of the indicated kind. Related Searches are recorded when the SERP is
+    shown to the user, and Contextual Searches are recorded when the panel is
+    closed. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearch.CardTag"
     enum="ContextualSearchCardTag" expires_after="never">
 <!-- expires-never: tracks key server results returned to the user. -->
@@ -1430,6 +1447,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.RelatedSearches.CTR" enum="BooleanClicked"
+    expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Records the click through rate for Related Searches. This is the rate that
+    at least one suggestion was chosen by the user when any were shown. Records
+    false whenever Related Searches suggestions were shown to the user but none
+    were selected, and true whenever the user has clicked on any suggestion to
+    view the suggested query. Only records one entry per botton-sheet session.
+    Recorded when the presentation UI is dismissed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked"
+    units="selected" expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    The number of suggestions that were chosen by the user in a bottom-sheet
+    session that showed any Related Searches. Written when the suggestions UI is
+    closed. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
     expires_after="2021-10-17">
   <owner>donnd@chromium.org</owner>
@@ -1442,6 +1484,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Contextual Search in way that could activate Related Searches (i.e. sends
     context). NOTE: Use the Count unique clients option to count users since
     multiple events are logged for each user. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
+    expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    The display position index for a chip in the carousel when it was selected
+    by the user. Written when a Related Searches suggestion chip is clicked.
+    Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.SelectedSuggestionIndex"
+    units="position" expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    The display position index for a suggestion when it was selected by the
+    user. The suggestion at location 0 is always the default selection search,
+    which may not be a possible position in some implementations. All indecies
+    from 1 on are true Related Searches suggestions. Written when a Related
+    Searches suggestion in the UI is selected. Implemented for Android.
   </summary>
 </histogram>
 
