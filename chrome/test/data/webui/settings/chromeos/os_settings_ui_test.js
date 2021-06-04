@@ -36,7 +36,7 @@ suite('OSSettingsUi', function() {
     settingsPage = settingsMain.$$('os-settings-page');
     assertTrue(!!settingsPage);
 
-    // Simulate Kerberos settings section enabled.
+    // Simulate Kerberos enabled.
     settingsPage.showKerberosSection = true;
 
     const idleRender =

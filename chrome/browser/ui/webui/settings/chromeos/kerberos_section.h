@@ -21,7 +21,7 @@ namespace settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for Kerberos settings. Search tags are
-// only shown if they are allowed by policy/flags.
+// only added if the feature is enabled by policy.
 class KerberosSection : public OsSettingsSection,
                         public KerberosCredentialsManager::Observer {
  public:

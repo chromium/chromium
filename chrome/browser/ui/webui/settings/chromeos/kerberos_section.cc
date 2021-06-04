@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/kerberos_section.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/chromeos/kerberos_accounts_handler.h"
@@ -71,10 +70,6 @@ KerberosSection::KerberosSection(
     KerberosCredentialsManager* kerberos_credentials_manager)
     : OsSettingsSection(profile, search_tag_registry),
       kerberos_credentials_manager_(kerberos_credentials_manager) {
-  // No search tags are registered if KerberosSettingsSection flag is disabled.
-  if (!chromeos::features::IsKerberosSettingsSectionEnabled())
-    return;
-
   if (kerberos_credentials_manager_) {
     // Kerberos search tags are added/removed dynamically.
     kerberos_credentials_manager_->AddObserver(this);
@@ -83,10 +78,6 @@ KerberosSection::KerberosSection(
 }
 
 KerberosSection::~KerberosSection() {
-  // No observer has been added if KerberosSettingsSection flag is disabled.
-  if (!chromeos::features::IsKerberosSettingsSectionEnabled())
-    return;
-
   if (kerberos_credentials_manager_)
     kerberos_credentials_manager_->RemoveObserver(this);
 }
@@ -100,10 +91,6 @@ void KerberosSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void KerberosSection::AddHandlers(content::WebUI* web_ui) {
-  // No handler is created/added if KerberosSettingsSection flag is disabled.
-  if (!chromeos::features::IsKerberosSettingsSectionEnabled())
-    return;
-
   std::unique_ptr<chromeos::settings::KerberosAccountsHandler>
       kerberos_accounts_handler =
           KerberosAccountsHandler::CreateIfKerberosEnabled(profile());

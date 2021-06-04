@@ -183,9 +183,7 @@ cr.define('settings', function() {
 
       this.showKerberosSection_ =
           loadTimeData.valueExists('isKerberosEnabled') &&
-          loadTimeData.getBoolean('isKerberosEnabled') &&
-          loadTimeData.valueExists('isKerberosSettingsSectionEnabled') &&
-          loadTimeData.getBoolean('isKerberosSettingsSectionEnabled');
+          loadTimeData.getBoolean('isKerberosEnabled');
 
       this.addEventListener('show-container', () => {
         this.$.container.style.visibility = 'visible';

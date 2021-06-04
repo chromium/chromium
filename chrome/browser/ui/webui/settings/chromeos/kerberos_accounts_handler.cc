@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
@@ -50,16 +49,12 @@ void AddKerberosTitleStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-// Adds flags related to Kerberos settings visibility and its corresponding
-// settings section.
-void AddKerberosSettingsVisibilityFlags(
+// Adds load time boolean corresponding to Kerberos enable state.
+void AddKerberosEnabledFlag(
     content::WebUIDataSource* html_source,
     KerberosCredentialsManager* kerberos_credentials_manager) {
   html_source->AddBoolean("isKerberosEnabled",
                           IsKerberosEnabled(kerberos_credentials_manager));
-  html_source->AddBoolean(
-      "isKerberosSettingsSectionEnabled",
-      chromeos::features::IsKerberosSettingsSectionEnabled());
 }
 
 // Adds load time strings to Kerberos Add Accounts dialog.
@@ -189,7 +184,7 @@ KerberosAccountsHandler::CreateIfKerberosEnabled(Profile* profile) {
 void KerberosAccountsHandler::AddLoadTimeKerberosStrings(
     content::WebUIDataSource* html_source,
     KerberosCredentialsManager* kerberos_credentials_manager) {
-  AddKerberosSettingsVisibilityFlags(html_source, kerberos_credentials_manager);
+  AddKerberosEnabledFlag(html_source, kerberos_credentials_manager);
   AddKerberosTitleStrings(html_source);
   AddKerberosAccountsPageStrings(html_source);
   AddKerberosAddAccountDialogStrings(html_source);
