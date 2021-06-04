@@ -158,11 +158,9 @@ LibLouis = class {
   loadOrReload_(opt_loadCallback) {
     this.worker_ = new Worker(this.wasmPath_);
     this.worker_.addEventListener(
-        'message', goog.bind(this.onInstanceMessage_, this),
-        false /* useCapture */);
+        'message', this.onInstanceMessage_.bind(this), false /* useCapture */);
     this.worker_.addEventListener(
-        'error', goog.bind(this.onInstanceError_, this),
-        false /* useCapture */);
+        'error', this.onInstanceError_.bind(this), false /* useCapture */);
     this.rpc_('load', {}, () => {
       this.isLoaded_ = true;
       opt_loadCallback && opt_loadCallback(this);

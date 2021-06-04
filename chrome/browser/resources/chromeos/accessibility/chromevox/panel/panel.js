@@ -341,7 +341,7 @@ Panel = class {
       // Make a copy of the key bindings, get the localized title of each
       // command, and then sort them.
       const sortedBindings = keymap.bindings().slice();
-      sortedBindings.forEach(goog.bind(function(binding) {
+      sortedBindings.forEach((binding) => {
         const command = binding.command;
         const keySeq = binding.sequence;
         binding.keySeq = KeyUtil.keySequenceToString(keySeq, true);
@@ -357,7 +357,7 @@ Panel = class {
           return word.charAt(0).toUpperCase() + word.substr(1);
         });
         binding.title = title;
-      }, this));
+      });
       sortedBindings.sort(function(binding1, binding2) {
         return binding1.title.localeCompare(binding2.title);
       });
@@ -365,7 +365,7 @@ Panel = class {
       // Insert items from the bindings into the menus.
       const sawBindingSet = {};
       const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
-      sortedBindings.forEach(goog.bind(function(binding) {
+      sortedBindings.forEach((binding) => {
         const command = binding.command;
         if (sawBindingSet[command]) {
           return;
@@ -399,7 +399,7 @@ Panel = class {
                 CommandHandler['onCommand'](binding.command);
               }, binding.command);
         }
-      }, this));
+      });
 
       // Add all open tabs to the Tabs menu.
       bkgnd.chrome.windows.getLastFocused(function(lastFocusedWindow) {

@@ -415,9 +415,9 @@ TtsBackground = class extends ChromeTtsBase {
     const utterance = this.currentUtterance_;
     const utteranceId = utterance.id;
 
-    utterance.properties['onEvent'] = goog.bind(function(event) {
+    utterance.properties['onEvent'] = (event) => {
       this.onTtsEvent_(event, utteranceId);
-    }, this);
+    };
 
     const validatedProperties = /** @type {!chrome.tts.TtsOptions} */ ({});
     for (let i = 0; i < TtsBackground.ALLOWED_PROPERTIES_.length; i++) {
@@ -741,7 +741,7 @@ TtsBackground = class extends ChromeTtsBase {
    * @private
    */
   createPunctuationReplace_(clear) {
-    return goog.bind(function(match) {
+    return (match) => {
       const retain =
           this.retainPunctuation_.indexOf(match) !== -1 ? match : ' ';
       return clear ? retain :
@@ -750,7 +750,7 @@ TtsBackground = class extends ChromeTtsBase {
                    Msgs.getMsg(AbstractTts.CHARACTER_DICTIONARY[match])))
                   .format({'COUNT': 1}) +
               retain + ' ';
-    }, this);
+    };
   }
 
   /**
@@ -807,21 +807,21 @@ TtsBackground = class extends ChromeTtsBase {
    * @private
    */
   updateVoice_(voiceName, opt_callback) {
-    chrome.tts.getVoices(goog.bind(function(voices) {
+    chrome.tts.getVoices((voices) => {
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
       const newVoice = voices.find((v) => {
         return v.voiceName === voiceName;
       }) ||
           systemVoice;
-      if (newVoice) {
+      if (newVoice && newVoice.voiceName) {
         this.currentVoice = newVoice.voiceName;
         this.startSpeakingNextItemInQueue_();
       }
       if (opt_callback) {
         opt_callback(this.currentVoice);
       }
-    }, this));
+    });
   }
 
   /**

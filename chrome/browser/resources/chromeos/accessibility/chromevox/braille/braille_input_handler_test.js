@@ -47,7 +47,7 @@ FakeEditor = class {
     this.uncommittedText_ = '';
     /** @private {?Array<number>} */
     this.extraCells_ = [];
-    port.postMessage = goog.bind(this.handleMessage_, this);
+    port.postMessage = this.handleMessage_.bind(this);
   }
 
   /**
