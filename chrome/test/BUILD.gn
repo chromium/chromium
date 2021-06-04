@@ -3769,8 +3769,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources +=
-          [ "../browser/ui/views/profiles/profile_picker_view_browsertest.cc" ]
+      sources += [
+        "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_browsertest.cc",
+      ]
     }
 
     sources += metric_integration_sources

@@ -470,6 +470,35 @@ bool MaybeLaunchApplication(
   }
   return false;
 }
+
+#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+bool MaybeLaunchUrlHandlerWebAppFromCmd(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    bool process_startup,
+    Profile* last_used_profile,
+    const std::vector<Profile*>& last_opened_profiles) {
+  auto on_urls_unhandled_cb = base::BindOnce(
+      [](const base::CommandLine& command_line, const base::FilePath& cur_dir,
+         bool process_startup, Profile* last_used_profile,
+         const std::vector<Profile*>& last_opened_profiles) {
+        // TODO(crbug.com/1208199): Refactor StartupBrowserCreator and use the
+        // state struct here.
+        StartupBrowserCreator startup_browser_creator;
+        startup_browser_creator.LaunchBrowserForLastProfiles(
+            command_line, cur_dir, process_startup, last_used_profile,
+            last_opened_profiles);
+      },
+      command_line, cur_dir, process_startup, last_used_profile,
+      last_opened_profiles);
+
+  return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
+      command_line, cur_dir, last_used_profile, std::move(on_urls_unhandled_cb),
+      base::BindOnce(&FinalizeWebAppLaunch,
+                     std::make_unique<LaunchModeRecorder>()));
+}
+#endif
+
 }  // namespace
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
@@ -571,6 +600,89 @@ bool StartupBrowserCreator::LaunchBrowser(
   profile_launch_observer.Get().AddLaunched(profile);
 
   return true;
+}
+
+bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    bool process_startup,
+    Profile* last_used_profile,
+    const Profiles& last_opened_profiles) {
+  chrome::startup::IsProcessStartup is_process_startup =
+      process_startup ? chrome::startup::IS_PROCESS_STARTUP
+                      : chrome::startup::IS_NOT_PROCESS_STARTUP;
+  chrome::startup::IsFirstRun is_first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
+                                    : chrome::startup::IS_NOT_FIRST_RUN;
+
+  // On Windows, when chrome is launched by notification activation where the
+  // kNotificationLaunchId switch is used, always use |last_used_profile| which
+  // contains the profile id extracted from the notification launch id.
+  bool was_windows_notification_launch = false;
+#if defined(OS_WIN)
+  was_windows_notification_launch =
+      command_line.HasSwitch(switches::kNotificationLaunchId);
+#endif  // defined(OS_WIN)
+
+  // TODO(crbug.com/1150326) Calling ShouldShowProfilePickerAtProcessLaunch()
+  // a second time here duplicates the logic to show the profile picker. The
+  // decision to show the picker should instead be on the previous call to
+  // ShouldShowProfilePickerAtProcessLaunch() issued from
+  // GetStartupProfilePath().
+  // Ephemeral guest is added here just for symmetry, once we use other ways to
+  // indicate that picker should get opened, we can remove both IsGuestSession()
+  // and IsEphemeralGuestProfile().
+  if (ShouldShowProfilePickerAtProcessLaunch(
+          g_browser_process->profile_manager(), command_line) &&
+      last_used_profile &&
+      (last_used_profile->IsGuestSession() ||
+       last_used_profile->IsEphemeralGuestProfile())) {
+    // The guest session is used to indicate the the profile picker should be
+    // displayed on start-up. See GetStartupProfilePath().
+    ShowProfilePicker(/*is_process_startup=*/process_startup);
+    return true;
+  }
+
+  // |last_opened_profiles| will be empty in the following circumstances:
+  // - This is the first launch. |last_used_profile| is the initial profile.
+  // - The user exited the browser by closing all windows for all profiles.
+  //   |last_used_profile| is the profile which owned the last open window.
+  // - Only incognito windows were open when the browser exited.
+  //   |last_used_profile| is the last used incognito profile. Restoring it will
+  //   create a browser window for the corresponding original profile.
+  // - All of the last opened profiles fail to initialize.
+  if (last_opened_profiles.empty() || was_windows_notification_launch) {
+    if (CanOpenProfileOnStartup(last_used_profile)) {
+      Profile* profile_to_open = last_used_profile->IsGuestSession()
+                                     ? last_used_profile->GetPrimaryOTRProfile(
+                                           /*create_if_needed=*/true)
+                                     : last_used_profile;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (process_startup) {
+        // If FullRestoreService is available for the profile (i.e. the full
+        // restore feature is enabled and the profile is a regular user
+        // profile), defer the browser launching to FullRestoreService code.
+        auto* full_restore_service =
+            chromeos::full_restore::FullRestoreService::GetForProfile(
+                profile_to_open);
+        if (full_restore_service) {
+          full_restore_service->LaunchBrowserWhenReady();
+          return true;
+        }
+      }
+#endif
+      return LaunchBrowser(command_line, profile_to_open, cur_dir,
+                           is_process_startup, is_first_run,
+                           std::make_unique<LaunchModeRecorder>());
+    }
+
+    // Show ProfilePicker if |last_used_profile| can't be auto opened.
+    ShowProfilePicker(/*is_process_startup=*/process_startup);
+    return true;
+  }
+  return ProcessLastOpenedProfiles(command_line, cur_dir, is_process_startup,
+                                   is_first_run, last_used_profile,
+                                   last_opened_profiles);
 }
 
 // static
@@ -705,18 +817,18 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+#if defined(OS_MAC)
 // static
-bool StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
-    const std::vector<GURL>& urls) {
+void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
+    const std::vector<GURL>& urls,
+    base::OnceCallback<void()> on_urls_unhandled_cb) {
   // Web app URL handling.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  return web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
-      urls, base::BindOnce(&FinalizeWebAppLaunch,
-                           std::make_unique<LaunchModeRecorder>()));
-#endif
-  return false;
+  web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
+      urls, std::move(on_urls_unhandled_cb),
+      base::BindOnce(&FinalizeWebAppLaunch,
+                     std::make_unique<LaunchModeRecorder>()));
 }
+#endif  // defined(OS_MAC)
 
 bool StartupBrowserCreator::ProcessCmdLineImpl(
     const base::CommandLine& command_line,
@@ -1031,101 +1143,16 @@ bool StartupBrowserCreator::StartupLaunchAfterProtocolHandler(
   }
 
   // Web app URL handling.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
-          command_line, cur_dir,
-          base::BindOnce(&FinalizeWebAppLaunch,
-                         std::make_unique<LaunchModeRecorder>()))) {
+#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  if (MaybeLaunchUrlHandlerWebAppFromCmd(command_line, cur_dir, process_startup,
+                                         last_used_profile,
+                                         last_opened_profiles)) {
     return true;
   }
 #endif
 
   return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
                                       last_used_profile, last_opened_profiles);
-}
-
-bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
-    const base::CommandLine& command_line,
-    const base::FilePath& cur_dir,
-    bool process_startup,
-    Profile* last_used_profile,
-    const Profiles& last_opened_profiles) {
-  chrome::startup::IsProcessStartup is_process_startup =
-      process_startup ? chrome::startup::IS_PROCESS_STARTUP
-                      : chrome::startup::IS_NOT_PROCESS_STARTUP;
-  chrome::startup::IsFirstRun is_first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-
-  // On Windows, when chrome is launched by notification activation where the
-  // kNotificationLaunchId switch is used, always use |last_used_profile| which
-  // contains the profile id extracted from the notification launch id.
-  bool was_windows_notification_launch = false;
-#if defined(OS_WIN)
-  was_windows_notification_launch =
-      command_line.HasSwitch(switches::kNotificationLaunchId);
-#endif  // defined(OS_WIN)
-
-  // TODO(crbug.com/1150326) Calling ShouldShowProfilePickerAtProcessLaunch()
-  // a second time here duplicates the logic to show the profile picker. The
-  // decision to show the picker should instead be on the previous call to
-  // ShouldShowProfilePickerAtProcessLaunch() issued from
-  // GetStartupProfilePath().
-  // Ephemeral guest is added here just for symmetry, once we use other ways to
-  // indicate that picker should get opened, we can remove both IsGuestSession()
-  // and IsEphemeralGuestProfile().
-  if (ShouldShowProfilePickerAtProcessLaunch(
-          g_browser_process->profile_manager(), command_line) &&
-      last_used_profile &&
-      (last_used_profile->IsGuestSession() ||
-       last_used_profile->IsEphemeralGuestProfile())) {
-    // The guest session is used to indicate the the profile picker should be
-    // displayed on start-up. See GetStartupProfilePath().
-    ShowProfilePicker(/*is_process_startup=*/process_startup);
-    return true;
-  }
-
-  // |last_opened_profiles| will be empty in the following circumstances:
-  // - This is the first launch. |last_used_profile| is the initial profile.
-  // - The user exited the browser by closing all windows for all profiles.
-  //   |last_used_profile| is the profile which owned the last open window.
-  // - Only incognito windows were open when the browser exited.
-  //   |last_used_profile| is the last used incognito profile. Restoring it will
-  //   create a browser window for the corresponding original profile.
-  // - All of the last opened profiles fail to initialize.
-  if (last_opened_profiles.empty() || was_windows_notification_launch) {
-    if (CanOpenProfileOnStartup(last_used_profile)) {
-      Profile* profile_to_open = last_used_profile->IsGuestSession()
-                                     ? last_used_profile->GetPrimaryOTRProfile(
-                                           /*create_if_needed=*/true)
-                                     : last_used_profile;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (process_startup) {
-        // If FullRestoreService is available for the profile (i.e. the full
-        // restore feature is enabled and the profile is a regular user
-        // profile), defer the browser launching to FullRestoreService code.
-        auto* full_restore_service =
-            chromeos::full_restore::FullRestoreService::GetForProfile(
-                profile_to_open);
-        if (full_restore_service) {
-          full_restore_service->LaunchBrowserWhenReady();
-          return true;
-        }
-      }
-#endif
-      return LaunchBrowser(command_line, profile_to_open, cur_dir,
-                           is_process_startup, is_first_run,
-                           std::make_unique<LaunchModeRecorder>());
-    }
-
-    // Show ProfilePicker if |last_used_profile| can't be auto opened.
-    ShowProfilePicker(/*is_process_startup=*/process_startup);
-    return true;
-  }
-  return ProcessLastOpenedProfiles(command_line, cur_dir, is_process_startup,
-                                   is_first_run, last_used_profile,
-                                   last_opened_profiles);
 }
 
 bool StartupBrowserCreator::ProcessLastOpenedProfiles(

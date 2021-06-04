@@ -17,6 +17,7 @@ class FilePath;
 
 class Browser;
 class GURL;
+class Profile;
 
 namespace web_app {
 namespace startup {
@@ -25,18 +26,24 @@ using FinalizeWebAppLaunchCallback =
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)>;
 
-// If |command_line| contains a single URL argument and that URL matches URL
+// If `command_line` contains a single URL argument and that URL matches URL
 // handling registration from installed web apps, show app options to user and
 // launch one if accepted.
-// Returns true if launching an app, false otherwise.
-bool MaybeLaunchUrlHandlerWebAppFromCmd(const base::CommandLine& command_line,
-                                        const base::FilePath& cur_dir,
-                                        FinalizeWebAppLaunchCallback callback);
+// Returns true if matching web apps are found, false otherwise.
+bool MaybeLaunchUrlHandlerWebAppFromCmd(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* last_used_profile,
+    base::OnceClosure on_urls_unhandled_cb,
+    FinalizeWebAppLaunchCallback app_launched_callback);
 
-// Same as MaybeLaunchUrlHandlerWebAppFromCmd but check if |urls| contains a
-// single URL.
-bool MaybeLaunchUrlHandlerWebAppFromUrls(const std::vector<GURL>& urls,
-                                         FinalizeWebAppLaunchCallback callback);
+// Checks if `urls` contains a single URL that can be handled by installed web
+// app URL handlers, show app options to user and launch one if accepted.
+// Otherwise, run `on_urls_unhandled_cb` to open `urls` in the browser.
+void MaybeLaunchUrlHandlerWebAppFromUrls(
+    const std::vector<GURL>& urls,
+    base::OnceClosure on_urls_unhandled_cb,
+    FinalizeWebAppLaunchCallback app_launched_callback);
 
 }  // namespace startup
 }  // namespace web_app

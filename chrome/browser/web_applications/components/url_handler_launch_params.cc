@@ -8,6 +8,8 @@
 
 namespace web_app {
 
+UrlHandlerLaunchParams::UrlHandlerLaunchParams() = default;
+
 UrlHandlerLaunchParams::UrlHandlerLaunchParams(
     const base::FilePath& profile_path,
     const AppId& app_id,
@@ -28,5 +30,15 @@ UrlHandlerLaunchParams::UrlHandlerLaunchParams(
     const UrlHandlerLaunchParams& other) = default;
 
 UrlHandlerLaunchParams::~UrlHandlerLaunchParams() = default;
+
+bool operator==(const UrlHandlerLaunchParams& launch_params1,
+                const UrlHandlerLaunchParams& launch_params2) {
+  return launch_params1.profile_path == launch_params2.profile_path &&
+         launch_params1.app_id == launch_params2.app_id &&
+         launch_params1.url == launch_params2.url &&
+         launch_params1.saved_choice == launch_params2.saved_choice &&
+         launch_params1.saved_choice_timestamp ==
+             launch_params2.saved_choice_timestamp;
+}
 
 }  // namespace web_app

@@ -120,7 +120,11 @@
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 using testing::Return;
@@ -268,6 +272,15 @@ void SessionsRestoredWaiter::OnSessionRestoreDone(int num_tabs_restored) {
   if (++num_sessions_restored_ == num_session_restores_expected_)
     std::move(quit_closure_).Run();
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+void AutoCloseDialog(views::Widget* widget) {
+  // Call CancelDialog to close the dialog, but the actual behavior will be
+  // determined by the ScopedTestDialogAutoConfirm configs.
+  views::test::CancelDialog(widget);
+}
+#endif
 
 }  // namespace
 
@@ -1665,14 +1678,73 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
-                       WebAppLaunch_InScopeUrl) {
+                       DialogCancelled_NoLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL(kStartUrl));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
+  SetUpCommandlineAndStart(kStartUrl);
+
+  // The waiter will get the dialog when it shows up and close it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+
+  // Wait for browser launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // When dialog is closed, nothing will happen.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
+                       DialogAccepted_BrowserLaunch) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // Select the first choice, which is the browser.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 0);
+  SetUpCommandlineAndStart(kStartUrl);
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // Wait for browser launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // When dialog is closed, URL will be launched in a browser window.
+  // Check for new browser window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+  Browser* other_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(other_browser);
+  ASSERT_FALSE(
+      web_app::AppBrowserController::IsForWebApp(other_browser, app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
+                       DialogAccepted_WebAppLaunch_InScopeUrl) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // Select the second choice, which is the app.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 1);
   // kStartUrl is in app scope.
   SetUpCommandlineAndStart(kStartUrl);
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
@@ -1691,13 +1763,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
-                       WebAppLaunch_DifferentOriginUrl) {
+                       DialogAccepted_WebAppLaunch_DifferentOriginUrl) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL("https://example.com"));
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
+  // Select the second choice, which is the app.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 1);
   // URL is not in app scope but matches url_handlers of installed app.
   SetUpCommandlineAndStart("https://example.com/abc/def");
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();

@@ -310,6 +310,27 @@ base::FilePath GetStartupProfilePathMac(const base::FilePath& user_data_dir) {
                                /*ignore_profile_picker=*/true);
 }
 
+// Open the urls in the last used browser from a regular profile.
+void OpenUrlsInBrowser(const std::vector<GURL>& urls,
+                       Profile* safe_last_profile) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  // if no browser window exists then create one with no tabs to be filled in
+  if (!browser) {
+    browser = Browser::Create(
+        Browser::CreateParams(safe_last_profile, /*user_gesture=*/true));
+    browser->window()->Show();
+  }
+
+  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
+  chrome::startup::IsFirstRun first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
+                                    : chrome::startup::IS_NOT_FIRST_RUN;
+  StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
+  launch.OpenURLsInBrowser(browser, false, urls);
+}
+
 }  // namespace
 
 // Returns the last profile. This is extracted as a standalone function in order
@@ -1559,26 +1580,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return;
   }
 
-  if (StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(urls))
-    return;
-
-  // Pick the last used browser from a regular profile to open the urls.
-  Profile* profile =
-      g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  // if no browser window exists then create one with no tabs to be filled in
-  if (!browser) {
-    browser = Browser::Create(
-        Browser::CreateParams([self safeLastProfileForNewWindows], true));
-    browser->window()->Show();
-  }
-
-  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenURLsInBrowser(browser, false, urls);
+  StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
+      urls, base::BindOnce(&OpenUrlsInBrowser, urls,
+                           [self safeLastProfileForNewWindows]));
 }
 
 - (void)getUrl:(NSAppleEventDescriptor*)event

@@ -10,12 +10,9 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -25,6 +22,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -35,17 +33,16 @@
 WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
                                      const web_app::AppId& app_id,
                                      web_app::WebAppProvider* provider,
-                                     const std::string& display_name,
+                                     const std::u16string& display_name,
                                      const GURL& url)
     : HoverButton(std::move(callback),
                   std::make_unique<NonAccessibleImageView>(),
-                  base::UTF8ToUTF16(base::StringPiece(display_name)),
+                  display_name,
                   l10n_util::GetStringFUTF16(
                       IDS_PROTOCOL_HANDLER_INTENT_PICKER_APP_ORIGIN_LABEL,
-                      web_app::AppBrowserController::FormatUrlOrigin(
+                      url_formatter::FormatUrlForSecurityDisplay(
                           url,
-                          url_formatter::kFormatUrlOmitHTTP |
-                              url_formatter::kFormatUrlOmitHTTPS)),
+                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)),
                   /*secondary_view=*/nullptr,
                   /*resize_row_for_secondary_view=*/false,
                   /*secondary_view_can_process_events=*/false),
@@ -63,7 +60,16 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
   Layout();
 }
 
-inline WebAppHoverButton::~WebAppHoverButton() = default;
+WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
+                                     const gfx::ImageSkia& icon,
+                                     const std::u16string& display_name)
+    : HoverButton(std::move(callback),
+                  ui::ImageModel::FromImageSkia(icon),
+                  display_name) {
+  Layout();
+}
+
+WebAppHoverButton::~WebAppHoverButton() = default;
 
 void WebAppHoverButton::MarkAsUnselected(const ui::Event* event) {
   ink_drop()->AnimateToState(views::InkDropState::HIDDEN,

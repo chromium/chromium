@@ -10,7 +10,9 @@
 
 #include "base/callback_forward.h"
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
@@ -154,7 +156,8 @@ void WebAppProtocolHandlerIntentPickerView::Initialize() {
   web_app::AppRegistrar& registrar = provider->registrar();
   auto app_button = std::make_unique<WebAppHoverButton>(
       views::Button::PressedCallback(), app_id_, provider,
-      registrar.GetAppShortName(app_id_), registrar.GetAppStartUrl(app_id_));
+      base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)),
+      registrar.GetAppStartUrl(app_id_));
   app_button->set_tag(0);
   app_button->SetTooltipAndAccessibleName();
   scrollable_view->AddChildViewAt(std::move(app_button), 0);

@@ -22,6 +22,11 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "chrome/browser/web_applications/components/web_app_id.h"
+#endif
+
 class Browser;
 class GURL;
 class LoginHandler;
@@ -69,6 +74,13 @@ namespace ui {
 class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+namespace web_app {
+struct UrlHandlerLaunchParams;
+}
+#endif
 
 namespace chrome {
 
@@ -135,6 +147,25 @@ void ShowWebAppProtocolHandlerIntentPicker(
     Profile* profile,
     const web_app::AppId& app_id,
     WebAppProtocolHandlerAcceptanceCallback close_callback);
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+// Callback that runs when the Web App URL Handler Intent Picker dialog is
+// closed. `accepted` is true when the dialog is accepted, false otherwise.
+// `launch_params` contains information of the app that is selected to open by
+// the user. It is null when the user selects to open the browser.
+using WebAppUrlHandlerAcceptanceCallback = base::OnceCallback<void(
+    bool accepted,
+    absl::optional<web_app::UrlHandlerLaunchParams> launch_params)>;
+
+// Shows the Web App URL Handler Intent Picker dialog and runs
+// `dialog_close_callback` on closure with the dialog acceptance status and
+// information of the user-selected app. `launch_params_list` contains
+// information of all the apps to show.
+void ShowWebAppUrlHandlerIntentPickerDialog(
+    std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
+    WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
 #endif
 
 // Sets whether |ShowWebAppDialog| should accept immediately without any

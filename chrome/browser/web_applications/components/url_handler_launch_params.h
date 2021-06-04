@@ -34,6 +34,7 @@ enum class UrlHandlerSavedChoice {
 // |saved_choice| can be used to determine if a UI prompt needs to be shown to
 // the user before launch.
 struct UrlHandlerLaunchParams {
+  UrlHandlerLaunchParams();
   UrlHandlerLaunchParams(const base::FilePath& profile_path,
                          const AppId& app_id,
                          const GURL& url,
@@ -50,6 +51,9 @@ struct UrlHandlerLaunchParams {
   UrlHandlerSavedChoice saved_choice = UrlHandlerSavedChoice::kNone;
   base::Time saved_choice_timestamp;
 };
+
+bool operator==(const UrlHandlerLaunchParams& launch_params1,
+                const UrlHandlerLaunchParams& launch_params2);
 
 }  // namespace web_app
 

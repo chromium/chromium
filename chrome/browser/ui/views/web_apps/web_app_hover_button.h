@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
@@ -39,8 +40,11 @@ class WebAppHoverButton : public HoverButton {
   WebAppHoverButton(views::Button::PressedCallback callback,
                     const web_app::AppId& app_id,
                     web_app::WebAppProvider* provider,
-                    const std::string& display_name,
+                    const std::u16string& display_name,
                     const GURL& url);
+  WebAppHoverButton(views::Button::PressedCallback callback,
+                    const gfx::ImageSkia& icon,
+                    const std::u16string& display_name);
   WebAppHoverButton(const WebAppHoverButton&) = delete;
   WebAppHoverButton& operator=(const WebAppHoverButton&) = delete;
   ~WebAppHoverButton() override;
