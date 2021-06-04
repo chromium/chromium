@@ -94,7 +94,8 @@ step](https://codereview.chromium.org/2517203002)). You should use asserts in
 the [same
 scenarios](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#CHECK_DCHECK_and-NOTREACHED)
 where C++ DCHECK()s make sense. For multi-statement asserts, use
-`org.chromium.base.BuildConfig.DCHECK_IS_ON` to guard your code.
+`org.chromium.build.BuildConfig.ENABLE_ASSERTS` to guard your code (similar to
+`#if DCHECK_IS_ON()` in C++).
 
 Example assert:
 
@@ -102,10 +103,14 @@ Example assert:
 assert someCallWithoutSideEffects() : "assert description";
 ```
 
-Example use of `DCHECK_IS_ON`:
+Example use of `BuildConfig.ENABLE_ASSERTS`:
 
 ```java
-if (org.chromium.base.BuildConfig.DCHECK_IS_ON) {
+import org.chromium.build.BuildConfig;
+
+...
+
+if (BuildConfig.ENABLE_ASSERTS) {
   // Any code here will be stripped in Release by ProGuard.
   ...
 }
