@@ -4,6 +4,9 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+#include <ostream>
+
+#include "base/strings/strcat.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -26,6 +29,10 @@ std::string StorageKey::Serialize() const {
   return origin_.GetURL().spec();
 }
 
+std::string StorageKey::GetDebugString() const {
+  return base::StrCat({"{ origin: ", origin_.GetDebugString(), " }"});
+}
+
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
   return lhs.origin_ == rhs.origin_;
 }
@@ -36,6 +43,10 @@ bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
 
 bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
   return lhs.origin_ < rhs.origin_;
+}
+
+std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {
+  return ostream << sk.GetDebugString();
 }
 
 }  // namespace blink

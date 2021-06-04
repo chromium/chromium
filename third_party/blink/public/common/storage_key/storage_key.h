@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "base/strings/string_piece.h"
@@ -49,6 +50,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   const url::Origin& origin() const { return origin_; }
 
+  std::string GetDebugString() const;
+
  private:
   BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
@@ -63,6 +66,9 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   url::Origin origin_;
 };
+
+BLINK_COMMON_EXPORT
+std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
 
 }  // namespace blink
 
