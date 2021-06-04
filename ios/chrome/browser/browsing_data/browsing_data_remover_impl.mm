@@ -132,8 +132,8 @@ void ClearCookies(
   net::CookieStore* cookie_store =
       request_context_getter->GetURLRequestContext()->cookie_store();
   cookie_store->DeleteAllCreatedInTimeRangeAsync(
-      creation_range, AdaptCallbackForRepeating(base::BindOnce(
-                          &DeleteCallbackAdapter, std::move(callback))));
+      creation_range,
+      base::BindOnce(&DeleteCallbackAdapter, std::move(callback)));
 }
 
 }  // namespace
@@ -423,8 +423,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     if (password_store) {
       password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end,
-          AdaptCallbackForRepeating(CreatePendingTaskCompletionClosure()));
+          delete_begin, delete_end, CreatePendingTaskCompletionClosure());
     }
   }
 
@@ -532,8 +531,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   // Always wipe accumulated network related data (TransportSecurityState and
   // HttpServerPropertiesManager data).
   browser_state_->ClearNetworkingHistorySince(
-      delete_begin,
-      AdaptCallbackForRepeating(CreatePendingTaskCompletionClosure()));
+      delete_begin, CreatePendingTaskCompletionClosure());
 
   // Remove browsing data stored in WKWebsiteDataStore if necessary.
   RemoveDataFromWKWebsiteDataStore(delete_begin, mask);
