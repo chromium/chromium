@@ -128,8 +128,9 @@ class ESimProfileTest : public ESimTestBase {
   }
 
   void TearDown() override {
-    HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
-        /*connected_after_enable=*/false);
+    HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
+        HermesProfileClient::TestInterface::EnableProfileBehavior::
+            kConnectableButNotConnected);
   }
 
   void SetIsGuest(bool is_guest) {
@@ -283,8 +284,9 @@ TEST_F(ESimProfileTest, InstallProfileAlreadyConnected) {
   mojo::Remote<mojom::ESimProfile> esim_profile = GetESimProfileForIccid(
       ESimTestBase::kTestEid, dbus_properties->iccid().value());
 
-  HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
-      /*connected_after_enable=*/true);
+  HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
+      HermesProfileClient::TestInterface::EnableProfileBehavior::
+          kConnectableAndConnected);
 
   mojom::ProfileInstallResult install_result =
       InstallProfile(esim_profile, /*wait_for_connect=*/false,
