@@ -102,7 +102,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
       row_baseline_tabulator.ProcessCell(
           fragment, row.block_size,
           NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign()),
-          is_parallel,
+          is_parallel, cell.TableCellRowspan() > 1,
           layout_result->HasDescendantThatDependsOnPercentageBlockSize());
     }
     row_baseline = row_baseline_tabulator.ComputeBaseline(row.block_size);
@@ -132,7 +132,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     row_baseline_tabulator.ProcessCell(
         fragment, row.block_size,
         NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign()),
-        is_parallel,
+        is_parallel, cell.TableCellRowspan() > 1,
         cell_result->HasDescendantThatDependsOnPercentageBlockSize());
   }
   container_builder_.SetFragmentBlockSize(row.block_size);

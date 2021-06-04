@@ -247,7 +247,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     row_baseline_tabulator.ProcessCell(
         fragment, cell_block_constraint.min_block_size,
         NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-        is_parallel,
+        is_parallel, rowspan > 1,
         layout_result->HasDescendantThatDependsOnPercentageBlockSize());
 
     // Compute cell's css block size.
@@ -689,6 +689,7 @@ void NGRowBaselineTabulator::ProcessCell(
     const LayoutUnit cell_min_block_size,
     const bool is_baseline_aligned,
     const bool is_parallel,
+    const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {
   if (is_parallel && is_baseline_aligned &&
       fragment.HasDescendantsForTablePart()) {
@@ -697,8 +698,14 @@ void NGRowBaselineTabulator::ProcessCell(
     const LayoutUnit cell_baseline = fragment.FirstBaselineOrSynthesize();
     max_cell_ascent_ =
         std::max(max_cell_ascent_.value_or(LayoutUnit::Min()), cell_baseline);
-    max_cell_descent_ = std::max(max_cell_descent_.value_or(LayoutUnit::Min()),
-                                 cell_min_block_size - cell_baseline);
+    if (is_rowspanned) {
+      if (!max_cell_descent_)
+        max_cell_descent_ = LayoutUnit();
+    } else {
+      max_cell_descent_ =
+          std::max(max_cell_descent_.value_or(LayoutUnit::Min()),
+                   cell_min_block_size - cell_baseline);
+    }
   }
 
   // https://www.w3.org/TR/css-tables-3/#row-layout "If there is no such
