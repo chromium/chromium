@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<title>Basic named @container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  div {
+    color: black;
+  }
+  #container1 {
+    container-name: c1;
+    container-type: inline-size;
+    width: 400px;
+  }
+  #container2 {
+    container-name: c2;
+    container-type: inline-size;
+    width: 300px;
+  }
+  #container3 {
+    container-name: c3;
+    container-type: inline-size;
+    width: 200px;
+  }
+
+  @container (width: 200px) { #unnamed .w200 { color:green; } }
+  @container (width: 300px) { #unnamed .w300 { color:red !important; } }
+  @container (width: 400px) { #unnamed .w400 { color:red !important; } }
+
+  @container c3 (width: 200px) { #q3 .w200 { color:green; } }
+  @container c3 (width: 300px) { #q3 .w300 { color:red !important; } }
+  @container c3 (width: 400px) { #q3 .w400 { color:red !important; } }
+
+  @container c2 (width: 200px) { #q2 .w200 { color:red !important; } }
+  @container c2 (width: 300px) { #q2 .w300 { color:green; } }
+  @container c2 (width: 400px) { #q2 .w400 { color:red !important; } }
+
+  @container c1 (width: 200px) { #q1 .w200 { color:red !important; } }
+  @container c1 (width: 300px) { #q1 .w300 { color:red !important; } }
+  @container c1 (width: 400px) { #q1 .w400 { color:green; } }
+
+</style>
+<div id=container1>
+  <div id=container2>
+    <div id=container3>
+      <div id=unnamed>
+        <div class=w200>unnamed, w200</div>
+        <div class=w300>unnamed, w300</div>
+        <div class=w400>unnamed, w400</div>
+      </div>
+      <div id=q3>
+        <div class=w200>c3, w200</div>
+        <div class=w300>c3, w300</div>
+        <div class=w400>c3, w400</div>
+      </div>
+      <div id=q2>
+        <div class=w200>c2, w200</div>
+        <div class=w300>c2, w300</div>
+        <div class=w400>c2, w400</div>
+      </div>
+      <div id=q1>
+        <div class=w200>c1, w200</div>
+        <div class=w300>c1, w300</div>
+        <div class=w400>c1, w400</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function computedColor(selector) {
+    return getComputedStyle(document.querySelector(selector)).color;
+  }
+
+  test(function() {
+    assert_equals(computedColor('#unnamed > .w200'), 'rgb(0, 128, 0)');
+    assert_equals(computedColor('#unnamed > .w300'), 'rgb(0, 0, 0)');
+    assert_equals(computedColor('#unnamed > .w400'), 'rgb(0, 0, 0)');
+  }, 'Querying nearest (unnamed) container');
+
+  test(function() {
+    assert_equals(computedColor('#q3 > .w200'), 'rgb(0, 128, 0)');
+    assert_equals(computedColor('#q3 > .w300'), 'rgb(0, 0, 0)');
+    assert_equals(computedColor('#q3 > .w400'), 'rgb(0, 0, 0)');
+  }, 'Querying nearest container by name');
+
+  test(function() {
+    assert_equals(computedColor('#q2 > .w200'), 'rgb(0, 0, 0)');
+    assert_equals(computedColor('#q2 > .w300'), 'rgb(0, 128, 0)');
+    assert_equals(computedColor('#q2 > .w400'), 'rgb(0, 0, 0)');
+  }, 'Querying intermediate container by name');
+
+  test(function() {
+    assert_equals(computedColor('#q1 > .w200'), 'rgb(0, 0, 0)');
+    assert_equals(computedColor('#q1 > .w300'), 'rgb(0, 0, 0)');
+    assert_equals(computedColor('#q1 > .w400'), 'rgb(0, 128, 0)');
+  }, 'Querying topmost container by name');
+</script>

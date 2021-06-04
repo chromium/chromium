@@ -33,25 +33,32 @@ class CORE_EXPORT ContainerQueryEvaluator final
     return result;
   }
 
+  enum class Change {
+    // The update has no effect on the evaluation of queries associated with
+    // this evaluator, and therefore we do not need to perform style recalc of
+    // any elements which depend on this evaluator.
+    kNone,
+    // The update changed unnamed queries only. We must therefore perform style
+    // recalc on dependent elements within the container, but we can skip nested
+    // container.
+    kUnnamed,
+    // The update changed at least one named query. We must therefore perform
+    // style
+    // recalc on dependent elements, including those in nested containers.
+    kNamed,
+  };
+
   // Update the size/axis information of the evaluator.
   //
-  // A return value of 'false' means that the update has no effect on the
-  // evaluation of queries associated with this evaluator, and therefore we do
-  // not need to perform style recalc of any elements which depend on this
-  // evaluator.
-  //
-  // A return value of 'true' means that the update *may* have an effect, and
-  // therefore elements that depends on this evaluator need style recalc.
-  //
-  // Dependent queries are cleared when 'true' is returned (and left unchanged
-  // otherwise).
-  bool ContainerChanged(PhysicalSize, PhysicalAxes contained_axes);
+  // Dependent queries are cleared when kUnnamed/kNamed is returned (and left
+  // unchanged otherwise).
+  Change ContainerChanged(PhysicalSize, PhysicalAxes contained_axes);
 
   void Trace(Visitor*) const;
 
  private:
   void SetData(PhysicalSize, PhysicalAxes contained_axes);
-  bool ResultsChanged() const;
+  Change ComputeChange() const;
 
   // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
   Member<MediaQueryEvaluator> media_query_evaluator_;

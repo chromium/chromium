@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>container-type layout invalidation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #div {
+    width: fit-content;
+  }
+</style>
+<div id=div>
+  content
+</div>
+<script>
+  test(function(t) {
+    t.add_cleanup(() => { div.style = ''; });
+
+    assert_greater_than(div.offsetWidth, 0);
+    assert_greater_than(div.offsetHeight, 0);
+
+    div.style.containerType = 'inline-size block-size';
+
+    assert_equals(div.offsetWidth, 0);
+    assert_equals(div.offsetHeight, 0);
+  }, 'Changing container-type invalidates layout');
+</script>

@@ -2019,24 +2019,31 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
-  WritingMode writing_mode =
-      container.GetLayoutObject()->StyleRef().GetWritingMode();
+  const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
+  WritingMode writing_mode = style.GetWritingMode();
   PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
+  StyleRecalcChange::Propagate propagate =
+      StyleRecalcChange::kRecalcContainerQueryDependent;
+
   if (auto* evaluator = container.GetContainerQueryEvaluator()) {
-    if (!evaluator->ContainerChanged(physical_size, physical_axes))
+    auto change = evaluator->ContainerChanged(physical_size, physical_axes);
+    if (change == ContainerQueryEvaluator::Change::kNone)
       return;
+    if (change == ContainerQueryEvaluator::Change::kNamed)
+      propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
   } else {
     container.SetContainerQueryEvaluator(
         MakeGarbageCollected<ContainerQueryEvaluator>(physical_size,
                                                       physical_axes));
+    if (!style.ContainerName().IsNull())
+      propagate = StyleRecalcChange::kRecalcDescendantContainerQueryDependent;
   }
 
   NthIndexCache nth_index_cache(GetDocument());
   style_recalc_root_.Update(nullptr, &container);
-  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},
-              StyleRecalcContext());
+  RecalcStyle({propagate}, StyleRecalcContext());
 
   // Nodes are marked for whitespace reattachment for DOM removal only. This set
   // should have been cleared before layout.

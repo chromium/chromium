@@ -34,22 +34,24 @@ void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
   results_.Set(&query, result);
 }
 
-bool ContainerQueryEvaluator::ContainerChanged(PhysicalSize size,
-                                               PhysicalAxes contained_axes) {
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
+    PhysicalSize size,
+    PhysicalAxes contained_axes) {
   if (size_ == size && contained_axes_ == contained_axes)
-    return false;
+    return Change::kNone;
 
   SetData(size, contained_axes);
 
-  if (!ResultsChanged())
-    return false;
+  Change change = ComputeChange();
 
   // We can clear the results here because we will always recaculate the style
   // of all descendants which depend on this evaluator whenever we return
-  // 'true' from this function, so the results will always be repopulated.
-  results_.clear();
+  // something other than kNone from this function, so the results will always
+  // be repopulated.
+  if (change != Change::kNone)
+    results_.clear();
 
-  return true;
+  return change;
 }
 
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
@@ -68,12 +70,18 @@ void ContainerQueryEvaluator::SetData(PhysicalSize size,
       MakeGarbageCollected<MediaQueryEvaluator>(*cached_values);
 }
 
-bool ContainerQueryEvaluator::ResultsChanged() const {
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
+  Change change = Change::kNone;
+
   for (const auto& result : results_) {
-    if (Eval(*result.key) != result.value)
-      return true;
+    if (Eval(*result.key) != result.value) {
+      change =
+          std::max(change, result.key->Name() == g_null_atom ? Change::kUnnamed
+                                                             : Change::kNamed);
+    }
   }
-  return false;
+
+  return change;
 }
 
 }  // namespace blink
