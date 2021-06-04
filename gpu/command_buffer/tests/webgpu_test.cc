@@ -330,6 +330,11 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
 }
 
 TEST_F(WebGPUTest, SPIRVIsDisallowed) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+
   auto ExpectSPIRVDisallowedError = [](WGPUErrorType type, const char* message,
                                        void* userdata) {
     // We match on this string to make sure the shader module creation fails
