@@ -414,7 +414,9 @@ class CONTENT_EXPORT NavigationRequest
 
   int bindings() const { return bindings_; }
 
-  bool browser_initiated() const { return browser_initiated_; }
+  bool browser_initiated() const {
+    return commit_params_->is_browser_initiated;
+  }
 
   bool from_begin_navigation() const { return from_begin_navigation_; }
 
@@ -1344,19 +1346,21 @@ class CONTENT_EXPORT NavigationRequest
   // Note: When the navigation is ready to commit, the url in |common_params|
   // will be set to the final navigation url, obtained after following all
   // redirects.
+  //
   // Note: |common_params_| and |begin_params_| are not const as they can be
   // modified during redirects.
+  //
   // Note: |commit_params_| is not const because was_discarded will
   // be set in CreatedNavigationRequest.
-  // Note: |browser_initiated_| and |common_params_| may be mutated by
-  // ContentBrowserClient::OverrideNavigationParams at StartNavigation time
-  // (i.e. before we actually kick off the navigation). |browser_initiated|
-  // will always be true for history navigations, even if they began in the
-  // renderer using the history API.
+  //
+  // Note: |commit_params_->is_browser_initiated| and |common_params_| may be
+  // mutated by ContentBrowserClient::OverrideNavigationParams at construction
+  // time (i.e. before we actually kick off the navigation).
+  // |commit_params_->is_browser_initiated| will always be true for history
+  // navigations, even if they began in the renderer using the history API.
   mojom::CommonNavigationParamsPtr common_params_;
   mojom::BeginNavigationParamsPtr begin_params_;
   mojom::CommitNavigationParamsPtr commit_params_;
-  bool browser_initiated_;
   bool same_origin_ = false;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle

@@ -1177,7 +1177,6 @@ NavigationRequest::NavigationRequest(
       common_params_(std::move(common_params)),
       begin_params_(std::move(begin_params)),
       commit_params_(std::move(commit_params)),
-      browser_initiated_(browser_initiated),
       navigation_ui_data_(std::move(navigation_ui_data)),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
       restore_type_(entry ? entry->restore_type() : RestoreType::kNotRestored),
@@ -1206,7 +1205,7 @@ NavigationRequest::NavigationRequest(
       was_opener_suppressed_(was_opener_suppressed),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
-  DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
+  DCHECK(browser_initiated || common_params_->initiator_origin.has_value());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -1339,9 +1338,9 @@ NavigationRequest::NavigationRequest(
   // Let the NTP override the navigation params and pretend that this is a
   // browser-initiated, bookmark-like navigation.
   // TODO(crbug.com/1099431): determine why some link navigations on chrome://
-  //     pages have |browser_initiated_| set to true and others set to false.
+  //     pages have |browser_initiated| set to true and others set to false.
   if (source_site_instance_) {
-    bool is_renderer_initiated = !browser_initiated_;
+    bool is_renderer_initiated = !browser_initiated;
     Referrer referrer(*common_params_->referrer);
     GetContentClient()->browser()->OverrideNavigationParams(
         controller->GetWebContents(), source_site_instance_.get(),
@@ -1349,9 +1348,9 @@ NavigationRequest::NavigationRequest(
         &common_params_->initiator_origin);
     common_params_->referrer =
         blink::mojom::Referrer::New(referrer.url, referrer.policy);
-    browser_initiated_ = !is_renderer_initiated;
-    commit_params_->is_browser_initiated = browser_initiated_;
+    browser_initiated = !is_renderer_initiated;
   }
+  commit_params_->is_browser_initiated = browser_initiated;
 
   // Update the load flags with cache information.
   UpdateLoadFlagsWithCacheFlags(&begin_params_->load_flags,
@@ -1406,11 +1405,12 @@ NavigationRequest::NavigationRequest(
         frame_tree_node);
 
     if (begin_params_->is_form_submission) {
-      if (browser_initiated_ && !commit_params_->post_content_type.empty()) {
+      if (commit_params_->is_browser_initiated &&
+          !commit_params_->post_content_type.empty()) {
         // This is a form resubmit, so make sure to set the Content-Type header.
         headers.SetHeaderIfMissing(net::HttpRequestHeaders::kContentType,
                                    commit_params_->post_content_type);
-      } else if (!browser_initiated_) {
+      } else if (!commit_params_->is_browser_initiated) {
         // Save the Content-Type in case the form is resubmitted. This will get
         // sent back to the renderer in the CommitNavigation IPC. The renderer
         // will then send it back with the post body so that we can access it
@@ -1422,8 +1422,6 @@ NavigationRequest::NavigationRequest(
   }
 
   begin_params_->headers = headers.ToString();
-
-  commit_params_->is_browser_initiated = browser_initiated_;
 }
 
 NavigationRequest::~NavigationRequest() {
@@ -1526,10 +1524,10 @@ void NavigationRequest::BeginNavigation() {
   bool should_override_url_loading = false;
 
   if (!GetContentClient()->browser()->ShouldOverrideUrlLoading(
-          frame_tree_node_->frame_tree_node_id(), browser_initiated_,
-          commit_params_->original_url, commit_params_->original_method,
-          common_params_->has_user_gesture, false,
-          frame_tree_node_->IsMainFrame(), common_params_->transition,
+          frame_tree_node_->frame_tree_node_id(),
+          commit_params_->is_browser_initiated, commit_params_->original_url,
+          commit_params_->original_method, common_params_->has_user_gesture,
+          false, frame_tree_node_->IsMainFrame(), common_params_->transition,
           &should_override_url_loading)) {
     // A Java exception was thrown by the embedding application; we
     // need to return from this task. Specifically, it's not safe from
@@ -2056,8 +2054,9 @@ void NavigationRequest::OnRequestRedirected(
 
   bool should_override_url_loading = false;
   if (!GetContentClient()->browser()->ShouldOverrideUrlLoading(
-          frame_tree_node_->frame_tree_node_id(), browser_initiated_,
-          redirect_info.new_url, redirect_info.new_method,
+          frame_tree_node_->frame_tree_node_id(),
+          commit_params_->is_browser_initiated, redirect_info.new_url,
+          redirect_info.new_method,
           // Redirects are always not counted as from user gesture.
           false, true, frame_tree_node_->IsMainFrame(),
           common_params_->transition, &should_override_url_loading)) {
@@ -2105,7 +2104,7 @@ void NavigationRequest::OnRequestRedirected(
   // For renderer-initiated navigations we need to check if the source has
   // access to the URL. Browser-initiated navigations only rely on the
   // |CanRedirectToURL| test above.
-  if (!browser_initiated_ && GetSourceSiteInstance() &&
+  if (!commit_params_->is_browser_initiated && GetSourceSiteInstance() &&
       !ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
           GetSourceSiteInstance()->GetProcess()->GetID(),
           redirect_info.new_url)) {
@@ -2695,7 +2694,7 @@ void NavigationRequest::OnResponseStarted(
   if (commit_params_->was_activated == mojom::WasActivatedOption::kUnknown) {
     commit_params_->was_activated = mojom::WasActivatedOption::kNo;
 
-    if (!browser_initiated_ &&
+    if (!commit_params_->is_browser_initiated &&
         (frame_tree_node_->HasStickyUserActivation() ||
          frame_tree_node_->has_received_user_gesture_before_nav()) &&
         ShouldPropagateUserActivation(
@@ -2705,7 +2704,8 @@ void NavigationRequest::OnResponseStarted(
       // TODO(805871): the next check is relying on sanitized_referrer_ but
       // should ideally use a more reliable source for the originating URL when
       // the navigation is renderer initiated.
-    } else if (((common_params_->has_user_gesture && !browser_initiated_) ||
+    } else if (((common_params_->has_user_gesture &&
+                 !commit_params_->is_browser_initiated) ||
                 common_params_->started_from_context_menu) &&
                ShouldPropagateUserActivation(
                    url::Origin::Create(sanitized_referrer_->url),
@@ -2848,7 +2848,7 @@ void NavigationRequest::OnResponseStarted(
 
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 
-  if (!browser_initiated_ && render_frame_host_ &&
+  if (!commit_params_->is_browser_initiated && render_frame_host_ &&
       render_frame_host_ != frame_tree_node_->current_frame_host()) {
     // Allow the embedder to cancel the cross-process commit if needed.
     // TODO(clamy): Rename ShouldTransferNavigation.
@@ -5384,7 +5384,7 @@ void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("net_error", net_error_);
   dict.Add("url", common_params_->url);
   dict.Add("frame_tree_node", frame_tree_node_);
-  dict.Add("browser_initiated", browser_initiated_);
+  dict.Add("browser_initiated", commit_params_->is_browser_initiated);
   dict.Add("from_begin_navigation", from_begin_navigation_);
   dict.Add("is_for_commit", is_for_commit_);
   dict.Add("reload_type", reload_type_);
@@ -5653,7 +5653,7 @@ SiteInstanceImpl* NavigationRequest::GetSourceSiteInstance() {
 }
 
 bool NavigationRequest::IsRendererInitiated() {
-  return !browser_initiated_;
+  return !commit_params_->is_browser_initiated;
 }
 
 bool NavigationRequest::IsSameOrigin() {
