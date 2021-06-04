@@ -1265,10 +1265,11 @@ void InProcessCommandBuffer::SignalSyncToken(const SyncToken& sync_token,
 void InProcessCommandBuffer::SignalSyncTokenOnGpuThread(
     const SyncToken& sync_token,
     base::OnceClosure callback) {
-  base::RepeatingClosure maybe_pass_callback =
-      base::AdaptCallbackForRepeating(WrapClientCallback(std::move(callback)));
-  if (!sync_point_client_state_->Wait(sync_token, maybe_pass_callback)) {
-    maybe_pass_callback.Run();
+  auto callback_pair =
+      base::SplitOnceCallback(WrapClientCallback(std::move(callback)));
+  if (!sync_point_client_state_->Wait(sync_token,
+                                      std::move(callback_pair.first))) {
+    std::move(callback_pair.second).Run();
   }
 }
 
