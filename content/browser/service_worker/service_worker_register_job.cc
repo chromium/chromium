@@ -48,7 +48,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     blink::mojom::FetchClientSettingsObjectPtr
-        outside_fetch_client_settings_object)
+        outside_fetch_client_settings_object,
+    const GlobalFrameRoutingId& requesting_frame_id)
     : context_(context),
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),
@@ -62,7 +63,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       should_uninstall_on_failure_(false),
       force_bypass_cache_(false),
       skip_script_comparison_(false),
-      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk) {
+      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
+      requesting_frame_id_(requesting_frame_id) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
 }
@@ -466,7 +468,7 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
 
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
-      outside_fetch_client_settings_object_.Clone());
+      outside_fetch_client_settings_object_.Clone(), requesting_frame_id_);
   new_script_fetcher_->Start(
       base::BindOnce(&ServiceWorkerRegisterJob::OnScriptFetchCompleted,
                      weak_factory_.GetWeakPtr(), std::move(version)));

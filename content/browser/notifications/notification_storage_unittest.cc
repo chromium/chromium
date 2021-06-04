@@ -73,7 +73,8 @@ class NotificationStorageTest : public ::testing::Test {
           script_url, key, options,
           blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(&NotificationStorageTest::DidRegisterServiceWorker,
-                         base::Unretained(this), run_loop.QuitClosure()));
+                         base::Unretained(this), run_loop.QuitClosure()),
+          /*requesting_frame_id=*/GlobalFrameRoutingId());
       run_loop.Run();
     }
 

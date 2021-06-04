@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -208,6 +209,16 @@ void ServiceWorkerContainerHost::Register(
       std::move(callback), blink::mojom::ServiceWorkerErrorType::kUnknown,
       std::string(), nullptr);
 
+  // We record the requesting frame host and pass it down, so that we can use
+  // this context for things like printing console error if the service worker
+  // does not have a process yet.
+  GlobalFrameRoutingId requesting_frame_id;
+  FrameTreeNode* requesting_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id());
+  if (requesting_frame_tree_node)
+    requesting_frame_id = requesting_frame_tree_node->current_frame_host()
+                              ->GetGlobalFrameRoutingId();
+
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
   // implements StorageKey.
   blink::StorageKey key(url::Origin::Create(options->scope));
@@ -217,7 +228,8 @@ void ServiceWorkerContainerHost::Register(
       base::BindOnce(&ServiceWorkerContainerHost::RegistrationComplete,
                      weak_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
-                     trace_id, mojo::GetBadMessageCallback()));
+                     trace_id, mojo::GetBadMessageCallback()),
+      requesting_frame_id);
 }
 
 void ServiceWorkerContainerHost::GetRegistration(

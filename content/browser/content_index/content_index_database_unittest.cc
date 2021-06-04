@@ -247,7 +247,8 @@ class ContentIndexDatabaseTest : public ::testing::Test {
           blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(&DidRegisterServiceWorker,
                          &service_worker_registration_id,
-                         run_loop.QuitClosure()));
+                         run_loop.QuitClosure()),
+          /*requesting_frame_id=*/GlobalFrameRoutingId());
 
       run_loop.Run();
     }

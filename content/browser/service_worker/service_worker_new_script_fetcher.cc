@@ -64,12 +64,14 @@ ServiceWorkerNewScriptFetcher::ServiceWorkerNewScriptFetcher(
     ServiceWorkerContextCore& context,
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object)
+    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
+    const GlobalFrameRoutingId& requesting_frame_id)
     : context_(context),
       version_(std::move(version)),
       loader_factory_(std::move(loader_factory)),
       fetch_client_settings_object_(std::move(fetch_client_settings_object)),
-      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id) {}
+      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id),
+      requesting_frame_id_(requesting_frame_id) {}
 
 ServiceWorkerNewScriptFetcher::~ServiceWorkerNewScriptFetcher() = default;
 
@@ -106,7 +108,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
           std::move(version_), std::move(loader_factory_),
           net::MutableNetworkTrafficAnnotationTag(
               kServiceWorkerScriptLoadTrafficAnnotation),
-          resource_id, /*is_throttle_needed=*/true),
+          resource_id, /*is_throttle_needed=*/true, requesting_frame_id_),
       url_loader_remote_.BindNewPipeAndPassReceiver());
 }
 

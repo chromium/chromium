@@ -15,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_update_checker.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -52,7 +53,8 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       blink::mojom::FetchClientSettingsObjectPtr
-          outside_fetch_client_settings_object);
+          outside_fetch_client_settings_object,
+      const GlobalFrameRoutingId& requesting_frame_id);
 
   // For update jobs.
   CONTENT_EXPORT ServiceWorkerRegisterJob(
@@ -204,6 +206,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   blink::ServiceWorkerStatusCode promise_resolved_status_;
   std::string promise_resolved_status_message_;
   scoped_refptr<ServiceWorkerRegistration> promise_resolved_registration_;
+  const GlobalFrameRoutingId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerRegisterJob> weak_factory_{this};
 

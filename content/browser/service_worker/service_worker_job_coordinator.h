@@ -13,6 +13,7 @@
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
 
@@ -30,6 +31,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                 const blink::mojom::ServiceWorkerRegistrationOptions& options,
                 blink::mojom::FetchClientSettingsObjectPtr
                     outside_fetch_client_settings_object,
+                const GlobalFrameRoutingId& requesting_frame_id,
                 ServiceWorkerRegisterJob::RegistrationCallback callback);
 
   // If |is_immediate| is true, unregister clears the active worker from the

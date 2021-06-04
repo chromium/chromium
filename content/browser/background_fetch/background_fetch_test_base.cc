@@ -117,8 +117,8 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
         script_url, key, options,
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&DidRegisterServiceWorker,
-                       &service_worker_registration_id,
-                       run_loop.QuitClosure()));
+                       &service_worker_registration_id, run_loop.QuitClosure()),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
 
     run_loop.Run();
   }

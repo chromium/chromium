@@ -213,7 +213,8 @@ class CookieStoreManagerTest
           EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status)
               << blink::ServiceWorkerStatusToString(status);
           run_loop.Quit();
-        }));
+        }),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
     run_loop.Run();
     if (!success)
       return kInvalidRegistrationId;

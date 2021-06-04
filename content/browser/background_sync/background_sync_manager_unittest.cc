@@ -171,13 +171,15 @@ class BackgroundSyncManagerTest
         GURL(kScript1), key1, options1,
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_1,
-                       &sw_registration_id_1_));
+                       &sw_registration_id_1_),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
 
     helper_->context()->RegisterServiceWorker(
         GURL(kScript2), key2, options2,
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_2,
-                       &sw_registration_id_2_));
+                       &sw_registration_id_2_),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called_1);
     EXPECT_TRUE(called_2);

@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -19,6 +21,7 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/url_loader_throttles.h"
+#include "content/public/common/content_features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -56,11 +59,12 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
-    bool is_throttle_needed) {
+    bool is_throttle_needed,
+    const GlobalFrameRoutingId& requesting_frame_id) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
       request_id, options, original_request, std::move(client), version,
-      loader_factory, traffic_annotation, cache_resource_id,
-      is_throttle_needed));
+      loader_factory, traffic_annotation, cache_resource_id, is_throttle_needed,
+      requesting_frame_id));
 }
 
 // TODO(nhiroki): We're doing multiple things in the ctor. Consider factors out
@@ -74,7 +78,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
-    bool is_throttle_needed)
+    bool is_throttle_needed,
+    const GlobalFrameRoutingId& requesting_frame_id)
     : request_url_(original_request.url),
       is_main_script_(original_request.destination ==
                           network::mojom::RequestDestination::kServiceWorker &&
@@ -86,7 +91,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                        base::SequencedTaskRunnerHandle::Get()),
       loader_factory_(std::move(loader_factory)),
-      client_(std::move(client)) {
+      client_(std::move(client)),
+      requesting_frame_id_(requesting_frame_id) {
   DCHECK_NE(cache_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
 
   network::ResourceRequest resource_request(original_request);
@@ -541,12 +547,22 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     DCHECK(cache_writer_->did_replace());
     bytes_written = cache_writer_->bytes_written();
   } else {
-    // AddMessageConsole must be called before notifying that an error occurred
-    // because the worker stops soon after receiving the error response.
-    // TODO(nhiroki): Consider replacing this hacky way with the new error code
-    // handling mechanism in URLLoader.
-    version_->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                                  status_message);
+    // When we fail a main script fetch with plzServiceWorker, we do not have
+    // a renderer in which to log the failure. We call into devtools with the
+    // frame id instead.
+    if (requesting_frame_id_) {
+      DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
+      devtools_instrumentation::OnServiceWorkerMainScriptFetchingFailed(
+          requesting_frame_id_, status_message);
+    } else {
+      // AddMessageConsole must be called before notifying that an error
+      // occurred because the worker stops soon after receiving the error
+      // response.
+      // TODO(nhiroki): Consider replacing this hacky way with the new error
+      // code handling mechanism in URLLoader.
+      version_->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                                    status_message);
+    }
   }
   version_->script_cache_map()->NotifyFinishedCaching(
       request_url_, bytes_written, error_code, status_message);

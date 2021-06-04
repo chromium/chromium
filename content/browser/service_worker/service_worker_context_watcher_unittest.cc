@@ -152,7 +152,8 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
     context()->RegisterServiceWorker(
         script_url, key, options,
         blink::mojom::FetchClientSettingsObject::New(),
-        base::BindOnce(&DidRegisterServiceWorker, &registration_id));
+        base::BindOnce(&DidRegisterServiceWorker, &registration_id),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
     base::RunLoop().RunUntilIdle();
     return registration_id;
   }

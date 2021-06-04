@@ -76,7 +76,8 @@ class ServiceWorkerContextCoreTest : public testing::Test,
               status = result_status;
               registration_id = result_registration_id;
               loop.Quit();
-            }));
+            }),
+        /*requesting_frame_id=*/GlobalFrameRoutingId());
     loop.Run();
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     scoped_refptr<ServiceWorkerRegistration> registration =
@@ -239,7 +240,8 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKeyAbortsQueuedJobs) {
               int64_t result_registration_id) {
             register_job_status = result_status;
             register_job_loop.Quit();
-          }));
+          }),
+      /*requesting_frame_id=*/GlobalFrameRoutingId());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, DeleteForStorageKey(key));
 
@@ -286,7 +288,8 @@ TEST_F(ServiceWorkerContextCoreTest,
               int64_t result_registration_id) {
             register_job_status = result_status;
             register_job_loop.Quit();
-          }));
+          }),
+      /*requesting_frame_id=*/GlobalFrameRoutingId());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, DeleteForStorageKey(key));
 

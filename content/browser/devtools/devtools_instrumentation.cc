@@ -1024,6 +1024,33 @@ void OnWebTransportHandshakeFailed(
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
 
+void OnServiceWorkerMainScriptFetchingFailed(
+    const GlobalFrameRoutingId& requesting_frame_id,
+    const std::string& error) {
+  // If we have a requesting_frame_id, we should have a frame and a frame tree
+  // node. However since the lifetime of these objects can be complex, we check
+  // at each step that we indeed can go reach all the way to the FrameTreeNode.
+  if (!requesting_frame_id)
+    return;
+
+  RenderFrameHostImpl* requesting_frame =
+      RenderFrameHostImpl::FromID(requesting_frame_id);
+  if (!requesting_frame)
+    return;
+
+  FrameTreeNode* ftn = requesting_frame->frame_tree_node();
+  if (!ftn)
+    return;
+
+  auto entry = protocol::Log::LogEntry::Create()
+                   .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
+                   .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
+                   .SetText(error)
+                   .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
+                   .Build();
+  DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
+}
+
 void LogWorkletError(RenderFrameHostImpl* frame_host,
                      const std::string& error) {
   FrameTreeNode* ftn = frame_host->frame_tree_node();

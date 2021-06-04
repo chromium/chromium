@@ -43,7 +43,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptFetcher
       ServiceWorkerContextCore& context,
       scoped_refptr<ServiceWorkerVersion> version,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object);
+      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
+      const GlobalFrameRoutingId& requesting_frame_id);
   ~ServiceWorkerNewScriptFetcher() override;
 
   // Callback called when the main script load params are ready. Called with
@@ -83,6 +84,10 @@ class CONTENT_EXPORT ServiceWorkerNewScriptFetcher
 
   // Called when the header and the data pipe for the body are ready.
   StartCallback callback_;
+
+  // The global routing id of the frame that made the SW registration request.
+  // Note: This is only valid with PlzServiceWorker.
+  const GlobalFrameRoutingId requesting_frame_id_;
 
   // Mojo endpoint connected to ServiceWorkerNewScriptLoader.
   mojo::Remote<network::mojom::URLLoader> url_loader_remote_;

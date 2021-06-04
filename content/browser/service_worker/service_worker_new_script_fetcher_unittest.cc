@@ -68,7 +68,8 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
       *context(), version,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &fake_factory),
-      blink::mojom::FetchClientSettingsObject::New());
+      blink::mojom::FetchClientSettingsObject::New(),
+      /*requesting_frame_id=*/GlobalFrameRoutingId());
 
   // Start a fetcher and wait to get the result. The script loaded from
   // `loader_factory` is set to the `main_script_load_params` through

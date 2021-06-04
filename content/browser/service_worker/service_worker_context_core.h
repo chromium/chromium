@@ -40,7 +40,6 @@ class SpecialStoragePolicy;
 }  // namespace storage
 
 namespace content {
-
 class ServiceWorkerContextCoreObserver;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
@@ -242,7 +241,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      RegistrationCallback callback);
+      RegistrationCallback callback,
+      const GlobalFrameRoutingId& requesting_frame_id);
 
   // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.

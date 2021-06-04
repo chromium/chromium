@@ -13,6 +13,7 @@
 
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -229,6 +230,10 @@ void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
     const absl::optional<net::WebTransportError>& error);
+
+void OnServiceWorkerMainScriptFetchingFailed(
+    const GlobalFrameRoutingId& requesting_frame_id,
+    const std::string& error);
 
 // Adds a debug error message from a worklet to the devtools console.
 void LogWorkletError(RenderFrameHostImpl* frame_host, const std::string& error);
