@@ -240,6 +240,7 @@ component("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql",
+    "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//third_party/sqlite",
     "//url",
@@ -342,6 +343,7 @@ source_set("unittests") {
     "//services/network/public/mojom",
     "//sql:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//third_party/sqlite",
   ]

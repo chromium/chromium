@@ -19,6 +19,7 @@
 #include "storage/browser/quota/usage_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using blink::mojom::QuotaStatusCode;
 using blink::mojom::StorageType;
@@ -38,6 +39,8 @@ void DidGetGlobalUsage(bool* done,
   *unlimited_usage_out = unlimited_usage;
 }
 
+// TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient is
+// migrated to use StorageKey instead of Origin.
 class UsageTrackerTestQuotaClient : public QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
@@ -142,16 +145,16 @@ class UsageTrackerTest : public testing::Test {
     *done = true;
   }
 
-  void UpdateUsage(const url::Origin& origin, int64_t delta) {
-    quota_client_->UpdateUsage(origin, delta);
-    usage_tracker_.UpdateUsageCache(QuotaClientType::kFileSystem, origin,
+  void UpdateUsage(const blink::StorageKey& storage_key, int64_t delta) {
+    quota_client_->UpdateUsage(storage_key.origin(), delta);
+    usage_tracker_.UpdateUsageCache(QuotaClientType::kFileSystem, storage_key,
                                     delta);
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdateUsageWithoutNotification(const url::Origin& origin,
+  void UpdateUsageWithoutNotification(const blink::StorageKey& storage_key,
                                       int64_t delta) {
-    quota_client_->UpdateUsage(origin, delta);
+    quota_client_->UpdateUsage(storage_key.origin(), delta);
   }
 
   void GetGlobalUsage(int64_t* usage, int64_t* unlimited_usage) {
@@ -177,25 +180,26 @@ class UsageTrackerTest : public testing::Test {
     return std::make_pair(usage, std::move(usage_breakdown));
   }
 
-  void GrantUnlimitedStoragePolicy(const url::Origin& origin) {
-    if (!storage_policy_->IsStorageUnlimited(origin.GetURL())) {
-      storage_policy_->AddUnlimited(origin.GetURL());
-      storage_policy_->NotifyGranted(origin,
+  void GrantUnlimitedStoragePolicy(const blink::StorageKey& storage_key) {
+    if (!storage_policy_->IsStorageUnlimited(storage_key.origin().GetURL())) {
+      storage_policy_->AddUnlimited(storage_key.origin().GetURL());
+      storage_policy_->NotifyGranted(storage_key.origin(),
                                      SpecialStoragePolicy::STORAGE_UNLIMITED);
     }
   }
 
-  void RevokeUnlimitedStoragePolicy(const url::Origin& origin) {
-    if (storage_policy_->IsStorageUnlimited(origin.GetURL())) {
-      storage_policy_->RemoveUnlimited(origin.GetURL());
-      storage_policy_->NotifyRevoked(origin,
+  void RevokeUnlimitedStoragePolicy(const blink::StorageKey& storage_key) {
+    if (storage_policy_->IsStorageUnlimited(storage_key.origin().GetURL())) {
+      storage_policy_->RemoveUnlimited(storage_key.origin().GetURL());
+      storage_policy_->NotifyRevoked(storage_key.origin(),
                                      SpecialStoragePolicy::STORAGE_UNLIMITED);
     }
   }
 
-  void SetUsageCacheEnabled(const url::Origin& origin, bool enabled) {
-    usage_tracker_.SetUsageCacheEnabled(QuotaClientType::kFileSystem, origin,
-                                        enabled);
+  void SetUsageCacheEnabled(const blink::StorageKey& storage_key,
+                            bool enabled) {
+    usage_tracker_.SetUsageCacheEnabled(QuotaClientType::kFileSystem,
+                                        storage_key, enabled);
   }
 
  private:
@@ -224,11 +228,11 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   EXPECT_EQ(0, usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-  const url::Origin origin = url::Origin::Create(GURL("http://example.com"));
-  const std::string& host = origin.host();
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const std::string& host = storage_key.origin().host();
 
-  UpdateUsage(origin, 100);
+  UpdateUsage(storage_key, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -238,7 +242,7 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  GrantUnlimitedStoragePolicy(origin);
+  GrantUnlimitedStoragePolicy(storage_key);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(100, unlimited_usage);
@@ -246,7 +250,7 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  RevokeUnlimitedStoragePolicy(origin);
+  RevokeUnlimitedStoragePolicy(storage_key);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -261,10 +265,11 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   blink::mojom::UsageBreakdownPtr host_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
 
-  const url::Origin origin = url::Origin::Create(GURL("http://example.com"));
-  const std::string& host = origin.host();
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const std::string& host = storage_key.origin().host();
 
-  UpdateUsage(origin, 100);
+  UpdateUsage(storage_key, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -274,7 +279,7 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  UpdateUsageWithoutNotification(origin, 100);
+  UpdateUsageWithoutNotification(storage_key, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -282,10 +287,10 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  GrantUnlimitedStoragePolicy(origin);
-  UpdateUsageWithoutNotification(origin, 100);
-  SetUsageCacheEnabled(origin, false);
-  UpdateUsageWithoutNotification(origin, 100);
+  GrantUnlimitedStoragePolicy(storage_key);
+  UpdateUsageWithoutNotification(storage_key, 100);
+  SetUsageCacheEnabled(storage_key, false);
+  UpdateUsageWithoutNotification(storage_key, 100);
 
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(400, usage);
@@ -295,7 +300,7 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(400, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  RevokeUnlimitedStoragePolicy(origin);
+  RevokeUnlimitedStoragePolicy(storage_key);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(400, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -303,8 +308,8 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(400, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  SetUsageCacheEnabled(origin, true);
-  UpdateUsage(origin, 100);
+  SetUsageCacheEnabled(storage_key, true);
+  UpdateUsage(storage_key, 100);
 
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(500, usage);
@@ -316,11 +321,15 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
-  const url::Origin kNormal = url::Origin::Create(GURL("http://normal"));
-  const url::Origin kUnlimited = url::Origin::Create(GURL("http://unlimited"));
-  const url::Origin kNonCached = url::Origin::Create(GURL("http://non_cached"));
-  const url::Origin kNonCachedUnlimited =
-      url::Origin::Create(GURL("http://non_cached-unlimited"));
+  const blink::StorageKey kNormal =
+      blink::StorageKey::CreateFromStringForTesting("http://normal");
+  const blink::StorageKey kUnlimited =
+      blink::StorageKey::CreateFromStringForTesting("http://unlimited");
+  const blink::StorageKey kNonCached =
+      blink::StorageKey::CreateFromStringForTesting("http://non_cached");
+  const blink::StorageKey kNonCachedUnlimited =
+      blink::StorageKey::CreateFromStringForTesting(
+          "http://non_cached-unlimited");
 
   GrantUnlimitedStoragePolicy(kUnlimited);
   GrantUnlimitedStoragePolicy(kNonCachedUnlimited);
@@ -348,15 +357,16 @@ TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
   EXPECT_EQ(2 + 32, unlimited_usage);
 }
 
-TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedInit) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://example.com"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://example.com:8080"));
-  ASSERT_EQ(kOrigin1.host(), kOrigin2.host())
+TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedInit) {
+  const blink::StorageKey kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const blink::StorageKey kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+  ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two origins have the same host";
 
-  UpdateUsageWithoutNotification(kOrigin1, 100);
-  UpdateUsageWithoutNotification(kOrigin2, 200);
+  UpdateUsageWithoutNotification(kStorageKey1, 100);
+  UpdateUsageWithoutNotification(kStorageKey2, 200);
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
@@ -369,10 +379,11 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedInit) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedUpdate) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://example.com"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://example.com:8080"));
-  ASSERT_EQ(kOrigin1.host(), kOrigin2.host())
+  const blink::StorageKey kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const blink::StorageKey kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+  ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two origins have the same host";
 
   int64_t total_usage = 0;
@@ -384,8 +395,8 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedUpdate) {
   EXPECT_EQ(0, total_usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  UpdateUsage(kOrigin1, 100);
-  UpdateUsage(kOrigin2, 200);
+  UpdateUsage(kStorageKey1, 100);
+  UpdateUsage(kStorageKey2, 200);
 
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);
@@ -393,17 +404,18 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedUpdate) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedInit) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://example.com"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://example.com:8080"));
-  ASSERT_EQ(kOrigin1.host(), kOrigin2.host())
+  const blink::StorageKey kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const blink::StorageKey kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+  ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two origins have the same host";
 
-  SetUsageCacheEnabled(kOrigin1, false);
-  SetUsageCacheEnabled(kOrigin2, false);
+  SetUsageCacheEnabled(kStorageKey1, false);
+  SetUsageCacheEnabled(kStorageKey2, false);
 
-  UpdateUsageWithoutNotification(kOrigin1, 100);
-  UpdateUsageWithoutNotification(kOrigin2, 200);
+  UpdateUsageWithoutNotification(kStorageKey1, 100);
+  UpdateUsageWithoutNotification(kStorageKey2, 200);
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
@@ -416,10 +428,11 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedInit) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedUpdate) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://example.com"));
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://example.com:8080"));
-  ASSERT_EQ(kOrigin1.host(), kOrigin2.host())
+  const blink::StorageKey kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const blink::StorageKey kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+  ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two origins have the same host";
 
   int64_t total_usage = 0;
@@ -431,11 +444,11 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedUpdate) {
   EXPECT_EQ(0, total_usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  SetUsageCacheEnabled(kOrigin1, false);
-  SetUsageCacheEnabled(kOrigin2, false);
+  SetUsageCacheEnabled(kStorageKey1, false);
+  SetUsageCacheEnabled(kStorageKey2, false);
 
-  UpdateUsageWithoutNotification(kOrigin1, 100);
-  UpdateUsageWithoutNotification(kOrigin2, 200);
+  UpdateUsageWithoutNotification(kStorageKey1, 100);
+  UpdateUsageWithoutNotification(kStorageKey2, 200);
 
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);

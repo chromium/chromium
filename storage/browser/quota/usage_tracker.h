@@ -24,7 +24,10 @@
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -61,19 +64,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void GetHostUsageWithBreakdown(const std::string& host,
                                  UsageWithBreakdownCallback callback);
   void UpdateUsageCache(QuotaClientType client_type,
-                        const url::Origin& origin,
+                        const blink::StorageKey& storage_key,
                         int64_t delta);
   int64_t GetCachedUsage() const;
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
-  std::map<url::Origin, int64_t> GetCachedOriginsUsage() const;
-  std::set<url::Origin> GetCachedOrigins() const;
+  std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
+  std::set<blink::StorageKey> GetCachedStorageKeys() const;
   bool IsWorking() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return !global_usage_callbacks_.empty() || !host_usage_callbacks_.empty();
   }
 
   void SetUsageCacheEnabled(QuotaClientType client_type,
-                            const url::Origin& origin,
+                            const blink::StorageKey& storage_key,
                             bool enabled);
 
  private:

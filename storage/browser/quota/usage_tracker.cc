@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "storage/browser/quota/client_usage_tracker.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -105,12 +106,12 @@ void UsageTracker::GetHostUsageWithBreakdown(
 }
 
 void UsageTracker::UpdateUsageCache(QuotaClientType client_type,
-                                    const url::Origin& origin,
+                                    const blink::StorageKey& storage_key,
                                     int64_t delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_tracker_map_.count(client_type));
   for (const auto& client_tracker : client_tracker_map_[client_type])
-    client_tracker->UpdateUsageCache(origin, delta);
+    client_tracker->UpdateUsageCache(storage_key, delta);
 }
 
 int64_t UsageTracker::GetCachedUsage() const {
@@ -137,40 +138,43 @@ std::map<std::string, int64_t> UsageTracker::GetCachedHostsUsage() const {
   return host_usage;
 }
 
-std::map<url::Origin, int64_t> UsageTracker::GetCachedOriginsUsage() const {
+std::map<blink::StorageKey, int64_t> UsageTracker::GetCachedStorageKeysUsage()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<url::Origin, int64_t> origin_usage;
+  std::map<blink::StorageKey, int64_t> storage_key_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      std::map<url::Origin, int64_t> client_origin_usage =
-          client_tracker->GetCachedOriginsUsage();
-      for (const auto& origin_and_usage : client_origin_usage)
-        origin_usage[origin_and_usage.first] += origin_and_usage.second;
+      std::map<blink::StorageKey, int64_t> client_storage_key_usage =
+          client_tracker->GetCachedStorageKeysUsage();
+      for (const auto& storage_key_and_usage : client_storage_key_usage)
+        storage_key_usage[storage_key_and_usage.first] +=
+            storage_key_and_usage.second;
     }
   }
-  return origin_usage;
+  return storage_key_usage;
 }
 
-std::set<url::Origin> UsageTracker::GetCachedOrigins() const {
+std::set<blink::StorageKey> UsageTracker::GetCachedStorageKeys() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<url::Origin> origins;
+  std::set<blink::StorageKey> storage_keys;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      std::set<url::Origin> client_origins = client_tracker->GetCachedOrigins();
-      for (const auto& client_origin : client_origins)
-        origins.insert(client_origin);
+      std::set<blink::StorageKey> client_storage_keys =
+          client_tracker->GetCachedStorageKeys();
+      for (const auto& client_storage_key : client_storage_keys)
+        storage_keys.insert(client_storage_key);
     }
   }
-  return origins;
+  return storage_keys;
 }
 
 void UsageTracker::SetUsageCacheEnabled(QuotaClientType client_type,
-                                        const url::Origin& origin,
+                                        const blink::StorageKey& storage_key,
                                         bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_tracker_map_.count(client_type));
   for (const auto& client_tracker : client_tracker_map_[client_type])
-    client_tracker->SetUsageCacheEnabled(origin, enabled);
+    client_tracker->SetUsageCacheEnabled(storage_key, enabled);
 }
 
 void UsageTracker::AccumulateClientGlobalUsage(AccumulateInfo* info,
