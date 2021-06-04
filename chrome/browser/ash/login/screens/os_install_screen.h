@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OS_INSTALL_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OS_INSTALL_SCREEN_H_
 
+#include <string>
+
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace chromeos {
@@ -24,6 +26,7 @@ class OsInstallScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
 
   OsInstallScreenView* view_ = nullptr;
 };

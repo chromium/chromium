@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"
@@ -18,7 +19,9 @@ constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
 
 OsInstallScreenHandler::OsInstallScreenHandler(
     JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {}
+    : BaseScreenHandler(kScreenId, js_calls_container) {
+  set_user_acted_method_path("login.OsInstallScreen.userActed");
+}
 
 OsInstallScreenHandler::~OsInstallScreenHandler() {
   if (screen_)
@@ -28,11 +31,24 @@ OsInstallScreenHandler::~OsInstallScreenHandler() {
 void OsInstallScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("osInstallDialogIntroTitle", IDS_OS_INSTALL_SCREEN_INTRO_TITLE);
+  builder->Add("osInstallDialogIntroSubtitle",
+               IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE);
+  builder->Add("osInstallDialogIntroBody", IDS_OS_INSTALL_SCREEN_INTRO_BODY);
+  builder->Add("osInstallDialogIntroNextButton",
+               IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON);
+
+  builder->Add("osInstallDialogConfirmTitle",
+               IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE);
+  builder->Add("osInstallDialogConfirmBody",
+               IDS_OS_INSTALL_SCREEN_CONFIRM_BODY);
+  builder->Add("osInstallDialogConfirmNextButton",
+               IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON);
+
+  builder->Add("osInstallDialogInProgressTitle",
+               IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE);
 }
 
 void OsInstallScreenHandler::Initialize() {}
-
-void OsInstallScreenHandler::RegisterMessages() {}
 
 void OsInstallScreenHandler::Show() {
   ShowScreen(kScreenId);
@@ -46,6 +62,14 @@ void OsInstallScreenHandler::Bind(OsInstallScreen* screen) {
 void OsInstallScreenHandler::Unbind() {
   screen_ = nullptr;
   BaseScreenHandler::SetBaseScreen(nullptr);
+}
+
+void OsInstallScreenHandler::ShowConfirmStep() {
+  CallJS("login.OsInstallScreen.showConfirmStep");
+}
+
+void OsInstallScreenHandler::StartInstall() {
+  CallJS("login.OsInstallScreen.showInProgressStep");
 }
 
 }  // namespace chromeos

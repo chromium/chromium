@@ -32,6 +32,9 @@ class OsInstallScreenView {
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
+
+  virtual void ShowConfirmStep() = 0;
+  virtual void StartInstall() = 0;
 };
 
 class OsInstallScreenHandler : public BaseScreenHandler,
@@ -49,12 +52,13 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
-  void RegisterMessages() override;
 
   // OsInstallScreenView:
   void Show() override;
   void Bind(OsInstallScreen* screen) override;
   void Unbind() override;
+  void ShowConfirmStep() override;
+  void StartInstall() override;
 
   OsInstallScreen* screen_ = nullptr;
 };

@@ -8,6 +8,14 @@
 
 namespace chromeos {
 
+namespace {
+
+constexpr const char kUserActionIntroNextClicked[] = "os-install-intro-next";
+constexpr const char kUserActionConfirmNextClicked[] =
+    "os-install-confirm-next";
+
+}  // namespace
+
 OsInstallScreen::OsInstallScreen(OsInstallScreenView* view)
     : BaseScreen(OsInstallScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(view) {
@@ -33,5 +41,15 @@ void OsInstallScreen::ShowImpl() {
 }
 
 void OsInstallScreen::HideImpl() {}
+
+void OsInstallScreen::OnUserAction(const std::string& action_id) {
+  if (action_id == kUserActionIntroNextClicked) {
+    view_->ShowConfirmStep();
+  } else if (action_id == kUserActionConfirmNextClicked) {
+    view_->StartInstall();
+  } else {
+    BaseScreen::OnUserAction(action_id);
+  }
+}
 
 }  // namespace chromeos

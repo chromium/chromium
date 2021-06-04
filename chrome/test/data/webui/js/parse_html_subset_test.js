@@ -79,6 +79,7 @@ suite('ParseHtmlSubsetModuleTest', function() {
 
   test('supported optional tags', function() {
     parseHtmlSubset('<img>Some <b>bold</b> text', ['img']);
+    parseHtmlSubset('A list:<ul><li>An item</li></ul>', ['li', 'ul']);
   });
 
   test('supported optional tags without the argument', function() {

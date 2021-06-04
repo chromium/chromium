@@ -102,7 +102,7 @@
    * @type {!Set<string>}
    * @const
    */
-  const allowedOptionalTags = new Set(['IMG']);
+  const allowedOptionalTags = new Set(['IMG', 'LI', 'UL']);
 
   /**
    * This policy maps a given string to a `TrustedHTML` object
