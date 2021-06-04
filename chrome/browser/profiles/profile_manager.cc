@@ -396,7 +396,7 @@ size_t GetEnabledAppCount(Profile* profile) {
 // It might get called more than once with different values of
 // |status| but only once the profile is fully initialized will
 // |client_callback| be run.
-void OnProfileLoaded(ProfileManager::ProfileLoadedCallback* client_callback,
+void OnProfileLoaded(ProfileManager::ProfileLoadedCallback& client_callback,
                      bool incognito,
                      Profile* profile,
                      Profile::CreateStatus status) {
@@ -407,11 +407,11 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback* client_callback,
   }
   if (status != Profile::CREATE_STATUS_INITIALIZED) {
     LOG(WARNING) << "Profile not loaded correctly";
-    std::move(*client_callback).Run(nullptr);
+    std::move(client_callback).Run(nullptr);
     return;
   }
   DCHECK(profile);
-  std::move(*client_callback)
+  std::move(client_callback)
       .Run(incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                      : profile);
 }
@@ -791,9 +791,7 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
       base::BindRepeating(&OnProfileLoaded,
                           // OnProfileLoaded may be called multiple times, but
                           // |callback| will be called only once.
-                          base::Owned(std::make_unique<ProfileLoadedCallback>(
-                              std::move(callback))),
-                          incognito));
+                          base::OwnedRef(std::move(callback)), incognito));
   return true;
 }
 

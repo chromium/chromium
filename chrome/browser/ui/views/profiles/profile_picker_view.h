@@ -139,7 +139,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // On creation success for the sign-in profile, it rebuilds the view.
   void OnProfileForSigninCreated(
       SkColor profile_color,
-      base::OnceCallback<void(bool)>* switch_finished_callback,
+      base::OnceCallback<void(bool)>& switch_finished_callback,
       Profile* new_profile,
       Profile::CreateStatus status);
 

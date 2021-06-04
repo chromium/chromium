@@ -247,7 +247,7 @@ void ClientUsageTracker::DidGetOriginsForGlobalUsage(
       // The `accumulator` is called multiple times, but the `callback` inside
       // of it will only be called a single time, so we give ownership to the
       // `accumulator` itself.
-      base::Owned(std::make_unique<GlobalUsageCallback>(std::move(callback))));
+      base::OwnedRef(std::move(callback)));
 
   for (const auto& host_and_origins : origins_by_host) {
     const std::string& host = host_and_origins.first;
@@ -261,7 +261,7 @@ void ClientUsageTracker::DidGetOriginsForGlobalUsage(
 }
 
 void ClientUsageTracker::AccumulateHostUsage(AccumulateInfo* info,
-                                             GlobalUsageCallback* callback,
+                                             GlobalUsageCallback& callback,
                                              int64_t limited_usage,
                                              int64_t unlimited_usage) {
   DCHECK_GT(info->pending_jobs, 0U);
@@ -275,8 +275,8 @@ void ClientUsageTracker::AccumulateHostUsage(AccumulateInfo* info,
   DCHECK_GE(info->unlimited_usage, 0);
 
   global_usage_retrieved_ = true;
-  std::move(*callback).Run(info->limited_usage + info->unlimited_usage,
-                           info->unlimited_usage);
+  std::move(callback).Run(info->limited_usage + info->unlimited_usage,
+                          info->unlimited_usage);
 }
 
 void ClientUsageTracker::DidGetOriginsForHostUsage(
