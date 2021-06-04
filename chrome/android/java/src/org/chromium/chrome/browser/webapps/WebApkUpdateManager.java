@@ -202,10 +202,10 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         ModalDialogManager dialogManager =
                 mTabProvider.get().getWindowAndroid().getModalDialogManager();
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
-        dialog.show(dialogManager, iconChanging, shortNameChanging, nameChanging, mInfo.shortName(),
-                mFetchedInfo.shortName(), mInfo.name(), mFetchedInfo.name(), mInfo.icon().bitmap(),
-                mFetchedInfo.icon().bitmap(), mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(),
-                this::onUserApprovedUpdate);
+        dialog.show(dialogManager, mInfo.webApkPackageName(), iconChanging, shortNameChanging,
+                nameChanging, mInfo.shortName(), mFetchedInfo.shortName(), mInfo.name(),
+                mFetchedInfo.name(), mInfo.icon().bitmap(), mFetchedInfo.icon().bitmap(),
+                mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(), this::onUserApprovedUpdate);
     }
 
     protected void onUserApprovedUpdate(int dismissalCause) {

@@ -35,6 +35,9 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     // The short name of the app before update.
     private String mOldAppShortName;
 
+    // The package name for this app.
+    private String mPackageName;
+
     // The callback to run when the user has made a decision.
     private Callback<Integer> mDialogResultCallback;
 
@@ -43,6 +46,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
     /**
      * Shows the dialog.
      * @param manager The {@ModalDialogManager} to use.
+     * @param packageName The package name for this app.
      * @param iconChanging Whether an icon change has been detected.
      * @param shortNameChanging Whether a short name change has been detected.
      * @param nameChanging Whether a name change has been detected.
@@ -56,13 +60,15 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
      * @param newIconAdaptive Whether the updated icon is adaptive.
      * @param callback The callback to use to communicate the results.
      */
-    public void show(ModalDialogManager manager, boolean iconChanging, boolean shortNameChanging,
-            boolean nameChanging, String oldAppShortName, String newAppShortName, String oldAppName,
-            String newAppName, Bitmap currentAppIcon, Bitmap updatedAppIcon,
-            boolean oldIconAdaptive, boolean newIconAdaptive, Callback<Integer> callback) {
+    public void show(ModalDialogManager manager, String packageName, boolean iconChanging,
+            boolean shortNameChanging, boolean nameChanging, String oldAppShortName,
+            String newAppShortName, String oldAppName, String newAppName, Bitmap currentAppIcon,
+            Bitmap updatedAppIcon, boolean oldIconAdaptive, boolean newIconAdaptive,
+            Callback<Integer> callback) {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
         mOldAppShortName = oldAppShortName;
+        mPackageName = packageName;
         mDialogResultCallback = callback;
 
         int titleId = 0;
@@ -121,7 +127,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
                 WebApkUpdateReportAbuseDialog reportAbuseDialog = new WebApkUpdateReportAbuseDialog(
-                        mModalDialogManager, mOldAppShortName, this::onUninstall);
+                        mModalDialogManager, mPackageName, mOldAppShortName, this::onUninstall);
                 reportAbuseDialog.show();
                 break;
             default:

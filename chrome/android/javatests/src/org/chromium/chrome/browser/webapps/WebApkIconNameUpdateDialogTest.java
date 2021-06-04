@@ -145,11 +145,11 @@ public class WebApkIconNameUpdateDialogTest {
 
             WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
 
-            dialog.show(modalDialogManager, dialogParams.iconChanged, dialogParams.shortNameChanged,
-                    dialogParams.nameChanged, dialogParams.shortNameBefore,
-                    dialogParams.shortNameAfter, dialogParams.nameBefore, dialogParams.nameAfter,
-                    dialogParams.bitmapBefore, dialogParams.bitmapAfter, false, false,
-                    this::onUpdateDialogResult);
+            dialog.show(modalDialogManager, /* packageName= */ "", dialogParams.iconChanged,
+                    dialogParams.shortNameChanged, dialogParams.nameChanged,
+                    dialogParams.shortNameBefore, dialogParams.shortNameAfter,
+                    dialogParams.nameBefore, dialogParams.nameAfter, dialogParams.bitmapBefore,
+                    dialogParams.bitmapAfter, false, false, this::onUpdateDialogResult);
 
             Assert.assertEquals(
                     dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
@@ -192,8 +192,9 @@ public class WebApkIconNameUpdateDialogTest {
             ModalDialogManager modalDialogManager =
                     mActivityTestRule.getActivity().getModalDialogManager();
 
-            WebApkUpdateReportAbuseDialog dialog = new WebApkUpdateReportAbuseDialog(
-                    modalDialogManager, shortAppName, this::onAbuseDialogResult);
+            WebApkUpdateReportAbuseDialog dialog =
+                    new WebApkUpdateReportAbuseDialog(modalDialogManager, /* packageName= */ "",
+                            shortAppName, this::onAbuseDialogResult);
             dialog.show();
 
             Assert.assertEquals(expectedTitle, getDialogTitle());

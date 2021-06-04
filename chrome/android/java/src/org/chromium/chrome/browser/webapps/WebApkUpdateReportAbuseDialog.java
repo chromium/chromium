@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.CheckBox;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -38,15 +42,19 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     // The short name of the app the user is uninstalling.
     private String mAppShortName;
 
+    // The package name for the app the user is uninstalling.
+    private String mAppPackageName;
+
     // When checked, the app will not just be uninstalled, but also reported for abuse.
     private CheckBox mReportAbuseCheckBox;
 
     // Notifies the parent (dialog beneath us) that uninstalling was the action taken by the user.
     private Callback mOnUninstallCallback;
 
-    public WebApkUpdateReportAbuseDialog(
-            ModalDialogManager manager, String appShortName, Callback callback) {
+    public WebApkUpdateReportAbuseDialog(ModalDialogManager manager, String appPackageName,
+            String appShortName, Callback callback) {
         mModalDialogManager = manager;
+        mAppPackageName = appPackageName;
         mAppShortName = appShortName;
         mOnUninstallCallback = callback;
     }
@@ -102,11 +110,23 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
 
             if (mReportAbuseCheckBox.isChecked()) {
                 // TODO(finnur): Implement sending info to the SafeBrowsing team.
-                Log.i(TAG, "Uninstall and report abuse");
-            } else {
-                // TODO(finnur): Implement opening the uninstall screen.
-                Log.i(TAG, "Uninstall without reporting abuse");
+                Log.i(TAG, "Send report to SafeBrowsing");
             }
+
+            showAppInfoToUninstall();
         }
+    }
+
+    private void showAppInfoToUninstall() {
+        Context context = ContextUtils.getApplicationContext();
+        if (!PackageUtils.isPackageInstalled(context, mAppPackageName)) {
+            Log.i(TAG, "WebApk not found:" + mAppPackageName);
+            return;
+        }
+
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse("package:" + mAppPackageName));
+        context.startActivity(intent);
     }
 }
