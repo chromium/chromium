@@ -2068,6 +2068,7 @@ class ComputedStyle : public ComputedStyleBase,
   bool ContainsBlockSize() const {
     return (Contain() & kContainsBlockSize) || IsBlockSizeContainer();
   }
+  CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
   // Display utility functions.
   bool IsDisplayReplacedType() const {

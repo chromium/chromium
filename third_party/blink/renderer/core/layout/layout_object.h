@@ -644,6 +644,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return ShouldApplyPaintContainment() && ShouldApplyLayoutContainment() &&
            ShouldApplySizeContainment();
   }
+  inline bool ShouldApplyAnyContainment() const {
+    NOT_DESTROYED();
+    return ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
+           ShouldApplyStyleContainment() || ShouldApplyBlockSizeContainment() ||
+           ShouldApplyInlineSizeContainment();
+  }
+
   inline bool IsContainerForContainerQueries() const {
     NOT_DESTROYED();
     return ShouldApplyLayoutContainment() && ShouldApplyStyleContainment() &&

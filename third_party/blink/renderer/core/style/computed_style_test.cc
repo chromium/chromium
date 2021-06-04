@@ -22,7 +22,10 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
@@ -1212,6 +1215,81 @@ TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
   TEST_STYLE_VALUE_NO_DIFF(FloodOpacity);
   TEST_STYLE_VALUE_NO_DIFF(LightingColor);
   TEST_STYLE_VALUE_NO_DIFF(BaselineShift);
+}
+
+TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+
+  auto* html = document.documentElement();
+  auto* body = document.body();
+  ASSERT_TRUE(html);
+  ASSERT_TRUE(body);
+
+  auto display_types = {CSSValueID::kInline,
+                        CSSValueID::kBlock,
+                        CSSValueID::kListItem,
+                        CSSValueID::kInlineBlock,
+                        CSSValueID::kTable,
+                        CSSValueID::kInlineTable,
+                        CSSValueID::kTableRowGroup,
+                        CSSValueID::kTableHeaderGroup,
+                        CSSValueID::kTableFooterGroup,
+                        CSSValueID::kTableRow,
+                        CSSValueID::kTableColumnGroup,
+                        CSSValueID::kTableColumn,
+                        CSSValueID::kTableCell,
+                        CSSValueID::kTableCaption,
+                        CSSValueID::kWebkitBox,
+                        CSSValueID::kWebkitInlineBox,
+                        CSSValueID::kFlex,
+                        CSSValueID::kInlineFlex,
+                        CSSValueID::kGrid,
+                        CSSValueID::kInlineGrid,
+                        CSSValueID::kContents,
+                        CSSValueID::kFlowRoot,
+                        CSSValueID::kNone,
+                        CSSValueID::kMath};
+
+  for (auto contain :
+       {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
+        CSSValueID::kSize, CSSValueID::kStyle}) {
+    html->SetInlineStyleProperty(CSSPropertyID::kContain,
+                                 getValueName(contain));
+    body->SetInlineStyleProperty(CSSPropertyID::kContain,
+                                 getValueName(contain));
+    for (auto html_display : display_types) {
+      html->SetInlineStyleProperty(CSSPropertyID::kDisplay, html_display);
+      for (auto body_display : display_types) {
+        body->SetInlineStyleProperty(CSSPropertyID::kDisplay, body_display);
+        document.View()->UpdateAllLifecyclePhasesForTest();
+
+        if (!html->GetLayoutObject()) {
+          EXPECT_TRUE(!html->GetComputedStyle());
+          continue;
+        }
+        EXPECT_EQ(html->GetLayoutObject()->ShouldApplyAnyContainment(),
+                  html->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
+                      *html))
+            << "html contain:" << getValueName(contain)
+            << " display:" << getValueName(html_display);
+        if (!body->GetLayoutObject()) {
+          if (const auto* body_style = body->GetComputedStyle()) {
+            EXPECT_EQ(body_style->Display(), EDisplay::kContents);
+            EXPECT_EQ(body_style->ShouldApplyAnyContainment(*body),
+                      contain == CSSValueID::kStyle);
+          }
+          continue;
+        }
+        EXPECT_EQ(body->GetLayoutObject()->ShouldApplyAnyContainment(),
+                  body->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
+                      *body))
+            << "body contain:" << getValueName(contain)
+            << " display:" << getValueName(body_display);
+      }
+    }
+  }
 }
 
 #if DCHECK_IS_ON()

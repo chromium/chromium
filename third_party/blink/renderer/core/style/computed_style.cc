@@ -43,6 +43,8 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
@@ -2540,6 +2542,27 @@ EPaintOrderType ComputedStyle::PaintOrderType(unsigned index) const {
   pt =
       (pt >> (kPaintOrderBitwidth * index)) & ((1u << kPaintOrderBitwidth) - 1);
   return static_cast<EPaintOrderType>(pt);
+}
+
+bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
+  DCHECK(IsA<HTMLBodyElement>(element) || IsA<HTMLHtmlElement>(element))
+      << "Since elements can override the computed display for which box type "
+         "to create, this method is not generally correct. Use "
+         "LayoutObject::ShouldApplyAnyContainment if possible.";
+  if (ContainsStyle())
+    return true;
+  if (!element.LayoutObjectIsNeeded(*this))
+    return false;
+  if (Display() == EDisplay::kInline)
+    return false;
+  if ((ContainsInlineSize() || ContainsBlockSize()) &&
+      (!IsDisplayTableType() || Display() == EDisplay::kTableCaption)) {
+    return true;
+  }
+  return (ContainsLayout() || ContainsPaint()) &&
+         (!IsDisplayTableType() || IsDisplayTableBox() ||
+          Display() == EDisplay::kTableCell ||
+          Display() == EDisplay::kTableCaption);
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 
 namespace blink {
@@ -27,7 +28,7 @@ inline bool IsValidCSSValueID(CSSValueID id)
     return id != CSSValueID::kInvalid;
 }
 
-const char* getValueName(CSSValueID);
+CORE_EXPORT const char* getValueName(CSSValueID);
 bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode);
 
 }  // namespace blink
