@@ -191,7 +191,8 @@ static_library("sandbox") {
 
   # NACL on 32-bit builds this target twice, once for 64-bit and once for 32-bit
   # so avoid this dep from running twice with the same output in that case.
-  if (current_cpu == target_cpu) {
+  # Additionally, exclude setting ACLs when build is not happening on Windows.
+  if (current_cpu == target_cpu && host_os == "win") {
     deps += [ ":set_appcontainer_acls" ]
   }
 }
