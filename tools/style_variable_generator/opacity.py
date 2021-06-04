@@ -5,9 +5,6 @@
 import re
 import sys
 
-# Python3's unicode class is just 'str'.
-STRTYPE = str if sys.version_info >= (3, ) else basestring
-
 
 class Opacity:
     '''A representation of a single color value.
@@ -26,7 +23,7 @@ class Opacity:
                 raise ValueError('Malformed opacity value:' + value)
 
     def Parse(self, value):
-        if isinstance(value, STRTYPE):
+        if isinstance(value, str):
             match = re.match('^\$([a-z0-9_]+_opacity)$', value)
             if match:
                 self.var = match.group(1)

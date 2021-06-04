@@ -1,6 +1,6 @@
 /* This file is generated from:
- *  colors_test_palette.json5
  *  colors_test.json5
+ *  colors_test_palette.json5
  */
 
 syntax = "proto3";

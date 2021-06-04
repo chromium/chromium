@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from base_generator import Color, Modes, BaseGenerator, VariableType
+from style_variable_generator.base_generator import Color, Modes, BaseGenerator, VariableType
 import collections
 
 
@@ -46,7 +46,7 @@ class CSSStyleGenerator(BaseGenerator):
             'css_color_from_rgb_var':
             self._CSSColorFromRGBVar,
             'in_files':
-            self.in_file_to_context.keys(),
+            sorted(self.in_file_to_context.keys()),
             'dark_mode_selector':
             self.generator_options.get('dark_mode_selector', None),
             'Modes':

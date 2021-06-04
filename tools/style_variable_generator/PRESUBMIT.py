@@ -6,16 +6,29 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
+import os
+
+USE_PYTHON3 = True
 
 TEST_PATTERNS = [r'.+_test.py$']
 STYLE_VAR_GEN_INPUTS = [
     r'^tools[\\\/]style_variable_generator[\\\/].+\.json5$'
 ]
 
-
 def _CommonChecks(input_api, output_api):
+    env = os.environ
+    pythonpath = [os.path.join(os.getcwd(), '..')]
+    if 'PYTHONPATH' in env:
+        pythonpath.append(env.get('PYTHONPATH'))
+    env['PYTHONPATH'] = input_api.os_path.pathsep.join((pythonpath))
+
     results = input_api.canned_checks.RunUnitTestsInDirectory(
-        input_api, output_api, '.', files_to_check=TEST_PATTERNS)
+        input_api,
+        output_api,
+        '.',
+        files_to_check=TEST_PATTERNS,
+        env=env,
+        run_on_python2=False)
     try:
         import sys
         old_sys_path = sys.path[:]

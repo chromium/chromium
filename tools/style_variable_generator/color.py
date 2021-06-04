@@ -4,7 +4,7 @@
 
 import re
 import textwrap
-from opacity import Opacity
+from style_variable_generator.opacity import Opacity
 
 
 class Color:

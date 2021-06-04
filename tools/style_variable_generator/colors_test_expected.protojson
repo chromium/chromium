@@ -1,7 +1,7 @@
 # This file is generated from:
 #   additional_colors_test.json5
-#   colors_test_palette.json5
 #   colors_test.json5
+#   colors_test_palette.json5
 palette_colors: [
   {
     key: "google_grey_900",

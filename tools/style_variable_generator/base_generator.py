@@ -7,9 +7,9 @@ import sys
 import collections
 import re
 import textwrap
-import path_overrides
-from color import Color
-from opacity import Opacity
+from style_variable_generator import path_overrides
+from style_variable_generator.color import Color
+from style_variable_generator.opacity import Opacity
 import copy
 
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))

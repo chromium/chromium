@@ -25,7 +25,7 @@
 #    foo_protojson
 #      Protobuf JSON value format, contains actual color information
 template("style_variable_generator") {
-  script_file = "//tools/style_variable_generator/style_variable_generator.py"
+  script_file = "//tools/style_variable_generator/main.py"
   original_target_name = target_name
   common_inputs = [
     "//tools/style_variable_generator/base_generator.py",

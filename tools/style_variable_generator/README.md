@@ -11,7 +11,7 @@ For input format examples, see the \*_test.json5 files which contain up to date
 illustrations of each feature, as well as expected outputs in the corresponding
 \*_test_expected.\* files.
 
-Run `python style_variable_generator.py -h` for usage details.
+Run `./style_variable_generator -h` for usage details.
 
 ## Generator Options
 

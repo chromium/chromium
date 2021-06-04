@@ -1,22 +1,19 @@
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from base_generator import Modes
-from css_generator import CSSStyleGenerator
-from proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
-from views_generator import ViewsStyleGenerator
+from style_variable_generator.base_generator import Modes
+from style_variable_generator.css_generator import CSSStyleGenerator
+from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
+from style_variable_generator.views_generator import ViewsStyleGenerator
 import unittest
 
 
 class BaseStyleGeneratorTest:
     def assertEqualToFile(self, value, filename):
-        with open(filename) as f:
-            contents = f.read()
-            self.assertEqual(
-                value, contents,
-                '\n>>>>>\n%s<<<<<\n\ndoes not match\n\n>>>>>\n%s<<<<<' %
-                (value, contents))
+        with open(filename, 'r') as f:
+            self.assertEqual(value, f.read())
 
     def testColorTestJSON(self):
         self.generator.out_file_path = (

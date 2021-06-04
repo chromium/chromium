@@ -6,7 +6,7 @@ import argparse
 import os
 import subprocess
 import sys
-from css_generator import CSSStyleGenerator
+from style_variable_generator.css_generator import CSSStyleGenerator
 
 
 def BuildGrepQuery(deleted_names):

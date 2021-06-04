@@ -4,7 +4,7 @@
 
 import os
 import collections
-from base_generator import Color, Modes, BaseGenerator, VariableType
+from style_variable_generator.base_generator import Color, Modes, BaseGenerator, VariableType
 
 
 class BaseProtoStyleGenerator(BaseGenerator):
@@ -23,7 +23,7 @@ class BaseProtoStyleGenerator(BaseGenerator):
     def GetGlobals(self):
         return {
             'Modes': Modes,
-            'in_files': self.in_file_to_context.keys(),
+            'in_files': sorted(self.in_file_to_context.keys()),
         }
 
     def _CreateFieldList(self):

@@ -8,8 +8,8 @@ import argparse
 import os
 import subprocess
 import sys
-from css_generator import CSSStyleGenerator
-from presubmit_support import RunGit
+from style_variable_generator.css_generator import CSSStyleGenerator
+from style_variable_generator.presubmit_support import RunGit
 
 
 # TODO(calamity): extend this checker to find unused C++ variables

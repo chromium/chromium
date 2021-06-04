@@ -4,7 +4,7 @@
 
 import os
 import math
-from base_generator import Color, Modes, BaseGenerator, VariableType
+from style_variable_generator.base_generator import Color, Modes, BaseGenerator, VariableType
 
 
 class ViewsStyleGenerator(BaseGenerator):
@@ -38,7 +38,7 @@ class ViewsStyleGenerator(BaseGenerator):
             'Modes': Modes,
             'out_file_path': None,
             'namespace_name': None,
-            'in_files': self.in_file_to_context.keys(),
+            'in_files': sorted(self.in_file_to_context.keys()),
         }
         if self.out_file_path:
             globals['out_file_path'] = self.out_file_path
