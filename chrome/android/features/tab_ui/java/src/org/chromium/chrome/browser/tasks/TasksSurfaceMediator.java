@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -110,8 +111,8 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(LENS_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LensMetrics.recordClicked(LensEntryPoint.TASKS_SURFACE);
                 mOmniboxStub.startLens(LensEntryPoint.TASKS_SURFACE);
-                RecordUserAction.record("TasksSurface.FakeBox.Lens");
             }
         });
 

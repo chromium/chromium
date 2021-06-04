@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -296,8 +297,7 @@ class LocationBarMediator
             mLocationBarLayout.post(deferredRunnable);
         }
         mDeferredNativeRunnables.clear();
-        updateMicButtonState();
-        updateLensButtonState();
+        updateButtonVisibility();
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
@@ -546,7 +546,7 @@ class LocationBarMediator
 
     /** package */ void lensButtonClicked(View view) {
         if (!mNativeInitialized || mLocationBarDataProvider == null) return;
-        RecordUserAction.record("MobileOmniboxLens");
+        LensMetrics.recordClicked(LensEntryPoint.OMNIBOX);
         startLens(LensEntryPoint.OMNIBOX);
     }
 
@@ -933,14 +933,6 @@ class LocationBarMediator
                 "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
     }
 
-    private void updateMicButtonState() {
-        updateButtonVisibility();
-    }
-
-    private void updateLensButtonState() {
-        updateButtonVisibility();
-    }
-
     /**
      * Updates the display of the mic button.
      */
@@ -949,7 +941,9 @@ class LocationBarMediator
     }
 
     private void updateLensButtonVisibility() {
-        mLocationBarLayout.setLensButtonVisibility(shouldShowLensButton());
+        boolean shouldShowLensButton = shouldShowLensButton();
+        LensMetrics.recordShown(LensEntryPoint.OMNIBOX, shouldShowLensButton);
+        mLocationBarLayout.setLensButtonVisibility(shouldShowLensButton);
     }
 
     private void updateDeleteButtonVisibility() {
@@ -994,18 +988,13 @@ class LocationBarMediator
     }
 
     private boolean shouldShowLensButton() {
-        if (mIsTablet) {
-            // TODO(b/180967835): add logic to enable Lens for tablets.
-            return false;
-        } else if (mShouldShowButtonsWhenUnfocused) {
+        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
             return isLensEnabled(LensEntryPoint.OMNIBOX) && mNativeInitialized
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
-        } else {
-            boolean deleteButtonVisible = shouldShowDeleteButton();
-            return isLensEnabled(LensEntryPoint.OMNIBOX) && !deleteButtonVisible
-                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
-                            || mShouldShowMicButtonWhenUnfocused);
         }
+        return isLensEnabled(LensEntryPoint.OMNIBOX) && !shouldShowDeleteButton()
+                && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
+                        || mShouldShowLensButtonWhenUnfocused);
     }
 
     private boolean shouldShowSaveOfflineButton() {
@@ -1130,7 +1119,7 @@ class LocationBarMediator
 
     @Override
     public void onIncognitoStateChanged() {
-        updateMicButtonState();
+        updateButtonVisibility();
     }
 
     @Override
@@ -1163,7 +1152,12 @@ class LocationBarMediator
     public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {
         boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
-            if (!urlHasFocus) recordOmniboxFocusReason(reason);
+            if (!urlHasFocus) {
+                recordOmniboxFocusReason(reason);
+                // Record Lens button shown when Omnibox is focused.
+                if (shouldShowLensButton()) LensMetrics.recordOmniboxFocusedWhenLensShown();
+            }
+
             if (reason == OmniboxFocusReason.FAKE_BOX_TAP
                     || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
                     || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
@@ -1254,7 +1248,7 @@ class LocationBarMediator
 
     @Override
     public void onVoiceAvailabilityImpacted() {
-        updateMicButtonState();
+        updateButtonVisibility();
     }
 
     @Override

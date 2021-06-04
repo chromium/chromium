@@ -6104,7 +6104,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensCameraAssistedSearchDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch,
                                     kLensCameraAssistedSearchVariations,
-                                    "LensCameraAssistedSearch")},
+                                    "OmniboxAssistantVoiceSearch")},
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -8768,6 +8768,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Lens.Omnibox.LensSupportStatus" enum="LensSupportStatus"
+    expires_after="2021-11-18">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Whether the user supports the camera assisted search with Google Lens and if
+    not, the reason why. Recorded only if the feature is enabled when the
+    omnibox or the new tab page is loaded.
+  </summary>
+</histogram>
+
 <histogram name="LevelDB.ApproximateMemTableMemoryUse" units="bytes"
     expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>

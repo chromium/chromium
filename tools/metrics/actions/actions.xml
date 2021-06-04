@@ -14812,6 +14812,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxFocusedLensShown" not_user_triggered="true">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Mobile Omnibox Lens button shown when Omnibox focused.
+  </description>
+</action>
+
 <action name="MobileOmniboxLens">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
@@ -14819,6 +14830,15 @@ should be able to be added at any place in this file.
   <owner>wylieb@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <description>Mobile Omnibox Lens button clicked.</description>
+</action>
+
+<action name="MobileOmniboxLensShown" not_user_triggered="true">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>Mobile Omnibox Lens button shown.</description>
 </action>
 
 <action name="MobileOmniboxRefineSuggestion">
@@ -16714,6 +16734,18 @@ should be able to be added at any place in this file.
   <owner>lens-chrome@google.com</owner>
   <description>
     Recorded when the user taps the Lens button in the search box on the new tab
+    page.
+  </description>
+</action>
+
+<action name="NewTabPage.SearchBox.LensShown" not_user_triggered="true">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the Lens button is shown in the search box on the new tab
     page.
   </description>
 </action>
@@ -26687,6 +26719,18 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user taps the Lens button in the fake box on the tasks
     surface on Android.
+  </description>
+</action>
+
+<action name="TasksSurface.FakeBox.LensShown" not_user_triggered="true">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the Lens button is shown in the fake box on the tasks surface
+    on Android.
   </description>
 </action>
 
