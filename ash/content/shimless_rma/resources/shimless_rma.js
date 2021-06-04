@@ -56,12 +56,6 @@ const StateComponentMapping = {
     buttonBack: ButtonState.HIDDEN,
   },
   // TODO(joonbug): update to correct RmaState
-  [RmaState.kSelectComponents]: {
-    componentIs: 'onboarding-update-page',
-    buttonNext: ButtonState.VISIBLE,
-    buttonCancel: ButtonState.VISIBLE,
-    buttonBack: ButtonState.VISIBLE,
-  },
   [RmaState.kChooseDestination]: {
     componentIs: 'onboarding-choose-destination-page',
     buttonNext: ButtonState.HIDDEN,
