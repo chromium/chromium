@@ -225,10 +225,13 @@ Polymer({
     }
 
     const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
-    if (this.isUpdatedCellularUiEnabled_ && eSimSlots > 0) {
-      // Do not show simInfo if |updatedCellularActivationUi| flag is enabled
-      // and if we are using an eSIM enabled device.
-      return false;
+    if (this.isUpdatedCellularUiEnabled_) {
+      if (eSimSlots > 0) {
+        // Do not show simInfo if |updatedCellularActivationUi| flag is enabled
+        // and if we are using an eSIM enabled device.
+        return false;
+      }
+      return this.simLocked_(deviceState);
     }
     return this.simLockedOrAbsent_(deviceState);
   },
@@ -277,6 +280,18 @@ Polymer({
     if (deviceState.simAbsent) {
       return true;
     }
+    return this.simLocked_(deviceState);
+  },
+
+  /**
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @return {boolean}
+   * @private
+   */
+  simLocked_(deviceState) {
+    if (!deviceState) {
+      return false;
+    }
     if (!deviceState.simLockStatus) {
       return false;
     }
@@ -314,16 +329,21 @@ Polymer({
       case mojom.NetworkType.kEthernet:
       case mojom.NetworkType.kVPN:
         return false;
+
       case mojom.NetworkType.kTether:
         return true;
+
       case mojom.NetworkType.kWiFi:
         return deviceState.deviceState !== mojom.DeviceStateType.kUninitialized;
+
       case mojom.NetworkType.kCellular:
-        return (deviceState.deviceState !==
-                    mojom.DeviceStateType.kUninitialized &&
-                !this.simLockedOrAbsent_(deviceState)) ||
-            (this.isUpdatedCellularUiEnabled_ &&
-             this.simLockedOrAbsent_(deviceState));
+        if (deviceState.deviceState === mojom.DeviceStateType.kUninitialized) {
+          return false;
+        }
+
+        // Toggle should be shown as long as we are not also showing the UI for
+        // unlocking the SIM.
+        return !this.showSimInfo_(deviceState);
     }
     assertNotReached();
     return false;
