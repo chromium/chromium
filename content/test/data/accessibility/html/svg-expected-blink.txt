@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++svgRoot name='svg'
+++++++svgRoot name='svg' tooltip='SVG Title Tag'
 ++++++++genericContainer
 ++++++++++staticText name='Test'
 ++++++++++++inlineTextBox name='Test'

@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
@@ -265,6 +266,32 @@ TextDecorationStyleToAXTextDecorationStyle(
 
   NOTREACHED();
   return ax::mojom::blink::TextDecorationStyle::kNone;
+}
+
+String GetTitle(blink::Element* element) {
+  if (!element)
+    return String();
+
+  if (blink::SVGElement* svg_element =
+          blink::DynamicTo<blink::SVGElement>(element)) {
+    // Don't use title() in SVG, as it calls innerText() which updates layout.
+    // Unfortunately, this must duplicate some logic from SVGElement::title().
+    if (svg_element->InUseShadowTree()) {
+      String title = GetTitle(svg_element->OwnerShadowHost());
+      if (!title.IsEmpty())
+        return title;
+    }
+    // If we aren't an instance in a <use> or the <use> title was not found,
+    // then find the first <title> child of this element. If a title child was
+    // found, return the text contents.
+    if (auto* title_element =
+            blink::Traversal<blink::SVGTitleElement>::FirstChild(*element)) {
+      return title_element->GetInnerTextWithoutUpdate();
+    }
+    return String();
+  }
+
+  return element->title();
 }
 
 }  // namespace
@@ -5258,15 +5285,9 @@ String AXNodeObject::Placeholder(ax::mojom::blink::NameFrom name_from) const {
 
 String AXNodeObject::Title(ax::mojom::blink::NameFrom name_from) const {
   if (name_from == ax::mojom::blink::NameFrom::kTitle)
-    return String();
+    return String();  // Already exposed the title in the name field.
 
-  if (const auto* element = GetElement()) {
-    String title = element->title();
-    if (!title.IsEmpty())
-      return title;
-  }
-
-  return String();
+  return GetTitle(GetElement());
 }
 
 String AXNodeObject::PlaceholderFromNativeAttribute() const {
