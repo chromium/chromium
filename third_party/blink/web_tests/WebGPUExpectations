@@ -185,6 +185,10 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Fai
 
 crbug.com/1192234 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,setBindGroup:u32array_start_and_length:* [ Failure ]
 
+# crbug.com/1215024
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
+
 # Crash with validation layer.
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
 

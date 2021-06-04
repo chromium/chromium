@@ -127,6 +127,7 @@ src/webgpu/api/validation/validation_test.ts
 src/webgpu/api/validation/attachment_compatibility.spec.ts
 src/webgpu/api/validation/createBindGroup.spec.ts
 src/webgpu/api/validation/createBindGroupLayout.spec.ts
+src/webgpu/api/validation/createComputePipeline.spec.ts
 src/webgpu/api/validation/createPipelineLayout.spec.ts
 src/webgpu/api/validation/createRenderPipeline.spec.ts
 src/webgpu/api/validation/createSampler.spec.ts
