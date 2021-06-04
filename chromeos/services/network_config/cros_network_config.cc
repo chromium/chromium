@@ -433,14 +433,36 @@ std::vector<mojom::SIMInfoPtr> CellularSIMInfosToMojo(
   return sim_info_mojos;
 }
 
-mojom::InhibitReason GetInhibitReason(CellularInhibitor* cellular_inhibitor) {
+bool IsCellularConnecting(NetworkStateHandler* network_state_handler) {
+  NetworkStateHandler::NetworkStateList cellular_networks;
+  network_state_handler->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &cellular_networks);
+  auto iter = std::find_if(cellular_networks.begin(), cellular_networks.end(),
+                           [](const NetworkState* network_state) {
+                             return network_state->IsConnectingState();
+                           });
+  return iter != cellular_networks.end();
+}
+
+mojom::InhibitReason GetInhibitReason(
+    NetworkStateHandler* network_state_handler,
+    CellularInhibitor* cellular_inhibitor) {
   if (!cellular_inhibitor)
     return mojom::InhibitReason::kNotInhibited;
 
   absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
       cellular_inhibitor->GetInhibitReason();
-  if (!inhibit_reason)
+  if (!inhibit_reason) {
+    // For devices with EUICC, the UI should be inhibited when a cellular
+    // network connection is in progress to prevent additional requests. This is
+    // due to complexity in switching slots.
+    if (!chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty() &&
+        IsCellularConnecting(network_state_handler)) {
+      return mojom::InhibitReason::kConnectingToProfile;
+    }
+
     return mojom::InhibitReason::kNotInhibited;
+  }
 
   switch (*inhibit_reason) {
     case CellularInhibitor::InhibitReason::kInstallingProfile:
@@ -458,6 +480,7 @@ mojom::InhibitReason GetInhibitReason(CellularInhibitor* cellular_inhibitor) {
 
 mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     const DeviceState* device,
+    NetworkStateHandler* network_state_handler,
     CellularInhibitor* cellular_inhibitor,
     mojom::DeviceStateType technology_state) {
   mojom::NetworkType type = ShillTypeToMojo(device->type());
@@ -503,7 +526,8 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
   }
   if (type == mojom::NetworkType::kCellular) {
     result->sim_infos = CellularSIMInfosToMojo(device);
-    result->inhibit_reason = GetInhibitReason(cellular_inhibitor);
+    result->inhibit_reason =
+        GetInhibitReason(network_state_handler, cellular_inhibitor);
   }
   return result;
 }
@@ -1958,8 +1982,8 @@ void CrosNetworkConfig::GetDeviceStateList(
       NET_LOG(ERROR) << "Device state unavailable: " << device->name();
       continue;
     }
-    mojom::DeviceStatePropertiesPtr mojo_device =
-        DeviceStateToMojo(device, cellular_inhibitor_, technology_state);
+    mojom::DeviceStatePropertiesPtr mojo_device = DeviceStateToMojo(
+        device, network_state_handler_, cellular_inhibitor_, technology_state);
     if (mojo_device)
       result.emplace_back(std::move(mojo_device));
   }
@@ -2845,6 +2869,17 @@ void CrosNetworkConfig::ScanCompleted(const DeviceState* device) {
 }
 
 void CrosNetworkConfig::ScanStarted(const DeviceState* device) {
+  DeviceListChanged();
+}
+
+void CrosNetworkConfig::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  if (!network->Matches(NetworkTypePattern::Cellular())) {
+    return;
+  }
+  // inhibit_reason device property is dependent on network connection state of
+  // cellular networks. Notify device list change so that clients will update
+  // with new inhibit reason.
   DeviceListChanged();
 }
 

@@ -1344,6 +1344,39 @@ TEST_F(CrosNetworkConfigTest, CellularInhibitState) {
   EXPECT_EQ(mojom::InhibitReason::kInstallingProfile, cellular->inhibit_reason);
 }
 
+TEST_F(CrosNetworkConfigTest, CellularInhibitState_Connecting) {
+  const char kTestEuiccPath[] = "euicc_path";
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kNotInhibited, cellular->inhibit_reason);
+
+  // Set connect requested on cellular network.
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  const NetworkState* network_state =
+      network_state_handler->GetNetworkStateFromGuid("cellular_guid");
+  network_state_handler->SetNetworkConnectRequested(network_state->path(),
+                                                    true);
+
+  // Verify the inhibit state is not set when connecting if there are no EUICC.
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kNotInhibited, cellular->inhibit_reason);
+
+  // Verify the adding EUICC sets the inhibit reason correctly.
+  helper()->hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
+                                            "eid", /*is_active=*/true,
+                                            /*physical_slot=*/0);
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kConnectingToProfile,
+            cellular->inhibit_reason);
+}
+
 TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
   // Assert initial state.
   mojom::DeviceStatePropertiesPtr cellular =
@@ -1633,10 +1666,12 @@ TEST_F(CrosNetworkConfigTest, DeviceListChanged) {
   SetupObserver();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, observer()->device_state_list_changed());
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
 
   // Disable wifi
-  NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-      NetworkTypePattern::WiFi(), false, network_handler::ErrorCallback());
+  network_state_handler->SetTechnologyEnabled(NetworkTypePattern::WiFi(), false,
+                                              network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   // This will trigger three device list updates. First when wifi is in the
   // disabling state, next when it's actually disabled, and lastly when
@@ -1644,22 +1679,31 @@ TEST_F(CrosNetworkConfigTest, DeviceListChanged) {
   EXPECT_EQ(3, observer()->device_state_list_changed());
 
   // Enable Tethering
-  NetworkHandler::Get()->network_state_handler()->SetTetherTechnologyState(
+  network_state_handler->SetTetherTechnologyState(
       NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4, observer()->device_state_list_changed());
 
   // Tests that observers are notified of device state list change
   // when a tether scan begins for a device.
-  NetworkHandler::Get()->network_state_handler()->SetTetherScanState(true);
+  network_state_handler->SetTetherScanState(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(5, observer()->device_state_list_changed());
 
   // Tests that observers are notified of device state list change
   // when a tether scan completes.
-  NetworkHandler::Get()->network_state_handler()->SetTetherScanState(false);
+  network_state_handler->SetTetherScanState(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(6, observer()->device_state_list_changed());
+
+  // Test that observers are notified of device state list change
+  // when a cellular network connection state changes.
+  const NetworkState* network_state =
+      network_state_handler->GetNetworkStateFromGuid("cellular_guid");
+  network_state_handler->SetNetworkConnectRequested(network_state->path(),
+                                                    /*connect_requested=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(7, observer()->device_state_list_changed());
 }
 
 TEST_F(CrosNetworkConfigTest, ActiveNetworksChanged) {
