@@ -851,6 +851,7 @@ void CaptureModeController::FinalizeRecording(bool success,
 
   // Resetting the service remote would terminate its process.
   recording_service_remote_.reset();
+  delegate_->OnServiceRemoteReset();
   recording_service_client_receiver_.reset();
 
   OnVideoFileSaved(thumbnail, success);
