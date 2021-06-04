@@ -93,6 +93,11 @@ class MEDIA_GPU_EXPORT Fourcc {
     // Maps to PIXEL_FORMAT_NV21, V4L2_PIX_FMT_NV21M.
     NM21 = ComposeFourcc('N', 'M', '2', '1'),
 
+    // YUV422 single-planar format.
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv422p.html
+    // Maps to PIXEL_FORMAT_I422, V4L2_PIX_FMT_YUV422P.
+    YU16 = ComposeFourcc('4', '2', '2', 'P'),
+
     // YUV422 multi-planar format.
     // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv422m.html
     // Maps to PIXEL_FORMAT_I422, V4L2_PIX_FMT_YUV422M

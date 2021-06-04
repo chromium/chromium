@@ -39,6 +39,7 @@ absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
     case NV21:
     case NM12:
     case NM21:
+    case YU16:
     case YM16:
     case MT21:
     case MM21:
@@ -75,12 +76,13 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
         return Fourcc(NV12);
       case PIXEL_FORMAT_NV21:
         return Fourcc(NV21);
+      case PIXEL_FORMAT_I422:
+        return Fourcc(YU16);
       case PIXEL_FORMAT_P016LE:
         return Fourcc(P010);
       case PIXEL_FORMAT_UYVY:
         NOTREACHED();
         FALLTHROUGH;
-      case PIXEL_FORMAT_I422:
       case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_I444:
       case PIXEL_FORMAT_RGB24:
@@ -175,6 +177,7 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
     case NV21:
     case NM21:
       return PIXEL_FORMAT_NV21;
+    case YU16:
     case YM16:
       return PIXEL_FORMAT_I422;
     // V4L2_PIX_FMT_MT21C is only used for MT8173 hardware video decoder output
@@ -271,6 +274,7 @@ absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
     case YM21:
     case NM12:
     case NM21:
+    case YU16:
     case YM16:
     case MT21:
     case MM21:
@@ -307,7 +311,9 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
       return Fourcc(NV12);
     case NM21:
       return Fourcc(NV21);
+    case YU16:
     case YM16:
+      return Fourcc(YU16);
     case MT21:
     case MM21:
       return absl::nullopt;
@@ -330,6 +336,7 @@ bool Fourcc::IsMultiPlanar() const {
     case YUYV:
     case NV12:
     case NV21:
+    case YU16:
     case P010:
       return false;
     case YM12:
@@ -368,6 +375,7 @@ static_assert(Fourcc::NV12 == V4L2_PIX_FMT_NV12, "Mismatch Fourcc");
 static_assert(Fourcc::NV21 == V4L2_PIX_FMT_NV21, "Mismatch Fourcc");
 static_assert(Fourcc::NM12 == V4L2_PIX_FMT_NV12M, "Mismatch Fourcc");
 static_assert(Fourcc::NM21 == V4L2_PIX_FMT_NV21M, "Mismatch Fourcc");
+static_assert(Fourcc::YU16 == V4L2_PIX_FMT_YUV422P, "Mismatch Fourcc");
 static_assert(Fourcc::YM16 == V4L2_PIX_FMT_YUV422M, "Mismatch Fourcc");
 static_assert(Fourcc::MT21 == V4L2_PIX_FMT_MT21C, "Mismatch Fourcc");
 #ifdef V4L2_PIX_FMT_MM21
