@@ -164,9 +164,6 @@ class ChannelAssociatedGroupController
   }
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    DCHECK(thread_checker_.CalledOnValidThread());
-    DCHECK(task_runner_->BelongsToCurrentThread());
-
     connector_ = std::make_unique<mojo::Connector>(
         std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
         "IPC Channel");
@@ -213,7 +210,7 @@ class ChannelAssociatedGroupController
   }
 
   void CreateChannelEndpoints(
-      mojo::AssociatedRemote<mojom::Channel>* sender,
+      mojo::PendingAssociatedRemote<mojom::Channel>* sender,
       mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) {
     mojo::InterfaceId sender_id, receiver_id;
     if (set_interface_id_namespace_bit_) {
@@ -239,8 +236,8 @@ class ChannelAssociatedGroupController
     mojo::ScopedInterfaceEndpointHandle receiver_handle =
         CreateScopedInterfaceEndpointHandle(receiver_id);
 
-    sender->Bind(mojo::PendingAssociatedRemote<mojom::Channel>(
-        std::move(sender_handle), 0));
+    *sender = mojo::PendingAssociatedRemote<mojom::Channel>(
+        std::move(sender_handle), 0);
     *receiver = mojo::PendingAssociatedReceiver<mojom::Channel>(
         std::move(receiver_handle));
   }
@@ -1106,7 +1103,7 @@ class MojoBootstrapImpl : public MojoBootstrap {
 
  private:
   void Connect(
-      mojo::AssociatedRemote<mojom::Channel>* sender,
+      mojo::PendingAssociatedRemote<mojom::Channel>* sender,
       mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) override {
     controller_->Bind(std::move(handle_));
     controller_->CreateChannelEndpoints(sender, receiver);

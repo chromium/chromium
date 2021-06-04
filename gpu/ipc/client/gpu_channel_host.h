@@ -166,7 +166,7 @@ class GPU_EXPORT GpuChannelHost
     Listener();
     ~Listener() override;
 
-    // Called on the IO thread.
+    // Called on the GpuChannelHost's thread.
     void Initialize(mojo::ScopedMessagePipeHandle handle,
                     mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
                     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
