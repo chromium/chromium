@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
@@ -801,7 +802,16 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
     ReportingDisposition reporting_disposition,
     const String& devtools_request_id) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  const char kWellKnownConversionRegistrationPath[] =
+      "/.well-known/attribution-reporting/trigger-attribution";
+  if (url.GetPath() != kWellKnownConversionRegistrationPath)
+    return false;
+
+  const bool detached = GetResourceFetcherProperties().IsDetached();
+  UMA_HISTOGRAM_BOOLEAN("Conversions.RedirectInterceptedFrameDetached",
+                        detached);
+
+  if (detached)
     return false;
 
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
@@ -814,11 +824,6 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
       !SecurityOrigin::AreSameOrigin(url, redirect_info->previous_url)) {
     return false;
   }
-
-  const char kWellKnownConversionRegsitrationPath[] =
-      "/.well-known/attribution-reporting/trigger-attribution";
-  if (url.GetPath() != kWellKnownConversionRegsitrationPath)
-    return false;
 
   if (!document_->domWindow()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {

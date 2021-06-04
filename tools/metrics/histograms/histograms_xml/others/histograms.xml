@@ -3540,6 +3540,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RedirectInterceptedFrameDetached" enum="Boolean"
+    expires_after="M95">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often conversions are not handled due to the frame being
+    detached. Recorded when an attribution trigger redirect is received. This is
+    recorded regardless of the Attribution Reporting API being enabled.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
     expires_after="2021-11-07">
   <owner>johnidel@chromium.org</owner>

@@ -1347,6 +1347,43 @@ TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
       net::SiteForCookies::FromUrl(document_url)));
 }
 
+TEST_F(FrameFetchContextTest,
+       SendConversionRequestInsteadOfRedirecting_RecordsMetric) {
+  const bool kDetach = true;
+  const bool kNoDetach = false;
+
+  const char kTriggerURL[] =
+      "https://www.example.com/.well-known/attribution-reporting/"
+      "trigger-attribution";
+  const char kNoTriggerURL[] = "https://www.example.com/";
+
+  struct {
+    KURL url;
+    bool detach;
+    int want;
+  } test_cases[] = {
+      {KURL(kNoTriggerURL), kNoDetach, 0},
+      {KURL(kTriggerURL), kNoDetach, 1},
+      {KURL(kNoTriggerURL), kDetach, 0},
+      {KURL(kTriggerURL), kDetach, 1},
+  };
+
+  for (const auto& test_case : test_cases) {
+    if (test_case.detach)
+      dummy_page_holder = nullptr;
+
+    HistogramTester histograms;
+    GetFetchContext()->SendConversionRequestInsteadOfRedirecting(
+        test_case.url, /*redirect_info=*/absl::nullopt,
+        ReportingDisposition::kReport, /*devtools_request_id=*/"abc");
+    histograms.ExpectUniqueSample(
+        "Conversions.RedirectInterceptedFrameDetached", test_case.detach,
+        test_case.want);
+
+    RecreateFetchContext();
+  }
+}
+
 TEST_F(FrameFetchContextTest, TopFrameOrigin) {
   const KURL document_url("https://www2.example.com/foo/bar");
   RecreateFetchContext(document_url);
