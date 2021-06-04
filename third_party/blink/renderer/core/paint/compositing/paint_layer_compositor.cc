@@ -196,17 +196,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
   if (target_state == DocumentLifecycle::kCompositingInputsClean)
     return;
 
-  {
-    // TODO(szager): Remove this after diagnosing crash.
-    DisableCompositingQueryAsserts query_assert_disabler;
-    CHECK_EQ(InCompositingMode(), (bool)RootGraphicsLayer());
-    if (auto* owner = layout_view_->GetFrame()->OwnerLayoutObject()) {
-      auto* parent_compositor = owner->View()->Compositor();
-      CHECK(parent_compositor->StaleInCompositingMode() ||
-            !RootGraphicsLayer());
-    }
-  }
-
   if (layout_view_->GetFrameView()->ShouldThrottleRendering())
     return;
 
