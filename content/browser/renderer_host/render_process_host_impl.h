@@ -235,7 +235,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
-  const base::TimeTicks& GetInitTimeForNavigationMetrics() override;
+  const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
   void IncrementKeepAliveRefCount() override;
   void DecrementKeepAliveRefCount() override;
@@ -999,8 +999,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // True after ProcessDied(), until the next call to Init().
   bool is_dead_ = false;
 
-  // Stores the time at which the first call to Init happened.
-  base::TimeTicks init_time_;
+  // Stores the time at which the last successful call to Init happened.
+  base::TimeTicks last_init_time_;
 
   // Used to launch and terminate the process without blocking the UI thread.
   std::unique_ptr<ChildProcessLauncher> child_process_launcher_;

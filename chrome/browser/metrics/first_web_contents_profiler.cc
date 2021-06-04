@@ -160,10 +160,8 @@ void FirstWebContentsProfiler::DidFirstVisuallyNonEmptyPaint() {
   }
 
   startup_metric_utils::RecordFirstWebContentsNonEmptyPaint(
-      base::TimeTicks::Now(), web_contents()
-                                  ->GetMainFrame()
-                                  ->GetProcess()
-                                  ->GetInitTimeForNavigationMetrics());
+      base::TimeTicks::Now(),
+      web_contents()->GetMainFrame()->GetProcess()->GetLastInitTime());
 
   FinishedCollectingMetrics(FinishReason::kDone);
 }

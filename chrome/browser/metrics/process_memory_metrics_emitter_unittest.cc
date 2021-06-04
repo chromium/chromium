@@ -13,7 +13,6 @@
 #include "base/process/process_handle.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/renderer_uptime_tracker.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"

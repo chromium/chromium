@@ -2007,7 +2007,7 @@ bool RenderProcessHostImpl::Init() {
     shutdown_requested_ = false;
   }
 
-  init_time_ = base::TimeTicks::Now();
+  last_init_time_ = base::TimeTicks::Now();
   return true;
 }
 
@@ -2785,9 +2785,8 @@ RenderProcessHostImpl::TakeMetricsAllocator() {
   return std::move(metrics_allocator_);
 }
 
-const base::TimeTicks&
-RenderProcessHostImpl::GetInitTimeForNavigationMetrics() {
-  return init_time_;
+const base::TimeTicks& RenderProcessHostImpl::GetLastInitTime() {
+  return last_init_time_;
 }
 
 bool RenderProcessHostImpl::IsProcessBackgrounded() {

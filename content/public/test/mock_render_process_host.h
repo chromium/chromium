@@ -140,7 +140,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
-  const base::TimeTicks& GetInitTimeForNavigationMetrics() override;
+  const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
   size_t GetKeepAliveRefCount() const;
   void IncrementKeepAliveRefCount() override;

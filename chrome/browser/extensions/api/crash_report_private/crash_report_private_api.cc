@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/renderer_uptime_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -86,17 +85,18 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   if (web_contents) {
     error_report.window_type = GetWindowType(web_contents);
 
-    if (web_contents->GetMainFrame() &&
-        web_contents->GetMainFrame()->GetProcess()) {
-      int pid = web_contents->GetMainFrame()->GetProcess()->GetID();
-      base::TimeDelta render_process_uptime =
-          metrics::RendererUptimeTracker::Get()->GetProcessUptime(pid);
-      // Note: This can be 0 in tests or if the process can't be found (implying
-      // process fails to start up or terminated). Report this anyways as it can
-      // hint at race conditions.
-      error_report.renderer_process_uptime_ms =
-          render_process_uptime.InMilliseconds();
+    base::TimeTicks render_process_start_time =
+        web_contents->GetMainFrame()->GetProcess()->GetLastInitTime();
+    base::TimeDelta render_process_uptime;
+    if (!render_process_start_time.is_null()) {
+      render_process_uptime =
+          base::TimeTicks::Now() - render_process_start_time;
     }
+    // Note: This can be 0 in tests or if the process isn't live (implying
+    // process fails to start up or terminated). Report this anyways as it can
+    // hint at race conditions.
+    error_report.renderer_process_uptime_ms =
+        render_process_uptime.InMilliseconds();
   }
 
   error_report.app_locale = g_browser_process->GetApplicationLocale();

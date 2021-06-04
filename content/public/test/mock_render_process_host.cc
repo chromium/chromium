@@ -347,8 +347,7 @@ MockRenderProcessHost::TakeMetricsAllocator() {
   return nullptr;
 }
 
-const base::TimeTicks&
-MockRenderProcessHost::GetInitTimeForNavigationMetrics() {
+const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
   static base::TimeTicks dummy_time = base::TimeTicks::Now();
   return dummy_time;
 }
