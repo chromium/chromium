@@ -8,7 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace performance_manager {
 namespace mechanism {
@@ -41,6 +43,18 @@ bool WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
   PLOG_IF(ERROR, written < 0 && errno != ENOENT)
       << "Write failed on " << reclaim_file << " mode: " << kReclaimMode;
   return written > 0;
+}
+
+void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
+    TrimArcVmWorkingSetCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  if (!arc_session_manager) {
+    LOG(ERROR) << "ArcSessionManager unavailable";
+    std::move(callback).Run(false, "ArcSessionManager unavailable");
+    return;
+  }
+  arc_session_manager->TrimVmMemory(std::move(callback));
 }
 
 bool WorkingSetTrimmerChromeOS::TrimWorkingSet(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 
+#include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
@@ -31,9 +32,16 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
  private:
   friend class base::NoDestructor<WorkingSetTrimmerChromeOS>;
   friend class policies::WorkingSetTrimmerPolicyChromeOS;
+  friend class TestWorkingSetTrimmerChromeOS;
+  using TrimArcVmWorkingSetCallback =
+      base::OnceCallback<void(bool result, const std::string& failure_reason)>;
 
   // TrimWorkingSet based on ProcessId |pid|.
   bool TrimWorkingSet(base::ProcessId pid);
+
+  // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
+  // The function must be called on the UI thread.
+  void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback);
 
   // The constructor is made private to prevent instantiation of this class
   // directly, it should always be retrieved via
