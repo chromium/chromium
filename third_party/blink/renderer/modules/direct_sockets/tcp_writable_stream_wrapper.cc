@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -204,32 +206,15 @@ ScriptPromise TCPWritableStreamWrapper::SinkWrite(
     return ScriptPromise();
   }
 
-  auto* isolate = script_state->GetIsolate();
-
-  ArrayBufferOrArrayBufferView buffer_source;
-  V8ArrayBufferOrArrayBufferView::ToImpl(
-      isolate, chunk.V8Value(), buffer_source,
-      UnionTypeConversionMode::kNotNullable, exception_state);
+  auto* buffer_source = V8BufferSource::Create(
+      script_state_->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
+  DCHECK(buffer_source);
 
-  DCHECK(!buffer_source.IsNull());
-
-  // |data| will not be valid when this function returns.
-  base::span<const uint8_t> data;
-  if (buffer_source.IsArrayBuffer()) {
-    const auto* array_buffer = buffer_source.GetAsArrayBuffer();
-    data = base::make_span(static_cast<const uint8_t*>(array_buffer->Data()),
-                           array_buffer->ByteLength());
-  } else {
-    DCHECK(buffer_source.IsArrayBufferView());
-    const auto* array_buffer_view = buffer_source.GetAsArrayBufferView().Get();
-    data = base::make_span(
-        static_cast<const uint8_t*>(array_buffer_view->BaseAddress()),
-        array_buffer_view->byteLength());
-  }
-
-  return WriteOrCacheData(script_state, data);
+  DOMArrayPiece array_piece(buffer_source);
+  return WriteOrCacheData(script_state,
+                          {array_piece.Bytes(), array_piece.ByteLength()});
 }
 
 // Attempt to write |data|. Cache anything that could not be written

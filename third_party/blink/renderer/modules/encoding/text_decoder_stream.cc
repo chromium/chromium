@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -42,42 +44,23 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
                           TransformStreamDefaultController* controller,
                           ExceptionState& exception_state) override {
-    ArrayBufferOrArrayBufferView bufferSource;
-    V8ArrayBufferOrArrayBufferView::ToImpl(
-        script_state_->GetIsolate(), chunk, bufferSource,
-        UnionTypeConversionMode::kNotNullable, exception_state);
+    auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
+                                                 chunk, exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
 
     // This implements the "get a copy of the bytes held by the buffer source"
     // algorithm (https://heycam.github.io/webidl/#dfn-get-buffer-source-copy).
-    if (bufferSource.IsArrayBufferView()) {
-      const auto* view = bufferSource.GetAsArrayBufferView().Get();
-      const char* start = static_cast<const char*>(view->BaseAddress());
-      size_t length = view->byteLength();
-      if (length > std::numeric_limits<uint32_t>::max()) {
-        exception_state.ThrowRangeError(
-            "Buffer size exceeds maximum heap object size.");
-        return ScriptPromise();
-      }
-      DecodeAndEnqueue(start, static_cast<uint32_t>(length),
-                       WTF::FlushBehavior::kDoNotFlush, controller,
-                       exception_state);
-      return ScriptPromise::CastUndefined(script_state_);
-    }
-    DCHECK(bufferSource.IsArrayBuffer());
-    const auto* array_buffer = bufferSource.GetAsArrayBuffer();
-    const char* start = static_cast<const char*>(array_buffer->Data());
-    size_t length = array_buffer->ByteLength();
-    if (length > std::numeric_limits<uint32_t>::max()) {
+    DOMArrayPiece array_piece(buffer_source);
+    if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");
       return ScriptPromise();
     }
-    DecodeAndEnqueue(start, static_cast<uint32_t>(length),
+    DecodeAndEnqueue(static_cast<char*>(array_piece.Data()),
+                     static_cast<uint32_t>(array_piece.ByteLength()),
                      WTF::FlushBehavior::kDoNotFlush, controller,
                      exception_state);
-
     return ScriptPromise::CastUndefined(script_state_);
   }
 

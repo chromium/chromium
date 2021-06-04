@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_sink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -36,7 +38,7 @@ ScriptPromise SerialPortUnderlyingSink::write(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   // There can only be one call to write() in progress at a time.
-  DCHECK(buffer_source_.IsNull());
+  DCHECK(!buffer_source_);
   DCHECK_EQ(0u, offset_);
   DCHECK(!pending_operation_);
 
@@ -48,9 +50,8 @@ ScriptPromise SerialPortUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  V8ArrayBufferOrArrayBufferView::ToImpl(
-      script_state->GetIsolate(), chunk.V8Value(), buffer_source_,
-      UnionTypeConversionMode::kNotNullable, exception_state);
+  buffer_source_ = V8BufferSource::Create(script_state->GetIsolate(),
+                                          chunk.V8Value(), exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 
@@ -168,27 +169,17 @@ void SerialPortUnderlyingSink::OnFlushOrDrain() {
 void SerialPortUnderlyingSink::WriteData() {
   DCHECK(data_pipe_);
   DCHECK(pending_operation_);
-  DCHECK(!buffer_source_.IsNull());
+  DCHECK(buffer_source_);
 
-  const uint8_t* data = nullptr;
-  uint32_t length = 0;
-  size_t byte_size = 0;
-  if (buffer_source_.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer_source_.GetAsArrayBuffer();
-    byte_size = array->ByteLength();
-    data = static_cast<const uint8_t*>(array->Data());
-  } else {
-    DOMArrayBufferView* view = buffer_source_.GetAsArrayBufferView().Get();
-    byte_size = view->byteLength();
-    data = static_cast<const uint8_t*>(view->BaseAddress());
-  }
-  if (byte_size > std::numeric_limits<uint32_t>::max()) {
+  DOMArrayPiece array_piece(buffer_source_);
+  if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
     pending_exception_ = DOMException::Create(
         "Buffer size exceeds maximum heap object size.", "DataError");
     PipeClosed();
     return;
   }
-  length = static_cast<uint32_t>(byte_size);
+  const uint8_t* data = array_piece.Bytes();
+  const uint32_t length = static_cast<uint32_t>(array_piece.ByteLength());
 
   DCHECK_LT(offset_, length);
   data += offset_;
@@ -200,7 +191,7 @@ void SerialPortUnderlyingSink::WriteData() {
     case MOJO_RESULT_OK:
       offset_ += num_bytes;
       if (offset_ == length) {
-        buffer_source_ = ArrayBufferOrArrayBufferView();
+        buffer_source_ = nullptr;
         offset_ = 0;
         pending_operation_->Resolve();
         pending_operation_ = nullptr;

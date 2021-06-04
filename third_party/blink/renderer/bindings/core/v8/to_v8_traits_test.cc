@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string_or_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
@@ -592,21 +592,21 @@ TEST(ToV8TraitsTest, NullableDate) {
 
 TEST(ToV8TraitsTest, Union) {
   const V8TestingScope scope;
-  const FileOrUSVStringOrFormData usv_string =
-      FileOrUSVStringOrFormData::FromUSVString("https://example.com/");
-  TEST_TOV8_TRAITS(scope, IDLUnionNotINT<FileOrUSVStringOrFormData>,
+  const auto* usv_string =
+      MakeGarbageCollected<V8UnionFileOrFormDataOrUSVString>(
+          "https://example.com/");
+  TEST_TOV8_TRAITS(scope, V8UnionFileOrFormDataOrUSVString,
                    "https://example.com/", usv_string);
 }
 
 TEST(ToV8TraitsTest, NullableUnion) {
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope,
-                   IDLNullable<IDLUnionNotINT<FileOrUSVStringOrFormData>>,
-                   "null", FileOrUSVStringOrFormData());
-  const FileOrUSVStringOrFormData usv_string =
-      FileOrUSVStringOrFormData::FromUSVString("http://example.com/");
-  TEST_TOV8_TRAITS(scope,
-                   IDLNullable<IDLUnionNotINT<FileOrUSVStringOrFormData>>,
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8UnionFileOrFormDataOrUSVString>, "null",
+                   nullptr);
+  const auto* usv_string =
+      MakeGarbageCollected<V8UnionFileOrFormDataOrUSVString>(
+          "http://example.com/");
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8UnionFileOrFormDataOrUSVString>,
                    "http://example.com/", usv_string);
 }
 

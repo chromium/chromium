@@ -4,17 +4,18 @@
 
 #include "third_party/blink/renderer/modules/compression/deflate_transformer.h"
 
-#include <string.h>
 #include <algorithm>
+#include <cstring>
 #include <limits>
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/zlib_partition_alloc.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -56,38 +57,19 @@ ScriptPromise DeflateTransformer::Transform(
     v8::Local<v8::Value> chunk,
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
-  ArrayBufferOrArrayBufferView buffer_source;
-  V8ArrayBufferOrArrayBufferView::ToImpl(
-      script_state_->GetIsolate(), chunk, buffer_source,
-      UnionTypeConversionMode::kNotNullable, exception_state);
-  if (exception_state.HadException()) {
+  auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
+                                               chunk, exception_state);
+  if (exception_state.HadException())
     return ScriptPromise();
-  }
-  if (buffer_source.IsArrayBufferView()) {
-    const auto* view = buffer_source.GetAsArrayBufferView().Get();
-    const uint8_t* start = static_cast<const uint8_t*>(view->BaseAddress());
-    size_t length = view->byteLength();
-    if (length > std::numeric_limits<wtf_size_t>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return ScriptPromise();
-    }
-    Deflate(start, static_cast<wtf_size_t>(length), IsFinished(false),
-            controller, exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
-  }
-  DCHECK(buffer_source.IsArrayBuffer());
-  const auto* array_buffer = buffer_source.GetAsArrayBuffer();
-  const uint8_t* start = static_cast<const uint8_t*>(array_buffer->Data());
-  size_t length = array_buffer->ByteLength();
-  if (length > std::numeric_limits<wtf_size_t>::max()) {
+  DOMArrayPiece array_piece(buffer_source);
+  if (array_piece.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return ScriptPromise();
   }
-  Deflate(start, static_cast<wtf_size_t>(length), IsFinished(false), controller,
-          exception_state);
-
+  Deflate(array_piece.Bytes(),
+          static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
+          controller, exception_state);
   return ScriptPromise::CastUndefined(script_state_);
 }
 

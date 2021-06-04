@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_OUTGOING_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_OUTGOING_STREAM_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
@@ -17,10 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-
-namespace v8 {
-class Isolate;
-}
+#include "v8/include/v8.h"
 
 namespace blink {
 

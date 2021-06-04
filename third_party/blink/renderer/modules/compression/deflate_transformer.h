@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPRESSION_DEFLATE_TRANSFORMER_H_
 
 #include "base/types/strong_alias.h"
-
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
