@@ -52,13 +52,13 @@ std::string GetIdForIcon(ScreenlockBridge::UserPodCustomIcon icon) {
 
 }  // namespace
 
-ScreenlockBridge::UserPodCustomIconOptions::UserPodCustomIconOptions()
+ScreenlockBridge::UserPodCustomIconInfo::UserPodCustomIconInfo()
     : autoshow_tooltip_(false), hardlock_on_click_(false) {}
 
-ScreenlockBridge::UserPodCustomIconOptions::~UserPodCustomIconOptions() {}
+ScreenlockBridge::UserPodCustomIconInfo::~UserPodCustomIconInfo() {}
 
 std::unique_ptr<base::DictionaryValue>
-ScreenlockBridge::UserPodCustomIconOptions::ToDictionaryValue() const {
+ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetString("id", GetIDString());
 
@@ -78,28 +78,28 @@ ScreenlockBridge::UserPodCustomIconOptions::ToDictionaryValue() const {
   return result;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetIcon(
+void ScreenlockBridge::UserPodCustomIconInfo::SetIcon(
     ScreenlockBridge::UserPodCustomIcon icon) {
   icon_ = icon;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetTooltip(
+void ScreenlockBridge::UserPodCustomIconInfo::SetTooltip(
     const std::u16string& tooltip,
     bool autoshow) {
   tooltip_ = tooltip;
   autoshow_tooltip_ = autoshow;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetAriaLabel(
+void ScreenlockBridge::UserPodCustomIconInfo::SetAriaLabel(
     const std::u16string& aria_label) {
   aria_label_ = aria_label;
 }
 
-void ScreenlockBridge::UserPodCustomIconOptions::SetHardlockOnClick() {
+void ScreenlockBridge::UserPodCustomIconInfo::SetHardlockOnClick() {
   hardlock_on_click_ = true;
 }
 
-std::string ScreenlockBridge::UserPodCustomIconOptions::GetIDString() const {
+std::string ScreenlockBridge::UserPodCustomIconInfo::GetIDString() const {
   return GetIdForIcon(icon_);
 }
 

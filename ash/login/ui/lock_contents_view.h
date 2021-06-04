@@ -181,7 +181,7 @@ class ASH_EXPORT LockContentsView
                                           bool enabled) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
   void OnShowEasyUnlockIcon(const AccountId& user,
-                            const EasyUnlockIconOptions& icon) override;
+                            const EasyUnlockIconInfo& icon_info) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
   void OnSystemInfoChanged(bool show,
                            bool enforced,
@@ -248,7 +248,7 @@ class ASH_EXPORT LockContentsView
     bool disable_auth = false;
     bool show_pin_pad_for_password = false;
     size_t autosubmit_pin_length = 0;
-    absl::optional<EasyUnlockIconOptions> easy_unlock_state = absl::nullopt;
+    absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
     FingerprintState fingerprint_state;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;

@@ -55,7 +55,7 @@ void LoginDataDispatcher::Observer::OnLockScreenNoteStateChanged(
 
 void LoginDataDispatcher::Observer::OnShowEasyUnlockIcon(
     const AccountId& user,
-    const EasyUnlockIconOptions& icon) {}
+    const EasyUnlockIconInfo& icon_info) {}
 
 void LoginDataDispatcher::Observer::OnWarningMessageUpdated(
     const std::u16string& message) {}
@@ -184,9 +184,9 @@ void LoginDataDispatcher::SetLockScreenNoteState(mojom::TrayActionState state) {
 
 void LoginDataDispatcher::ShowEasyUnlockIcon(
     const AccountId& user,
-    const EasyUnlockIconOptions& icon) {
+    const EasyUnlockIconInfo& icon_info) {
   for (auto& observer : observers_)
-    observer.OnShowEasyUnlockIcon(user, icon);
+    observer.OnShowEasyUnlockIcon(user, icon_info);
 }
 
 void LoginDataDispatcher::UpdateWarningMessage(const std::u16string& message) {

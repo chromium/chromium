@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/login_user_menu_view.h"
+#include "ash/login/ui/login_remove_account_dialog.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
@@ -24,25 +24,25 @@
 namespace ash {
 namespace {
 // Vertical margin between username and mail.
-constexpr int kUserMenuVerticalMarginUsernameMailDp = 8;
+constexpr int kVerticalMarginUsernameMailDp = 8;
 
 // Vertical margin between labels.
-constexpr int kUserMenuVerticalMarginBetweenLabelsDp = 16;
+constexpr int kVerticalMarginBetweenLabelsDp = 16;
 
-// Horizontal and vertical padding of login user menu view.
-constexpr int kHorizontalPaddingLoginUserMenuViewDp = 8;
-constexpr int kVerticalPaddingLoginUserMenuViewDp = 8;
+// Horizontal and vertical padding of the remove account dialog.
+constexpr int kHorizontalPaddingRemoveAccountDialogDp = 8;
+constexpr int kVerticalPaddingRemoveAccountDialogDp = 8;
 
-constexpr int kUserMenuRemoveUserButtonIdForTest = 1;
+constexpr int kRemoveUserButtonIdForTest = 1;
 
 // Font name of the username headline.
-constexpr char kUserMenuFontNameUsername[] = "Google Sans";
+constexpr char kFontNameUsername[] = "Google Sans";
 
 // Font size of the username headline.
-constexpr int kUserMenuFontSizeUsername = 15;
+constexpr int kFontSizeUsername = 15;
 
 // Line height of the username headline.
-constexpr int kUserMenuLineHeightUsername = 22;
+constexpr int kLineHeightUsername = 22;
 
 // Traps the focus so it does not move from the |trapped_focus| view.
 class TrappedFocusSearch : public views::FocusSearch {
@@ -75,7 +75,7 @@ class TrappedFocusSearch : public views::FocusSearch {
 // A button that holds a child view.
 class RemoveUserButton : public SystemLabelButton {
  public:
-  RemoveUserButton(PressedCallback callback, LoginUserMenuView* bubble)
+  RemoveUserButton(PressedCallback callback, LoginRemoveAccountDialog* bubble)
       : SystemLabelButton(std::move(callback),
                           l10n_util::GetStringUTF16(
                               IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME),
@@ -83,6 +83,8 @@ class RemoveUserButton : public SystemLabelButton {
                           /*multiline*/ true),
         bubble_(bubble) {}
 
+  RemoveUserButton(const RemoveUserButton&) = delete;
+  RemoveUserButton& operator=(const RemoveUserButton&) = delete;
   ~RemoveUserButton() override = default;
 
  private:
@@ -103,35 +105,33 @@ class RemoveUserButton : public SystemLabelButton {
       views::Button::OnKeyEvent(event);
   }
 
-  LoginUserMenuView* bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveUserButton);
+  LoginRemoveAccountDialog* bubble_;
 };
 
-LoginUserMenuView::TestApi::TestApi(LoginUserMenuView* bubble)
+LoginRemoveAccountDialog::TestApi::TestApi(LoginRemoveAccountDialog* bubble)
     : bubble_(bubble) {}
 
-views::View* LoginUserMenuView::TestApi::remove_user_button() {
+views::View* LoginRemoveAccountDialog::TestApi::remove_user_button() {
   return bubble_->remove_user_button_;
 }
 
-views::View* LoginUserMenuView::TestApi::remove_user_confirm_data() {
+views::View* LoginRemoveAccountDialog::TestApi::remove_user_confirm_data() {
   return bubble_->remove_user_confirm_data_;
 }
 
-views::View* LoginUserMenuView::TestApi::managed_user_data() {
+views::View* LoginRemoveAccountDialog::TestApi::managed_user_data() {
   return bubble_->managed_user_data_;
 }
 
-views::Label* LoginUserMenuView::TestApi::username_label() {
+views::Label* LoginRemoveAccountDialog::TestApi::username_label() {
   return bubble_->username_label_;
 }
 
-views::Label* LoginUserMenuView::TestApi::management_disclosure_label() {
+views::Label* LoginRemoveAccountDialog::TestApi::management_disclosure_label() {
   return bubble_->management_disclosure_label_;
 }
 
-LoginUserMenuView::LoginUserMenuView(
+LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     const LoginUserInfo& user,
     views::View* anchor_view,
     LoginButton* bubble_opener,
@@ -145,7 +145,7 @@ LoginUserMenuView::LoginUserMenuView(
       base::UTF8ToUTF16(user.basic_user_info.display_email);
   bool is_owner = user.is_device_owner;
 
-  // User information.
+  // Add texts with user information such as username, email and ownership.
   {
     const std::u16string& username =
         base::UTF8ToUTF16(user.basic_user_info.display_name);
@@ -158,21 +158,20 @@ LoginUserMenuView::LoginUserMenuView(
         new NonAccessibleView("UsernameLabel MarginContainer");
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        kUserMenuVerticalMarginUsernameMailDp));
+        kVerticalMarginUsernameMailDp));
     AddChildView(container);
     // Colors should be updated in OnThemeChanged.
     username_label_ =
         container->AddChildView(login_views_utils::CreateBubbleLabel(
             display_username, nullptr, SK_ColorGREEN,
-            gfx::FontList({kUserMenuFontNameUsername},
-                          gfx::Font::FontStyle::NORMAL,
-                          kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
-            kUserMenuLineHeightUsername));
+            gfx::FontList({kFontNameUsername}, gfx::Font::FontStyle::NORMAL,
+                          kFontSizeUsername, gfx::Font::Weight::MEDIUM),
+            kLineHeightUsername));
     email_label_ =
         container->AddChildView(login_views_utils::CreateBubbleLabel(email));
   }
 
-  // User is managed.
+  // Add a warning text if the user is managed.
   if (user.user_account_manager) {
     managed_user_data_ = new views::View();
     managed_user_data_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -191,7 +190,7 @@ LoginUserMenuView::LoginUserMenuView(
   // accessible data is displayed by accessibility tools.
   set_notify_alert_on_show(!user.can_remove);
 
-  // Remove user.
+  // Add the remove user button and texts about consequences of user removal.
   if (user.can_remove) {
     DCHECK(!is_owner);
     user_manager::UserType type = user.basic_user_info.type;
@@ -208,7 +207,7 @@ LoginUserMenuView::LoginUserMenuView(
     remove_user_confirm_data_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-            kUserMenuVerticalMarginBetweenLabelsDp));
+            kVerticalMarginBetweenLabelsDp));
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
@@ -218,10 +217,10 @@ LoginUserMenuView::LoginUserMenuView(
         login_views_utils::CreateBubbleLabel(part2, this));
 
     remove_user_button_ = new RemoveUserButton(
-        base::BindRepeating(&LoginUserMenuView::RemoveUserButtonPressed,
+        base::BindRepeating(&LoginRemoveAccountDialog::RemoveUserButtonPressed,
                             base::Unretained(this)),
         this);
-    remove_user_button_->SetID(kUserMenuRemoveUserButtonIdForTest);
+    remove_user_button_->SetID(kRemoveUserButtonIdForTest);
     AddChildView(remove_user_button_);
 
     // Traps the focus on the remove user button.
@@ -229,13 +228,13 @@ LoginUserMenuView::LoginUserMenuView(
   }
 
   set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
-  SetPadding(kHorizontalPaddingLoginUserMenuViewDp,
-             kVerticalPaddingLoginUserMenuViewDp);
+  SetPadding(kHorizontalPaddingRemoveAccountDialogDp,
+             kVerticalPaddingRemoveAccountDialogDp);
 }
 
-LoginUserMenuView::~LoginUserMenuView() = default;
+LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
 
-void LoginUserMenuView::ResetState() {
+void LoginRemoveAccountDialog::ResetState() {
   if (managed_user_data_)
     managed_user_data_->SetVisible(true);
   if (remove_user_confirm_data_) {
@@ -248,11 +247,11 @@ void LoginUserMenuView::ResetState() {
   }
 }
 
-LoginButton* LoginUserMenuView::GetBubbleOpener() const {
+LoginButton* LoginRemoveAccountDialog::GetBubbleOpener() const {
   return bubble_opener_;
 }
 
-void LoginUserMenuView::OnThemeChanged() {
+void LoginRemoveAccountDialog::OnThemeChanged() {
   LoginBaseBubbleView::OnThemeChanged();
   username_label_->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(
@@ -269,22 +268,23 @@ void LoginUserMenuView::OnThemeChanged() {
   }
 }
 
-void LoginUserMenuView::RequestFocus() {
+void LoginRemoveAccountDialog::RequestFocus() {
   // This view has no actual interesting contents to focus, so immediately
   // forward to the button.
   if (remove_user_button_)
     remove_user_button_->RequestFocus();
 }
 
-bool LoginUserMenuView::HasFocus() const {
+bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
 }
 
-const char* LoginUserMenuView::GetClassName() const {
-  return "LoginUserMenuView";
+const char* LoginRemoveAccountDialog::GetClassName() const {
+  return "LoginRemoveAccountDialog";
 }
 
-void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void LoginRemoveAccountDialog::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
   if (remove_user_button_) {
     node_data->SetName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
@@ -304,23 +304,23 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
-views::FocusTraversable* LoginUserMenuView::GetPaneFocusTraversable() {
+views::FocusTraversable* LoginRemoveAccountDialog::GetPaneFocusTraversable() {
   return this;
 }
 
-views::FocusSearch* LoginUserMenuView::GetFocusSearch() {
+views::FocusSearch* LoginRemoveAccountDialog::GetFocusSearch() {
   return focus_search_.get();
 }
 
-views::FocusTraversable* LoginUserMenuView::GetFocusTraversableParent() {
+views::FocusTraversable* LoginRemoveAccountDialog::GetFocusTraversableParent() {
   return nullptr;
 }
 
-views::View* LoginUserMenuView::GetFocusTraversableParentView() {
+views::View* LoginRemoveAccountDialog::GetFocusTraversableParentView() {
   return nullptr;
 }
 
-void LoginUserMenuView::RemoveUserButtonPressed() {
+void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
   // Show confirmation warning. The user has to click the button again before
   // we actually allow the exit.
   if (!remove_user_confirm_data_->GetVisible()) {

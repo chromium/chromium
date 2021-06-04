@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_LOGIN_MENU_VIEW_H_
-#define ASH_LOGIN_UI_LOGIN_MENU_VIEW_H_
+#ifndef ASH_LOGIN_UI_PUBLIC_ACCOUNT_MENU_VIEW_H_
+#define ASH_LOGIN_UI_PUBLIC_ACCOUNT_MENU_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
@@ -13,24 +13,24 @@
 
 namespace ash {
 
-// Implements a menu view for login screen.
+// Implements a menu view for the login screen's expanded public account view.
 // This is used instead of views::Combobox because we want a more customisable
 // view for the menu items to support some sepcific styles like nested menu
 // entries which have different left margin (less than regular items) and are
 // not selectable. views::Combobox uses views::MenuItemView which is not very
 // straightforward to customize.
-class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
+class ASH_EXPORT PublicAccountMenuView : public LoginBaseBubbleView {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:
-    explicit TestApi(LoginMenuView* view);
+    explicit TestApi(PublicAccountMenuView* view);
     ~TestApi();
 
     views::View* contents() const;
 
    private:
-    LoginMenuView* const view_;
+    PublicAccountMenuView* const view_;
   };
 
   struct Item {
@@ -45,11 +45,13 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
   using OnSelect = base::RepeatingCallback<void(Item item)>;
   using OnHighlight = base::RepeatingCallback<void(bool by_selection)>;
 
-  LoginMenuView(const std::vector<Item>& items,
-                views::View* anchor_view,
-                LoginButton* opener_,
-                const OnSelect& on_select);
-  ~LoginMenuView() override;
+  PublicAccountMenuView(const std::vector<Item>& items,
+                        views::View* anchor_view,
+                        LoginButton* opener_,
+                        const OnSelect& on_select);
+  PublicAccountMenuView(const PublicAccountMenuView&) = delete;
+  PublicAccountMenuView& operator=(const PublicAccountMenuView&) = delete;
+  ~PublicAccountMenuView() override;
 
   void OnHighlightChange(size_t item_index, bool by_selection);
 
@@ -74,10 +76,8 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
 
   const OnSelect on_select_;
   size_t selected_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginMenuView);
 };
 
 }  // namespace ash
 
-#endif  // ASH_LOGIN_UI_LOGIN_MENU_VIEW_H_
+#endif  // ASH_LOGIN_UI_PUBLIC_ACCOUNT_MENU_VIEW_H_

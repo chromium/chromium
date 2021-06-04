@@ -12,7 +12,7 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/login_user_view.h"
-#include "ash/login/ui/public_account_warning_dialog.h"
+#include "ash/login/ui/public_account_monitoring_info_dialog.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_types.h"
@@ -488,7 +488,7 @@ class RightPaneView : public NonAccessibleView {
               : MonitoringWarningView::WarningType::kSoftWarning);
   }
 
-  void OnLanguageSelected(LoginMenuView::Item item) {
+  void OnLanguageSelected(PublicAccountMenuView::Item item) {
     language_changed_by_user_ = true;
     selected_language_item_ = item;
     language_selection_->SetText(base::UTF8ToUTF16(item.title));
@@ -502,7 +502,7 @@ class RightPaneView : public NonAccessibleView {
             current_user_.basic_user_info.account_id, item.value);
   }
 
-  void OnKeyboardSelected(LoginMenuView::Item item) {
+  void OnKeyboardSelected(PublicAccountMenuView::Item item) {
     selected_keyboard_item_ = item;
     keyboard_selection_->SetText(base::UTF8ToUTF16(item.title));
   }
@@ -510,7 +510,7 @@ class RightPaneView : public NonAccessibleView {
   void PopulateLanguageItems(const std::vector<LocaleItem>& locales) {
     language_items_.clear();
     for (const auto& locale : locales) {
-      LoginMenuView::Item item;
+      PublicAccountMenuView::Item item;
       if (locale.group_name) {
         item.title = locale.group_name.value();
         item.is_group = true;
@@ -526,9 +526,9 @@ class RightPaneView : public NonAccessibleView {
         selected_language_item_ = item;
     }
 
-    LoginMenuView* old_language_menu_view = language_menu_view_;
+    PublicAccountMenuView* old_language_menu_view = language_menu_view_;
 
-    language_menu_view_ = new LoginMenuView(
+    language_menu_view_ = new PublicAccountMenuView(
         language_items_, language_selection_ /*anchor_view*/,
         language_selection_ /*bubble_opener*/,
         base::BindRepeating(&RightPaneView::OnLanguageSelected,
@@ -544,7 +544,7 @@ class RightPaneView : public NonAccessibleView {
       const std::vector<InputMethodItem>& keyboard_layouts) {
     keyboard_items_.clear();
     for (const auto& keyboard : keyboard_layouts) {
-      LoginMenuView::Item item;
+      PublicAccountMenuView::Item item;
       item.title = keyboard.title;
       item.value = keyboard.ime_id;
       item.is_group = false;
@@ -555,9 +555,9 @@ class RightPaneView : public NonAccessibleView {
         selected_keyboard_item_ = item;
     }
 
-    LoginMenuView* old_keyboard_menu_view = keyboard_menu_view_;
+    PublicAccountMenuView* old_keyboard_menu_view = keyboard_menu_view_;
 
-    keyboard_menu_view_ = new LoginMenuView(
+    keyboard_menu_view_ = new PublicAccountMenuView(
         keyboard_items_, keyboard_selection_ /*anchor_view*/,
         keyboard_selection_ /*bubble_opener*/,
         base::BindRepeating(&RightPaneView::OnKeyboardSelected,
@@ -648,13 +648,13 @@ class RightPaneView : public NonAccessibleView {
   // |language_menu_view_| and |keyboard_menu_view_| are parented by the top
   // level view, either LockContentsView or LockDebugView. This allows the menu
   // items to be clicked outside the bounds of the right pane view.
-  LoginMenuView* language_menu_view_ = nullptr;
-  LoginMenuView* keyboard_menu_view_ = nullptr;
+  PublicAccountMenuView* language_menu_view_ = nullptr;
+  PublicAccountMenuView* keyboard_menu_view_ = nullptr;
 
-  LoginMenuView::Item selected_language_item_;
-  LoginMenuView::Item selected_keyboard_item_;
-  std::vector<LoginMenuView::Item> language_items_;
-  std::vector<LoginMenuView::Item> keyboard_items_;
+  PublicAccountMenuView::Item selected_language_item_;
+  PublicAccountMenuView::Item selected_keyboard_item_;
+  std::vector<PublicAccountMenuView::Item> language_items_;
+  std::vector<PublicAccountMenuView::Item> keyboard_items_;
 
   // Local states to check if the locale and whether to show advanced view
   // has been changed by the user. This ensures user action won't be overridden
@@ -692,9 +692,9 @@ views::View* LoginExpandedPublicAccountView::TestApi::advanced_view() {
   return view_->right_pane_->advanced_view_;
 }
 
-PublicAccountWarningDialog*
-LoginExpandedPublicAccountView::TestApi::warning_dialog() {
-  return view_->warning_dialog_;
+PublicAccountMonitoringInfoDialog*
+LoginExpandedPublicAccountView::TestApi::learn_more_dialog() {
+  return view_->learn_more_dialog_;
 }
 
 views::StyledLabel*
@@ -712,20 +712,22 @@ LoginExpandedPublicAccountView::TestApi::keyboard_selection_button() {
   return view_->right_pane_->keyboard_selection_;
 }
 
-LoginMenuView* LoginExpandedPublicAccountView::TestApi::language_menu_view() {
+PublicAccountMenuView*
+LoginExpandedPublicAccountView::TestApi::language_menu_view() {
   return view_->right_pane_->language_menu_view_;
 }
 
-LoginMenuView* LoginExpandedPublicAccountView::TestApi::keyboard_menu_view() {
+PublicAccountMenuView*
+LoginExpandedPublicAccountView::TestApi::keyboard_menu_view() {
   return view_->right_pane_->keyboard_menu_view_;
 }
 
-LoginMenuView::Item
+PublicAccountMenuView::Item
 LoginExpandedPublicAccountView::TestApi::selected_language_item() {
   return view_->right_pane_->selected_language_item_;
 }
 
-LoginMenuView::Item
+PublicAccountMenuView::Item
 LoginExpandedPublicAccountView::TestApi::selected_keyboard_item() {
   return view_->right_pane_->selected_keyboard_item_;
 }
@@ -751,7 +753,7 @@ void LoginExpandedPublicAccountView::TestApi::ResetUserForTest() {
 
 bool LoginExpandedPublicAccountView::TestApi::SelectLanguage(
     const std::string& language_code) {
-  for (LoginMenuView::Item item : view_->right_pane_->language_items_) {
+  for (PublicAccountMenuView::Item item : view_->right_pane_->language_items_) {
     if (item.value == language_code) {
       view_->right_pane_->OnLanguageSelected(item);
       return true;
@@ -762,7 +764,7 @@ bool LoginExpandedPublicAccountView::TestApi::SelectLanguage(
 
 bool LoginExpandedPublicAccountView::TestApi::SelectKeyboard(
     const std::string& ime_id) {
-  for (LoginMenuView::Item item : view_->right_pane_->keyboard_items_) {
+  for (PublicAccountMenuView::Item item : view_->right_pane_->keyboard_items_) {
     if (item.value == ime_id) {
       view_->right_pane_->OnKeyboardSelected(item);
       return true;
@@ -773,7 +775,7 @@ bool LoginExpandedPublicAccountView::TestApi::SelectKeyboard(
 
 std::vector<LocaleItem> LoginExpandedPublicAccountView::TestApi::GetLocales() {
   std::vector<LocaleItem> locales;
-  for (LoginMenuView::Item item : view_->right_pane_->language_items_) {
+  for (PublicAccountMenuView::Item item : view_->right_pane_->language_items_) {
     LocaleItem locale;
     locale.title = item.title;
     locale.language_code = item.value;
@@ -835,8 +837,8 @@ void LoginExpandedPublicAccountView::ProcessPressedEvent(
   if (!GetVisible())
     return;
 
-  // Keep this view to be visible until warning dialog is dismissed.
-  if (warning_dialog_ && warning_dialog_->IsVisible())
+  // Keep this view to be visible until learn more dialog is dismissed.
+  if (learn_more_dialog_ && learn_more_dialog_->IsVisible())
     return;
 
   if (GetBoundsInScreen().Contains(event->root_location()))
@@ -872,13 +874,14 @@ void LoginExpandedPublicAccountView::Hide() {
 }
 
 void LoginExpandedPublicAccountView::ShowWarningDialog() {
-  DCHECK(!warning_dialog_);
-  warning_dialog_ = new PublicAccountWarningDialog(weak_factory_.GetWeakPtr());
-  warning_dialog_->Show();
+  DCHECK(!learn_more_dialog_);
+  learn_more_dialog_ =
+      new PublicAccountMonitoringInfoDialog(weak_factory_.GetWeakPtr());
+  learn_more_dialog_->Show();
 }
 
-void LoginExpandedPublicAccountView::OnWarningDialogClosed() {
-  warning_dialog_ = nullptr;
+void LoginExpandedPublicAccountView::OnLearnMoreDialogClosed() {
+  learn_more_dialog_ = nullptr;
 }
 
 void LoginExpandedPublicAccountView::SetShowFullManagementDisclosure(
@@ -901,8 +904,8 @@ void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
   if (!GetVisible() || event->type() != ui::ET_KEY_PRESSED)
     return;
 
-  // Give warning dialog a chance to handle key event.
-  if (warning_dialog_ && warning_dialog_->IsVisible())
+  // Give learn more dialog a chance to handle key event.
+  if (learn_more_dialog_ && learn_more_dialog_->IsVisible())
     return;
 
   if (event->key_code() == ui::KeyboardCode::VKEY_ESCAPE) {

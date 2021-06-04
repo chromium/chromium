@@ -87,7 +87,7 @@ class EasyUnlockScreenlockStateHandler
 
   // Updates icon's tooltip options.
   void UpdateTooltipOptions(
-      proximity_auth::ScreenlockBridge::UserPodCustomIconOptions* icon_options);
+      proximity_auth::ScreenlockBridge::UserPodCustomIconInfo* icon_info);
 
   // Gets the name to be used for the device. The name depends on the device
   // type (example values: Chromebook and Chromebox).

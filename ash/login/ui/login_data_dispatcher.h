@@ -95,7 +95,7 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
 
     // Called when an easy unlock icon should be displayed.
     virtual void OnShowEasyUnlockIcon(const AccountId& user,
-                                      const EasyUnlockIconOptions& icon);
+                                      const EasyUnlockIconInfo& icon_info);
 
     // Called when a warning message should be displayed, or hidden if |message|
     // is empty.
@@ -181,7 +181,7 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void ForceOnlineSignInForUser(const AccountId& user) override;
   void SetLockScreenNoteState(mojom::TrayActionState state);
   void ShowEasyUnlockIcon(const AccountId& user,
-                          const EasyUnlockIconOptions& icon) override;
+                          const EasyUnlockIconInfo& icon_info) override;
   void UpdateWarningMessage(const std::u16string& message) override;
   void SetSystemInfo(bool show,
                      bool enforced,

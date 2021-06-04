@@ -80,8 +80,8 @@ enum class MultiProfileUserBehavior {
   OWNER_PRIMARY_ONLY = 3,
 };
 
-// Easy unlock icon choices.
-enum class EasyUnlockIconId {
+// Easy unlock icon states.
+enum class EasyUnlockIconState {
   // No icon shown.
   NONE,
   // The user has clicked the easy unlock icon and disabled easy unlock for this
@@ -122,17 +122,17 @@ enum class FingerprintState {
 };
 
 // Information about the custom icon in the user pod.
-struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
-  EasyUnlockIconOptions();
-  EasyUnlockIconOptions(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions(EasyUnlockIconOptions&& other);
-  ~EasyUnlockIconOptions();
+struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
+  EasyUnlockIconInfo();
+  EasyUnlockIconInfo(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo(EasyUnlockIconInfo&& other);
+  ~EasyUnlockIconInfo();
 
-  EasyUnlockIconOptions& operator=(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions& operator=(EasyUnlockIconOptions&& other);
+  EasyUnlockIconInfo& operator=(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo& operator=(EasyUnlockIconInfo&& other);
 
   // Icon that should be displayed.
-  EasyUnlockIconId icon = EasyUnlockIconId::NONE;
+  EasyUnlockIconState icon_state = EasyUnlockIconState::NONE;
   // Tooltip that is associated with the icon. This is shown automatically if
   // |autoshow_tooltip| is true. The user can always see the tooltip if they
   // hover over the icon. The tooltip should be used for the accessibility label

@@ -145,7 +145,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   InputFieldMode input_field_mode() const { return input_field_mode_; }
 
   // Add an easy unlock icon.
-  void SetEasyUnlockIcon(EasyUnlockIconId id,
+  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label);
 
   // Captures any metadata about the current view state that will be used for

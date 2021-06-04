@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
-#define ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
+#ifndef ASH_LOGIN_UI_LOGIN_REMOVE_ACCOUNT_DIALOG_H_
+#define ASH_LOGIN_UI_LOGIN_REMOVE_ACCOUNT_DIALOG_H_
 
 #include <string>
 
@@ -20,12 +20,16 @@ namespace ash {
 struct LoginUserInfo;
 class RemoveUserButton;
 
-class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
-                                     public views::FocusTraversable {
+class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
+                                            public views::FocusTraversable {
  public:
   class TestApi {
    public:
-    explicit TestApi(LoginUserMenuView* bubble);
+    explicit TestApi(LoginRemoveAccountDialog* bubble);
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+    ~TestApi() = default;
+
     views::View* remove_user_button();
     views::View* remove_user_confirm_data();
     views::View* managed_user_data();
@@ -33,18 +37,17 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
     views::Label* management_disclosure_label();
 
    private:
-    LoginUserMenuView* bubble_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
+    LoginRemoveAccountDialog* bubble_;
   };
 
-  LoginUserMenuView(const LoginUserInfo& user,
-                    views::View* anchor_view,
-                    LoginButton* bubble_opener,
-                    base::RepeatingClosure on_remove_user_warning_shown,
-                    base::RepeatingClosure on_remove_user_requested);
-
-  ~LoginUserMenuView() override;
+  LoginRemoveAccountDialog(const LoginUserInfo& user,
+                           views::View* anchor_view,
+                           LoginButton* bubble_opener,
+                           base::RepeatingClosure on_remove_user_warning_shown,
+                           base::RepeatingClosure on_remove_user_requested);
+  LoginRemoveAccountDialog(const LoginRemoveAccountDialog&) = delete;
+  LoginRemoveAccountDialog& operator=(const LoginRemoveAccountDialog&) = delete;
+  ~LoginRemoveAccountDialog() override;
 
   // Resets the user menu to the state where Remove User has not been pressed.
   void ResetState();
@@ -81,10 +84,8 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   std::u16string warning_message_;
 
   std::unique_ptr<views::FocusSearch> focus_search_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUserMenuView);
 };
 
 }  // namespace ash
 
-#endif  // ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
+#endif  // ASH_LOGIN_UI_LOGIN_REMOVE_ACCOUNT_DIALOG_H_

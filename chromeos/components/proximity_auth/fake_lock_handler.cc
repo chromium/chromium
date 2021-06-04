@@ -15,7 +15,7 @@ void FakeLockHandler::ShowBannerMessage(const std::u16string& message,
 
 void FakeLockHandler::ShowUserPodCustomIcon(
     const AccountId& account_id,
-    const ScreenlockBridge::UserPodCustomIconOptions& icon) {}
+    const ScreenlockBridge::UserPodCustomIconInfo& icon_info) {}
 
 void FakeLockHandler::HideUserPodCustomIcon(const AccountId& account_id) {}
 

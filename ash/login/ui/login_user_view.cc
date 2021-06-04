@@ -379,8 +379,9 @@ views::View* LoginUserView::TestApi::dropdown() const {
   return view_->dropdown_;
 }
 
-LoginUserMenuView* LoginUserView::TestApi::menu() const {
-  return view_->menu_;
+LoginRemoveAccountDialog* LoginUserView::TestApi::remove_account_dialog()
+    const {
+  return view_->remove_account_dialog_;
 }
 
 views::View* LoginUserView::TestApi::enterprise_icon() const {
@@ -480,15 +481,15 @@ LoginUserView::~LoginUserView() = default;
 void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
   current_user_ = user;
 
-  if (menu_ && menu_->parent()) {
-    menu_->parent()->RemoveChildView(menu_);
-    delete menu_;
+  if (remove_account_dialog_ && remove_account_dialog_->parent()) {
+    remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
+    delete remove_account_dialog_;
   }
 
-  menu_ = new LoginUserMenuView(current_user_, dropdown_ /*anchor_view*/,
-                                dropdown_ /*bubble_opener*/,
-                                on_remove_warning_shown_, on_remove_);
-  menu_->SetVisible(false);
+  remove_account_dialog_ = new LoginRemoveAccountDialog(
+      current_user_, dropdown_ /*anchor_view*/, dropdown_ /*bubble_opener*/,
+      on_remove_warning_shown_, on_remove_);
+  remove_account_dialog_->SetVisible(false);
 
   if (animate) {
     // Stop any existing animation.
@@ -597,29 +598,30 @@ void LoginUserView::OnHover(bool has_hover) {
 
 void LoginUserView::DropdownButtonPressed() {
   DCHECK(dropdown_);
-  DCHECK(menu_);
+  DCHECK(remove_account_dialog_);
 
-  // If menu is showing, just close it
-  if (menu_->GetVisible()) {
-    menu_->Hide();
+  // If the remove account dialog is showing, just close it.
+  if (remove_account_dialog_->GetVisible()) {
+    remove_account_dialog_->Hide();
     return;
   }
 
-  bool opener_focused =
-      menu_->GetBubbleOpener() && menu_->GetBubbleOpener()->HasFocus();
+  bool opener_focused = remove_account_dialog_->GetBubbleOpener() &&
+                        remove_account_dialog_->GetBubbleOpener()->HasFocus();
 
-  if (!menu_->parent())
-    login_views_utils::GetBubbleContainer(this)->AddChildView(menu_);
+  if (!remove_account_dialog_->parent())
+    login_views_utils::GetBubbleContainer(this)->AddChildView(
+        remove_account_dialog_);
 
   // Reset state in case the remove-user button was clicked once previously.
-  menu_->ResetState();
-  menu_->Show();
+  remove_account_dialog_->ResetState();
+  remove_account_dialog_->Show();
 
-  // If the menu was opened by pressing Enter on the focused dropdown, focus
-  // should automatically go to the remove-user button (for keyboard
-  // accessibility).
+  // If the remove account dialog was opened by pressing Enter on the focused
+  // dropdown, focus should automatically go to the remove-user button (for
+  // keyboard accessibility).
   if (opener_focused)
-    menu_->RequestFocus();
+    remove_account_dialog_->RequestFocus();
 }
 
 void LoginUserView::UpdateCurrentUserState() {

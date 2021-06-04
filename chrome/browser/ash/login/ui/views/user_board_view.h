@@ -45,8 +45,8 @@ class UserBoardView {
                                  bool is_warning) = 0;
   virtual void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions&
-          icon) = 0;
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo&
+          icon_info) = 0;
   virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
   virtual void SetAuthType(const AccountId& account_id,
                            proximity_auth::mojom::AuthType auth_type,

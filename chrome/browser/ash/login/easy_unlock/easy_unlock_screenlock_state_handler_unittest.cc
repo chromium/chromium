@@ -104,13 +104,13 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions& icon)
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
       override {
     ASSERT_TRUE(account_id_ == account_id)
         << "account_id_=" << account_id_.Serialize()
         << " != account_id=" << account_id.Serialize();
     ++show_icon_count_;
-    last_custom_icon_ = icon.ToDictionaryValue();
+    last_custom_icon_ = icon_info.ToDictionaryValue();
     ValidateCustomIcon();
   }
 

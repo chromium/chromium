@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
+#include "ash/login/ui/login_remove_account_dialog.h"
 #include "ash/login/ui/login_test_base.h"
-#include "ash/login/ui/login_user_menu_view.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,9 +21,9 @@ namespace {
 constexpr int kBubbleAnchorViewSizeDp = 100;
 }  // namespace
 
-using LoginUserMenuViewTest = LoginTestBase;
+using LoginRemoveAccountDialogTest = LoginTestBase;
 
-TEST_F(LoginUserMenuViewTest, RemoveUserRequiresTwoActivations) {
+TEST_F(LoginRemoveAccountDialogTest, RemoveUserRequiresTwoActivations) {
   auto* anchor = new views::View;
   anchor->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -34,7 +34,7 @@ TEST_F(LoginUserMenuViewTest, RemoveUserRequiresTwoActivations) {
 
   LoginUserInfo login_user_info;
   login_user_info.can_remove = true;
-  auto* bubble = new LoginUserMenuView(
+  auto* bubble = new LoginRemoveAccountDialog(
       login_user_info, anchor, nullptr /*bubble_opener*/,
       base::BindRepeating([](bool* warning_called) { *warning_called = true; },
                           &remove_warning_called),
@@ -63,7 +63,7 @@ TEST_F(LoginUserMenuViewTest, RemoveUserRequiresTwoActivations) {
   EXPECT_TRUE(remove_called);
 }
 
-TEST_F(LoginUserMenuViewTest, LongUserNameAndEmailLaidOutCorrectly) {
+TEST_F(LoginRemoveAccountDialogTest, LongUserNameAndEmailLaidOutCorrectly) {
   auto* anchor = new views::View;
   anchor->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -77,16 +77,16 @@ TEST_F(LoginUserMenuViewTest, LongUserNameAndEmailLaidOutCorrectly) {
   login_user_info.basic_user_info.type = user_manager::USER_TYPE_REGULAR;
   login_user_info.is_device_owner = false;
   login_user_info.can_remove = true;
-  auto* bubble =
-      new LoginUserMenuView(login_user_info, anchor, nullptr /*bubble_opener*/,
-                            base::DoNothing(), base::DoNothing());
+  auto* bubble = new LoginRemoveAccountDialog(
+      login_user_info, anchor, nullptr /*bubble_opener*/, base::DoNothing(),
+      base::DoNothing());
 
   anchor->AddChildView(bubble);
   bubble->Show();
 
   EXPECT_TRUE(bubble->GetVisible());
 
-  LoginUserMenuView::TestApi test_api(bubble);
+  LoginRemoveAccountDialog::TestApi test_api(bubble);
   views::View* remove_user_button = test_api.remove_user_button();
   views::View* remove_user_confirm_data = test_api.remove_user_confirm_data();
   views::View* username_label = test_api.username_label();
@@ -109,7 +109,7 @@ TEST_F(LoginUserMenuViewTest, LongUserNameAndEmailLaidOutCorrectly) {
       remove_user_button->GetBoundsInScreen()));
 }
 
-TEST_F(LoginUserMenuViewTest, LoginButtonRipple) {
+TEST_F(LoginRemoveAccountDialogTest, LoginButtonRipple) {
   auto* container = new views::View();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -127,9 +127,9 @@ TEST_F(LoginUserMenuViewTest, LoginButtonRipple) {
   EXPECT_EQ(ink_drop_api.ink_drop_mode(), views::InkDropHost::InkDropMode::ON);
   EXPECT_TRUE(ink_drop_api.HasInkDrop());
 
-  auto* bubble = new LoginUserMenuView(LoginUserInfo(), container /*anchor*/,
-                                       bubble_opener, base::DoNothing(),
-                                       base::DoNothing());
+  auto* bubble = new LoginRemoveAccountDialog(
+      LoginUserInfo(), container /*anchor*/, bubble_opener, base::DoNothing(),
+      base::DoNothing());
 
   container->AddChildView(bubble);
 
@@ -147,7 +147,7 @@ TEST_F(LoginUserMenuViewTest, LoginButtonRipple) {
   EXPECT_FALSE(ink_drop_api.GetInkDrop()->IsHighlightFadingInOrVisible());
 }
 
-TEST_F(LoginUserMenuViewTest, ResetStateHidesConfirmData) {
+TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
   auto* container = new views::View;
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -155,14 +155,14 @@ TEST_F(LoginUserMenuViewTest, ResetStateHidesConfirmData) {
 
   LoginUserInfo login_user_info;
   login_user_info.can_remove = true;
-  auto* bubble = new LoginUserMenuView(login_user_info, nullptr /*anchor*/,
-                                       nullptr /*bubble_opener*/,
-                                       base::DoNothing(), base::DoNothing());
+  auto* bubble = new LoginRemoveAccountDialog(
+      login_user_info, nullptr /*anchor*/, nullptr /*bubble_opener*/,
+      base::DoNothing(), base::DoNothing());
   container->AddChildView(bubble);
 
   bubble->Show();
 
-  LoginUserMenuView::TestApi test_api(bubble);
+  LoginRemoveAccountDialog::TestApi test_api(bubble);
   EXPECT_FALSE(test_api.remove_user_confirm_data()->GetVisible());
 
   test_api.remove_user_button()->RequestFocus();

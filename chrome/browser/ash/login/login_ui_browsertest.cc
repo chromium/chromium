@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
   LoginAndLock(not_managed_user, nullptr);
   EXPECT_FALSE(
       ash::LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user.account_id));
 }
 
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        EnterpriseIconInvisibleNotManagedUser) {
   EXPECT_FALSE(
       ash::LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user.account_id));
 }
 
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
   LoginAndLock(managed_user, &managed_user_policy_mixin_);
   EXPECT_TRUE(
       ash::LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user.account_id));
 }
 
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        EnterpriseIconVisibleManagedUser) {
   EXPECT_TRUE(
       ash::LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user.account_id));
 }
 
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
   screen_locker_tester.Lock();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedIconShown(
       logged_in_user_mixin_.GetAccountId()));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       logged_in_user_mixin_.GetAccountId()));
 }
 
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
                        EnterpriseIconVisibleChildUser) {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedIconShown(
       logged_in_user_mixin_.GetAccountId()));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       logged_in_user_mixin_.GetAccountId()));
 }
 

@@ -329,10 +329,10 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
                   base::Unretained(this)));
   }
 
-  void SetEasyUnlockIcon(EasyUnlockIconId icon_id,
+  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label) {
-    icon_id_ = icon_id;
-    UpdateImage(icon_id);
+    icon_state_ = icon_state;
+    UpdateImage(icon_state);
     SetAccessibleName(accessibility_label);
   }
 
@@ -341,7 +341,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    UpdateImage(icon_id_);
+    UpdateImage(icon_state_);
   }
 
   // views::Button:
@@ -369,8 +369,8 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
                        : ButtonState::STATE_NORMAL);
   }
 
-  void UpdateImage(EasyUnlockIconId icon_id) {
-    // If the icon state changes from EasyUnlockIconId::SPINNER to something
+  void UpdateImage(EasyUnlockIconState icon_state) {
+    // If the icon state changes from EasyUnlockIconState::SPINNER to something
     // else, we need to abort the current opacity animation and set back the
     // opacity to 100%. This can be done by destroying the layer that we do not
     // use anymore.
@@ -382,32 +382,32 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
     SkColor color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorPrimary);
 
-    switch (icon_id) {
-      case EasyUnlockIconId::NONE:
+    switch (icon_state) {
+      case EasyUnlockIconState::NONE:
         // The easy unlock icon will be set to invisible. Do nothing.
         break;
-      case EasyUnlockIconId::HARDLOCKED:
+      case EasyUnlockIconState::HARDLOCKED:
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorProminent);
         break;
-      case EasyUnlockIconId::LOCKED:
+      case EasyUnlockIconState::LOCKED:
         // This is the default case in terms of icon and color.
         break;
-      case EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED:
+      case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
         color = AshColorProvider::GetDisabledColor(
             color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary));
         break;
-      case EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT:
+      case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning);
         break;
-      case EasyUnlockIconId::UNLOCKED:
+      case EasyUnlockIconState::UNLOCKED:
         icon = &kLockScreenEasyUnlockOpenIcon;
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPositive);
         break;
-      case EasyUnlockIconId::SPINNER: {
+      case EasyUnlockIconState::SPINNER: {
         SetPaintToLayer();
         layer()->SetFillsBoundsOpaquely(false);
         std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
@@ -444,7 +444,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   // run immediately.
   bool immediately_hover_for_test_ = false;
 
-  EasyUnlockIconId icon_id_ = EasyUnlockIconId::LOCKED;
+  EasyUnlockIconState icon_state_ = EasyUnlockIconState::LOCKED;
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockIcon);
 };
@@ -711,13 +711,13 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
 }
 
 void LoginPasswordView::SetEasyUnlockIcon(
-    EasyUnlockIconId id,
+    EasyUnlockIconState icon_state,
     const std::u16string& accessibility_label) {
   // Update icon.
-  easy_unlock_icon_->SetEasyUnlockIcon(id, accessibility_label);
+  easy_unlock_icon_->SetEasyUnlockIcon(icon_state, accessibility_label);
 
-  // Update icon visiblity.
-  bool has_icon = id != EasyUnlockIconId::NONE;
+  // Update icon visibility.
+  bool has_icon = icon_state != EasyUnlockIconState::NONE;
   // We do not want to schedule a new animation when the user switches from an
   // account to another.
   if (should_show_easy_unlock_ == has_icon)

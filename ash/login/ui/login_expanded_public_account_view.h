@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/login/ui/login_menu_view.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/login/ui/public_account_menu_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -24,7 +24,7 @@ class ArrowButtonView;
 struct LocaleItem;
 class LoginUserView;
 class RightPaneView;
-class PublicAccountWarningDialog;
+class PublicAccountMonitoringInfoDialog;
 struct LoginUserInfo;
 
 // Implements an expanded view for the public account user to select language
@@ -41,14 +41,14 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     views::View* advanced_view_button();
     ArrowButtonView* submit_button();
     views::View* advanced_view();
-    PublicAccountWarningDialog* warning_dialog();
+    PublicAccountMonitoringInfoDialog* learn_more_dialog();
     views::StyledLabel* learn_more_label();
     views::View* language_selection_button();
     views::View* keyboard_selection_button();
-    LoginMenuView* language_menu_view();
-    LoginMenuView* keyboard_menu_view();
-    LoginMenuView::Item selected_language_item();
-    LoginMenuView::Item selected_keyboard_item();
+    PublicAccountMenuView* language_menu_view();
+    PublicAccountMenuView* keyboard_menu_view();
+    PublicAccountMenuView::Item selected_language_item();
+    PublicAccountMenuView::Item selected_keyboard_item();
     views::ImageView* monitoring_warning_icon();
     views::Label* monitoring_warning_label();
     void ResetUserForTest();
@@ -72,7 +72,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   const LoginUserInfo& current_user() const;
   void Hide();
   void ShowWarningDialog();
-  void OnWarningDialogClosed();
+  void OnLearnMoreDialogClosed();
   void SetShowFullManagementDisclosure(bool show_full_management_disclosure);
 
   // views::View:
@@ -85,7 +85,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   LoginUserView* user_view_ = nullptr;
   RightPaneView* right_pane_ = nullptr;
   OnPublicSessionViewDismissed on_dismissed_;
-  PublicAccountWarningDialog* warning_dialog_ = nullptr;
+  PublicAccountMonitoringInfoDialog* learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;
 
   base::WeakPtrFactory<LoginExpandedPublicAccountView> weak_factory_{this};

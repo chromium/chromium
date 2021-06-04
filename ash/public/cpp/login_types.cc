@@ -8,17 +8,16 @@
 
 namespace ash {
 
-EasyUnlockIconOptions::EasyUnlockIconOptions() = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(EasyUnlockIconOptions&& other) =
+EasyUnlockIconInfo::EasyUnlockIconInfo() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(const EasyUnlockIconInfo& other) =
     default;
-EasyUnlockIconOptions::~EasyUnlockIconOptions() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(EasyUnlockIconInfo&& other) = default;
+EasyUnlockIconInfo::~EasyUnlockIconInfo() = default;
 
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    EasyUnlockIconOptions&& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(
+    const EasyUnlockIconInfo& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(EasyUnlockIconInfo&& other) =
+    default;
 
 InputMethodItem::InputMethodItem() = default;
 InputMethodItem::InputMethodItem(const InputMethodItem& other) = default;

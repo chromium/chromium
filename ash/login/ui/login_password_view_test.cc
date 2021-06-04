@@ -244,7 +244,7 @@ TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Enable icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
 
@@ -276,7 +276,7 @@ TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Enable icon, enable immediate hovering.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   test_api.set_immediately_hover_easy_unlock_icon();
   ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
@@ -316,7 +316,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Show the easy unlock icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   // The easy unlock icon should be visible.
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
@@ -347,7 +347,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Hide the easy unlock icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
                            std::u16string() /*accessibility_label*/);
   // Nothing should be displayed.
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
@@ -359,13 +359,13 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
 
   // Then trigger the easy unlock icon, it should be displayed immediately.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Hide the easy unlock icon, the capslock icon should be shown.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
                            std::u16string() /*accessibility_label*/);
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_TRUE(test_api.capslock_icon()->GetVisible());

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/login_menu_view.h"
+#include "ash/login/ui/public_account_menu_view.h"
 
 #include <algorithm>
 #include <iterator>
@@ -32,8 +32,8 @@ namespace {
 
 class MenuItemView : public views::Button {
  public:
-  MenuItemView(const LoginMenuView::Item& item,
-               const LoginMenuView::OnHighlight& on_highlight)
+  MenuItemView(const PublicAccountMenuView::Item& item,
+               const PublicAccountMenuView::OnHighlight& on_highlight)
       : views::Button(base::BindRepeating(&MenuItemView::ButtonPressed,
                                           base::Unretained(this))),
         item_(item),
@@ -65,7 +65,8 @@ class MenuItemView : public views::Button {
         this,
         base::BindRepeating(&MenuItemView::OnHover, base::Unretained(this)));
   }
-
+  MenuItemView(const MenuItemView&) = delete;
+  MenuItemView& operator=(const MenuItemView&) = delete;
   ~MenuItemView() override = default;
 
   // views::View:
@@ -84,7 +85,7 @@ class MenuItemView : public views::Button {
     on_highlight_.Run(false /*by_selection*/);
   }
 
-  const LoginMenuView::Item& item() const { return item_; }
+  const PublicAccountMenuView::Item& item() const { return item_; }
 
  private:
   void ButtonPressed() {
@@ -92,43 +93,42 @@ class MenuItemView : public views::Button {
       on_highlight_.Run(true /*by_selection*/);
   }
 
-  const LoginMenuView::Item item_;
-  const LoginMenuView::OnHighlight on_highlight_;
+  const PublicAccountMenuView::Item item_;
+  const PublicAccountMenuView::OnHighlight on_highlight_;
   std::unique_ptr<HoverNotifier> hover_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemView);
 };
 
 class LoginScrollBar : public views::OverlayScrollBar {
  public:
   LoginScrollBar() : OverlayScrollBar(false) {}
+  LoginScrollBar(const LoginScrollBar&) = delete;
+  LoginScrollBar& operator=(const LoginScrollBar&) = delete;
+  ~LoginScrollBar() override = default;
 
   // OverlayScrollBar:
   bool OnKeyPressed(const ui::KeyEvent& event) override {
     // Let LoginMenuView to handle up/down keypress.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScrollBar);
 };
 
 }  // namespace
 
-LoginMenuView::TestApi::TestApi(LoginMenuView* view) : view_(view) {}
+PublicAccountMenuView::TestApi::TestApi(PublicAccountMenuView* view)
+    : view_(view) {}
 
-LoginMenuView::TestApi::~TestApi() = default;
+PublicAccountMenuView::TestApi::~TestApi() = default;
 
-views::View* LoginMenuView::TestApi::contents() const {
+views::View* PublicAccountMenuView::TestApi::contents() const {
   return view_->contents_;
 }
 
-LoginMenuView::Item::Item() = default;
+PublicAccountMenuView::Item::Item() = default;
 
-LoginMenuView::LoginMenuView(const std::vector<Item>& items,
-                             views::View* anchor_view,
-                             LoginButton* opener,
-                             const OnSelect& on_select)
+PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
+                                             views::View* anchor_view,
+                                             LoginButton* opener,
+                                             const OnSelect& on_select)
     : LoginBaseBubbleView(anchor_view), opener_(opener), on_select_(on_select) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -154,7 +154,7 @@ LoginMenuView::LoginMenuView(const std::vector<Item>& items,
   for (size_t i = 0; i < items.size(); i++) {
     const Item& item = items[i];
     contents->AddChildView(new MenuItemView(
-        item, base::BindRepeating(&LoginMenuView::OnHighlightChange,
+        item, base::BindRepeating(&PublicAccountMenuView::OnHighlightChange,
                                   base::Unretained(this), i)));
 
     if (item.selected)
@@ -164,9 +164,10 @@ LoginMenuView::LoginMenuView(const std::vector<Item>& items,
   scroller_->SetVerticalScrollBar(std::make_unique<LoginScrollBar>());
 }
 
-LoginMenuView::~LoginMenuView() = default;
+PublicAccountMenuView::~PublicAccountMenuView() = default;
 
-void LoginMenuView::OnHighlightChange(size_t item_index, bool by_selection) {
+void PublicAccountMenuView::OnHighlightChange(size_t item_index,
+                                              bool by_selection) {
   selected_index_ = item_index;
   views::View* highlight_item = contents_->children()[item_index];
   for (views::View* child : contents_->GetChildrenInZOrder()) {
@@ -182,16 +183,16 @@ void LoginMenuView::OnHighlightChange(size_t item_index, bool by_selection) {
   contents_->SchedulePaint();
 }
 
-LoginButton* LoginMenuView::GetBubbleOpener() const {
+LoginButton* PublicAccountMenuView::GetBubbleOpener() const {
   return opener_;
 }
 
-void LoginMenuView::OnFocus() {
+void PublicAccountMenuView::OnFocus() {
   // Forward the focus to the selected child view.
   contents_->children()[selected_index_]->RequestFocus();
 }
 
-bool LoginMenuView::OnKeyPressed(const ui::KeyEvent& event) {
+bool PublicAccountMenuView::OnKeyPressed(const ui::KeyEvent& event) {
   const ui::KeyboardCode key = event.key_code();
   if (key == ui::VKEY_UP || key == ui::VKEY_DOWN) {
     FindNextItem(key == ui::VKEY_UP)->RequestFocus();
@@ -201,12 +202,13 @@ bool LoginMenuView::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void LoginMenuView::VisibilityChanged(View* starting_from, bool is_visible) {
+void PublicAccountMenuView::VisibilityChanged(View* starting_from,
+                                              bool is_visible) {
   if (is_visible)
     contents_->children()[selected_index_]->RequestFocus();
 }
 
-views::View* LoginMenuView::FindNextItem(bool reverse) {
+views::View* PublicAccountMenuView::FindNextItem(bool reverse) {
   const auto& children = contents_->children();
   const auto is_item = [](views::View* v) {
     return !static_cast<MenuItemView*>(v)->item().is_group;

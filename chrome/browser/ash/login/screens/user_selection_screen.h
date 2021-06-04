@@ -78,7 +78,7 @@ class UserSelectionScreen
                          bool is_warning) override;
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions& icon)
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
       override;
   void HideUserPodCustomIcon(const AccountId& account_id) override;
 

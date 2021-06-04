@@ -937,17 +937,17 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockForceTooltipCreatesTooltipWidget) {
 
   // Show an icon with |autoshow_tooltip| is false. Tooltip bubble is not
   // activated.
-  EasyUnlockIconOptions icon;
-  icon.icon = EasyUnlockIconId::LOCKED;
-  icon.autoshow_tooltip = false;
+  EasyUnlockIconInfo icon_info;
+  icon_info.icon_state = EasyUnlockIconState::LOCKED;
+  icon_info.autoshow_tooltip = false;
   DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon);
+                                       icon_info);
   EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
 
   // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is shown.
-  icon.autoshow_tooltip = true;
+  icon_info.autoshow_tooltip = true;
   DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon);
+                                       icon_info);
   EXPECT_TRUE(test_api.tooltip_bubble()->GetVisible());
 }
 
@@ -979,18 +979,18 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockIconUpdatedDuringUserSwap) {
 
   // Enables easy unlock icon for |view|.
   auto enable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconOptions icon;
-    icon.icon = EasyUnlockIconId::LOCKED;
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::LOCKED;
     DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon);
+        view->GetCurrentUser().basic_user_info.account_id, icon_info);
   };
 
   // Disables easy unlock icon for |view|.
   auto disable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconOptions icon;
-    icon.icon = EasyUnlockIconId::NONE;
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = EasyUnlockIconState::NONE;
     DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon);
+        view->GetCurrentUser().basic_user_info.account_id, icon_info);
   };
 
   // Makes |view| the active auth view so it will can show auth methods.
@@ -1022,7 +1022,7 @@ TEST_F(LockContentsViewUnitTest, EasyUnlockIconUpdatedDuringUserSwap) {
   make_active_auth_view(primary);
   EXPECT_TRUE(showing_easy_unlock_icon(primary));
 
-  // Activate icon for secondary. Primary visiblity does not change.
+  // Activate icon for secondary. Primary visibility does not change.
   enable_icon(secondary);
   EXPECT_TRUE(showing_easy_unlock_icon(primary));
 
@@ -2539,7 +2539,7 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
   // Focus the remove user bubble, tap twice to remove the user.
-  user_test_api.menu()->RequestFocus();
+  user_test_api.remove_account_dialog()->RequestFocus();
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);

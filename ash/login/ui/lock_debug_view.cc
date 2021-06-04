@@ -82,7 +82,7 @@ struct UserMetadata {
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
   user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
-  EasyUnlockIconId easy_unlock_id = EasyUnlockIconId::NONE;
+  EasyUnlockIconState easy_unlock_icon_state = EasyUnlockIconState::NONE;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
 };
 
@@ -264,50 +264,52 @@ class LockDebugView::DebugDataDispatcherTransformer
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
 
-    // EasyUnlockIconId state transition.
-    auto get_next_id = [](EasyUnlockIconId id) {
-      switch (id) {
-        case EasyUnlockIconId::NONE:
-          return EasyUnlockIconId::SPINNER;
-        case EasyUnlockIconId::SPINNER:
-          return EasyUnlockIconId::LOCKED;
-        case EasyUnlockIconId::LOCKED:
-          return EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED;
-        case EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED:
-          return EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT;
-        case EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT:
-          return EasyUnlockIconId::HARDLOCKED;
-        case EasyUnlockIconId::HARDLOCKED:
-          return EasyUnlockIconId::UNLOCKED;
-        case EasyUnlockIconId::UNLOCKED:
-          return EasyUnlockIconId::NONE;
+    // EasyUnlockIconState transition.
+    auto get_next_state = [](EasyUnlockIconState icon_state) {
+      switch (icon_state) {
+        case EasyUnlockIconState::NONE:
+          return EasyUnlockIconState::SPINNER;
+        case EasyUnlockIconState::SPINNER:
+          return EasyUnlockIconState::LOCKED;
+        case EasyUnlockIconState::LOCKED:
+          return EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED;
+        case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
+          return EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT;
+        case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
+          return EasyUnlockIconState::HARDLOCKED;
+        case EasyUnlockIconState::HARDLOCKED:
+          return EasyUnlockIconState::UNLOCKED;
+        case EasyUnlockIconState::UNLOCKED:
+          return EasyUnlockIconState::NONE;
       }
-      return EasyUnlockIconId::NONE;
+      return EasyUnlockIconState::NONE;
     };
-    debug_user->easy_unlock_id = get_next_id(debug_user->easy_unlock_id);
+    debug_user->easy_unlock_icon_state =
+        get_next_state(debug_user->easy_unlock_icon_state);
 
     // Enable/disable click to unlock.
     debug_user->enable_tap_to_unlock =
-        debug_user->easy_unlock_id == EasyUnlockIconId::UNLOCKED;
+        debug_user->easy_unlock_icon_state == EasyUnlockIconState::UNLOCKED;
 
     // Prepare icon that we will show.
-    EasyUnlockIconOptions icon;
-    icon.icon = debug_user->easy_unlock_id;
-    if (icon.icon == EasyUnlockIconId::SPINNER) {
-      icon.aria_label = u"Icon is spinning";
-    } else if (icon.icon == EasyUnlockIconId::LOCKED ||
-               icon.icon == EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED) {
-      icon.autoshow_tooltip = true;
-      icon.tooltip = base::ASCIIToUTF16(
+    EasyUnlockIconInfo icon_info;
+    icon_info.icon_state = debug_user->easy_unlock_icon_state;
+    if (icon_info.icon_state == EasyUnlockIconState::SPINNER) {
+      icon_info.aria_label = u"Icon is spinning";
+    } else if (icon_info.icon_state == EasyUnlockIconState::LOCKED ||
+               icon_info.icon_state ==
+                   EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED) {
+      icon_info.autoshow_tooltip = true;
+      icon_info.tooltip = base::ASCIIToUTF16(
           "This is a long message to trigger overflow. This should show up "
-          "automatically. icon_id=" +
-          base::NumberToString(static_cast<int>(icon.icon)));
+          "automatically. icon_state=" +
+          base::NumberToString(static_cast<int>(icon_info.icon_state)));
     } else {
-      icon.tooltip = u"This should not show up automatically.";
+      icon_info.tooltip = u"This should not show up automatically.";
     }
 
     // Show icon and enable/disable click to unlock.
-    debug_dispatcher_.ShowEasyUnlockIcon(debug_user->account_id, icon);
+    debug_dispatcher_.ShowEasyUnlockIcon(debug_user->account_id, icon_info);
     debug_dispatcher_.SetTapToUnlockEnabledForUser(
         debug_user->account_id, debug_user->enable_tap_to_unlock);
   }
@@ -473,8 +475,8 @@ class LockDebugView::DebugDataDispatcherTransformer
     debug_dispatcher_.SetLockScreenNoteState(state);
   }
   void OnShowEasyUnlockIcon(const AccountId& user,
-                            const EasyUnlockIconOptions& icon) override {
-    debug_dispatcher_.ShowEasyUnlockIcon(user, icon);
+                            const EasyUnlockIconInfo& icon_info) override {
+    debug_dispatcher_.ShowEasyUnlockIcon(user, icon_info);
   }
   void OnDetachableBasePairingStatusChanged(
       DetachableBasePairingStatus pairing_status) override {

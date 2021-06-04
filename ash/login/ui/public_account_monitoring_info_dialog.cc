@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/public_account_warning_dialog.h"
+#include "ash/login/ui/public_account_monitoring_info_dialog.h"
 
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -31,7 +31,8 @@ class BulletView : public views::View {
  public:
   explicit BulletView(SkColor color, int radius)
       : color_(color), radius_(radius) {}
-
+  BulletView(const BulletView&) = delete;
+  BulletView& operator=(const BulletView&) = delete;
   ~BulletView() override = default;
 
   // views::View:
@@ -52,14 +53,11 @@ class BulletView : public views::View {
  private:
   SkColor color_;
   int radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BulletView);
 };
 
 }  // namespace
 
-// TODO(crbug.com/1142953): Rename to PublicAccountLearnMoreDialog.
-PublicAccountWarningDialog::PublicAccountWarningDialog(
+PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
     base::WeakPtr<LoginExpandedPublicAccountView> controller)
     : controller_(controller) {
   SetModalType(ui::MODAL_TYPE_SYSTEM);
@@ -107,21 +105,21 @@ PublicAccountWarningDialog::PublicAccountWarningDialog(
       this, nullptr, controller->GetWidget()->GetNativeView());
 }
 
-PublicAccountWarningDialog::~PublicAccountWarningDialog() {
+PublicAccountMonitoringInfoDialog::~PublicAccountMonitoringInfoDialog() {
   if (controller_)
-    controller_->OnWarningDialogClosed();
+    controller_->OnLearnMoreDialogClosed();
 }
 
-bool PublicAccountWarningDialog::IsVisible() {
+bool PublicAccountMonitoringInfoDialog::IsVisible() {
   return GetWidget() && GetWidget()->IsVisible();
 }
 
-void PublicAccountWarningDialog::Show() {
+void PublicAccountMonitoringInfoDialog::Show() {
   if (GetWidget())
     GetWidget()->Show();
 }
 
-void PublicAccountWarningDialog::AddedToWidget() {
+void PublicAccountMonitoringInfoDialog::AddedToWidget() {
   std::unique_ptr<views::Label> title_label =
       views::BubbleFrameView::CreateDefaultTitleLabel(l10n_util::GetStringUTF16(
           IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO));
@@ -132,7 +130,7 @@ void PublicAccountWarningDialog::AddedToWidget() {
   frame_view->SetTitleView(std::move(title_label));
 }
 
-gfx::Size PublicAccountWarningDialog::CalculatePreferredSize() const {
+gfx::Size PublicAccountMonitoringInfoDialog::CalculatePreferredSize() const {
   return {kDialogWidthDp, GetHeightForWidth(kDialogWidthDp)};
 }
 

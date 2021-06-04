@@ -1157,13 +1157,14 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
     LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
 }
 
-void LockContentsView::OnShowEasyUnlockIcon(const AccountId& user,
-                                            const EasyUnlockIconOptions& icon) {
+void LockContentsView::OnShowEasyUnlockIcon(
+    const AccountId& user,
+    const EasyUnlockIconInfo& icon_info) {
   UserState* state = FindStateForUser(user);
   if (!state)
     return;
 
-  state->easy_unlock_state = icon;
+  state->easy_unlock_icon_info = icon_info;
   UpdateEasyUnlockIconForUser(user);
 
   // Show tooltip only if the user is actively showing auth.
@@ -1175,9 +1176,9 @@ void LockContentsView::OnShowEasyUnlockIcon(const AccountId& user,
   if (tooltip_bubble_->GetVisible())
     tooltip_bubble_->Hide();
 
-  if (icon.autoshow_tooltip) {
+  if (icon_info.autoshow_tooltip) {
     tooltip_bubble_->SetAnchorView(big_user->auth_user()->GetActiveInputView());
-    tooltip_bubble_->set_text(icon.tooltip);
+    tooltip_bubble_->set_text(icon_info.tooltip);
     tooltip_bubble_->Show();
     tooltip_bubble_->SetVisible(true);
   }
@@ -2018,21 +2019,21 @@ void LockContentsView::UpdateEasyUnlockIconForUser(const AccountId& user) {
   UserState* state = FindStateForUser(user);
   DCHECK(state);
 
-  // Hide easy unlock icon if there is no data is available.
-  if (!state->easy_unlock_state) {
-    big_view->auth_user()->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+  // Hide easy unlock icon if there is no data available.
+  if (!state->easy_unlock_icon_info) {
+    big_view->auth_user()->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
                                              std::u16string());
     return;
   }
 
   // TODO(jdufault): Make easy unlock backend always send aria_label, right now
   // it is only sent if there is no tooltip.
-  std::u16string accessibility_label = state->easy_unlock_state->aria_label;
+  std::u16string accessibility_label = state->easy_unlock_icon_info->aria_label;
   if (accessibility_label.empty())
-    accessibility_label = state->easy_unlock_state->tooltip;
+    accessibility_label = state->easy_unlock_icon_info->tooltip;
 
-  big_view->auth_user()->SetEasyUnlockIcon(state->easy_unlock_state->icon,
-                                           accessibility_label);
+  big_view->auth_user()->SetEasyUnlockIcon(
+      state->easy_unlock_icon_info->icon_state, accessibility_label);
 }
 
 LoginBigUserView* LockContentsView::CurrentBigUserView() {
@@ -2124,11 +2125,11 @@ void LockContentsView::OnEasyUnlockIconHovered() {
   UserState* state =
       FindStateForUser(big_view->GetCurrentUser().basic_user_info.account_id);
   DCHECK(state);
-  DCHECK(state->easy_unlock_state);
+  DCHECK(state->easy_unlock_icon_info);
 
-  if (!state->easy_unlock_state->tooltip.empty()) {
+  if (!state->easy_unlock_icon_info->tooltip.empty()) {
     tooltip_bubble_->SetAnchorView(big_view->auth_user()->GetActiveInputView());
-    tooltip_bubble_->set_text(state->easy_unlock_state->tooltip);
+    tooltip_bubble_->set_text(state->easy_unlock_icon_info->tooltip);
     tooltip_bubble_->Show();
   }
 }
@@ -2137,9 +2138,9 @@ void LockContentsView::OnEasyUnlockIconTapped() {
   UserState* state = FindStateForUser(
       CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id);
   DCHECK(state);
-  DCHECK(state->easy_unlock_state);
+  DCHECK(state->easy_unlock_icon_info);
 
-  if (state->easy_unlock_state->hardlock_on_click) {
+  if (state->easy_unlock_icon_info->hardlock_on_click) {
     AccountId user =
         CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id;
     Shell::Get()->login_screen_controller()->HardlockPod(user);

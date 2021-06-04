@@ -381,18 +381,19 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
   // The secondary user is not removable (as configured above) so showing the
   // dropdown does not result in an interactive/focusable view.
   focus_and_submit(secondary().dropdown());
-  EXPECT_TRUE(secondary().menu());
-  EXPECT_FALSE(HasFocusInAnyChildView(secondary().menu()));
-  // TODO(jdufault): Run submit() and then EXPECT_FALSE(secondary().menu()); to
+  EXPECT_TRUE(secondary().remove_account_dialog());
+  EXPECT_FALSE(HasFocusInAnyChildView(secondary().remove_account_dialog()));
+  // TODO(jdufault): Run submit() and then
+  // EXPECT_FALSE(secondary().remove_account_dialog()); to
   // verify that double-enter closes the bubble.
 
-  // The primary user is removable, so the menu is interactive. Submitting the
-  // first time shows the remove user warning, submitting the second time
-  // actually removes the user. Removing the user triggers a mojo API call as
-  // well as removes the user from the UI.
+  // The primary user is removable, so the remove account dialog is interactive.
+  // Submitting the first time shows the remove user warning, submitting the
+  // second time actually removes the user. Removing the user triggers a mojo
+  // API call as well as removes the user from the UI.
   focus_and_submit(primary().dropdown());
-  EXPECT_TRUE(primary().menu());
-  EXPECT_TRUE(HasFocusInAnyChildView(primary().menu()));
+  EXPECT_TRUE(primary().remove_account_dialog());
+  EXPECT_TRUE(HasFocusInAnyChildView(primary().remove_account_dialog()));
   EXPECT_CALL(*client, OnRemoveUserWarningShown()).Times(1);
   submit();
   EXPECT_CALL(*client, RemoveUser(users()[0].basic_user_info.account_id))

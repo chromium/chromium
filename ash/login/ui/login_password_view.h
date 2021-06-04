@@ -25,7 +25,7 @@ class ToggleImageButton;
 
 namespace ash {
 class ArrowButtonView;
-enum class EasyUnlockIconId;
+enum class EasyUnlockIconState;
 
 // Contains a textfield and a submit button. When the display password button
 // is visible, the textfield contains a button in the form of an eye icon that
@@ -97,11 +97,11 @@ class ASH_EXPORT LoginPasswordView : public views::View,
             const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered,
             views::Button::PressedCallback on_easy_unlock_icon_tapped);
 
-  // Is the password field enabled when there is no text?
+  // Whether or not the password field is enabled when there is no text.
   void SetEnabledOnEmptyPassword(bool enabled);
 
   // Change the active icon for easy unlock.
-  void SetEasyUnlockIcon(EasyUnlockIconId id,
+  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label);
 
   // Set the textfield name used for accessibility.

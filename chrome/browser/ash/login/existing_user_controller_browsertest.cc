@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
   // Set the lock screen so that the managed warning can be queried.
   screen_locker_tester_.Lock();
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
 
   // Verify that the lock screen text uses the prefs value for its construction.
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
   // Set the lock screen so that the managed warning can be queried.
   screen_locker_tester_.Lock();
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
 
   // Verify that the lock screen text uses the prefs value for its construction.
@@ -1414,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   screen_locker_tester_.Lock();
 
   // Verify that no managed warning is shown for an unmanaged user.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user_.account_id));
 }
 

@@ -41,10 +41,12 @@ class ScreenlockBridge {
 
   // Class containing parameters describing the custom icon that should be
   // shown on a user's screen lock pod next to the input field.
-  class UserPodCustomIconOptions {
+  class UserPodCustomIconInfo {
    public:
-    UserPodCustomIconOptions();
-    ~UserPodCustomIconOptions();
+    UserPodCustomIconInfo();
+    UserPodCustomIconInfo(const UserPodCustomIconInfo&) = delete;
+    UserPodCustomIconInfo& operator=(const UserPodCustomIconInfo&) = delete;
+    ~UserPodCustomIconInfo();
 
     // Converts parameters to a dictionary values that can be sent to the
     // screenlock web UI.
@@ -86,8 +88,6 @@ class ScreenlockBridge {
     std::u16string aria_label_;
 
     bool hardlock_on_click_;
-
-    DISALLOW_COPY_AND_ASSIGN(UserPodCustomIconOptions);
   };
 
   class LockHandler {
@@ -101,7 +101,7 @@ class ScreenlockBridge {
     // Shows a custom icon in the user pod on the lock screen.
     virtual void ShowUserPodCustomIcon(
         const AccountId& account_id,
-        const UserPodCustomIconOptions& icon) = 0;
+        const UserPodCustomIconInfo& icon_info) = 0;
 
     // Hides the custom icon in user pod for a user.
     virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
