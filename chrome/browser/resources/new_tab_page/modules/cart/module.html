@@ -16,15 +16,15 @@
     }
   }
 
+  #module:hover .side-scroll-button {
+    visibility: visible;
+  }
+
   /* Adjusting header margin and cartCarousel to make sure
    * the discount chip doesn't get clipped due to
    * overflow-x: hidden */
   ntp-module-header {
     margin-bottom: 0;
-  }
-
-  :host(:hover) .side-scroll-button {
-    visibility: visible;
   }
 
   #moduleContent {
@@ -272,110 +272,112 @@
     width: 12px;
   }
 </style>
-<ntp-module-header
-    chip-text="[[headerChipText]]"
-    description-text="[[headerDescriptionText]]"
-    dismiss-text="[[i18nRecursive('',
-                                  'modulesDismissButtonText',
-                                  'modulesCartLowerThese')]]"
-    disable-text="[[i18nRecursive('',
-                                  'modulesDisableButtonText',
-                                  'modulesCartLower')]]"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
-    on-disable-button-click="onDisableButtonClick_">
-  [[i18n('modulesCartSentence')]]
-</ntp-module-header>
-<div id="moduleContent">
-  <template is="dom-if" if="[[showLeftScrollButton_]]">
-    <div id="leftScrollShadow" class="side-scroll-shadow"></div>
-    <cr-icon-button id="leftScrollButton"
-        class="side-scroll-button" on-click="onLeftScrollClick_">
-    </cr-icon-button>
-  </template>
-  <div id="cartCarousel">
-    <div id="leftProbe" class="probe"></div>
-    <template id="consentCardElement" is="dom-if"
-        if="[[showDiscountConsent]]">
-      <div id="consentCard">
-        <div id="consentIconContainer">
-          <div id="consentIcon"></div>
-        </div>
-        <span id="consentContent">
-          [[i18n('modulesCartDiscountConsentContent')]]
-        </span>
-        <div id="consentButtonContainer">
-          <cr-button id="cancelButton"
-              class="cancel-button" on-click="onDisallowDiscount_"
-              on-auxclick="onDisallowDiscount_">
-            [[i18n('modulesCartDiscountConsentReject')]]
-          </cr-button>
-          <cr-button id="actionButton"
-              class="action-button" on-click="onAllowDiscount_"
-              on-auxclick="onAllowDiscount_">
-            [[i18n('modulesCartDiscountConsentAccept')]]
-          </cr-button>
-        </div>
-      </div>
+<div id="module">
+  <ntp-module-header
+      chip-text="[[headerChipText]]"
+      description-text="[[headerDescriptionText]]"
+      dismiss-text="[[i18nRecursive('',
+                                    'modulesDismissButtonText',
+                                    'modulesCartLowerThese')]]"
+      disable-text="[[i18nRecursive('',
+                                    'modulesDisableButtonText',
+                                    'modulesCartLower')]]"
+      show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+      on-disable-button-click="onDisableButtonClick_">
+    [[i18n('modulesCartSentence')]]
+  </ntp-module-header>
+  <div id="moduleContent">
+    <template is="dom-if" if="[[showLeftScrollButton_]]">
+      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+      <cr-icon-button id="leftScrollButton"
+          class="side-scroll-button" on-click="onLeftScrollClick_">
+      </cr-icon-button>
     </template>
-    <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
-      <a class="cart-item" title="[[item.merchant]]"
-          href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
-          on-auxclick="onCartItemClick_">
-        <template is="dom-if" if="[[item.discountText]]">
-          <div class="discount-chip">[[item.discountText]]</div>
-        </template>
-        <cr-icon-button class="icon-more-vert"
-            title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
-        </cr-icon-button>
-        <img class="favicon-image" is="ntp-img"
-            auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
-        <div class="cart-title">
-          <span class="merchant">[[item.merchant]]</span>
-          <template is="dom-if" if="[[item.productImageUrls.length]]">
-            <span class="item-count">
-              &nbsp•&nbsp[[item.productImageUrls.length]]
-            </span>
-          </template>
+    <div id="cartCarousel">
+      <div id="leftProbe" class="probe"></div>
+      <template id="consentCardElement" is="dom-if"
+          if="[[showDiscountConsent]]">
+        <div id="consentCard">
+          <div id="consentIconContainer">
+            <div id="consentIcon"></div>
+          </div>
+          <span id="consentContent">
+            [[i18n('modulesCartDiscountConsentContent')]]
+          </span>
+          <div id="consentButtonContainer">
+            <cr-button id="cancelButton"
+                class="cancel-button" on-click="onDisallowDiscount_"
+                on-auxclick="onDisallowDiscount_">
+              [[i18n('modulesCartDiscountConsentReject')]]
+            </cr-button>
+            <cr-button id="actionButton"
+                class="action-button" on-click="onAllowDiscount_"
+                on-auxclick="onAllowDiscount_">
+              [[i18n('modulesCartDiscountConsentAccept')]]
+            </cr-button>
+          </div>
         </div>
-        <div class="thumbnail-container">
-          <template is="dom-if"
-              if="[[item.productImageUrls.length]]">
-            <ul class="thumbnail-list">
-              <template is="dom-repeat"
-                  items="[[getImagesToShow_(item.productImageUrls)]]">
-                <li>
-                  <img class="thumbnail-img" is="ntp-img"
-                      auto-src="[[item.url]]"></img>
-                </li>
-              </template>
-            </ul>
+      </template>
+      <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
+        <a class="cart-item" title="[[item.merchant]]"
+            href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
+            on-auxclick="onCartItemClick_">
+          <template is="dom-if" if="[[item.discountText]]">
+            <div class="discount-chip">[[item.discountText]]</div>
           </template>
-          <template id="thumbnailFallback" is="dom-if"
-              if="[[!item.productImageUrls.length]]">
-            <img class="thumbnail-fallback"
-                src="modules/cart/icons/cart_fallback.svg">
-          </template>
-        </div>
-      </a>
+          <cr-icon-button class="icon-more-vert"
+              title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
+          </cr-icon-button>
+          <img class="favicon-image" is="ntp-img"
+              auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+          <div class="cart-title">
+            <span class="merchant">[[item.merchant]]</span>
+            <template is="dom-if" if="[[item.productImageUrls.length]]">
+              <span class="item-count">
+                &nbsp•&nbsp[[item.productImageUrls.length]]
+              </span>
+            </template>
+          </div>
+          <div class="thumbnail-container">
+            <template is="dom-if"
+                if="[[item.productImageUrls.length]]">
+              <ul class="thumbnail-list">
+                <template is="dom-repeat"
+                    items="[[getImagesToShow_(item.productImageUrls)]]">
+                  <li>
+                    <img class="thumbnail-img" is="ntp-img"
+                        auto-src="[[item.url]]"></img>
+                  </li>
+                </template>
+              </ul>
+            </template>
+            <template id="thumbnailFallback" is="dom-if"
+                if="[[!item.productImageUrls.length]]">
+              <img class="thumbnail-fallback"
+                  src="modules/cart/icons/cart_fallback.svg">
+            </template>
+          </div>
+        </a>
+      </template>
+      <div id="rightProbe" class="probe"></div>
+    </div>
+    <cr-action-menu id="cartActionMenu">
+      <button id="hideCartButton" class="dropdown-item"
+          on-click="onCartHide_">
+        [[cartMenuHideItem_]]
+      </button>
+      <button id="removeCartButton" class="dropdown-item"
+          on-click="onCartRemove_">
+        [[cartMenuRemoveItem_]]
+      </button>
+    </cr-action-menu>
+    <template is="dom-if" if="[[showRightScrollButton_]]">
+      <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+      <cr-icon-button id="rightScrollButton"
+          class="side-scroll-button" on-click="onRightScrollClick_">
+      </cr-icon-button>
     </template>
-    <div id="rightProbe" class="probe"></div>
   </div>
-  <cr-action-menu id="cartActionMenu">
-    <button id="hideCartButton" class="dropdown-item"
-        on-click="onCartHide_">
-      [[cartMenuHideItem_]]
-    </button>
-    <button id="removeCartButton" class="dropdown-item"
-        on-click="onCartRemove_">
-      [[cartMenuRemoveItem_]]
-    </button>
-  </cr-action-menu>
-  <template is="dom-if" if="[[showRightScrollButton_]]">
-    <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
-    <cr-icon-button id="rightScrollButton"
-        class="side-scroll-button" on-click="onRightScrollClick_">
-    </cr-icon-button>
-  </template>
 </div>
 <cr-toast id="dismissCartToast" duration="10000">
   <div id="dismissCartToastMessage">
