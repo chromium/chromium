@@ -63,12 +63,12 @@
   :host([side-panel]) .sub-heading {
     border: none;
     font-weight: 600;
-    height: 20px;
+    height: 28px;
     margin: 0;
     padding: 8px 16px;
   }
 
-  :host([side-panel]) #ureadItemsList + .sub-heading {
+  :host([side-panel]) .hr {
     border-top: 1px solid #dbdbdb;
     margin-block-start: 8px;
   }
@@ -111,6 +111,8 @@
           data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
       </read-later-item>
     </template>
+    <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
+    </div>
     <div hidden="[[!readItems_.length]]" class="sub-heading">
       $i18n{readHeader}
     </div>

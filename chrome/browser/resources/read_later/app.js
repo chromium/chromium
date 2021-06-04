@@ -196,6 +196,14 @@ export class ReadLaterAppElement extends PolymerElement {
     e.stopPropagation();
     this.apiProxy_.closeUI();
   }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowHr_() {
+    return this.unreadItems_.length > 0 && this.readItems_.length > 0;
+  }
 }
 
 customElements.define(ReadLaterAppElement.is, ReadLaterAppElement);
