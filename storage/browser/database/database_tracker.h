@@ -71,12 +71,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfo {
 // This class manages the main database and keeps track of open databases.
 //
 // The data in this class is not thread-safe, so all methods of this class
-// should be called on the task runner returned by |task_runner()|. The only
-// exceptions are the ctor(), the dtor() and the database_directory() and
-// quota_manager_proxy() getters.
+// should be called on the task runner returned by task_runner(). The only
+// exceptions are the constructor, the destructor, and the getters explicitly
+// marked as thread-safe.
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     : public base::RefCountedThreadSafe<DatabaseTracker> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   class Observer {
    public:
     virtual void OnDatabaseSizeChanged(const std::string& origin_identifier,
@@ -105,6 +107,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
 
   DatabaseTracker(const DatabaseTracker&) = delete;
   DatabaseTracker& operator=(const DatabaseTracker&) = delete;
+
+  // Methods not explicity marked thread-safe must be called on this sequence.
+  //
+  // Thread-safe getter.
+  base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
   void DatabaseOpened(const std::string& origin_identifier,
                       const std::u16string& database_name,
@@ -188,8 +195,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // Disables the exit-time deletion of session-only data.
   void SetForceKeepSessionState();
 
-  base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
-
  protected:
   // Subclasses need PassKeys to call the constructor.
   static base::PassKey<DatabaseTracker> CreatePassKey() {
@@ -228,8 +233,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     }
   };
 
-  // virtual for unit-testing only.
   virtual ~DatabaseTracker();
+
+  // Registers WebSQL's QuotaClient with the QuotaManager.
+  void RegisterQuotaClient();
 
   // Deletes the directory that stores all DBs in Incognito mode, if it
   // exists.
@@ -319,8 +326,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // Thread-safety argument: The reference is immutable.
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
-  // The database tracker thread we're supposed to run file IO on.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Sequence where file I/O is allowed.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // When in Incognito mode, store a DELETE_ON_CLOSE handle to each
   // main DB and journal file that was accessed. When the Incognito profile

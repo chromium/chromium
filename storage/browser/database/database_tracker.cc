@@ -85,9 +85,11 @@ scoped_refptr<DatabaseTracker> DatabaseTracker::Create(
     bool is_incognito,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy) {
-  return base::MakeRefCounted<DatabaseTracker>(
+  auto database_tracker = base::MakeRefCounted<DatabaseTracker>(
       profile_path, is_incognito, std::move(special_storage_policy),
       std::move(quota_manager_proxy), base::PassKey<DatabaseTracker>());
+  database_tracker->RegisterQuotaClient();
+  return database_tracker;
 }
 
 DatabaseTracker::DatabaseTracker(
@@ -110,18 +112,22 @@ DatabaseTracker::DatabaseTracker(
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+
+DatabaseTracker::~DatabaseTracker() {
+  // base::RefCountedThreadSafe inserts the appropriate barriers to ensure
+  // member access in the destructor does not introduce data races.
+  DCHECK(dbs_to_be_deleted_.empty());
+  DCHECK(deletion_callbacks_.empty());
+}
+
+void DatabaseTracker::RegisterQuotaClient() {
   if (quota_manager_proxy_) {
     // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
     quota_manager_proxy_->RegisterLegacyClient(
         base::MakeRefCounted<DatabaseQuotaClient>(this),
         QuotaClientType::kDatabase, {blink::mojom::StorageType::kTemporary});
   }
-}
-
-DatabaseTracker::~DatabaseTracker() {
-  DCHECK(dbs_to_be_deleted_.empty());
-  DCHECK(deletion_callbacks_.empty());
 }
 
 void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
