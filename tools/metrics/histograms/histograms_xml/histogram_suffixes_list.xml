@@ -18431,6 +18431,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SoftwareReporter.RunningTime"/>
   <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome"/>
   <affected-histogram name="SoftwareReporter.RunningTimeRegistryError"/>
+  <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep"/>
   <affected-histogram name="SoftwareReporter.Step"/>
 </histogram_suffixes>
 

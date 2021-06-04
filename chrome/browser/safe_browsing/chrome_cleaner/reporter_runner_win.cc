@@ -218,9 +218,12 @@ class UMAHistogramReporter {
 
   // Reports the SwReporter run time with UMA both as reported by the tool via
   // the registry and as measured by |ReporterRunner|.
-  void ReportRuntime(const base::TimeDelta& reporter_running_time) const {
+  void ReportRuntime(const base::TimeDelta& reporter_running_time,
+                     const base::TimeDelta& running_time_without_sleep) const {
     RecordLongTimesHistogram("SoftwareReporter.RunningTimeAccordingToChrome",
                              reporter_running_time);
+    RecordLongTimesHistogram("SoftwareReporter.RunningTimeWithoutSleep",
+                             running_time_without_sleep);
 
     // TODO(b/641081): This should only have KEY_QUERY_VALUE and KEY_SET_VALUE.
     base::win::RegKey reporter_key;
@@ -468,6 +471,10 @@ class ReporterRunner {
   }
 
  private:
+  // The type returned by QueryUnbiasedInterruptTime, which does not include
+  // time spent in sleep or hibernation.
+  using TimestampWithoutSleep = ULONGLONG;
+
   // Keeps track of last and upcoming reporter runs and logs uploading.
   //
   // Periodic runs are allowed to start if the last time the reporter ran was
@@ -554,11 +561,15 @@ class ReporterRunner {
     base::TaskRunner* task_runner =
         g_testing_delegate_ ? g_testing_delegate_->BlockingTaskRunner()
                             : blocking_task_runner_.get();
+
+    TimestampWithoutSleep now_without_sleep;
+    ::QueryUnbiasedInterruptTime(&now_without_sleep);
+
     auto launch_and_wait =
         base::BindOnce(&LaunchAndWaitForExit, next_invocation);
     auto reporter_done =
         base::BindOnce(&ReporterRunner::ReporterDone, base::Unretained(this),
-                       Now(), next_invocation);
+                       Now(), now_without_sleep, next_invocation);
     base::PostTaskAndReplyWithResult(task_runner, FROM_HERE,
                                      std::move(launch_and_wait),
                                      std::move(reporter_done));
@@ -568,6 +579,7 @@ class ReporterRunner {
   // has completed. This is run as a task posted from an interruptible worker
   // thread so should be resilient to unexpected shutdown.
   void ReporterDone(const base::Time& reporter_start_time,
+                    TimestampWithoutSleep start_time_without_sleep,
                     SwReporterInvocation finished_invocation,
                     int exit_code) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -590,8 +602,17 @@ class ReporterRunner {
       return;
     }
 
+    TimestampWithoutSleep now_without_sleep;
+    ::QueryUnbiasedInterruptTime(&now_without_sleep);
+
     base::Time now = Now();
     base::TimeDelta reporter_running_time = now - reporter_start_time;
+
+    // QueryUnbiasedInterruptTime returns units of 100 nanoseconds. See
+    // https://docs.microsoft.com/en-us/windows/win32/api/realtimeapiset/nf-realtimeapiset-queryunbiasedinterrupttime
+    base::TimeDelta running_time_without_sleep =
+        base::TimeDelta::FromNanoseconds(
+            100 * (now_without_sleep - start_time_without_sleep));
 
     // Tries to run the next invocation in the queue.
     if (!invocations_.container().empty()) {
@@ -616,7 +637,7 @@ class ReporterRunner {
       local_state->SetInt64(prefs::kSwReporterLastTimeTriggered,
                             now.ToInternalValue());
     }
-    uma.ReportRuntime(reporter_running_time);
+    uma.ReportRuntime(reporter_running_time, running_time_without_sleep);
     uma.ReportMemoryUsage();
     if (finished_invocation.reporter_logs_upload_enabled())
       uma.RecordLogsUploadResult();
