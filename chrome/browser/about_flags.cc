@@ -4748,11 +4748,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"accessible-pdf-form", flag_descriptions::kAccessiblePDFFormName,
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kAccessiblePDFForm)},
-
-    {"pdf-viewer-document-properties",
-     flag_descriptions::kPdfViewerDocumentPropertiesName,
-     flag_descriptions::kPdfViewerDocumentPropertiesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfViewerDocumentProperties)},
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)

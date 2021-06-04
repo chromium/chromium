@@ -155,7 +155,6 @@ js_library("viewer-toolbar") {
     ":viewer-page-selector",
     "..:metrics",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 

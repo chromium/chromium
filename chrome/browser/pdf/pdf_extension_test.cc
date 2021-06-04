@@ -402,23 +402,12 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
  protected:
   // Hooks to set up feature flags.
   virtual const std::vector<base::Feature> GetEnabledFeatures() const {
-    std::vector<base::Feature> enabled;
-    if (ShouldEnablePdfViewerDocumentProperties()) {
-      enabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
-    }
-    return enabled;
+    return {};
   }
 
   virtual const std::vector<base::Feature> GetDisabledFeatures() const {
-    std::vector<base::Feature> disabled;
-    if (!ShouldEnablePdfViewerDocumentProperties()) {
-      disabled.push_back(chrome_pdf::features::kPdfViewerDocumentProperties);
-    }
-    return disabled;
+    return {};
   }
-
-  // Hook to set up whether the PdfViewerDocumentProperties feature is enabled.
-  virtual bool ShouldEnablePdfViewerDocumentProperties() const { return false; }
 
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
@@ -889,25 +878,6 @@ class PDFExtensionJSTestBase : public PDFExtensionTest {
   }
 };
 
-class PDFExtensionDocumentPropertiesEnabledTest
-    : public PDFExtensionJSTestBase {
- public:
-  ~PDFExtensionDocumentPropertiesEnabledTest() override = default;
-
- protected:
-  bool ShouldEnablePdfViewerDocumentProperties() const override { return true; }
-};
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionDocumentPropertiesEnabledTest,
-                       ViewerPropertiesDialog) {
-  // The properties dialog formats some values based on locale.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
-  // This will apply to the new processes spawned within RunTestsInJsModule(),
-  // thus consistently running the test in a well known time zone.
-  content::ScopedTimeZone scoped_time_zone{"America/Los_Angeles"};
-  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
-}
-
 class PDFExtensionJSTest : public PDFExtensionJSTestBase {
  public:
   ~PDFExtensionJSTest() override = default;
@@ -1034,6 +1004,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Fullscreen) {
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPropertiesDialog) {
+  // The properties dialog formats some values based on locale.
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
+  // This will apply to the new processes spawned within RunTestsInJsModule(),
+  // thus consistently running the test in a well known time zone.
+  content::ScopedTimeZone scoped_time_zone{"America/Los_Angeles"};
+  RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

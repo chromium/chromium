@@ -300,13 +300,11 @@
     $i18n{present}
   </button>
 
-  <template is="dom-if" if="[[documentPropertiesEnabled]]">
-    <button id="properties-button" class="dropdown-item"
-        on-click="onPropertiesClick_">
-      <span class="check-container" aria-hidden="true"></span>
-      $i18n{propertiesDialogTitle}
-    </button>
-  </template>
+  <button id="properties-button" class="dropdown-item"
+      on-click="onPropertiesClick_">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{propertiesDialogTitle}
+  </button>
 </cr-action-menu>
 
 <if expr="enable_ink">

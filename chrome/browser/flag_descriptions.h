@@ -2964,11 +2964,6 @@ extern const char kPaintPreviewStartupName[];
 extern const char kPaintPreviewStartupDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kPdfViewerDocumentPropertiesName[];
-extern const char kPdfViewerDocumentPropertiesDescription[];
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripName[];
 extern const char kWebUITabStripDescription[];

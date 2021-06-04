@@ -5055,15 +5055,6 @@ const char kPaintPreviewStartupDescription[] =
     "instead.";
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-
-const char kPdfViewerDocumentPropertiesName[] =
-    "PDF Viewer Document Properties";
-const char kPdfViewerDocumentPropertiesDescription[] =
-    "When enabled, the PDF viewer will include an option in the toolbar's "
-    "overflow menu to open a dialog containing document properties.";
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 const char kWebUITabStripName[] = "WebUI tab strip";
 const char kWebUITabStripDescription[] =

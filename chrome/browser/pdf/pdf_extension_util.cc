@@ -187,10 +187,6 @@ void AddStrings(PdfViewerContext context, base::Value* dict) {
 }
 
 void AddAdditionalData(bool enable_annotations, base::Value* dict) {
-  dict->SetKey("documentPropertiesEnabled",
-               base::Value(base::FeatureList::IsEnabled(
-                   chrome_pdf::features::kPdfViewerDocumentProperties)));
-
   bool printing_enabled = true;
   bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

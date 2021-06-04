@@ -17,7 +17,6 @@ import './shared-css.js';
 import './shared-vars.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
@@ -47,7 +46,6 @@ export class ViewerToolbarElement extends PolymerElement {
       // </if>
       docTitle: String,
       docLength: Number,
-      documentPropertiesEnabled: Boolean,
       hasEdits: Boolean,
       hasEnteredAnnotationMode: Boolean,
       isFormFieldFocused: Boolean,
@@ -226,7 +224,6 @@ export class ViewerToolbarElement extends PolymerElement {
 
   /** @private */
   onPropertiesClick_() {
-    assert(this.documentPropertiesEnabled);
     record(UserAction.PROPERTIES);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('properties-click'));

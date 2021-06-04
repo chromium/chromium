@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise, flushTasks} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {FittingType, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 /** @return {!ViewerToolbarElement} */
@@ -310,12 +310,7 @@ const tests = [
 
   async function testPropertiesButton() {
     const toolbar = createToolbar();
-    let button = toolbar.shadowRoot.querySelector('#properties-button');
-    chrome.test.assertFalse(!!button);
-
-    toolbar.documentPropertiesEnabled = true;
-    await flushTasks();
-    button = toolbar.shadowRoot.querySelector('#properties-button');
+    const button = toolbar.shadowRoot.querySelector('#properties-button');
     chrome.test.assertTrue(!!button);
 
     const whenFired = eventToPromise('properties-click', toolbar);

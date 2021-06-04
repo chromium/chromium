@@ -22,9 +22,6 @@ const base::Feature kPdfIncrementalLoading = {
 const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPdfViewerDocumentProperties = {
-    "PdfViewerDocumentProperties", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature has no effect if Chrome is built with no XFA support.
 const base::Feature kPdfXfaSupport = {"PdfXfaSupport",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
