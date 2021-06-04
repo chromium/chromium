@@ -544,13 +544,14 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, start_worker_status);
     version_->SetStatus(ServiceWorkerVersion::INSTALLING);
 
-    auto repeating_done = base::AdaptCallbackForRepeating(std::move(done));
+    auto callback_pair = base::SplitOnceCallback(std::move(done));
     int request_id = version_->StartRequest(
         ServiceWorkerMetrics::EventType::INSTALL,
-        CreateReceiver(BrowserThread::UI, repeating_done, result));
+        CreateReceiver(BrowserThread::UI, std::move(callback_pair.first),
+                       result));
     version_->endpoint()->DispatchInstallEvent(
         base::BindOnce(&self::ReceiveInstallEvent, base::Unretained(this),
-                       repeating_done, result, request_id));
+                       std::move(callback_pair.second), result, request_id));
   }
 
   void ReceiveInstallEvent(
