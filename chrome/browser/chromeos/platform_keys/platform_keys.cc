@@ -250,15 +250,16 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
   key_info.public_key_spki_der =
       chromeos::platform_keys::GetSubjectPublicKeyInfo(cert_x509);
   if (!chromeos::platform_keys::GetPublicKey(cert_x509, &key_info.key_type,
-                                             &key_info.key_size_bits) ||
-      (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA &&
-       key_info.key_type != net::X509Certificate::kPublicKeyTypeECDSA)) {
+                                             &key_info.key_size_bits)) {
     output.status = Status::kErrorAlgorithmNotSupported;
     return output;
   }
 
-  if (GetKeyTypeForAlgorithm(algorithm_name) != key_info.key_type) {
-    output.status = Status::kErrorAlgorithmNotPermittedByCertificate;
+  chromeos::platform_keys::Status check_result =
+      chromeos::platform_keys::CheckKeyTypeAndAlgorithm(key_info.key_type,
+                                                        algorithm_name);
+  if (check_result != chromeos::platform_keys::Status::kSuccess) {
+    output.status = check_result;
     return output;
   }
 

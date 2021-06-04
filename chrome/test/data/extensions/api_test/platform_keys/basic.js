@@ -402,8 +402,7 @@ function testGetKeyPairRejectsRSAPSS() {
   };
   chrome.platformKeys.getKeyPair(
       data.client_1.buffer, keyParams,
-      callbackFail(
-          'The requested Algorithm is not permitted by the certificate.'));
+      callbackFail('Algorithm not supported.'));
   chrome.platformKeys.getKeyPairBySpki(
       data.client_1_spki.buffer, keyParams,
       callbackFail('Algorithm not supported.'));
