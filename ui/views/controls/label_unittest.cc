@@ -1106,9 +1106,15 @@ TEST_F(LabelTest, GetSubstringBounds) {
 }
 
 // TODO(crbug.com/1139395): Enable on ChromeOS along with the DCHECK in Label.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface \
+  DISABLED_ChecksSubpixelRenderingOntoOpaqueSurface
+#else
+#define MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface \
+  ChecksSubpixelRenderingOntoOpaqueSurface
+#endif
 // Ensures DCHECK for subpixel rendering on transparent layer is working.
-TEST_F(LabelTest, ChecksSubpixelRenderingOntoOpaqueSurface) {
+TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   View view;
   Label* label = view.AddChildView(std::make_unique<TestLabel>());
   EXPECT_TRUE(label->GetSubpixelRenderingEnabled());
@@ -1138,7 +1144,6 @@ TEST_F(LabelTest, ChecksSubpixelRenderingOntoOpaqueSurface) {
   view.SetBackground(CreateSolidBackground(SK_ColorWHITE));
   label->OnPaint(&canvas);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(LabelSelectionTest, Selectable) {
   // By default, labels don't support text selection.
