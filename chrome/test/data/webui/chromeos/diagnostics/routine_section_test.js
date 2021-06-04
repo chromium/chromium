@@ -430,7 +430,8 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusBadge().hidden);
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getString('routineRemainingMinFinal'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
@@ -483,7 +484,8 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusBadge().hidden);
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getString('routineRemainingMinFinal'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
@@ -504,7 +506,8 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusBadge().hidden);
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getString('routineRemainingMinFinal'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);
@@ -783,7 +786,8 @@ export function routineSectionTestSuite() {
           assertTrue(isVisible(getStatusBadge()));
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getStringF('routineRemainingMin', '2'));
 
           return triggerStatusUpdate();
         })
@@ -823,7 +827,8 @@ export function routineSectionTestSuite() {
           assertTrue(isVisible(getStatusBadge()));
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getStringF('routineRemainingMin', '20'));
 
           return triggerStatusUpdate();
         })
@@ -873,7 +878,8 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusBadge().hidden);
           assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
           dx_utils.assertTextContains(
-              getStatusBadge().value, loadTimeData.getString('testRunning'));
+              getStatusBadge().value,
+              loadTimeData.getString('routineRemainingMinFinal'));
 
           // Text is visible describing which test is being run.
           assertFalse(getStatusTextElement().hidden);

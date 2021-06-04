@@ -228,6 +228,10 @@ Polymer({
       }
 
       this.routineStartTimeMs_ = performance.now();
+
+      // Set initial status badge text.
+      this.setRunningStatusBadgeText_();
+
       const remainingTimeUpdaterId =
           setInterval(() => this.setRunningStatusBadgeText_(), 1000);
 
@@ -264,6 +268,15 @@ Polymer({
             this.runTestsButtonText =
                 loadTimeData.getString('runAgainButtonText');
             clearInterval(remainingTimeUpdaterId);
+
+            if (status === ExecutionProgress.kCancelled) {
+              this.badgeText_ = loadTimeData.getString('testStoppedBadgeText')
+            } else {
+              this.badgeText_ = this.hasTestFailure_ ?
+                  loadTimeData.getString('testFailedBadgeText') :
+                  loadTimeData.getString('testSucceededBadgeText');
+            }
+
             this.cleanUp_();
           });
     });
@@ -368,13 +381,13 @@ Polymer({
         break;
       case ExecutionProgress.kRunning:
         this.setBadgeAndStatusText_(
-            BadgeType.RUNNING, loadTimeData.getString('testRunning'),
+            BadgeType.RUNNING,
             loadTimeData.getStringF(
                 'routineNameText', this.currentTestName_.toLowerCase()));
         break;
       case ExecutionProgress.kCancelled:
         this.setBadgeAndStatusText_(
-            BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'),
+            BadgeType.STOPPED,
             loadTimeData.getStringF(
                 'testCancelledText', this.currentTestName_));
         break;
@@ -382,12 +395,10 @@ Polymer({
         const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult_;
         if (this.hasTestFailure_) {
           this.setBadgeAndStatusText_(
-              BadgeType.ERROR, loadTimeData.getString('testFailedBadgeText'),
-              loadTimeData.getString('testFailure'));
+              BadgeType.ERROR, loadTimeData.getString('testFailure'));
         } else {
           this.setBadgeAndStatusText_(
               BadgeType.SUCCESS,
-              loadTimeData.getString('testSucceededBadgeText'),
               isPowerRoutine ? this.getPowerRoutineString_() :
                                loadTimeData.getString('testSuccess'));
         }
@@ -413,14 +424,12 @@ Polymer({
 
   /**
    * @param {!BadgeType} badgeType
-   * @param {string} badgeText
    * @param {string} statusText
    * @private
    */
-  setBadgeAndStatusText_(badgeType, badgeText, statusText) {
+  setBadgeAndStatusText_(badgeType, statusText) {
     this.setProperties({
       badgeType_: badgeType,
-      badgeText_: badgeText,
       statusText_: statusText
     });
   },
@@ -484,7 +493,8 @@ Polymer({
 
   /** @private */
   resetRoutineState_() {
-    this.setBadgeAndStatusText_(BadgeType.QUEUED, '', '');
+    this.setBadgeAndStatusText_(BadgeType.QUEUED, '');
+    this.badgeText_ = '';
     this.runTestsButtonText = this.initialButtonText_;
     this.hasTestFailure_ = false;
     this.currentTestName_ = '';
