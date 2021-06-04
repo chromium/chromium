@@ -18,7 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -62,7 +62,7 @@ bool HasUserPrefValue(const PrefService* pref_service,
 // Waits until local changes are committed or an auth error is encountered.
 class TestForAuthError : public UpdatedProgressMarkerChecker {
  public:
-  explicit TestForAuthError(syncer::ProfileSyncService* service)
+  explicit TestForAuthError(syncer::SyncServiceImpl* service)
       : UpdatedProgressMarkerChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -81,7 +81,7 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
 
 class SyncTransportActiveChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit SyncTransportActiveChecker(syncer::ProfileSyncService* service)
+  explicit SyncTransportActiveChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -117,12 +117,12 @@ class SyncAuthTest : public SyncTest {
   }
 
   void DisableTokenFetchRetries() {
-    // If ProfileSyncService observes a transient error like SERVICE_UNAVAILABLE
+    // If SyncServiceImpl observes a transient error like SERVICE_UNAVAILABLE
     // or CONNECTION_FAILED, this means the access token fetcher has given
     // up trying to reach Gaia. In practice, the access token fetching code
     // retries a fixed number of times, but the count is transparent to PSS.
     // Disable retries so that we instantly trigger the case where
-    // ProfileSyncService must pick up where the access token fetcher left off
+    // SyncServiceImpl must pick up where the access token fetcher left off
     // (in terms of retries).
     signin::DisableAccessTokenFetchRetries(
         IdentityManagerFactory::GetForProfile(GetProfile(0)));
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, Sanity) {
   ASSERT_FALSE(AttemptToTriggerAuthError());
 }
 
-// Verify that ProfileSyncService continues trying to fetch access tokens
+// Verify that SyncServiceImpl continues trying to fetch access tokens
 // when the access token fetcher has encountered more than a fixed number of
 // HTTP_INTERNAL_SERVER_ERROR (500) errors.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnInternalServerError500) {
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnInternalServerError500) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService continues trying to fetch access tokens
+// Verify that SyncServiceImpl continues trying to fetch access tokens
 // when the access token fetcher has encountered more than a fixed number of
 // HTTP_FORBIDDEN (403) errors.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnHttpForbidden403) {
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnHttpForbidden403) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService continues trying to fetch access tokens
+// Verify that SyncServiceImpl continues trying to fetch access tokens
 // when the access token fetcher has encountered a URLRequestStatus of FAILED.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnRequestFailed) {
   ASSERT_TRUE(SetupSync());
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnRequestFailed) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService continues trying to fetch access tokens
+// Verify that SyncServiceImpl continues trying to fetch access tokens
 // when the access token fetcher receives a malformed token.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnMalformedToken) {
   ASSERT_TRUE(SetupSync());
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnMalformedToken) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService ends up with an INVALID_GAIA_CREDENTIALS auth
+// Verify that SyncServiceImpl ends up with an INVALID_GAIA_CREDENTIALS auth
 // error when an invalid_grant error is returned by the access token fetcher
 // with an HTTP_BAD_REQUEST (400) response code.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, InvalidGrant) {
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, InvalidGrant) {
             GetSyncService(0)->GetAuthError().state());
 }
 
-// Verify that ProfileSyncService retries after SERVICE_ERROR auth error when
+// Verify that SyncServiceImpl retries after SERVICE_ERROR auth error when
 // an invalid_client error is returned by the access token fetcher with an
 // HTTP_BAD_REQUEST (400) response code.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInvalidClient) {
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInvalidClient) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService retries after REQUEST_CANCELED auth error
+// Verify that SyncServiceImpl retries after REQUEST_CANCELED auth error
 // when the access token fetcher has encountered a URLRequestStatus of
 // CANCELED.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryRequestCanceled) {
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryRequestCanceled) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService fails initial sync setup during backend
+// Verify that SyncServiceImpl fails initial sync setup during backend
 // initialization and ends up with an INVALID_GAIA_CREDENTIALS auth error when
 // an invalid_grant error is returned by the access token fetcher with an
 // HTTP_BAD_REQUEST (400) response code.
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, FailInitialSetupWithPersistentError) {
             GetSyncService(0)->GetAuthError().state());
 }
 
-// Verify that ProfileSyncService fails initial sync setup during backend
+// Verify that SyncServiceImpl fails initial sync setup during backend
 // initialization, but continues trying to fetch access tokens when
 // the access token fetcher receives an HTTP_INTERNAL_SERVER_ERROR (500)
 // response code.
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
   ASSERT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that ProfileSyncService fetches a new token when an old token expires.
+// Verify that SyncServiceImpl fetches a new token when an old token expires.
 IN_PROC_BROWSER_TEST_F(SyncAuthTest, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, TokenExpiry) {
 
 class NoAuthErrorChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit NoAuthErrorChecker(syncer::ProfileSyncService* service)
+  explicit NoAuthErrorChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.

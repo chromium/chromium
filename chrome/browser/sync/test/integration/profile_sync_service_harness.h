@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,7 +26,7 @@ class SyncSetupInProgressHandle;
 class SyncSigninDelegate;
 
 // An instance of this class is basically our notion of a "sync client" for
-// automation purposes. It harnesses the ProfileSyncService member of the
+// automation purposes. It harnesses the SyncServiceImpl member of the
 // profile passed to it on construction and automates certain things like setup
 // and authentication. It provides ways to "wait" adequate periods of time for
 // several clients to get to the same state.
@@ -128,8 +128,8 @@ class ProfileSyncServiceHarness {
 
   // Blocks the caller until the sync engine is initialized or some end state
   // (e.g., auth error) is reached. Returns true only if the engine initialized
-  // successfully. See ProfileSyncService's IsEngineInitialized() method for the
-  // definition of engine initialization.
+  // successfully. See SyncService::IsEngineInitialized() for the definition
+  // of engine initialization.
   bool AwaitEngineInitialization();
 
   // Blocks the caller until sync setup is complete, and sync-the-feature is
@@ -142,8 +142,8 @@ class ProfileSyncServiceHarness {
   // successful.
   bool AwaitSyncTransportActive();
 
-  // Returns the ProfileSyncService member of the sync client.
-  syncer::ProfileSyncService* service() const { return service_; }
+  // Returns the SyncServiceImpl member of the sync client.
+  syncer::SyncServiceImpl* service() const { return service_; }
 
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }
@@ -203,8 +203,8 @@ class ProfileSyncServiceHarness {
   // Profile associated with this sync client.
   Profile* const profile_;
 
-  // ProfileSyncService object associated with |profile_|.
-  syncer::ProfileSyncService* const service_;
+  // SyncServiceImpl object associated with |profile_|.
+  syncer::SyncServiceImpl* const service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

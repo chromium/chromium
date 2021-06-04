@@ -23,7 +23,7 @@ class ChromeSyncClient;
 }  // namespace browser_sync
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 class SyncService;
 }  // namespace syncer
 
@@ -35,9 +35,9 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // Returns the SyncService for the given profile.
   static syncer::SyncService* GetForProfile(Profile* profile);
-  // Returns the ProfileSyncService for the given profile. DO NOT USE unless
+  // Returns the SyncServiceImpl for the given profile. DO NOT USE unless
   // absolutely necessary! Prefer GetForProfile instead.
-  static syncer::ProfileSyncService* GetAsProfileSyncServiceForProfile(
+  static syncer::SyncServiceImpl* GetAsSyncServiceImplForProfile(
       Profile* profile);
 
   // Returns whether a SyncService has already been created for the profile.

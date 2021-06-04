@@ -21,8 +21,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -191,46 +191,46 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
   EXPECT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 }
 
-// Verify that a normal (no command line flags) PSS can be created and
-// properly initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
-  syncer::ProfileSyncService* pss =
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
+// Verify that a normal (no command line flags) SyncServiceImpl can be created
+// and properly initialized.
+TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
+  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, syncer::ModelTypeSet());
 
-  pss->Shutdown();
+  sync_service->Shutdown();
   RunUntilIdle();
 }
 
-// Verify that a PSS with a disabled datatype can be created and properly
-// initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDisableOne) {
+// Verify that a SyncServiceImpl with a disabled datatype can be created and
+// properly initialized.
+TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDisableOne) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
   SetDisabledTypes(disabled_types);
-  syncer::ProfileSyncService* pss =
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
+  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);
 
-  pss->Shutdown();
+  sync_service->Shutdown();
   RunUntilIdle();
 }
 
-// Verify that a PSS with multiple disabled datatypes can be created and
-// properly initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDisableMultiple) {
+// Verify that a SyncServiceImpl with multiple disabled datatypes can be created
+// and properly initialized.
+TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDisableMultiple) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
                                       syncer::BOOKMARKS);
   SetDisabledTypes(disabled_types);
-  syncer::ProfileSyncService* pss =
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
+  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);
 
-  pss->Shutdown();
+  sync_service->Shutdown();
   RunUntilIdle();
 }

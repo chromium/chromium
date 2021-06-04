@@ -66,8 +66,8 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    syncer::ProfileSyncService* sync_service =
-        SyncServiceFactory::GetAsProfileSyncServiceForProfile(
+    syncer::SyncServiceImpl* sync_service =
+        SyncServiceFactory::GetAsSyncServiceImplForProfile(
             browser()->profile());
 
     sync_service->OverrideNetworkForTest(

@@ -124,7 +124,7 @@ bool PhoneHubManagerFactory::ServiceIsNULLWhileTesting() const {
 bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   // We do want the service to be created with the BrowserContext, but returning
   // true here causes issues when opting into Chrome Sync in OOBE because it
-  // causes ProfileSyncService to be created before SyncConsentScreen. Instead,
+  // causes SyncService to be created before SyncConsentScreen. Instead,
   // we return false here and initialize PhoneHubManager within
   // UserSessionInitializer.
   return false;

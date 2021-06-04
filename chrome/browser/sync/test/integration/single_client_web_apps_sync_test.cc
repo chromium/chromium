@@ -14,7 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "content/public/test/browser_test.h"
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
   ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
   ASSERT_TRUE(SetupSync());
-  syncer::ProfileSyncService* service = GetSyncService(0);
+  syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
   EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
@@ -150,7 +150,7 @@ class SingleClientWebAppsSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        DisablingSelectedTypeDisablesModelType) {
   ASSERT_TRUE(SetupSync());
-  syncer::ProfileSyncService* service = GetSyncService(0);
+  syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));

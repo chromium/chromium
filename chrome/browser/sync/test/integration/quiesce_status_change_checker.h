@@ -13,7 +13,7 @@
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 }  // namespace syncer
 
 // Waits until all provided clients have finished committing any unsynced items
@@ -25,7 +25,7 @@ class ProfileSyncService;
 class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
   explicit QuiesceStatusChangeChecker(
-      std::vector<syncer::ProfileSyncService*> services);
+      std::vector<syncer::SyncServiceImpl*> services);
   ~QuiesceStatusChangeChecker() override;
 
   // Implementation of StatusChangeChecker.

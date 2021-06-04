@@ -62,7 +62,7 @@ enum ClientAction {
   // settings page that account is disabled.
   STOP_SYNC_FOR_DISABLED_ACCOUNT,
 
-  // Generated in response to CLIENT_DATA_OBSOLETE error. ProfileSyncService
+  // Generated in response to CLIENT_DATA_OBSOLETE error. SyncServiceImpl
   // should stop sync engine, delete the data and restart sync engine.
   RESET_LOCAL_SYNC_DATA,
 

@@ -75,7 +75,7 @@ class FakeServer;
 }  // namespace fake_server
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 }  // namespace syncer
 
 namespace switches {
@@ -227,14 +227,14 @@ class SyncTest : public PlatformBrowserTest {
   // Returns a list of the collection of sync clients.
   std::vector<ProfileSyncServiceHarness*> GetSyncClients();
 
-  // Returns a ProfileSyncService at the given index.
-  syncer::ProfileSyncService* GetSyncService(int index);
+  // Returns a SyncServiceImpl at the given index.
+  syncer::SyncServiceImpl* GetSyncService(int index);
 
-  // Returns the set of ProfileSyncServices.
-  std::vector<syncer::ProfileSyncService*> GetSyncServices();
+  // Returns the set of SyncServiceImpls.
+  std::vector<syncer::SyncServiceImpl*> GetSyncServices();
 
   // Returns the set of registered UserSelectableTypes.  This is retrieved from
-  // the ProfileSyncService at the given |index|.
+  // the SyncServiceImpl at the given |index|.
   syncer::UserSelectableTypeSet GetRegisteredSelectableTypes(int index);
 
   // Returns a pointer to the sync profile that is used to verify changes to

@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
-class ProfileSyncService;
+class SyncServiceImpl;
 }  // namespace syncer
 
 // Checker to block until all nudged changes have been committed to the server.
@@ -19,8 +19,7 @@ class ProfileSyncService;
 class CommittedAllNudgedChangesChecker
     : public SingleClientStatusChangeChecker {
  public:
-  explicit CommittedAllNudgedChangesChecker(
-      syncer::ProfileSyncService* service);
+  explicit CommittedAllNudgedChangesChecker(syncer::SyncServiceImpl* service);
   ~CommittedAllNudgedChangesChecker() override;
 
   // StatusChangeChecker implementation.

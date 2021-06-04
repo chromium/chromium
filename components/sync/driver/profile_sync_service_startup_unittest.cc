@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
@@ -51,7 +51,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
   ~ProfileSyncServiceStartupTest() override { sync_service_->Shutdown(); }
 
   void CreateSyncService(
-      ProfileSyncService::StartBehavior start_behavior,
+      SyncServiceImpl::StartBehavior start_behavior,
       ModelTypeSet registered_types = ModelTypeSet(BOOKMARKS)) {
     DataTypeController::TypeVector controllers;
     for (ModelType type : registered_types) {
@@ -66,7 +66,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
     ON_CALL(*sync_client, CreateDataTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
-    sync_service_ = std::make_unique<ProfileSyncService>(
+    sync_service_ = std::make_unique<SyncServiceImpl>(
         profile_sync_service_bundle_.CreateBasicInitParams(
             start_behavior, std::move(sync_client)));
   }
@@ -107,7 +107,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
 
-  ProfileSyncService* sync_service() { return sync_service_.get(); }
+  SyncServiceImpl* sync_service() { return sync_service_.get(); }
 
   PrefService* pref_service() {
     return profile_sync_service_bundle_.pref_service();
@@ -137,7 +137,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   ProfileSyncServiceBundle profile_sync_service_bundle_;
   SyncPrefs sync_prefs_;
-  std::unique_ptr<ProfileSyncService> sync_service_;
+  std::unique_ptr<SyncServiceImpl> sync_service_;
   // The controllers are owned by |sync_service_|.
   std::map<ModelType, FakeDataTypeController*> controller_map_;
 };
@@ -148,7 +148,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   // Should not actually start, rather just clean things up and wait
   // to be enabled.
@@ -166,7 +166,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
   EXPECT_EQ(base::Time(), sync_service()->GetLastSyncedTimeForDebugging());
   EXPECT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
-  // This tells the ProfileSyncService that setup is now in progress, which
+  // This tells the SyncServiceImpl that setup is now in progress, which
   // causes it to try starting up the engine. We're not signed in yet though, so
   // that won't work.
   sync_service()->GetUserSettings()->SetSyncRequested(true);
@@ -203,7 +203,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 
-  // Marking first setup complete will let ProfileSyncService reconfigure the
+  // Marking first setup complete will let SyncServiceImpl reconfigure the
   // DataTypeManager in full Sync-the-feature mode.
   sync_service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
@@ -222,15 +222,15 @@ TEST_F(ProfileSyncServiceStartupTest, StartNoCredentials) {
   SimulateTestUserSigninWithoutRefreshToken();
   sync_prefs()->SetFirstSetupComplete();
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
-  // ProfileSyncService should now be active, but of course not have an access
+  // SyncServiceImpl should now be active, but of course not have an access
   // token.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->GetAccessTokenForTest().empty());
-  // Note that ProfileSyncService is not in an auth error state - no auth was
+  // Note that SyncServiceImpl is not in an auth error state - no auth was
   // attempted, so no error.
 }
 
@@ -241,11 +241,11 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutBeforeInitialization) {
   SimulateWebSignout();
   sync_prefs()->SetFirstSetupComplete();
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
 
-  // ProfileSyncService should now be in the paused state.
+  // SyncServiceImpl should now be in the paused state.
   EXPECT_EQ(SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
 }
@@ -259,7 +259,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
 
   // Note: Deferred startup is only enabled if SESSIONS is among the preferred
   // data types.
-  CreateSyncService(ProfileSyncService::MANUAL_START, {TYPED_URLS, SESSIONS});
+  CreateSyncService(SyncServiceImpl::MANUAL_START, {TYPED_URLS, SESSIONS});
   sync_service()->Initialize();
 
   ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
@@ -277,7 +277,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
   // Now sign out on the web to enter the sync-paused state.
   SimulateWebSignout();
 
-  // ProfileSyncService should now be in the paused state.
+  // SyncServiceImpl should now be in the paused state.
   EXPECT_EQ(SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
 
@@ -292,7 +292,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
   SimulateTestUserSignin();
   sync_prefs()->SetFirstSetupComplete();
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
   // Respond to the token request to finish the initialization flow.
@@ -313,7 +313,7 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
   // Now sign out on the web to enter the sync-paused state.
   SimulateWebSignout();
 
-  // ProfileSyncService should now be in the paused state.
+  // SyncServiceImpl should now be in the paused state.
   EXPECT_EQ(SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
 
@@ -325,7 +325,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartInvalidCredentials) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
@@ -352,7 +352,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartCrosNoCredentials) {
   // isn't necessarily available yet.
   SimulateTestUserSigninWithoutRefreshToken();
 
-  CreateSyncService(ProfileSyncService::AUTO_START);
+  CreateSyncService(SyncServiceImpl::AUTO_START);
 
   // Calling Initialize should cause the service to immediately create and
   // initialize the engine, and configure the DataTypeManager.
@@ -371,7 +371,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartCrosFirstTime) {
   // isn't necessarily available yet.
   SimulateTestUserSigninWithoutRefreshToken();
 
-  CreateSyncService(ProfileSyncService::AUTO_START);
+  CreateSyncService(SyncServiceImpl::AUTO_START);
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
   // The primary account is already populated, all that's left to do is provide
@@ -388,7 +388,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartNormal) {
   sync_prefs()->SetFirstSetupComplete();
   SimulateTestUserSignin();
 
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   // Since all conditions for starting Sync are already fulfilled, calling
   // Initialize should immediately create and initialize the engine and
@@ -403,7 +403,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartNormal) {
 
 TEST_F(ProfileSyncServiceStartupTest, StopSync) {
   sync_prefs()->SetFirstSetupComplete();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
 
   sync_service()->Initialize();
@@ -427,7 +427,7 @@ TEST_F(ProfileSyncServiceStartupTest, DisableSync) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
   SimulateTestUserSignin();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
   ASSERT_TRUE(sync_service()->IsSyncFeatureActive());
@@ -465,7 +465,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartRecoverDatatypePrefs) {
   }
 
   sync_prefs()->SetFirstSetupComplete();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
 
   sync_service()->Initialize();
@@ -484,7 +484,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartDontRecoverDatatypePrefs) {
       /*chosen_types=*/{UserSelectableType::kBookmarks});
 
   sync_prefs()->SetFirstSetupComplete();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
 
   sync_service()->Initialize();
@@ -500,7 +500,7 @@ TEST_F(ProfileSyncServiceStartupTest, ManagedStartup) {
   sync_prefs()->SetFirstSetupComplete();
 
   SimulateTestUserSignin();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
   // Sync was disabled due to the policy, setting SyncRequested to false and
@@ -519,7 +519,7 @@ TEST_F(ProfileSyncServiceStartupTest, SwitchManaged) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
   SimulateTestUserSignin();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   // Initialize() should be enough to kick off Sync startup (which is instant in
   // this test).
@@ -570,7 +570,7 @@ TEST_F(ProfileSyncServiceStartupTest, SwitchManaged) {
 
 TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);
-  CreateSyncService(ProfileSyncService::MANUAL_START);
+  CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSignin();
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
@@ -598,7 +598,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
 
   // Note: Deferred startup is only enabled if SESSIONS is among the preferred
   // data types.
-  CreateSyncService(ProfileSyncService::MANUAL_START,
+  CreateSyncService(SyncServiceImpl::MANUAL_START,
                     ModelTypeSet(SESSIONS, TYPED_URLS));
   sync_service()->Initialize();
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
@@ -683,7 +683,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceNthTime) {
 
   // Note: Deferred startup is only enabled if SESSIONS is among the preferred
   // data types.
-  CreateSyncService(ProfileSyncService::MANUAL_START,
+  CreateSyncService(SyncServiceImpl::MANUAL_START,
                     ModelTypeSet(SESSIONS, TYPED_URLS));
   sync_service()->Initialize();
   ASSERT_TRUE(sync_service()->CanSyncFeatureStart());

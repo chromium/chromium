@@ -435,7 +435,7 @@ void InjectKeystoreEncryptedServerPassword(
 }  // namespace passwords_helper
 
 PasswordSyncActiveChecker::PasswordSyncActiveChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
 PasswordSyncActiveChecker::~PasswordSyncActiveChecker() = default;
 
@@ -458,7 +458,7 @@ SamePasswordFormsChecker::~SamePasswordFormsChecker() = default;
 //
 // This function indirectly calls GetLogins(), which starts a RunLoop on the UI
 // thread.  This can be a problem, since the next task to execute could very
-// well contain a ProfileSyncService::OnStateChanged() event, which would
+// well contain a SyncServiceObserver::OnStateChanged() event, which would
 // trigger another call to this here function, and start another layer of
 // nested RunLoops.  That makes the StatusChangeChecker's Quit() method
 // ineffective.

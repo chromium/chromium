@@ -107,7 +107,7 @@ class IsHistoryURLSyncedChecker : public SingleClientStatusChangeChecker {
  public:
   IsHistoryURLSyncedChecker(const std::string& url,
                             fake_server::FakeServer* fake_server,
-                            syncer::ProfileSyncService* service)
+                            syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service),
         url_(url),
         fake_server_(fake_server) {}
@@ -128,7 +128,7 @@ class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
   IsIconURLSyncedChecker(const std::string& page_url,
                          const std::string& icon_url,
                          fake_server::FakeServer* fake_server,
-                         syncer::ProfileSyncService* service)
+                         syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service),
         page_url_(page_url),
         icon_url_(icon_url),
@@ -265,7 +265,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
 
   // Simulates receiving list of accounts in the cookie jar from ListAccounts
   // endpoint. Adds |account_ids| into signed in accounts, notifies
-  // ProfileSyncService and waits for change to propagate to sync engine.
+  // SyncServiceImpl and waits for change to propagate to sync engine.
   void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountId> account_ids,
                                       bool expected_cookie_jar_mismatch) {
     std::vector<gaia::ListedAccount> accounts;
@@ -835,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
 
   // Avoid interferences from actual IdentityManager trying to fetch gaia
   // account information, which would exercise
-  // ProfileSyncService::OnAccountsInCookieUpdated().
+  // SyncServiceImpl::OnAccountsInCookieUpdated().
   signin::CancelAllOngoingGaiaCookieOperations(
       IdentityManagerFactory::GetForProfile(GetProfile(0)));
 

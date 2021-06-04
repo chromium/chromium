@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_H_
-#define COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_H_
+#ifndef COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_H_
+#define COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
 #include <set>
@@ -57,13 +57,13 @@ class BackendMigrator;
 class SyncAuthManager;
 
 // Look at the SyncService interface for information on how to use this class.
-// You should not need to know about ProfileSyncService directly.
-class ProfileSyncService : public SyncService,
-                           public SyncEngineHost,
-                           public SyncPrefObserver,
-                           public DataTypeManagerObserver,
-                           public SyncServiceCrypto::Delegate,
-                           public signin::IdentityManager::Observer {
+// You should not need to know about SyncServiceImpl directly.
+class SyncServiceImpl : public SyncService,
+                        public SyncEngineHost,
+                        public SyncPrefObserver,
+                        public DataTypeManagerObserver,
+                        public SyncServiceCrypto::Delegate,
+                        public signin::IdentityManager::Observer {
  public:
   // If AUTO_START, sync will set IsFirstSetupComplete() automatically and sync
   // will begin syncing without the user needing to confirm sync settings.
@@ -72,7 +72,7 @@ class ProfileSyncService : public SyncService,
     MANUAL_START,
   };
 
-  // Bundles the arguments for ProfileSyncService construction. This is a
+  // Bundles the arguments for SyncServiceImpl construction. This is a
   // movable struct. Because of the non-POD data members, it needs out-of-line
   // constructors, so in particular the move constructor needs to be
   // explicitly defined.
@@ -97,9 +97,9 @@ class ProfileSyncService : public SyncService,
     DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
-  explicit ProfileSyncService(InitParams init_params);
+  explicit SyncServiceImpl(InitParams init_params);
 
-  ~ProfileSyncService() override;
+  ~SyncServiceImpl() override;
 
   // Initializes the object. This must be called at most once, and
   // immediately after an object of this class is constructed.
@@ -418,7 +418,7 @@ class ProfileSyncService : public SyncService,
   int outstanding_setup_in_progress_handles_ = 0;
 
   // Set when sync receives STOP_SYNC_FOR_DISABLED_ACCOUNT error from server.
-  // Prevents ProfileSyncService from starting engine till browser restarted
+  // Prevents SyncServiceImpl from starting engine till browser restarted
   // or user signed out.
   bool sync_disabled_by_admin_;
 
@@ -484,13 +484,13 @@ class ProfileSyncService : public SyncService,
   bool sessions_invalidations_enabled_;
 
   // This weak factory invalidates its issued pointers when Sync is disabled.
-  base::WeakPtrFactory<ProfileSyncService> sync_enabled_weak_factory_{this};
+  base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};
 
-  base::WeakPtrFactory<ProfileSyncService> weak_factory_{this};
+  base::WeakPtrFactory<SyncServiceImpl> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileSyncService);
+  DISALLOW_COPY_AND_ASSIGN(SyncServiceImpl);
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_DRIVER_PROFILE_SYNC_SERVICE_H_
+#endif  // COMPONENTS_SYNC_DRIVER_SYNC_SERVICE_IMPL_H_

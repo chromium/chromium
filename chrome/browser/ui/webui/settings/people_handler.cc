@@ -852,7 +852,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   UpdateSyncStatus();
   // TODO(crbug.com/1106764): Re-evaluate marking sync as configuring here,
-  // since this gets called whenever ProfileSyncService changes state. Inline
+  // since this gets called whenever SyncService changes state. Inline
   // MaybeMarkSyncConfiguring() then.
   MaybeMarkSyncConfiguring();
   PushSyncPrefs();

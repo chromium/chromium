@@ -4,10 +4,10 @@
 
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 
 CommittedAllNudgedChangesChecker::CommittedAllNudgedChangesChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {
   service->HasUnsyncedItemsForTest(
       base::BindOnce(&CommittedAllNudgedChangesChecker::GotHasUnsyncedItems,

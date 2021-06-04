@@ -13,8 +13,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_client_mock.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
 #include "components/sync/invalidations/switches.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -22,7 +22,7 @@
 namespace syncer {
 
 // Aggregate this class to get all necessary support for creating a
-// ProfileSyncService in tests. The test still needs to have its own
+// SyncServiceImpl in tests. The test still needs to have its own
 // MessageLoop, though.
 class ProfileSyncServiceBundle {
  public:
@@ -36,8 +36,8 @@ class ProfileSyncServiceBundle {
   // Creates an InitParams instance with the specified |start_behavior| and
   // |sync_client|, and fills the rest with dummy values and objects owned by
   // the bundle.
-  ProfileSyncService::InitParams CreateBasicInitParams(
-      ProfileSyncService::StartBehavior start_behavior,
+  SyncServiceImpl::InitParams CreateBasicInitParams(
+      SyncServiceImpl::StartBehavior start_behavior,
       std::unique_ptr<SyncClient> sync_client);
 
   // Accessors

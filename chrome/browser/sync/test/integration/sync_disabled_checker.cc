@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 
-SyncDisabledChecker::SyncDisabledChecker(syncer::ProfileSyncService* service)
+SyncDisabledChecker::SyncDisabledChecker(syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
 
 SyncDisabledChecker::~SyncDisabledChecker() = default;

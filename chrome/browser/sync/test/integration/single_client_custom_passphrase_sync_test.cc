@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -146,7 +146,7 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
         .Wait();
   }
 
-  syncer::ProfileSyncService* GetSyncService() {
+  syncer::SyncServiceImpl* GetSyncService() {
     return SyncTest::GetSyncService(0);
   }
 

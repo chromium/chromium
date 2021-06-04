@@ -16,7 +16,7 @@ namespace syncer {
 // Struct describing in which context sync was enabled, including state that can
 // be assumed to be fixed while sync is enabled (or, more precisely, is
 // representative of the last (re)configuration request). It's built by
-// ProfileSyncService and plumbed through DataTypeManager until datatype
+// SyncServiceImpl and plumbed through DataTypeManager until datatype
 // controllers, which for USS datatypes propagate analogous information to the
 // processor/bridge via DataTypeActivationRequest.
 struct ConfigureContext {

@@ -14,7 +14,7 @@
 
 namespace syncer {
 
-// This class is used by ProfileSyncService to manage all logic and state
+// This class is used by SyncServiceImpl to manage all logic and state
 // pertaining to initialization of the SyncEngine.
 class StartupController : public policy::PolicyService::Observer {
  public:

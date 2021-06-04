@@ -28,7 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,7 +45,7 @@ using content::BrowserThread;
 namespace {
 
 // Native callback for the JNI GetAllNodes method. When
-// ProfileSyncService::GetAllNodes completes, this method is called and the
+// SyncServiceImpl::GetAllNodes completes, this method is called and the
 // results are sent to the Java callback.
 void NativeGetAllNodesCallback(
     JNIEnv* env,
@@ -75,7 +75,7 @@ ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
 
 ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(
     JNIEnv* env,
-    syncer::ProfileSyncService* native_sync_service,
+    syncer::SyncServiceImpl* native_sync_service,
     jobject java_sync_service)
     : native_sync_service_(native_sync_service),
       java_sync_service_(env, java_sync_service) {
@@ -95,7 +95,7 @@ void ProfileSyncServiceAndroid::OnStateChanged(syncer::SyncService* sync) {
   Java_ProfileSyncService_syncStateChanged(env, java_sync_service_.get(env));
 }
 
-// Pure ProfileSyncService calls.
+// Pure SyncServiceImpl calls.
 
 jboolean ProfileSyncServiceAndroid::IsSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -384,7 +384,7 @@ jboolean ProfileSyncServiceAndroid::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
 
 // Functionality only available for testing purposes.
 
-jlong ProfileSyncServiceAndroid::GetProfileSyncServiceForTest(JNIEnv* env) {
+jlong ProfileSyncServiceAndroid::GetSyncServiceImplForTest(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(native_sync_service_);
 }
@@ -417,8 +417,8 @@ static jlong JNI_ProfileSyncService_Init(
     const JavaParamRef<jobject>& java_sync_service) {
   DCHECK(g_browser_process && g_browser_process->profile_manager());
 
-  syncer::ProfileSyncService* sync_service =
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(
           ProfileManager::GetLastUsedProfile());
   if (!sync_service) {
     return 0;

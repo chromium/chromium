@@ -642,7 +642,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   // We don't need to check is_status_valid here.
   // full_status.sync_protocol_error is exported directly from the
-  // ProfileSyncService, even if the backend doesn't exist.
+  // SyncServiceImpl, even if the backend doesn't exist.
   const bool actionable_error_detected =
       full_status.sync_protocol_error.error_type != UNKNOWN_ERROR &&
       full_status.sync_protocol_error.error_type != SYNC_SUCCESS;

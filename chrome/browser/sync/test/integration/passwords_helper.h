@@ -149,7 +149,7 @@ void InjectKeystoreEncryptedServerPassword(
 // Checker to wait until the PASSWORDS datatype becomes active.
 class PasswordSyncActiveChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PasswordSyncActiveChecker(syncer::ProfileSyncService* service);
+  explicit PasswordSyncActiveChecker(syncer::SyncServiceImpl* service);
   ~PasswordSyncActiveChecker() override;
 
   // StatusChangeChecker implementation.

@@ -228,8 +228,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   // TODO(crbug.com/1113597): consider destroying/notifying
   // |trusted_vault_client_| upon IdentityManager shutdown, to avoid its usages
   // afterwards. This can be done by tranferring |trusted_vault_client_|
-  // ownership to ProfileSyncService and acting on
-  // ProfileSyncService::Shutdown() or by handling
+  // ownership to SyncServiceImpl and acting on
+  // SyncServiceImpl::Shutdown() or by handling
   // IdentityManagerFactory::Observer::IdentityManagerShutdown().
   trusted_vault_client_ =
       std::make_unique<syncer::StandaloneTrustedVaultClient>(

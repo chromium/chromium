@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 
 #include <cstddef>
 #include <utility>
@@ -70,13 +70,12 @@ enum SyncInitialState {
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                             bool first_setup_complete) {
   SyncInitialState sync_state = CAN_START;
-  if (disable_reasons.Has(ProfileSyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
+  if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
     sync_state = NOT_SIGNED_IN;
   } else if (disable_reasons.Has(
-                 ProfileSyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+                 SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     sync_state = NOT_ALLOWED_BY_POLICY;
-  } else if (disable_reasons.Has(
-                 ProfileSyncService::DISABLE_REASON_USER_CHOICE)) {
+  } else if (disable_reasons.Has(SyncService::DISABLE_REASON_USER_CHOICE)) {
     if (first_setup_complete) {
       sync_state = NOT_REQUESTED;
     } else {
@@ -127,19 +126,19 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
 
 }  // namespace
 
-ProfileSyncService::InitParams::InitParams() = default;
-ProfileSyncService::InitParams::InitParams(InitParams&& other) = default;
-ProfileSyncService::InitParams::~InitParams() = default;
+SyncServiceImpl::InitParams::InitParams() = default;
+SyncServiceImpl::InitParams::InitParams(InitParams&& other) = default;
+SyncServiceImpl::InitParams::~InitParams() = default;
 
-ProfileSyncService::ProfileSyncService(InitParams init_params)
+SyncServiceImpl::SyncServiceImpl(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
       sync_prefs_(sync_client_->GetPrefService()),
       identity_manager_(init_params.identity_manager),
       auth_manager_(std::make_unique<SyncAuthManager>(
           identity_manager_,
-          base::BindRepeating(&ProfileSyncService::AccountStateChanged,
+          base::BindRepeating(&SyncServiceImpl::AccountStateChanged,
                               base::Unretained(this)),
-          base::BindRepeating(&ProfileSyncService::CredentialsChanged,
+          base::BindRepeating(&SyncServiceImpl::CredentialsChanged,
                               base::Unretained(this)))),
       channel_(init_params.channel),
       debug_identifier_(init_params.debug_identifier),
@@ -167,7 +166,7 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
   DCHECK(sync_client_);
   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);
 
-  // If Sync is disabled via command line flag, then ProfileSyncService
+  // If Sync is disabled via command line flag, then SyncServiceImpl
   // shouldn't be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
 
@@ -175,11 +174,11 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       base::FeatureList::IsEnabled(switches::kSyncRequiresPoliciesLoaded);
 
   startup_controller_ = std::make_unique<StartupController>(
-      base::BindRepeating(&ProfileSyncService::GetPreferredDataTypes,
+      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
                           base::Unretained(this)),
-      base::BindRepeating(&ProfileSyncService::IsEngineAllowedToRun,
+      base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
                           base::Unretained(this)),
-      base::BindRepeating(&ProfileSyncService::StartUpSlowEngineComponents,
+      base::BindRepeating(&SyncServiceImpl::StartUpSlowEngineComponents,
                           base::Unretained(this)),
       should_wait_for_policies ? init_params.policy_service : nullptr);
 
@@ -191,7 +190,7 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
     identity_manager_->AddObserver(this);
 }
 
-ProfileSyncService::~ProfileSyncService() {
+SyncServiceImpl::~SyncServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (identity_manager_)
     identity_manager_->RemoveObserver(this);
@@ -200,7 +199,7 @@ ProfileSyncService::~ProfileSyncService() {
   DCHECK(!engine_);
 }
 
-void ProfileSyncService::Initialize() {
+void SyncServiceImpl::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.emplace();
@@ -269,7 +268,7 @@ void ProfileSyncService::Initialize() {
   startup_controller_->TryStart(force_immediate);
 }
 
-void ProfileSyncService::StartSyncingWithServer() {
+void SyncServiceImpl::StartSyncingWithServer() {
   DCHECK(startup_controller_->ArePoliciesReady());
   if (engine_)
     engine_->StartSyncingWithServer();
@@ -278,11 +277,11 @@ void ProfileSyncService::StartSyncingWithServer() {
   }
 }
 
-ModelTypeSet ProfileSyncService::GetRegisteredDataTypesForTest() const {
+ModelTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
 }
 
-void ProfileSyncService::GetThrottledDataTypesForTest(
+void SyncServiceImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!engine_ || !engine_->IsInitialized()) {
@@ -293,15 +292,14 @@ void ProfileSyncService::GetThrottledDataTypesForTest(
   engine_->GetThrottledDataTypesForTest(std::move(cb));
 }
 
-void ProfileSyncService::TriggerPoliciesLoadedForTest() {
+void SyncServiceImpl::TriggerPoliciesLoadedForTest() {
   if (!startup_controller_->ArePoliciesReady()) {
     startup_controller_->OnFirstPoliciesLoaded(
         policy::PolicyDomain::POLICY_DOMAIN_CHROME);
   }
 }
 
-bool ProfileSyncService::IsDataTypeControllerRunningForTest(
-    ModelType type) const {
+bool SyncServiceImpl::IsDataTypeControllerRunningForTest(ModelType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iter = data_type_controllers_.find(type);
   if (iter == data_type_controllers_.end()) {
@@ -310,7 +308,7 @@ bool ProfileSyncService::IsDataTypeControllerRunningForTest(
   return iter->second->state() == DataTypeController::RUNNING;
 }
 
-void ProfileSyncService::AccountStateChanged() {
+void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if defined(OS_ANDROID)
@@ -351,7 +349,7 @@ void ProfileSyncService::AccountStateChanged() {
   }
 }
 
-void ProfileSyncService::CredentialsChanged() {
+void SyncServiceImpl::CredentialsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the engine isn't allowed to start anymore due to the credentials change,
@@ -384,7 +382,7 @@ void ProfileSyncService::CredentialsChanged() {
   NotifyObservers();
 }
 
-bool ProfileSyncService::IsEngineAllowedToRun() const {
+bool SyncServiceImpl::IsEngineAllowedToRun() const {
   // USER_CHOICE (i.e. the Sync feature toggle) and PLATFORM_OVERRIDE (i.e.
   // Android's "MasterSync" toggle) do not prevent starting up the Sync
   // transport.
@@ -394,13 +392,13 @@ bool ProfileSyncService::IsEngineAllowedToRun() const {
   return disable_reasons.Empty() && !auth_manager_->IsSyncPaused();
 }
 
-void ProfileSyncService::OnProtocolEvent(const ProtocolEvent& event) {
+void SyncServiceImpl::OnProtocolEvent(const ProtocolEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : protocol_event_observers_)
     observer.OnProtocolEvent(event);
 }
 
-void ProfileSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {
+void SyncServiceImpl::OnDataTypeRequestsSyncStartup(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(UserTypes().Has(type));
 
@@ -421,7 +419,7 @@ void ProfileSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {
   startup_controller_->OnDataTypeRequestsSyncStartup(type);
 }
 
-void ProfileSyncService::StartUpSlowEngineComponents() {
+void SyncServiceImpl::StartUpSlowEngineComponents() {
   DCHECK(IsEngineAllowedToRun());
 
   const CoreAccountInfo authenticated_account_info =
@@ -485,7 +483,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   engine_->Initialize(std::move(params));
 }
 
-void ProfileSyncService::Shutdown() {
+void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyShutdown();
@@ -509,7 +507,7 @@ void ProfileSyncService::Shutdown() {
   auth_manager_.reset();
 }
 
-void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
+void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
@@ -566,7 +564,7 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
   NotifyObservers();
 }
 
-void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
+void SyncServiceImpl::StopImpl(SyncStopDataFate data_fate) {
   switch (data_fate) {
     case KEEP_DATA:
       ShutdownImpl(STOP_SYNC);
@@ -592,20 +590,20 @@ void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
   }
 }
 
-SyncUserSettings* ProfileSyncService::GetUserSettings() {
+SyncUserSettings* SyncServiceImpl::GetUserSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_settings_.get();
 }
 
-const SyncUserSettings* ProfileSyncService::GetUserSettings() const {
+const SyncUserSettings* SyncServiceImpl::GetUserSettings() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_settings_.get();
 }
 
-SyncService::DisableReasonSet ProfileSyncService::GetDisableReasons() const {
+SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If Sync is disabled via command line flag, then ProfileSyncService
+  // If Sync is disabled via command line flag, then SyncServiceImpl
   // shouldn't even be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
   DisableReasonSet result;
@@ -632,7 +630,7 @@ SyncService::DisableReasonSet ProfileSyncService::GetDisableReasons() const {
   return result;
 }
 
-SyncService::TransportState ProfileSyncService::GetTransportState() const {
+SyncService::TransportState SyncServiceImpl::GetTransportState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsEngineAllowedToRun()) {
@@ -686,29 +684,29 @@ SyncService::TransportState ProfileSyncService::GetTransportState() const {
   return TransportState::ACTIVE;
 }
 
-void ProfileSyncService::NotifyObservers() {
+void SyncServiceImpl::NotifyObservers() {
   for (auto& observer : *observers_) {
     observer.OnStateChanged(this);
   }
 }
 
-void ProfileSyncService::NotifySyncCycleCompleted() {
+void SyncServiceImpl::NotifySyncCycleCompleted() {
   for (auto& observer : *observers_)
     observer.OnSyncCycleCompleted(this);
 }
 
-void ProfileSyncService::NotifyShutdown() {
+void SyncServiceImpl::NotifyShutdown() {
   for (auto& observer : *observers_)
     observer.OnSyncShutdown(this);
 }
 
-void ProfileSyncService::ClearUnrecoverableError() {
+void SyncServiceImpl::ClearUnrecoverableError() {
   unrecoverable_error_reason_ = absl::nullopt;
   unrecoverable_error_message_.clear();
   unrecoverable_error_location_ = base::Location();
 }
 
-void ProfileSyncService::OnUnrecoverableErrorImpl(
+void SyncServiceImpl::OnUnrecoverableErrorImpl(
     const base::Location& from_here,
     const std::string& message,
     UnrecoverableErrorReason reason) {
@@ -718,20 +716,20 @@ void ProfileSyncService::OnUnrecoverableErrorImpl(
   unrecoverable_error_location_ = from_here;
 
   LOG(ERROR) << "Unrecoverable error detected at " << from_here.ToString()
-             << " -- ProfileSyncService unusable: " << message;
+             << " -- SyncServiceImpl unusable: " << message;
 
   // Shut all data types down.
   ShutdownImpl(DISABLE_SYNC);
 }
 
-void ProfileSyncService::DataTypePreconditionChanged(ModelType type) {
+void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!engine_ || !engine_->IsInitialized() || !data_type_manager_)
     return;
   data_type_manager_->DataTypePreconditionChanged(type);
 }
 
-void ProfileSyncService::UpdateEngineInitUMA(bool success) const {
+void SyncServiceImpl::UpdateEngineInitUMA(bool success) const {
   if (is_first_time_sync_configure_) {
     UMA_HISTOGRAM_BOOLEAN("Sync.BackendInitializeFirstTimeSuccess", success);
   } else {
@@ -748,7 +746,7 @@ void ProfileSyncService::UpdateEngineInitUMA(bool success) const {
   }
 }
 
-void ProfileSyncService::OnEngineInitialized(
+void SyncServiceImpl::OnEngineInitialized(
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     bool success,
     bool is_first_time_sync_configure) {
@@ -812,8 +810,7 @@ void ProfileSyncService::OnEngineInitialized(
   NotifyObservers();
 }
 
-void ProfileSyncService::OnSyncCycleCompleted(
-    const SyncCycleSnapshot& snapshot) {
+void SyncServiceImpl::OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   last_snapshot_ = snapshot;
@@ -822,7 +819,7 @@ void ProfileSyncService::OnSyncCycleCompleted(
   NotifySyncCycleCompleted();
 }
 
-void ProfileSyncService::OnConnectionStatusChange(ConnectionStatus status) {
+void SyncServiceImpl::OnConnectionStatusChange(ConnectionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionStatusChanged(status);
@@ -830,7 +827,7 @@ void ProfileSyncService::OnConnectionStatusChange(ConnectionStatus status) {
   NotifyObservers();
 }
 
-void ProfileSyncService::OnMigrationNeededForTypes(ModelTypeSet types) {
+void SyncServiceImpl::OnMigrationNeededForTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
@@ -841,7 +838,7 @@ void ProfileSyncService::OnMigrationNeededForTypes(ModelTypeSet types) {
   migrator_->MigrateTypes(types);
 }
 
-void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
+void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_actionable_error_ = error;
   DCHECK_NE(last_actionable_error_.action, UNKNOWN_ACTION);
@@ -902,16 +899,17 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
   NotifyObservers();
 }
 
-void ProfileSyncService::OnBackedOffTypesChanged() {
+void SyncServiceImpl::OnBackedOffTypesChanged() {
   NotifyObservers();
 }
 
-void ProfileSyncService::OnConfigureDone(
+void SyncServiceImpl::OnConfigureDone(
     const DataTypeManager::ConfigureResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_type_error_map_ = result.data_type_status_table.GetAllErrors();
 
-  DVLOG(1) << "PSS OnConfigureDone called with status: " << result.status;
+  DVLOG(1) << "SyncServiceImpl::OnConfigureDone called with status: "
+           << result.status;
   // The possible status values:
   //    ABORT - Configuration was aborted. This is not an error, if
   //            initiated by user.
@@ -920,7 +918,7 @@ void ProfileSyncService::OnConfigureDone(
   // First handle the abort case.
   if (result.status == DataTypeManager::ABORTED) {
     DCHECK(expect_sync_configuration_aborted_);
-    DVLOG(0) << "ProfileSyncService::Observe Sync Configure aborted";
+    DVLOG(0) << "SyncServiceImpl sync configuration aborted";
     expect_sync_configuration_aborted_ = false;
     return;
   }
@@ -951,18 +949,18 @@ void ProfileSyncService::OnConfigureDone(
   StartSyncingWithServer();
 }
 
-void ProfileSyncService::OnConfigureStart() {
+void SyncServiceImpl::OnConfigureStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   engine_->StartConfiguration();
   NotifyObservers();
 }
 
-void ProfileSyncService::CryptoStateChanged() {
+void SyncServiceImpl::CryptoStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyObservers();
 }
 
-void ProfileSyncService::CryptoRequiredUserActionChanged() {
+void SyncServiceImpl::CryptoRequiredUserActionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (should_record_trusted_vault_error_shown_on_startup_ &&
@@ -977,7 +975,7 @@ void ProfileSyncService::CryptoRequiredUserActionChanged() {
   }
 }
 
-void ProfileSyncService::ReconfigureDataTypesDueToCrypto() {
+void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
@@ -991,18 +989,18 @@ void ProfileSyncService::ReconfigureDataTypesDueToCrypto() {
   NotifyObservers();
 }
 
-void ProfileSyncService::EncryptionBootstrapTokenChanged(
+void SyncServiceImpl::EncryptionBootstrapTokenChanged(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);
 }
 
-bool ProfileSyncService::IsSetupInProgress() const {
+bool SyncServiceImpl::IsSetupInProgress() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return outstanding_setup_in_progress_handles_ > 0;
 }
 
-bool ProfileSyncService::QueryDetailedSyncStatusForDebugging(
+bool SyncServiceImpl::QueryDetailedSyncStatusForDebugging(
     SyncStatus* result) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_ && engine_->IsInitialized()) {
@@ -1015,21 +1013,21 @@ bool ProfileSyncService::QueryDetailedSyncStatusForDebugging(
   return false;
 }
 
-GoogleServiceAuthError ProfileSyncService::GetAuthError() const {
+GoogleServiceAuthError SyncServiceImpl::GetAuthError() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->GetLastAuthError();
 }
 
-base::Time ProfileSyncService::GetAuthErrorTime() const {
+base::Time SyncServiceImpl::GetAuthErrorTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->GetLastAuthErrorTime();
 }
 
-bool ProfileSyncService::RequiresClientUpgrade() const {
+bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
-bool ProfileSyncService::CanConfigureDataTypes(
+bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
   // TODO(crbug.com/856179): Arguably, IsSetupInProgress() shouldn't prevent
   // configuring data types in transport mode, but at least for now, it's
@@ -1040,7 +1038,7 @@ bool ProfileSyncService::CanConfigureDataTypes(
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>
-ProfileSyncService::GetSetupInProgressHandle() {
+SyncServiceImpl::GetSetupInProgressHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (++outstanding_setup_in_progress_handles_ == 1) {
@@ -1050,28 +1048,28 @@ ProfileSyncService::GetSetupInProgressHandle() {
   }
 
   return std::make_unique<SyncSetupInProgressHandle>(
-      base::BindRepeating(&ProfileSyncService::OnSetupInProgressHandleDestroyed,
+      base::BindRepeating(&SyncServiceImpl::OnSetupInProgressHandleDestroyed,
                           weak_factory_.GetWeakPtr()));
 }
 
-bool ProfileSyncService::IsLocalSyncEnabled() const {
+bool SyncServiceImpl::IsLocalSyncEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_prefs_.IsLocalSyncEnabled();
 }
 
-void ProfileSyncService::TriggerRefresh(const ModelTypeSet& types) {
+void SyncServiceImpl::TriggerRefresh(const ModelTypeSet& types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_ && engine_->IsInitialized()) {
     engine_->TriggerRefresh(types);
   }
 }
 
-bool ProfileSyncService::IsSignedIn() const {
+bool SyncServiceImpl::IsSignedIn() const {
   // Sync is logged in if there is a non-empty account id.
   return !GetAuthenticatedAccountInfo().account_id.empty();
 }
 
-base::Time ProfileSyncService::GetLastSyncedTimeForDebugging() const {
+base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
   if (!engine_ || !engine_->IsInitialized()) {
     return base::Time();
   }
@@ -1079,7 +1077,7 @@ base::Time ProfileSyncService::GetLastSyncedTimeForDebugging() const {
   return engine_->GetLastSyncedTimeForDebugging();
 }
 
-void ProfileSyncService::OnPreferredDataTypesPrefChange() {
+void SyncServiceImpl::OnPreferredDataTypesPrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!engine_ && !HasDisableReason(DISABLE_REASON_UNRECOVERABLE_ERROR)) {
@@ -1092,40 +1090,39 @@ void ProfileSyncService::OnPreferredDataTypesPrefChange() {
   ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
 }
 
-SyncClient* ProfileSyncService::GetSyncClientForTest() {
+SyncClient* SyncServiceImpl::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_client_.get();
 }
 
-void ProfileSyncService::AddObserver(SyncServiceObserver* observer) {
+void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_->AddObserver(observer);
 }
 
-void ProfileSyncService::RemoveObserver(SyncServiceObserver* observer) {
+void SyncServiceImpl::RemoveObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_->RemoveObserver(observer);
 }
 
-bool ProfileSyncService::HasObserver(
-    const SyncServiceObserver* observer) const {
+bool SyncServiceImpl::HasObserver(const SyncServiceObserver* observer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return observers_->HasObserver(observer);
 }
 
-ModelTypeSet ProfileSyncService::GetPreferredDataTypes() const {
+ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_settings_->GetPreferredDataTypes();
 }
 
-ModelTypeSet ProfileSyncService::GetActiveDataTypes() const {
+ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!data_type_manager_ || GetAuthError().IsPersistentError())
     return ModelTypeSet();
   return data_type_manager_->GetActiveDataTypes();
 }
 
-void ProfileSyncService::SyncAllowedByPlatformChanged(bool allowed) {
+void SyncServiceImpl::SyncAllowedByPlatformChanged(bool allowed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!allowed) {
@@ -1138,8 +1135,7 @@ void ProfileSyncService::SyncAllowedByPlatformChanged(bool allowed) {
   }
 }
 
-void ProfileSyncService::SetSyncRequestedAndIgnoreNotification(
-    bool is_requested) {
+void SyncServiceImpl::SetSyncRequestedAndIgnoreNotification(bool is_requested) {
   // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
   // |is_setting_sync_requested_| wouldn't get reset, so check.
   if (is_requested != user_settings_->IsSyncRequested()) {
@@ -1151,7 +1147,7 @@ void ProfileSyncService::SetSyncRequestedAndIgnoreNotification(
   }
 }
 
-void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
+void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
   DCHECK(!engine_->GetCacheGuid().empty());
@@ -1170,9 +1166,9 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
     // We create the migrator at the same time.
     migrator_ = std::make_unique<BackendMigrator>(
         debug_identifier_, data_type_manager_.get(),
-        base::BindRepeating(&ProfileSyncService::ConfigureDataTypeManager,
+        base::BindRepeating(&SyncServiceImpl::ConfigureDataTypeManager,
                             base::Unretained(this), CONFIGURE_REASON_MIGRATION),
-        base::BindRepeating(&ProfileSyncService::StartSyncingWithServer,
+        base::BindRepeating(&SyncServiceImpl::StartSyncingWithServer,
                             base::Unretained(this)));
 
     // Override reason if no configuration has completed ever.
@@ -1223,13 +1219,13 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
   }
 }
 
-bool ProfileSyncService::UseTransportOnlyMode() const {
+bool SyncServiceImpl::UseTransportOnlyMode() const {
   // Note: When local Sync is enabled, then we want full-sync mode (not just
   // transport), even though Sync-the-feature is not considered enabled.
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
 }
 
-ModelTypeSet ProfileSyncService::GetRegisteredDataTypes() const {
+ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ModelTypeSet registered_types;
   // The |data_type_controllers_| are determined by command-line flags;
@@ -1241,7 +1237,7 @@ ModelTypeSet ProfileSyncService::GetRegisteredDataTypes() const {
   return registered_types;
 }
 
-ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
+ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
   // Collect the types from all controllers that support transport-only mode.
   ModelTypeSet allowed_types;
   for (const auto& type_and_controller : data_type_controllers_) {
@@ -1254,7 +1250,7 @@ ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
   return allowed_types;
 }
 
-ModelTypeSet ProfileSyncService::GetDataTypesToConfigure() const {
+ModelTypeSet SyncServiceImpl::GetDataTypesToConfigure() const {
   ModelTypeSet types = GetPreferredDataTypes();
   // In transport-only mode, only a subset of data types is supported.
   if (UseTransportOnlyMode()) {
@@ -1263,7 +1259,7 @@ ModelTypeSet ProfileSyncService::GetDataTypesToConfigure() const {
   return types;
 }
 
-void ProfileSyncService::UpdateDataTypesForInvalidations() {
+void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   SyncInvalidationsService* invalidations_service =
       sync_client_->GetSyncInvalidationsService();
   if (!invalidations_service) {
@@ -1282,16 +1278,16 @@ void ProfileSyncService::UpdateDataTypesForInvalidations() {
     types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
   invalidations_service->SetInterestedDataTypes(
-      types, base::BindRepeating(&ProfileSyncService::TriggerRefresh,
+      types, base::BindRepeating(&SyncServiceImpl::TriggerRefresh,
                                  sync_enabled_weak_factory_.GetWeakPtr()));
 }
 
-SyncCycleSnapshot ProfileSyncService::GetLastCycleSnapshotForDebugging() const {
+SyncCycleSnapshot SyncServiceImpl::GetLastCycleSnapshotForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_snapshot_;
 }
 
-void ProfileSyncService::HasUnsyncedItemsForTest(
+void SyncServiceImpl::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(engine_);
@@ -1299,13 +1295,12 @@ void ProfileSyncService::HasUnsyncedItemsForTest(
   engine_->HasUnsyncedItemsForTest(std::move(cb));
 }
 
-BackendMigrator* ProfileSyncService::GetBackendMigratorForTest() {
+BackendMigrator* SyncServiceImpl::GetBackendMigratorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return migrator_.get();
 }
 
-std::unique_ptr<base::Value>
-ProfileSyncService::GetTypeStatusMapForDebugging() {
+std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto result = std::make_unique<base::ListValue>();
 
@@ -1369,7 +1364,7 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
   return std::move(result);
 }
 
-void ProfileSyncService::GetEntityCountsForDebugging(
+void SyncServiceImpl::GetEntityCountsForDebugging(
     base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
     const {
   // The method must respond with the TypeEntitiesCount of all data types, but
@@ -1405,7 +1400,7 @@ void ProfileSyncService::GetEntityCountsForDebugging(
   }
 }
 
-void ProfileSyncService::OnSyncManagedPrefChange(bool is_sync_managed) {
+void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Local sync is not controlled by the "sync managed" policy, so these pref
@@ -1423,14 +1418,14 @@ void ProfileSyncService::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 }
 
-void ProfileSyncService::OnFirstSetupCompletePrefChange(
+void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_first_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
     ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
   }
 }
 
-void ProfileSyncService::OnSyncRequestedPrefChange(bool is_sync_requested) {
+void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
   // Ignore the notification if the service itself set the pref.
   if (is_setting_sync_requested_) {
     is_setting_sync_requested_ = false;
@@ -1465,18 +1460,18 @@ void ProfileSyncService::OnSyncRequestedPrefChange(bool is_sync_requested) {
   }
 }
 
-void ProfileSyncService::OnAccountsInCookieUpdated(
+void SyncServiceImpl::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   OnAccountsInCookieUpdatedWithCallback(
       accounts_in_cookie_jar_info.signed_in_accounts, base::NullCallback());
 }
 
-void ProfileSyncService::OnAccountsCookieDeletedByUserAction() {
+void SyncServiceImpl::OnAccountsCookieDeletedByUserAction() {
   sync_client_->GetTrustedVaultClient()->RemoveAllStoredKeys();
 }
 
-void ProfileSyncService::OnAccountsInCookieUpdatedWithCallback(
+void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
     const std::vector<gaia::ListedAccount>& signed_in_accounts,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1491,7 +1486,7 @@ void ProfileSyncService::OnAccountsInCookieUpdatedWithCallback(
   engine_->OnCookieJarChanged(cookie_jar_mismatch, std::move(callback));
 }
 
-bool ProfileSyncService::HasCookieJarMismatch(
+bool SyncServiceImpl::HasCookieJarMismatch(
     const std::vector<gaia::ListedAccount>& cookie_jar_accounts) {
   CoreAccountId account_id = GetAuthenticatedAccountInfo().account_id;
   // Iterate through list of accounts, looking for current sync account.
@@ -1502,7 +1497,7 @@ bool ProfileSyncService::HasCookieJarMismatch(
   return true;
 }
 
-void ProfileSyncService::AddProtocolEventObserver(
+void SyncServiceImpl::AddProtocolEventObserver(
     ProtocolEventObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   protocol_event_observers_.AddObserver(observer);
@@ -1511,7 +1506,7 @@ void ProfileSyncService::AddProtocolEventObserver(
   }
 }
 
-void ProfileSyncService::RemoveProtocolEventObserver(
+void SyncServiceImpl::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   protocol_event_observers_.RemoveObserver(observer);
@@ -1583,7 +1578,7 @@ void GetAllNodesRequestHelper::OnReceivedNodesForType(
 
 }  // namespace
 
-void ProfileSyncService::GetAllNodesForDebugging(
+void SyncServiceImpl::GetAllNodesForDebugging(
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1622,10 +1617,10 @@ void ProfileSyncService::GetAllNodesForDebugging(
   }
 }
 
-CoreAccountInfo ProfileSyncService::GetAuthenticatedAccountInfo() const {
+CoreAccountInfo SyncServiceImpl::GetAuthenticatedAccountInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!auth_manager_) {
-    // Some crashes on iOS (crbug.com/962384) suggest that ProfileSyncService
+    // Some crashes on iOS (crbug.com/962384) suggest that SyncServiceImpl
     // gets called after it has been already shutdown. It's not clear why this
     // actually happens. We add this null check here to protect against such
     // crashes.
@@ -1634,7 +1629,7 @@ CoreAccountInfo ProfileSyncService::GetAuthenticatedAccountInfo() const {
   return auth_manager_->GetActiveAccountInfo().account_info;
 }
 
-bool ProfileSyncService::IsAuthenticatedAccountPrimary() const {
+bool SyncServiceImpl::IsAuthenticatedAccountPrimary() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!auth_manager_) {
     // This is a precautionary check to be consistent with the check in
@@ -1644,7 +1639,7 @@ bool ProfileSyncService::IsAuthenticatedAccountPrimary() const {
   return auth_manager_->GetActiveAccountInfo().is_primary;
 }
 
-void ProfileSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {
+void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_ && engine_->IsInitialized()) {
     engine_->SetInvalidationsForSessionsEnabled(enabled);
@@ -1654,7 +1649,7 @@ void ProfileSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {
   UpdateDataTypesForInvalidations();
 }
 
-void ProfileSyncService::AddTrustedVaultDecryptionKeysFromWeb(
+void SyncServiceImpl::AddTrustedVaultDecryptionKeysFromWeb(
     const std::string& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
@@ -1662,7 +1657,7 @@ void ProfileSyncService::AddTrustedVaultDecryptionKeysFromWeb(
                                                    last_key_version);
 }
 
-void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
+void SyncServiceImpl::AddTrustedVaultRecoveryMethodFromWeb(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
@@ -1671,7 +1666,7 @@ void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
       gaia_id, public_key, method_type_hint, std::move(callback));
 }
 
-void ProfileSyncService::StopAndClear() {
+void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SetSyncRequestedAndIgnoreNotification(false);
@@ -1680,7 +1675,7 @@ void ProfileSyncService::StopAndClear() {
   startup_controller_->TryStart(/*force_immediate=*/true);
 }
 
-void ProfileSyncService::SetSyncAllowedByPlatform(bool allowed) {
+void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (allowed == sync_allowed_by_platform_) {
     return;
@@ -1697,7 +1692,7 @@ void ProfileSyncService::SetSyncAllowedByPlatform(bool allowed) {
   }
 }
 
-void ProfileSyncService::ReconfigureDatatypeManager(
+void SyncServiceImpl::ReconfigureDatatypeManager(
     bool bypass_setup_in_progress_check) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_ && engine_->IsInitialized()) {
@@ -1728,22 +1723,22 @@ void ProfileSyncService::ReconfigureDatatypeManager(
   }
 }
 
-bool ProfileSyncService::IsRetryingAccessTokenFetchForTest() const {
+bool SyncServiceImpl::IsRetryingAccessTokenFetchForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->IsRetryingAccessTokenFetchForTest();
 }
 
-std::string ProfileSyncService::GetAccessTokenForTest() const {
+std::string SyncServiceImpl::GetAccessTokenForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->access_token();
 }
 
-SyncTokenStatus ProfileSyncService::GetSyncTokenStatusForDebugging() const {
+SyncTokenStatus SyncServiceImpl::GetSyncTokenStatusForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return auth_manager_->GetSyncTokenStatus();
 }
 
-void ProfileSyncService::OverrideNetworkForTest(
+void SyncServiceImpl::OverrideNetworkForTest(
     const CreateHttpPostProviderFactory& create_http_post_provider_factory_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the engine has already been created, then it has a copy of the previous
@@ -1777,23 +1772,23 @@ void ProfileSyncService::OverrideNetworkForTest(
 }
 
 #if defined(OS_ANDROID)
-void ProfileSyncService::SetDecoupledFromAndroidMasterSync() {
+void SyncServiceImpl::SetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetDecoupledFromAndroidMasterSync();
 }
 
-bool ProfileSyncService::GetDecoupledFromAndroidMasterSync() {
+bool SyncServiceImpl::GetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_prefs_.GetDecoupledFromAndroidMasterSync();
 }
 #endif  // defined(OS_ANDROID)
 
 SyncEncryptionHandler::Observer*
-ProfileSyncService::GetEncryptionObserverForTest() {
+SyncServiceImpl::GetEncryptionObserverForTest() {
   return &crypto_;
 }
 
-void ProfileSyncService::RemoveClientFromServer() const {
+void SyncServiceImpl::RemoveClientFromServer() const {
   if (!engine_ || !engine_->IsInitialized()) {
     return;
   }
@@ -1807,7 +1802,7 @@ void ProfileSyncService::RemoveClientFromServer() const {
   }
 }
 
-void ProfileSyncService::RecordMemoryUsageAndCountsHistograms() {
+void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
     auto dtc_it = data_type_controllers_.find(type);
@@ -1821,24 +1816,23 @@ void ProfileSyncService::RecordMemoryUsageAndCountsHistograms() {
   }
 }
 
-const GURL& ProfileSyncService::GetSyncServiceUrlForDebugging() const {
+const GURL& SyncServiceImpl::GetSyncServiceUrlForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_service_url_;
 }
 
-std::string ProfileSyncService::GetUnrecoverableErrorMessageForDebugging()
-    const {
+std::string SyncServiceImpl::GetUnrecoverableErrorMessageForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return unrecoverable_error_message_;
 }
 
-base::Location ProfileSyncService::GetUnrecoverableErrorLocationForDebugging()
+base::Location SyncServiceImpl::GetUnrecoverableErrorLocationForDebugging()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return unrecoverable_error_location_;
 }
 
-void ProfileSyncService::OnSetupInProgressHandleDestroyed() {
+void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
   DCHECK_GT(outstanding_setup_in_progress_handles_, 0);
 
   --outstanding_setup_in_progress_handles_;

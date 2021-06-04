@@ -245,7 +245,7 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
 }
 
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
-  // Prior to SplitSettingsSync, sync is autostarted during ProfileSyncService
+  // Prior to SplitSettingsSync, sync is autostarted during SyncService
   // creation, so sync is already in the right state.
   if (!features::IsSplitSettingsSyncEnabled())
     return;

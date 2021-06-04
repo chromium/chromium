@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * This class mostly makes calls to native and contains a minimum of business logic. It is only
  * usable from the UI thread as the native ProfileSyncService requires its access to be on the
- * UI thread. See components/sync/driver/profile_sync_service.h for more details.
+ * UI thread. See components/sync/driver/sync_service_impl.h for more details.
  */
 public class ProfileSyncService {
 
@@ -556,7 +556,7 @@ public class ProfileSyncService {
 
     @VisibleForTesting
     public long getNativeProfileSyncServiceForTest() {
-        return ProfileSyncServiceJni.get().getProfileSyncServiceForTest(
+        return ProfileSyncServiceJni.get().getSyncServiceImplForTest(
                 mNativeProfileSyncServiceAndroid);
     }
 
@@ -677,7 +677,7 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid);
         void markPassphrasePromptMutedForCurrentProductVersion(
                 long nativeProfileSyncServiceAndroid);
-        long getProfileSyncServiceForTest(long nativeProfileSyncServiceAndroid);
+        long getSyncServiceImplForTest(long nativeProfileSyncServiceAndroid);
         long getLastSyncedTimeForTest(long nativeProfileSyncServiceAndroid);
         void getAllNodes(long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
         void recordKeyRetrievalTrigger(

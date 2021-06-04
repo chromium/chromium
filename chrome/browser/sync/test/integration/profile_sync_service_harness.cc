@@ -41,14 +41,14 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-using syncer::ProfileSyncService;
 using syncer::SyncCycleSnapshot;
+using syncer::SyncServiceImpl;
 
 const char* kSyncUrlClearServerDataKey = "sync-url-clear-server-data";
 
 namespace {
 
-bool HasAuthError(ProfileSyncService* service) {
+bool HasAuthError(SyncServiceImpl* service) {
   return service->GetAuthError().state() ==
              GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS ||
          service->GetAuthError().state() ==
@@ -59,7 +59,7 @@ bool HasAuthError(ProfileSyncService* service) {
 
 class EngineInitializeChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit EngineInitializeChecker(ProfileSyncService* service)
+  explicit EngineInitializeChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
@@ -86,7 +86,7 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
  public:
   enum class State { kTransportActive, kFeatureActive };
 
-  SyncSetupChecker(ProfileSyncService* service, State wait_for_state)
+  SyncSetupChecker(SyncServiceImpl* service, State wait_for_state)
       : SingleClientStatusChangeChecker(service),
         wait_for_state_(wait_for_state) {}
 
@@ -187,7 +187,7 @@ ProfileSyncServiceHarness::ProfileSyncServiceHarness(
     const std::string& password,
     SigninType signin_type)
     : profile_(profile),
-      service_(SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile)),
+      service_(SyncServiceFactory::GetAsSyncServiceImplForProfile(profile)),
       username_(username),
       password_(password),
       signin_type_(signin_type),
@@ -339,7 +339,7 @@ bool ProfileSyncServiceHarness::SetupSyncImpl(
                     "present data.";
     }
   }
-  // Notify ProfileSyncService that we are done with configuration.
+  // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
   if (signin_type_ == SigninType::UI_SIGNIN)
@@ -409,7 +409,7 @@ bool ProfileSyncServiceHarness::AwaitQuiescence(
     return true;
   }
 
-  std::vector<ProfileSyncService*> services;
+  std::vector<SyncServiceImpl*> services;
   for (const ProfileSyncServiceHarness* harness : clients) {
     services.push_back(harness->service());
   }
@@ -646,5 +646,5 @@ std::string ProfileSyncServiceHarness::GetClientInfoString(
 bool ProfileSyncServiceHarness::IsSyncEnabledByUser() const {
   return service()->GetUserSettings()->IsFirstSetupComplete() &&
          !service()->HasDisableReason(
-             ProfileSyncService::DISABLE_REASON_USER_CHOICE);
+             SyncServiceImpl::DISABLE_REASON_USER_CHOICE);
 }

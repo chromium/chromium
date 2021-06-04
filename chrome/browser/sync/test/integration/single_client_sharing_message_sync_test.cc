@@ -42,7 +42,7 @@ MATCHER_P(HasErrorCode, expected_error_code, "") {
 
 class NextCycleIterationChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit NextCycleIterationChecker(syncer::ProfileSyncService* service)
+  explicit NextCycleIterationChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {
     last_synced_time_ = SingleClientStatusChangeChecker::service()
                             ->GetLastSyncedTimeForDebugging();
@@ -64,7 +64,7 @@ class NextCycleIterationChecker : public SingleClientStatusChangeChecker {
 
 class DisabledSharingMessageChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit DisabledSharingMessageChecker(syncer::ProfileSyncService* service)
+  explicit DisabledSharingMessageChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
@@ -75,7 +75,7 @@ class DisabledSharingMessageChecker : public SingleClientStatusChangeChecker {
 
 class RetryingAccessTokenFetchChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit RetryingAccessTokenFetchChecker(syncer::ProfileSyncService* service)
+  explicit RetryingAccessTokenFetchChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -90,7 +90,7 @@ class RetryingAccessTokenFetchChecker : public SingleClientStatusChangeChecker {
 class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   SharingMessageEqualityChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       fake_server::FakeServer* fake_server,
       std::vector<SharingMessageSpecifics> expected_specifics)
       : SingleClientStatusChangeChecker(service),
@@ -140,7 +140,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
 class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
  public:
   SharingMessageCallbackChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       sync_pb::SharingMessageCommitError::ErrorCode expected_error_code)
       : SingleClientStatusChangeChecker(service),
         expected_error_code_(expected_error_code) {}
@@ -174,7 +174,7 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
 // least one sharing message with the expected payload.
 class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
  public:
-  SharingMessageCommitChecker(syncer::ProfileSyncService* service,
+  SharingMessageCommitChecker(syncer::SyncServiceImpl* service,
                               fake_server::FakeServer* fake_server,
                               const std::string& expected_payload)
       : SingleClientStatusChangeChecker(service),

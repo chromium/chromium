@@ -14,8 +14,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -81,9 +81,9 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state);
   WebViewGCMProfileServiceFactory::GetForBrowserState(browser_state);
 
-  syncer::ProfileSyncService::InitParams init_params;
+  syncer::SyncServiceImpl::InitParams init_params;
   init_params.identity_manager = identity_manager;
-  init_params.start_behavior = syncer::ProfileSyncService::MANUAL_START;
+  init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client = WebViewSyncClient::Create(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
   // ios/web_view has no need to update network time.
@@ -92,16 +92,16 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
   init_params.channel = version_info::Channel::STABLE;
 
-  auto profile_sync_service =
-      std::make_unique<syncer::ProfileSyncService>(std::move(init_params));
-  profile_sync_service->Initialize();
+  auto sync_service =
+      std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
+  sync_service->Initialize();
 
   // Hook PSS into PersonalDataManager (a circular dependency).
   autofill::PersonalDataManager* pdm =
       WebViewPersonalDataManagerFactory::GetForBrowserState(browser_state);
-  pdm->OnSyncServiceInitialized(profile_sync_service.get());
+  pdm->OnSyncServiceInitialized(sync_service.get());
 
-  return profile_sync_service;
+  return sync_service;
 }
 
 }  // namespace ios_web_view

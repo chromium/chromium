@@ -19,7 +19,7 @@ const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
 
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs) {
   // TODO(crbug.com/1015322): SyncPrefs is used directly instead of methods in
-  // SyncService due to a dependency of ProfileSyncService on
+  // SyncService due to a dependency of SyncServiceImpl on
   // DeviceInfoSyncService. IsReceivingEnabledByUserOnThisDevice is ultimately
   // used by DeviceInfoSyncClient which is owned by DeviceInfoSyncService.
   syncer::SyncPrefs sync_prefs(prefs);

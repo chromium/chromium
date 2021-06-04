@@ -84,7 +84,7 @@
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
@@ -3240,10 +3240,9 @@ TEST_P(ArcAppModelBuilderTest, DontRemoveRuntimeAppOnPackageChange) {
 }
 
 TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceEnabled) {
-  EXPECT_TRUE(
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile_.get())
-          ->GetRegisteredDataTypesForTest()
-          .Has(syncer::ARC_PACKAGE));
+  EXPECT_TRUE(SyncServiceFactory::GetAsSyncServiceImplForProfile(profile_.get())
+                  ->GetRegisteredDataTypesForTest()
+                  .Has(syncer::ARC_PACKAGE));
 }
 
 TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceDisabled) {
@@ -3251,7 +3250,7 @@ TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceDisabled) {
   command_line.GetProcessCommandLine()->AppendSwitch(
       chromeos::switches::kArcDisableAppSync);
   EXPECT_FALSE(
-      SyncServiceFactory::GetAsProfileSyncServiceForProfile(profile_.get())
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile_.get())
           ->GetRegisteredDataTypesForTest()
           .Has(syncer::ARC_PACKAGE));
 }

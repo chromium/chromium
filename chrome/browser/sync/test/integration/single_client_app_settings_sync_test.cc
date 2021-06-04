@@ -6,7 +6,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
   ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
   ASSERT_TRUE(SetupSync());
-  syncer::ProfileSyncService* service = GetSyncService(0);
+  syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
   EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
@@ -55,7 +55,7 @@ class SingleClientAppSettingsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsSyncTest, Basics) {
   ASSERT_TRUE(SetupSync());
-  syncer::ProfileSyncService* service = GetSyncService(0);
+  syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
   EXPECT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APP_SETTINGS));
