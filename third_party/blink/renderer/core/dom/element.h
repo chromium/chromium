@@ -1278,7 +1278,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Update ForceLegacyLayout flags for this element, and for ancestors, if
   // necessary. We cannot establish a ForceLegacyLayout subtree at an arbitrary
   // element; it needs to be a block formatting context root.
-  void UpdateForceLegacyLayout(const ComputedStyle& new_style,
+  // Returns true if we need to reattach this element or any ancestor element.
+  bool UpdateForceLegacyLayout(const ComputedStyle& new_style,
                                const ComputedStyle* old_style);
 
   // If this element requires legacy layout, and we can't tell for sure that it
@@ -1286,7 +1287,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // layout on ancestors until we reach one that we're sure that will establish
   // a new formatting context. LayoutNG and legacy layout cannot cooperate
   // within a formatting context.
-  void ForceLegacyLayoutInFormattingContext(const ComputedStyle& new_style);
+  // Returns true if we need to reattach this element or any ancestor element.
+  bool ForceLegacyLayoutInFormattingContext(const ComputedStyle& new_style);
 
   // If this element requires legacy layout, and we're inside a fragmentation
   // context, we need to force legacy layout for the entire fragmentation
