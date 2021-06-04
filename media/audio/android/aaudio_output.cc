@@ -4,7 +4,10 @@
 
 #include "media/audio/android/aaudio_output.h"
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/thread_annotations.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
@@ -12,14 +15,47 @@
 
 namespace media {
 
+// Used to circumvent issues where the AAudio thread callbacks continue
+// after AAudioStream_requestStop() completes. See crbug.com/1183255.
+class LOCKABLE AAudioDestructionHelper {
+ public:
+  explicit AAudioDestructionHelper(AAudioOutputStream* stream)
+      : stream_(stream) {}
+
+  AAudioOutputStream* GetAndLockStream() EXCLUSIVE_LOCK_FUNCTION() {
+    lock_.Acquire();
+    return stream_;
+  }
+
+  void UnlockStream() UNLOCK_FUNCTION() { lock_.Release(); }
+
+  void OnStreamDestroyed() {
+    base::AutoLock al(lock_);
+    stream_ = nullptr;
+  }
+
+ private:
+  base::Lock lock_;
+  AAudioOutputStream* stream_ GUARDED_BY(lock_) = nullptr;
+};
+
 static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
     AAudioStream* stream,
     void* user_data,
     void* audio_data,
     int32_t num_frames) {
-  AAudioOutputStream* output_stream =
-      reinterpret_cast<AAudioOutputStream*>(user_data);
-  return output_stream->OnAudioDataRequested(audio_data, num_frames);
+  AAudioDestructionHelper* destruction_helper =
+      reinterpret_cast<AAudioDestructionHelper*>(user_data);
+
+  AAudioOutputStream* output_stream = destruction_helper->GetAndLockStream();
+
+  aaudio_data_callback_result_t result = AAUDIO_CALLBACK_RESULT_STOP;
+  if (output_stream)
+    result = output_stream->OnAudioDataRequested(audio_data, num_frames);
+
+  destruction_helper->UnlockStream();
+
+  return result;
 }
 
 static void OnStreamErrorCallback(AAudioStream* stream,
@@ -38,7 +74,8 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
       usage_(usage),
       performance_mode_(AAUDIO_PERFORMANCE_MODE_NONE),
       ns_per_frame_(base::Time::kNanosecondsPerSecond /
-                    static_cast<double>(params.sample_rate())) {
+                    static_cast<double>(params.sample_rate())),
+      destruction_helper_(std::make_unique<AAudioDestructionHelper>(this)) {
   DCHECK(manager);
   DCHECK(params.IsValid());
 
@@ -66,6 +103,21 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
 
 AAudioOutputStream::~AAudioOutputStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // In R and earlier, it is possible for callbacks to still be running even
+  // after calling AAudioStream_close(). The code below is a mitigation to work
+  // around this issue. See crbug.com/1183255.
+
+  // |destruction_helper_->GetStreamAndLock()| will return nullptr after this.
+  destruction_helper_->OnStreamDestroyed();
+
+  // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
+  // bound to the callback stays valid until the callbacks stop.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::DoNothing::Once<std::unique_ptr<AAudioDestructionHelper>>(),
+          std::move(destruction_helper_)),
+      base::TimeDelta::FromSeconds(1));
 }
 
 void AAudioOutputStream::Flush() {}
@@ -90,7 +142,7 @@ bool AAudioOutputStream::Open() {
 
   // Callbacks
   AAudioStreamBuilder_setDataCallback(builder, OnAudioDataRequestedCallback,
-                                      this);
+                                      destruction_helper_.get());
   AAudioStreamBuilder_setErrorCallback(builder, OnStreamErrorCallback, this);
 
   result = AAudioStreamBuilder_openStream(builder, &aaudio_stream_);
