@@ -498,17 +498,27 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{error: !RmadErrorCode}>}
+   * @return {!Promise<!StateResult>}
    */
-  cutoffBattery() {
-    return this.methods_.resolveMethod('cutoffBattery');
+  finalizeAndReboot() {
+    return this.getNextStateForMethod_(
+      'finalizeAndReboot', RmaState.kRepairComplete);
   }
 
   /**
-   * @param {!RmadErrorCode} error
+   * @return {!Promise<!StateResult>}
    */
-  setCutoffBatteryResult(error) {
-    this.methods_.setResult('cutoffBattery', {error: error});
+  finalizeAndShutdown() {
+    return this.getNextStateForMethod_(
+      'finalizeAndShutdown', RmaState.kRepairComplete);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  cutoffBattery() {
+    return this.getNextStateForMethod_(
+      'cutoffBattery', RmaState.kRepairComplete);
   }
 
   /**
@@ -718,6 +728,8 @@ export class FakeShimlessRmaService {
     this.methods_.register('getSku');
     this.methods_.register('setSku');
 
+    this.methods_.register('finalizeAndReboot');
+    this.methods_.register('finalizeAndShutdown');
     this.methods_.register('cutoffBattery');
   }
 
