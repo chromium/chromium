@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -31,14 +32,22 @@ BookmarkLocalChangesBuilder::BookmarkLocalChangesBuilder(
 syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     size_t max_entries) const {
   DCHECK(bookmark_tracker_);
+
   const std::vector<const SyncedBookmarkTracker::Entity*>
       entities_with_local_changes =
-          bookmark_tracker_->GetEntitiesWithLocalChanges(max_entries);
-  DCHECK_LE(entities_with_local_changes.size(), max_entries);
+          bookmark_tracker_->GetEntitiesWithLocalChanges(
+              base::FeatureList::IsEnabled(
+                  switches::kSyncBookmarksEnforceLateMaxEntriesToCommit)
+                  ? std::numeric_limits<int>::max()
+                  : max_entries);
 
   syncer::CommitRequestDataList commit_requests;
   for (const SyncedBookmarkTracker::Entity* entity :
        entities_with_local_changes) {
+    if (commit_requests.size() >= max_entries) {
+      break;
+    }
+
     DCHECK(entity);
     DCHECK(entity->IsUnsynced());
     const sync_pb::EntityMetadata* metadata = entity->metadata();

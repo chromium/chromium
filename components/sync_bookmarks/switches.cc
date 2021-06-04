@@ -16,4 +16,8 @@ const base::Feature kSyncUseClientTagForBookmarkCommits{
 const base::Feature kSyncReuploadBookmarksUponMatchingData{
     "SyncReuploadBookmarksUponMatchingData", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSyncBookmarksEnforceLateMaxEntriesToCommit{
+    "SyncBookmarksEnforceLateMaxEntriesToCommit",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace switches

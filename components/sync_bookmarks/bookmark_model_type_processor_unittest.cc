@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,16 +30,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-using testing::_;
-using testing::Eq;
-using testing::IsNull;
-using testing::NiceMock;
-using testing::NotNull;
-
 namespace sync_bookmarks {
 
 namespace {
+
+using base::ASCIIToUTF16;
+using testing::_;
+using testing::ElementsAre;
+using testing::Eq;
+using testing::IsEmpty;
+using testing::IsNull;
+using testing::NiceMock;
+using testing::NotNull;
+using testing::UnorderedElementsAre;
 
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kOtherBookmarksTag[] = "other_bookmarks";
@@ -56,6 +60,17 @@ struct BookmarkInfo {
   std::string parent_id;
   std::string server_tag;
 };
+
+MATCHER_P(CommitRequestDataMatchesGuid, guid, "") {
+  const syncer::CommitRequestData* data = arg.get();
+  return data != nullptr && data->entity != nullptr &&
+         data->entity->specifics.bookmark().guid() == guid.AsLowercaseString();
+}
+
+MATCHER_P(TrackedEntityCorrespondsToBookmarkNode, bookmark_node, "") {
+  const SyncedBookmarkTracker::Entity* entity = arg;
+  return entity->bookmark_node() == bookmark_node;
+}
 
 syncer::UpdateResponseData CreateUpdateResponseData(
     const BookmarkInfo& bookmark_info,
@@ -114,6 +129,37 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
                                           node->guid().AsLowercaseString())
           .value());
   return bookmark_metadata;
+}
+
+// Same as above but marks the node as unsynced (pending commit). |node| must
+// not be nullptr.
+sync_pb::BookmarkMetadata CreateUnsyncedNodeMetadata(
+    const bookmarks::BookmarkNode* node,
+    const std::string& server_id) {
+  sync_pb::BookmarkMetadata bookmark_metadata =
+      CreateNodeMetadata(node, server_id);
+  // Mark the entity as unsynced.
+  bookmark_metadata.mutable_metadata()->set_sequence_number(2);
+  bookmark_metadata.mutable_metadata()->set_acked_sequence_number(1);
+  return bookmark_metadata;
+}
+
+sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
+    const bookmarks::BookmarkModel* bookmark_model) {
+  sync_pb::BookmarkModelMetadata model_metadata;
+  *model_metadata.mutable_model_type_state() = CreateDummyModelTypeState();
+
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
+                         /*server_id=*/kBookmarkBarId);
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmark_model->mobile_node(),
+                         /*server_id=*/kMobileBookmarksId);
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmark_model->other_node(),
+                         /*server_id=*/kOtherBookmarksId);
+
+  return model_metadata;
 }
 
 void AssertState(const BookmarkModelTypeProcessor* processor,
@@ -203,7 +249,10 @@ class TestBookmarkClientWithFavicon : public bookmarks::TestBookmarkClient {
     favicon_base::FaviconImageResult result;
     result.image = std::move(image);
     result.icon_url = std::move(icon_url);
-    std::move(favicon_image_callbacks_[task_id]).Run(result);
+    favicon_base::FaviconImageCallback cb =
+        std::move(favicon_image_callbacks_[task_id]);
+    favicon_image_callbacks_.erase(task_id);
+    std::move(cb).Run(result);
   }
 
   size_t GetTasksCount() const { return favicon_image_callbacks_.size(); }
@@ -286,6 +335,17 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
         processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
     model_metadata.clear_bookmarks_full_title_reuploaded();
     return model_metadata;
+  }
+
+  syncer::CommitRequestDataList GetLocalChangesFromProcessor(
+      size_t max_entries) {
+    base::MockOnceCallback<void(syncer::CommitRequestDataList &&)> callback;
+    syncer::CommitRequestDataList local_changes;
+    // Destruction of the mock upon return will verify that Run() was indeed
+    // invoked.
+    EXPECT_CALL(callback, Run).WillOnce(MoveArg(&local_changes));
+    processor_->GetLocalChanges(max_entries, callback.Get());
+    return local_changes;
   }
 
  private:
@@ -467,34 +527,9 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
 
   SimulateModelReadyToSync();
   SimulateOnSyncStarting();
-  // TODO(crbug.com/516866): Remove this after initial sync done is properly set
-  // within the processor.
-  sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
-  // Add entries for the permanent nodes. TestBookmarkClient adds all of them.
-  sync_pb::BookmarkMetadata* bookmark_metadata =
-      model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_bar_node->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(bookmark_bar_node->guid())
-          .value());
 
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_model()->other_node()->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kOtherBookmarksId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(
-          bookmark_model()->other_node()->guid())
-          .value());
-
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_model()->mobile_node()->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kMobileBookmarksId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(
-          bookmark_model()->mobile_node()->guid())
-          .value());
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
 
   // Add an entry for the bookmark node.
   *model_metadata.add_bookmarks_metadata() =
@@ -590,10 +625,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
   model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
   // Add entries for only the bookmark bar. However, the TestBookmarkClient will
   // create all the 3 permanent nodes.
-  sync_pb::BookmarkMetadata* bookmark_metadata =
-      model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_model()->bookmark_bar_node()->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmark_model()->bookmark_bar_node(),
+                         /*server_id=*/kBookmarkBarId);
 
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(bookmark_undo_service());
@@ -729,68 +763,95 @@ TEST_F(BookmarkModelTypeProcessorTest,
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       GURL(kUrl));
 
-  sync_pb::BookmarkModelMetadata model_metadata;
-  *model_metadata.mutable_model_type_state() = CreateDummyModelTypeState();
-
-  // Add entries for the permanent nodes. TestBookmarkClient adds all of them.
-  sync_pb::BookmarkMetadata* bookmark_metadata =
-      model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_bar_node->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(bookmark_bar_node->guid())
-          .value());
-
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_model()->other_node()->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kOtherBookmarksId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(
-          bookmark_model()->other_node()->guid())
-          .value());
-
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmark_model()->mobile_node()->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kMobileBookmarksId);
-  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(
-          bookmark_model()->mobile_node()->guid())
-          .value());
-
-  // Add an entry for the bookmark node.
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  *bookmark_metadata = CreateNodeMetadata(node, kNodeId);
-  // Mark the entity as unsynced.
-  bookmark_metadata->mutable_metadata()->set_sequence_number(2);
-  bookmark_metadata->mutable_metadata()->set_acked_sequence_number(1);
+  // Add an entry for the bookmark node that is unsynced.
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  *model_metadata.add_bookmarks_metadata() =
+      CreateUnsyncedNodeMetadata(node, kNodeId);
 
   SimulateOnSyncStarting();
   processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
 
-  base::MockOnceCallback<void(
-      std::vector<std::unique_ptr<syncer::CommitRequestData>> &&)>
-      callback;
-  std::vector<std::unique_ptr<syncer::CommitRequestData>> callback_result;
-  ON_CALL(callback, Run)
-      .WillByDefault(
-          [&callback_result](
-              std::vector<std::unique_ptr<syncer::CommitRequestData>>&&
-                  commit_data) { callback_result = std::move(commit_data); });
-
   ASSERT_EQ(0u, bookmark_client()->GetTasksCount());
-  EXPECT_CALL(callback, Run);
-  processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
-  EXPECT_TRUE(callback_result.empty());
+  EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10), IsEmpty());
   EXPECT_TRUE(node->is_favicon_loading());
 
   bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), gfx::Image(),
                                            GURL(kIconUrl));
   ASSERT_TRUE(node->is_favicon_loaded());
-  EXPECT_CALL(callback, Run);
-  processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
-  EXPECT_FALSE(callback_result.empty());
+  EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10),
+              ElementsAre(CommitRequestDataMatchesGuid(node->guid())));
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldCommitEntitiesWhileOtherFaviconsLoading) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      switches::kSyncBookmarksEnforceLateMaxEntriesToCommit);
+
+  const std::string kNodeId1 = "node_id1";
+  const std::string kNodeId2 = "node_id2";
+  const std::string kTitle = "title";
+  const std::string kUrl1 = "http://www.url1.com";
+  const std::string kUrl2 = "http://www.url2.com";
+  const std::string kIconUrl = "http://www.url.com/favicon";
+
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node1 = bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
+      GURL(kUrl1));
+  const bookmarks::BookmarkNode* node2 = bookmark_model()->AddURL(
+      /*parent=*/bookmark_bar_node, /*index=*/1, base::UTF8ToUTF16(kTitle),
+      GURL(kUrl2));
+
+  // Add entries for the two bookmark nodes and mark them as unsynced.
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  *model_metadata.add_bookmarks_metadata() =
+      CreateUnsyncedNodeMetadata(node1, kNodeId1);
+  *model_metadata.add_bookmarks_metadata() =
+      CreateUnsyncedNodeMetadata(node2, kNodeId2);
+
+  SimulateOnSyncStarting();
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  // The goal of this test is to mimic the case where one bookmark (the first
+  // one listed by SyncedBookmarkTracker::GetEntitiesWithLocalChanges()) has no
+  // loaded favicon, while the second one does. The precise order is not known
+  // in advance (in the current implementation, it depends on the iteration
+  // order for raw pointers in an unordered_set) which means the test needs to
+  // pass for both cases.
+  const std::vector<const SyncedBookmarkTracker::Entity*> unsynced_entities =
+      processor()->GetTrackerForTest()->GetEntitiesWithLocalChanges(
+          /*max_entries=*/1000);
+  ASSERT_THAT(
+      unsynced_entities,
+      UnorderedElementsAre(TrackedEntityCorrespondsToBookmarkNode(node1),
+                           TrackedEntityCorrespondsToBookmarkNode(node2)));
+
+  // Force a favicon load for the second listed entity, but leave the first
+  // without loaded favicon.
+  bookmark_model()->GetFavicon(unsynced_entities[1]->bookmark_node());
+  bookmark_client()->SimulateFaviconLoaded(
+      unsynced_entities[1]->bookmark_node()->url(), gfx::Image(),
+      GURL(kIconUrl));
+  ASSERT_TRUE(unsynced_entities[1]->bookmark_node()->is_favicon_loaded());
+  ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loaded());
+  ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loading());
+
+  EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/1),
+              ElementsAre(CommitRequestDataMatchesGuid(
+                  unsynced_entities[1]->bookmark_node()->guid())));
+
+  // |unsynced_entities[0]| has been excluded from the result above because the
+  // favicon isn't loaded, but the loading process should have started now (see
+  // BookmarkLocalChangesBuilder::BuildCommitRequests()).
+  EXPECT_TRUE(unsynced_entities[0]->bookmark_node()->is_favicon_loading());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {

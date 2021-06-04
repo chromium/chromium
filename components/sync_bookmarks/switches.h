@@ -19,6 +19,10 @@ extern const base::Feature kSyncUseClientTagForBookmarkCommits;
 // SyncReuploadBookmarkFullTitles is enabled.
 extern const base::Feature kSyncReuploadBookmarksUponMatchingData;
 
+// TODO(crbug.com/1177798): remove this code after a quick verification that it
+// doesn't cause issues.
+extern const base::Feature kSyncBookmarksEnforceLateMaxEntriesToCommit;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_
