@@ -17,6 +17,10 @@ std::string BorealisInstaller::GetInstallingStateName(InstallingState state) {
       return "kInactive";
     case InstallingState::kInstallingDlc:
       return "kInstallingDlc";
+    case InstallingState::kStartingUp:
+      return "kStartingUp";
+    case InstallingState::kAwaitingApplications:
+      return "kAwaitingApplications";
   }
 }
 

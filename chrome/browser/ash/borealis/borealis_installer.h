@@ -22,6 +22,8 @@ class BorealisInstaller : public KeyedService {
   enum class InstallingState {
     kInactive,
     kInstallingDlc,
+    kStartingUp,
+    kAwaitingApplications,
   };
 
   // Observer class for the Borealis installation related events.

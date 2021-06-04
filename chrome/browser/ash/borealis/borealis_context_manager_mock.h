@@ -14,7 +14,7 @@ class BorealisContextManagerMock : public BorealisContextManager {
  public:
   BorealisContextManagerMock();
 
-  ~BorealisContextManagerMock();
+  ~BorealisContextManagerMock() override;
 
   MOCK_METHOD(void,
               StartBorealis,

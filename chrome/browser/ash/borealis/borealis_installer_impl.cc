@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
@@ -29,17 +30,32 @@
 
 namespace borealis {
 
+namespace {
+
+// Time to wait for borealis' main app to appear. This is done almost
+// immediately by garcon on launch so a short timeout is sufficient.
+constexpr base::TimeDelta kWaitForMainAppTimeout =
+    base::TimeDelta::FromSeconds(5);
+
+}  // namespace
+
 class BorealisInstallerImpl::Installation
     : public Transition<BorealisInstallerImpl::InstallInfo,
                         BorealisInstallerImpl::InstallInfo,
-                        BorealisInstallResult> {
+                        BorealisInstallResult>,
+      public guest_os::GuestOsRegistryService::Observer {
  public:
-  explicit Installation(
+  Installation(
+      Profile* profile,
+      base::TimeDelta main_app_timeout,
       base::RepeatingCallback<void(double)> update_progress_callback,
       base::RepeatingCallback<void(InstallingState)> update_state_callback)
-      : installation_start_tick_(base::TimeTicks::Now()),
+      : profile_(profile),
+        installation_start_tick_(base::TimeTicks::Now()),
+        main_app_timeout_(main_app_timeout),
         update_progress_callback_(std::move(update_progress_callback)),
         update_state_callback_(std::move(update_state_callback)),
+        apps_observation_(this),
         weak_factory_(this) {}
 
   base::TimeTicks start_time() { return installation_start_tick_; }
@@ -76,7 +92,12 @@ class BorealisInstallerImpl::Installation
 
     // If success, continue to the next state.
     if (install_result.error == dlcservice::kErrorNone) {
-      Succeed(std::move(install_info_));
+      // We are in the callback of DLC completion, and the first thing startup
+      // will do is try to mount the DLC, so we need to use a PostTask to avoid
+      // deadlocking ourselves.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&Installation::StartupBorealis,
+                                    weak_factory_.GetWeakPtr()));
       return;
     }
 
@@ -112,11 +133,91 @@ class BorealisInstallerImpl::Installation
     Fail(result);
   }
 
+  // As part of its installation we perform a dry run of borealis. This ensures
+  // that the VM works somewhat and allows the container_guest daemon to update
+  // Chrome. See go/borealis-mid-launch for details.
+  void StartupBorealis() {
+    SetState(InstallingState::kStartingUp);
+    BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
+        base::BindOnce(&Installation::OnBorealisStarted,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnBorealisStarted(BorealisContextManager::ContextOrFailure result) {
+    if (result) {
+      WaitForMainApp();
+      return;
+    }
+    LOG(ERROR) << "Failed to start borealis (code "
+               << static_cast<int>(result.Error().error())
+               << "): " << result.Error().description();
+    Fail(BorealisInstallResult::kStartupFailed);
+  }
+
+  void WaitForMainApp() {
+    SetState(InstallingState::kAwaitingApplications);
+    guest_os::GuestOsRegistryService* apps_registry =
+        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
+    apps_observation_.Observe(apps_registry);
+    absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
+        apps_registry->GetRegistration(kBorealisMainAppId);
+    if (main_app.has_value() && main_app->VmType() ==
+                                    guest_os::GuestOsRegistryService::VmType::
+                                        ApplicationList_VmType_BOREALIS) {
+      apps_observation_.Reset();
+      MainAppFound(true);
+      return;
+    }
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&Installation::MainAppFound, weak_factory_.GetWeakPtr(),
+                       false),
+        main_app_timeout_);
+  }
+
+  void OnRegistryUpdated(
+      guest_os::GuestOsRegistryService* registry_service,
+      guest_os::GuestOsRegistryService::VmType vm_type,
+      const std::vector<std::string>& updated_apps,
+      const std::vector<std::string>& removed_apps,
+      const std::vector<std::string>& inserted_apps) override {
+    if (vm_type != guest_os::GuestOsRegistryService::VmType::
+                       ApplicationList_VmType_BOREALIS) {
+      return;
+    }
+
+    for (const auto& app : inserted_apps) {
+      if (app == kBorealisMainAppId) {
+        MainAppFound(true);
+        break;
+      }
+    }
+  }
+
+  void MainAppFound(bool found) {
+    // We use the presence of the install_info_ object to prevent races here, so
+    // return if it has already been removed.
+    if (!install_info_)
+      return;
+    if (!found) {
+      install_info_.reset();
+      LOG(ERROR) << "Failed to verify that the main app has been created";
+      Fail(BorealisInstallResult::kMainAppNotPresent);
+      return;
+    }
+    Succeed(std::move(install_info_));
+  }
+
+  Profile* const profile_;
   base::TimeTicks installation_start_tick_;
+  base::TimeDelta main_app_timeout_;
   InstallingState installing_state_;
   base::RepeatingCallback<void(double)> update_progress_callback_;
   base::RepeatingCallback<void(InstallingState)> update_state_callback_;
   std::unique_ptr<BorealisInstallerImpl::InstallInfo> install_info_;
+  base::ScopedObservation<guest_os::GuestOsRegistryService,
+                          guest_os::GuestOsRegistryService::Observer>
+      apps_observation_;
   base::WeakPtrFactory<Installation> weak_factory_;
 };
 
@@ -206,7 +307,9 @@ class BorealisInstallerImpl::Uninstallation
 };
 
 BorealisInstallerImpl::BorealisInstallerImpl(Profile* profile)
-    : profile_(profile), weak_ptr_factory_(this) {}
+    : profile_(profile),
+      main_app_timeout_(kWaitForMainAppTimeout),
+      weak_ptr_factory_(this) {}
 
 BorealisInstallerImpl::~BorealisInstallerImpl() = default;
 
@@ -244,6 +347,7 @@ void BorealisInstallerImpl::Start() {
   install_info->vm_name = "borealis";
   install_info->container_name = "penguin";
   in_progress_installation_ = std::make_unique<Installation>(
+      profile_, main_app_timeout_,
       base::BindRepeating(&BorealisInstallerImpl::UpdateProgress,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&BorealisInstallerImpl::UpdateInstallingState,
@@ -293,6 +397,11 @@ void BorealisInstallerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void BorealisInstallerImpl::SetMainAppTimeoutForTesting(
+    base::TimeDelta timeout) {
+  main_app_timeout_ = timeout;
+}
+
 void BorealisInstallerImpl::UpdateProgress(double state_progress) {
   if (state_progress < 0 || state_progress > 1) {
     LOG(ERROR) << "Unexpected progress value " << state_progress
@@ -306,7 +415,15 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
   switch (installing_state_) {
     case InstallingState::kInstallingDlc:
       start_range = 0;
-      end_range = 1;
+      end_range = 0.5;
+      break;
+    case InstallingState::kStartingUp:
+      start_range = 0.5;
+      end_range = 0.8;
+      break;
+    case InstallingState::kAwaitingApplications:
+      start_range = 0.8;
+      end_range = 1.0;
       break;
     case InstallingState::kInactive:
       NOTREACHED();
@@ -327,6 +444,8 @@ void BorealisInstallerImpl::UpdateInstallingState(
   for (auto& observer : observers_) {
     observer.OnStateUpdated(installing_state_);
   }
+  // The state just changed, so the progress towards that state is 0.
+  UpdateProgress(0);
 }
 
 void BorealisInstallerImpl::OnInstallComplete(
@@ -349,6 +468,7 @@ void BorealisInstallerImpl::OnInstallComplete(
       profile_->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
       RecordBorealisInstallOverallTimeHistogram(duration);
     }
+    // TODO(b/188713071): Clean up if installation fails.
     RecordBorealisInstallResultHistogram(result);
   }
   for (auto& observer : observers_) {

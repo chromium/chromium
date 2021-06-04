@@ -43,6 +43,9 @@ class BorealisInstallerImpl : public BorealisInstaller {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  // Override the timeout to wait for the main app to appear.
+  void SetMainAppTimeoutForTesting(base::TimeDelta timeout);
+
  private:
   // Holds information about (un)install operations.
   struct InstallInfo {
@@ -70,6 +73,8 @@ class BorealisInstallerImpl : public BorealisInstaller {
 
   std::unique_ptr<Installation> in_progress_installation_;
   std::unique_ptr<Uninstallation> in_progress_uninstallation_;
+
+  base::TimeDelta main_app_timeout_;
 
   base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_;
 };

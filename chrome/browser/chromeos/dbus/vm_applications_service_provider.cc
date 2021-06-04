@@ -83,11 +83,14 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  // Borealis checks Allowed() rather than Enabled() as we need to update the
+  // borealis applications list before it is considered Enabled (i.e. failure to
+  // update the list implies failure to enable).
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile) ||
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile) ||
       borealis::BorealisService::GetForProfile(profile)
           ->Features()
-          .IsEnabled()) {
+          .IsAllowed()) {
     auto* registry_service =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
     registry_service->UpdateApplicationList(request);

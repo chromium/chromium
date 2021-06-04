@@ -72,8 +72,8 @@ class BorealisInstallerView::TitleLabel : public views::Label {
 
   METADATA_HEADER(TitleLabel);
 
-  TitleLabel() {}
-  ~TitleLabel() override {}
+  TitleLabel() = default;
+  ~TitleLabel() override = default;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(GetText());
@@ -350,6 +350,8 @@ int BorealisInstallerView::GetCurrentDialogButtons() const {
         case borealis::BorealisInstallResult::kBorealisNotAllowed:
         case borealis::BorealisInstallResult::kDlcUnsupportedError:
         case borealis::BorealisInstallResult::kDlcNeedUpdateError:
+        case borealis::BorealisInstallResult::kStartupFailed:
+        case borealis::BorealisInstallResult::kMainAppNotPresent:
           return ui::DIALOG_BUTTON_CANCEL;
         case borealis::BorealisInstallResult::kBorealisInstallInProgress:
         case borealis::BorealisInstallResult::kDlcInternalError:

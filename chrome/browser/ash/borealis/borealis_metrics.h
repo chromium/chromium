@@ -36,7 +36,9 @@ enum class BorealisInstallResult {
   kDlcUnknownError = 9,
   kOffline = 10,
   kDlcNeedUpdateError = 11,
-  kMaxValue = kDlcNeedUpdateError,
+  kStartupFailed = 12,
+  kMainAppNotPresent = 13,
+  kMaxValue = kMainAppNotPresent,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
