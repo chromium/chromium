@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -118,7 +119,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteAndRecreateDatabase(const char* histogram_name);
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
 
-  StorageAreaHolder* GetOrCreateStorageArea(const url::Origin& origin);
+  StorageAreaHolder* GetOrCreateStorageArea(
+      const blink::StorageKey& storage_key);
 
   // The (possibly delayed) implementation of GetUsage(). Can be called directly
   // from that function, or through |on_database_open_callbacks_|.
@@ -169,8 +171,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   std::vector<base::OnceClosure> on_database_opened_callbacks_;
 
-  // Maps between an origin and its prefixed LevelDB view.
-  std::map<url::Origin, std::unique_ptr<StorageAreaHolder>> areas_;
+  // Maps between a StorageKey and its prefixed LevelDB view.
+  std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
 
   bool is_low_end_device_;
   // Counts consecutive commit errors. If this number reaches a threshold, the

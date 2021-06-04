@@ -53,11 +53,14 @@ namespace storage {
 //   key: "VERSION"
 //   value: "1"
 //
-//   key: "META:" + <url::Origin 'origin'>
-//   value: <LocalStorageOriginMetaData serialized as a string>
+//   key: "META:" + <StorageKey 'storage_key'>
+//   value: <LocalStorageStorageKeyMetaData serialized as a string>
 //
-//   key: "_" + <url::Origin> 'origin'> + '\x00' + <script controlled key>
+//   key: "_" + <StorageKey 'storage_key'> + '\x00' + <script controlled key>
 //   value: <script controlled value>
+//
+// Note: The StorageKeys are serialized as origins, not URLs, i.e. with no
+// trailing slashes.
 
 namespace {
 
@@ -83,25 +86,26 @@ const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
 
-DomStorageDatabase::Key CreateMetaDataKey(const url::Origin& origin) {
-  auto origin_str = origin.Serialize();
-  std::vector<uint8_t> serialized_origin(origin_str.begin(), origin_str.end());
+DomStorageDatabase::Key CreateMetaDataKey(
+    const blink::StorageKey& storage_key) {
+  std::string storage_key_str = storage_key.SerializeForLocalStorage();
+  std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
+                                              storage_key_str.end());
   DomStorageDatabase::Key key;
-  key.reserve(base::size(kMetaPrefix) + serialized_origin.size());
+  key.reserve(base::size(kMetaPrefix) + serialized_storage_key.size());
   key.insert(key.end(), kMetaPrefix, kMetaPrefix + base::size(kMetaPrefix));
-  key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
+  key.insert(key.end(), serialized_storage_key.begin(),
+             serialized_storage_key.end());
   return key;
 }
 
-absl::optional<url::Origin> ExtractOriginFromMetaDataKey(
+absl::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
     const DomStorageDatabase::Key& key) {
   DCHECK_GT(key.size(), base::size(kMetaPrefix));
   const base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
                                      key.size());
-  const GURL url(key_string.substr(base::size(kMetaPrefix)));
-  if (!url.is_valid())
-    return absl::nullopt;
-  return url::Origin::Create(url);
+  return blink::StorageKey::Deserialize(
+      key_string.substr(base::size(kMetaPrefix)));
 }
 
 void SuccessResponse(base::OnceClosure callback, bool success) {
@@ -112,17 +116,19 @@ void IgnoreStatus(base::OnceClosure callback, leveldb::Status status) {
   std::move(callback).Run();
 }
 
-DomStorageDatabase::Key MakeOriginPrefix(const url::Origin& origin) {
+DomStorageDatabase::Key MakeStorageKeyPrefix(
+    const blink::StorageKey& storage_key) {
   const char kDataPrefix = '_';
-  const std::string serialized_origin = origin.Serialize();
-  const char kOriginSeparator = '\x00';
+  const std::string serialized_storage_key =
+      storage_key.SerializeForLocalStorage();
+  const char kStorageKeySeparator = '\x00';
 
   DomStorageDatabase::Key prefix;
-  prefix.reserve(serialized_origin.size() + 2);
+  prefix.reserve(serialized_storage_key.size() + 2);
   prefix.push_back(kDataPrefix);
-  prefix.insert(prefix.end(), serialized_origin.begin(),
-                serialized_origin.end());
-  prefix.push_back(kOriginSeparator);
+  prefix.insert(prefix.end(), serialized_storage_key.begin(),
+                serialized_storage_key.end());
+  prefix.push_back(kStorageKeySeparator);
   return prefix;
 }
 
@@ -134,8 +140,10 @@ void DeleteOrigins(AsyncDomStorageDatabase* database,
           [](std::vector<url::Origin> origins, const DomStorageDatabase& db) {
             leveldb::WriteBatch batch;
             for (const auto& origin : origins) {
-              db.DeletePrefixed(MakeOriginPrefix(origin), &batch);
-              batch.Delete(leveldb_env::MakeSlice(CreateMetaDataKey(origin)));
+              blink::StorageKey storage_key(origin);
+              db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), &batch);
+              batch.Delete(
+                  leveldb_env::MakeSlice(CreateMetaDataKey(storage_key)));
             }
             return db.Commit(&batch);
           },
@@ -187,8 +195,9 @@ void RecordCachePurgedHistogram(CachePurgeReason reason,
 class LocalStorageImpl::StorageAreaHolder final
     : public StorageAreaImpl::Delegate {
  public:
-  StorageAreaHolder(LocalStorageImpl* context, const url::Origin& origin)
-      : context_(context), origin_(origin) {
+  StorageAreaHolder(LocalStorageImpl* context,
+                    const blink::StorageKey& storage_key)
+      : context_(context), storage_key_(storage_key) {
     // Delay for a moment after a value is set in anticipation
     // of other values being set, so changes are batched.
     static constexpr base::TimeDelta kCommitDefaultDelaySecs =
@@ -213,7 +222,8 @@ class LocalStorageImpl::StorageAreaHolder final
     }
 #endif
     area_ = std::make_unique<StorageAreaImpl>(
-        context_->database_.get(), MakeOriginPrefix(origin_), this, options);
+        context_->database_.get(), MakeStorageKeyPrefix(storage_key_), this,
+        options);
     area_ptr_ = area_.get();
   }
 
@@ -240,11 +250,11 @@ class LocalStorageImpl::StorageAreaHolder final
       context_->database_initialized_ = true;
     }
 
-    DomStorageDatabase::Key metadata_key = CreateMetaDataKey(origin_);
+    DomStorageDatabase::Key metadata_key = CreateMetaDataKey(storage_key_);
     if (storage_area()->empty()) {
       extra_keys_to_delete->push_back(std::move(metadata_key));
     } else {
-      storage::LocalStorageOriginMetaData data;
+      storage::LocalStorageStorageKeyMetaData data;
       data.set_last_modified(base::Time::Now().ToInternalValue());
       data.set_size_bytes(storage_area()->storage_used());
       std::string serialized_data = data.SerializeAsString();
@@ -280,7 +290,7 @@ class LocalStorageImpl::StorageAreaHolder final
 
  private:
   LocalStorageImpl* context_;
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   // Holds the same value as |area_|. The reason for this is that
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
@@ -320,7 +330,7 @@ void LocalStorageImpl::BindStorageArea(
     return;
   }
 
-  GetOrCreateStorageArea(origin)->Bind(std::move(receiver));
+  GetOrCreateStorageArea(blink::StorageKey(origin))->Bind(std::move(receiver));
 }
 
 void LocalStorageImpl::GetUsage(GetUsageCallback callback) {
@@ -338,7 +348,7 @@ void LocalStorageImpl::DeleteStorage(const url::Origin& origin,
     return;
   }
 
-  auto found = areas_.find(origin);
+  auto found = areas_.find(blink::StorageKey(origin));
   if (found != areas_.end()) {
     // Renderer process expects |source| to always be two newline separated
     // strings. We don't bother passing an observer because this is a one-shot
@@ -395,7 +405,7 @@ void LocalStorageImpl::Flush(FlushCallback callback) {
 void LocalStorageImpl::FlushOriginForTesting(const url::Origin& origin) {
   if (connection_state_ != CONNECTION_FINISHED)
     return;
-  const auto& it = areas_.find(origin);
+  const auto& it = areas_.find(blink::StorageKey(origin));
   if (it == areas_.end())
     return;
   it->second->storage_area()->ScheduleImmediateCommit();
@@ -768,9 +778,9 @@ void LocalStorageImpl::OnDBDestroyed(bool recreate_in_memory,
 }
 
 LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
-  auto found = areas_.find(origin);
+  auto found = areas_.find(storage_key);
   if (found != areas_.end()) {
     return found->second.get();
   }
@@ -784,9 +794,9 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
 
   PurgeUnusedAreasIfNeeded();
 
-  auto holder = std::make_unique<StorageAreaHolder>(this, origin);
+  auto holder = std::make_unique<StorageAreaHolder>(this, storage_key);
   StorageAreaHolder* holder_ptr = holder.get();
-  areas_[origin] = std::move(holder);
+  areas_[storage_key] = std::move(holder);
   return holder_ptr;
 }
 
@@ -797,7 +807,8 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();
     for (const auto& it : areas_) {
-      result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
+      result.emplace_back(
+          mojom::StorageUsageInfo::New(it.first.origin(), 0, now));
     }
     std::move(callback).Run(std::move(result));
   } else {
@@ -816,37 +827,39 @@ void LocalStorageImpl::OnGotMetaData(
     GetUsageCallback callback,
     std::vector<DomStorageDatabase::KeyValuePair> data) {
   std::vector<mojom::StorageUsageInfoPtr> result;
-  std::set<url::Origin> origins;
+  std::set<blink::StorageKey> storage_keys;
   for (const auto& row : data) {
-    absl::optional<url::Origin> origin = ExtractOriginFromMetaDataKey(row.key);
-    origins.insert(origin.value_or(url::Origin()));
-    if (!origin) {
+    absl::optional<blink::StorageKey> storage_key =
+        ExtractStorageKeyFromMetaDataKey(row.key);
+    if (!storage_key) {
       // TODO(mek): Deal with database corruption.
       continue;
     }
+    storage_keys.insert(*storage_key);
 
-    storage::LocalStorageOriginMetaData row_data;
+    storage::LocalStorageStorageKeyMetaData row_data;
     if (!row_data.ParseFromArray(row.value.data(), row.value.size())) {
       // TODO(mek): Deal with database corruption.
       continue;
     }
 
     result.emplace_back(mojom::StorageUsageInfo::New(
-        *origin, row_data.size_bytes(),
+        storage_key->origin(), row_data.size_bytes(),
         base::Time::FromInternalValue(row_data.last_modified())));
   }
-  // Add any origins for which StorageAreas exist, but which haven't
+  // Add any storage keys for which StorageAreas exist, but which haven't
   // committed any data to disk yet.
   base::Time now = base::Time::Now();
   for (const auto& it : areas_) {
-    if (origins.find(it.first) != origins.end())
+    if (storage_keys.find(it.first) != storage_keys.end())
       continue;
-    // Skip any origins that definitely don't have any data.
+    // Skip any storage keys that definitely don't have any data.
     if (!it.second->storage_area()->has_pending_load_tasks() &&
         it.second->storage_area()->empty()) {
       continue;
     }
-    result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
+    result.emplace_back(
+        mojom::StorageUsageInfo::New(it.first.origin(), 0, now));
   }
   std::move(callback).Run(std::move(result));
 }

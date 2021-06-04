@@ -313,7 +313,7 @@ class RemoveLocalStorageTester {
                                const url::Origin& origin1,
                                const url::Origin& origin2,
                                const url::Origin& origin3) {
-    storage::LocalStorageOriginMetaData data;
+    storage::LocalStorageStorageKeyMetaData data;
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> entries;
 
     base::Time now = base::Time::Now();

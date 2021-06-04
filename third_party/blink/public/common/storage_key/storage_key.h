@@ -34,6 +34,9 @@ class BLINK_COMMON_EXPORT StorageKey {
   // non-nullopt value, it will be a valid, non-opaque StorageKey. A
   // deserialized StorageKey will be equivalent to the StorageKey that was
   // initially serialized.
+  //
+  // Can be called on the output of either Serialize() or
+  // SerializeForLocalStorage(), as it can handle both formats.
   static absl::optional<StorageKey> Deserialize(base::StringPiece in);
 
   // Transforms a string into a StorageKey if possible (and an opaque StorageKey
@@ -45,6 +48,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   // This function will return the spec url of the underlying Origin. Do not
   // call if `this` is opaque.
   std::string Serialize() const;
+
+  // Serializes into a string in the format used for localStorage (without
+  // trailing slashes). Prefer Serialize() for uses other than localStorage. Do
+  // not call if `this` is opaque.
+  std::string SerializeForLocalStorage() const;
 
   bool opaque() const { return origin_.opaque(); }
 

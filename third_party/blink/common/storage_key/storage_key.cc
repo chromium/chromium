@@ -29,6 +29,11 @@ std::string StorageKey::Serialize() const {
   return origin_.GetURL().spec();
 }
 
+std::string StorageKey::SerializeForLocalStorage() const {
+  DCHECK(!opaque());
+  return origin_.Serialize();
+}
+
 std::string StorageKey::GetDebugString() const {
   return base::StrCat({"{ origin: ", origin_.GetDebugString(), " }"});
 }
