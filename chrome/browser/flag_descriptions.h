@@ -1145,9 +1145,6 @@ extern const char kPointerLockOptionsDescription[];
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 
-extern const char kPrintServerScalingName[];
-extern const char kPrintServerScalingDescription[];
-
 extern const char kPrivacyAdvisorName[];
 extern const char kPrivacyAdvisorDescription[];
 

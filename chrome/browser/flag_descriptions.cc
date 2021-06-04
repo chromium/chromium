@@ -1996,10 +1996,6 @@ const char kPrerender2Description[] =
     "Enables the new prerenderer implementation for <link rel=prerender> "
     "instead of NoStatePrefetch.";
 
-const char kPrintServerScalingName[] = "Print Server Scaling";
-const char kPrintServerScalingDescription[] =
-    "Allows print servers to be selected when beyond a specified limit.";
-
 const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";

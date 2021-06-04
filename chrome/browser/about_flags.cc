@@ -5500,10 +5500,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSelectToSpeakNavigationControlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kSelectToSpeakNavigationControl)},
 
-    {"print-server-scaling", flag_descriptions::kPrintServerScalingName,
-     flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
-
     {"enable-networking-in-diagnostics-app",
      flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
      flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,

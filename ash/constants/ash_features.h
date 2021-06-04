@@ -254,7 +254,6 @@ extern const base::Feature kPluginVmShowMicrophonePermissions;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPrintJobManagementApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kPrintServerScaling;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswers;

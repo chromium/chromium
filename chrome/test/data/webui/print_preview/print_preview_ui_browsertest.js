@@ -772,15 +772,6 @@ var PrintPreviewDestinationDialogCrosTest = class extends PrintPreviewTest {
     return destination_dialog_cros_test.suiteName;
   }
 
-  /** @override */
-  get featureList() {
-    const featureList = super.featureList || [];
-    const kPrintServerScaling = ['chromeos::features::kPrintServerScaling'];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrintServerScaling) :
-        kPrintServerScaling;
-    return featureList;
-  }
 };
 
 TEST_F('PrintPreviewDestinationDialogCrosTest', 'PrinterList', function() {

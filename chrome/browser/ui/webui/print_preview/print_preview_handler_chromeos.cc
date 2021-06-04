@@ -31,7 +31,6 @@
 #include "content/public/browser/web_ui.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
@@ -143,8 +142,6 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling))
-    return;
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* cups_manager =
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
@@ -180,10 +177,6 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling))
-    return;
-#endif
   web_ui()->RegisterMessageCallback(
       "choosePrintServers",
       base::BindRepeating(
@@ -198,8 +191,6 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
 
 void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling))
-    return;
   Profile* profile = Profile::FromWebUI(web_ui());
   print_servers_manager_ =
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile)
@@ -221,8 +212,6 @@ void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
   // this is necessary for refresh or navigation from the chrome://print page.
   weak_factory_.InvalidateWeakPtrs();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling))
-    return;
   print_servers_manager_->RemoveObserver(this);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   receiver_.reset();

@@ -4,9 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/print_servers_policy_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
@@ -87,9 +85,6 @@ void PrintServersPolicyProvider::OnServersChanged(
 
 ServerPrintersFetchingMode PrintServersPolicyProvider::GetFetchingMode(
     const std::map<GURL, PrintServer>& all_servers) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
-    return ServerPrintersFetchingMode::kStandard;
-  }
   return all_servers.size() <= kMaxRecords
              ? ServerPrintersFetchingMode::kStandard
              : ServerPrintersFetchingMode::kSingleServerOnly;

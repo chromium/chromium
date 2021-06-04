@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
@@ -22,9 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
@@ -192,10 +189,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   ~PrintPreviewHandlerChromeOSTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kPrintServerScaling}, {});
-#endif
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -271,7 +264,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestPrintServersManager> print_servers_manager_;

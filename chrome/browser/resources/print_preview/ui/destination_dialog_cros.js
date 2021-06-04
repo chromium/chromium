@@ -105,15 +105,6 @@ Polymer({
       },
     },
 
-    /** @private */
-    printServerScalingFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printServerScaling');
-      },
-      readOnly: true,
-    },
-
     /** @private {boolean} */
     loadingServerPrinters_: {
       type: Boolean,
@@ -151,9 +142,6 @@ Polymer({
 
   /** @override */
   ready() {
-    if (!this.printServerScalingFlagEnabled_) {
-      return;
-    }
     this.printServerStore_ = new PrintServerStore(
         (/** string */ eventName, /** !Function */ callback) =>
             void this.addWebUIListener(eventName, callback));
@@ -362,7 +350,7 @@ Polymer({
    * @private
    */
   onPrintServerSelected_(printServerName) {
-    if (!this.printServerScalingFlagEnabled_ || !this.printServerStore_) {
+    if (!this.printServerStore_) {
       return;
     }
     this.printServerStore_.choosePrintServers(printServerName);

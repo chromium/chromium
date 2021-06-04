@@ -8,11 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
@@ -89,10 +87,6 @@ class FakePrintServersProvider : public PrintServersProvider {
 class PrintServersManagerTest : public testing::Test,
                                 public PrintServersManager::Observer {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kPrintServerScaling}, {});
-  }
   PrintServersManagerTest() {
     auto server_printers_provider =
         std::make_unique<FakeServerPrintersProvider>();
@@ -123,8 +117,6 @@ class PrintServersManagerTest : public testing::Test,
  protected:
   // Everything from PrintServersProvider must be called on Chrome_UIThread
   content::BrowserTaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
