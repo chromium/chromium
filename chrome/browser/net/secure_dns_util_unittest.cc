@@ -27,8 +27,11 @@ namespace secure_dns {
 
 class SecureDnsUtilTest : public testing::Test {};
 
-#if !defined(OS_ANDROID)
-TEST_F(SecureDnsUtilTest, MigrateProbesPref) {
+TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardDefault) {
+#if defined(OS_ANDROID)
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kLinkDoctorDeprecationAndroid);
+#endif  // defined(OS_ANDROID)
   const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterBooleanPref(
@@ -40,12 +43,103 @@ TEST_F(SecureDnsUtilTest, MigrateProbesPref) {
   const PrefService::Preference* backup_pref =
       prefs.FindPreference(kAlternateErrorPagesBackup);
 
+  EXPECT_FALSE(current_pref->HasUserSetting());
+  EXPECT_FALSE(backup_pref->HasUserSetting());
+
   MigrateProbesSettingToOrFromBackup(&prefs);
   EXPECT_FALSE(current_pref->HasUserSetting());
   EXPECT_TRUE(backup_pref->HasUserSetting());
   EXPECT_TRUE(prefs.GetBoolean(kAlternateErrorPagesBackup));
 }
-#endif  // !defined(OS_ANDROID)
+
+// The following test verifies the lack of forward migration when the flag is
+// disabled, which can only happen on Android.
+// TODO(crbug.com/1177778): remove once the migration is fully rolled out.
+#if defined(OS_ANDROID)
+TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardNoMigration) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      features::kLinkDoctorDeprecationAndroid);
+  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(
+      embedder_support::kAlternateErrorPagesEnabled, true);
+  prefs.registry()->RegisterBooleanPref(kAlternateErrorPagesBackup, true);
+
+  prefs.SetBoolean(embedder_support::kAlternateErrorPagesEnabled, true);
+
+  const PrefService::Preference* current_pref =
+      prefs.FindPreference(embedder_support::kAlternateErrorPagesEnabled);
+  const PrefService::Preference* backup_pref =
+      prefs.FindPreference(kAlternateErrorPagesBackup);
+
+  EXPECT_TRUE(current_pref->HasUserSetting());
+  EXPECT_FALSE(backup_pref->HasUserSetting());
+
+  MigrateProbesSettingToOrFromBackup(&prefs);
+  EXPECT_TRUE(current_pref->HasUserSetting());
+  EXPECT_FALSE(backup_pref->HasUserSetting());
+  EXPECT_TRUE(prefs.GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
+}
+#endif  // defined(OS_ANDROID)
+
+TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardCustomDisabled) {
+#if defined(OS_ANDROID)
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kLinkDoctorDeprecationAndroid);
+#endif  // defined(OS_ANDROID)
+  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(
+      embedder_support::kAlternateErrorPagesEnabled, true);
+  prefs.registry()->RegisterBooleanPref(kAlternateErrorPagesBackup, true);
+
+  prefs.SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
+
+  const PrefService::Preference* current_pref =
+      prefs.FindPreference(embedder_support::kAlternateErrorPagesEnabled);
+  const PrefService::Preference* backup_pref =
+      prefs.FindPreference(kAlternateErrorPagesBackup);
+
+  EXPECT_TRUE(current_pref->HasUserSetting());
+  EXPECT_FALSE(backup_pref->HasUserSetting());
+
+  MigrateProbesSettingToOrFromBackup(&prefs);
+  EXPECT_FALSE(current_pref->HasUserSetting());
+  EXPECT_TRUE(backup_pref->HasUserSetting());
+  EXPECT_FALSE(prefs.GetBoolean(kAlternateErrorPagesBackup));
+}
+
+// The following test verifies the backward migration, which can only happen on
+// Android.
+// TODO(crbug.com/1177778): remove once the migration is fully rolled out.
+#if defined(OS_ANDROID)
+TEST_F(SecureDnsUtilTest, MigrateProbesPrefBackward) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      features::kLinkDoctorDeprecationAndroid);
+  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(
+      embedder_support::kAlternateErrorPagesEnabled, true);
+  prefs.registry()->RegisterBooleanPref(kAlternateErrorPagesBackup, true);
+
+  prefs.SetBoolean(kAlternateErrorPagesBackup, true);
+
+  const PrefService::Preference* current_pref =
+      prefs.FindPreference(embedder_support::kAlternateErrorPagesEnabled);
+  const PrefService::Preference* backup_pref =
+      prefs.FindPreference(kAlternateErrorPagesBackup);
+
+  EXPECT_FALSE(current_pref->HasUserSetting());
+  EXPECT_TRUE(backup_pref->HasUserSetting());
+
+  MigrateProbesSettingToOrFromBackup(&prefs);
+  EXPECT_TRUE(current_pref->HasUserSetting());
+  EXPECT_FALSE(backup_pref->HasUserSetting());
+  EXPECT_TRUE(prefs.GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
+}
+#endif  // defined(OS_ANDROID)
 
 TEST(SecureDnsUtil, SplitGroup) {
   EXPECT_THAT(SplitGroup("a"), ElementsAre("a"));
