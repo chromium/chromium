@@ -182,8 +182,6 @@ GetOriginsAndLastModifiedOnTaskRunner(
 
     int64_t storage_size =
         GetCacheStorageSize(path, index_last_modified, index);
-    base::UmaHistogramBoolean("ServiceWorkerCache.UsedIndexFileSize",
-                              storage_size != CacheStorage::kSizeUnknown);
 
     usages.emplace_back(storage::mojom::StorageUsageInfo::New(
         storage_key.origin(), storage_size, file_info.last_modified));
