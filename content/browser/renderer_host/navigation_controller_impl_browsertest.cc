@@ -2188,7 +2188,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 // Verify that navigations to the same URL are correctly classified as
-// EXISTING_ENTRY.
+// EXISTING_ENTRY (if it becomes a reload) or NEW_ENTRY (if it becomes a
+// replacement navigation).
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigationTypeClassification_ExistingEntrySameURL) {
   GURL url1(embedded_test_server()->GetURL(
@@ -2318,6 +2319,133 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We lost the history.state value from before the failed navigation.
     EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  // Replace history.state to "foo".
+  ReplaceState(root, "foo");
+  EXPECT_EQ("foo", EvalJs(root, "history.state"));
+  previous_entry = controller.GetLastCommittedEntry();
+
+  {
+    // Navigate to the same URL (browser-initiated) with LoadURLParams, setting
+    // should_replace_current_entry to true. The browser should not convert this
+    // navigation to do a reload, and should continue to do replacement.
+    FrameNavigateParamsCapturer capturer(root);
+    NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    params.should_replace_current_entry = true;
+    contents()->GetController().LoadURLWithParams(params);
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(2, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (browser-initiated) with LoadURLParams, setting
+    // should_replace_current_entry to true, but hit a network error. The
+    // browser will convert this navigation to do a reload, but ended up doing
+    // replacement instead.
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    FrameNavigateParamsCapturer capturer(root);
+    NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    params.should_replace_current_entry = true;
+    contents()->GetController().LoadURLWithParams(params);
+    capturer.Wait();
+
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry
+    // because the navigation resulted in an error page.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(2, controller.GetEntryCount());
+
+    url_loader_interceptor.reset();
+  }
+}
+
+// Verify that navigations to the same WebUI URL are correctly classified as
+// EXISTING_ENTRY (if it becomes a reload) or NEW_ENTRY (if it becomes a
+// replacement navigation).
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    NavigationTypeClassification_ExistingEntrySameURL_WebUI) {
+  // Navigate to a WebUI page.
+  GURL web_ui_url(std::string(kChromeUIScheme) + "://" +
+                  std::string(kChromeUIGpuHost));
+  EXPECT_TRUE(NavigateToURL(shell(), web_ui_url));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+
+  {
+    // Navigate to the same Web UI URL (browser-initiated).
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), web_ui_url));
+    capturer.Wait();
+    // The navigation got converted into a reload, and we're classifying this as
+    // EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+
+    // Ensure the pending entry was cleared after commit.
+    EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
+
+    // We reuse the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same WebUI URL (renderer-initiated). This will go through
+    // the "browser-initiated" path in the browser (OpenURL instead of
+    // BeginNavigation), but should still behave like a renderer-initiated
+    // navigation, which will do a replacement instead of reload for same-URL
+    // navigations.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(contents(), JsReplace("location.href = $1", web_ui_url),
+                       EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry.
+    // This differs than the browser-initiated case's behavior, but it's OK.
+    // The renderer-initiated navigation follows the spec at
+    // https://html.spec.whatwg.org/#navigating-across-documents:hh-replace-3,
+    // while the browser-initiated version got converted into a reload.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
   }
 }
 

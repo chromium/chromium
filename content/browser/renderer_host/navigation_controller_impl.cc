@@ -152,10 +152,10 @@ bool ShouldOverrideUserAgent(
   return false;
 }
 
-// Returns true this navigation should be treated as a reload. For e.g.
+// Returns true if this navigation should be treated as a reload. For e.g.
 // navigating to the last committed url via the address bar or clicking on a
-// link which results in a navigation to the last committed or pending
-// navigation, etc.
+// link which results in a navigation to the last committed URL (but wasn't
+// converted to do a replacement navigation in the renderer), etc.
 // |node| is the FrameTreeNode which is navigating. |url|, |virtual_url|,
 // |base_url_for_data_url|, |transition_type| correspond to the new navigation
 // (i.e. the pending NavigationEntry). |last_committed_entry| is the last
@@ -166,10 +166,11 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
                                    const GURL& base_url_for_data_url,
                                    ui::PageTransition transition_type,
                                    bool is_post,
-                                   bool is_reload,
-                                   bool is_navigation_to_existing_entry,
+                                   bool should_replace_current_entry,
                                    NavigationEntryImpl* last_committed_entry) {
-  if (is_reload || is_navigation_to_existing_entry)
+  // Navigations intended to do a replacement shouldn't be converted to do a
+  // reload.
+  if (should_replace_current_entry)
     return false;
   // Only convert to reload if at least one navigation committed.
   if (!last_committed_entry)
@@ -3162,8 +3163,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
           params.base_url_for_data_url, params.transition_type,
           params.load_type ==
               NavigationController::LOAD_TYPE_HTTP_POST /* is_post */,
-          false /* is_reload */, false /* is_navigation_to_existing_entry */,
-          GetLastCommittedEntry())) {
+          params.should_replace_current_entry, GetLastCommittedEntry())) {
     reload_type = ReloadType::NORMAL;
     pending_entry_->set_reload_type(reload_type);
 

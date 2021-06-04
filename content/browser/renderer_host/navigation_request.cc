@@ -1209,6 +1209,9 @@ NavigationRequest::NavigationRequest(
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
+  // Navigations can't be a replacement and a reload at the same time.
+  DCHECK(!common_params_->should_replace_current_entry ||
+         !NavigationTypeUtils::IsReload(common_params_->navigation_type));
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
   // There should be no navigations to about:newtab, about:version or other
