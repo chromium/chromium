@@ -327,6 +327,10 @@ WebLocalFrame* RenderViewTest::GetMainFrame() {
   return web_view_->MainFrame()->ToWebLocalFrame();
 }
 
+RenderFrame* RenderViewTest::GetMainRenderFrame() {
+  return RenderFrame::FromWebFrame(GetMainFrame());
+}
+
 void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
   GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUTF8(js)));
 }
@@ -362,7 +366,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
 }
 
 void RenderViewTest::LoadHTML(const char* html) {
-  FrameLoadWaiter waiter(view_->GetMainRenderFrame());
+  FrameLoadWaiter waiter(GetMainRenderFrame());
   std::string url_string = "data:text/html;charset=utf-8,";
   url_string.append(net::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
@@ -377,7 +381,7 @@ void RenderViewTest::LoadHTML(const char* html) {
 
 void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
                                              const char* url_override) {
-  FrameLoadWaiter waiter(view_->GetMainRenderFrame());
+  FrameLoadWaiter waiter(GetMainRenderFrame());
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_override), "UTF-8", GURL(),
                                  false /* replace_current_item */);
@@ -389,13 +393,11 @@ void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
 }
 
 blink::PageState RenderViewTest::GetCurrentPageState() {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-
   // This returns a PageState object for the main frame, excluding subframes.
   // This could be extended to all local frames if needed by tests, but it
   // cannot include out-of-process frames.
-  auto* frame = view->GetMainRenderFrame();
-  return frame->GetWebFrame()->CurrentHistoryItemToPageState();
+  auto* frame = GetMainFrame();
+  return frame->CurrentHistoryItemToPageState();
 }
 
 void RenderViewTest::GoBack(const GURL& url, const blink::PageState& state) {
@@ -769,9 +771,7 @@ void RenderViewTest::Reload(const GURL& url) {
       base::TimeTicks() /* input_start */);
   auto commit_params = CreateCommitNavigationParams();
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  TestRenderFrame* frame =
-      static_cast<TestRenderFrame*>(view->GetMainRenderFrame());
+  TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);
   frame->Navigate(std::move(common_params), std::move(commit_params));
   waiter.Wait();
@@ -842,12 +842,13 @@ void RenderViewTest::SimulateUserInputChangeForElement(
 
 void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                                               bool is_new_navigation) {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  view->GetMainRenderFrame()->DidFinishSameDocumentNavigation(
-      is_new_navigation ? blink::kWebStandardCommit
-                        : blink::kWebHistoryInertCommit,
-      false /* is_synchronously_committed */,
-      false /* is_history_api_navigation */, false /* is_client_redirect */);
+  static_cast<RenderFrameImpl*>(GetMainRenderFrame())
+      ->DidFinishSameDocumentNavigation(is_new_navigation
+                                            ? blink::kWebStandardCommit
+                                            : blink::kWebHistoryInertCommit,
+                                        false /* is_synchronously_committed */,
+                                        false /* is_history_api_navigation */,
+                                        false /* is_client_redirect */);
 }
 
 void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
@@ -887,7 +888,6 @@ blink::VisualProperties RenderViewTest::InitialVisualProperties() {
 void RenderViewTest::GoToOffset(int offset,
                                 const GURL& url,
                                 const blink::PageState& state) {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
   blink::WebView* webview = web_view_;
   int history_list_length =
       webview->HistoryBackListCount() + webview->HistoryForwardListCount() + 1;
@@ -913,7 +913,7 @@ void RenderViewTest::GoToOffset(int offset,
   commit_params->current_history_list_length = history_list_length;
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
-  auto* frame = static_cast<TestRenderFrame*>(view->GetMainRenderFrame());
+  auto* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);
   frame->Navigate(std::move(common_params), std::move(commit_params));
   // The load may actually happen asynchronously, so we pump messages to process
@@ -924,8 +924,8 @@ void RenderViewTest::GoToOffset(int offset,
 }
 
 void RenderViewTest::CreateFakeWebURLLoaderFactory() {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderFrameImpl* main_frame = view->GetMainRenderFrame();
+  RenderFrameImpl* main_frame =
+      static_cast<RenderFrameImpl*>(GetMainRenderFrame());
   DCHECK(main_frame);
   main_frame->SetWebURLLoaderFactoryOverrideForTest(
       std::make_unique<FakeWebURLLoaderFactory>());

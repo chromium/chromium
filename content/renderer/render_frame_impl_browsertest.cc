@@ -140,7 +140,7 @@ class RenderFrameImplTest : public RenderViewTest {
     remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
     RenderFrameImpl::FromWebFrame(
-        view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
+        GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
                  blink::RemoteFrameToken(),
                  std::move(remote_main_frame_interfaces));
@@ -175,7 +175,7 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
   TestRenderFrame* GetMainRenderFrame() {
-    return static_cast<TestRenderFrame*>(view_->GetMainRenderFrame());
+    return static_cast<TestRenderFrame*>(RenderViewTest::GetMainRenderFrame());
   }
 
   TestRenderFrame* frame() { return frame_; }
@@ -232,8 +232,7 @@ class RenderFrameTestObserver : public RenderFrameObserver {
 TEST_F(RenderFrameImplTest, SubframeWidget) {
   EXPECT_TRUE(frame_widget());
 
-  RenderFrameImpl* main_frame =
-      static_cast<RenderViewImpl*>(view_)->GetMainRenderFrame();
+  RenderFrameImpl* main_frame = GetMainRenderFrame();
   blink::WebFrameWidget* main_frame_widget =
       main_frame->GetLocalRootWebFrameWidget();
   EXPECT_NE(frame_widget(), main_frame_widget);
@@ -816,7 +815,7 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
   }
 
   TestRenderFrame* GetMainRenderFrame() {
-    return static_cast<TestRenderFrame*>(view_->GetMainRenderFrame());
+    return static_cast<TestRenderFrame*>(RenderViewTest::GetMainRenderFrame());
   }
 
   ContentRendererClient* CreateContentRendererClient() override {

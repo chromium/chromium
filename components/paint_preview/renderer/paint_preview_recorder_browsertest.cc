@@ -77,8 +77,6 @@ class PaintPreviewRecorderRenderViewTest
                                                        GetParam());
   }
 
-  content::RenderFrame* GetFrame() { return view_->GetMainRenderFrame(); }
-
   base::FilePath MakeTestFilePath(const std::string& filename) {
     return temp_dir_.GetPath().AppendASCII(filename);
   }
@@ -132,7 +130,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
       "</body>");
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   base::FilePath skp_path = RunCapture(frame, &out_response);
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
@@ -196,7 +194,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
   content::RunAllTasksUntilIdle();
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   base::FilePath skp_path = RunCapture(frame, &out_response);
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
@@ -238,7 +236,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureFragment) {
       "  <h1 id='fragment'>I'm a fragment</h1>"
       "</body>");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -269,7 +267,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   base::File skp_file;  // Invalid file.
   params->file = std::move(skp_file);
 
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   PaintPreviewRecorderImpl paint_preview_recorder(frame);
   paint_preview_recorder.CapturePaintPreview(
       std::move(params),
@@ -294,7 +292,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   params->file = std::move(skp_file);
 
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   PaintPreviewRecorderImpl paint_preview_recorder(frame);
   paint_preview_recorder.CapturePaintPreview(
       std::move(params),
@@ -312,7 +310,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
       "          background-color: #000000'>&nbsp;</div>\"></iframe>"
       "</body>");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -332,7 +330,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
       "</body>");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   auto* child_frame = content::RenderFrame::FromWebFrame(
-      GetFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame());
+      GetMainRenderFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame());
   ASSERT_TRUE(child_frame);
 
   RunCapture(child_frame, &out_response, false);
@@ -353,7 +351,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
       "</body>");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   auto* child_web_frame =
-      GetFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame();
+      GetMainRenderFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame();
   auto* child_frame = content::RenderFrame::FromWebFrame(child_web_frame);
   ASSERT_TRUE(child_frame);
 
@@ -396,7 +394,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
       "</body>");
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   gfx::Rect clip_rect = gfx::Rect(150, 150, 300, 300);
   base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
 
@@ -442,7 +440,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
       "</body>");
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   const size_t kLarge = 1000000;
   gfx::Rect clip_rect = gfx::Rect(0, 0, kLarge, kLarge);
   base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
@@ -476,7 +474,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
       "</body>");
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
   gfx::Rect clip_rect = gfx::Rect(1, 1, 0, 0);
   base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
 
@@ -519,7 +517,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {
       </div>
     </body>)");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -559,7 +557,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithTranslateThenRotate) {
       </div>
     </body>)");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -601,7 +599,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithRotateThenTranslate) {
       </div>
     </body>)");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -643,7 +641,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithScale) {
       </div>
     </body>)");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 
@@ -694,7 +692,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
       </div>
     </body>)");
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
-  content::RenderFrame* frame = GetFrame();
+  content::RenderFrame* frame = GetMainRenderFrame();
 
   RunCapture(frame, &out_response);
 

@@ -311,7 +311,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
   RenderFrameImpl* frame() {
-    return static_cast<RenderFrameImpl*>(view()->GetMainRenderFrame());
+    return static_cast<RenderFrameImpl*>(RenderViewTest::GetMainRenderFrame());
   }
 
   IPC::TestSink* sink() { return sink_; }

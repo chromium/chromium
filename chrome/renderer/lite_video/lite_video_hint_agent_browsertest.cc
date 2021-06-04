@@ -88,7 +88,7 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
     request.SetUrl(GURL(kTestURL));
     request.SetRequestContext(request_context_type);
     return LiteVideoURLLoaderThrottle::MaybeCreateThrottle(
-        request, view_->GetMainRenderFrame()->GetRoutingID());
+        request, GetMainRenderFrame()->GetRoutingID());
   }
 
   std::unique_ptr<MediaLoaderThrottleInfo> CreateThrottleAndSendResponse(
@@ -131,8 +131,7 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(features::kLiteVideo);
     blink::WebNetworkStateNotifier::SetSaveDataEnabled(true);
-    lite_video_hint_agent_ =
-        new LiteVideoHintAgent(view_->GetMainRenderFrame());
+    lite_video_hint_agent_ = new LiteVideoHintAgent(GetMainRenderFrame());
 
     // Set some default hints.
     previews::mojom::LiteVideoHintPtr hint =

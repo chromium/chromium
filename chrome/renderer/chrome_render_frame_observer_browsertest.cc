@@ -107,24 +107,20 @@ class ChromeRenderFrameObserverTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
-    view_->GetMainRenderFrame()
-        ->GetBrowserInterfaceBroker()
-        ->SetBinderForTesting(
-            translate::mojom::ContentTranslateDriver::Name_,
-            base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
-                                base::Unretained(&fake_translate_driver_)));
+    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        translate::mojom::ContentTranslateDriver::Name_,
+        base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
+                            base::Unretained(&fake_translate_driver_)));
   }
 
   void TearDown() override {
-    view_->GetMainRenderFrame()
-        ->GetBrowserInterfaceBroker()
-        ->SetBinderForTesting(translate::mojom::ContentTranslateDriver::Name_,
-                              {});
+    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        translate::mojom::ContentTranslateDriver::Name_, {});
 
     ChromeRenderViewTest::TearDown();
   }
 
-  content::RenderFrame* render_frame() { return view_->GetMainRenderFrame(); }
+  content::RenderFrame* render_frame() { return GetMainRenderFrame(); }
 
  protected:
   FakeContentTranslateDriver fake_translate_driver_;

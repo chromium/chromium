@@ -19,8 +19,6 @@ class SearchResultExtractorImplRenderViewTest : public content::RenderViewTest {
   SearchResultExtractorImplRenderViewTest() = default;
   ~SearchResultExtractorImplRenderViewTest() override = default;
 
-  content::RenderFrame* GetFrame() { return view_->GetMainRenderFrame(); }
-
   // Loads the contents of `html` and attempts to extract data. Caller should
   // provide the `expected_status` and `expected_results` which are used to
   // verify the extraction behaved as intended. Note that
@@ -32,12 +30,12 @@ class SearchResultExtractorImplRenderViewTest : public content::RenderViewTest {
       mojom::CategoryResultsPtr expected_results) {
     LoadHTML(html.data());
     expected_results->document_url =
-        GURL(GetFrame()->GetWebFrame()->GetDocument().Url());
+        GURL(GetMainRenderFrame()->GetWebFrame()->GetDocument().Url());
     base::RunLoop loop;
     mojom::SearchResultExtractor::Status out_status;
     mojom::CategoryResultsPtr out_results;
     {
-      auto* extractor = SearchResultExtractorImpl::Create(GetFrame());
+      auto* extractor = SearchResultExtractorImpl::Create(GetMainRenderFrame());
       EXPECT_NE(extractor, nullptr);
       extractor->ExtractCurrentSearchResults(base::BindOnce(
           [](base::OnceClosure quit,

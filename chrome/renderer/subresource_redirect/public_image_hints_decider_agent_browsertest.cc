@@ -50,11 +50,11 @@ class SubresourceRedirectPublicImageHintsDeciderAgentTest
     request.SetPreviewsState(previews_state);
     request.SetRequestDestination(request_destination);
     DCHECK(SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
-               request, view_->GetMainRenderFrame()->GetRoutingID())
+               request, GetMainRenderFrame()->GetRoutingID())
                .get() != nullptr);
 
     return std::make_unique<SubresourceRedirectURLLoaderThrottle>(
-        view_->GetMainRenderFrame()->GetRoutingID(),
+        GetMainRenderFrame()->GetRoutingID(),
         previews_state & blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON);
   }
 
@@ -76,8 +76,8 @@ class SubresourceRedirectPublicImageHintsDeciderAgentTest
           {{"enable_subresource_server_redirect", "true"}}}},
         {});
     public_image_hints_decider_agent_ =
-        std::make_unique<PublicImageHintsDeciderAgent>(
-            &associated_interfaces_, view_->GetMainRenderFrame());
+        std::make_unique<PublicImageHintsDeciderAgent>(&associated_interfaces_,
+                                                       GetMainRenderFrame());
   }
 
   void TearDown() override {

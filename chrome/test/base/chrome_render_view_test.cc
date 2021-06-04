@@ -114,15 +114,14 @@ void ChromeRenderViewTest::SetUp() {
   // store them directly (they're stored as RenderFrameObserver*).  So just
   // create another set.
   password_autofill_agent_ = new autofill::TestPasswordAutofillAgent(
-      view_->GetMainRenderFrame(), &associated_interfaces_);
+      GetMainRenderFrame(), &associated_interfaces_);
   password_generation_ = new autofill::PasswordGenerationAgent(
-      view_->GetMainRenderFrame(), password_autofill_agent_,
-      &associated_interfaces_);
+      GetMainRenderFrame(), password_autofill_agent_, &associated_interfaces_);
   autofill_assistant_agent_ =
-      new autofill::AutofillAssistantAgent(view_->GetMainRenderFrame());
+      new autofill::AutofillAssistantAgent(GetMainRenderFrame());
   autofill_agent_ = new NiceMock<MockAutofillAgent>(
-      view_->GetMainRenderFrame(), password_autofill_agent_,
-      password_generation_, autofill_assistant_agent_, &associated_interfaces_);
+      GetMainRenderFrame(), password_autofill_agent_, password_generation_,
+      autofill_assistant_agent_, &associated_interfaces_);
 }
 
 void ChromeRenderViewTest::TearDown() {

@@ -151,7 +151,7 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
-    content::RenderFrame* render_frame = view_->GetMainRenderFrame();
+    content::RenderFrame* render_frame = GetMainRenderFrame();
     classifier_ = new StrictMock<MockPhishingClassifier>(render_frame);
     delegate_ = PhishingClassifierDelegate::Create(render_frame, classifier_);
   }

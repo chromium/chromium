@@ -307,11 +307,11 @@ class RenderViewImplTest : public RenderViewTest {
   RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
   blink::WebFrameWidget* main_frame_widget() {
-    return view()->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
+    return frame()->GetLocalRootWebFrameWidget();
   }
 
   TestRenderFrame* frame() {
-    return static_cast<TestRenderFrame*>(view()->GetMainRenderFrame());
+    return static_cast<TestRenderFrame*>(GetMainRenderFrame());
   }
 
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler() {
@@ -565,7 +565,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     widget->ApplyVisualProperties(
         MakeVisualPropertiesWithDeviceScaleFactor(dsf));
 
-    ASSERT_EQ(dsf, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
+    ASSERT_EQ(dsf, GetMainRenderFrame()->GetDeviceScaleFactor());
     ASSERT_EQ(dsf, widget->GetOriginalScreenInfo().device_scale_factor);
   }
 
@@ -939,7 +939,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
 
 TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   // Enable bindings to simulate a WebUI view.
-  view()->GetMainRenderFrame()->AllowBindings(BINDINGS_POLICY_WEB_UI);
+  frame()->AllowBindings(BINDINGS_POLICY_WEB_UI);
 
   blink::WebSecurityOrigin requestor_origin =
       blink::WebSecurityOrigin::Create(GURL("http://foo.com"));
@@ -1030,8 +1030,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationPolicyNewForegroundTab;
   render_thread_->sink().ClearMessages();
   RenderFrameImpl::FromWebFrame(new_web_view->MainFrame())
-      ->render_view()
-      ->GetMainRenderFrame()
       ->BeginNavigation(std::move(popup_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 }
@@ -1065,14 +1063,14 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
 
   // Verify that the system device scale factor has propagated into the
   // RenderFrameProxy.
-  EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
+  EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
   EXPECT_EQ(device_scale,
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
 
   TestEmulatedSizeDprDsf(640, 480, 3.f, device_scale);
 
   // Verify that the RenderFrameProxy device scale factor is still the same.
-  EXPECT_EQ(3.f, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
+  EXPECT_EQ(3.f, GetMainRenderFrame()->GetDeviceScaleFactor());
   EXPECT_EQ(device_scale,
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
 
@@ -1132,7 +1130,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
        DeviceScaleCorrectAfterCrossOriginNav) {
   const float device_scale = 3.0f;
   SetDeviceScaleFactor(device_scale);
-  EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
+  EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
 
   LoadHTML("Hello world!");
 
@@ -1205,7 +1203,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
                               DummyCommitNavigationParams());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
+  EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
   EXPECT_EQ(device_scale, web_view_->ZoomFactorForDeviceScaleFactor());
 
   double device_pixel_ratio;
@@ -1280,8 +1278,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   LoadHTML("Hello world!");
 
   // Unload the main frame after which it should become a WebRemoteFrame.
-  TestRenderFrame* main_frame =
-      static_cast<TestRenderFrame*>(view()->GetMainRenderFrame());
+  TestRenderFrame* main_frame = frame();
   static_cast<mojom::Frame*>(main_frame)
       ->Unload(kProxyRoutingId, true,
                ReconstructReplicationStateForTesting(main_frame),
@@ -2101,7 +2098,7 @@ TEST_F(RenderViewImplTest, DroppedNavigationStaysInViewSourceMode) {
   frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
 
   // A cancellation occurred.
-  view()->GetMainRenderFrame()->OnDroppedNavigation();
+  frame()->OnDroppedNavigation();
   // Frame should stay in view-source mode.
   EXPECT_TRUE(web_frame->IsViewSourceModeEnabled());
 }
@@ -2525,7 +2522,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
 // This test ensures that a RenderFrame object is created for the top level
 // frame in the RenderView.
 TEST_F(RenderViewImplTest, BasicRenderFrame) {
-  EXPECT_TRUE(view()->GetMainRenderFrame());
+  EXPECT_TRUE(GetMainRenderFrame());
 }
 
 namespace {
@@ -2604,7 +2601,7 @@ class RendererErrorPageTest : public RenderViewImplTest {
   RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
   RenderFrameImpl* frame() {
-    return static_cast<RenderFrameImpl*>(view()->GetMainRenderFrame());
+    return static_cast<RenderFrameImpl*>(GetMainRenderFrame());
   }
 
  private:

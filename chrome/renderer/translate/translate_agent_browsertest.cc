@@ -162,21 +162,17 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    translate_agent_ = new TestTranslateAgent(view_->GetMainRenderFrame());
+    translate_agent_ = new TestTranslateAgent(GetMainRenderFrame());
 
-    view_->GetMainRenderFrame()
-        ->GetBrowserInterfaceBroker()
-        ->SetBinderForTesting(
-            translate::mojom::ContentTranslateDriver::Name_,
-            base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
-                                base::Unretained(&fake_translate_driver_)));
+    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        translate::mojom::ContentTranslateDriver::Name_,
+        base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
+                            base::Unretained(&fake_translate_driver_)));
   }
 
   void TearDown() override {
-    view_->GetMainRenderFrame()
-        ->GetBrowserInterfaceBroker()
-        ->SetBinderForTesting(translate::mojom::ContentTranslateDriver::Name_,
-                              {});
+    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+        translate::mojom::ContentTranslateDriver::Name_, {});
 
     delete translate_agent_;
     ChromeRenderViewTest::TearDown();

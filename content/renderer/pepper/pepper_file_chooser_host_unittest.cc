@@ -107,7 +107,7 @@ class PepperFileChooserHostTest : public RenderViewTest {
 
     globals_.GetResourceTracker()->DidCreateInstance(pp_instance_);
     mock_file_chooser_ = std::make_unique<MockFileChooser>(
-        static_cast<RenderFrameImpl*>(view_->GetMainRenderFrame())
+        static_cast<RenderFrameImpl*>(GetMainRenderFrame())
             ->GetBrowserInterfaceBroker(),
         run_loop_.QuitClosure());
   }

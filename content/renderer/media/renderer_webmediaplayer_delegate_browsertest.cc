@@ -54,8 +54,8 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
     RenderViewTest::SetUp();
     // Start the tick clock off at a non-null value.
     tick_clock_.Advance(base::TimeDelta::FromSeconds(1234));
-    delegate_manager_ = std::make_unique<RendererWebMediaPlayerDelegate>(
-        view_->GetMainRenderFrame());
+    delegate_manager_ =
+        std::make_unique<RendererWebMediaPlayerDelegate>(GetMainRenderFrame());
     delegate_manager_->SetIdleCleanupParamsForTesting(
         kIdleTimeout, base::TimeDelta(), &tick_clock_, false);
   }

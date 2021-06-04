@@ -142,7 +142,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
     request.SetPreviewsState(previews_state);
     request.SetRequestDestination(request_destination);
     auto throttle = SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
-        request, view_->GetMainRenderFrame()->GetRoutingID());
+        request, GetMainRenderFrame()->GetRoutingID());
     EXPECT_TRUE(throttle.get());
     return throttle;
   }
@@ -170,7 +170,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
            {"enable_public_image_hints_based_compression", "false"}}}},
         {});
     login_robots_decider_agent_ = new LoginRobotsDeciderAgent(
-        &associated_interfaces_, view_->GetMainRenderFrame());
+        &associated_interfaces_, GetMainRenderFrame());
   }
 
  protected:
@@ -233,10 +233,9 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
     request.SetPreviewsState(test_case.previews_state);
     request.SetUrl(GURL(test_case.url));
     request.SetRequestDestination(test_case.destination);
-    EXPECT_EQ(
-        test_case.expected_is_throttle_created,
-        SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
-            request, view_->GetMainRenderFrame()->GetRoutingID()) != nullptr);
+    EXPECT_EQ(test_case.expected_is_throttle_created,
+              SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
+                  request, GetMainRenderFrame()->GetRoutingID()) != nullptr);
   }
 }
 

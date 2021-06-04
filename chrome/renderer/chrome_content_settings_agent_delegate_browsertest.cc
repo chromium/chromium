@@ -21,9 +21,8 @@ class ChromeContentSettingsAgentDelegateBrowserTest
 
     // Unbind the ContentSettingsAgent interface that would be registered by
     // the ChromeContentSettingsAgent created when the render frame is created.
-    view_->GetMainRenderFrame()
-        ->GetAssociatedInterfaceRegistry()
-        ->RemoveInterface(content_settings::mojom::ContentSettingsAgent::Name_);
+    GetMainRenderFrame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+        content_settings::mojom::ContentSettingsAgent::Name_);
   }
 };
 
@@ -36,7 +35,7 @@ TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
   std::string bar_plugin = "bar";
 
   auto* delegate =
-      ChromeContentSettingsAgentDelegate::Get(view_->GetMainRenderFrame());
+      ChromeContentSettingsAgentDelegate::Get(GetMainRenderFrame());
   EXPECT_FALSE(delegate->IsPluginTemporarilyAllowed(foo_plugin));
 
   // Temporarily allow the "foo" plugin.

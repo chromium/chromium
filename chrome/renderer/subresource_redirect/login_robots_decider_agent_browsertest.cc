@@ -111,7 +111,7 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
            {"enable_public_image_hints_based_compression", "false"}}}},
         {});
     login_robots_decider_agent_ = new LoginRobotsDeciderAgent(
-        &associated_interfaces_, view_->GetMainRenderFrame());
+        &associated_interfaces_, GetMainRenderFrame());
   }
 
   LoginRobotsDeciderAgent* login_robots_decider_agent_;

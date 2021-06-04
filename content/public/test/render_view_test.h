@@ -50,6 +50,7 @@ class FakeRenderWidgetHost;
 class RendererMainPlatformDelegate;
 class RendererBlinkPlatformImpl;
 class RendererBlinkPlatformImplTestOverrideImpl;
+class RenderFrame;
 class RenderProcess;
 class RenderView;
 
@@ -85,6 +86,7 @@ class RenderViewTest : public testing::Test {
  protected:
   // Returns a pointer to the main frame.
   blink::WebLocalFrame* GetMainFrame();
+  RenderFrame* GetMainRenderFrame();
 
   // Executes the given JavaScript in the context of the main frame. The input
   // is a NULL-terminated UTF-8 string.

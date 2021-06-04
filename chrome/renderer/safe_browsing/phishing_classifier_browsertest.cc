@@ -212,8 +212,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
   }
 
   void SetUpClassifier() {
-    classifier_ =
-        std::make_unique<PhishingClassifier>(view_->GetMainRenderFrame());
+    classifier_ = std::make_unique<PhishingClassifier>(GetMainRenderFrame());
     // No scorer yet, so the classifier is not ready.
     ASSERT_FALSE(classifier_->is_ready());
 

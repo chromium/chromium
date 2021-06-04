@@ -47,7 +47,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
   std::unique_ptr<base::test::ScopedFeatureList> feature_list =
       SetupTagAndAttributeFeature();
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   // Lower kMaxNodes and kMaxAttributes for the test. Loading 500 subframes in a
   // debug build takes a while.
@@ -292,7 +292,7 @@ TEST_F(ThreatDOMDetailsTest, DefaultTagAndAttributesList) {
   feature_list->InitAndDisableFeature(
       safe_browsing::kThreatDomDetailsTagAndAttributeFeature);
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   const char kUrlPrefix[] = "data:text/html;charset=utf-8,";
 
@@ -382,7 +382,7 @@ TEST_F(ThreatDOMDetailsTest, CheckTagAndAttributeListIsSorted) {
       safe_browsing::kCaptureInlineJavascriptForGoogleAds);
 
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
   std::vector<safe_browsing::TagAndAttributesItem> tag_and_attr_list =
       details->GetTagAndAttributesListForTest();
@@ -405,7 +405,7 @@ TEST_F(ThreatDOMDetailsTest, CaptureInnerHtmlContent) {
   scoped_list->InitAndEnableFeature(
       safe_browsing::kCaptureInlineJavascriptForGoogleAds);
   std::unique_ptr<safe_browsing::ThreatDOMDetails> details(
-      safe_browsing::ThreatDOMDetails::Create(view_->GetMainRenderFrame(),
+      safe_browsing::ThreatDOMDetails::Create(GetMainRenderFrame(),
                                               registry_.get()));
 
   const char kUrlPrefix[] = "data:text/html;charset=utf-8,";

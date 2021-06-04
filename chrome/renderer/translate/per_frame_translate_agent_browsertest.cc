@@ -151,7 +151,7 @@ class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    translate_agent_ = new PerFrameTranslateAgent(view_->GetMainRenderFrame());
+    translate_agent_ = new PerFrameTranslateAgent(GetMainRenderFrame());
   }
 
   void TearDown() override {

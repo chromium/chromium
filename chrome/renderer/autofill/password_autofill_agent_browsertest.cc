@@ -339,14 +339,14 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
     // Reject all requests to bind driver/client to anything but the test class:
-    view_->GetMainRenderFrame()
+    GetMainRenderFrame()
         ->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::PasswordGenerationDriver::Name_,
             base::BindRepeating([](mojo::ScopedInterfaceEndpointHandle handle) {
               handle.reset();
             }));
-    view_->GetMainRenderFrame()
+    GetMainRenderFrame()
         ->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::PasswordManagerDriver::Name_,
@@ -414,7 +414,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     // Because the test cases only involve the main frame in this test,
     // the fake password client and the fake driver is only used on main frame.
     blink::AssociatedInterfaceProvider* remote_associated_interfaces =
-        view_->GetMainRenderFrame()->GetRemoteAssociatedInterfaces();
+        GetMainRenderFrame()->GetRemoteAssociatedInterfaces();
     remote_associated_interfaces->OverrideBinderForTesting(
         mojom::PasswordGenerationDriver::Name_,
         base::BindRepeating(
