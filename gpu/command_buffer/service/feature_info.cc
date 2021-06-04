@@ -278,6 +278,7 @@ void FeatureInfo::InitializeForTesting(ContextType context_type) {
 }
 
 bool IsGL_REDSupportedOnFBOs() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   DCHECK(glGetError() == GL_NO_ERROR);
   // Skia uses GL_RED with frame buffers, unfortunately, Mesa claims to support
   // GL_EXT_texture_rg, but it doesn't support it on frame buffers.  To fix
@@ -309,6 +310,9 @@ bool IsGL_REDSupportedOnFBOs() {
   DCHECK(glGetError() == GL_NO_ERROR);
 
   return result;
+#else
+  return true;
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
 void FeatureInfo::EnableCHROMIUMTextureStorageImage() {
