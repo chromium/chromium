@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">縮放等級</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID：<ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">歡迎使用實驗性瀏覽器！請注意，使用這個瀏覽器有遺失資料的風險，也可能對安全性或隱私權產生不良影響。如有問題，請依序按一下 [說明] &gt; [回報問題…] 進行回報。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1709217939274742847">選擇要用於驗證的票證。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">無法分享</translation>
@@ -1088,6 +1089,7 @@
 <translation id="2144557304298909478">Linux Android 應用程式開發</translation>
 <translation id="2146263598007866206">網站可能會自動一併下載相關檔案，為你節省時間</translation>
 <translation id="2147151613919729065">如要清除訪客模式的歷史記錄，請關閉所有訪客模式視窗。</translation>
+<translation id="2147218225094845757">隱藏側邊面板</translation>
 <translation id="2148219725039824548">掛接共用裝置時發生錯誤。在網路上找不到指定的共用裝置。</translation>
 <translation id="2148756636027685713">格式化完成</translation>
 <translation id="2148892889047469596">投放分頁</translation>
@@ -3935,6 +3937,7 @@
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
+<translation id="5277127016695466621">顯示側邊面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
 <translation id="5280243692621919988">關閉所有視窗時清除 Cookie 和網站資料</translation>

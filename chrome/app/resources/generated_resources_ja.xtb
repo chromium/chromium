@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">ズームレベル</translation>
 <translation id="1708338024780164500">（無効）</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />（ID: <ph name="ID_PH" />）</translation>
+<translation id="1708860176443612387">試験運用版のブラウザのため、データが失われたり、セキュリティやプライバシーが侵害されたりする可能性があります。問題が発生した場合は、[ヘルプ] &gt; [問題の報告...] からご報告ください。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1709217939274742847">認証に使用するチケットを選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">共有できません</translation>
@@ -1088,6 +1089,7 @@
 <translation id="2144557304298909478">Linux Android アプリの開発</translation>
 <translation id="2146263598007866206">時間節約のために、関連する複数のファイルをまとめて自動的にダウンロードするサイトもあります</translation>
 <translation id="2147151613919729065">ゲストモードの履歴を消去するには、ゲスト ウィンドウをすべて閉じてください。</translation>
+<translation id="2147218225094845757">サイドパネルを非表示</translation>
 <translation id="2148219725039824548">共有フォルダのマウントエラー。指定された共有フォルダがネットワークで見つかりませんでした。</translation>
 <translation id="2148756636027685713">フォーマットが完了しました</translation>
 <translation id="2148892889047469596">タブをキャスト</translation>
@@ -3936,6 +3938,7 @@
 <translation id="5269977353971873915">印刷の失敗</translation>
 <translation id="5275352920323889391">犬</translation>
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
+<translation id="5277127016695466621">サイドパネルを表示</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
 <translation id="5280243692621919988">すべてのウィンドウを閉じるときに Cookie とサイトデータを削除する</translation>

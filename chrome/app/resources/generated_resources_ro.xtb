@@ -672,6 +672,7 @@
 <translation id="1706625117072057435">Niveluri de zoom</translation>
 <translation id="1708338024780164500">(Inactivă)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Browser experimental! Poate să piardă date ori să compromită confidențialitatea sau securitatea. Raportează problemele accesând Ajutor &gt; Raportează o problemă…</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativă)</translation>
 <translation id="1709217939274742847">Alege un tichet pe care să îl folosești pentru autentificare. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Nu se pot trimite fișierele</translation>
@@ -1089,6 +1090,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2144557304298909478">Dezvoltarea aplicațiilor pentru Android în Linux</translation>
 <translation id="2146263598007866206">Site-urile pot descărca automat fișierele conexe împreună pentru a te ajuta să economisești timp</translation>
 <translation id="2147151613919729065">Pentru a șterge istoricul din modul pentru invitați, închide toate ferestrele pentru invitați.</translation>
+<translation id="2147218225094845757">Ascunde panoul lateral</translation>
 <translation id="2148219725039824548">Eroare la montarea dispozitivului de stocare în rețea. Dispozitivul indicat nu a fost găsit în rețea.</translation>
 <translation id="2148756636027685713">Formatarea a fost finalizată</translation>
 <translation id="2148892889047469596">Proiectează fila</translation>
@@ -3937,6 +3939,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5269977353971873915">Printarea a eșuat</translation>
 <translation id="5275352920323889391">Câine</translation>
 <translation id="527605982717517565">Permite întotdeauna JavaScript pe <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Afișează panoul lateral</translation>
 <translation id="5278823018825269962">Cod de stare</translation>
 <translation id="5280064835262749532">Actualizează datele de conectare pentru <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Șterge cookie-urile și datele privind site-urile când închizi toate ferestrele</translation>

@@ -677,6 +677,7 @@
 <translation id="1706625117072057435">Zoomnivåer</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Eksperimentell nettleser! Det kan forekomme tap av data eller brudd på personvernet eller sikkerheten. Rapportér problemer via Hjelp &gt; «Rapportér et problem».</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1709217939274742847">Velg en sak som skal brukes til autentisering. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Kan ikke dele</translation>
@@ -1094,6 +1095,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2144557304298909478">Android-apputvikling i Linux</translation>
 <translation id="2146263598007866206">Nettsteder kan automatisk laste ned beslektede filer sammen for å spare tid</translation>
 <translation id="2147151613919729065">For å slette loggen for Gjestemodus, lukk alle gjestevinduer.</translation>
+<translation id="2147218225094845757">Skjul sidepanelet</translation>
 <translation id="2148219725039824548">Feil ved innsetting av deling. Den spesifiserte delingen ble ikke funnet på nettverket.</translation>
 <translation id="2148756636027685713">Formatering er fullført</translation>
 <translation id="2148892889047469596">Castefane</translation>
@@ -3943,6 +3945,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5269977353971873915">Utskrift mislyktes</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillat alltid JavaScript på <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Vis sidepanelet</translation>
 <translation id="5278823018825269962">Status-ID</translation>
 <translation id="5280064835262749532">Oppdater legitimasjonen for <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Slett informasjonskapsler og nettstedsdata når du lukker alle vinduer</translation>

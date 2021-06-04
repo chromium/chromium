@@ -668,6 +668,7 @@
 <translation id="1706625117072057435">Nivelet e zmadhimit</translation>
 <translation id="1708338024780164500">(Joaktive)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Shfletues eksperimental! Mund të humbasë të dhëna ose të cenojë privatësinë ose sigurinë. Raporto problemet me: Ndihma &gt; "Raporto një problem...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (origjinal)</translation>
 <translation id="1709217939274742847">Zgjidh një biletë për ta përdorur për vërtetim. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Nuk mund të ndahet</translation>
@@ -1085,6 +1086,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2144557304298909478">Zhvillimi i aplikacionit Android për Linux</translation>
 <translation id="2146263598007866206">Sajtet mund të shkarkojnë automatikisht skedarë përkatës së bashku për të të kursyer kohë</translation>
 <translation id="2147151613919729065">Për të pastruar historikun e "Modalitetit "Vizitor"", mbyll të gjitha dritaret e vizitorit.</translation>
+<translation id="2147218225094845757">Fshihe panelin anësor</translation>
 <translation id="2148219725039824548">Gabim gjatë montimit të ndarjes. Ndarja e specifikuar nuk u gjend në rrjet.</translation>
 <translation id="2148756636027685713">Formatimi përfundoi</translation>
 <translation id="2148892889047469596">Transmeto skedën</translation>
@@ -3933,6 +3935,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5269977353971873915">Printimi dështoi</translation>
 <translation id="5275352920323889391">Qen</translation>
 <translation id="527605982717517565">Lejo gjithmonë JavaScript në <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Shfaq panelin anësor</translation>
 <translation id="5278823018825269962">ID-ja e statusit</translation>
 <translation id="5280064835262749532">Përditëso kredencialet për <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Pastro kukit dhe të dhënat e sajteve kur të mbyllësh të gjitha dritaret</translation>

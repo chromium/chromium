@@ -682,6 +682,7 @@
 <translation id="1706625117072057435">Zoomnivåer</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (id: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Detta är en experimentell webbläsare. Data kan gå förlorad, och det kan innebära en integritets- och säkerhetsrisk. Rapportera problem via Hjälp &gt; Rapportera ett problem …</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (standard)</translation>
 <translation id="1709217939274742847">Välj vilken biljett som ska användas till autentisering. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Det går inte att dela</translation>
@@ -1100,6 +1101,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2144557304298909478">Android-apputveckling i Linux</translation>
 <translation id="2146263598007866206">Webbplatser kan automatiskt ladda ned relaterade filer samtidigt så att du sparar tid</translation>
 <translation id="2147151613919729065">Stäng alla gästfönster för att rensa gästlägets historik.</translation>
+<translation id="2147218225094845757">Dölj sidopanel</translation>
 <translation id="2148219725039824548">Det gick inte att montera den delade resursen. Den angivna resursen hittades inte i nätverket.</translation>
 <translation id="2148756636027685713">Formateringen är klar</translation>
 <translation id="2148892889047469596">Casta fliken</translation>
@@ -3952,6 +3954,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillåt alltid JavaScript på <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Visa sidopanel</translation>
 <translation id="5278823018825269962">Status-id</translation>
 <translation id="5280064835262749532">Uppdatera användaruppgifterna för <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Rensa cookies och webbplatsdata när du stänger alla fönster</translation>

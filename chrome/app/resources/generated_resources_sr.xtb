@@ -670,6 +670,7 @@
 <translation id="1706625117072057435">Нивои зумирања</translation>
 <translation id="1708338024780164500">(Неактивно)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ИД: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Експерментални прегледач! Можете да изгубите податке или угрозите приватност или безбедност. Пријавите проблеме преко опције: Помоћ &gt; „Пријавите проблем…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Основна)</translation>
 <translation id="1709217939274742847">Одаберите тикет који ћете користити за потврду идентитета. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Дељење није успело</translation>
@@ -1087,6 +1088,7 @@
 <translation id="2144557304298909478">Програмирање Android апликација за Linux</translation>
 <translation id="2146263598007866206">Сајтови могу аутоматски да преузимају сродне фајлове заједно да би вам штедели време</translation>
 <translation id="2147151613919729065">Да бисте обрисали историју режима госта, затворите све прозоре режима госта.</translation>
+<translation id="2147218225094845757">Сакриј бочну таблу</translation>
 <translation id="2148219725039824548">Грешка при учитавању дељене датотеке. Наведена дељена датотека није пронађена на мрежи.</translation>
 <translation id="2148756636027685713">Форматирање је завршено</translation>
 <translation id="2148892889047469596">Пребаците картицу</translation>
@@ -3935,6 +3937,7 @@
 <translation id="5269977353971873915">Штампање није успело</translation>
 <translation id="5275352920323889391">Пас</translation>
 <translation id="527605982717517565">Увек дозволи JavaScript на сајту <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Прикажи бочну таблу</translation>
 <translation id="5278823018825269962">ИД статуса</translation>
 <translation id="5280064835262749532">Ажурирајте акредитиве за: <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Бришите колачиће и податке о сајтовима када затворите све прозоре</translation>

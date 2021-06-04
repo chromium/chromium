@@ -673,6 +673,7 @@
 <translation id="1706625117072057435">Մասշտաբավորման մակարդակներ</translation>
 <translation id="1708338024780164500">(Անգործուն)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID` <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Փորձնական դիտարկիչ։ Ձեր տվյալները, գաղտնիությունն ու անվտանգությունը կարող են վտանգված լինել։ Խնդիրների մասին կարող եք հաղորդել՝ սեղմելով Օգնություն &gt; «Հաղորդել խնդրի մասին»։</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (օրիգինալ)</translation>
 <translation id="1709217939274742847">Ընտրեք տոմս՝ նույնականացման համար օգտագործելու համար: <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Սխալ առաջացավ</translation>
@@ -1090,6 +1091,7 @@
 <translation id="2144557304298909478">Android-ի համար հավելվածների մշակում Լինուքսում</translation>
 <translation id="2146263598007866206">Կայքերը կարող են առնչվող ֆայլերն ավտոմատ միասին ներբեռնել՝ ձեր ժամանակը խնայելու համար</translation>
 <translation id="2147151613919729065">Հյուրի ռեժիմի պատմությունը ջնջելու համար փակեք այդ ռեժիմում բացված բոլոր պատուհանները։</translation>
+<translation id="2147218225094845757">Թաքցնել կողային վահանակը</translation>
 <translation id="2148219725039824548">Ընդհանուր միացման սխալ կա։ Նշված սարքը չի գտնվել ցանցում։</translation>
 <translation id="2148756636027685713">Ձևաչափումն ավարտված է</translation>
 <translation id="2148892889047469596">Ներդիրի հեռարձակում</translation>
@@ -3938,6 +3940,7 @@
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
 <translation id="5275352920323889391">Շուն</translation>
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
+<translation id="5277127016695466621">Ցուցադրել կողային վահանակը</translation>
 <translation id="5278823018825269962">Կարգավիճակի նույնացուցիչ</translation>
 <translation id="5280064835262749532">Թարմացրեք <ph name="SHARE_PATH" />-ի տվյալները</translation>
 <translation id="5280243692621919988">Բոլոր պատուհանները փակելիս մաքրել քուքիները և կայքերի տվյալները</translation>

@@ -681,6 +681,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1706625117072057435">Nivoi zumiranja</translation>
 <translation id="1708338024780164500">(Neaktivan)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Eksperimentalni preglednik! Moguć je gubitak podataka ili ugrožavanje privatnosti ili sigurnosti. Prijavite probleme u odjeljku: Pomoć &gt; "Prijavite problem...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1709217939274742847">Odaberite tiket za autentifikaciju. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Nije moguće dijeliti</translation>
@@ -1099,6 +1100,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2144557304298909478">Razvoj Android aplikacija na Linuxu</translation>
 <translation id="2146263598007866206">Web lokacije mogu automatski zajedno preuzimati srodne fajlove radi uštede na vremenu</translation>
 <translation id="2147151613919729065">Da obrišete historiju Načina rada za gosta, zatvorite sve prozore gosta.</translation>
+<translation id="2147218225094845757">Sakrivanje bočne ploče</translation>
 <translation id="2148219725039824548">Greška prilikom aktiviranja dijeljenog sadržaja. Navedeni dijeljeni sadržaj nije pronađen na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Emitiraj karticu</translation>
@@ -3950,6 +3952,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5269977353971873915">Štampanje nije uspjelo</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvijek omogući JavaScript na web lokaciji <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Prikaz bočne ploče</translation>
 <translation id="5278823018825269962">ID statusa</translation>
 <translation id="5280064835262749532">Ažurirajte akreditive za <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Obriši kolačiće i podatke o web lokaciji kada se svi prozori zatvore</translation>

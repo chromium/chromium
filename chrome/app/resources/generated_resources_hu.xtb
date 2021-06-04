@@ -682,6 +682,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1706625117072057435">Nagyítási/kicsinyítési szintek</translation>
 <translation id="1708338024780164500">(Inaktív)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (azonosító: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Kísérleti böngésző! Adatvesztés, illetve adatvédelmi vagy biztonsági probléma léphet fel. A hibákat a Súgó „Probléma bejelentése...” pontjában jelentheti be.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> képpont (natív)</translation>
 <translation id="1709217939274742847">Válassza ki a hitelesítéshez használni kívánt jegyet. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="1709972045049031556">Sikertelen megosztás</translation>
@@ -1099,6 +1100,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2144557304298909478">Android-alkalmazás fejlesztése Linuxra</translation>
 <translation id="2146263598007866206">Előfordulhat, hogy a webhelyek automatikusan együtt töltik le a kapcsolódó fájlokat, hogy időt takarítsanak meg Önnek</translation>
 <translation id="2147151613919729065">A vendég mód előzményeinek törléséhez zárja be a vendég módban megnyitott összes ablakot.</translation>
+<translation id="2147218225094845757">Oldalsó panel elrejtése</translation>
 <translation id="2148219725039824548">Hiba történt a megosztott tároló csatlakoztatása során. A megadott megosztott tároló nem található a hálózaton.</translation>
 <translation id="2148756636027685713">A formázás elkészült</translation>
 <translation id="2148892889047469596">Lap átküldése</translation>
@@ -3949,6 +3951,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5269977353971873915">A nyomtatás nem sikerült</translation>
 <translation id="5275352920323889391">Kutya</translation>
 <translation id="527605982717517565">Mindig engedélyezze a JavaScriptet itt: <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Oldalsó panel megjelenítése</translation>
 <translation id="5278823018825269962">Állapotazonosító</translation>
 <translation id="5280064835262749532">A(z) <ph name="SHARE_PATH" /> hitelesítési adatainak frissítése</translation>
 <translation id="5280243692621919988">A cookie-k és webhelyadatok törlése az összes ablak bezárásakor</translation>

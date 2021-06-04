@@ -670,6 +670,7 @@
 <translation id="1706625117072057435">Nivoi zumiranja</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Ekspermentalni pregledač! Možete da izgubite podatke ili ugrozite privatnost ili bezbednost. Prijavite probleme preko opcije: Pomoć &gt; „Prijavite problem…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Osnovna)</translation>
 <translation id="1709217939274742847">Odaberite tiket koji ćete koristiti za potvrdu identiteta. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Deljenje nije uspelo</translation>
@@ -1087,6 +1088,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2144557304298909478">Programiranje Android aplikacija za Linux</translation>
 <translation id="2146263598007866206">Sajtovi mogu automatski da preuzimaju srodne fajlove zajedno da bi vam štedeli vreme</translation>
 <translation id="2147151613919729065">Da biste obrisali istoriju režima gosta, zatvorite sve prozore režima gosta.</translation>
+<translation id="2147218225094845757">Sakrij bočnu tablu</translation>
 <translation id="2148219725039824548">Greška pri učitavanju deljene datoteke. Navedena deljena datoteka nije pronađena na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
@@ -3935,6 +3937,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5269977353971873915">Štampanje nije uspelo</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvek dozvoli JavaScript na sajtu <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Prikaži bočnu tablu</translation>
 <translation id="5278823018825269962">ID statusa</translation>
 <translation id="5280064835262749532">Ažurirajte akreditive za: <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Brišite kolačiće i podatke o sajtovima kada zatvorite sve prozore</translation>

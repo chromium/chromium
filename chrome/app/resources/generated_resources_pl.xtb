@@ -673,6 +673,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1706625117072057435">Poziomy powiększenia</translation>
 <translation id="1708338024780164500">(Nieaktywne)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (identyfikator: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Uwaga: to jest przeglądarka eksperymentalna. Może dojść do utraty danych lub naruszenia prywatności i bezpieczeństwa. Jeśli pojawią się problemy, zgłoś je, klikając Pomoc &gt; „Zgłoś problem…”.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (natywna)</translation>
 <translation id="1709217939274742847">Wybierz zgłoszenie, które ma być używane do uwierzytelniania. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Nie udało się udostępnić</translation>
@@ -1086,6 +1087,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2144557304298909478">Programowanie aplikacji Linux na Androida</translation>
 <translation id="2146263598007866206">Strony mogą automatycznie pobierać powiązane pliki, by zaoszczędzić Twój czas</translation>
 <translation id="2147151613919729065">Aby wyczyścić historię trybu gościa, zamknij wszystkie okna tego trybu.</translation>
+<translation id="2147218225094845757">Ukryj panel boczny</translation>
 <translation id="2148219725039824548">Błąd podczas podłączania udziału. Udziału nie znaleziono w sieci.</translation>
 <translation id="2148756636027685713">Formatowanie zostało zakończone.</translation>
 <translation id="2148892889047469596">Przesyłaj kartę</translation>
@@ -3933,6 +3935,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5269977353971873915">Niepowodzenie drukowania</translation>
 <translation id="5275352920323889391">Pies</translation>
 <translation id="527605982717517565">Zawsze zezwalaj na wykonywanie kodu JavaScript w witrynie <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Pokaż panel boczny</translation>
 <translation id="5278823018825269962">Identyfikator stanu</translation>
 <translation id="5280064835262749532">Zaktualizuj dane logowania do <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Wyczyść pliki cookie i dane stron w momencie zamknięcia wszystkich okien</translation>

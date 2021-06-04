@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">ระดับการซูม</translation>
 <translation id="1708338024780164500">(ไม่ใช้งาน)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">เบราว์เซอร์ทดลอง! คุณอาจสูญเสียข้อมูลหรือถูกละเมิดความเป็นส่วนตัวหรือความปลอดภัย โปรดรายงานปัญหาโดยไปที่ความช่วยเหลือ &gt; "รายงานปัญหา..."</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ดั้งเดิม)</translation>
 <translation id="1709217939274742847">เลือกตั๋วที่จะใช้สำหรับการตรวจสอบสิทธิ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">แชร์ไม่สำเร็จ</translation>
@@ -1088,6 +1089,7 @@
 <translation id="2144557304298909478">การพัฒนาแอป Android ใน Linux</translation>
 <translation id="2146263598007866206">เว็บไซต์อาจดาวน์โหลดไฟล์ที่เกี่ยวข้องพร้อมกันโดยอัตโนมัติเพื่อช่วยคุณประหยัดเวลา</translation>
 <translation id="2147151613919729065">หากต้องการล้างประวัติการเข้าชมในโหมดผู้มาเยือน ให้ปิดหน้าต่างผู้มาเยือนทั้งหมด</translation>
+<translation id="2147218225094845757">ซ่อนแผงด้านข้าง</translation>
 <translation id="2148219725039824548">เกิดข้อผิดพลาดขณะต่อเชื่อมพื้นที่แชร์ ไม่พบพื้นที่แชร์ที่ระบุในเครือข่าย</translation>
 <translation id="2148756636027685713">ฟอร์แมตเสร็จแล้ว</translation>
 <translation id="2148892889047469596">แคสต์แท็บ</translation>
@@ -3936,6 +3938,7 @@
 <translation id="5269977353971873915">การพิมพ์ล้มเหลว</translation>
 <translation id="5275352920323889391">สุนัข</translation>
 <translation id="527605982717517565">อนุญาตให้เรียกใช้ JavaScript บน <ph name="HOST" /> เสมอ</translation>
+<translation id="5277127016695466621">แสดงแผงด้านข้าง</translation>
 <translation id="5278823018825269962">รหัสสถานะ</translation>
 <translation id="5280064835262749532">อัปเดตข้อมูลเข้าสู่ระบบสำหรับ <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">ล้างคุกกี้และข้อมูลเว็บไซต์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>

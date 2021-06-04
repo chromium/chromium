@@ -668,6 +668,7 @@
 <translation id="1706625117072057435">Масштабтау деңгейлері</translation>
 <translation id="1708338024780164500">(Белсенді емес)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ИДЕНТИФИКАТОР: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Эксперименттік браузер! Деректер жоғалуы немесе құпиялылық пен қауіпсіздікке қатер төнуі мүмкін. Кез келген ақауды "Анықтама &gt; Ақау туралы хабарлау" тармағы арқылы көрсетіңіз.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (жергілікті)</translation>
 <translation id="1709217939274742847">Аутентификация үшін қолдануға арналған билетті таңдаңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Бөлісу мүмкін емес</translation>
@@ -1085,6 +1086,7 @@
 <translation id="2144557304298909478">Linux жүйесінде Android қолданбаларын әзірлеу</translation>
 <translation id="2146263598007866206">Сайттар уақыт үнемдеу үшін ұқсас файлдарды автоматты түрде жүктеп ала алады.</translation>
 <translation id="2147151613919729065">Қонақ режимі тарихын тазалау үшін осы режимдегі барлық терезені жабыңыз.</translation>
+<translation id="2147218225094845757">Бүйірлік панельді жасыру</translation>
 <translation id="2148219725039824548">Ортақ файлды бөлісу кезінде қате шықты. Көрсетілген ортақ файл желіден табылмады.</translation>
 <translation id="2148756636027685713">Пішімдеу аяқталды</translation>
 <translation id="2148892889047469596">Қойынды трансляциясы</translation>
@@ -3932,6 +3934,7 @@
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
+<translation id="5277127016695466621">Бүйірлік панельді көрсету</translation>
 <translation id="5278823018825269962">Күй идентификаторы</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> тіркелу деректерін жаңартыңыз</translation>
 <translation id="5280243692621919988">Терезелердің барлығы жабылғанда, cookie файлдары мен сайт деректерін өшіріп отыру</translation>

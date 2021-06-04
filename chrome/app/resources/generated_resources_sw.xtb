@@ -679,6 +679,7 @@
 <translation id="1706625117072057435">Viwango vya kukuza</translation>
 <translation id="1708338024780164500">(Sio amilifu)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (Kitambulisho: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Kivinjari kinachofanyiwa majaribio! Huenda ukapoteza data au kuathiri faragha au usalama. Tafadhali ripoti matatizo kupitia sehemu ya: Usaidizi &gt; "Ripoti tatizo...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asili)</translation>
 <translation id="1709217939274742847">Chagua tiketi ili uitumie kwenye uthibitishaji. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Imeshindwa kushiriki</translation>
@@ -1096,6 +1097,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2144557304298909478">Usanidi wa programu ya Android kwenye Linux</translation>
 <translation id="2146263598007866206">Tovuti zinaweza kupakua kiotomatiki faili zinazohusiana kwa pamoja ili kuokoa muda wako</translation>
 <translation id="2147151613919729065">Ili ufute historia ya hali ya matumizi ya Wageni, funga madirisha yote ya Wageni.</translation>
+<translation id="2147218225094845757">Ficha kidirisha cha pembeni</translation>
 <translation id="2148219725039824548">Hitilafu imetokea wakati wa kupachika faili ya kushiriki. Imeshindwa kupata faili iliyobainishwa ya kushiriki katika mtandao.</translation>
 <translation id="2148756636027685713">Uumbizaji umekamilika</translation>
 <translation id="2148892889047469596">Tuma kichupo</translation>
@@ -3946,6 +3948,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
 <translation id="5275352920323889391">Mbwa</translation>
 <translation id="527605982717517565">Ruhusu <ph name="HOST" /> iendeshe JavaScript kila wakati</translation>
+<translation id="5277127016695466621">Onyesha kidirisha cha pembeni</translation>
 <translation id="5278823018825269962">Kitambulisho cha Hali</translation>
 <translation id="5280064835262749532">Sasisha kitambulisho cha <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Futa vidakuzi na data ya tovuti unapofunga madirisha yote</translation>

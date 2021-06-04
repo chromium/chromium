@@ -682,6 +682,7 @@
 <translation id="1706625117072057435">Ченөлчөм деңгээлдери</translation>
 <translation id="1708338024780164500">(Жигерсиз)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Бул сынамык серепчи. Дайын-даректер жоголуп, же болбосо, купуялыгыңызга же коопсуздугуңузга коркунуч жаралышы мүмкүн. Көйгөйлөрдү кабарлоо үчүн Жардам &gt; "Көйгөйдү кабарлоо..." бөлүмүнө өтүңүз.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> х <ph name="HEIGHT" /> (Түпнуска)</translation>
 <translation id="1709217939274742847">Аутентификациядан өтүү үчүн билет тандоо. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Бөлүшүү мүмкүн эмес</translation>
@@ -1100,6 +1101,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2144557304298909478">Linux Android колдонмосун иштеп чыгуу</translation>
 <translation id="2146263598007866206">Сайттар убактыңызды үнөмдөө үчүн окшош файлдарды автоматтык түрдө жүктөп алышы мүмкүн</translation>
 <translation id="2147151613919729065">Конок режиминин таржымалын тазалоо үчүн бардык Конок терезелерин жабыңыз.</translation>
+<translation id="2147218225094845757">Капталдагы тилкени жашыруу</translation>
 <translation id="2148219725039824548">Түзмөктү кошууда ката кетти. Белгиленген түзмөк тармакта табылган жок.</translation>
 <translation id="2148756636027685713">Форматталып</translation>
 <translation id="2148892889047469596">Тышкы экранга чыгаруу өтмөгү</translation>
@@ -3952,6 +3954,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5269977353971873915">Басылып чыкпай калды</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ичинде JavaScript'ке ар дайым уруксат берилсин</translation>
+<translation id="5277127016695466621">Капталдагы тилкени көрсөтүү</translation>
 <translation id="5278823018825269962">Абалынын идентификатору</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> үчүн эсептик дайындарды жаңыртуу</translation>
 <translation id="5280243692621919988">Бардык терезелер жабылганда, cookie файлдары менен сайттын маалыматын өчүрүү</translation>

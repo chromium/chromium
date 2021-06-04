@@ -683,6 +683,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1706625117072057435">Mga antas ng pag-zoom</translation>
 <translation id="1708338024780164500">(Hindi aktibo)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Pang-eksperimentong browser! Posibleng mawalan ng data o makompromiso ang privacy o seguridad. Pakiulat ang mga isyu sa: Tulong &gt; "Mag-ulat ng isyu...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1709217939274742847">Pumili ng ticket para magamit sa pag-authenticate. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Hindi maibahagi</translation>
@@ -1101,6 +1102,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2144557304298909478">Pag-develop ng Android app sa Linux</translation>
 <translation id="2146263598007866206">Posibleng awtomatikong i-download ng mga site ang magkakaugnay na file nang magkakasama para makatipid ka sa oras</translation>
 <translation id="2147151613919729065">Para i-clear ang history ng Guest mode, isara ang lahat ng Guest window.</translation>
+<translation id="2147218225094845757">Itago ang panel sa gilid</translation>
 <translation id="2148219725039824548">Nagka-error sa pag-mount ng share. Hindi nakita ang isinaad na share sa network.</translation>
 <translation id="2148756636027685713">Tapos na ang pag-format</translation>
 <translation id="2148892889047469596">I-cast ang tab</translation>
@@ -3953,6 +3955,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
 <translation id="5275352920323889391">Aso</translation>
 <translation id="527605982717517565">Palaging hayaan ang JavaScript sa <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Ipakita ang panel sa gilid</translation>
 <translation id="5278823018825269962">Status Id</translation>
 <translation id="5280064835262749532">I-update ang mga kredensyal para sa <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">I-clear ang cookies at data ng site kapag isinara mo ang lahat ng window</translation>

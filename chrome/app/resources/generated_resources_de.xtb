@@ -668,6 +668,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1706625117072057435">Zoomstufen</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Dies ist ein experimenteller Browser. Es besteht die Gefahr, dass Sie Daten verlieren oder Ihre Privatsphäre oder Sicherheit kompromittiert wird. Melden Sie Probleme über „Hilfe“ &gt; „Problem melden…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1709217939274742847">Wählen Sie ein Ticket für die Authentifizierung aus. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Teilen nicht möglich</translation>
@@ -1085,6 +1086,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2144557304298909478">Android-App-Entwicklung in Linux</translation>
 <translation id="2146263598007866206">Websites laden zusammengehörende Dateien möglicherweise automatisch gemeinsam herunter, um Ihnen Zeit zu sparen</translation>
 <translation id="2147151613919729065">Wenn Sie den Verlauf des Gastmodus löschen möchten, müssen Sie zuerst alle Fenster schließen, die darin geöffnet sind.</translation>
+<translation id="2147218225094845757">Seitenleiste ausblenden</translation>
 <translation id="2148219725039824548">Fehler beim Bereitstellen der Freigabe. Die angegebene Freigabe wurde im Netzwerk nicht gefunden.</translation>
 <translation id="2148756636027685713">Formatierung beendet</translation>
 <translation id="2148892889047469596">Tab streamen</translation>
@@ -3931,6 +3933,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">JavaScript auf <ph name="HOST" /> immer zulassen</translation>
+<translation id="5277127016695466621">Seitenleiste einblenden</translation>
 <translation id="5278823018825269962">Status-ID</translation>
 <translation id="5280064835262749532">Anmeldedaten für <ph name="SHARE_PATH" /> aktualisieren</translation>
 <translation id="5280243692621919988">Cookies und Websitedaten löschen, wenn alle Fenster geschlossen werden</translation>

@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">Níveis de zoom</translation>
 <translation id="1708338024780164500">(Inativa)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Navegador experimental! Pode perder dados ou comprometer a privacidade ou a segurança. Comunique problemas em Ajuda &gt; "Comunicar um problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolha uma permissão para utilizar para a autenticação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Não é possível partilhar</translation>
@@ -1088,6 +1089,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2144557304298909478">Programação de apps Android no Linux</translation>
 <translation id="2146263598007866206">Os sites podem transferir automaticamente ficheiros relacionados em simultâneo para poupar tempo.</translation>
 <translation id="2147151613919729065">Para limpar o histórico do Modo convidado, feche todas as janelas de convidado.</translation>
+<translation id="2147218225094845757">Oculte o painel lateral</translation>
 <translation id="2148219725039824548">Erro ao montar a partilha. A partilha especificada não foi encontrada na rede.</translation>
 <translation id="2148756636027685713">Formatação concluída</translation>
 <translation id="2148892889047469596">Transmitir separador</translation>
@@ -3937,6 +3939,7 @@ Pretende pará-lo?</translation>
 <translation id="5269977353971873915">Falha de Impressão</translation>
 <translation id="5275352920323889391">Cão</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript em <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostre o painel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
 <translation id="5280064835262749532">Atualize as credenciais de <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Limpar cookies e dados de sites quando fechar todas as janelas</translation>

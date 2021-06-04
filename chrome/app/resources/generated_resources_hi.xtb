@@ -683,6 +683,7 @@
 <translation id="1706625117072057435">ज़ूम स्तर</translation>
 <translation id="1708338024780164500">(प्रयोग में नहीं)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (आईडी: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">एक्सपेरिमेंटल ब्राउज़र! डेटा खो सकता है. इसके अलावा, निजता या सुरक्षा को खतरा हो सकता है. इससे जुड़ी किसी भी समस्या की शिकायत करने के लिए, कृपया यहां जाएं: सहायता &gt; "समस्या की शिकायत करें...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (स्थानीय)</translation>
 <translation id="1709217939274742847">पुष्टि करने के लिए टिकट चुनें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">फ़ाइल शेयर नहीं की जा सकती</translation>
@@ -1101,6 +1102,7 @@
 <translation id="2144557304298909478">Linux के लिए Android ऐप्लिकेशन बनाना</translation>
 <translation id="2146263598007866206">साइटें समय बचाने के लिए, संबंधित फ़ाइलों को अपने-आप डाउनलोड कर सकती हैं</translation>
 <translation id="2147151613919729065">मेहमान मोड का इतिहास मिटाने के लिए, मेहमान मोड वाली सभी विंडो बंद करें.</translation>
+<translation id="2147218225094845757">साइड पैनल छिपाएं</translation>
 <translation id="2148219725039824548">शेयर माउंट करने में गड़बड़ी. बताया गया शेयर नेटवर्क पर नहीं मिला.</translation>
 <translation id="2148756636027685713">स्वरूपण खत्म हो गया</translation>
 <translation id="2148892889047469596">टैब कास्ट करें</translation>
@@ -3951,6 +3953,7 @@
 <translation id="5269977353971873915">प्रिंट विफल</translation>
 <translation id="5275352920323889391">श्‍वान</translation>
 <translation id="527605982717517565"><ph name="HOST" /> पर JavaScript को हमेशा अनुमति दें</translation>
+<translation id="5277127016695466621">साइड पैनल दिखाएं</translation>
 <translation id="5278823018825269962">स्थिति का आईडी</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> के क्रेडेंशियल अपडेट करें</translation>
 <translation id="5280243692621919988">सभी विंडो बंद करने के बाद कुकी और साइट का डेटा मिटाएं</translation>

@@ -681,6 +681,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1706625117072057435">Amaleveli okusondeza</translation>
 <translation id="1708338024780164500">(Akusebenzi)</translation>
 <translation id="1708713382908678956">I-<ph name="NAME_PH" /> (I-ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">I-browser yokuhlola! Ingase ilahlekelwe idatha noma ifake engcupheni ubumfihlo nokuvikeleka. Sicela ubike izinkinga ngokuthi: Usizo &gt; "Bika inkinga..."</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Okomdabu)</translation>
 <translation id="1709217939274742847">Khetha ithikithi ozolisebenzisela ukufakazela ubuqiniso. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Ayikwazi ukwaba</translation>
@@ -1099,6 +1100,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2144557304298909478">Ukuthuthukiswa kohlelo lokusebenza le-Linux Android</translation>
 <translation id="2146263598007866206">Amasayithi angalanda ngokuzenzakalela amafayela ahambisanayo ndawonye ukuze akulondolozele isikhathi</translation>
 <translation id="2147151613919729065">Ukuze usule umlando Wemodi Yesivakashi, vala wonke amawindi Wesivakashi.</translation>
+<translation id="2147218225094845757">Fihla iphaneli eseceleni</translation>
 <translation id="2148219725039824548">Iphutha ukukhweza ukwabelana. Ukwabelane okucacisiwe akutholakele kunethiwekhi.</translation>
 <translation id="2148756636027685713">Ukufometha kuqediwe</translation>
 <translation id="2148892889047469596">Ithebhu yokusakaza</translation>
@@ -3950,6 +3952,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="5269977353971873915">Ukuphrinta kuhlulekile</translation>
 <translation id="5275352920323889391">Inja</translation>
 <translation id="527605982717517565">Hlala uvumela i-JavaScript ku-<ph name="HOST" /></translation>
+<translation id="5277127016695466621">Bonisa iphaneli eseceleni</translation>
 <translation id="5278823018825269962">I-Id Yesimo</translation>
 <translation id="5280064835262749532">Buyekeza ukuqinisekisa kwe-<ph name="SHARE_PATH" />.</translation>
 <translation id="5280243692621919988">Sula idatha yamakhukhi neyesayithi lapho uvala wonke amawindi</translation>

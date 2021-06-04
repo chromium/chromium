@@ -681,6 +681,7 @@
 <translation id="1706625117072057435">Zoomaustasot</translation>
 <translation id="1708338024780164500">(Ei-aktiivinen)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (tunnus: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Kokeellinen selain. Dataa saatetaan menettää tai yksityisyys tai turvallisuus voivat vaarantua. Ilmoita ongelmista kohdassa Ohje &gt; "Ilmoita ongelmasta…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivitarkkuus)</translation>
 <translation id="1709217939274742847">Valitse todennukseen käytettävä tukipyyntö. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Jakaminen ei onnistu</translation>
@@ -1099,6 +1100,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2144557304298909478">Linuxin Android-sovellusten kehittäminen</translation>
 <translation id="2146263598007866206">Sivustot voivat ladata toisiinsa liittyviä tiedostoja automaattisesti yhdessä säästääkseen aikaa</translation>
 <translation id="2147151613919729065">Voit tyhjentää vierastilan historian sulkemalla kaikki vierasikkunat.</translation>
+<translation id="2147218225094845757">Piilota sivupaneeli</translation>
 <translation id="2148219725039824548">Virhe jaon käyttöönotossa. Kyseistä jakoa ei löytynyt verkosta.</translation>
 <translation id="2148756636027685713">Alustus valmis</translation>
 <translation id="2148892889047469596">Suoratoista välilehti</translation>
@@ -3948,6 +3950,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5269977353971873915">Tulostus epäonnistui</translation>
 <translation id="5275352920323889391">Koira</translation>
 <translation id="527605982717517565">Salli aina JavaScript sivustossa <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Näytä sivupaneeli</translation>
 <translation id="5278823018825269962">Tilatunnus</translation>
 <translation id="5280064835262749532">Päivitä kirjautumistiedot: <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Tyhjennä evästeet ja sivustodata, kun kaikki ikkunat suljetaan</translation>

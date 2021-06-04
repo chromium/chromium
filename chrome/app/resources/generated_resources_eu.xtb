@@ -671,6 +671,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1706625117072057435">Zoom-mailak</translation>
 <translation id="1708338024780164500">(Inaktibo)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (IDa: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Probako arakatzailea. Baliteke datuak galtzea, edo pribatutasuna edo segurtasuna arriskuan jartzea. Arazoren bat aurkituz gero, jakinaraz ezazu hemen: Laguntza &gt; "Eman arazo baten berri…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (natiboa)</translation>
 <translation id="1709217939274742847">Aukeratu autentifikazioan erabiltzeko zerbitzu-eskaera bat. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Ezin da partekatu</translation>
@@ -1088,6 +1089,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2144557304298909478">Linux-en Android-erako aplikazioen garapena</translation>
 <translation id="2146263598007866206">Baliteke webguneek erlazionatutako fitxategiak automatikoki deskargatzea, denbora aurrezteko</translation>
 <translation id="2147151613919729065">Gonbidatu moduko historia garbitzeko, itxi gonbidatu moduko leiho guztiak.</translation>
+<translation id="2147218225094845757">Ezkutatu alboko panela</translation>
 <translation id="2148219725039824548">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. Zehaztutako fitxategiak partekatzeko biltegia ez da aurkitu sarean.</translation>
 <translation id="2148756636027685713">Formateatzen amaitu da</translation>
 <translation id="2148892889047469596">Igorri fitxa</translation>
@@ -3935,6 +3937,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5269977353971873915">Inprimatzeak huts egin du</translation>
 <translation id="5275352920323889391">Txakurra</translation>
 <translation id="527605982717517565">Eman beti JavaScript <ph name="HOST" /> ostalarian erabiltzeko baimena</translation>
+<translation id="5277127016695466621">Erakutsi alboko panela</translation>
 <translation id="5278823018825269962">Egoeraren IDa</translation>
 <translation id="5280064835262749532">Eguneratu hemengo kredentzialak: <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Garbitu cookieak eta webguneetako datuak leiho guztiak ixten dituzunean</translation>
@@ -4861,7 +4864,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> ezin izan da konfiguratu automatikoki. Zehaztu inprimagailuaren xehetasun aurreratuak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="630292539633944562">Informazio pertsonalari buruzko iradokizunak</translation>
 <translation id="6305607932814307878">Gidalerro orokorra:</translation>
-<translation id="6307990684951724544">Sistema lanpetuta dago</translation>
+<translation id="6307990684951724544">Sistema okupatuta dago</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> luzapenaren bidezko saio-hasiera</translation>
 <translation id="6308937455967653460">Gorde &amp;esteka honela…</translation>
 <translation id="6309443618838462258">Administratzaileak ez du onartzen idazketa-metodo hau</translation>

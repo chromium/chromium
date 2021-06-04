@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">Livelli di zoom</translation>
 <translation id="1708338024780164500">(Non attiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Browser sperimentale. Potresti perdere dati oppure compromettere la sicurezza o la privacy. Segnala eventuali problemi selezionando Guida &gt; "Segnala un problema".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (formato nativo)</translation>
 <translation id="1709217939274742847">Scegli una richiesta da usare per l'autenticazione. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Impossibile condividere</translation>
@@ -1088,6 +1089,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2144557304298909478">Sviluppo di app Android in Linux</translation>
 <translation id="2146263598007866206">I siti potrebbero scaricare automaticamente file correlati per aiutarti a risparmiare tempo</translation>
 <translation id="2147151613919729065">Per cancellare la cronologia della modalità Ospite, chiudi tutte le finestre Ospite.</translation>
+<translation id="2147218225094845757">Nascondi riquadro laterale</translation>
 <translation id="2148219725039824548">Errore durante il montaggio della condivisione. Impossibile trovare la condivisione specificata sulla rete.</translation>
 <translation id="2148756636027685713">Formattazione terminata</translation>
 <translation id="2148892889047469596">Trasmetti scheda</translation>
@@ -3936,6 +3938,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5275352920323889391">Cane</translation>
 <translation id="527605982717517565">Consenti sempre JavaScript su <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostra riquadro laterale</translation>
 <translation id="5278823018825269962">ID stato</translation>
 <translation id="5280064835262749532">Aggiorna le credenziali relative a <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Cancella cookie e dati dei siti alla chiusura di tutte le finestre</translation>

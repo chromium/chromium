@@ -683,6 +683,7 @@
 <translation id="1706625117072057435">Zoomniveauer</translation>
 <translation id="1708338024780164500">(inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (id: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Eksperimentel browser! Data kan gå tabt, og beskyttelsen af personlige oplysninger og sikkerheden kan blive kompromitteret. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Oprindelig)</translation>
 <translation id="1709217939274742847">Vælg en billet, som du vil bruge til godkendelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Delingen lykkedes ikke</translation>
@@ -1101,6 +1102,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2144557304298909478">Udvikling af Android-apps i Linux</translation>
 <translation id="2146263598007866206">Websites kan automatisk downloade relaterede filer sammen for at spare tid</translation>
 <translation id="2147151613919729065">Du kan rydde historikken for Gæstetilstand ved at lukke alle gæstevinduer.</translation>
+<translation id="2147218225094845757">Skjul sidepanel</translation>
 <translation id="2148219725039824548">Der opstod en fejl ved anvendelse af deling. Den angivne deling blev ikke fundet på netværket.</translation>
 <translation id="2148756636027685713">Formatering er fuldført</translation>
 <translation id="2148892889047469596">Cast fanen</translation>
@@ -3953,6 +3955,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillad altid JavaScript på <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Vis sidepanel</translation>
 <translation id="5278823018825269962">Status-id</translation>
 <translation id="5280064835262749532">Opdater loginoplysninger for <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Ryd cookies og websitedata, når du lukker alle vinduer</translation>

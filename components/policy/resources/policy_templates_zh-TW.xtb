@@ -3846,6 +3846,9 @@
 
       如果不設定這項政策，使用者則可依照個人偏好變更瀏覽器的主題。</translation>
 <translation id="6195802366906945965">決定是否使用內建憑證驗證器來驗證伺服器憑證</translation>
+<translation id="6198947200418556248">這項政策已淘汰；如果仍需要舊版 Cookie 行為，請改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。這項政策可以將所有 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站的網址是否相同時，略過網路通訊協定的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
+
+          如果不設定這項政策，系統對 Cookie 採取的預設 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為會取決於使用者對於 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 和 <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 功能的個人配置。使用者可以透過公開實驗，或是分別啟用或停用 <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 或 <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> 旗標，來設定這些功能的個人配置。</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>

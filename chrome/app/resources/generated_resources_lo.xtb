@@ -680,6 +680,7 @@
 <translation id="1706625117072057435">ລະດັບການຊູມ</translation>
 <translation id="1708338024780164500">(ບໍ່ເຮັດວຽກ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">ໂປຣແກຣມທ່ອງເວັບທົດລອງ! ອາດເສຍຂໍ້ມູນ ຫຼື ຖືກລະເມີດຄວາມເປັນສ່ວນຕົວ ຫຼື ຄວາມປອດໄພ. ກະລຸນາລາຍງານບັນຫາຕ່າງໆດ້ວຍ: ຊ່ວຍເຫຼືອ &gt; "ລາຍງານບັນຫາ...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
 <translation id="1709217939274742847">ເລືອກປີ້ເພື່ອໃຊ້ການກວດສອບຄວາມຖືກຕ້ອງ <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">ບໍ່ສາມາດແບ່ງປັນໄດ້</translation>
@@ -1097,6 +1098,7 @@
 <translation id="2144557304298909478">ການພັດທະນາແອັບ Android ໃນ Linux</translation>
 <translation id="2146263598007866206">ເວັບໄຊອາດຈະດາວໂຫຼດໄຟລ໌ທີ່ກ່ຽວຂ້ອງຮວມກັນໂດຍອັດຕະໂນມັດເພື່ອປະຢັດເວລາໃຫ້ທ່ານ</translation>
 <translation id="2147151613919729065">ເພື່ອລຶບລ້າງປະຫວັດໃນໂໝດແຂກ, ກະລຸນາປິດໜ້າຈໍແຂກທັງໝົດ.</translation>
+<translation id="2147218225094845757">ເຊື່ອງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="2148219725039824548">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ບໍ່ພົບການແບ່ງປັນທີ່ລະບຸໄວ້ຢູ່ໃນເຄືອຂ່າຍ.</translation>
 <translation id="2148756636027685713">ການຟໍແມັດສໍາເລັດແລ້ວ</translation>
 <translation id="2148892889047469596">​ແຖບຄາສ໌ທ</translation>
@@ -3949,6 +3951,7 @@
 <translation id="5269977353971873915">ພິມບໍ່ສໍາເລັດ</translation>
 <translation id="5275352920323889391">ໝາ</translation>
 <translation id="527605982717517565">ອະ​ນຸ​ຍາດ​ JavaScript ຢູ່ເທິງ <ph name="HOST" /> ຢູ່ສະເໝີ</translation>
+<translation id="5277127016695466621">ສະແດງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5278823018825269962">ID ສະຖານະ</translation>
 <translation id="5280064835262749532">ອັບເດດຂໍ້ມູນປະຈຳຕົວສຳລັບ <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">ລຶບລ້າງຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊເມື່ອທ່ານປິດໜ້າຈໍທັງໝົດ</translation>

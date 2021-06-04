@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">Zoomniveaus</translation>
 <translation id="1708338024780164500">(Inactief)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Experimentele browser. Kan gegevens kwijtraken of je privacy of beveiliging in gevaar brengen. Meld problemen via Hulp &gt; Een probleem melden.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (native)</translation>
 <translation id="1709217939274742847">Kies een ticket dat je voor verificatie wilt gebruiken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Kan niet delen</translation>
@@ -1088,6 +1089,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2144557304298909478">Android-app-ontwikkeling voor Linux</translation>
 <translation id="2146263598007866206">Sites kunnen gerelateerde bestanden automatisch samen downloaden om tijd te besparen</translation>
 <translation id="2147151613919729065">Sluit alle gastvensters om de geschiedenis van de gastmodus te wissen.</translation>
+<translation id="2147218225094845757">Zijvenster verbergen</translation>
 <translation id="2148219725039824548">Fout bij het activeren van de fileshare. De opgegeven fileshare kan niet in het netwerk worden gevonden.</translation>
 <translation id="2148756636027685713">Formatteren voltooid</translation>
 <translation id="2148892889047469596">Tabblad casten</translation>
@@ -3933,6 +3935,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5269977353971873915">Afdrukken mislukt</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">JavaScript altijd toestaan op <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Zijvenster tonen</translation>
 <translation id="5278823018825269962">Status-ID</translation>
 <translation id="5280064835262749532">Update je inloggegevens voor <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Cookies en sitegegevens wissen als je alle vensters sluit</translation>

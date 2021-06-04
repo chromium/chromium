@@ -3860,6 +3860,9 @@
 
       如果此政策未设置，用户可根据自己的偏好更改所用浏览器的主题。</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
+<translation id="6198947200418556248">此政策已被弃用；如果您仍需设置旧版 Cookie 行为，请改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。此政策让您能够将所有 Cookie 都恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为。恢复为旧版行为会导致未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性的 Cookie 被当作“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 来处理，会撤消“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 必须附带“<ph name="ATTRIBUTE_SECURE_NAME" />”属性的要求，并会在评估两个网站是否为同一个网站时跳过架构对比。如需查看完整说明，请参阅 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
+
+          如果此政策未设置，Cookie 的默认 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为将取决于用户针对 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 功能、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 功能和 <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 功能（这些功能可通过现场试验来设置，也可通过启用或停用这些功能分别对应的 <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 标记、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 标记或 <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> 标记来设置）指定的个人配置。</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
 <translation id="6212868225782276239">系统会显示除黑名单中所列打印机之外的所有打印机。</translation>

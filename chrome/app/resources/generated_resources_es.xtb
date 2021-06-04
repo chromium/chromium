@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Navegador experimental. Es posible que se pierdan datos o que se vulnere la privacidad o la seguridad. Para informar de cualquier problema, ve a Ayuda &gt; Notificar un problema.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Selecciona el ticket que vas a usar para autenticarte. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
@@ -1088,6 +1089,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2144557304298909478">Desarrollo de aplicaciones Android en Linux</translation>
 <translation id="2146263598007866206">Los sitios podrían descargar de forma automática varios archivos relacionados a la vez para ahorrar tiempo.</translation>
 <translation id="2147151613919729065">Para borrar el historial del Modo invitados, cierra todas las ventanas de la sesión de invitados.</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="2148219725039824548">No se ha podido activar el recurso compartido. No se ha encontrado el recurso especificado en la red.</translation>
 <translation id="2148756636027685713">El proceso de formateo ha terminado.</translation>
 <translation id="2148892889047469596">Enviar pestaña</translation>
@@ -3935,6 +3937,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Permitir siempre JavaScript en <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostrar panel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
 <translation id="5280064835262749532">Actualiza las credenciales de <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Borrar cookies y datos de sitios al cerrar todas las ventanas</translation>

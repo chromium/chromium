@@ -672,6 +672,7 @@
 <translation id="1706625117072057435">Razine zumiranja</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Eksperimentalni preglednik! Može izgubiti podatke ili ugroziti privatnost ili sigurnost. Poteškoće prijavite putem odjeljka Pomoć &gt; Prijavite poteškoću...</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativno)</translation>
 <translation id="1709217939274742847">Odaberite tiket koji ćete upotrebljavati za autentifikaciju. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Dijeljenje nije moguće</translation>
@@ -1089,6 +1090,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2144557304298909478">Linuxov razvoj Android aplikacija</translation>
 <translation id="2146263598007866206">Web-lokacije mogu automatski zajedno preuzimati povezane datoteke kako bi vam uštedjele vrijeme</translation>
 <translation id="2147151613919729065">Da biste izbrisali povijest u načinu rada za goste, zatvorite sve gostujuće prozore.</translation>
+<translation id="2147218225094845757">Sakrij bočnu ploču</translation>
 <translation id="2148219725039824548">Pogreška pri učitavanju dijeljenja. Navedeno dijeljenje nije pronađeno na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je dovršeno</translation>
 <translation id="2148892889047469596">Emitiraj karticu</translation>
@@ -3938,6 +3940,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5269977353971873915">Ispis nije uspio</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvijek dopusti JavaScript na web-lokaciji <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Prikaži bočnu ploču</translation>
 <translation id="5278823018825269962">ID statusa</translation>
 <translation id="5280064835262749532">Ažurirajte vjerodajnice za <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Izbriši kolačiće i podatke web-lokacije nakon što zatvorite sve prozore</translation>

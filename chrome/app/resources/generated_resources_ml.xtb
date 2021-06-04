@@ -670,6 +670,7 @@
 <translation id="1706625117072057435">സൂം ലെവലുകൾ</translation>
 <translation id="1708338024780164500">(നിഷ്‌ക്രിയം)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ഐഡി: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">പരീക്ഷണാടിസ്ഥാനത്തിലുള്ള ബ്രൗസർ! ഡാറ്റ നഷ്ടപ്പെട്ടേക്കാം അല്ലെങ്കിൽ സ്വകാര്യതയോ സുരക്ഷയോ അപകടത്തിലായേക്കാം. സഹായം &gt; "പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക..." ഉപയോഗിച്ച് പ്രശ്‌നങ്ങൾ റിപ്പോർട്ട് ചെയ്യുക.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (പ്രാദേശികം)</translation>
 <translation id="1709217939274742847">പരിശോധിച്ചുറപ്പിക്കലിനായി ഒരു ടിക്കറ്റ് തിരഞ്ഞെടുക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">പങ്കിടാനാകുന്നില്ല</translation>
@@ -1087,6 +1088,7 @@
 <translation id="2144557304298909478">Linux Android ആപ്പ് വികസിപ്പിക്കൽ</translation>
 <translation id="2146263598007866206">നിങ്ങളുടെ സമയം ലാഭിക്കാൻ, സൈറ്റുകൾ ബന്ധപ്പെട്ട ഫയലുകൾ ഒന്നിച്ച് സ്വയമേവ ഡൗൺലോഡ് ചെയ്‌തേക്കാം</translation>
 <translation id="2147151613919729065">അതിഥി മോഡ് ചരിത്രം മായ്ക്കാൻ എല്ലാ അതിഥി വിൻഡോകളും അടയ്ക്കുക.</translation>
+<translation id="2147218225094845757">സൈഡ് പാനൽ മറയ്‌ക്കുക</translation>
 <translation id="2148219725039824548">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. നെറ്റ്‌വർക്കിൽ നിർദ്ദിഷ്‌ട പങ്കിടൽ കണ്ടെത്തിയില്ല,</translation>
 <translation id="2148756636027685713">ഫോർമാറ്റിംഗ് പൂർത്തിയായി</translation>
 <translation id="2148892889047469596">കാസ്റ്റ് ടാബ്</translation>
@@ -3934,6 +3936,7 @@
 <translation id="5269977353971873915">പ്രിന്‍റ് ചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5275352920323889391">നായ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ല്‍‌ എപ്പോഴുംJavaScript അനുവദിക്കുക</translation>
+<translation id="5277127016695466621">സൈഡ് പാനൽ കാണിക്കുക</translation>
 <translation id="5278823018825269962">സ്‌റ്റാറ്റസ് ഐഡി</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> എന്നതിനായി ക്രെഡന്‍ഷ്യലുകൾ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5280243692621919988">എല്ലാ വിൻ‌ഡോകളും‌ അടയ്‌ക്കുമ്പോൾ‌ കുക്കികളും സൈറ്റ് ഡാറ്റയും മായ്‌ക്കുക</translation>

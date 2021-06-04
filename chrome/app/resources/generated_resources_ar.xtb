@@ -675,6 +675,7 @@
 <translation id="1706625117072057435">مستويات التكبير أو التصغير</translation>
 <translation id="1708338024780164500">(غير نشطة)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (رقم التعريف: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">المتصفِّح تجريبي، ولذلك قد تفقد البيانات أو تُنتهَك خصوصيتك أو يُخترَق أمانك. يُرجى الإبلاغ عن أي مشاكل من خلال الانتقال إلى: مساعدة &gt; "الإبلاغ عن مشكلة...".</translation>
 <translation id="1709106626015023981">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأصلي)</translation>
 <translation id="1709217939274742847">اختَر تذكرة لاستخدامها في المصادقة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">تعذَّرت المشاركة</translation>
@@ -1092,6 +1093,7 @@
 <translation id="2144557304298909478">‏تطوير تطبيق متوافق مع Android لنظام التشغيل Linux</translation>
 <translation id="2146263598007866206">قد تعمل المواقع الإلكترونية على تنزيل الملفات المتشابهة معًا تلقائيًا لتوفير الوقت.</translation>
 <translation id="2147151613919729065">لمحو سجلّ "وضع الضيف"، أغلِق كل النوافذ المفتوحة في هذا الوضع.</translation>
+<translation id="2147218225094845757">إخفاء اللوحة الجانبية</translation>
 <translation id="2148219725039824548">حدث خطأ في تحميل المشاركة. لم يتم العثور على المشاركة المُحدَّدة في الشبكة.</translation>
 <translation id="2148756636027685713">انتهت عملية التنسيق</translation>
 <translation id="2148892889047469596">علامة التبويب "إرسال"</translation>
@@ -3939,6 +3941,7 @@
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5275352920323889391">كلب</translation>
 <translation id="527605982717517565">‏السماح بتشغيل JavaScript على الموقع <ph name="HOST" /> دومًا</translation>
+<translation id="5277127016695466621">إظهار اللوحة الجانبية</translation>
 <translation id="5278823018825269962">رقم تعريف الحالة</translation>
 <translation id="5280064835262749532">تحديث بيانات اعتماد <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">محو ملفات تعريف الارتباط وبيانات الموقع الإلكتروني عند إغلاق جميع النوافذ</translation>

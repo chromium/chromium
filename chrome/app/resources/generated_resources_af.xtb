@@ -682,6 +682,7 @@
 <translation id="1706625117072057435">Zoemvlakke</translation>
 <translation id="1708338024780164500">(Onaktief)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Eksperimentele blaaier! Kan dalk data verloor of privaatheid of sekuriteit kompromitteer. Gee kwessies aan met Hulp &gt; "Gee 'n kwessie aan …".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronklik)</translation>
 <translation id="1709217939274742847">Kies 'n kaartjie om vir stawing te gebruik. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Kan nie deel nie</translation>
@@ -1100,6 +1101,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2144557304298909478">Android-programontwikkeling in Linux</translation>
 <translation id="2146263598007866206">Werwe kan dalk outomaties verwante lêers saam aflaai om jou tyd te bespaar</translation>
 <translation id="2147151613919729065">Jy moet alle gasvensters toemaak om Gasmodus-geskiedenis uit te vee.</translation>
+<translation id="2147218225094845757">Versteek kantpaneel</translation>
 <translation id="2148219725039824548">Kon nie deling monteer nie. Die gespesifiseerde deling is nie in die netwerk gevind nie.</translation>
 <translation id="2148756636027685713">Formatering afgehandel</translation>
 <translation id="2148892889047469596">Saai oortjie uit</translation>
@@ -3952,6 +3954,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">Laat JavaScript altyd op <ph name="HOST" /> toe.</translation>
+<translation id="5277127016695466621">Wys kantpaneel</translation>
 <translation id="5278823018825269962">Status-ID</translation>
 <translation id="5280064835262749532">Dateer eiebewyse vir <ph name="SHARE_PATH" /> op</translation>
 <translation id="5280243692621919988">Vee webkoekies en werfdata uit wanneer jy alle vensters toemaak</translation>

@@ -811,7 +811,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="2043749682619281558">Habilita el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
-<translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
+<translation id="2057317273526988987">Permitir el acceso a una lista de URLs</translation>
 <translation id="2061123930713023976">Permite capturas de paquetes de red de depuración</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2069350366303315077">Si se habilita la política, <ph name="PRODUCT_NAME" /> usará sesiones de invitado e impedirá inicios de sesión de perfiles. Las sesiones de invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que las ventanas están en modo de incógnito.
@@ -3937,6 +3937,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se asigna ningún valor a la política, los usuarios podrán cambiar al tema que prefieran en su navegador.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de los servidores</translation>
+<translation id="6198947200418556248">Esta política está obsoleta. Si necesitas que las cookies tengan el comportamiento antiguo, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Te permite revertir todas las cookies al comportamiento antiguo de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si restableces el comportamiento antiguo, las cookies que no especifiquen un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si fueran <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />. Además, se eliminará el requisito de que las cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> tengan el atributo <ph name="ATTRIBUTE_SECURE_NAME" /> y se omitirá la comparación de esquemas cuando se evalúe si dos sitios son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Si no se establece esta política, el comportamiento predeterminado de <ph name="ATTRIBUTE_SAMESITE_NAME" /> correspondiente a las cookies dependerá de la configuración personal del usuario en las funciones <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> y <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, que pueden definirse mediante una prueba pública o mediante la habilitación o la inhabilitación de las marcas <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> (respectivamente).</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Se muestran todas las impresas excepto las que se incluyen en la lista negra.</translation>
@@ -6275,7 +6278,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si se asigna el valor "Falso" a esta política o no se establece, no se enviará ninguna información.
       Si se le asigna el valor "Verdadero", se enviará información sobre el sistema del dispositivo.</translation>
-<translation id="913195841488580904">Bloquear el acceso a una lista de URL</translation>
+<translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
 <translation id="9150416707757015439">Esta política está obsoleta. Te recomendamos que uses IncognitoModeAvailability en su lugar.

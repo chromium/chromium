@@ -681,6 +681,7 @@
 <translation id="1706625117072057435">רמות מרחק מתצוגה</translation>
 <translation id="1708338024780164500">(לא פעיל)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (מזהה: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">דפדפן ניסיוני! השימוש בו עלול לגרום לאובדן נתונים ולסכן את ההגנה על הפרטיות והאבטחה. אפשר לדווח על בעיות דרך 'עזרה' &gt; "דיווח על בעיה…".</translation>
 <translation id="1709106626015023981">‏<ph name="WIDTH" />‏ x ‏<ph name="HEIGHT" />‏ (מקורי)</translation>
 <translation id="1709217939274742847">בחירת כרטיס שישמש לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">השיתוף נכשל</translation>
@@ -1099,6 +1100,7 @@
 <translation id="2144557304298909478">‏פיתוח אפליקציות ל-Android ב-Linux</translation>
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
 <translation id="2147151613919729065">כדי לנקות את ההיסטוריה של 'מצב אורח', עליך לסגור את כל החלונות של האורחים.</translation>
+<translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
 <translation id="2148219725039824548">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. ההתקן שצוין לא נמצא ברשת.</translation>
 <translation id="2148756636027685713">הפרמוט הסתיים</translation>
 <translation id="2148892889047469596">העברת הכרטיסייה</translation>
@@ -3952,6 +3954,7 @@
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
 <translation id="5275352920323889391">כלב</translation>
 <translation id="527605982717517565">‏לאפשר תמיד JavaScript ב-<ph name="HOST" /></translation>
+<translation id="5277127016695466621">הצגת החלונית הצדדית</translation>
 <translation id="5278823018825269962">מזהה סטטוס</translation>
 <translation id="5280064835262749532">עדכון פרטי הכניסה אל <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">‏ניקוי קובצי cookie ונתוני אתרים כשכל החלונות נסגרים</translation>

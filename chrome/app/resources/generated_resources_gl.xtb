@@ -670,6 +670,7 @@
 <translation id="1706625117072057435">Niveis de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Estás usando un navegador experimental. É posible que che faga perder datos e que poña en risco a túa privacidade ou a túa seguranza. Se tes algún problema, indícanolo en Axuda &gt; Informar dun problema...</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolle o tícket que queres utilizar para a autenticación. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Non se puido compartir o ficheiro</translation>
@@ -1087,6 +1088,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2144557304298909478">Programación de aplicacións de Android en Linux</translation>
 <translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
 <translation id="2147151613919729065">Para borrar o historial do modo Invitados, pecha todas as ventás da sesión de invitado.</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="2148219725039824548">Produciuse un erro ao montar a localización compartida. A localización compartida especificada non se atopou na rede.</translation>
 <translation id="2148756636027685713">Formatado finalizado</translation>
 <translation id="2148892889047469596">Emitir contido da pestana</translation>
@@ -3934,6 +3936,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5269977353971873915">Non se puido efectuar a impresión</translation>
 <translation id="5275352920323889391">Can</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript en <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostrar panel lateral</translation>
 <translation id="5278823018825269962">Identificador de estado</translation>
 <translation id="5280064835262749532">Actualiza as credenciais de <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Borrar as cookies e os datos dos sitios cando peches todas as ventás</translation>

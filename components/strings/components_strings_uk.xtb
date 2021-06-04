@@ -1027,6 +1027,7 @@
 <translation id="4731967714531604179">Prc2 (конверт)</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> хоче отримати доступ до геоданих вашого пристрою</translation>
 <translation id="4736825316280949806">Перезапустіть Chromium</translation>
+<translation id="4736934858538408121">Віртуальна картка</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4738601419177586157">Пропозиція пошуку за запитом "<ph name="TEXT" />"</translation>
 <translation id="4742407542027196863">Керувати паролями…</translation>
@@ -1202,7 +1203,7 @@
 <translation id="5321288445143113935">Розгорнуто</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Вибрати контактну інформацію</translation>
-<translation id="5327248766486351172">Назва</translation>
+<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
 <translation id="5332219387342487447">Спосіб доставки</translation>
 <translation id="5333022057423422993">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо перевірити надійність збережених паролів.</translation>

@@ -683,6 +683,7 @@
 <translation id="1706625117072057435">Aðdráttarstig</translation>
 <translation id="1708338024780164500">(Óvirk)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (auðkenni: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Vafri á tilraunastigi! Gæti glatað gögnum og stefnt persónuvernd eða öryggi í hættu. Tilkynntu vandamál með: Hjálp &gt; „Tilkynna vandamál…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (rétt)</translation>
 <translation id="1709217939274742847">Veldu miða til að nota fyrir auðkenningu. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Ekki er hægt að deila</translation>
@@ -1101,6 +1102,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2144557304298909478">Android forritaþróun í Linux</translation>
 <translation id="2146263598007866206">Vefsvæði gætu sjálfkrafa sótt tengdar skrár saman til að spara þér tíma</translation>
 <translation id="2147151613919729065">Til að hreinsa feril gestastillingar skaltu loka öllum gestagluggum.</translation>
+<translation id="2147218225094845757">Fela hliðarglugga</translation>
 <translation id="2148219725039824548">Villa við að tengja deilt efni. Tilgreint deilt efni fannst ekki á netinu.</translation>
 <translation id="2148756636027685713">Lokið við að sníða</translation>
 <translation id="2148892889047469596">Senda út flipa</translation>
@@ -3952,6 +3954,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5269977353971873915">Prentun mistókst</translation>
 <translation id="5275352920323889391">Hundur</translation>
 <translation id="527605982717517565">Leyfa alltaf JavaScript á <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Sýna hliðarglugga</translation>
 <translation id="5278823018825269962">Stöðukenni</translation>
 <translation id="5280064835262749532">Uppfæra skilríki fyrir <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Hreinsa fótspor og vefsvæðisgögn þegar öllum gluggum er lokað</translation>

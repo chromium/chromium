@@ -3657,7 +3657,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle beobachten können.
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
-<translation id="5861856285460256766">Konfiguration von Elternzugriffscodes</translation>
+<translation id="5861856285460256766">Konfiguration von Elternzugangscodes</translation>
 <translation id="5868414965372171132">Netzwerkkonfiguration auf Nutzerebene</translation>
 <translation id="587242272905978723">Zulassen, dass <ph name="PLUGIN_VM_NAME" /> Nutzerdaten von <ph name="PLUGIN_VM_NAME" /> erhebt.
 
@@ -3893,6 +3893,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Wird die Richtlinie nicht konfiguriert, können Nutzer das Design nach Belieben ändern.</translation>
 <translation id="6195802366906945965">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet wird</translation>
+<translation id="6198947200418556248">Diese Richtlinie wurde eingestellt. Falls Sie immer noch das alte Cookie-Verhalten benötigen, verwenden Sie stattdessen „<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />“. Hiermit kann für alle Cookies das alte „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Verhalten wiederhergestellt werden. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
+
+          Wenn diese Richtlinie nicht konfiguriert ist, hängt das Standardverhalten von „<ph name="ATTRIBUTE_SAMESITE_NAME" />“ für Cookies von der jeweiligen Konfiguration der „<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />“-, „<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" />“- und „<ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />“-Funktion ab. Dies kann im Rahmen eines Testzeitraums oder durch Aktivieren oder Deaktivieren des „<ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />“-, „<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" />“- oder „<ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />“-Status festgelegt werden.</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
 <translation id="6212868225782276239">Alle Drucker außer denen in der Sperrliste werden angezeigt.</translation>
@@ -5076,17 +5079,17 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7613115815080726221">Zeitraum ohne Nutzereingabe, nach dem das Gerät in den Inaktivitätsmodus wechselt, angegeben in Millisekunden.</translation>
 <translation id="7614663184588396421">Liste der deaktivierten Protokollschemas</translation>
 <translation id="7616631530432070402">Cipher Suites von 3DES werden in TLS aktiviert</translation>
-<translation id="7620869951155758729">Anhand der in dieser Richtlinie angegebenen Konfiguration werden Elternzugriffscodes generiert und überprüft.
+<translation id="7620869951155758729">Anhand der in dieser Richtlinie angegebenen Konfiguration werden Elternzugangscodes generiert und überprüft.
 
-      |current_config| wird immer zum Generieren von Zugriffscodes verwendet und sollte nur für die Validierung verwendet werden, wenn dies mit |future_config| nicht möglich ist.
-      |future_config| ist die primäre Konfiguration zum Validieren von Zugriffscodes.
-      |old_configs| sollte nur zum Validieren von Zugriffscodes verwendet werden, wenn eine Validierung mit |future_config| oder |current_config| nicht möglich ist.
+      |current_config| wird immer zum Generieren von Zugangscodes verwendet und sollte nur für die Validierung verwendet werden, wenn dies mit |future_config| nicht möglich ist.
+      |future_config| ist die primäre Konfiguration zum Validieren von Zugangscodes.
+      |old_configs| sollte nur zum Validieren von Zugangscodes verwendet werden, wenn eine Validierung mit |future_config| oder |current_config| nicht möglich ist.
 
-      Mit dieser Richtlinie soll die Konfiguration von Zugriffscodes schrittweise rotiert werden. Die neue Konfiguration wird immer in |future_config| eingefügt, während gleichzeitig der vorhandene Wert in |current_config| verschoben wird. Die vorherigen Werte von |current_config| werden in |old_configs| verschoben und nach Beenden des Rotationszyklus entfernt.
+      Mit dieser Richtlinie soll die Konfiguration von Zugangscodes schrittweise rotiert werden. Die neue Konfiguration wird immer in |future_config| eingefügt, während gleichzeitig der vorhandene Wert in |current_config| verschoben wird. Die vorherigen Werte von |current_config| werden in |old_configs| verschoben und nach Beenden des Rotationszyklus entfernt.
 
       Diese Richtlinie gilt nur für Kinder.
-      Wenn diese Richtlinie festgelegt ist, kann der Elternzugriffscode auf dem Gerät des Kindes überprüft werden.
-      Ist die Richtlinie nicht festgelegt, kann der Elternzugriffscode auf dem Gerät des Kindes nicht überprüft werden.</translation>
+      Wenn diese Richtlinie festgelegt ist, kann der Elternzugangscode auf dem Gerät des Kindes überprüft werden.
+      Ist die Richtlinie nicht festgelegt, kann der Elternzugangscode auf dem Gerät des Kindes nicht überprüft werden.</translation>
 <translation id="7629840767216985001">Wenn Sie die Richtlinie auf "True" setzen, wird der große Cursor auf dem Anmeldebildschirm aktiviert. Wenn Sie die Richtlinie auf "False" setzen, wird der große Cursor auf dem Anmeldebildschirm deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, können Nutzer vorübergehend den großen Cursor aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird er in den Originalzustand zurückversetzt.

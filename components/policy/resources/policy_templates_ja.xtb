@@ -3787,6 +3787,9 @@
 
       このポリシーを未設定のままにした場合、ユーザーはブラウザのテーマを自由に変更できます。</translation>
 <translation id="6195802366906945965">サーバー証明書の確認に組み込みの証明書確認機能を使用する</translation>
+<translation id="6198947200418556248">このポリシーはサポートが終了しています。Cookie を以前の動作に戻す必要がある場合は、<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" /> ポリシーを使用してください。すべての Cookie を以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻します。以前の動作に戻すと、<ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性のない Cookie は「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」が指定されたものとして扱われます。また、「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」の Cookie に「<ph name="ATTRIBUTE_SECURE_NAME" />」属性は必須ではなくなります。さらに、2 つのサイトが同一サイトかどうかを評価する際に、スキーム比較がスキップされます。詳細については https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies をご覧ください。
+
+          このポリシーを設定しない場合、Cookie のデフォルトの <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作は、<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 機能、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 機能、<ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 機能に対するユーザーの個人設定（公開テストで、またはそれぞれ <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> フラグ、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> フラグ、<ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> フラグを有効か無効にすることで設定される）によって決まります。</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> のポリシー情報に関するレポートを作成</translation>
 <translation id="6210259502936598222">OS と <ph name="PRODUCT_NAME" /> のバージョン情報に関するレポートを作成</translation>
 <translation id="6212868225782276239">ブラックリスト登録されている以外のすべてのプリンタを表示する。</translation>

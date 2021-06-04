@@ -683,6 +683,7 @@
 <translation id="1706625117072057435">Нивоа на зумирање</translation>
 <translation id="1708338024780164500">(Неактивна)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Експериментален прелистувач! Може да дојде до загуба на податоци или нарушување на приватноста или безбедноста. Ако наидете на проблем, пријавете го во „Помош &gt; Пријавете проблем…“</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (природна)</translation>
 <translation id="1709217939274742847">Изберете билет што ќе го користите за проверка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Не може да се сподели</translation>
@@ -1101,6 +1102,7 @@
 <translation id="2144557304298909478">Развој на апликации на Android за Linux</translation>
 <translation id="2146263598007866206">Сајтовите може автоматски да преземаат слични датотеки одеднаш за да ви штедат време</translation>
 <translation id="2147151613919729065">За да ја избришете историјата на „Режим на гостин“, затворете ги сите гостински прозорци.</translation>
+<translation id="2147218225094845757">Сокриј ја страничната табла</translation>
 <translation id="2148219725039824548">Грешка при монтирање на споделувањето. Наведеното споделување не е најдено на мрежата.</translation>
 <translation id="2148756636027685713">Форматирањето заврши</translation>
 <translation id="2148892889047469596">Картичка за емитување</translation>
@@ -3953,6 +3955,7 @@
 <translation id="5269977353971873915">Печатењето не успеа</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Секогаш дозволи JavaScript на <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Прикажи ја страничната табла</translation>
 <translation id="5278823018825269962">ID на статусот</translation>
 <translation id="5280064835262749532">Ажурирајте ги акредитивите за <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Бриши ги колачињата и податоците за сајтовите при затворање на сите прозорци</translation>

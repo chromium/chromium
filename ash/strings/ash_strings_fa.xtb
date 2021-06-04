@@ -253,7 +253,7 @@
 <translation id="3017687597151988916">ناحیه انتخاب روی پنجره تنظیم شد</translation>
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
-<translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی والدین Family Link خود را وارد کنید</translation>
+<translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی ولی Family Link خود را وارد کنید</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
 <translation id="3051189971848907985">درحال تغییر نام نمایه. چند دقیقه صبر کنید.</translation>
@@ -474,7 +474,7 @@
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم‌خصوصی خاموش است</translation>
 <translation id="4705716602320768426">ثبت بازخورد</translation>
-<translation id="4731797938093519117">دسترسی والدین</translation>
+<translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
@@ -786,7 +786,7 @@
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
 <translation id="7392563512730092880">همیشه می‌توانید راه‌اندازی را در زمان دیگری ازطریق «تنظیمات» انجام دهید.</translation>
 <translation id="7398254312354928459">اتصال شبکه تغییریافته</translation>
-<translation id="7405710164030118432">‏برای باز کردن قفل دستگاه، کد دسترسی والدین را برای Family Link وارد کنید</translation>
+<translation id="7405710164030118432">‏برای باز کردن قفل دستگاه، کد دسترسی ولی را برای Family Link وارد کنید</translation>
 <translation id="7406608787870898861">تکمیل کردن راه‌اندازی شبکه تلفن همراه</translation>
 <translation id="741244894080940828">تبدیل</translation>
 <translation id="7413851974711031813">برای بستن، کلید «گریز» را فشار دهید</translation>
@@ -943,7 +943,7 @@
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی‌مانده</translation>
 <translation id="8641805545866562088">درحال بازخوانی فهرست نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="8646417893960517480">زمان‌سنج <ph name="TOTAL_TIME" /></translation>
-<translation id="8647931990447795414">‏برای افزودن فرد، کد دسترسی والدین Family Link خود را وارد کنید</translation>
+<translation id="8647931990447795414">‏برای افزودن فرد، کد دسترسی ولی Family Link خود را وارد کنید</translation>
 <translation id="8649101189709089199">انتخاب برای شنیدن</translation>
 <translation id="8652175077544655965">بستن تنظیمات</translation>
 <translation id="8653151467777939995">نمایش تنظیمات اعلان. اعلان‌ها روشن است</translation>
@@ -997,7 +997,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>
-<translation id="9017320285115481645">‏کد دسترسی والدین Family Link را وارد کنید</translation>
+<translation id="9017320285115481645">‏کد دسترسی ولی Family Link را وارد کنید</translation>
 <translation id="9024331582947483881">تمام‌صفحه</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">دستگاه عقب‌گرد می‌کند</translation>

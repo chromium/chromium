@@ -668,6 +668,7 @@
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">¡Navegador experimental! Es posible que se pierdan datos o se ponga en riesgo la seguridad o la privacidad. Para informar problemas, usa la opción Ayuda &gt; "Informar un problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Elige un ticket para usar en la autenticación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
@@ -1085,6 +1086,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2144557304298909478">Desarrollo de apps para Android en Linux</translation>
 <translation id="2146263598007866206">Es posible que los sitios descarguen automáticamente archivos relacionados de forma conjunta para ahorrar tiempo.</translation>
 <translation id="2147151613919729065">Para borrar el historial del modo de invitado, cierra todas las ventanas de invitado.</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="2148219725039824548">Se produjo un error al activar el recurso compartido porque no se lo encontró en la red.</translation>
 <translation id="2148756636027685713">Formato terminado</translation>
 <translation id="2148892889047469596">Transmitir pestaña</translation>
@@ -3933,6 +3935,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostrar panel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
 <translation id="5280064835262749532">Actualiza las credenciales para <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Borrar las cookies y los datos de los sitios cuando cierras todas las ventanas</translation>

@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">විශාලන මට්ටම්</translation>
 <translation id="1708338024780164500">(අක්‍රියයි)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">අත්හදා බැලීමේ බ්‍රව්සරය! දත්ත නැති වීමට හෝ පෞද්ගලිකත්වය හෝ ආරක්ෂාව අවදානමට පත් කිරීමට ඉඩ ඇත. කරුණාකර ගැටලු මෙලෙස වාර්තා කරන්න: උදවු &gt; "ගැටලුවක් වාර්තා කරන්න...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ආවේණික)</translation>
 <translation id="1709217939274742847">සත්‍යාපනය සඳහා භාවිත කිරීමට ප්‍රවේශපත්‍රයක් තෝරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">බෙදා ගත නොහැකිය</translation>
@@ -1089,6 +1090,7 @@
 <translation id="2144557304298909478">ලිනක්ස් Android යෙදුම් සංවර්ධනය</translation>
 <translation id="2146263598007866206">අඩවි ඔබේ කාලය ඉතිරි කිරීම සඳහා ස්වයංක්‍රියව අදාළ ගොනු බාගත හැකිය</translation>
 <translation id="2147151613919729065">ආගන්තුක ප්‍රකාර ඉතිහාසය හිස් කිරීමට, සියලු ආගන්තුක කවුළු වසන්න.</translation>
+<translation id="2147218225094845757">පැති පැනලය සඟවන්න</translation>
 <translation id="2148219725039824548">කොටස නැංවීමේ දෝෂයකි. විශේෂිත කොටස ජාලයෙහි සොයා ගත නොහැකි විය.</translation>
 <translation id="2148756636027685713">ආකෘතිගත කිරීම නිමයි</translation>
 <translation id="2148892889047469596">විකාශ පටිත්ත</translation>
@@ -3940,6 +3942,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5269977353971873915">මුදණය අසාර්ථක විය</translation>
 <translation id="5275352920323889391">බල්ලා</translation>
 <translation id="527605982717517565"><ph name="HOST" /> මත සැමවිට JavaScript ඉඩ දෙන්න</translation>
+<translation id="5277127016695466621">පැති පැනලය පෙන්වන්න</translation>
 <translation id="5278823018825269962">තත්ත්ව හැඳුනුම</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> සඳහා අක්තපත්‍ර යාවත්කාලීන කරන්න</translation>
 <translation id="5280243692621919988">ඔබ සියලුම කවුළු වසන විට කුකී සහ වෙබ් අඩවි දත්ත හිස් කරන්න</translation>

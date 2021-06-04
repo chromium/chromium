@@ -683,6 +683,7 @@
 <translation id="1706625117072057435">ਜ਼ੂਮ ਪੱਧਰ</translation>
 <translation id="1708338024780164500">(ਨਿਸ਼ਕਿਰਿਆ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ਆਈ.ਡੀ.: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">ਪ੍ਰਯੋਗਮਈ ਬ੍ਰਾਊਜ਼ਰ! ਡਾਟਾ ਗੁੰਮ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਪਰਦੇਦਾਰੀ ਜਾਂ ਸੁਰੱਖਿਆ ਨਾਲ ਛੇੜਛਾੜ ਹੋ ਸਕਦੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਮੱਸਿਆਵਾਂ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ ਇੱਥੇ ਜਾਓ: ਮਦਦ &gt; "ਕਿਸੇ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ..."।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ਜੱਦੀ)</translation>
 <translation id="1709217939274742847">ਪ੍ਰਮਾਣੀਕਰਨ ਵਰਤਣ ਲਈ ਟਿਕਟ ਚੁਣੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
@@ -1101,6 +1102,7 @@
 <translation id="2144557304298909478">Linux Android ਐਪ ਵਿਕਾਸ</translation>
 <translation id="2146263598007866206">ਸਾਈਟਾਂ ਤੁਹਾਡਾ ਸਮਾਂ ਬਚਾਉਣ ਲਈ ਸੰਬੰਧਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇਕੱਠਿਆਂ ਹੀ ਡਾਊਨਲੋਡ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2147151613919729065">ਮਹਿਮਾਨ ਮੋਡ ਇਤਿਹਾਸ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ, ਸਾਰੀਆਂ ਮਹਿਮਾਨ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
+<translation id="2147218225094845757">ਸਾਈਡ ਪੈਨਲ ਲੁਕਾਓ</translation>
 <translation id="2148219725039824548">ਸਾਂਝਾਕਰਨ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਨਿਰਧਾਰਤ ਸਾਂਝਾਕਰਨ ਨੈੱਟਵਰਕ 'ਤੇ ਨਹੀਂ ਮਿਲਿਆ।</translation>
 <translation id="2148756636027685713">ਫੌਰਮੈਟ ਕਰਨਾ ਪੂਰਾ ਕੀਤਾ</translation>
 <translation id="2148892889047469596">ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
@@ -3952,6 +3954,7 @@
 <translation id="5269977353971873915">ਪ੍ਰਿੰਟ ਲੈਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="5275352920323889391">ਕੁੱਤਾ</translation>
 <translation id="527605982717517565">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ JavaScript ਦੀ ਆਗਿਆ ਦਿਓ</translation>
+<translation id="5277127016695466621">ਸਾਈਡ ਪੈਨਲ ਦਿਖਾਓ</translation>
 <translation id="5278823018825269962">ਸਥਿਤੀ ਦੀ ਆਈਡੀ</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> ਲਈ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5280243692621919988">ਸਾਰੀਆਂ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨ ਵੇਲੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>

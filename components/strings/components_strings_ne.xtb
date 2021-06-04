@@ -912,6 +912,7 @@
 <translation id="4275830172053184480">आफ्नो यन्त्रलाई फेरि सुरु गर्नुहोस्</translation>
 <translation id="4277028893293644418">पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यो कार्डलाई तपाईंको Google खातामा सुरक्षित गरिएको छ।}other{यी कार्डहरूलाई तपाईंको Google खातामा सुरक्षित गरिएको छ}}</translation>
+<translation id="4287885627794386150">परीक्षण प्रयोग गर्न सकिन्छ तर सक्रिय भने छैन</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
@@ -1714,6 +1715,7 @@
 <translation id="7378594059915113390">मिडियासम्बन्धी नियन्त्रणहरू</translation>
 <translation id="7378627244592794276">होइन</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">लागू नहुने</translation>
 <translation id="7390545607259442187">कार्डको पुष्टि गर्नुहोस्</translation>
 <translation id="7392089738299859607">ठेगाना परिवर्तन गर्नुहोस्</translation>
 <translation id="7399802613464275309">सुरक्षा जाँच</translation>

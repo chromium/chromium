@@ -668,6 +668,7 @@
 <translation id="1706625117072057435">缩放级别</translation>
 <translation id="1708338024780164500">（无效）</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />（ID：<ph name="ID_PH" />）</translation>
+<translation id="1708860176443612387">实验性浏览器！可能会丢失数据或有损私密性/安全性。若要报告问题，请使用“帮助”&gt;“报告问题…”。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1709217939274742847">选择用于进行身份验证的票据。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">无法分享</translation>
@@ -1085,6 +1086,7 @@
 <translation id="2144557304298909478">Linux Android 应用开发</translation>
 <translation id="2146263598007866206">网站可能会自动将相关文件一起下载，从而为您节省时间</translation>
 <translation id="2147151613919729065">如需清除访客模式历史记录，请关闭所有访客窗口。</translation>
+<translation id="2147218225094845757">隐藏侧边栏</translation>
 <translation id="2148219725039824548">装载共享资源时出错。在网络上找不到所指定的共享资源。</translation>
 <translation id="2148756636027685713">格式化已完成</translation>
 <translation id="2148892889047469596">投射标签页</translation>
@@ -3931,6 +3933,7 @@
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
+<translation id="5277127016695466621">显示侧边栏</translation>
 <translation id="5278823018825269962">状态 ID</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的访问凭据</translation>
 <translation id="5280243692621919988">关闭所有窗口时清除 Cookie 及网站数据</translation>

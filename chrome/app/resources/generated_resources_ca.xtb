@@ -671,6 +671,7 @@
 <translation id="1706625117072057435">Nivells de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (identificador: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Aquest és un navegador experimental. És possible que es perdin dades o que es posin en perill la privadesa i seguretat. Informa de qualsevol problema des d'Ajuda &gt; Informa d'un problema...</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Tria un tiquet per autenticar-te. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">No es pot compartir</translation>
@@ -1088,6 +1089,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2144557304298909478">Desenvolupament d'aplicacions d'Android a Linux</translation>
 <translation id="2146263598007866206">És possible que els llocs web baixin automàticament fitxers relacionats en grup per estalviar-te temps</translation>
 <translation id="2147151613919729065">Per esborrar l'historial del mode de convidat, tanca totes les finestres de convidat.</translation>
+<translation id="2147218225094845757">Amaga el tauler lateral</translation>
 <translation id="2148219725039824548">S'ha produït un error en activar l'ús compartit especificat perquè no s'ha trobat a la xarxa.</translation>
 <translation id="2148756636027685713">Format finalitzat</translation>
 <translation id="2148892889047469596">Emet la pestanya</translation>
@@ -3936,6 +3938,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5269977353971873915">Error d'impressió</translation>
 <translation id="5275352920323889391">Gos</translation>
 <translation id="527605982717517565">Permet sempre JavaScript a <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Mostra el tauler lateral</translation>
 <translation id="5278823018825269962">Identificador d'estat</translation>
 <translation id="5280064835262749532">Actualitza les credencials per a <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Esborra les galetes i les dades dels llocs web en tancar totes les finestres</translation>

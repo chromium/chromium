@@ -685,6 +685,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1706625117072057435">Ravni povečave/pomanjšave</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Preizkusni brskalnik. Morda se bodo izgubili podatki ali bo ogrožena zasebnost ali varnost. Težave prijavite v Pomoč &gt; »Prijava težave …«.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1709217939274742847">Izberite kartonček za preverjanje pristnosti. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Ni mogoče deliti</translation>
@@ -1103,6 +1104,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2144557304298909478">Razvoj aplikacij za Android v Linuxu</translation>
 <translation id="2146263598007866206">Spletna mesta lahko skupaj samodejno prenesejo sorodne datoteke in vam tako prihranijo čas.</translation>
 <translation id="2147151613919729065">Če želite izbrisati zgodovino načina za goste, zaprite vsa okna načina za goste.</translation>
+<translation id="2147218225094845757">Skrij stransko podokno</translation>
 <translation id="2148219725039824548">Napaka pri vpenjanju datotečnega sredstva v skupni rabi. Določeno datotečno sredstvo v skupni rabi ni bilo najdeno v omrežju.</translation>
 <translation id="2148756636027685713">Formatiranje je končano</translation>
 <translation id="2148892889047469596">Predvajanje zavihka</translation>
@@ -3955,6 +3957,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5269977353971873915">Tiskanje ni uspelo</translation>
 <translation id="5275352920323889391">Pes</translation>
 <translation id="527605982717517565">Vedno dovoli JavaScript na mestu <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Pokaži stransko podokno</translation>
 <translation id="5278823018825269962">ID stanja</translation>
 <translation id="5280064835262749532">Posodobitev poverilnic za <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Izbriši piškotke in podatke spletnih mest, ko zaprete vsa okna</translation>

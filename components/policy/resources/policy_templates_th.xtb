@@ -3859,6 +3859,9 @@
 
       การไม่ตั้งค่านโยบายจะทำให้ผู้ใช้เปลี่ยนธีมของเบราว์เซอร์ได้ตามที่ต้องการ</translation>
 <translation id="6195802366906945965">กำหนดว่าจะใช้ตัวตรวจสอบใบรับรองในตัวเพื่อยืนยันใบรับรองเซิร์ฟเวอร์หรือไม่</translation>
+<translation id="6198947200418556248">นโยบายนี้เลิกใช้งานไปแล้ว หากคุณยังคงต้องการให้คุกกี้มีลักษณะการทำงานเดิม โปรดใช้ <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" /> อนุญาตให้คุณเปลี่ยนคุกกี้ทั้งหมดกลับไปมีลักษณะการทำงาน <ph name="ATTRIBUTE_SAMESITE_NAME" /> เช่นเดิมได้ การเปลี่ยนกลับไปใช้ลักษณะการทำงานเดิมทำให้คุกกี้ที่ไม่ได้ระบุแอตทริบิวต์ <ph name="ATTRIBUTE_SAMESITE_NAME" /> ได้รับการดำเนินการเหมือนกับเป็น "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", นำข้อกำหนดที่คุกกี้ "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ต้องมีแอตทริบิวต์ "<ph name="ATTRIBUTE_SECURE_NAME" />" ออกไป และข้ามการเปรียบเทียบสกีมเมื่อประเมินว่าเว็บไซต์ 2 แห่งเป็นเว็บไซต์เดียวกันหรือไม่ ดูคำอธิบายแบบเต็มใน https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies
+
+          เมื่อไม่ได้ตั้งค่านโยบายนี้ ลักษณะการทำงาน <ph name="ATTRIBUTE_SAMESITE_NAME" /> ที่เป็นค่าเริ่มต้นของคุกกี้จะขึ้นอยู่กับการกำหนดค่าส่วนตัวของผู้ใช้สำหรับฟีเจอร์ <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, ฟีเจอร์ <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> และฟีเจอร์ <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> ซึ่งอาจมีการตั้งค่าโดยการทดสอบในวงจำกัด หรือโดยการเปิดหรือปิดใช้แฟล็ก <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, แฟล็ก <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> หรือแฟล็ก <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> ตามลำดับ</translation>
 <translation id="6208896993204286313">รายงานข้อมูลนโยบายของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">รายงานข้อมูลระบบปฏิบัติการและเวอร์ชันของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">เครื่องพิมพ์ทั้งหมดยกเว้นที่อยู่ในบัญชีดำจะปรากฏ</translation>

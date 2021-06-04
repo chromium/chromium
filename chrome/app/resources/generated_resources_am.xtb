@@ -679,6 +679,7 @@
 <translation id="1706625117072057435">የማጉላት ደረጃዎች</translation>
 <translation id="1708338024780164500">(የቦዘነ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (መታወቂያ፦ <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">የሙከራ አሳሽ! ውሂብዎ ሊጠፋ ወይም ግላዊነትን ወይም ደህንነትን አደጋ ላይ ሊጥል ይችላል። እባክዎ ችግሮችን በሚከተለው ሪፖርት ያድርጉ፦ እገዛ &gt; «ችግርን ሪፖርት አድርግ...»።</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ቤተኛ)</translation>
 <translation id="1709217939274742847">ለማረጋገጥ የሚጠቀሙበት ቲኬት ይምረጡ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">ማጋራት አይችሉም</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2144557304298909478">የLinux Android መተግበሪያ ግንባታ</translation>
 <translation id="2146263598007866206">ጣቢያዎች እርስዎን ጊዜ ለመቆጠብ ተዛማጅ ፋይሎችን በራስ-ሰር አብረው ማውረድ ይችላሉ</translation>
 <translation id="2147151613919729065">የእንግዳ ሁነታን ታሪክ ለማፅዳት፣ ሁሉንም የእንግዳ መስኮቶች ይዝጉ።</translation>
+<translation id="2147218225094845757">የጎን ፓነልን ደብቅ</translation>
 <translation id="2148219725039824548">ማጋራትን ማፈናጠጥ ላይ ስህተት። የተገለጸው ማጋራት በአውታረ መረቡ ላይ አልተገኘም።</translation>
 <translation id="2148756636027685713">ቅርጸት መስራት ተጠናቅቋል</translation>
 <translation id="2148892889047469596">ትር ውስድ</translation>
@@ -3943,6 +3945,7 @@
 <translation id="5269977353971873915">ማተም አልተሳካም</translation>
 <translation id="5275352920323889391">ውሻ</translation>
 <translation id="527605982717517565">ሁልጊዜ በ<ph name="HOST" /> ላይ ጃቫስክሪፕት ፍቀድ</translation>
+<translation id="5277127016695466621">የጎን ፓነልን አሳይ</translation>
 <translation id="5278823018825269962">የሁኔታ መታወቂያ</translation>
 <translation id="5280064835262749532">ለ <ph name="SHARE_PATH" /> የዕውቅና ማረጋገጫዎችን ያዘምኑ</translation>
 <translation id="5280243692621919988">ሁሉንም መስኮቶች ሲዘጉ ኩኪዎችን እና የጣቢያ ውሂብን ያጽዱ</translation>

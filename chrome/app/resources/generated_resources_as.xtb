@@ -680,6 +680,7 @@
 <translation id="1706625117072057435">জুমৰ স্তৰ</translation>
 <translation id="1708338024780164500">(নিষ্ক্ৰিয়)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (আইডি: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">পৰীক্ষামূলক ব্ৰাউজাৰ! ডেটা হেৰুৱাব পাৰে অথবা গোপনীয়তা অথবা সুৰক্ষাৰ ক্ষেত্ৰত আপোচ কৰা হ’ব পাৰে। অনুগ্ৰহ কৰি ইয়াৰ জৰিয়তে সমস্যাৰ অভিযোগ দিয়ক: সহায় &gt; "সমস্যাৰ অভিযোগ দিয়ক…"।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
 <translation id="1709217939274742847">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ বাবে ব্যৱহাৰ কৰিবলৈ এটা টিকেট বাছনি কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">শ্বেয়াৰ কৰিব নোৱাৰি</translation>
@@ -1098,6 +1099,7 @@
 <translation id="2144557304298909478">Linux Android এপৰ বিকাশ</translation>
 <translation id="2146263598007866206">ছাইটসমূহে আপোনাৰ সময় ৰাহি কৰিবলৈ মিল থকা ফাইলসমূহ স্বয়ংক্ৰিয়ভাৱে ডাউনল'ড কৰিব পাৰে</translation>
 <translation id="2147151613919729065">অতিথি ম’ডৰ ইতিহাস মচিবলৈ আটাইবোৰ অতিথিৰ ৱিণ্ড’ বন্ধ কৰক।</translation>
+<translation id="2147218225094845757">ছাইডৰ পেনেল লুকুৱাওক</translation>
 <translation id="2148219725039824548">শ্বেয়াৰ মাউণ্ট কৰোঁতে আসোঁৱাহ হ’ল। নেটৱর্কত নির্দিষ্ট কৰা শ্বেয়াৰ কৰা কার্যটো বিচাৰি পোৱ নগ’ল।</translation>
 <translation id="2148756636027685713">ফৰ্মেট কৰা সম্পূৰ্ণ হ’ল</translation>
 <translation id="2148892889047469596">টেব কাষ্ট কৰক</translation>
@@ -3945,6 +3947,7 @@
 <translation id="5269977353971873915">প্ৰিণ্ট কৰিব পৰা নগ'ল</translation>
 <translation id="5275352920323889391">কুকুৰ</translation>
 <translation id="527605982717517565"><ph name="HOST" />ত সদায় JavaScriptক অনুমতি দিয়ক</translation>
+<translation id="5277127016695466621">ছাইডৰ পেনেল দেখুৱাওক</translation>
 <translation id="5278823018825269962">স্থিতিৰ আইডি</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />ৰ বাবে ক্ৰিডেনশ্বিয়েলসমূহ আপডে’ট কৰক</translation>
 <translation id="5280243692621919988">আপুনি সকলো ৱিণ্ড' বন্ধ কৰিলে কুকিসমূহ আৰু ছাইটৰ ডেটা মচক</translation>
