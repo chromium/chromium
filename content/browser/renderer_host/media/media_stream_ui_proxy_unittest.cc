@@ -70,16 +70,14 @@ class MockMediaStreamUI : public MediaStreamUI {
                               const std::string& label,
                               std::vector<DesktopMediaID> screen_capture_ids,
                               StateChangeCallback state_change) override {
-    // gmock cannot handle move-only types:
-    return MockOnStarted(base::AdaptCallbackForRepeating(std::move(stop)),
-                         source);
+    return MockOnStarted(std::move(stop), source);
   }
 
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id) override {}
 
   MOCK_METHOD2(MockOnStarted,
-               gfx::NativeViewId(base::RepeatingClosure stop,
+               gfx::NativeViewId(base::OnceClosure stop,
                                  MediaStreamUI::SourceCallback source));
 };
 
@@ -260,8 +258,11 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
   devices.push_back(blink::MediaStreamDevice(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "Mic", "Mic"));
   auto ui = std::make_unique<MockMediaStreamUI>();
-  EXPECT_CALL(*ui, MockOnStarted(_, _))
-      .WillOnce(testing::DoAll(MoveArg<0>(&stop_callback), Return(0)));
+  EXPECT_CALL(*ui, MockOnStarted(_, _)).WillOnce([&](auto closure, auto) {
+    stop_callback = std::move(closure);
+    return 0;
+  });
+
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
                           std::move(ui));
 
@@ -357,8 +358,10 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       "fake_desktop_video_device", "Fake Desktop Video Device"));
   auto ui = std::make_unique<MockMediaStreamUI>();
-  EXPECT_CALL(*ui, MockOnStarted(_, _))
-      .WillOnce(testing::DoAll(SaveArg<1>(&source_callback), Return(0)));
+  EXPECT_CALL(*ui, MockOnStarted(_, _)).WillOnce([&](auto, auto callback) {
+    source_callback = std::move(callback);
+    return 0;
+  });
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
                           std::move(ui));
 
