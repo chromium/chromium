@@ -890,7 +890,25 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       ComputeMarginsFor(space, node.Style(), ConstraintSpace());
 
   auto MinMaxContentSizes = [&]() -> MinMaxSizes {
-    return ComputeMinAndMaxContentContributionForSelf(node, space).sizes;
+    const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
+
+    // The min/max contribution may depend on the block-size of the grid-area:
+    // <div style="display: inline-grid; grid-template-columns: auto auto;">
+    //   <div style="height: 100%">
+    //     <img style="height: 50%;" />
+    //   </div>
+    //   <div>
+    //     <div style="height: 100px;"></div>
+    //   </div>
+    // </div>
+    // Mark ourselves as requiring an additional pass to re-resolve the column
+    // tracks for this case.
+    if (is_parallel && result.depends_on_block_constraints &&
+        space.AvailableSize().block_size == kIndefiniteSize) {
+      *needs_additional_pass = true;
+    }
+
+    return result.sizes;
   };
 
   // This function will determine the correct block-size of a grid-item.
