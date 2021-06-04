@@ -140,7 +140,8 @@ DEFINE_PROTO_FUZZER(const PolicyFuzzerProto& proto) {
     PolicyMap policy_map;
     DecodeProtoFields(cloud_policy_settings, cloud_data_manager,
                       PolicySource::POLICY_SOURCE_CLOUD,
-                      PolicyScope::POLICY_SCOPE_USER, &policy_map);
+                      PolicyScope::POLICY_SCOPE_USER, &policy_map,
+                      PolicyPerProfileFilter::kAny);
 
     for (const auto& it : policy_map) {
       const std::string& policy_name = it.first;
