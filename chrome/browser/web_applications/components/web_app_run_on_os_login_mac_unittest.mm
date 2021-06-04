@@ -110,6 +110,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
     SetChromeAppsFolderForTesting(base::FilePath());
+    WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();
   }
 

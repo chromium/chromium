@@ -1039,6 +1039,13 @@ bool WebAppShortcutCreator::CreateShortcuts(
   return true;
 }
 
+static bool g_have_localized_app_dir_name = false;
+
+// static
+void WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting() {
+  g_have_localized_app_dir_name = false;
+}
+
 bool WebAppShortcutCreator::UpdateShortcuts(
     bool create_if_needed,
     std::vector<base::FilePath>* updated_paths) {
@@ -1054,8 +1061,11 @@ bool WebAppShortcutCreator::UpdateShortcuts(
     }
     // Only set folder icons and a localized name once. This avoids concurrent
     // calls to -[NSWorkspace setIcon:..], which is not reentrant.
-    static bool once = UpdateAppShortcutsSubdirLocalizedName(applications_dir);
-    if (!once) {
+    if (!g_have_localized_app_dir_name) {
+      g_have_localized_app_dir_name =
+          UpdateAppShortcutsSubdirLocalizedName(applications_dir);
+    }
+    if (!g_have_localized_app_dir_name) {
       RecordCreateShortcut(CreateShortcutResult::kFailToLocalizeApplication);
       LOG(ERROR) << "Failed to localize " << applications_dir.value();
     }

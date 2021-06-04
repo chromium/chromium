@@ -100,6 +100,10 @@ class WebAppShortcutCreator {
 
   virtual ~WebAppShortcutCreator();
 
+  // This allows UpdateAppShortcutsSubdirLocalizedName to be called multiple
+  // times in a process, for unit tests.
+  static void ResetHaveLocalizedAppDirNameForTesting();
+
   // Returns the base name for the shortcut. This will be a sanitized version
   // of the application title. If |copy_number| is not 1, then append it before
   // the .app part of the extension.
