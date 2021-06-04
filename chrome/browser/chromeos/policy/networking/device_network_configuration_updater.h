@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/network_configuration_updater.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
 
@@ -23,12 +23,12 @@ class CrosSettings;
 namespace base {
 class DictionaryValue;
 class ListValue;
-}
+}  // namespace base
 
 namespace chromeos {
 class ManagedNetworkConfigurationHandler;
 class NetworkDeviceHandler;
-}
+}  // namespace chromeos
 
 namespace policy {
 
@@ -88,5 +88,4 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
-
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_

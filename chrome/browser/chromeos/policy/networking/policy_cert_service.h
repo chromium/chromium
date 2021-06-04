@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_POLICY_CERT_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_POLICY_CERT_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_POLICY_CERT_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_POLICY_CERT_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -28,8 +28,8 @@ class UserManager;
 
 namespace net {
 class X509Certificate;
-typedef std::vector<scoped_refptr<X509Certificate> > CertificateList;
-}
+typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
+}  // namespace net
 
 namespace network {
 class NSSTempCertsCacheChromeOS;
@@ -136,4 +136,4 @@ class PolicyCertService : public KeyedService,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_POLICY_CERT_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_POLICY_CERT_SERVICE_H_

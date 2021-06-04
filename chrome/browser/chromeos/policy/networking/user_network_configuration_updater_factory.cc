@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/user_network_configuration_updater_factory.h"
+#include "chrome/browser/chromeos/policy/networking/user_network_configuration_updater_factory.h"
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,9 +46,8 @@ UserNetworkConfigurationUpdaterFactory::GetBrowserContextToUse(
   return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
-bool
-UserNetworkConfigurationUpdaterFactory::ServiceIsCreatedWithBrowserContext()
-    const {
+bool UserNetworkConfigurationUpdaterFactory::
+    ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 

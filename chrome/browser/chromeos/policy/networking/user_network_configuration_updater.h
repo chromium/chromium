@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_USER_NETWORK_CONFIGURATION_UPDATER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_USER_NETWORK_CONFIGURATION_UPDATER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_USER_NETWORK_CONFIGURATION_UPDATER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_USER_NETWORK_CONFIGURATION_UPDATER_H_
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/network_configuration_updater.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -39,7 +39,7 @@ namespace chromeos {
 namespace onc {
 class CertificateImporter;
 }
-}
+}  // namespace chromeos
 
 namespace policy {
 
@@ -125,4 +125,4 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_USER_NETWORK_CONFIGURATION_UPDATER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_NETWORKING_USER_NETWORK_CONFIGURATION_UPDATER_H_

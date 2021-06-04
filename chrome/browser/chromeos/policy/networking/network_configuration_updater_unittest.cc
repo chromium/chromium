@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/policy/device_network_configuration_updater.h"
-#include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/device_network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/user_network_configuration_updater.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/fake_network_device_handler.h"
@@ -51,13 +51,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::Mock;
 using testing::Ne;
 using testing::Return;
 using testing::StrictMock;
-using testing::_;
 
 namespace policy {
 
@@ -427,10 +427,9 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
       bool set_client_cert_importer) {
     UserNetworkConfigurationUpdater* updater =
         UserNetworkConfigurationUpdater::CreateForUserPolicy(
-            &profile_,
-            fake_user_,
-            policy_service_.get(),
-            &network_config_handler_).release();
+            &profile_, fake_user_, policy_service_.get(),
+            &network_config_handler_)
+            .release();
     if (set_client_cert_importer) {
       EXPECT_TRUE(client_certificate_importer_owned_);
       updater->SetClientCertificateImporterForTest(
@@ -544,8 +543,7 @@ TEST_F(NetworkConfigurationUpdaterTest, PolicyIsValidatedAndRepaired) {
   UpdateProviderPolicy(policy);
 
   EXPECT_CALL(network_config_handler_,
-              SetPolicy(onc::ONC_SOURCE_USER_POLICY,
-                        _,
+              SetPolicy(onc::ONC_SOURCE_USER_POLICY, _,
                         IsEqualTo(network_configs_repaired),
                         IsEqualTo(global_config_repaired)));
 

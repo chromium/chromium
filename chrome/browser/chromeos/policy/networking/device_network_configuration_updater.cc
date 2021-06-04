@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_network_configuration_updater.h"
+#include "chrome/browser/chromeos/policy/networking/device_network_configuration_updater.h"
 
 #include <map>
 
@@ -130,10 +130,9 @@ void DeviceNetworkConfigurationUpdater::ApplyNetworkPolicy(
   chromeos::onc::ExpandStringsInNetworks(variable_expander,
                                          network_configs_onc);
 
-  network_config_handler_->SetPolicy(onc_source_,
-                                     std::string() /* no username hash */,
-                                     *network_configs_onc,
-                                     *global_network_config);
+  network_config_handler_->SetPolicy(
+      onc_source_, std::string() /* no username hash */, *network_configs_onc,
+      *global_network_config);
 }
 
 void DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged() {
