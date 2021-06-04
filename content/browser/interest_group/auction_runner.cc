@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -313,24 +314,38 @@ void AuctionRunner::OnBidScored(BidState* state,
                                 const std::vector<std::string>& errors) {
   DCHECK_EQ(state->state, BidState::State::kSellerScoringBid);
   state->seller_score = score;
-
-  // Check if this is the top bidder. If not, unload its worklet.
-  //
-  // TODO(morlovich): What if there is a tie?
-  if (score > 0 && (!top_bidder_ || score > top_bidder_->seller_score)) {
-    // If this bidder out scored a previous winning bidder, unload that bidder's
-    // worklet.
-    if (top_bidder_)
-      top_bidder_->bidder_worklet.reset();
-    top_bidder_ = state;
-  } else {
-    state->bidder_worklet.reset();
-  }
-
   --outstanding_bids_;
   state->state = BidState::State::kScoringComplete;
-
   errors_.insert(errors_.end(), errors.begin(), errors.end());
+
+  if (score <= 0) {
+    // If the worklet didn't bid, destroy the worklet.
+    state->bidder_worklet.reset();
+  } else {
+    bool replace_top_bidder = false;
+    if (!top_bidder_ || score > top_bidder_->seller_score) {
+      // If there's no previous top bidder, or the bidder has the highest score,
+      // need to replace the previous top bidder.
+      replace_top_bidder = true;
+      num_top_bidders_ = 1;
+    } else if (score == top_bidder_->seller_score) {
+      // If there's a tie, replace the top-bidder with 1-in-`num_top_bidders_`
+      // chance. This is the select random value from a stream with fixed
+      // storage problem.
+      ++num_top_bidders_;
+      if (1 == base::RandInt(1, num_top_bidders_))
+        replace_top_bidder = true;
+    }
+
+    if (replace_top_bidder) {
+      if (top_bidder_)
+        top_bidder_->bidder_worklet.reset();
+      top_bidder_ = state;
+    } else {
+      state->bidder_worklet.reset();
+    }
+  }
+
   MaybeCompleteAuction();
 }
 

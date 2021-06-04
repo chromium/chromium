@@ -257,6 +257,8 @@ class CONTENT_EXPORT AuctionRunner {
   // worklet can win the auction, so the other worklets are all unloaded right
   // after scoring.
   BidState* top_bidder_ = nullptr;
+  // Number of bidders with the same score as `top_bidder`.
+  size_t num_top_bidders_ = 0;
 
   // URLLoaderFactory proxy class configured only to load the URL the seller
   // needs.

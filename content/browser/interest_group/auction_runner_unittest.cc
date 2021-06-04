@@ -2297,5 +2297,86 @@ TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletLastBidderLoses) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
+// Check that the winner of ties is randomized. Mock out bidders so can make
+// sure that which bidder wins isn't changed just due to script execution order
+// changing.
+TEST_F(AuctionRunnerTest, Tie) {
+  bool seen_bidder1_win = false;
+  bool seen_bidder2_win = false;
+
+  while (!seen_bidder1_win || !seen_bidder2_win) {
+    StartStandardAuctionWithMockService();
+
+    auto seller_worklet = mock_worklet_service_->TakeSellerWorklet();
+    ASSERT_TRUE(seller_worklet);
+    auto bidder1_worklet =
+        mock_worklet_service_->TakeBidderWorklet(kBidder1, kBidder1Name);
+    ASSERT_TRUE(bidder1_worklet);
+    auto bidder2_worklet =
+        mock_worklet_service_->TakeBidderWorklet(kBidder2, kBidder2Name);
+    ASSERT_TRUE(bidder2_worklet);
+
+    seller_worklet->CompleteLoading();
+
+    // Bidder1 returns a bid, which is then scored.
+    bidder1_worklet->CompleteLoadingAndBid(5 /* bid */,
+                                           GURL("https://ad1.com/"));
+    auto score_ad_params = seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
+    EXPECT_EQ(5, score_ad_params->bid);
+    seller_worklet->InvokeScoreAdCallback(10 /* score */);
+
+    // Bidder2 returns a bid, which is then scored.
+    bidder2_worklet->CompleteLoadingAndBid(5 /* bid */,
+                                           GURL("https://ad2.com/"));
+    score_ad_params = seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
+    EXPECT_EQ(5, score_ad_params->bid);
+    seller_worklet->InvokeScoreAdCallback(10 /* score */);
+    // Need to flush the service pipe to make sure the AuctionRunner has
+    // received the score.
+    seller_worklet->Flush();
+
+    seller_worklet->WaitForReportResult();
+    seller_worklet->InvokeReportResultCallback();
+
+    // The bidder without the closed pipe is the one that was picked to win the
+    // auction.
+    if (bidder2_worklet->PipeIsClosed()) {
+      seen_bidder1_win = true;
+
+      EXPECT_FALSE(bidder1_worklet->PipeIsClosed());
+      bidder1_worklet->WaitForReportWin();
+      bidder1_worklet->InvokeReportWinCallback();
+      auction_run_loop_->Run();
+
+      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+      ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+      EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+                result_.bidder1_prev_wins[3]->ad_json);
+    } else {
+      seen_bidder2_win = true;
+
+      EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
+      bidder2_worklet->WaitForReportWin();
+      bidder2_worklet->InvokeReportWinCallback();
+      auction_run_loop_->Run();
+
+      EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+      EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+      ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+                result_.bidder2_prev_wins[3]->ad_json);
+    }
+
+    EXPECT_FALSE(result_.seller_report_url);
+    EXPECT_FALSE(result_.bidder_report_url);
+    EXPECT_EQ(6, result_.bidder1_bid_count);
+    EXPECT_EQ(6, result_.bidder2_bid_count);
+    EXPECT_THAT(result_.errors, testing::ElementsAre());
+  }
+}
+
 }  // namespace
 }  // namespace content
