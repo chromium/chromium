@@ -4231,11 +4231,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "prefetch-notification-scheduling-integration",
-    "owners": [ "hesen" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig" ],
     "expiry_milestone": 96

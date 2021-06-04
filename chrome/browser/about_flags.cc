@@ -4695,15 +4695,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUserMediaScreenCapturing)},
 #endif
 
-#if defined(OS_ANDROID)
-    {"prefetch-notification-scheduling-integration",
-     flag_descriptions::kPrefetchNotificationSchedulingIntegrationName,
-     flag_descriptions::kPrefetchNotificationSchedulingIntegrationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kPrefetchNotificationSchedulingIntegration)},
-#endif
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"chrome-tips-in-main-menu", flag_descriptions::kChromeTipsInMainMenuName,
      flag_descriptions::kChromeTipsInMainMenuDescription, kOsDesktop,

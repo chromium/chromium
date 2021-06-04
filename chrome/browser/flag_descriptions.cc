@@ -3394,12 +3394,6 @@ const char kUserMediaScreenCapturingName[] = "Screen Capture API";
 const char kUserMediaScreenCapturingDescription[] =
     "Allows sites to request a video stream of your screen.";
 
-const char kPrefetchNotificationSchedulingIntegrationName[] =
-    "Enable prefetch notification using notification scheduling system";
-const char kPrefetchNotificationSchedulingIntegrationDescription[] =
-    "if enable prefetch notification service and background task will hook up "
-    "to notification scheduling system in native side";
-
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 const char kVideoTutorialsInstantFetchName[] =

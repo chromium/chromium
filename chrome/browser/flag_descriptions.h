@@ -1959,9 +1959,6 @@ extern const char kShareButtonInTopToolbarDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
 
-extern const char kPrefetchNotificationSchedulingIntegrationName[];
-extern const char kPrefetchNotificationSchedulingIntegrationDescription[];
-
 extern const char kInlineUpdateFlowName[];
 extern const char kInlineUpdateFlowDescription[];
 
