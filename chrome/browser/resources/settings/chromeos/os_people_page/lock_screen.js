@@ -263,15 +263,15 @@ Polymer({
       // |hasPin| to true. This prevents setupPinButton UI delays, except in the
       // small chance that CrOS fails to remove the quick unlock capability. See
       // https://crbug.com/1054327 for details.
-      if (!this.hasPin) {
-        return;
-      }
       this.hasPin = false;
       this.setModes.call(null, [], [], (result) => {
-        assert(result, 'Failed to clear quick unlock modes');
         // Revert |hasPin| to true in the event setModes fails to set lock state
         // to PASSWORD only.
-        this.hasPin = true;
+        if (!result) {
+          this.hasPin = true;
+        }
+
+        assert(result, 'Failed to clear quick unlock modes');
       });
     }
   },
