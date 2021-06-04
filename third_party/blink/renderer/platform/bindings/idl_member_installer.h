@@ -138,8 +138,7 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
 
   struct NoAllocDirectCallOperationConfig {
     OperationConfig operation_config;
-    const v8::CFunction* v8_cfunction_table_data;
-    uint32_t v8_cfunction_table_size;
+    v8::CFunction v8_c_function;
   };
   static void InstallOperations(
       v8::Isolate* isolate,
