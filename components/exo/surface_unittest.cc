@@ -89,9 +89,25 @@ class SurfaceTest : public test::ExoTestBase,
         gfx::ConvertRectToPixels(rect, device_scale_factor()));
   }
 
-  gfx::Rect ToTargetSpaceDamage(const gfx::Rect damage_rect) {
+  gfx::Rect GetCompleteDamage(const viz::CompositorFrame& frame) {
+    auto& root_pass = frame.render_pass_list.back();
+    gfx::Rect complete_damage = root_pass->damage_rect;
+
+    for (auto* quad : root_pass->quad_list) {
+      if (quad->material == viz::DrawQuad::Material::kTextureContent) {
+        auto* texture_quad = viz::TextureDrawQuad::MaterialCast(quad);
+        if (texture_quad->damage_rect.has_value()) {
+          complete_damage.Union(texture_quad->damage_rect.value());
+        }
+      }
+    }
+    return complete_damage;
+  }
+
+  gfx::Rect ToTargetSpaceDamage(const viz::CompositorFrame& frame) {
     // Map a frame's damage back to the coordinate space of its buffer.
-    return gfx::ScaleToEnclosingRect(damage_rect, 1 / device_scale_factor());
+    return gfx::ScaleToEnclosingRect(GetCompleteDamage(frame),
+                                     1 / device_scale_factor());
   }
 
   const viz::CompositorFrame& GetFrameFromSurface(ShellSurface* shell_surface) {
@@ -174,8 +190,7 @@ TEST_P(SurfaceTest, Damage) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    EXPECT_EQ(ToPixel(gfx::Rect(buffer_size)),
-              frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(ToPixel(gfx::Rect(buffer_size)), GetCompleteDamage(frame));
   }
 
   gfx::RectF buffer_damage(32, 64, 16, 32);
@@ -193,8 +208,8 @@ TEST_P(SurfaceTest, Damage) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    EXPECT_TRUE(ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect)
-                    .Contains(gfx::ToNearestRect(buffer_damage)));
+    EXPECT_TRUE(
+        ToTargetSpaceDamage(frame).Contains(gfx::ToNearestRect(buffer_damage)));
   }
 }
 
@@ -223,7 +238,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(gfx::ScaleRect(
         gfx::RectF(gfx::Rect(buffer_size)), device_scale_factor()));
-    EXPECT_EQ(scaled_damage, frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(scaled_damage, GetCompleteDamage(frame));
   }
 
   const gfx::RectF surface_damage(16, 16);
@@ -241,8 +256,8 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(
         gfx::ScaleRect(subsurface_damage, device_scale_factor()));
-    EXPECT_TRUE(scaled_damage.ApproximatelyEqual(
-        frame.render_pass_list.back()->damage_rect, margin));
+    EXPECT_TRUE(
+        scaled_damage.ApproximatelyEqual(GetCompleteDamage(frame), margin));
   }
 
   surface->Damage(gfx::ToNearestRect(surface_damage));
@@ -256,8 +271,8 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(
         gfx::ScaleRect(surface_damage, device_scale_factor()));
-    EXPECT_TRUE(scaled_damage.ApproximatelyEqual(
-        frame.render_pass_list.back()->damage_rect, margin));
+    EXPECT_TRUE(
+        scaled_damage.ApproximatelyEqual(GetCompleteDamage(frame), margin));
   }
 }
 
@@ -287,7 +302,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(gfx::ScaleRect(
         gfx::RectF(gfx::Rect(buffer_size)), device_scale_factor()));
-    EXPECT_EQ(scaled_damage, frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(scaled_damage, GetCompleteDamage(frame));
   }
 
   const gfx::RectF subsurface_damage(32, 32, 16, 16);
@@ -309,7 +324,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(gfx::ScaleRect(
         gfx::RectF(gfx::Rect(buffer_size)), device_scale_factor()));
-    EXPECT_EQ(scaled_damage, frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(scaled_damage, GetCompleteDamage(frame));
   }
 
   // Damage but do not commit.
@@ -326,8 +341,8 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(
         gfx::ScaleRect(subsurface_damage, device_scale_factor()));
-    EXPECT_TRUE(scaled_damage.ApproximatelyEqual(
-        frame.render_pass_list.back()->damage_rect, margin));
+    EXPECT_TRUE(
+        scaled_damage.ApproximatelyEqual(GetCompleteDamage(frame), margin));
   }
 }
 
@@ -357,7 +372,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageDesynchronizedCommitBehavior) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(gfx::ScaleRect(
         gfx::RectF(gfx::Rect(buffer_size)), device_scale_factor()));
-    EXPECT_EQ(scaled_damage, frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(scaled_damage, GetCompleteDamage(frame));
   }
 
   const gfx::RectF subsurface_damage(32, 32, 16, 16);
@@ -378,8 +393,8 @@ TEST_P(SurfaceTest, SubsurfaceDamageDesynchronizedCommitBehavior) {
         GetFrameFromSurface(shell_surface.get());
     const gfx::Rect scaled_damage = gfx::ToNearestRect(
         gfx::ScaleRect(subsurface_damage, device_scale_factor()));
-    EXPECT_TRUE(scaled_damage.ApproximatelyEqual(
-        frame.render_pass_list.back()->damage_rect, margin));
+    EXPECT_TRUE(
+        scaled_damage.ApproximatelyEqual(GetCompleteDamage(frame), margin));
   }
 }
 
@@ -434,8 +449,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
 
     EXPECT_FALSE(texture_draw_quad->ShouldDrawWithBlending());
     EXPECT_EQ(SK_ColorBLACK, texture_draw_quad->background_color);
-    EXPECT_EQ(gfx::Rect(buffer_size),
-              ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
   // Setting an empty opaque region requires draw with blending.
@@ -452,8 +466,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
         frame.render_pass_list.back()->quad_list.back());
     EXPECT_TRUE(texture_draw_quad->ShouldDrawWithBlending());
     EXPECT_EQ(SK_ColorTRANSPARENT, texture_draw_quad->background_color);
-    EXPECT_EQ(gfx::Rect(buffer_size),
-              ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
   std::unique_ptr<Buffer> buffer_without_alpha(
@@ -474,8 +487,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
     EXPECT_FALSE(frame.render_pass_list.back()
                      ->quad_list.back()
                      ->ShouldDrawWithBlending());
-    EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 0, 0)),
-              frame.render_pass_list.back()->damage_rect);
+    EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 0, 0)), GetCompleteDamage(frame));
   }
 }
 
@@ -594,8 +606,7 @@ TEST_P(SurfaceTest, SetBufferScale) {
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
-  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 256, 256)),
-            frame.render_pass_list.back()->damage_rect);
+  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 256, 256)), GetCompleteDamage(frame));
 }
 
 // Disabled due to flakiness: crbug.com/856145
@@ -629,7 +640,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
     ASSERT_EQ(1u, frame.render_pass_list.size());
     EXPECT_EQ(
         ToPixel(gfx::Rect(0, 0, buffer_size.height(), buffer_size.width())),
-        frame.render_pass_list.back()->damage_rect);
+        GetCompleteDamage(frame));
     const auto& quad_list = frame.render_pass_list[0]->quad_list;
     ASSERT_EQ(1u, quad_list.size());
     EXPECT_EQ(
@@ -732,8 +743,7 @@ TEST_P(SurfaceTest, SetViewport) {
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
-  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 512, 512)),
-            frame.render_pass_list.back()->damage_rect);
+  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 512, 512)), GetCompleteDamage(frame));
 }
 
 TEST_P(SurfaceTest, SetCrop) {
@@ -755,8 +765,7 @@ TEST_P(SurfaceTest, SetCrop) {
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
-  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 12, 12)),
-            frame.render_pass_list.back()->damage_rect);
+  EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 12, 12)), GetCompleteDamage(frame));
 }
 
 // Disabled due to flakiness: crbug.com/856145
@@ -1019,8 +1028,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
     ASSERT_EQ(1u, frame.resource_list.size());
     ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
-    EXPECT_EQ(gfx::Rect(buffer_size),
-              ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
   {
@@ -1034,8 +1042,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     // No quad if alpha is 0.
     ASSERT_EQ(0u, frame.render_pass_list.back()->quad_list.size());
     ASSERT_EQ(0u, frame.resource_list.size());
-    EXPECT_EQ(gfx::Rect(buffer_size),
-              ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
   {
@@ -1050,8 +1057,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     ASSERT_EQ(1u, frame.resource_list.size());
     // The resource should be updated again, the id should be changed.
     ASSERT_EQ(viz::ResourceId(2u), frame.resource_list.back().id);
-    EXPECT_EQ(gfx::Rect(buffer_size),
-              ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 }
 

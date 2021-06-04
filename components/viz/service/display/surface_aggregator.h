@@ -265,7 +265,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   int ChildIdForSurface(Surface* surface);
   bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;
   gfx::Rect DamageRectForSurface(const Surface* surface,
-                                 const CompositorRenderPass& source) const;
+                                 const CompositorRenderPass& source,
+                                 bool include_per_quad_damage) const;
 
   // This function adds |damage_rect| to
   // |damage_rects_union_of_surfaces_on_top_|. |damage_rect| is in the quad

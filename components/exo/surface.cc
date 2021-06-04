@@ -47,6 +47,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_fence.h"
@@ -1166,8 +1167,8 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
     if (device_scale_factor <= 1) {
-      render_pass->damage_rect.Union(gfx::ToEnclosingRect(
-          gfx::ConvertRectToPixels(damage_rect, device_scale_factor)));
+      damage_rect = gfx::ToEnclosingRect(
+          gfx::ConvertRectToPixels(damage_rect, device_scale_factor));
     } else {
       // The damage will eventually be rescaled by 1/device_scale_factor. Since
       // that scale factor is <1, taking the enclosed rect here means that that
@@ -1175,7 +1176,7 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
       // which makes the enclosing rect equal to |damage_rect|.
       gfx::RectF scaled_damage(damage_rect);
       scaled_damage.Scale(device_scale_factor);
-      render_pass->damage_rect.Union(gfx::ToEnclosedRect(scaled_damage));
+      damage_rect = gfx::ToEnclosedRect(scaled_damage);
     }
   }
   state_.damage.Clear();
@@ -1234,7 +1235,6 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
       gfx::MaskFilterInfo() /*mask_filter_info=*/, absl::nullopt /*clip_rect=*/,
       are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
       SkBlendMode::kSrcOver /*blend_mode=*/, 0 /*sorting_context_id=*/);
-  quad_state->no_damage = damage_rect.IsEmpty();
 
   if (current_resource_.id) {
     gfx::RectF uv_crop(gfx::SizeF(1, 1));
@@ -1299,7 +1299,15 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
           gfx::ProtectedVideoType::kClear);
       if (current_resource_.is_overlay_candidate)
         texture_quad->set_resource_size_in_pixels(current_resource_.size);
+
       frame->resource_list.push_back(current_resource_);
+
+      if (!damage_rect.IsEmpty()) {
+        texture_quad->damage_rect = damage_rect;
+        render_pass->has_per_quad_damage = true;
+        // Clear handled damage so it will not be added to the |render_pass|.
+        damage_rect = gfx::Rect();
+      }
     }
   } else {
     viz::SolidColorDrawQuad* solid_quad =
@@ -1307,6 +1315,8 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
     solid_quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorBLACK,
                        false /* force_anti_aliasing_off */);
   }
+
+  render_pass->damage_rect.Union(damage_rect);
 }
 
 void Surface::UpdateContentSize() {

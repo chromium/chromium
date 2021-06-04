@@ -51,6 +51,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
@@ -176,10 +178,21 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
       return quad;
     }
 
-    static Quad YUVVideoQuad(const gfx::Rect& rect) {
+    static Quad YUVVideoQuad(const gfx::Rect& rect,
+                             bool per_quad_damage_output = false) {
       Quad quad;
       quad.material = DrawQuad::Material::kYuvVideoContent;
       quad.rect = rect;
+      quad.per_quad_damage_output = per_quad_damage_output;
+      return quad;
+    }
+
+    static Quad TextureQuad(const gfx::Rect& rect,
+                            bool per_quad_damage_output = false) {
+      Quad quad;
+      quad.material = DrawQuad::Material::kTextureContent;
+      quad.rect = rect;
+      quad.per_quad_damage_output = per_quad_damage_output;
       return quad;
     }
 
@@ -244,6 +257,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     gfx::MaskFilterInfo mask_filter_info;
     bool is_fast_rounded_corner = false;
     bool allow_merge = true;
+    bool per_quad_damage_output = false;
 
     // Set when material==DrawQuad::Material::kSolidColor.
     SkColor color{SK_ColorWHITE};
@@ -307,7 +321,10 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                           desc.intersects_damage_under);
         break;
       case DrawQuad::Material::kYuvVideoContent:
-        AddYUVVideoQuad(pass, desc.rect);
+        AddYUVVideoQuad(pass, desc.rect, desc.per_quad_damage_output);
+        break;
+      case DrawQuad::Material::kTextureContent:
+        AddTextureDrawQuad(pass, desc.rect, desc.per_quad_damage_output);
         break;
       default:
         NOTREACHED();
@@ -435,7 +452,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
   }
 
   static void AddYUVVideoQuad(CompositorRenderPass* pass,
-                              const gfx::Rect& output_rect) {
+                              const gfx::Rect& output_rect,
+                              bool per_quad_damage_output) {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
@@ -446,6 +464,32 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                  gfx::Size(), ResourceId(1), ResourceId(2), ResourceId(3),
                  kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 0, 1.0,
                  8);
+    if (per_quad_damage_output) {
+      quad->damage_rect = output_rect;
+    }
+  }
+
+  static void AddTextureDrawQuad(CompositorRenderPass* pass,
+                                 const gfx::Rect& output_rect,
+                                 bool per_quad_damage_output) {
+    auto* shared_state = pass->CreateAndAppendSharedQuadState();
+    shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
+                         gfx::MaskFilterInfo(), absl::nullopt, false, 1,
+                         SkBlendMode::kSrcOver, 0);
+    auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    const gfx::PointF kUVTopLeft(0.1f, 0.2f);
+    const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+    quad->SetNew(shared_state, output_rect, output_rect,
+                 false /*needs_blending*/, ResourceId(1),
+                 false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                 SK_ColorTRANSPARENT, vertex_opacity, false /*flipped*/,
+                 false /*nearest_neighbor*/, false /*secure_output_only*/,
+                 gfx::ProtectedVideoType::kClear);
+
+    if (per_quad_damage_output) {
+      quad->damage_rect = output_rect;
+    }
   }
 
  protected:
@@ -6807,7 +6851,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   // Add a quad on top of video quad.
   child_surface_quads = std::vector<Quad>(
       {Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(0, 0, 50, 50)),
-       Quad::YUVVideoQuad(gfx::Rect(0, 0, 100, 100))});
+       Quad::YUVVideoQuad(gfx::Rect(0, 0, 100, 100), true)});
 
   child_surface_passes =
       std::vector<Pass>({Pass(child_surface_quads, /*size*/ gfx::Size(100, 100),
@@ -6842,8 +6886,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
               &child_surface_frame.metadata.referenced_surfaces);
     auto* render_pass = child_surface_frame.render_pass_list[0].get();
-    auto* surface_quad_sqs = render_pass->shared_quad_state_list.front();
-    surface_quad_sqs->no_damage = true;
+    render_pass->has_per_quad_damage = true;
 
     child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
                                        std::move(child_surface_frame));
@@ -6862,11 +6905,146 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // No occluding damage.
     EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
     auto index = video_sqs->overlay_damage_index.value();
-    EXPECT_EQ(0U, index);
+    EXPECT_EQ(1U, index);
 
     // Video quad(10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
               aggregated_frame.surface_damage_rect_list_[index]);
+  }
+}
+
+// Tests the |per_quad_damage| feature by adding a few quads, flagged with
+// |per_quad_damage|, and then checking the output damage after surface
+// aggregation. By placing these quads in a surface we also test that the
+// correct relevant transforms have been applied by examining the
+// |surface_damage_rect_list_|.
+TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassHasPerQuadDamage) {
+  // Video quad
+  gfx::Rect surface_quad_rect = gfx::Rect(0, 0, 100, 100);
+  std::vector<Quad> child_surface_quads = {
+      Quad::YUVVideoQuad(surface_quad_rect)};
+
+  std::vector<Pass> child_surface_passes = {
+      Pass(child_surface_quads, /*size*/ gfx::Size(100, 100),
+           /*damage_rect*/ gfx::Rect(0, 0, 100, 100))};
+
+  // Various rects configs that will be used to test per quad damage.
+  gfx::Rect quad_rects[] = {gfx::Rect(60, 0, 40, 40), gfx::Rect(0, 0, 50, 50),
+                            gfx::Rect(0, 0, 75, 25), gfx::Rect(10, 0, 30, 30),
+                            gfx::Rect(0, 5, 50, 50)};
+
+  CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+  AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+            &child_surface_frame.metadata.referenced_surfaces);
+  PopulateTransferableResources(child_surface_frame);
+
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                     std::move(child_surface_frame));
+  gfx::PointF child_surface_offset(10.0f, 5.0f);
+  gfx::Transform child_surface_transform(
+      1.f, 0, 0, 1.f, child_surface_offset.x(), child_surface_offset.y());
+
+  auto apply_transform = [child_surface_offset](const gfx::Rect orig_rect) {
+    auto rtn_rect = orig_rect;
+    rtn_rect.set_x(static_cast<int>(child_surface_offset.x()) + rtn_rect.x());
+    rtn_rect.set_y(static_cast<int>(child_surface_offset.y()) + rtn_rect.y());
+    return rtn_rect;
+  };
+
+  // root surface quads
+  std::vector<Quad> root_surface_quads = {
+      Quad::SolidColorQuad(SK_ColorRED, quad_rects[0]),
+      Quad::SurfaceQuad(
+          SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
+          /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
+          /*opacity*/ 1.f, child_surface_transform,
+          /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
+          /*is_fast_rounded_corner=*/false)};
+
+  std::vector<Pass> root_passes = {Pass(root_surface_quads,
+                                        /*size*/ gfx::Size(200, 200),
+                                        /*damage_rect*/ quad_rects[0])};
+
+  CompositorFrame root_frame = MakeEmptyCompositorFrame();
+  AddPasses(&root_frame.render_pass_list, root_passes,
+            &root_frame.metadata.referenced_surfaces);
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // Initial test frame - Full occluding damage rect
+  // The damage rect of the very first frame is always the full rect.
+  auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200), output_root_pass->damage_rect);
+  // Make sure |surface_damage_rect_list_| is correct.
+  EXPECT_EQ(output_root_pass->damage_rect,
+            DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+  const SharedQuadState* video_sqs =
+      output_root_pass->quad_list.back()->shared_quad_state;
+
+  // The whole root surface (0, 0, 200, 200) is damaged.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
+            aggregated_frame.surface_damage_rect_list_[0]);
+
+  ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
+  auto index = video_sqs->overlay_damage_index.value();
+  EXPECT_EQ(1U, index);
+  EXPECT_EQ(apply_transform(surface_quad_rect),
+            aggregated_frame.surface_damage_rect_list_[index]);
+
+  // Frame that has three quads that are flagged with per quad damage.
+  // Add a quad on top of video quad.
+  child_surface_quads = std::vector<Quad>({
+      Quad::SolidColorQuad(SK_ColorRED, quad_rects[1]),
+      Quad::YUVVideoQuad(quad_rects[2], true),
+      Quad::TextureQuad(quad_rects[3], true),
+      Quad::TextureQuad(quad_rects[4], true),
+  });
+
+  child_surface_passes = std::vector<Pass>(
+      {Pass(child_surface_quads, gfx::Size(100, 100), quad_rects[1])});
+
+  {
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    auto* render_pass = child_surface_frame.render_pass_list[0].get();
+    render_pass->has_per_quad_damage = true;
+
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    // No change in root frame.
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+    EXPECT_EQ(apply_transform(quad_rects[1]),
+              aggregated_frame.surface_damage_rect_list_[0]);
+    EXPECT_EQ(4u, aggregated_frame.surface_damage_rect_list_.size());
+    EXPECT_EQ(5u, output_root_pass->quad_list.size());
+    uint32_t i = 0;
+    // There should be 5 quads in total:
+    // 0    - root color quad
+    // 1    - surface color quad
+    // 2-4  - Quads that have |per_quad_damage|
+    for (auto* quad : output_root_pass->quad_list) {
+      EXPECT_EQ(quad_rects[i], quad->rect);
+
+      // Looking at only the quads with |per_quad_damage|.
+      if (i >= 2) {
+        const SharedQuadState* sqs = quad->shared_quad_state;
+        EXPECT_TRUE(sqs->overlay_damage_index.has_value());
+        auto index = sqs->overlay_damage_index.value();
+        EXPECT_EQ(i - 1, index);
+        EXPECT_EQ(apply_transform(quad_rects[i]),
+                  aggregated_frame.surface_damage_rect_list_[i - 1]);
+      }
+      i++;
+    }
   }
 }
 

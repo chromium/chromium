@@ -93,7 +93,8 @@ void CompositorRenderPass::SetAll(
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
-    bool generate_mipmap) {
+    bool generate_mipmap,
+    bool has_per_quad_damage) {
   DCHECK(id);
 
   this->id = id;
@@ -110,7 +111,7 @@ void CompositorRenderPass::SetAll(
   this->has_damage_from_contributing_content =
       has_damage_from_contributing_content;
   this->generate_mipmap = generate_mipmap;
-
+  this->has_per_quad_damage = has_per_quad_damage;
   DCHECK(quad_list.empty());
   DCHECK(shared_quad_state_list.empty());
 }
@@ -228,7 +229,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
                     filters, backdrop_filters, backdrop_filter_bounds,
                     subtree_capture_id, subtree_size,
                     has_transparent_background, cache_render_pass,
-                    has_damage_from_contributing_content, generate_mipmap);
+                    has_damage_from_contributing_content, generate_mipmap,
+                    has_per_quad_damage);
 
   if (shared_quad_state_list.empty()) {
     DCHECK(quad_list.empty());

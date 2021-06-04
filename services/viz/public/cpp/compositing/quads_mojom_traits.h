@@ -25,7 +25,9 @@
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
@@ -435,6 +437,13 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->hw_protected_validation_id;
   }
 
+  static const absl::optional<gfx::Rect>& damage_rect(
+      const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->damage_rect;
+  }
+
   static bool Read(viz::mojom::TextureQuadStateDataView data,
                    viz::DrawQuad* out);
 };
@@ -552,10 +561,18 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->protected_video_type;
   }
+
   static const gfx::HDRMetadata& hdr_metadata(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->hdr_metadata;
+  }
+
+  static const absl::optional<gfx::Rect>& damage_rect(
+      const viz::DrawQuad& input) {
+    const viz::YUVVideoDrawQuad* quad =
+        viz::YUVVideoDrawQuad::MaterialCast(&input);
+    return quad->damage_rect;
   }
 
   static bool Read(viz::mojom::YUVVideoQuadStateDataView data,

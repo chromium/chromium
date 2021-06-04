@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_YUV_VIDEO_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_YUV_VIDEO_DRAW_QUAD_H_
 
-#include <stddef.h>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -86,6 +85,9 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
   gfx::HDRMetadata hdr_metadata;
+
+  // This optional damage is in target render pass coordinate space.
+  absl::optional<gfx::Rect> damage_rect;
 
   static const YUVVideoDrawQuad* MaterialCast(const DrawQuad*);
 

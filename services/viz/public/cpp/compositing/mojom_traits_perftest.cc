@@ -178,6 +178,7 @@ class VizSerializationPerfTest : public testing::Test {
     bool arbitrary_bool4 = true;
     bool arbitrary_bool5 = false;
     bool arbitrary_bool6 = true;
+    bool arbitrary_bool7 = false;
     gfx::ProtectedVideoType arbitrary_protected_video_type =
         gfx::ProtectedVideoType::kClear;
     int arbitrary_context_id1 = 12;
@@ -210,7 +211,7 @@ class VizSerializationPerfTest : public testing::Test {
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
                     arbitrary_rrectf1, SubtreeCaptureId(),
                     arbitrary_rect1.size(), arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool1);
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {

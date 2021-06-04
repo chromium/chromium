@@ -44,8 +44,4 @@ struct SharedQuadState {
   // de-jelly effect.
   float de_jelly_delta_y;
 
-  // If true, indicates that the quads do not contribute damage to their
-  // render pass's damage; if false, whether or not the quads contribute
-  // damage is unknown.
-  bool no_damage;
 };

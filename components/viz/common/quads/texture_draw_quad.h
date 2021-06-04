@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 
-#include <stddef.h>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/video_types.h"
 
@@ -22,6 +22,8 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
 
   TextureDrawQuad();
   TextureDrawQuad(const TextureDrawQuad& other);
+
+  ~TextureDrawQuad() override;
 
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -74,6 +76,9 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // regular display path. They need either a protected output or a protected
   // hardware overlay.
   gfx::ProtectedVideoType protected_video_type : 2;
+
+  // This optional damage is in target render pass coordinate space.
+  absl::optional<gfx::Rect> damage_rect;
 
   // Identifier passed through by the video decoder that allows us to validate
   // if a protected surface can still be displayed. Non-zero when valid.

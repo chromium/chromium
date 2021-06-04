@@ -709,12 +709,14 @@ TEST_F(StructTraitsTest, RenderPass) {
   const bool cache_render_pass = true;
   const bool has_damage_from_contributing_content = true;
   const bool generate_mipmap = true;
+  const bool has_per_quad_damage = true;
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
                 subtree_capture_id, output_rect.size(),
                 has_transparent_background, cache_render_pass,
-                has_damage_from_contributing_content, generate_mipmap);
+                has_damage_from_contributing_content, generate_mipmap,
+                has_per_quad_damage);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
   const gfx::Rect copy_output_area(24, 42, 75, 57);
   input->copy_requests.back()->set_area(copy_output_area);
@@ -782,6 +784,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   EXPECT_EQ(cache_render_pass, output->cache_render_pass);
   EXPECT_EQ(has_damage_from_contributing_content,
             output->has_damage_from_contributing_content);
+  EXPECT_EQ(has_per_quad_damage, output->has_per_quad_damage);
   EXPECT_EQ(generate_mipmap, output->generate_mipmap);
   ASSERT_EQ(1u, output->copy_requests.size());
   EXPECT_EQ(copy_output_area, output->copy_requests.front()->area());
@@ -853,12 +856,14 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   const bool cache_render_pass = false;
   const bool has_damage_from_contributing_content = false;
   const bool generate_mipmap = false;
+  const bool has_per_quad_damage = false;
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
                 backdrop_filter_bounds, subtree_capture_id, output_rect.size(),
                 has_transparent_background, cache_render_pass,
-                has_damage_from_contributing_content, generate_mipmap);
+                has_damage_from_contributing_content, generate_mipmap,
+                has_per_quad_damage);
 
   // Unlike the previous test, don't add any quads to the list; we need to
   // verify that the serialization code can deal with that.

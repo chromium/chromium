@@ -28,6 +28,8 @@ TextureDrawQuad::TextureDrawQuad()
 
 TextureDrawQuad::TextureDrawQuad(const TextureDrawQuad& other) = default;
 
+TextureDrawQuad::~TextureDrawQuad() = default;
+
 void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,

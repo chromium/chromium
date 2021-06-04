@@ -74,11 +74,6 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   absl::optional<size_t> overlay_damage_index;
   // The amount to skew quads in this layer. For experimental de-jelly effect.
   float de_jelly_delta_y = 0.0f;
-
-  // If true, indicates that the quads do not contribute damage to their
-  // render pass's damage; if false, whether or not the quads contribute
-  // damage is unknown. Only meaningful in root render passes.
-  bool no_damage = false;
 };
 
 }  // namespace viz

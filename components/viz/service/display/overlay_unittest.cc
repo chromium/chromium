@@ -1021,7 +1021,6 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
     SharedQuadState* damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
             pass->shared_quad_state_list.back());
-    damaged_shared_quad_state->no_damage = false;
 
     auto* quad = CreateCandidateQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -1075,7 +1074,6 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
     SharedQuadState* damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
             pass->shared_quad_state_list.back());
-    damaged_shared_quad_state->no_damage = false;
 
     // Create surface damages corresponding to the in front damage, the overlay
     // damage, and finally the behind overlay damage.
@@ -2037,11 +2035,9 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
           child_provider_.get(), pass->output_rect.size(),
           true /*is_overlay_candidate*/);
       previous_resource_id = resource_id;
-      pass->shared_quad_state_list.back()->no_damage = false;
     } else {
       // Starting the 3rd frame, they should have the same resource ID.
       resource_id = previous_resource_id;
-      pass->shared_quad_state_list.back()->no_damage = true;
     }
 
     // Create a quad with the resource ID selected above.

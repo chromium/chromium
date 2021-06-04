@@ -76,6 +76,11 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->has_transparent_background;
   }
 
+  static bool has_per_quad_damage(
+      const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    return input->has_per_quad_damage;
+  }
+
   static bool cache_render_pass(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->cache_render_pass;

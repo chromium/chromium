@@ -383,8 +383,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
         static_cast<float>(it->candidate.damage_area_estimate) / display_area,
         it->candidate.resource_id, tracker_config_,
         it->candidate.overlay_damage_index !=
-                OverlayCandidate::kInvalidDamageIndex ||
-            it->candidate.assume_damaged);
+            OverlayCandidate::kInvalidDamageIndex);
 
     // Here a series of criteria are considered for wholesale rejection of a
     // candidate. The rational for rejection is usually power improvements but

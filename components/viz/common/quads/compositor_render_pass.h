@@ -75,7 +75,8 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
-              bool generate_mipmap);
+              bool generate_mipmap,
+              bool has_per_quad_damage);
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
@@ -99,6 +100,10 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // equal to |output_rect|. If empty, then the full |output_rect| should be
   // copied.
   gfx::Size subtree_size;
+
+  // Set to true if at least one of the quads in the |quad_list| contains damage
+  // that is not contained in |damage_rect|.
+  bool has_per_quad_damage = false;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use

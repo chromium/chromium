@@ -41,7 +41,7 @@ static void CompareRenderPassLists(
     EXPECT_EQ(expected->has_transparent_background,
               actual->has_transparent_background);
     EXPECT_EQ(expected->generate_mipmap, actual->generate_mipmap);
-
+    EXPECT_EQ(expected->has_per_quad_damage, actual->has_per_quad_damage);
     EXPECT_EQ(expected->shared_quad_state_list.size(),
               actual->shared_quad_state_list.size());
     EXPECT_EQ(expected->quad_list.size(), actual->quad_list.size());
@@ -135,13 +135,14 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
   bool generate_mipmap = false;
+  bool has_per_quad_damage = false;
 
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId{1u},
                output_rect.size(), has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
-               generate_mipmap);
+               generate_mipmap, has_per_quad_damage);
 
   // Two quads using one shared state.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();
@@ -191,6 +192,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   bool contrib_cache_render_pass = false;
   bool contrib_has_damage_from_contributing_content = false;
   bool contrib_generate_mipmap = false;
+  bool contrib_has_per_quad_damage = false;
 
   auto contrib = CompositorRenderPass::Create();
   contrib->SetAll(contrib_id, contrib_output_rect, contrib_damage_rect,
@@ -199,7 +201,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
                   SubtreeCaptureId{2u}, contrib_output_rect.size(),
                   contrib_has_transparent_background, contrib_cache_render_pass,
                   contrib_has_damage_from_contributing_content,
-                  contrib_generate_mipmap);
+                  contrib_generate_mipmap, contrib_has_per_quad_damage);
 
   SharedQuadState* contrib_shared_state =
       contrib->CreateAndAppendSharedQuadState();
@@ -247,13 +249,13 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
   bool generate_mipmap = false;
-
+  bool has_per_quad_damage = false;
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId(),
                output_rect.size(), has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
-               generate_mipmap);
+               generate_mipmap, has_per_quad_damage);
 
   // A shared state with a quad.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();

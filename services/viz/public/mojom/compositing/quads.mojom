@@ -91,6 +91,7 @@ struct TextureQuadState {
   bool is_video_frame;
   ProtectedVideoState protected_video_type;
   uint32 hw_protected_validation_id;
+  gfx.mojom.Rect? damage_rect;
 };
 
 struct TileQuadState {
@@ -117,6 +118,7 @@ struct YUVVideoQuadState {
   gfx.mojom.ColorSpace video_color_space;
   ProtectedVideoState protected_video_type;
   gfx.mojom.HDRMetadata hdr_metadata;
+  gfx.mojom.Rect? damage_rect;
 };
 
 struct VideoHoleQuadState {

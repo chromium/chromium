@@ -7,6 +7,8 @@
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
@@ -165,6 +167,10 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->secure_output_only = data.secure_output_only();
   quad->is_video_frame = data.is_video_frame();
   quad->hw_protected_validation_id = data.hw_protected_validation_id();
+
+  if (!data.ReadDamageRect(&quad->damage_rect))
+    return false;
+
   return true;
 }
 
@@ -240,6 +246,9 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
     viz::SetDeserializationCrashKeyString("Bits per channel too big");
     return false;
   }
+  if (!data.ReadDamageRect(&quad->damage_rect))
+    return false;
+
   return true;
 }
 

@@ -27,6 +27,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gl {
 struct HDRMetadata;
@@ -52,6 +53,7 @@ enum RenderPassField {
   kRenderPassCopyRequests = 1 << 12,
   kRenderPassQuadList = 1 << 13,
   kRenderPassSharedQuadStateList = 1 << 14,
+  kRenderPassHasPreQuadDamage = 1 << 15,
   kRenderPassAllFields = 0xFFFFFFFF,
 };
 
@@ -1202,6 +1204,9 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   DCHECK_EQ(1u, draw_quad->resources.count);
   dict->SetKey("resource_size_in_pixels",
                SizeToDict(draw_quad->overlay_resources.size_in_pixels));
+  if (draw_quad->damage_rect.has_value()) {
+    dict->SetKey("damage_rect", RectToDict(draw_quad->damage_rect.value()));
+  }
 }
 
 void TileDrawQuadToDict(const TileDrawQuad* draw_quad, base::Value* dict) {
@@ -1228,6 +1233,9 @@ void YUVVideoDrawQuadToDict(const YUVVideoDrawQuad* draw_quad,
       "protected_video_type",
       ProtectedVideoTypeToString(draw_quad->protected_video_type));
   DCHECK(4u == draw_quad->resources.count || 3u == draw_quad->resources.count);
+  if (draw_quad->damage_rect.has_value()) {
+    dict->SetKey("damage_rect", RectToDict(draw_quad->damage_rect.value()));
+  }
 }
 
 void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
@@ -1437,6 +1445,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
   const base::Value* uv_bottom_right = dict.FindDictKey("uv_bottom_right");
   absl::optional<int> background_color = dict.FindIntKey("background_color");
   const base::Value* vertex_opacity = dict.FindListKey("vertex_opacity");
+  const base::Value* damage_rect = dict.FindDictKey("damage_rect");
   absl::optional<bool> y_flipped = dict.FindBoolKey("y_flipped");
   absl::optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
   absl::optional<bool> secure_output_only =
@@ -1475,6 +1484,12 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
       static_cast<SkColor>(background_color.value()), t_vertex_opacity,
       y_flipped.value(), nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
+
+  gfx::Rect t_damage_rect;
+  if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {
+    draw_quad->damage_rect = t_damage_rect;
+  }
+
   return true;
 }
 
@@ -1516,6 +1531,7 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
   const base::Value* uv_tex_coord_rect = dict.FindDictKey("uv_tex_coord_rect");
   const base::Value* ya_tex_size = dict.FindDictKey("ya_tex_size");
   const base::Value* uv_tex_size = dict.FindDictKey("uv_tex_size");
+  const base::Value* damage_rect = dict.FindDictKey("damage_rect");
   absl::optional<double> resource_offset =
       dict.FindDoubleKey("resource_offset");
   absl::optional<double> resource_multiplier =
@@ -1568,6 +1584,12 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
       static_cast<uint32_t>(bits_per_channel.value()),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
       gfx::HDRMetadata());
+
+  gfx::Rect t_damage_rect;
+  if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {
+    draw_quad->damage_rect = t_damage_rect;
+  }
+
   return true;
 }
 
@@ -1904,6 +1926,11 @@ base::Value CompositorRenderPassToDict(
   }
   if (ProcessRenderPassField(kRenderPassCacheRenderPass))
     dict.SetBoolKey("cache_render_pass", render_pass.cache_render_pass);
+  if (ProcessRenderPassField(kRenderPassHasPreQuadDamage)) {
+    // Set the dict value only if it is not the non default value.
+    if (render_pass.has_per_quad_damage)
+      dict.SetBoolKey("has_per_quad_damage", render_pass.has_per_quad_damage);
+  }
   if (ProcessRenderPassField(kRenderPassHasDamageFromContributingContent)) {
     dict.SetBoolKey("has_damage_from_contributing_content",
                     render_pass.has_damage_from_contributing_content);
@@ -2023,6 +2050,13 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
     if (!cache_render_pass)
       return nullptr;
     pass->cache_render_pass = cache_render_pass.value();
+  }
+
+  if (ProcessRenderPassField(kRenderPassHasPreQuadDamage)) {
+    const absl::optional<bool> has_per_quad_damage =
+        dict.FindBoolKey("has_per_quad_damage");
+    if (has_per_quad_damage)
+      pass->has_per_quad_damage = has_per_quad_damage.value();
   }
 
   if (ProcessRenderPassField(kRenderPassHasDamageFromContributingContent)) {
