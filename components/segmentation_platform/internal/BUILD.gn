@@ -17,6 +17,7 @@ static_library("internal") {
   sources = [
     "database/metadata_utils.cc",
     "database/metadata_utils.h",
+    "database/segment_info_database.cc",
     "database/segment_info_database.h",
     "database/user_action_database.h",
     "execution/model_execution_status.h",
@@ -73,6 +74,7 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "database/metadata_utils_unittest.cc",
+    "database/segment_info_database_unittest.cc",
     "database/test_segment_info_database.cc",
     "database/test_segment_info_database.h",
     "scheduler/model_execution_scheduler_unittest.cc",
