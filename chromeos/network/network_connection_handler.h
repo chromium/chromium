@@ -123,6 +123,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // The SIM must be unlocked before a connection can succeed.
   static const char kErrorSimLocked[];
 
+  // Connect failed because cellular device is busy.
+  static const char kErrorCellularDeviceBusy[];
+
+  // Connect failed because connect request timed out.
+  static const char kErrorConnectTimeout[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
     using StringErrorCallback =

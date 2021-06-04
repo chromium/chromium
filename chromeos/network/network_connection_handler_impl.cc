@@ -48,6 +48,10 @@ namespace {
 constexpr base::TimeDelta kMaxCertLoadTimeSeconds =
     base::TimeDelta::FromSeconds(15);
 
+// Timeout after which a pending cellular connect request is considered failed.
+constexpr base::TimeDelta kCellularConnectTimeout =
+    base::TimeDelta::FromSeconds(150);
+
 bool IsAuthenticationError(const std::string& error) {
   return (error == shill::kErrorBadWEPKey ||
           error == shill::kErrorPppAuthFailed ||
@@ -326,6 +330,15 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
         return;
       }
 
+      // Reject request if a cellular connect request is already in progress.
+      // This prevents complexity with switching slots when one is already in
+      // progress.
+      if (HasPendingCellularRequest()) {
+        InvokeConnectErrorCallback(service_path, std::move(error_callback),
+                                   kErrorCellularDeviceBusy);
+        return;
+      }
+
       const DeviceState* cellular_device =
           network_state_handler_->GetDeviceState(network->device_path());
 
@@ -365,10 +378,10 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
   }
 
   // All synchronous checks passed, add |service_path| to connecting list.
-  pending_requests_.emplace(
-      service_path,
-      ConnectRequest(mode, service_path, profile_path,
-                     std::move(success_callback), std::move(error_callback)));
+  pending_requests_.emplace(service_path, std::make_unique<ConnectRequest>(
+                                              mode, service_path, profile_path,
+                                              std::move(success_callback),
+                                              std::move(error_callback)));
 
   // Indicate that a connect was requested. This will be updated by
   // NetworkStateHandler when the connection state changes, or cleared if
@@ -376,6 +389,8 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
   network_state_handler_->SetNetworkConnectRequested(service_path, true);
 
   if (cellular_connection_handler_ && !cellular_network_iccid.empty()) {
+    StartConnectTimer(service_path, kCellularConnectTimeout);
+
     // Cellular networks require special handling before Shill can initiate a
     // connection. Prepare the network for connection before proceeding.
     cellular_connection_handler_->PrepareExistingCellularNetworkForConnection(
@@ -479,9 +494,9 @@ void NetworkConnectionHandlerImpl::NetworkIdentifierTransitioned(
 
   // Remove the old map entry from the previous service path and add a new
   // mapping with the updated service path.
-  ConnectRequest request = std::move(it->second);
-  request.service_path = new_service_path;
-  request.profile_path = profile_path;
+  std::unique_ptr<ConnectRequest> request = std::move(it->second);
+  request->service_path = new_service_path;
+  request->profile_path = profile_path;
   pending_requests_.erase(it);
   pending_requests_.emplace(new_service_path, std::move(request));
 
@@ -497,9 +512,21 @@ bool NetworkConnectionHandlerImpl::HasConnectingNetwork(
 NetworkConnectionHandlerImpl::ConnectRequest*
 NetworkConnectionHandlerImpl::GetPendingRequest(
     const std::string& service_path) {
-  std::map<std::string, ConnectRequest>::iterator iter =
+  std::map<std::string, std::unique_ptr<ConnectRequest>>::iterator iter =
       pending_requests_.find(service_path);
-  return iter != pending_requests_.end() ? &(iter->second) : nullptr;
+  return iter != pending_requests_.end() ? iter->second.get() : nullptr;
+}
+
+bool NetworkConnectionHandlerImpl::HasPendingCellularRequest() const {
+  auto iter = std::find_if(
+      pending_requests_.begin(), pending_requests_.end(),
+      [&](const std::pair<const std::string, std::unique_ptr<ConnectRequest>>&
+              pair) {
+        const NetworkState* network =
+            network_state_handler_->GetNetworkState(pair.first);
+        return network && network->Matches(NetworkTypePattern::Cellular());
+      });
+  return iter != pending_requests_.end();
 }
 
 void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionFailure(
@@ -517,6 +544,29 @@ void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionFailure(
   ClearPendingRequest(service_path);
   InvokeConnectErrorCallback(service_path, std::move(error_callback),
                              error_name);
+}
+
+void NetworkConnectionHandlerImpl::StartConnectTimer(
+    const std::string& service_path,
+    base::TimeDelta timeout) {
+  ConnectRequest* request = GetPendingRequest(service_path);
+  if (!request)
+    return;
+
+  request->timer = std::make_unique<base::OneShotTimer>();
+  request->timer->Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&NetworkConnectionHandlerImpl::OnConnectTimeout,
+                     AsWeakPtr(), request));
+}
+
+void NetworkConnectionHandlerImpl::OnConnectTimeout(ConnectRequest* request) {
+  // Copy service path since request will be deleted in ClearPendingRequest.
+  std::string service_path = request->service_path;
+  NET_LOG(EVENT) << "Connect request timed out for path=" << service_path;
+  InvokeConnectErrorCallback(service_path, std::move(request->error_callback),
+                             kErrorConnectTimeout);
+  ClearPendingRequest(service_path);
 }
 
 // ConnectToNetwork implementation
@@ -969,7 +1019,7 @@ void NetworkConnectionHandlerImpl::CheckPendingRequest(
 }
 
 void NetworkConnectionHandlerImpl::CheckAllPendingRequests() {
-  for (std::map<std::string, ConnectRequest>::iterator iter =
+  for (std::map<std::string, std::unique_ptr<ConnectRequest>>::iterator iter =
            pending_requests_.begin();
        iter != pending_requests_.end(); ++iter) {
     CheckPendingRequest(iter->first);
