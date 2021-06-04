@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -39,6 +40,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -318,6 +320,8 @@ NewTabPageHandler::NewTabPageHandler(
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : instant_service_(instant_service),
+      most_visited_sites_(
+          ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       logo_service_(LogoServiceFactory::GetForProfile(profile)),
@@ -355,23 +359,16 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
                                                bool visible) {
-  auto pair = instant_service_->GetCurrentShortcutSettings();
-  // The first of the pair is true if most-visited tiles are being used.
-  bool old_custom_links_enabled = !pair.first;
-  bool old_visible = pair.second;
-  // |ToggleMostVisitedOrCustomLinks()| always notifies observers. Since we only
-  // want to notify once, we need to call |ToggleShortcutsVisibility()| with
-  // false if we are also going to call |ToggleMostVisitedOrCustomLinks()|.
-  bool toggleCustomLinksEnabled =
-      old_custom_links_enabled != custom_links_enabled;
+  bool old_visible = most_visited_sites_->IsShortcutsVisible();
   if (old_visible != visible) {
-    instant_service_->ToggleShortcutsVisibility(
-        /* do_notify= */ !toggleCustomLinksEnabled);
+    most_visited_sites_->SetShortcutsVisible(visible);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY,
                      base::TimeDelta() /* unused */);
   }
-  if (toggleCustomLinksEnabled) {
-    instant_service_->ToggleMostVisitedOrCustomLinks();
+
+  bool old_custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
+  if (old_custom_links_enabled != custom_links_enabled) {
+    most_visited_sites_->EnableCustomLinks(custom_links_enabled);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
                      base::TimeDelta() /* unused */);
   }
@@ -379,10 +376,8 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
 
 void NewTabPageHandler::GetMostVisitedSettings(
     GetMostVisitedSettingsCallback callback) {
-  auto pair = instant_service_->GetCurrentShortcutSettings();
-  // The first of the pair is true if most-visited tiles are being used.
-  bool custom_links_enabled = !pair.first;
-  bool visible = pair.second;
+  bool custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
+  bool visible = most_visited_sites_->IsShortcutsVisible();
   std::move(callback).Run(custom_links_enabled, visible);
 }
 

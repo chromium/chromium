@@ -9,9 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/ntp_tiles/constants.h"
@@ -48,70 +47,74 @@ MostVisitedHandler::MostVisitedHandler(
     const GURL& ntp_url,
     const base::Time& ntp_navigation_start_time)
     : profile_(profile),
-      instant_service_(InstantServiceFactory::GetForProfile(profile)),
+      most_visited_sites_(
+          ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       web_contents_(web_contents),
       logger_(profile, ntp_url),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
-  instant_service_->AddObserver(this);
+  most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
+  most_visited_sites_->SetMostVisitedURLsObserver(
+      this, ntp_tiles::kMaxNumMostVisited);
 }
 
-MostVisitedHandler::~MostVisitedHandler() {
-  instant_service_->RemoveObserver(this);
-}
+MostVisitedHandler::~MostVisitedHandler() = default;
 
 void MostVisitedHandler::AddMostVisitedTile(
     const GURL& url,
     const std::string& title,
     AddMostVisitedTileCallback callback) {
-  bool success = instant_service_->AddCustomLink(url, title);
-  std::move(callback).Run(success);
-  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD, base::TimeDelta() /* unused */);
+  if (IsCustomLinksEnabled()) {
+    bool success =
+        most_visited_sites_->AddCustomLink(url, base::UTF8ToUTF16(title));
+    std::move(callback).Run(success);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD,
+                     base::TimeDelta() /* unused */);
+  }
 }
 
 void MostVisitedHandler::DeleteMostVisitedTile(const GURL& url) {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->DeleteCustomLink(url);
+  if (IsCustomLinksEnabled()) {
+    most_visited_sites_->DeleteCustomLink(url);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
                      base::TimeDelta() /* unused */);
   } else {
-    instant_service_->DeleteMostVisitedItem(url);
+    most_visited_sites_->AddOrRemoveBlockedUrl(url, true);
     last_blocklisted_ = url;
   }
 }
 
 void MostVisitedHandler::RestoreMostVisitedDefaults() {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->ResetCustomLinks();
+  if (IsCustomLinksEnabled()) {
+    most_visited_sites_->UninitializeCustomLinks();
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
                      base::TimeDelta() /* unused */);
   } else {
-    instant_service_->UndoAllMostVisitedDeletions();
+    most_visited_sites_->ClearBlockedUrls();
   }
 }
 
 void MostVisitedHandler::ReorderMostVisitedTile(const GURL& url,
                                                 uint8_t new_pos) {
-  instant_service_->ReorderCustomLink(url, new_pos);
+  if (IsCustomLinksEnabled()) {
+    most_visited_sites_->ReorderCustomLink(url, new_pos);
+  }
 }
 
 void MostVisitedHandler::UndoMostVisitedTileAction() {
-  if (instant_service_->IsCustomLinksEnabled()) {
-    instant_service_->UndoCustomLinkAction();
+  if (IsCustomLinksEnabled()) {
+    most_visited_sites_->UndoCustomLinkAction();
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
                      base::TimeDelta() /* unused */);
   } else if (last_blocklisted_.is_valid()) {
-    instant_service_->UndoMostVisitedDeletion(last_blocklisted_);
+    most_visited_sites_->AddOrRemoveBlockedUrl(last_blocklisted_, false);
     last_blocklisted_ = GURL();
   }
 }
 
 void MostVisitedHandler::UpdateMostVisitedInfo() {
-  // OnNewTabPageOpened refreshes the most visited entries while
-  // UpdateMostVisitedInfo triggers a call to MostVisitedInfoChanged.
-  instant_service_->OnNewTabPageOpened();
-  instant_service_->UpdateMostVisitedInfo();
+  most_visited_sites_->RefreshTiles();
 }
 
 void MostVisitedHandler::UpdateMostVisitedTile(
@@ -119,11 +122,13 @@ void MostVisitedHandler::UpdateMostVisitedTile(
     const GURL& new_url,
     const std::string& new_title,
     UpdateMostVisitedTileCallback callback) {
-  bool success = instant_service_->UpdateCustomLink(
-      url, new_url != url ? new_url : GURL(), new_title);
-  std::move(callback).Run(success);
-  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
-                   base::TimeDelta() /* unused */);
+  if (IsCustomLinksEnabled()) {
+    bool success = most_visited_sites_->UpdateCustomLink(
+        url, new_url != url ? new_url : GURL(), base::UTF8ToUTF16(new_title));
+    std::move(callback).Run(success);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
+                     base::TimeDelta() /* unused */);
+  }
 }
 
 void MostVisitedHandler::OnMostVisitedTilesRendered(
@@ -170,15 +175,14 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
       false));
 }
 
-void MostVisitedHandler::NtpThemeChanged(const NtpTheme& theme) {}
-
-void MostVisitedHandler::MostVisitedInfoChanged(
-    const InstantMostVisitedInfo& info) {
+void MostVisitedHandler::OnURLsAvailable(
+    const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
+        sections) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   auto result = most_visited::mojom::MostVisitedInfo::New();
   std::vector<most_visited::mojom::MostVisitedTilePtr> tiles;
-  for (auto& tile : info.items) {
+  for (auto& tile : sections.at(ntp_tiles::SectionType::PERSONALIZED)) {
     auto value = most_visited::mojom::MostVisitedTile::New();
     if (tile.title.empty()) {
       value->title = tile.url.spec();
@@ -200,11 +204,14 @@ void MostVisitedHandler::MostVisitedInfoChanged(
     tiles.push_back(std::move(value));
   }
   result->tiles = std::move(tiles);
-  // Update the page with the up-to-date most visited settings. The most visited
-  // settings in |info| may not reflect the current default search provider.
-  auto pair = instant_service_->GetCurrentShortcutSettings();
-  result->custom_links_enabled =
-      !pair.first && search::DefaultSearchProviderIsGoogle(profile_);
-  result->visible = pair.second;
+  result->custom_links_enabled = IsCustomLinksEnabled();
+  result->visible = most_visited_sites_->IsShortcutsVisible();
   page_->SetMostVisitedInfo(std::move(result));
+}
+
+void MostVisitedHandler::OnIconMadeAvailable(const GURL& site_url) {}
+
+bool MostVisitedHandler::IsCustomLinksEnabled() {
+  return most_visited_sites_->IsCustomLinksEnabled() &&
+         search::DefaultSearchProviderIsGoogle(profile_);
 }

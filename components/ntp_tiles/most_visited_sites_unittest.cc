@@ -1138,6 +1138,50 @@ class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {
   }
 };
 
+TEST_P(MostVisitedSitesWithCustomLinksTest, ChangeVisibility) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  std::map<SectionType, NTPTilesVector> sections;
+  DisableRemoteSuggestions();
+
+  // Build tiles when custom links is not initialized. Tiles should be Top
+  // Sites.
+  EXPECT_CALL(*mock_custom_links_, RegisterCallbackForOnChanged(_));
+  ExpectBuildWithTopSites(
+      MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}, &sections);
+  most_visited_sites_->SetMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
+  base::RunLoop().RunUntilIdle();
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0],
+              MatchesTile(kTestTitle, kTestUrl, TileSource::TOP_SITES));
+
+  EXPECT_TRUE(most_visited_sites_->IsCustomLinksEnabled());
+  EXPECT_TRUE(most_visited_sites_->IsShortcutsVisible());
+
+  // Hide shortcuts. Observer should get notified.
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
+  most_visited_sites_->SetShortcutsVisible(false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(most_visited_sites_->IsCustomLinksEnabled());
+  EXPECT_FALSE(most_visited_sites_->IsShortcutsVisible());
+
+  // Attempt to hide the shortcuts again. This should be ignored.
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
+  most_visited_sites_->SetShortcutsVisible(false);
+  base::RunLoop().RunUntilIdle();
+
+  // Make the shortcuts visible. Observer should get notified.
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
+  most_visited_sites_->SetShortcutsVisible(true);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(most_visited_sites_->IsCustomLinksEnabled());
+  EXPECT_TRUE(most_visited_sites_->IsShortcutsVisible());
+}
+
 TEST_P(MostVisitedSitesWithCustomLinksTest,
        ShouldOnlyBuildCustomLinksWhenInitialized) {
   const char kTestUrl[] = "http://site1/";
@@ -1295,8 +1339,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   // Disable custom links. Tiles should rebuild.
   EXPECT_CALL(mock_suggestions_service_, GetSuggestionsDataFromCache())
       .WillOnce(Return(MakeProfile({MakeSuggestion(kTestTitle, kTestUrl)})));
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
-      .Times(IsPopularSitesFeatureEnabled() ? 1 : 0);
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
   most_visited_sites_->EnableCustomLinks(false);
   base::RunLoop().RunUntilIdle();
 
@@ -1549,7 +1592,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, GetLinks())
       .WillRepeatedly(ReturnRef(expected_links));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
-      .WillOnce(SaveArg<0>(&sections));
+      .WillRepeatedly(SaveArg<0>(&sections));
   most_visited_sites_->UpdateCustomLink(GURL("test.com"), GURL("test.com"),
                                         u"test");
   base::RunLoop().RunUntilIdle();
@@ -1598,48 +1641,48 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   ASSERT_THAT(tiles[0],
               MatchesTile(kTestTitle, kTestUrl, TileSource::TOP_SITES));
 
-  // Fail to add a custom link. This should not initialize custom links nor
+  // Fail to add a custom link. This should not initialize custom links but
   // notify.
   EXPECT_CALL(*mock_custom_links_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_custom_links_, AddLink(_, _)).WillOnce(Return(false));
   EXPECT_CALL(*mock_custom_links_, IsInitialized())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
   most_visited_sites_->AddCustomLink(GURL(kTestUrl), u"test");
   base::RunLoop().RunUntilIdle();
 
-  // Fail to edit a custom link. This should not initialize custom links nor
+  // Fail to edit a custom link. This should not initialize custom links but
   // notify.
   EXPECT_CALL(*mock_custom_links_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_custom_links_, UpdateLink(_, _, _)).WillOnce(Return(false));
   EXPECT_CALL(*mock_custom_links_, IsInitialized())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
   most_visited_sites_->UpdateCustomLink(GURL("test.com"), GURL("test2.com"),
                                         u"test");
   base::RunLoop().RunUntilIdle();
 
-  // Fail to reorder a custom link. This should not initialize custom links nor
+  // Fail to reorder a custom link. This should not initialize custom links but
   // notify.
   EXPECT_CALL(*mock_custom_links_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_custom_links_, ReorderLink(_, _)).WillOnce(Return(false));
   EXPECT_CALL(*mock_custom_links_, IsInitialized())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
   most_visited_sites_->ReorderCustomLink(GURL("test.com"), 1);
   base::RunLoop().RunUntilIdle();
 
-  // Fail to delete a custom link. This should not initialize custom links nor
+  // Fail to delete a custom link. This should not initialize custom links but
   // notify.
   EXPECT_CALL(*mock_custom_links_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_custom_links_, DeleteLink(_)).WillOnce(Return(false));
   EXPECT_CALL(*mock_custom_links_, IsInitialized())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(1);
   most_visited_sites_->DeleteCustomLink(GURL("test.com"));
   base::RunLoop().RunUntilIdle();
 }
@@ -2108,7 +2151,7 @@ TEST_P(MostVisitedSitesWithEmptyCacheTest,
 }
 
 TEST_P(MostVisitedSitesWithEmptyCacheTest,
-       ShouldNotifyOnceIfTopSitesUnchanged) {
+       ShouldStillNotifyIfTopSitesUnchanged) {
   EXPECT_CALL(
       mock_observer_,
       OnURLsAvailable(Contains(Pair(
@@ -2117,7 +2160,8 @@ TEST_P(MostVisitedSitesWithEmptyCacheTest,
               MatchesTile(u"Site 1", "http://site1/", TileSource::TOP_SITES),
               MatchesTile(u"Site 2", "http://site2/", TileSource::TOP_SITES),
               MatchesTile(u"Site 3", "http://site3/",
-                          TileSource::TOP_SITES))))));
+                          TileSource::TOP_SITES))))))
+      .Times(5);
 
   suggestions_service_callbacks_.Notify(SuggestionsProfile());
 
@@ -2143,7 +2187,7 @@ TEST_P(MostVisitedSitesWithEmptyCacheTest,
 }
 
 TEST_P(MostVisitedSitesWithEmptyCacheTest,
-       ShouldNotifyOnceIfSuggestionsUnchanged) {
+       ShouldStillNotifyIfSuggestionsUnchanged) {
   EXPECT_CALL(mock_observer_,
               OnURLsAvailable(Contains(Pair(
                   SectionType::PERSONALIZED,
@@ -2152,7 +2196,8 @@ TEST_P(MostVisitedSitesWithEmptyCacheTest,
                               MatchesTile(u"Site 2", "http://site2/",
                                           TileSource::SUGGESTIONS_SERVICE),
                               MatchesTile(u"Site 3", "http://site3/",
-                                          TileSource::SUGGESTIONS_SERVICE))))));
+                                          TileSource::SUGGESTIONS_SERVICE))))))
+      .Times(5);
 
   for (int i = 0; i < 5; ++i) {
     suggestions_service_callbacks_.Notify(

@@ -136,6 +136,19 @@ MostVisitedSites::MostVisitedSites(
       max_num_sites_(0u),
       mv_source_(TileSource::TOP_SITES) {
   DCHECK(prefs_);
+
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_.Add(
+      prefs::kNtpUseMostVisitedTiles,
+      base::BindRepeating(&MostVisitedSites::OnCustomLinksEnabledPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kNtpShortcutsVisible,
+      base::BindRepeating(&MostVisitedSites::OnTilesVisibilityPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+
   // top_sites_ can be null in tests.
   // TODO(sfiera): have iOS use a dummy TopSites in its tests.
   DCHECK(suggestions_service_);
@@ -275,10 +288,7 @@ bool MostVisitedSites::IsCustomLinksInitialized() {
 
 void MostVisitedSites::EnableCustomLinks(bool enable) {
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
-  if (IsCustomLinksEnabled() != enable) {
-    prefs_->SetBoolean(prefs::kNtpUseMostVisitedTiles, !enable);
-    BuildCurrentTiles();
-  }
+  prefs_->SetBoolean(prefs::kNtpUseMostVisitedTiles, !enable);
 #endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
 
@@ -462,6 +472,18 @@ void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(prefs::kNtpShortcutsVisible, true);
 #endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
+
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+
+void MostVisitedSites::OnCustomLinksEnabledPrefChanged() {
+  BuildCurrentTiles();
+}
+
+void MostVisitedSites::OnTilesVisibilityPrefChanged() {
+  BuildCurrentTiles();
+}
+
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 
 size_t MostVisitedSites::GetMaxNumSites() const {
   return max_num_sites_ + (custom_links_ && IsCustomLinksEnabled() ? 1 : 0);
@@ -861,18 +883,18 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
 void MostVisitedSites::SaveTilesAndNotify(
     NTPTilesVector new_tiles,
     std::map<SectionType, NTPTilesVector> sections) {
-  if (current_tiles_.has_value() && (*current_tiles_ == new_tiles))
-    return;
-  current_tiles_.emplace(std::move(new_tiles));
+  if (!current_tiles_.has_value() || (*current_tiles_ != new_tiles)) {
+    current_tiles_.emplace(std::move(new_tiles));
 
-  int num_personal_tiles = 0;
-  for (const auto& tile : *current_tiles_) {
-    if (tile.source != TileSource::POPULAR &&
-        tile.source != TileSource::POPULAR_BAKED_IN) {
-      num_personal_tiles++;
+    int num_personal_tiles = 0;
+    for (const auto& tile : *current_tiles_) {
+      if (tile.source != TileSource::POPULAR &&
+          tile.source != TileSource::POPULAR_BAKED_IN) {
+        num_personal_tiles++;
+      }
     }
+    prefs_->SetInteger(prefs::kNumPersonalTiles, num_personal_tiles);
   }
-  prefs_->SetInteger(prefs::kNumPersonalTiles, num_personal_tiles);
   if (!observer_)
     return;
   sections[SectionType::PERSONALIZED] = *current_tiles_;

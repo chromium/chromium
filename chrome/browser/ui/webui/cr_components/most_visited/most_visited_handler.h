@@ -9,18 +9,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
-#include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/ntp_tiles/section_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
-
 class GURL;
-class InstantService;
 class Profile;
 
 namespace content {
@@ -29,7 +26,7 @@ class WebContents;
 
 // Handles bidirectional communication between MV tiles and the browser.
 class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
-                           public InstantServiceObserver {
+                           public ntp_tiles::MostVisitedSites::Observer {
  public:
   MostVisitedHandler(
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
@@ -68,12 +65,16 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                                    bool shift_key) override;
 
  private:
-  // InstantServiceObserver:
-  void NtpThemeChanged(const NtpTheme& theme) override;
-  void MostVisitedInfoChanged(const InstantMostVisitedInfo& info) override;
+  // ntp_tiles::MostVisitedSites::Observer:
+  void OnURLsAvailable(
+      const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
+          sections) override;
+  void OnIconMadeAvailable(const GURL& site_url) override;
+
+  bool IsCustomLinksEnabled();
 
   Profile* profile_;
-  InstantService* instant_service_;
+  std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
   content::WebContents* web_contents_;
   NTPUserDataLogger logger_;
   base::Time ntp_navigation_start_time_;
