@@ -776,8 +776,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2020-04-05">
-  <owner>maxmorin@chromium.org</owner>
+    expires_after="2022-01-30">
+  <owner>olka@chromium.org</owner>
+  <owner>henrika@chromium.org</owner>
   <summary>
     Similar to Media.Audio.OutputDeviceAuthorizationTime, this histogram
     measures the time required for device authorization, but it is measured on
@@ -785,12 +786,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the IO thread until it receives OnDeviceAuthorized, also on the IO thread.
     Note that an authorization timeout will cause OnDeviceAuthorized to be
     called, so for platforms that use a timeout, very few times will be above
-    the timeout value.
+    the timeout value. Warning: this histogram was expired from 2020-04-05 to
+    2021-06-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTimedOut"
-    enum="BooleanTimedOut" expires_after="2021-10-10">
+    enum="BooleanTimedOut" expires_after="2022-01-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -810,12 +812,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputStreamDuration" units="ms"
-    expires_after="2020-04-05">
-  <owner>maxmorin@chromium.org</owner>
+    expires_after="2022-01-30">
+  <owner>olka@chromium.org</owner>
+  <owner>henrika@chromium.org</owner>
   <summary>
     This histogram measures the duration of every output stream, as seen from
     the renderer. It counts from when it has been successfully started, until it
-    is stopped. Streams that fail to start are not logged.
+    is stopped. Streams that fail to start are not logged. Warning: this
+    histogram was expired from 2020-04-05 to 2021-06-04; data may be missing.
   </summary>
 </histogram>
 
@@ -974,7 +978,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadline" units="%"
-    expires_after="2021-06-01">
+    expires_after="2021-10-04">
   <owner>gudou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1035,7 +1039,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioOutputController.CallbackError" enum="BooleanError"
-    expires_after="2021-08-09">
+    expires_after="2021-10-09">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1108,7 +1112,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"
     enum="AudioOutputResamplerLowLatencyOpenStreamResult"
-    expires_after="2021-08-09">
+    expires_after="2021-10-09">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -2444,11 +2448,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.InputStreamDurationWithoutCallback" units="ms"
-    expires_after="2020-10-11">
-  <owner>maxmorin@chromium.org</owner>
+    expires_after="2021-10-11">
+  <owner>olka@chromium.org</owner>
+  <owner>henrika@chromium.org</owner>
   <summary>
     Duration in milliseconds of low-latency audio input streams which never got
-    any callbacks.
+    any callbacks. Warning: this histogram was expired from 2020-10-11 to
+    2021-06-04; data may be missing.
   </summary>
 </histogram>
 
