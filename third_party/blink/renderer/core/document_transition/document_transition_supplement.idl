@@ -6,5 +6,5 @@
     ImplementedAs=DocumentTransitionSupplement,
     RuntimeEnabled=DocumentTransition
 ] partial interface Document {
-    [SameObject] readonly attribute DocumentTransition documentTransition;
+    [SameObject, MeasureAs=DocumentTransition] readonly attribute DocumentTransition documentTransition;
 };
