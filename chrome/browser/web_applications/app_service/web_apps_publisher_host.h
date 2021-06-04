@@ -88,9 +88,13 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
       apps::mojom::WindowInfoPtr window_info);
+
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
   void OpenNativeSettings(const std::string& app_id);
+
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode);
 
  private:
   void OnReady();
@@ -115,6 +119,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;
+  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
+                                      DisplayMode user_display_mode) override;
 
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 

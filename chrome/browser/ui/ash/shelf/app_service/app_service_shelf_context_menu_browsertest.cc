@@ -90,6 +90,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+
+  // Wait for app service to set the display mode.
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->FlushMojoCallsForTesting();
+
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
             1);
 
@@ -145,6 +150,10 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_REGULAR_TAB);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+
+  // Wait for app service to set the display mode.
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->FlushMojoCallsForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tab"), 1);
 }

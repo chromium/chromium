@@ -114,6 +114,13 @@ void AppRegistrar::NotifyWebAppInstalledWithOsHooks(const AppId& app_id) {
     observer.OnWebAppInstalledWithOsHooks(app_id);
 }
 
+void AppRegistrar::NotifyWebAppUserDisplayModeChanged(
+    const AppId& app_id,
+    DisplayMode user_display_mode) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
+}
+
 void AppRegistrar::NotifyAppRegistrarShutdown() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarShutdown();

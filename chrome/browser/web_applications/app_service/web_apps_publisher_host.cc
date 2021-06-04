@@ -162,6 +162,11 @@ void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
+void WebAppsPublisherHost::SetWindowMode(const std::string& app_id,
+                                         apps::mojom::WindowMode window_mode) {
+  return publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
@@ -224,6 +229,19 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
   }
 
   PublishWebApp(publisher_helper().ConvertLaunchedWebApp(web_app));
+}
+
+void WebAppsPublisherHost::OnWebAppUserDisplayModeChanged(
+    const AppId& app_id,
+    DisplayMode user_display_mode) {
+  if (GetWebApp(app_id)) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = apps::mojom::AppType::kWeb;
+    app->app_id = app_id;
+    app->window_mode =
+        publisher_helper().ConvertDisplayModeToWindowMode(user_display_mode);
+    PublishWebApp(std::move(app));
+  }
 }
 
 void WebAppsPublisherHost::OnRequestUpdate(

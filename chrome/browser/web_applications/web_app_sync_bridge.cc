@@ -203,6 +203,8 @@ void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
   WebApp* web_app = update->UpdateApp(app_id);
   if (web_app)
     web_app->SetUserDisplayMode(user_display_mode);
+
+  registrar_->NotifyWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
 
 void WebAppSyncBridge::SetAppRunOnOsLoginMode(const AppId& app_id,

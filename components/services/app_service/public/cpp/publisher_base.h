@@ -94,6 +94,8 @@ class PublisherBase : public apps::mojom::Publisher {
       apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
   mojo::Receiver<apps::mojom::Publisher> receiver_{this};
 };

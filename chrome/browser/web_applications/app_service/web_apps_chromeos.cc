@@ -342,6 +342,11 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
   publisher_helper().LaunchAppWithParams(std::move(params));
 }
 
+void WebAppsChromeOs::SetWindowMode(const std::string& app_id,
+                                    apps::mojom::WindowMode window_mode) {
+  publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
 void WebAppsChromeOs::OnWebAppInstalled(const AppId& app_id) {
   provider()->registry_controller().SetAppIsDisabled(
       app_id, IsWebAppInDisabledList(app_id));
@@ -424,6 +429,19 @@ void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
       cloned_apps.push_back(app.Clone());
     subscriber->OnApps(std::move(cloned_apps), app_type(),
                        should_notify_initialized);
+  }
+}
+
+void WebAppsChromeOs::OnWebAppUserDisplayModeChanged(
+    const AppId& app_id,
+    DisplayMode user_display_mode) {
+  if (GetWebApp(app_id) && Accepts(app_id)) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = app_type();
+    app->app_id = app_id;
+    app->window_mode =
+        publisher_helper().ConvertDisplayModeToWindowMode(user_display_mode);
+    Publish(std::move(app), subscribers());
   }
 }
 
@@ -636,20 +654,8 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
   app->icon_key = publisher_helper().MakeIconKey(web_app);
 
   auto display_mode = GetRegistrar()->GetAppUserDisplayMode(web_app->app_id());
-  switch (display_mode) {
-    case blink::mojom::DisplayMode::kUndefined:
-      app->window_mode = apps::mojom::WindowMode::kUnknown;
-      break;
-    case blink::mojom::DisplayMode::kBrowser:
-      app->window_mode = apps::mojom::WindowMode::kBrowser;
-      break;
-    case blink::mojom::DisplayMode::kMinimalUi:
-    case blink::mojom::DisplayMode::kStandalone:
-    case blink::mojom::DisplayMode::kFullscreen:
-    case blink::mojom::DisplayMode::kWindowControlsOverlay:
-      app->window_mode = apps::mojom::WindowMode::kWindow;
-      break;
-  }
+  app->window_mode =
+      publisher_helper().ConvertDisplayModeToWindowMode(display_mode);
 
   apps::mojom::OptionalBool has_notification =
       app_notifications_.HasNotification(web_app->app_id())

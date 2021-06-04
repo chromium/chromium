@@ -135,6 +135,12 @@ interface AppService {
       AppType app_type,
       string app_id,
       OptionalBool locked);
+
+  // Set the window display mode for the app identified by |app_id|.
+  SetWindowMode(
+      AppType app_type,
+      string app_id,
+      WindowMode window_mode);
 };
 
 interface Publisher {
@@ -232,6 +238,11 @@ interface Publisher {
   SetResizeLocked(
       string app_id,
       OptionalBool locked);
+
+  // Set the window display mode for the app identified by |app_id|.
+  SetWindowMode(
+      string app_id,
+      WindowMode window_mode);
 };
 
 // Subscriber works as a proxy, to receive a stream of apps from publishers,

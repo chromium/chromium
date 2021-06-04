@@ -446,6 +446,14 @@ void AppServiceProxyBase::AddPreferredApp(
   }
 }
 
+void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
+                                        apps::mojom::WindowMode window_mode) {
+  if (app_service_.is_connected()) {
+    app_service_->SetWindowMode(app_registry_cache_.GetAppType(app_id), app_id,
+                                window_mode);
+  }
+}
+
 void AppServiceProxyBase::AddAppIconSource(Profile* profile) {
   // Make the chrome://app-icon/ resource available.
   content::URLDataSource::Add(profile,

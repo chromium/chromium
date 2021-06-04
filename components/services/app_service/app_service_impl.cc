@@ -417,6 +417,16 @@ void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,
   iter->second->SetResizeLocked(app_id, locked);
 }
 
+void AppServiceImpl::SetWindowMode(apps::mojom::AppType app_type,
+                                   const std::string& app_id,
+                                   apps::mojom::WindowMode window_mode) {
+  auto iter = publishers_.find(app_type);
+  if (iter == publishers_.end()) {
+    return;
+  }
+  iter->second->SetWindowMode(app_id, window_mode);
+}
+
 PreferredAppsList& AppServiceImpl::GetPreferredAppsForTesting() {
   return preferred_apps_;
 }

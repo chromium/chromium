@@ -205,6 +205,9 @@ class AppServiceProxyBase : public KeyedService,
   void AddPreferredApp(const std::string& app_id,
                        const apps::mojom::IntentPtr& intent);
 
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode);
+
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
   // Mojo service (or on a fake implementation for testing).

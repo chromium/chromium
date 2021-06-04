@@ -231,6 +231,8 @@ class AppRegistrar {
 
   // Notify when OS hooks installation is finished during Web App installation.
   void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
+  void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
+                                          DisplayMode user_display_mode);
 
  protected:
   Profile* profile() const { return profile_; }

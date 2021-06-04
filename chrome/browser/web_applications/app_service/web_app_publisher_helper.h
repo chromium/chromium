@@ -148,6 +148,13 @@ class WebAppPublisherHelper : public content_settings::Observer {
 
   void OpenNativeSettings(const std::string& app_id);
 
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode);
+
+  // Converts |display_mode| to a |window_mode|.
+  apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
+      blink::mojom::DisplayMode display_mode);
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -548,6 +549,39 @@ void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
   }
 
   chrome::ShowSiteSettings(profile(), web_app->start_url());
+}
+
+void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
+                                          apps::mojom::WindowMode window_mode) {
+  auto display_mode = blink::mojom::DisplayMode::kUndefined;
+  switch (window_mode) {
+    case apps::mojom::WindowMode::kUnknown:
+      display_mode = blink::mojom::DisplayMode::kUndefined;
+      break;
+    case apps::mojom::WindowMode::kBrowser:
+      display_mode = blink::mojom::DisplayMode::kBrowser;
+      break;
+    case apps::mojom::WindowMode::kWindow:
+      display_mode = blink::mojom::DisplayMode::kStandalone;
+      break;
+  }
+  provider_->registry_controller().SetAppUserDisplayMode(
+      app_id, display_mode, /*is_user_action=*/true);
+}
+
+apps::mojom::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
+    blink::mojom::DisplayMode display_mode) {
+  switch (display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+      return apps::mojom::WindowMode::kUnknown;
+    case blink::mojom::DisplayMode::kBrowser:
+      return apps::mojom::WindowMode::kBrowser;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      return apps::mojom::WindowMode::kWindow;
+  }
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {

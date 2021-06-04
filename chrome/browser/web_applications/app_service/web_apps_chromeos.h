@@ -92,6 +92,8 @@ class WebAppsChromeOs : public WebAppsBase,
                                  int command_id,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
@@ -99,6 +101,8 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
+  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
+                                      DisplayMode user_display_mode) override;
 
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
