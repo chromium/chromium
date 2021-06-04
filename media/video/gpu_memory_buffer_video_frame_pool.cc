@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/media_switches.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -46,6 +47,14 @@
 #endif
 
 namespace media {
+
+namespace {
+
+bool MultiPlaneSharedImagesEnabled() {
+  return base::FeatureList::IsEnabled(kMultiPlaneSharedImageVideo);
+}
+
+}  // namespace
 
 // Implementation of a pool of GpuMemoryBuffers used to back VideoFrames.
 class GpuMemoryBufferVideoFramePool::PoolImpl
@@ -339,6 +348,52 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
   }
   NOTREACHED();
   return 0;
+}
+
+// The number of shared images for a given format. Note that a single
+// GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
+size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
+  if (MultiPlaneSharedImagesEnabled()) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+      return 2;
+    }
+  }
+  return NumGpuMemoryBuffers(format);
+}
+
+// In the case of a format where a single GpuMemoryBuffer is used by multiple
+// planes' shared images, this function returns the index of the PlaneResource
+// in which the GpuMemoryBuffer for a plane is to be found.
+size_t GpuMemoryBufferPlaneResourceIndexForPlane(
+    GpuVideoAcceleratorFactories::OutputFormat format,
+    size_t plane) {
+  if (MultiPlaneSharedImagesEnabled()) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+      return 0;
+    }
+  }
+  return plane;
+}
+
+// When a single plane of a GpuMemoryBuffer is to bound to a SharedImage, this
+// method will indicate that plane.
+gfx::BufferPlane GetSharedImageBufferPlane(
+    GpuVideoAcceleratorFactories::OutputFormat format,
+    size_t plane) {
+  if (MultiPlaneSharedImagesEnabled()) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+      switch (plane) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::UV;
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+  }
+  return gfx::BufferPlane::DEFAULT;
 }
 
 // The number of output rows to be copied in each iteration.
@@ -991,34 +1046,42 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
   const gfx::Size coded_size = CodedSize(video_frame.get(), output_format_);
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
   // Set up the planes creating the mailboxes needed to refer to the textures.
-  for (size_t i = 0; i < NumGpuMemoryBuffers(output_format_); i++) {
-    PlaneResource& plane_resource = frame_resources->plane_resources[i];
+  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++) {
+    size_t gpu_memory_buffer_plane =
+        GpuMemoryBufferPlaneResourceIndexForPlane(output_format_, plane);
+
+    PlaneResource& plane_resource = frame_resources->plane_resources[plane];
+    gfx::GpuMemoryBuffer* gpu_memory_buffer =
+        frame_resources->plane_resources[gpu_memory_buffer_plane]
+            .gpu_memory_buffer.get();
+
     const gfx::BufferFormat buffer_format =
-        GpuMemoryBufferFormat(output_format_, i);
+        GpuMemoryBufferFormat(output_format_, plane);
     unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
     // Bind the texture and create or rebind the image.
-    if (plane_resource.gpu_memory_buffer && plane_resource.mailbox.IsZero()) {
+    if (gpu_memory_buffer && plane_resource.mailbox.IsZero()) {
       uint32_t usage =
           gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
           gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
       plane_resource.mailbox = sii->CreateSharedImage(
-          plane_resource.gpu_memory_buffer.get(),
-          gpu_factories_->GpuMemoryBufferManager(), video_frame->ColorSpace(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+          gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
+          GetSharedImageBufferPlane(output_format_, plane),
+          video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, usage);
     } else if (!plane_resource.mailbox.IsZero()) {
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.mailbox);
     }
-    mailbox_holders[i] = gpu::MailboxHolder(plane_resource.mailbox,
-                                            gpu::SyncToken(), texture_target);
+    mailbox_holders[plane] = gpu::MailboxHolder(
+        plane_resource.mailbox, gpu::SyncToken(), texture_target);
   }
 
   // Insert a sync_token, this is needed to make sure that the textures the
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  for (size_t i = 0; i < NumGpuMemoryBuffers(output_format_); i++)
-    mailbox_holders[i].sync_token = sync_token;
+  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++)
+    mailbox_holders[plane].sync_token = sync_token;
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 

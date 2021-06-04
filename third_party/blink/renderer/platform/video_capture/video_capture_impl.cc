@@ -31,6 +31,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -47,9 +48,6 @@ constexpr int kMaxFirstFrameLogs = 5;
 
 const base::Feature kTimeoutHangingVideoCaptureStarts{
     "TimeoutHangingVideoCaptureStarts", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kMultiPlaneSharedImageCapture{
-    "MultiPlaneSharedImageCapture", base::FEATURE_DISABLED_BY_DEFAULT};
 
 using VideoFrameBufferHandleType = media::mojom::blink::VideoBufferHandle::Tag;
 
@@ -451,7 +449,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
           gpu_memory_buffer_->GetFormat());
 
   std::vector<gfx::BufferPlane> planes;
-  if (base::FeatureList::IsEnabled(kMultiPlaneSharedImageCapture)) {
+  if (base::FeatureList::IsEnabled(media::kMultiPlaneSharedImageVideo)) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
   } else {
