@@ -76,6 +76,9 @@ crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_h
 [ fuchsia ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 [ fuchsia ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
+# Fuchsia flakes.
+crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
+
 # SwiftShader GL does not work on CrOS, wait for it to be replaced by SwANGLE.
 crbug.com/1084794 [ chromeos ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 crbug.com/1084794 [ chromeos ] GpuProcess_swiftshader_for_webgl [ Skip ]
