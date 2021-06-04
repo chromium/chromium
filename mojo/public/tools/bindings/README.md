@@ -550,10 +550,16 @@ See the documentation for
 
 *** note
 **NOTE:** You don't need to worry about versioning if you don't care about
-backwards compatibility. Specifically, all parts of Chrome are updated
-atomically today and there is not yet any possibility of any two Chrome
-processes communicating with two different versions of any given Mojom
-interface.
+backwards compatibility. Today, all parts of the Chrome browser are
+updated atomically and there is not yet any possibility of any two
+Chrome processes communicating with two different versions of any given Mojom
+interface. On Chrome OS, there are several places where versioning is required.
+For example,
+[ARC++](https://developer.android.com/chrome-os/intro)
+uses versioned mojo to send IPC to the Android container.
+Likewise, the
+[Lacros](/docs/lacros.md)
+browser uses versioned mojo to talk to the ash system UI.
 ***
 
 Services extend their interfaces to support new features over time, and clients
