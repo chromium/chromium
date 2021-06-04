@@ -47,7 +47,7 @@ constexpr base::TimeDelta kBubbleAnimationDuration =
 // associated bubble in response.
 class LoginBubbleHandler : public ui::EventHandler {
  public:
-  LoginBubbleHandler(LoginBaseBubbleView* bubble) : bubble_(bubble) {
+  explicit LoginBubbleHandler(LoginBaseBubbleView* bubble) : bubble_(bubble) {
     Shell::Get()->AddPreTargetHandler(this);
   }
 

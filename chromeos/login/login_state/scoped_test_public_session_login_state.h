@@ -15,7 +15,7 @@ namespace chromeos {
 // (so it nicely cleans up after going out of scope).
 class ScopedTestPublicSessionLoginState {
  public:
-  ScopedTestPublicSessionLoginState(
+  explicit ScopedTestPublicSessionLoginState(
       LoginState::LoggedInUserType user_type =
           LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   ~ScopedTestPublicSessionLoginState();

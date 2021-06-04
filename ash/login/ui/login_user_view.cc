@@ -88,7 +88,7 @@ constexpr char kLoginUserLabelClassName[] = "LoginUserLabel";
 class PassthroughAnimationDecoder
     : public AnimatedRoundedImageView::AnimationDecoder {
  public:
-  PassthroughAnimationDecoder(const AnimationFrames& frames)
+  explicit PassthroughAnimationDecoder(const AnimationFrames& frames)
       : frames_(frames) {}
   ~PassthroughAnimationDecoder() override = default;
 
@@ -102,7 +102,7 @@ class PassthroughAnimationDecoder
 
 class IconRoundedView : public views::View {
  public:
-  IconRoundedView(int size) : size_(size) {}
+  explicit IconRoundedView(int size) : size_(size) {}
   ~IconRoundedView() override = default;
 
   IconRoundedView(const IconRoundedView&) = delete;
@@ -166,7 +166,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
     LoginUserView::UserImage* const view_;
   };
 
-  UserImage(LoginDisplayStyle style)
+  explicit UserImage(LoginDisplayStyle style)
       : NonAccessibleView(kLoginUserImageClassName) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 

@@ -95,7 +95,7 @@ class MarketingBackendConnector
 // Scoped callback setter for the MarketingBackendConnector
 class ScopedRequestCallbackSetter {
  public:
-  ScopedRequestCallbackSetter(
+  explicit ScopedRequestCallbackSetter(
       std::unique_ptr<base::RepeatingCallback<void(std::string)>> callback);
   ~ScopedRequestCallbackSetter();
 
