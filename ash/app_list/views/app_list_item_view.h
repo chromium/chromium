@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
@@ -18,7 +17,13 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 
+namespace gfx {
+class Point;
+class Rect;
+}  // namespace gfx
+
 namespace ui {
+class LocatedEvent;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -32,8 +37,10 @@ class AppListConfig;
 class AppListItem;
 class AppListMenuModelAdapter;
 class AppListViewDelegate;
-class AppsGridView;
 
+// An application icon and title. Commonly part of the AppsGridView, but may be
+// used in other contexts. Supports dragging and keyboard selection via the
+// GridDelegate interface.
 class ASH_EXPORT AppListItemView : public views::Button,
                                    public views::ContextMenuController,
                                    public AppListItemObserver,
@@ -41,9 +48,47 @@ class ASH_EXPORT AppListItemView : public views::Button,
  public:
   METADATA_HEADER(AppListItemView);
 
-  AppListItemView(AppsGridView* apps_grid_view,
+  // The parent apps grid (AppsGridView) or a stub. Not named "Delegate" to
+  // differentiate it from AppListViewDelegate.
+  class GridDelegate {
+   public:
+    virtual ~GridDelegate() = default;
+
+    // Whether the parent apps grid (if any) is a folder.
+    virtual bool IsInFolder() const = 0;
+
+    // Methods for keyboard selection.
+    virtual void SetSelectedView(AppListItemView* view) = 0;
+    virtual void ClearSelectedView(AppListItemView* view) = 0;
+    virtual void ClearAnySelectedView() = 0;
+    virtual bool IsSelectedView(const AppListItemView* view) const = 0;
+
+    virtual void InitiateDrag(AppListItemView* view,
+                              const gfx::Point& location,
+                              const gfx::Point& root_location) = 0;
+    virtual void StartDragAndDropHostDragAfterLongPress() = 0;
+
+    // Called from AppListItemView when it receives a drag event. Returns true
+    // if the drag is still happening.
+    virtual bool UpdateDragFromItem(bool is_touch,
+                                    const ui::LocatedEvent& event) = 0;
+    virtual void EndDrag(bool cancel) = 0;
+    virtual bool IsDragging() const = 0;
+    virtual bool IsDraggedView(const AppListItemView* view) const = 0;
+
+    // Whether |view| is being dragged and is not in its drag start position.
+    virtual bool IsDragViewMoved(const AppListItemView& view) const = 0;
+
+    // Returns the ideal bounds for `view` in AppsGridView coordinates.
+    virtual const gfx::Rect& GetIdealBounds(AppListItemView* view) const = 0;
+
+    // TODO(crbug.com/1211592): Eliminate this method.
+    virtual const AppListConfig& GetAppListConfig() const = 0;
+  };
+
+  AppListItemView(GridDelegate* grid_delegate,
                   AppListItem* item,
-                  AppListViewDelegate* delegate);
+                  AppListViewDelegate* view_delegate);
   AppListItemView(const AppListItemView&) = delete;
   AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
@@ -253,8 +298,13 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   AppListItem* item_weak_;  // Owned by AppListModel. Can be nullptr.
 
-  AppListViewDelegate* delegate_;               // Unowned.
-  AppsGridView* apps_grid_view_;                // Parent view, owns this.
+  // Handles dragging and item selection. Might be a stub for items that are not
+  // part of an apps grid.
+  GridDelegate* const grid_delegate_;
+
+  // AppListControllerImpl by another name.
+  AppListViewDelegate* const view_delegate_;
+
   IconImageView* icon_ = nullptr;               // Strongly typed child view.
   views::Label* title_ = nullptr;               // Strongly typed child view.
 

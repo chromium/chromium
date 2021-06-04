@@ -18,6 +18,7 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/paged_view_structure.h"
+#include "ash/app_list/views/app_list_item_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/time/time.h"
@@ -77,6 +78,7 @@ struct ASH_EXPORT GridIndex {
 // - The main grid of apps in the launcher
 // - The grid of apps in a folder
 class ASH_EXPORT AppsGridView : public views::View,
+                                public AppListItemView::GridDelegate,
                                 public AppListItemListObserver,
                                 public AppListModelObserver,
                                 public ui::ImplicitAnimationObserver,
@@ -134,34 +136,23 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |item_list|.
   void SetItemList(AppListItemList* item_list);
 
-  void SetSelectedView(AppListItemView* view);
-  void ClearSelectedView(AppListItemView* view);
-  void ClearAnySelectedView();
-  bool IsSelectedView(const AppListItemView* view) const;
-  bool has_selected_view() const { return selected_view_ != nullptr; }
-  AppListItemView* GetSelectedView() const;
-
+  // AppListItemView::GridDelegate:
+  bool IsInFolder() const override;
+  void SetSelectedView(AppListItemView* view) override;
+  void ClearSelectedView(AppListItemView* view) override;
+  void ClearAnySelectedView() override;
+  bool IsSelectedView(const AppListItemView* view) const override;
   void InitiateDrag(AppListItemView* view,
-                    Pointer pointer,
                     const gfx::Point& location,
-                    const gfx::Point& root_location);
-
-  void StartDragAndDropHostDragAfterLongPress(Pointer pointer);
-  void TryStartDragAndDropHostDrag(Pointer pointer,
-                                   const gfx::Point& grid_location);
-
-  // Called from AppListItemView when it receives a drag event. Returns true
-  // if the drag is still happening.
-  bool UpdateDragFromItem(Pointer pointer, const ui::LocatedEvent& event);
-
-  // Called when the user is dragging an app. |point| is in grid view
-  // coordinates.
-  void UpdateDrag(Pointer pointer, const gfx::Point& point);
-  void EndDrag(bool cancel);
-  bool IsDraggedView(const AppListItemView* view) const;
-
-  // Whether |view| IsDraggedView and |view| is not in it's drag start position.
-  bool IsDragViewMoved(const AppListItemView& view) const;
+                    const gfx::Point& root_location) override;
+  void StartDragAndDropHostDragAfterLongPress() override;
+  bool UpdateDragFromItem(bool is_touch,
+                          const ui::LocatedEvent& event) override;
+  void EndDrag(bool cancel) override;
+  bool IsDragging() const override;
+  bool IsDraggedView(const AppListItemView* view) const override;
+  bool IsDragViewMoved(const AppListItemView& view) const override;
+  const gfx::Rect& GetIdealBounds(AppListItemView* view) const override;
 
   void ClearDragState();
   void SetDragViewVisible(bool visible);
@@ -173,7 +164,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Return true if the |bounds_animator_| is animating |view|.
   bool IsAnimatingView(AppListItemView* view);
 
+  // TODO(crbug.com/1211608): Replace these with selected_view().
+  bool has_selected_view() const { return selected_view_ != nullptr; }
+  AppListItemView* GetSelectedView() const;
+
   bool has_dragged_view() const { return drag_view_ != nullptr; }
+  // TODO(crbug.com/1211608): Remove this in favor of IsDragging().
   bool dragging() const { return drag_pointer_ != NONE; }
   const AppListItemView* drag_view() const { return drag_view_; }
 
@@ -203,9 +199,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Stops the timer that triggers a page flip during a drag.
   void StopPageFlipTimer();
-
-  // Returns the ideal bounds of an AppListItemView in AppsGridView coordinates.
-  const gfx::Rect& GetIdealBounds(AppListItemView* view) const;
 
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
@@ -282,7 +275,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Helper for getting current app list config from the parents in the app list
   // view hierarchy.
-  const AppListConfig& GetAppListConfig() const;
+  const AppListConfig& GetAppListConfig() const override;
 
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
@@ -305,8 +298,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
     folder_delegate_ = folder_delegate;
   }
-
-  bool is_in_folder() const { return !!folder_delegate_; }
 
   AppListItemView* activated_folder_item_view() const {
     return activated_folder_item_view_;
@@ -501,11 +492,18 @@ class ASH_EXPORT AppsGridView : public views::View,
   // currently dragged item is released.
   void UpdateDropTargetForReorder(const gfx::Point& point);
 
+  // Called when the user is dragging an app. |point| is in grid view
+  // coordinates.
+  void UpdateDrag(Pointer pointer, const gfx::Point& point);
+
   // Returns true if the current drag is occurring within a certain range of the
   // nearest item.
   bool DragIsCloseToItem();
 
   bool DragPointIsOverItem(const gfx::Point& point);
+
+  void TryStartDragAndDropHostDrag(Pointer pointer,
+                                   const gfx::Point& grid_location);
 
   // Prepares |drag_and_drop_host_| for dragging. |grid_location| contains
   // the drag point in this grid view's coordinates.

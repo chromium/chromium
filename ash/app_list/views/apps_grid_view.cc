@@ -422,6 +422,10 @@ void AppsGridView::SetItemList(AppListItemList* item_list) {
   Update();
 }
 
+bool AppsGridView::IsInFolder() const {
+  return !!folder_delegate_;
+}
+
 void AppsGridView::SetSelectedView(AppListItemView* view) {
   if (IsSelectedView(view) || IsDraggedView(view))
     return;
@@ -455,7 +459,6 @@ AppListItemView* AppsGridView::GetSelectedView() const {
 }
 
 void AppsGridView::InitiateDrag(AppListItemView* view,
-                                Pointer pointer,
                                 const gfx::Point& location,
                                 const gfx::Point& root_location) {
   DCHECK(view);
@@ -478,8 +481,8 @@ void AppsGridView::InitiateDrag(AppListItemView* view,
   drag_view_start_ = gfx::Point(drag_view_->x(), drag_view_->y());
 }
 
-void AppsGridView::StartDragAndDropHostDragAfterLongPress(Pointer pointer) {
-  TryStartDragAndDropHostDrag(pointer, drag_start_grid_view_);
+void AppsGridView::StartDragAndDropHostDragAfterLongPress() {
+  TryStartDragAndDropHostDrag(TOUCH, drag_start_grid_view_);
 }
 
 void AppsGridView::TryStartDragAndDropHostDrag(
@@ -499,7 +502,7 @@ void AppsGridView::TryStartDragAndDropHostDrag(
     StartDragAndDropHostDrag(grid_location);
 }
 
-bool AppsGridView::UpdateDragFromItem(Pointer pointer,
+bool AppsGridView::UpdateDragFromItem(bool is_touch,
                                       const ui::LocatedEvent& event) {
   if (!drag_view_)
     return false;  // Drag canceled.
@@ -508,6 +511,7 @@ bool AppsGridView::UpdateDragFromItem(Pointer pointer,
 
   gfx::Point drag_point_in_grid_view;
   ExtractDragLocation(event.root_location(), &drag_point_in_grid_view);
+  const Pointer pointer = is_touch ? TOUCH : MOUSE;
   UpdateDrag(pointer, drag_point_in_grid_view);
   if (!dragging())
     return false;
@@ -840,6 +844,10 @@ void AppsGridView::UpdateDragFromReparentItem(Pointer pointer,
   DCHECK(IsDraggingForReparentInRootLevelGridView());
 
   UpdateDrag(pointer, drag_point);
+}
+
+bool AppsGridView::IsDragging() const {
+  return dragging();
 }
 
 bool AppsGridView::IsDraggedView(const AppListItemView* view) const {

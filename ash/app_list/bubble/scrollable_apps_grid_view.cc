@@ -94,7 +94,7 @@ bool ScrollableAppsGridView::IsScrollAxisVertical() const {
 }
 
 void ScrollableAppsGridView::CalculateIdealBounds() {
-  DCHECK(!is_in_folder());
+  DCHECK(!IsInFolder());
 
   int grid_index = 0;
   int model_index = 0;

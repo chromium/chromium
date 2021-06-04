@@ -331,7 +331,7 @@ class AppsGridViewTest : public views::ViewsTestBase {
                                           &view_origin);
         // AppListItemViews that belong to a folder views' AppsGridView also
         // need to have their x coordinate set for RTL.
-        if (grid_view->is_in_folder())
+        if (grid_view->IsInFolder())
           view_origin.set_x(grid_view->GetMirroredXInView(view_origin.x()));
       }
       if (gfx::Rect(view_origin, view->size()).Contains(point))
@@ -492,7 +492,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
     // Ensure that the |root_from| point is correct if RTL.
     root_from.set_x(apps_grid_view->GetMirroredXInView(root_from.x()));
 
-    apps_grid_view->InitiateDrag(view, pointer, root_from, root_from);
+    apps_grid_view->InitiateDrag(view, root_from, root_from);
     current_drag_location_ = root_from;
     // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state.
     UpdateDrag(pointer, from, apps_grid_view);
@@ -1306,7 +1306,7 @@ TEST_F(AppsGridViewTest, CheckFolderWithMultiplePagesContents) {
       folder_apps_grid_view()->pagination_model();
   EXPECT_EQ(1, folder_pagination_model->total_pages());
   EXPECT_EQ(0, folder_pagination_model->selected_page());
-  EXPECT_TRUE(folder_apps_grid_view()->is_in_folder());
+  EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
 TEST_P(AppsGridViewDragAndDropTest, MouseDragItemOutOfFolderFirstPage) {
@@ -1365,7 +1365,7 @@ TEST_F(AppsGridViewTest, SwitchPageFolderItem) {
   EXPECT_EQ(1, folder_apps_grid_view()->pagination_model()->selected_page());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
-  EXPECT_TRUE(folder_apps_grid_view()->is_in_folder());
+  EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
 TEST_P(AppsGridViewDragAndDropTest, MouseDragItemOutOfFolderSecondPage) {
@@ -1425,7 +1425,7 @@ TEST_P(AppsGridViewDragAndDropTestNoCardifiedState,
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
   test_api_->PressItemAt(0);
-  ASSERT_TRUE(folder_apps_grid_view()->is_in_folder());
+  ASSERT_TRUE(folder_apps_grid_view()->IsInFolder());
   // Switch to second page.
   AnimateFolderViewPageFlip(1);
   // Fill the rest of the root grid view with new app list items. Leave 1 slot
@@ -2609,7 +2609,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
       folder_apps_grid_view()->pagination_model();
   EXPECT_EQ(1, folder_pagination_model->total_pages());
   EXPECT_EQ(0, folder_pagination_model->selected_page());
-  EXPECT_TRUE(folder_apps_grid_view()->is_in_folder());
+  EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
 TEST_P(AppsGridViewDragAndDropTest, MoveAnItemToNewEmptyPage) {

@@ -175,9 +175,9 @@ PagedAppsGridView::PagedAppsGridView(
 
   pagination_controller_ = std::make_unique<PaginationController>(
       &pagination_model_,
-      is_in_folder() ? PaginationController::SCROLL_AXIS_HORIZONTAL
-                     : PaginationController::SCROLL_AXIS_VERTICAL,
-      is_in_folder()
+      IsInFolder() ? PaginationController::SCROLL_AXIS_HORIZONTAL
+                   : PaginationController::SCROLL_AXIS_VERTICAL,
+      IsInFolder()
           ? base::DoNothing()
           : base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType),
       IsTabletMode());
@@ -477,7 +477,7 @@ gfx::Size PagedAppsGridView::GetTileViewSize() const {
 }
 
 gfx::Insets PagedAppsGridView::GetTilePadding() const {
-  if (is_in_folder()) {
+  if (IsInFolder()) {
     const int tile_padding_in_folder =
         GetAppListConfig().grid_tile_spacing_in_folder() / 2;
     return gfx::Insets(-tile_padding_in_folder, -tile_padding_in_folder);
@@ -522,7 +522,7 @@ void PagedAppsGridView::MaybeEndCardifiedView() {
 void PagedAppsGridView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   // Don't record from folder.
-  if (is_in_folder())
+  if (IsInFolder())
     return;
 
   // Initial setup for the AppList starts with -1 pages. Ignore the page count
@@ -684,7 +684,7 @@ bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
     gfx::PointF root_location = event.root_location_f();
     return root_location.y() - mouse_drag_start_point_.y();
   };
-  if (!is_in_folder() &&
+  if (!IsInFolder() &&
       (event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
       !IsTabletMode() &&
       ((pagination_model_.selected_page() == 0 &&
@@ -697,7 +697,7 @@ bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
 }
 
 void PagedAppsGridView::MaybeCreateGradientMask() {
-  if (!is_in_folder() && features::IsBackgroundBlurEnabled()) {
+  if (!IsInFolder() && features::IsBackgroundBlurEnabled()) {
     // TODO(newcomer): Improve implementation of the mask layer so we can
     // enable it on all devices https://crbug.com/765292.
     if (!layer()->layer_mask_layer()) {
@@ -717,7 +717,7 @@ void PagedAppsGridView::MaybeCreateGradientMask() {
 void PagedAppsGridView::StartAppsGridCardifiedView() {
   if (!app_list_features::IsNewDragSpecInLauncherEnabled())
     return;
-  if (is_in_folder())
+  if (IsInFolder())
     return;
   DCHECK(!cardified_state_);
   StopObservingImplicitAnimations();
@@ -737,7 +737,7 @@ void PagedAppsGridView::StartAppsGridCardifiedView() {
 void PagedAppsGridView::EndAppsGridCardifiedView() {
   if (!app_list_features::IsNewDragSpecInLauncherEnabled())
     return;
-  if (is_in_folder())
+  if (IsInFolder())
     return;
   DCHECK(cardified_state_);
   StopObservingImplicitAnimations();
