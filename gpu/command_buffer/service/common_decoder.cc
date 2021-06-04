@@ -9,8 +9,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"

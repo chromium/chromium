@@ -7,7 +7,7 @@
 
 // We explicitly do NOT include webgpu_cmd_format.h here because client side
 // and service side have different requirements.
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 
 namespace gpu {

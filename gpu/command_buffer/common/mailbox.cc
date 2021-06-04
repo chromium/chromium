@@ -9,8 +9,8 @@
 #include <string.h>
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace gpu {

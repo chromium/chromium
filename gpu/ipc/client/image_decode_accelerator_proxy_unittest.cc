@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "cc/paint/paint_image.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
