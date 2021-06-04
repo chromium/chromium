@@ -972,14 +972,12 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
   } else {
     slot_start = bucket->SlowPathAlloc(this, flags, raw_size,
                                        slot_span_alignment, is_already_zeroed);
-    // TODO(palmer): See if we can afford to make this a CHECK.
-    PA_DCHECK(!slot_start ||
-              IsValidSlotSpan(SlotSpan::FromSlotStartPtr(slot_start)));
-
     if (UNLIKELY(!slot_start))
       return nullptr;
 
     slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+    // TODO(palmer): See if we can afford to make this a CHECK.
+    PA_DCHECK(IsValidSlotSpan(slot_span));
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||
               (slot_span->bucket->is_direct_mapped() &&
