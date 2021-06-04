@@ -22,7 +22,8 @@ function runTest(test_file, expectation, description) {
       });
     });
 
-    startPrerendering(test_file);
+    // Open a new window to test the message box.
+    window.open(test_file, '_blank', 'noopener');
 
     // Wait for the message from the prerendering page.
     assert_equals(await gotMessage, expectation);

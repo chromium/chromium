@@ -2,14 +2,15 @@ const STORE_URL = '/wpt_internal/prerender/resources/key-value-store.py';
 
 // Starts prerendering for `url`.
 function startPrerendering(url) {
-  // Adds <link rel=prerender> for the URL.
-  // TODO(https://crbug.com/1174978): <link rel=prerender> may not start
-  // prerendering for some reason (e.g., resource limit). Implement a WebDriver
-  // API to force prerendering.
-  const link = document.createElement('link');
-  link.rel = 'prerender';
-  link.href = url;
-  document.head.appendChild(link);
+  // Adds <script type="speculationrules"> and specifies a prerender candidate
+  // for the given URL.
+  // TODO(https://crbug.com/1174978): <script type="speculationrules"> may not
+  // start prerendering for some reason (e.g., resource limit). Implement a
+  // WebDriver API to force prerendering.
+  const script = document.createElement('script');
+  script.type = 'speculationrules';
+  script.text = `{"prerender": [{"source": "list", "urls": ["${url}"] }] }`;
+  document.head.appendChild(script);
 }
 
 // Reads the value specified by `key` from the key-value store on the server.
