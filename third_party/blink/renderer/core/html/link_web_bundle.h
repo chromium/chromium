@@ -60,6 +60,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
 
  private:
   bool ResourcesOrScopesMatch(const KURL& url) const;
+  void ReleaseBundleLoader();
 
   Member<WebBundleLoader> bundle_loader_;
 };
