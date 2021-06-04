@@ -4,6 +4,8 @@ include_rules = [
   # These are low-level system APIs on ChromeOS that need to be available
   # everywhere.
   "+chromeos/crosapi/cpp/crosapi_constants.h",
+  "+chromeos/lacros/lacros_chrome_service_delegate.h",
+  "+chromeos/lacros/lacros_service.h",
   "+chromeos/lacros/lacros_test_helper.h",
   "+chromeos/startup/startup_switches.h",
 

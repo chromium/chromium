@@ -658,6 +658,7 @@ static_library("test_support") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/cpp",
+      "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/startup:constants",
     ]
@@ -826,6 +827,10 @@ static_library("browsertest_support") {
   if (is_mac) {
     sources += [ "../public/test/content_browser_test_utils_mac.mm" ]
     deps += [ "//ui/base/mojom" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:lacros" ]
   }
 
   configs += [ "//v8:external_startup_data" ]
@@ -2565,6 +2570,9 @@ test("content_unittests") {
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
     ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
   }
   if (is_android) {
     sources += [

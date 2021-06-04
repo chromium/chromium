@@ -13,7 +13,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
 namespace {
@@ -52,8 +51,8 @@ TestShellMainDelegate::~TestShellMainDelegate() {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TestShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  // Browser tests on Lacros requires a non-null LacrosChromeService.
-  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
+  // Browser tests on Lacros requires a non-null LacrosService.
+  lacros_service_ = std::make_unique<chromeos::LacrosService>(
       /*delegate=*/nullptr);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

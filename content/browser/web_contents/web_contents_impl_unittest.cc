@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/media/audio_stream_monitor.h"
@@ -79,6 +80,10 @@
 #include "ui/gfx/skia_util.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 namespace content {
 namespace {
 class WebContentsImplTestBrowserClient : public TestContentBrowserClient {
@@ -138,6 +143,11 @@ class WebContentsImplTest : public RenderViewHostImplTestHarness {
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Instantiate LacrosService for WakeLock support.
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
+
   ScopedWebUIControllerFactoryRegistration factory_registration_{
       ContentWebUIControllerFactory::GetInstance()};
 };

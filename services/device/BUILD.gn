@@ -191,10 +191,6 @@ source_set("tests") {
     sources += [ "generic_sensor/platform_sensor_provider_unittest_android.cc" ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [ "geolocation/wifi_data_provider_chromeos_unittest.cc" ]
-  }
-
   if (is_win) {
     sources += [
       "battery/battery_status_manager_win_unittest.cc",
@@ -226,7 +222,10 @@ source_set("tests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [ "fingerprint/fingerprint_chromeos_unittest.cc" ]
+    sources += [
+      "fingerprint/fingerprint_chromeos_unittest.cc",
+      "geolocation/wifi_data_provider_chromeos_unittest.cc",
+    ]
     deps += [
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
@@ -235,6 +234,10 @@ source_set("tests") {
       "//services/device/fingerprint",
       "//third_party/protobuf:protobuf_lite",
     ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
   }
 
   if (is_android) {
