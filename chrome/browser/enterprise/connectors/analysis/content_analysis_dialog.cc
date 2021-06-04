@@ -80,8 +80,8 @@ class CircleBackground : public views::Background {
   }
 };
 
-SkColor GetBackgroundColor(const views::Widget* widget) {
-  return widget->GetNativeTheme()->GetSystemColor(
+SkColor GetBackgroundColor(const views::View* view) {
+  return view->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground);
 }
 
@@ -207,16 +207,21 @@ ContentAnalysisDialog::ContentAnalysisDialog(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,
     content::WebContents* web_contents,
     safe_browsing::DeepScanAccessPoint access_point,
-    int files_count)
+    int files_count,
+    ContentAnalysisDelegateBase::FinalResult final_result)
     : content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)),
       web_contents_(web_contents),
+      final_result_(final_result),
       access_point_(std::move(access_point)),
       files_count_(files_count) {
   SetOwnedByWidget(true);
 
   if (observer_for_testing)
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
+
+  if (final_result_ != ContentAnalysisDelegateBase::FinalResult::SUCCESS)
+    UpdateStateFromFinalResult(final_result_);
 
   SetupButtons();
 
@@ -341,6 +346,11 @@ views::View* ContentAnalysisDialog::GetContentsView() {
 
     // Add padding to distance the message from the button(s).
     layout->AddPaddingRow(views::GridLayout::kFixedSize, 10);
+
+    // If the dialog was started in a state other than pending, setup the views
+    // accordingly.
+    if (!is_pending())
+      UpdateViews();
   }
 
   return contents_view_;
@@ -370,23 +380,10 @@ void ContentAnalysisDialog::ShowResult(
     const std::u16string& custom_message,
     const GURL& learn_more_url) {
   DCHECK(is_pending());
-  final_result_ = result;
   final_custom_message_ = custom_message;
   final_learn_more_url_ = learn_more_url;
 
-  switch (final_result_) {
-    case ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES:
-    case ContentAnalysisDelegateBase::FinalResult::LARGE_FILES:
-    case ContentAnalysisDelegateBase::FinalResult::FAILURE:
-      dialog_status_ = DeepScanningDialogStatus::FAILURE;
-      break;
-    case ContentAnalysisDelegateBase::FinalResult::SUCCESS:
-      dialog_status_ = DeepScanningDialogStatus::SUCCESS;
-      break;
-    case ContentAnalysisDelegateBase::FinalResult::WARNING:
-      dialog_status_ = DeepScanningDialogStatus::WARNING;
-      break;
-  }
+  UpdateStateFromFinalResult(result);
 
   // Update the pending dialog only after it has been shown for a minimum amount
   // of time.
@@ -407,19 +404,37 @@ ContentAnalysisDialog::~ContentAnalysisDialog() {
     observer_for_testing->DestructorCalled(this);
 }
 
-void ContentAnalysisDialog::UpdateDialog() {
-  views::Widget* widget = GetWidget();
-  DCHECK(widget);
-  DCHECK(is_result());
+void ContentAnalysisDialog::UpdateStateFromFinalResult(
+    ContentAnalysisDelegateBase::FinalResult final_result) {
+  final_result_ = final_result;
+  switch (final_result_) {
+    case ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES:
+    case ContentAnalysisDelegateBase::FinalResult::LARGE_FILES:
+    case ContentAnalysisDelegateBase::FinalResult::FAILURE:
+      dialog_state_ = State::FAILURE;
+      break;
+    case ContentAnalysisDelegateBase::FinalResult::SUCCESS:
+      dialog_state_ = State::SUCCESS;
+      break;
+    case ContentAnalysisDelegateBase::FinalResult::WARNING:
+      dialog_state_ = State::WARNING;
+      break;
+  }
+}
 
-  auto height_before = contents_view_->GetPreferredSize().height();
+void ContentAnalysisDialog::UpdateViews() {
+  DCHECK(contents_view_);
 
   // Update the style of the dialog to reflect the new state.
   message_->Update();
   image_->Update();
   side_icon_image_->Update();
-  side_icon_spinner_->Update();
-  side_icon_spinner_ = nullptr;
+  // There isn't always a spinner, for instance when the dialog is started in a
+  // state other than the "pending" state.
+  if (side_icon_spinner_) {
+    side_icon_spinner_->Update();
+    side_icon_spinner_ = nullptr;
+  }
 
   // Update the buttons.
   SetupButtons();
@@ -436,10 +451,18 @@ void ContentAnalysisDialog::UpdateDialog() {
   learn_more_link_->SetVisible(
       (is_failure() || is_warning()) &&
       (final_learn_more_url_.is_valid() && !final_learn_more_url_.is_empty()));
+}
+
+void ContentAnalysisDialog::UpdateDialog() {
+  DCHECK(contents_view_);
+  DCHECK(is_result());
+
+  auto height_before = contents_view_->GetPreferredSize().height();
+
+  UpdateViews();
 
   // Resize the dialog's height. This is needed since the text might take more
   // lines after changing.
-
   auto height_after = contents_view_->GetPreferredSize().height();
   int height_to_add = std::max(height_after - height_before, 0);
   if (height_to_add > 0)
@@ -447,7 +470,7 @@ void ContentAnalysisDialog::UpdateDialog() {
 
   // Update the dialog.
   DialogDelegate::DialogModelChanged();
-  widget->ScheduleLayout();
+  contents_view_->InvalidateLayout();
 
   // Schedule the dialog to close itself in the success case.
   if (is_success()) {
@@ -545,31 +568,31 @@ void ContentAnalysisDialog::SetupButtons() {
 }
 
 std::u16string ContentAnalysisDialog::GetDialogMessage() const {
-  switch (dialog_status_) {
-    case DeepScanningDialogStatus::PENDING:
+  switch (dialog_state_) {
+    case State::PENDING:
       return GetPendingMessage();
-    case DeepScanningDialogStatus::FAILURE:
+    case State::FAILURE:
       return GetFailureMessage();
-    case DeepScanningDialogStatus::SUCCESS:
+    case State::SUCCESS:
       return GetSuccessMessage();
-    case DeepScanningDialogStatus::WARNING:
+    case State::WARNING:
       return GetWarningMessage();
   }
 }
 
 std::u16string ContentAnalysisDialog::GetCancelButtonText() const {
   int text_id;
-  switch (dialog_status_) {
-    case DeepScanningDialogStatus::SUCCESS:
+  switch (dialog_state_) {
+    case State::SUCCESS:
       NOTREACHED();
       FALLTHROUGH;
-    case DeepScanningDialogStatus::PENDING:
+    case State::PENDING:
       text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_UPLOAD_BUTTON;
       break;
-    case DeepScanningDialogStatus::FAILURE:
+    case State::FAILURE:
       text_id = IDS_CLOSE;
       break;
-    case DeepScanningDialogStatus::WARNING:
+    case State::WARNING:
       text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_WARNING_BUTTON;
       break;
   }
@@ -610,12 +633,12 @@ std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
 
 SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
-  const views::Widget* widget = GetWidget();
-  DCHECK(widget);
+  DCHECK(contents_view_);
+
   ui::NativeTheme::ColorId color_id =
       is_success() ? ui::NativeTheme::kColorId_AlertSeverityLow
                    : ui::NativeTheme::kColorId_AlertSeverityHigh;
-  return widget->GetNativeTheme()->GetSystemColor(color_id);
+  return contents_view_->GetNativeTheme()->GetSystemColor(color_id);
 }
 
 int ContentAnalysisDialog::GetPasteImageId(bool use_dark) const {
@@ -689,7 +712,7 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
-  const bool use_dark = color_utils::IsDark(GetBackgroundColor(GetWidget()));
+  const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
   const bool treat_as_text_paste =
       access_point_ == safe_browsing::DeepScanAccessPoint::PASTE ||
       (access_point_ == safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP &&
@@ -702,19 +725,19 @@ const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
 }
 
 SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
-  const views::Widget* widget = GetWidget();
-  DCHECK(widget);
-  switch (dialog_status_) {
-    case DeepScanningDialogStatus::PENDING:
+  DCHECK(contents_view_);
+
+  switch (dialog_state_) {
+    case State::PENDING:
       // Match the spinner in the pending state.
-      return widget->GetNativeTheme()->GetSystemColor(
+      return contents_view_->GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_ThrobberSpinningColor);
-    case DeepScanningDialogStatus::SUCCESS:
-    case DeepScanningDialogStatus::FAILURE:
-    case DeepScanningDialogStatus::WARNING:
+    case State::SUCCESS:
+    case State::FAILURE:
+    case State::WARNING:
       // In a result state the background will have the result's color, so the
       // logo should have the same color as the background.
-      return GetBackgroundColor(widget);
+      return GetBackgroundColor(contents_view_);
   }
 }
 
