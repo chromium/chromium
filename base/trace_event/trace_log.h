@@ -346,7 +346,10 @@ class BASE_EXPORT TraceLog :
                         TraceEventHandle handle);
 
   int process_id() const { return process_id_; }
-  const std::string& process_name() const { return process_name_; }
+  std::string process_name() const {
+    AutoLock lock(lock_);
+    return process_name_;
+  }
 
   uint64_t MangleEventId(uint64_t id);
 
@@ -378,7 +381,10 @@ class BASE_EXPORT TraceLog :
     process_name_ = process_name;
   }
 
-  bool IsProcessNameEmpty() const { return process_name_.empty(); }
+  bool IsProcessNameEmpty() const {
+    AutoLock lock(lock_);
+    return process_name_.empty();
+  }
 
   // Processes can have labels in addition to their names. Use labels, for
   // instance, to list out the web page titles that a process is handling.
