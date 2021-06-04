@@ -1,18 +1,21 @@
 Name: wayland-protocols
 URL: http://wayland.freedesktop.org/
-Version: 1.20
+Version: 1.21
 License: MIT
 License File: src/COPYING
 Security Critical: yes
 
 Description:
-wayland-protocols contains Wayland protocols that adds functionality not
-available in the Wayland core protocol. Such protocols either adds
-completely new functionality, or extends the functionality of some other
-protocol either in Wayland core, or some other protocol in
-wayland-protocols.
+wayland-protocols/src contains Wayland protocols that add functionality not
+available in the Wayland core protocol.  Such protocols either add completely
+new functionality, or extend the functionality of some other protocol either in
+Wayland core, or some other protocol in wayland-protocols.
 
-To import a new snapshot of wayland-protocols:
-- Checkout the latest version: git checkout 57423eac60cc234ebfad15f394488a47f69afe16
-- Change the DEPS entry to the newly checked out commit.
+This component is fetched from the external repository.  To upgrade it to a new
+version:
+- Find the commit hash of that version in the project's git repository, which is
+  gitlab.freedesktop.org:wayland/wayland-protocols.git.
+- Update the DEPS entry to the commit found above with this command:
+  $ roll-dep --roll-to=<commit> src/third_party/wayland-protocols/src
+- Run gclient sync to update the local working copy with the new version.
 - Update this README to reflect the new version number.
