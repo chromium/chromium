@@ -38,6 +38,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/help_app_ui/buildflags.h"
 #include "chromeos/components/help_app_ui/help_app_manager.h"
 #include "chromeos/components/help_app_ui/help_app_manager_factory.h"
 #include "chromeos/components/help_app_ui/search/search.mojom.h"
@@ -175,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
 
   chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/")));
 #else
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 
   chrome::LaunchReleaseNotes(profile(),
                              apps::mojom::LaunchSource::kFromOtherApp);
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   // If no navigation happens, then this test will time out due to the wait.
   navigation_observer.Wait();
 
@@ -225,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
   base::UserActionTester user_action_tester;
   chrome::LaunchReleaseNotes(profile(),
                              apps::mojom::LaunchSource::kFromOtherApp);
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #else
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ReleaseNotes.LaunchedNotification"));
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
@@ -341,7 +342,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       chromeos::kShowHelpAppDiscoverTabNotificationId, absl::nullopt,
       absl::nullopt);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
 #else
   // We just have the original browser. No new app opens.
@@ -620,8 +621,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   EXPECT_EQ(help_task->get()->opened_count_for_testing(), 1u);
 
-// TODO(b/187231134): Replace this with a single build flag.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(ENABLE_CROS_HELP_APP)
   // This part only works in non-branded builds because it uses fake data added
   // by the mock app.
   // Search using the search handler to confirm that the update happened.
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
       browser(), ui::VKEY_OEM_2, /*control=*/true,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
   // Default browser tab and Help app are open.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ("chrome://help-app/", GetActiveWebContents()->GetVisibleURL());
