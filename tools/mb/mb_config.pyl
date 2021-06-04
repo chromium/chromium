@@ -2466,7 +2466,7 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_astro_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_astro_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
 
     'official_goma_linux_pgo': [
@@ -3532,6 +3532,10 @@
 
     'strip_absolute_paths_from_debug_symbols': {
       'gn_args': 'strip_absolute_paths_from_debug_symbols=true'
+    },
+
+    'test_isolate_no_emulator': {
+      'gn_args': 'test_isolate_uses_emulator=false',
     },
 
     'thin_lto': {
