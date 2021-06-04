@@ -754,6 +754,11 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_TRUE(
       ConvertTimingForCompositor(timing_, compositor_timing_, play_reverse));
   EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+
+  // Stress test with an effectively infinite start delay.
+  timing_.start_delay = AnimationTimeDelta::FromSecondsD(1e19);
+  EXPECT_FALSE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
