@@ -27,6 +27,7 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
     std::unique_ptr<media_router::StartPresentationContext> context)
     : id_(base::UnguessableToken::Create().ToString()),
       notification_service_(notification_service),
+      is_default_presentation_request_(context == nullptr),
       context_(std::move(context)),
       request_(request) {
   DCHECK(!context || request == context->presentation_request());

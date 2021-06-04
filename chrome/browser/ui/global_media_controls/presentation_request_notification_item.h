@@ -37,9 +37,10 @@ class PresentationRequestNotificationItem final
   }
 
   const std::string& id() const { return id_; }
-  media_router::StartPresentationContext* context() const {
-    return context_.get();
+  bool is_default_presentation_request() const {
+    return is_default_presentation_request_;
   }
+
   std::unique_ptr<media_router::StartPresentationContext> PassContext() {
     return std::move(context_);
   }
@@ -55,10 +56,15 @@ class PresentationRequestNotificationItem final
 
   const std::string id_;
   MediaNotificationService* const notification_service_;
+
+  // True if the item is created from a default PresentationRequest, which means
+  // |context_| is set to nullptr in the constructor.
+  const bool is_default_presentation_request_;
+
   // |context_| is nullptr if:
-  // (1) It is created for a default presentation request;
+  // (1) It is created for a default PresentationRequest;
   // (2) MediaNotificationService has passed |context_| to initialize a
-  // CastDialogController
+  // CastDialogController.
   std::unique_ptr<media_router::StartPresentationContext> context_;
   const content::PresentationRequest request_;
 

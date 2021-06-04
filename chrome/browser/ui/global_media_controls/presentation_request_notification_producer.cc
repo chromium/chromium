@@ -59,16 +59,16 @@ class PresentationRequestNotificationProducer::
 
  private:
   void WebContentsDestroyed() override {
-    notification_producer_->DeleteItemForPresentationRequest("closed");
+    notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override {
-    notification_producer_->DeleteItemForPresentationRequest("closed");
+    notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
   void RenderProcessGone(base::TerminationStatus status) override {
-    notification_producer_->DeleteItemForPresentationRequest("closed");
+    notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
   PresentationRequestNotificationProducer* const notification_producer_;
@@ -141,11 +141,10 @@ PresentationRequestNotificationProducer::GetNotificationItem() {
 void PresentationRequestNotificationProducer::OnNotificationListChanged() {
   ShowOrHideItem();
 }
-void PresentationRequestNotificationProducer::SetPresentationManagerForTesting(
+void PresentationRequestNotificationProducer::SetTestPresentationManager(
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager) {
-  presentation_manager_ = presentation_manager;
-  presentation_manager_->AddObserver(this);
+  test_presentation_manager_ = presentation_manager;
 }
 
 void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
@@ -157,7 +156,9 @@ void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
       base::BindOnce(
           &PresentationRequestNotificationProducer::AfterMediaDialogOpened,
           weak_factory_.GetWeakPtr(),
-          GetActiveWebContentsPresentationManager()));
+          test_presentation_manager_
+              ? test_presentation_manager_
+              : GetActiveWebContentsPresentationManager()));
 }
 
 void PresentationRequestNotificationProducer::OnMediaDialogClosed() {
@@ -240,11 +241,6 @@ void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
     const std::string& message) {
   if (!item_)
     return;
-  if (item_->context()) {
-    item_->context()->InvokeErrorCallback(blink::mojom::PresentationError(
-        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
-        message));
-  }
   const auto id{item_->id()};
   item_.reset();
   presentation_request_observer_.reset();
