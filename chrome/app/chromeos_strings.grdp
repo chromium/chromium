@@ -5400,6 +5400,9 @@
   <message name="IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_DOWNLOAD_FAILED" desc="Text of the Plugin VM installer if the installation failed because something went wrong while downloading the virtual machine.">
     Couldn't install the virtual machine because of a network error. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
+  <message name="IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_DOWNLOAD_HTTP_ERROR" desc="Text of the Parallels Desktop installer when downloading the virtual machine image failed due to a HTTP error (e.g. 401, 403, 404).">
+    Couldn't install <ph name="VM_NAME">$1<ex>Parallels Desktop</ex></ph>: Image URL returned a <ph name="HTTP_ERROR">$2<ex>404</ex></ph> error code. Please contact your administrator.
+  </message>
   <message name="IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_INSTALLING_FAILED" desc="Text of the Plugin VM installer if the installation failed because downloaded Plugin VM could not be installed.">
     Couldn't install the virtual machine. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>

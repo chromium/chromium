@@ -66,6 +66,22 @@ bool ShowRetryButton(plugin_vm::PluginVmInstaller::FailureReason reason) {
   }
 }
 
+int HttpErrorFailureReasonToInt(
+    plugin_vm::PluginVmInstaller::FailureReason reason) {
+  using Reason = plugin_vm::PluginVmInstaller::FailureReason;
+  switch (reason) {
+    default:
+      NOTREACHED();
+      FALLTHROUGH;
+    case Reason::DOWNLOAD_FAILED_401:
+      return 401;
+    case Reason::DOWNLOAD_FAILED_403:
+      return 403;
+    case Reason::DOWNLOAD_FAILED_404:
+      return 404;
+  }
+}
+
 }  // namespace
 
 void plugin_vm::ShowPluginVmInstallerView(Profile* profile) {
@@ -401,7 +417,10 @@ std::u16string PluginVmInstallerView::GetMessage() const {
         case Reason::DOWNLOAD_FAILED_401:
         case Reason::DOWNLOAD_FAILED_403:
         case Reason::DOWNLOAD_FAILED_404:
-          // TODO(b/160897236): Add a new string for this case.
+          return l10n_util::GetStringFUTF16(
+              IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_DOWNLOAD_HTTP_ERROR,
+              app_name_,
+              base::NumberToString16(HttpErrorFailureReasonToInt(*reason_)));
         case Reason::DOWNLOAD_FAILED_UNKNOWN:
         case Reason::DOWNLOAD_FAILED_NETWORK:
         case Reason::DOWNLOAD_FAILED_ABORTED:
