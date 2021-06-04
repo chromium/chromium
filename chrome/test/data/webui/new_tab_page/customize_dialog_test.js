@@ -163,6 +163,13 @@ suite('NewTabPageCustomizeDialogTest', () => {
       assertFalse(customizeDialog.$.refreshToggle.checked);
     });
 
+    test('clicking back', () => {
+      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.pages.scrollTop = 100;
+      customizeDialog.shadowRoot.querySelector('.icon-arrow-back').click();
+      assertEquals(customizeDialog.$.pages.scrollTop, 0);
+    });
+
     test('clicking cancel', () => {
       customizeDialog.backgroundSelection = {
         type: BackgroundSelectionType.IMAGE,

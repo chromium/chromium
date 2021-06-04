@@ -223,6 +223,7 @@ class CustomizeDialogElement extends mixinBehaviors
     this.selectedCollection_ = null;
     this.pageHandler_.onCustomizeDialogAction(
         newTabPage.mojom.CustomizeDialogAction.kBackgroundsBackClicked);
+    this.$.pages.scrollTop = 0;
   }
 
   /** @private */
