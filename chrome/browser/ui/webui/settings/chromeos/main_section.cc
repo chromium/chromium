@@ -230,7 +230,7 @@ void MainSection::AddChromeOSUserStrings(
       ProfileHelper::Get()->GetUserByProfile(profile());
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
+  std::string primary_user_email = primary_user->GetDisplayEmail();
 
   html_source->AddString("primaryUserEmail", primary_user_email);
   html_source->AddBoolean("isActiveDirectoryUser",
