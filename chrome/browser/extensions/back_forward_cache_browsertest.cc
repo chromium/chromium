@@ -20,7 +20,8 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
  public:
   explicit ExtensionBackForwardCacheBrowserTest(
       bool all_extensions_allowed = true,
-      bool allow_content_scripts = true) {
+      bool allow_content_scripts = true,
+      std::string blocked_extensions = "") {
     // If `allow_content_scripts` is true then `all_extensions_allowed` must
     // also be true.
     DCHECK(!(allow_content_scripts && !all_extensions_allowed));
@@ -30,7 +31,8 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
             allow_content_scripts ? "true" : "false"},
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"all_extensions_allowed",
-            all_extensions_allowed ? "true" : "false"}}}},
+            all_extensions_allowed ? "true" : "false"},
+           {"blocked_extensions", blocked_extensions}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
@@ -511,6 +513,48 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                    "BackForwardCache.Eviction.Renderer",
                    blink::mojom::RendererEvictionReason::kJavaScriptExecution));
+}
+
+// Test that allows all extensions but disables bfcache in the presence of a few
+// blocked ones.
+class ExtensionBackForwardCacheBlockedExtensionBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  ExtensionBackForwardCacheBlockedExtensionBrowserTest()
+      : ExtensionBackForwardCacheBrowserTest(
+            /*all_extensions_allowed*/ true,
+            /*allow_content_scripts=*/true,
+            /*blocked_extensions=*/
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,mockepjebcnmhmhcahfddgfcdgkdifnc,"
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") {}
+};
+
+// Tests that a blocked extension that is installed prevents back forward
+// cache.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
+                       ScriptDisallowed) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
+                        .AppendASCII("extension.crx"));
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), "mockepjebcnmhmhcahfddgfcdgkdifnc");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
+  // since there is a blocked feature flag with id
+  // 'mockepjebcnmhmhcahfddgfcdgkdifnc'.
+  delete_observer_rfh_a.WaitUntilDeleted();
 }
 
 }  // namespace extensions

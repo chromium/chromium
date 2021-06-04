@@ -164,19 +164,40 @@ bool AreAllExtensionsAllowedForBFCache() {
   return all_extensions_allowed.Get();
 }
 
+std::string BlockedExtensionListForBFCache() {
+  // If back forward cache is disabled, indicate nothing is blocked.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+    return std::string();
+
+  static base::FeatureParam<std::string> extensions_blocked(
+      &features::kBackForwardCache, "blocked_extensions", "");
+  return extensions_blocked.Get();
+}
+
 void DisableBackForwardCacheIfNecessary(
     const ExtensionSet& enabled_extensions,
     content::BrowserContext* context,
     content::NavigationHandle* navigation_handle) {
-  // If we allow all extensions for bfcache then just return.
-  if (AreAllExtensionsAllowedForBFCache())
+  bool all_allowed = AreAllExtensionsAllowedForBFCache();
+  std::string blocked_extensions = BlockedExtensionListForBFCache();
+
+  // If we allow all extensions for bfcache and there aren't any blocked, then
+  // just return.
+  if (all_allowed && blocked_extensions.empty())
     return;
+
+  // We shouldn't have blocked extensions if `all_allowed` is false.
+  DCHECK(blocked_extensions.empty() || all_allowed);
 
   bool disable_bfcache = false;
   // If the user data exists we know we are disabled.
   if (context->GetUserData(kIsBFCacheDisabledKey)) {
     disable_bfcache = true;
   } else {
+    std::vector<std::string> blocked_extensions_list =
+        base::SplitString(blocked_extensions, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+
     // Compute whether we need to disable it.
     for (const auto& extension : enabled_extensions) {
       // Skip component extensions, apps, themes, shared modules and the google
@@ -188,6 +209,13 @@ void DisableBackForwardCacheIfNecessary(
         continue;
       }
       if (util::IsExtensionVisibleToContext(*extension, context)) {
+        // If we are allowing all extensions with a block filter set, and this
+        // extension is not in it then continue.
+        if (all_allowed &&
+            !base::Contains(blocked_extensions_list, extension->id())) {
+          continue;
+        }
+
         VLOG(1) << "Disabled bfcache due to " << extension->short_name() << ","
                 << extension->id();
         if (!disable_bfcache) {
