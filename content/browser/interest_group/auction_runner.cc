@@ -84,9 +84,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
   DCHECK(!filtered_buyers.empty());
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       delegate, interest_group_manager, std::move(auction_config),
-      std::move(filtered_buyers), std::move(browser_signals), frame_origin,
-      std::move(callback)));
-  instance->ReadNextInterestGroup();
+      std::move(browser_signals), frame_origin, std::move(callback)));
+  instance->ReadInterestGroups(std::move(filtered_buyers));
   return instance;
 }
 
@@ -94,47 +93,44 @@ AuctionRunner::AuctionRunner(
     Delegate* delegate,
     InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    std::vector<url::Origin> filtered_buyers,
     auction_worklet::mojom::BrowserSignalsPtr browser_signals,
     const url::Origin& frame_origin,
     RunAuctionCallback callback)
     : delegate_(delegate),
       interest_group_manager_(interest_group_manager),
       auction_config_(std::move(auction_config)),
-      pending_buyers_(std::move(filtered_buyers)),
       browser_signals_(std::move(browser_signals)),
       frame_origin_(frame_origin),
       callback_(std::move(callback)) {}
 
 AuctionRunner::~AuctionRunner() = default;
 
-void AuctionRunner::ReadNextInterestGroup() {
-  DCHECK_LT(next_pending_buyer_, pending_buyers_.size());
+void AuctionRunner::ReadInterestGroups(
+    std::vector<url::Origin> filtered_buyers) {
+  num_pending_buyers_ = filtered_buyers.size();
 
-  interest_group_manager_->GetInterestGroupsForOwner(
-      pending_buyers_[next_pending_buyer_],
-      base::BindOnce(&AuctionRunner::OnInterestGroupRead,
-                     weak_ptr_factory_.GetWeakPtr()));
+  for (const url::Origin& buyer : filtered_buyers) {
+    interest_group_manager_->GetInterestGroupsForOwner(
+        buyer, base::BindOnce(&AuctionRunner::OnInterestGroupRead,
+                              weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void AuctionRunner::OnInterestGroupRead(
     std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
         interest_groups) {
+  DCHECK_GT(num_pending_buyers_, 0u);
+  --num_pending_buyers_;
+
   for (auto bidder = std::make_move_iterator(interest_groups.begin());
        bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
     bid_states_.emplace_back(BidState());
     bid_states_.back().bidder = std::move(*bidder);
   }
-  next_pending_buyer_++;
 
-  // If more buyers in the queue, load the next one.
-  if (next_pending_buyer_ < pending_buyers_.size()) {
-    ReadNextInterestGroup();
+  // Wait for more buyers to be loaded, if there are still some pending.
+  if (num_pending_buyers_ > 0)
     return;
-  }
-
-  // Pending buyers are no longer needed.
-  pending_buyers_.clear();
 
   // If no interest groups were found, end the auction without a winner.
   if (bid_states_.empty()) {

@@ -162,14 +162,14 @@ class CONTENT_EXPORT AuctionRunner {
   AuctionRunner(Delegate* delegate,
                 InterestGroupManager* interest_group_manager,
                 blink::mojom::AuctionAdConfigPtr auction_config,
-                std::vector<url::Origin> filtered_buyers,
                 auction_worklet::mojom::BrowserSignalsPtr browser_signals,
                 const url::Origin& frame_origin,
                 RunAuctionCallback callback);
 
-  // Retrieves the next interest group in `pending_buyers_` from storage.
-  // OnInterestGroupRead() will be invoked with the lookup results.
-  void ReadNextInterestGroup();
+  // Starts retrieving all interest groups owned by `filtered_buyers` from
+  // storage. OnInterestGroupRead() will be invoked with the lookup results for
+  // each buyer.
+  void ReadInterestGroups(std::vector<url::Origin> filtered_buyers);
 
   // Adds `interest_groups` to `bid_states_`. Continues retrieving bidders from
   // `pending_buyers_` if any have not been retrieved yet. Otherwise, invokes
@@ -235,11 +235,10 @@ class CONTENT_EXPORT AuctionRunner {
 
   // Configuration.
   blink::mojom::AuctionAdConfigPtr auction_config_;
-  // Buyers whose interest groups need to be looked up to be added to
-  // `bid_states_`.
-  std::vector<url::Origin> pending_buyers_;
-  // Next entry in `pending_buyers_` to fetch the interest group for.
-  size_t next_pending_buyer_ = 0;
+  // The number of buyers with pending interest group loads from storage.
+  // Decremented each time OnInterestGroupRead() is invoked. The auction is
+  // started once this hits 0.
+  size_t num_pending_buyers_ = 0;
   auction_worklet::mojom::BrowserSignalsPtr browser_signals_;
   const url::Origin frame_origin_;
   RunAuctionCallback callback_;
