@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataDelegate;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateTime;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantLoginChoice;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAndConditionsState;
@@ -122,18 +123,21 @@ public class AutofillAssistantCollectUserDataTestHelper {
         Map<String, AssistantValue> mAdditionalValues = new HashMap<>();
 
         @Override
-        public void onContactInfoChanged(@Nullable AutofillContact contact) {
-            mContact = contact;
+        public void onContactInfoChanged(
+                @Nullable AssistantCollectUserDataModel.ContactModel contactModel) {
+            mContact = contactModel == null ? null : contactModel.mOption;
         }
 
         @Override
-        public void onShippingAddressChanged(@Nullable AutofillAddress address) {
-            mAddress = address;
+        public void onShippingAddressChanged(
+                @Nullable AssistantCollectUserDataModel.AddressModel addressModel) {
+            mAddress = addressModel == null ? null : addressModel.mOption;
         }
 
         @Override
-        public void onPaymentMethodChanged(@Nullable AutofillPaymentInstrument paymentInstrument) {
-            mPaymentMethod = paymentInstrument;
+        public void onPaymentMethodChanged(@Nullable AssistantCollectUserDataModel
+                                                   .PaymentInstrumentModel paymentInstrumentModel) {
+            mPaymentMethod = paymentInstrumentModel == null ? null : paymentInstrumentModel.mOption;
         }
 
         @Override
@@ -142,8 +146,9 @@ public class AutofillAssistantCollectUserDataTestHelper {
         }
 
         @Override
-        public void onLoginChoiceChanged(@Nullable AssistantLoginChoice loginChoice) {
-            mLoginChoice = loginChoice;
+        public void onLoginChoiceChanged(
+                @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel) {
+            mLoginChoice = loginChoiceModel == null ? null : loginChoiceModel.mOption;
         }
 
         @Override

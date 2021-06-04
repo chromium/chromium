@@ -174,16 +174,16 @@ class AssistantCollectUserDataBinder
                             : null);
             view.mContactDetailsSection.setListener(collectUserDataDelegate == null
                             ? null
-                            : m -> collectUserDataDelegate.onContactInfoChanged(m.mOption));
+                            : collectUserDataDelegate::onContactInfoChanged);
             view.mPaymentMethodSection.setListener(collectUserDataDelegate == null
                             ? null
-                            : m -> collectUserDataDelegate.onPaymentMethodChanged(m.mOption));
+                            : collectUserDataDelegate::onPaymentMethodChanged);
             view.mShippingAddressSection.setListener(collectUserDataDelegate == null
                             ? null
-                            : m -> collectUserDataDelegate.onShippingAddressChanged(m.mOption));
+                            : collectUserDataDelegate::onShippingAddressChanged);
             view.mLoginSection.setListener(collectUserDataDelegate == null
                             ? null
-                            : m -> collectUserDataDelegate.onLoginChoiceChanged(m.mOption));
+                            : collectUserDataDelegate::onLoginChoiceChanged);
             view.mDateRangeStartSection.setDelegate(dateStartDelegate);
             view.mDateRangeEndSection.setDelegate(dateEndDelegate);
             view.mPrependedSections.setDelegate(collectUserDataDelegate != null

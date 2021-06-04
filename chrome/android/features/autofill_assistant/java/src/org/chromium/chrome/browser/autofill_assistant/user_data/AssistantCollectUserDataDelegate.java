@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 
 /**
  * Common interface for autofill assistant payment request delegates.
@@ -19,13 +16,15 @@ import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
  */
 public interface AssistantCollectUserDataDelegate {
     /** The currently selected contact has changed. */
-    void onContactInfoChanged(@Nullable AutofillContact contact);
+    void onContactInfoChanged(@Nullable AssistantCollectUserDataModel.ContactModel contactModel);
 
     /** The currently selected shipping address has changed. */
-    void onShippingAddressChanged(@Nullable AutofillAddress address);
+    void onShippingAddressChanged(
+            @Nullable AssistantCollectUserDataModel.AddressModel addressModel);
 
     /** The currently selected payment method has changed. */
-    void onPaymentMethodChanged(@Nullable AutofillPaymentInstrument paymentInstrument);
+    void onPaymentMethodChanged(
+            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel);
 
     /** The currently selected terms & conditions state has changed. */
     void onTermsAndConditionsChanged(@AssistantTermsAndConditionsState int state);
@@ -34,7 +33,8 @@ public interface AssistantCollectUserDataDelegate {
     void onTextLinkClicked(int link);
 
     /** The currently selected login choice has changed. */
-    void onLoginChoiceChanged(@Nullable AssistantLoginChoice loginChoice);
+    void onLoginChoiceChanged(
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel);
 
     /** The start date of the date/time range has changed. */
     void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date);

@@ -11,9 +11,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 
 /** Delegate for the Collect user data UI which forwards events to a native counterpart. */
 @JNINamespace("autofill_assistant")
@@ -31,33 +28,39 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onContactInfoChanged(@Nullable AutofillContact contact) {
+    public void onContactInfoChanged(
+            @Nullable AssistantCollectUserDataModel.ContactModel contactModel) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onContactInfoChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    contact != null ? contact.getProfile() : null);
+                    contactModel == null ? null : contactModel.mOption.getProfile());
         }
     }
 
     @Override
-    public void onShippingAddressChanged(@Nullable AutofillAddress address) {
+    public void onShippingAddressChanged(
+            @Nullable AssistantCollectUserDataModel.AddressModel addressModel) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onShippingAddressChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    address != null ? address.getProfile() : null);
+                    addressModel == null ? null : addressModel.mOption.getProfile());
         }
     }
 
     @Override
-    public void onPaymentMethodChanged(@Nullable AutofillPaymentInstrument paymentInstrument) {
+    public void onPaymentMethodChanged(
+            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onCreditCardChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    paymentInstrument != null ? paymentInstrument.getCard() : null,
-                    paymentInstrument != null ? paymentInstrument.getBillingProfile() : null);
+                    paymentInstrumentModel == null ? null
+                                                   : paymentInstrumentModel.mOption.getCard(),
+                    paymentInstrumentModel == null
+                            ? null
+                            : paymentInstrumentModel.mOption.getBillingProfile());
         }
     }
 
@@ -80,12 +83,13 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onLoginChoiceChanged(AssistantLoginChoice loginChoice) {
+    public void onLoginChoiceChanged(
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onLoginChoiceChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    loginChoice != null ? loginChoice.getIdentifier() : null);
+                    loginChoiceModel == null ? null : loginChoiceModel.mOption.getIdentifier());
         }
     }
 
