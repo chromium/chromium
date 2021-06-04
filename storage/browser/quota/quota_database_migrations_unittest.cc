@@ -59,7 +59,8 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
 
   void MigrateDatabase() {
     QuotaDatabase db(DbPath());
-    EXPECT_TRUE(db.LazyOpen(true));
+    EXPECT_EQ(db.LazyOpen(QuotaDatabase::LazyOpenMode::kCreateIfNotFound),
+              QuotaError::kNone);
     EXPECT_TRUE(db.db_.get());
   }
 

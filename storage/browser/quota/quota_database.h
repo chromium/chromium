@@ -67,6 +67,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     base::Time last_modified;
   };
 
+  enum class LazyOpenMode { kCreateIfNotFound, kFailIfNotFound };
+
   // If 'path' is empty, an in memory database will be used.
   explicit QuotaDatabase(const base::FilePath& path);
   ~QuotaDatabase();
@@ -219,7 +221,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void Commit();
   void ScheduleCommit();
 
-  bool LazyOpen(bool create_if_needed);
+  QuotaError LazyOpen(LazyOpenMode mode);
   bool EnsureDatabaseVersion();
   bool ResetSchema();
   bool UpgradeSchema(int current_version);
