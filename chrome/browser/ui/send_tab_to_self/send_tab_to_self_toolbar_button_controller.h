@@ -32,28 +32,16 @@ class SendTabToSelfToolbarButtonController
           new_entries) override;
   void DismissEntries(const std::vector<std::string>& guids) override;
 
-  void ShowToolbarButton();
+  void ShowToolbarButton(const SendTabToSelfEntry& entry);
 
   void SetDelegate(SendTabToSelfToolbarButtonControllerDelegate* delegate);
 
   Profile* profile() const { return profile_; }
 
  private:
-  // Tracks the current display state of the toolbar button delegate.
-  enum class DisplayState {
-    kShown,
-    kHidden,
-  };
-
-  void UpdateToolbarButtonState();
-
   Profile* profile_;
 
   SendTabToSelfToolbarButtonControllerDelegate* delegate_;
-
-  // The delegate starts hidden and isn't shown until a STTS
-  // notification is received.
-  DisplayState delegate_display_state_ = DisplayState::kHidden;
 };
 
 }  // namespace send_tab_to_self

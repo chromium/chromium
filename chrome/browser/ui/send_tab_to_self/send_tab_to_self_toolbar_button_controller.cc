@@ -16,7 +16,10 @@ SendTabToSelfToolbarButtonController::SendTabToSelfToolbarButtonController(
 
 void SendTabToSelfToolbarButtonController::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
-  ShowToolbarButton();
+  // TODO(crbug/1206381): Any entries that were never shown are lost.
+  // This is consistent with current behavior and we don't have UI for
+  // showing multiple entries with this iteration.
+  ShowToolbarButton(*new_entries.at(0));
 }
 
 void SendTabToSelfToolbarButtonController::DismissEntries(
@@ -24,23 +27,17 @@ void SendTabToSelfToolbarButtonController::DismissEntries(
   NOTIMPLEMENTED();
 }
 
-void SendTabToSelfToolbarButtonController::ShowToolbarButton() {
+void SendTabToSelfToolbarButtonController::ShowToolbarButton(
+    const SendTabToSelfEntry& entry) {
   if (!delegate_)
     return;
 
-  if (delegate_display_state_ != DisplayState::kShown) {
-    delegate_->Show();
-    delegate_display_state_ = DisplayState::kShown;
-  }
+  delegate_->Show(entry);
 }
 
 void SendTabToSelfToolbarButtonController::SetDelegate(
     SendTabToSelfToolbarButtonControllerDelegate* delegate) {
   delegate_ = delegate;
-}
-
-void SendTabToSelfToolbarButtonController::UpdateToolbarButtonState() {
-  NOTIMPLEMENTED();
 }
 
 SendTabToSelfToolbarButtonController::~SendTabToSelfToolbarButtonController() =

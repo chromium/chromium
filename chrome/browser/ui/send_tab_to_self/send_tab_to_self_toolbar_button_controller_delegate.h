@@ -7,12 +7,13 @@
 
 namespace send_tab_to_self {
 
+class SendTabToSelfEntry;
+
 // Delegate for SendTabToSelfToolbarButtonController that is told when to show
 // by the controller.
 class SendTabToSelfToolbarButtonControllerDelegate {
  public:
-  virtual void Show() = 0;
-  virtual void Hide() = 0;
+  virtual void Show(const SendTabToSelfEntry& entry) = 0;
 
  protected:
   virtual ~SendTabToSelfToolbarButtonControllerDelegate() = default;

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
@@ -29,13 +30,16 @@ class SendTabToSelfToolbarButtonView
   ~SendTabToSelfToolbarButtonView() override;
 
   // SendTabToSelfToolbarButtonControllerDelegate implementation.
-  void Show() override;
-  void Hide() override;
+  void Show(const SendTabToSelfEntry& entry) override;
+
+  void DismissEntry(std::string& guid);
 
  private:
   void ButtonPressed();
 
   const Browser* const browser_;
+
+  const SendTabToSelfEntry* entry_;
 };
 
 }  // namespace send_tab_to_self
