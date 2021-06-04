@@ -56372,6 +56372,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="NoProfiles"/>
 </enum>
 
+<enum name="NetworkCellularESimUninstallOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Disconnect failed"/>
+  <int value="3" label="Inhibit failed"/>
+  <int value="4" label="Refresh profiles failed"/>
+  <int value="5" label="Disable profile failed"/>
+  <int value="6" label="Uninstall profile failed"/>
+  <int value="7" label="Remove service failed"/>
+</enum>
+
 <enum name="NetworkCellularOutOfCreditsReason">
   <int value="0" label="Connect-Disconnect Loop"/>
   <int value="1" label="TX-Queue Congestion"/>
