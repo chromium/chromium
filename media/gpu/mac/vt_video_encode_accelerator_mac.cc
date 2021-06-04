@@ -163,7 +163,10 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
   client_ = client_ptr_factory_->GetWeakPtr();
   input_visible_size_ = config.input_visible_size;
-  frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
+  if (config.initial_framerate.has_value())
+    frame_rate_ = config.initial_framerate.value();
+  else
+    frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
   initial_bitrate_ = config.initial_bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
@@ -339,13 +342,11 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     return;
   }
 
-  if (framerate != static_cast<uint32_t>(frame_rate_)) {
-    video_toolbox::SessionPropertySetter session_property_setter(
-        compression_session_);
-    session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
-                                frame_rate_);
-  }
-
+  frame_rate_ = framerate;
+  video_toolbox::SessionPropertySetter session_property_setter(
+      compression_session_);
+  session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
+                              frame_rate_);
   if (bitrate != static_cast<uint32_t>(target_bitrate_) && bitrate > 0) {
     target_bitrate_ = bitrate;
     bitrate_adjuster_.SetTargetBitrateBps(target_bitrate_);
