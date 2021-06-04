@@ -728,7 +728,11 @@ bool NGPhysicalBoxFragment::MayIntersect(
 PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
     TextHeightType height_type) const {
   DCHECK(GetLayoutObject());
-  DCHECK_EQ(PostLayout(), this);
+  // TODO(kojii): Scrollable overflow is computed after layout, and that the
+  // tree needs to be consistent, except for Ruby where it is computed during
+  // layout. It might be that |ComputeAnnotationOverflow| should move to layout
+  // overflow recalc, but it is to be thought out.
+  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
   if (UNLIKELY(IsLayoutObjectDestroyedOrMoved())) {
     NOTREACHED();
     return PhysicalRect();
@@ -762,7 +766,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
 
 PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     TextHeightType height_type) const {
-  DCHECK_EQ(PostLayout(), this);
+  // TODO(kojii): See |ScrollableOverflow|.
+  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
   const NGFragmentItems* items = Items();
   if (Children().empty() && !items)
     return PhysicalRect();
