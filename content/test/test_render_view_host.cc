@@ -376,16 +376,6 @@ TestRenderViewHost* RenderViewHostImplTestHarness::test_rvh() {
   return contents()->GetRenderViewHost();
 }
 
-TestRenderViewHost* RenderViewHostImplTestHarness::pending_test_rvh() {
-  return contents()->GetSpeculativePrimaryMainFrame()
-             ? contents()->GetSpeculativePrimaryMainFrame()->GetRenderViewHost()
-             : nullptr;
-}
-
-TestRenderViewHost* RenderViewHostImplTestHarness::active_test_rvh() {
-  return static_cast<TestRenderViewHost*>(active_rvh());
-}
-
 TestRenderFrameHost* RenderViewHostImplTestHarness::main_test_rfh() {
   return contents()->GetMainFrame();
 }

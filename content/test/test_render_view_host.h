@@ -278,21 +278,6 @@ class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
   // prefer to use the GetMainFrame() method in tests.
   TestRenderViewHost* test_rvh();
 
-  // pending_test_rvh() is equivalent to all of the following:
-  //   contents()->GetPendingMainFrame()->GetRenderViewHost() [if frame exists]
-  //   contents()->GetPendingRenderViewHost()
-  //   static_cast<TestRenderViewHost*>(pending_rvh())
-  //
-  // Since most functionality will eventually shift from RVH to RFH, you may
-  // prefer to use the GetPendingMainFrame() method in tests.
-  TestRenderViewHost* pending_test_rvh();
-
-  // active_test_rvh() is equivalent to:
-  //   contents()->GetPendingRenderViewHost() ?
-  //        contents()->GetPendingRenderViewHost() :
-  //        contents()->GetRenderViewHost();
-  TestRenderViewHost* active_test_rvh();
-
   // main_test_rfh() is equivalent to contents()->GetMainFrame()
   // TODO(nick): Replace all uses with contents()->GetMainFrame()
   TestRenderFrameHost* main_test_rfh();
