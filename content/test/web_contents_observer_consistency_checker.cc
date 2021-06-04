@@ -16,9 +16,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
 
 namespace content {
@@ -83,6 +85,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
         << "not a current RenderFrameHost. Only the current frame should be "
         << "spawning children.";
   }
+  AddInputEventObserver(render_frame_host);
 }
 
 void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
@@ -116,6 +119,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
   // All players should have been paused by this point.
   for (const auto& id : active_media_players_)
     CHECK_NE(RenderFrameHost::FromID(id.frame_routing_id), render_frame_host);
+  RemoveInputEventObserver(render_frame_host);
 }
 
 void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
@@ -455,6 +459,65 @@ bool WebContentsObserverConsistencyChecker::HasAnyChildren(
     }
   }
   return false;
+}
+
+class WebContentsObserverConsistencyChecker::TestInputEventObserver
+    : public RenderWidgetHost::InputEventObserver {
+ public:
+  explicit TestInputEventObserver(RenderFrameHost& render_frame_host)
+      : render_frame_host_wrapper_(&render_frame_host),
+        render_widget_host_(static_cast<RenderWidgetHostImpl*>(
+                                render_frame_host.GetRenderWidgetHost())
+                                ->GetWeakPtr()) {
+    render_widget_host_->AddInputEventObserver(this);
+  }
+  ~TestInputEventObserver() override {
+    if (render_widget_host_)
+      render_widget_host_->RemoveInputEventObserver(this);
+  }
+
+  void OnInputEvent(const blink::WebInputEvent&) override {
+    EnsureRenderFrameHostNotPrerendered();
+  }
+  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+                       blink::mojom::InputEventResultState state,
+                       const blink::WebInputEvent&) override {
+    EnsureRenderFrameHostNotPrerendered();
+  }
+
+ private:
+  void EnsureRenderFrameHostNotPrerendered() {
+    if (render_frame_host_wrapper_.IsDestroyed())
+      return;
+
+    // TODO(crbug.com/1183639): Use RenderFrameHost::GetLifecycleState() if it
+    // is possible.
+    int frame_tree_node_id =
+        content::RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
+            render_frame_host_wrapper_->GetProcess()->GetID(),
+            render_frame_host_wrapper_->GetRoutingID());
+    CHECK(!FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+               ->frame_tree()
+               ->is_prerendering());
+  }
+
+  RenderFrameHostWrapper render_frame_host_wrapper_;
+  base::WeakPtr<RenderWidgetHostImpl> render_widget_host_;
+};
+
+void WebContentsObserverConsistencyChecker::AddInputEventObserver(
+    RenderFrameHost* render_frame_host) {
+  auto result = input_observer_map_.insert(std::make_pair(
+      render_frame_host,
+      std::make_unique<TestInputEventObserver>(*render_frame_host)));
+  CHECK(result.second);
+}
+
+void WebContentsObserverConsistencyChecker::RemoveInputEventObserver(
+    RenderFrameHost* render_frame_host) {
+  auto it = input_observer_map_.find(render_frame_host);
+  CHECK(it != input_observer_map_.end());
+  input_observer_map_.erase(it);
 }
 
 }  // namespace content

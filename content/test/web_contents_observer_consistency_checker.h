@@ -82,6 +82,8 @@ class WebContentsObserverConsistencyChecker
   void DidStopLoading() override;
 
  private:
+  class TestInputEventObserver;
+
   explicit WebContentsObserverConsistencyChecker(WebContents* web_contents);
 
   std::string Format(RenderFrameHost* render_frame_host);
@@ -93,6 +95,9 @@ class WebContentsObserverConsistencyChecker
   void EnsureStableParentValue(RenderFrameHost* render_frame_host);
   bool HasAnyChildren(RenderFrameHost* render_frame_host);
 
+  void AddInputEventObserver(RenderFrameHost* render_frame_host);
+  void RemoveInputEventObserver(RenderFrameHost* render_frame_host);
+
   std::map<int64_t, RenderFrameHost*> ready_to_commit_hosts_;
   std::set<GlobalRoutingID> current_hosts_;
   std::set<GlobalRoutingID> live_routes_;
@@ -100,6 +105,9 @@ class WebContentsObserverConsistencyChecker
 
   std::set<NavigationHandle*> ongoing_navigations_;
   std::vector<MediaPlayerId> active_media_players_;
+
+  std::map<RenderFrameHost*, std::unique_ptr<TestInputEventObserver>>
+      input_observer_map_;
 
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
