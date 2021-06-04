@@ -152,7 +152,7 @@ void RenderViewImpl::Initialize(
 
   webview_->SetRendererPreferences(params->renderer_preferences);
 
-  GetContentClient()->renderer()->RenderViewCreated(this);
+  GetContentClient()->renderer()->WebViewCreated(webview_);
 
 #if defined(OS_ANDROID)
   // TODO(sgurun): crbug.com/325351 Needed only for android webview's deprecated

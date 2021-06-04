@@ -170,9 +170,8 @@ void AwContentRendererClient::RenderFrameCreated(
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 }
 
-void AwContentRendererClient::RenderViewCreated(
-    content::RenderView* render_view) {
-  AwRenderViewExt::WebViewCreated(render_view->GetWebView());
+void AwContentRendererClient::WebViewCreated(blink::WebView* web_view) {
+  AwRenderViewExt::WebViewCreated(web_view);
 }
 
 void AwContentRendererClient::PrepareErrorPage(

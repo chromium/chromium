@@ -50,6 +50,7 @@ class WebPrescientNetworking;
 class WebServiceWorkerContextProxy;
 class WebURL;
 class WebURLRequest;
+class WebView;
 struct WebContentSecurityPolicyHeader;
 struct WebPluginParams;
 struct WebURLError;
@@ -67,7 +68,6 @@ class BinderMap;
 
 namespace content {
 class RenderFrame;
-class RenderView;
 
 // Embedder API for participating in renderer logic.
 class CONTENT_EXPORT ContentRendererClient {
@@ -85,8 +85,8 @@ class CONTENT_EXPORT ContentRendererClient {
   // Notifies that a new RenderFrame has been created.
   virtual void RenderFrameCreated(RenderFrame* render_frame) {}
 
-  // Notifies that a new RenderView has been created.
-  virtual void RenderViewCreated(RenderView* render_view) {}
+  // Notifies that a new WebView has been created.
+  virtual void WebViewCreated(blink::WebView* web_view) {}
 
   // Returns the bitmap to show when a plugin crashed, or NULL for none.
   virtual SkBitmap* GetSadPluginBitmap();
