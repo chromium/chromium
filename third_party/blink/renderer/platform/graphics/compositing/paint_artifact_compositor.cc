@@ -351,11 +351,20 @@ bool NeedsFullUpdateAfterPaintingChunk(
     const PaintArtifact& previous_artifact,
     const PaintChunk& repainted,
     const PaintArtifact& repainted_artifact) {
-  if (repainted.is_moved_from_cached_subsequence)
-    return false;
-
   if (!repainted.Matches(previous))
     return true;
+
+  if (repainted.is_moved_from_cached_subsequence) {
+    DCHECK_EQ(previous.bounds, repainted.bounds);
+    DCHECK_EQ(previous.known_to_be_opaque, repainted.known_to_be_opaque);
+    DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
+              repainted.text_known_to_be_on_opaque_background);
+    // Not checking ForeignLayer() here because the old ForeignDisplayItem
+    // was set to 0 when we moved the cached subsequence. This is also the
+    // reason why we check is_moved_from_cached_subsequence before checking
+    // ForeignLayer().
+    return false;
+  }
 
   // Bounds are used in overlap testing.
   // TODO(pdr): If the bounds shrink, that does affect overlap testing but we
