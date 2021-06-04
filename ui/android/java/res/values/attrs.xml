@@ -10,6 +10,12 @@
     <!-- The rounded corner radius for the menus. -->
     <attr name="menuCornerSize" format="reference|dimension"/>
 
+    <!-- Material roles currently only used in downstream. Define them here
+         so public builds do not complain the attribute is not found. Removal
+         tracked in https://crbug.com/1216204. -->
+    <attr name="colorOnSurfaceVariant" format="color"/>
+    <attr name="colorOnSurfaceInverse" format="color"/>
+
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>

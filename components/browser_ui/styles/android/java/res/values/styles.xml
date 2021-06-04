@@ -179,8 +179,12 @@
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
-    <!-- Refactored styles -->
-    <style name="ThemeRefactorAppThemeOverlay">
-        <item name="menuCornerSize">@dimen/refactor_menu_rounded_corner_radius</item>
+    <style name="BaseColorOverlay">
+        <item name="colorPrimary">@color/modern_blue_600</item>
+        <item name="colorError">@color/google_red_600</item>
+        <item name="android:colorBackground">@color/modern_white</item>
+        <item name="colorOnBackground">@color/modern_grey_900</item>
+        <item name="colorOnSurfaceVariant">@color/modern_grey_700</item>
+        <item name="colorOnSurfaceInverse">@color/modern_white</item>
     </style>
 </resources>

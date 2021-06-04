@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="BaseColorOverlay">
+        <item name="colorPrimary">@color/modern_blue_300</item>
+        <item name="colorError">@color/google_red_300</item>
+        <item name="android:colorBackground">@color/modern_grey_900</item>
+        <item name="colorOnBackground">@color/modern_white</item>
+        <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
+        <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>
+    </style>
+</resources>

@@ -162,7 +162,7 @@
     </style>
 
     <!-- Settings -->
-    <style name="SettingsActionBarModern" parent="@style/Widget.MaterialComponents.Light.ActionBar.Solid">
+    <style name="SettingsActionBarModern" parent="@style/Widget.MaterialComponents.ActionBar.Surface">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary</item>
     </style>
 
