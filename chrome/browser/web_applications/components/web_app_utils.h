@@ -72,16 +72,21 @@ std::string GetProfileCategoryForLogging(Profile* profile);
 // Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
 bool IsChromeOs();
 
-// Returns file handlers associated with the app at `url`, in the `profile`.
-const apps::FileHandlers GetFileHandlersForWebApp(Profile* profile,
-                                                  const GURL& url);
+// Returns all file handlers associated with any apps at the origin of `url`, in
+// the `profile`. This is not limited to a particular app's scope because it's
+// used for display in permissions contexts, and permissions are origin-bound.
+apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
+                                                          const GURL& url);
 
 // Returns a display-ready string that holds all file type associations handled
-// by the app at `url`. On Linux, where files are associated via MIME types,
-// this will return MIME types like "text/plain, image/png". On all other
-// platforms, where files are associated via file extensions, this will return
-// capitalized file extensions with the period truncated, like "TXT, PNG".
-std::u16string GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
+// by all installed apps that are scoped under the origin of `url`. This means
+// that if the provided URL is example.com/app/, the returned value will also
+// include file types for example.com/alternate_app/. On Linux, where files are
+// associated via MIME types, this will return MIME types like "text/plain,
+// image/png". On all other platforms, where files are associated via file
+// extensions, this will return capitalized file extensions with the period
+// truncated, like "TXT, PNG".
+std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     Profile* profile,
     const GURL& url);
 

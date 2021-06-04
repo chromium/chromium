@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -50,6 +51,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #endif
+
+namespace web_app {
 
 // A fake file handling expiry service. This service allows us to mock having an
 // origin trial which expires having a certain time, without needing to manage
@@ -96,19 +99,19 @@ class FakeFileHandlingExpiryService
   mojo::AssociatedReceiver<blink::mojom::FileHandlingExpiry> receiver_{this};
 };
 
-class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
+class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
  public:
-  web_app::WebAppProviderBase* provider() {
-    return web_app::WebAppProviderBase::GetProviderBase(profile());
+  WebAppProviderBase* provider() {
+    return WebAppProviderBase::GetProviderBase(profile());
   }
 
-  web_app::FileHandlerManager& file_handler_manager() {
+  FileHandlerManager& file_handler_manager() {
     return provider()
         ->os_integration_manager()
         .file_handler_manager_for_testing();
   }
 
-  web_app::AppRegistrar& registrar() { return provider()->registrar(); }
+  AppRegistrar& registrar() { return provider()->registrar(); }
 
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");
@@ -124,6 +127,10 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
 
   GURL GetHTMLFileHandlerActionURL() {
     return https_server()->GetURL("app.com", "/ssl/page_with_frame.html");
+  }
+
+  GURL GetSecondAppUrl() {
+    return https_server()->GetURL("app.com", "/pwa/app2.html");
   }
 
   void InstallFileHandlingPWA() {
@@ -161,6 +168,24 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
+  void InstallSecondFileHandlingPWASameOrigin() {
+    GURL url = GetSecondAppUrl();
+
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = url;
+    web_app_info->scope = url.GetWithoutFilename();
+    web_app_info->title = u"A second app";
+
+    // This one handles jpegs.
+    blink::Manifest::FileHandler entry1;
+    entry1.action = GetTextFileHandlerActionURL();
+    entry1.name = u"jpeg";
+    entry1.accept[u"image/jpeg"].push_back(u".jpeg");
+    web_app_info->file_handlers.push_back(std::move(entry1));
+
+    WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+  }
+
  protected:
   void SetFileHandlingPermission(ContentSetting setting) {
     auto* map =
@@ -168,10 +193,10 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
     map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING, setting);
   }
 
-  const web_app::AppId& app_id() { return app_id_; }
+  const AppId& app_id() { return app_id_; }
 
  private:
-  web_app::AppId app_id_;
+  AppId app_id_;
 };
 
 namespace {
@@ -334,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        MAYBE_UnlimitedFileHandlersForChrome) {
   // We install more than |kMaxFileHandlers| file handlers.
-  const unsigned kNumHandlers = 2 * web_app::kMaxFileHandlers + 1;
+  const unsigned kNumHandlers = 2 * kMaxFileHandlers + 1;
 
   auto action_url = [](unsigned index) {
     return GURL(base::StringPrintf("chrome://interstitials/#a%u", index));
@@ -348,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     return base::StringPrintf(".e%u", index);
   };
 
-  web_app::AppId app_id;
+  AppId app_id;
   {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = GURL("chrome://interstitials/");
@@ -388,7 +413,7 @@ class WebAppFileHandlingOriginTrialBrowserTest
     : public WebAppFileHandlingTestBase {
  public:
   WebAppFileHandlingOriginTrialBrowserTest() {
-    web_app::FileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting();
+    FileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting();
   }
 
   content::WebContents* web_contents() {
@@ -483,9 +508,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
   EXPECT_TRUE(file_handler_manager().AreFileHandlersEnabled(app_id()));
 
   // Update the expiry time to be in the past.
-  web_app::UpdateDoubleWebAppPref(profile()->GetPrefs(), app_id(),
-                                  web_app::kFileHandlingOriginTrialExpiryTime,
-                                  base::Time().ToDoubleT());
+  UpdateDoubleWebAppPref(profile()->GetPrefs(), app_id(),
+                         kFileHandlingOriginTrialExpiryTime,
+                         base::Time().ToDoubleT());
 }
 
 // Part 2: Test that expired file handlers for an app are cleaned up.
@@ -601,8 +626,7 @@ constexpr char kOriginTrialPublicKeyForTesting[] =
 
 }  // namespace
 
-class WebAppFileHandlingOriginTrialTest
-    : public web_app::WebAppControllerBrowserTest {
+class WebAppFileHandlingOriginTrialTest : public WebAppControllerBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebAppControllerBrowserTest::SetUpCommandLine(command_line);
@@ -620,7 +644,7 @@ class WebAppFileHandlingOriginTrialTest
                                   CONTENT_SETTING_ALLOW);
   }
 
-  web_app::AppId InstallFileHandlingWebApp(GURL* start_url_out = nullptr) {
+  AppId InstallFileHandlingWebApp(GURL* start_url_out = nullptr) {
     std::string origin = "https://file-handling-pwa";
 
     // We need to use URLLoaderInterceptor (rather than a EmbeddedTestServer),
@@ -643,7 +667,7 @@ class WebAppFileHandlingOriginTrialTest
     entry1.accept[u"text/*"].push_back(u".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
-    web_app::AppId app_id =
+    AppId app_id =
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
 
     // Here we need first launch the App, so it can update the origin trial
@@ -665,7 +689,7 @@ class WebAppFileHandlingOriginTrialTest
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        LaunchParamsArePassedCorrectly) {
   GURL start_url;
-  const web_app::AppId app_id = InstallFileHandlingWebApp(&start_url);
+  const AppId app_id = InstallFileHandlingWebApp(&start_url);
   GrantFileHandlingPermission();
   base::FilePath test_file_path = NewTestFilePath("txt");
   content::WebContents* web_content = LaunchApplication(
@@ -725,16 +749,53 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
 // on WebAppProvider system setup based on current permission settings.
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
                        PolicySettingsBlockedUrl) {
-  auto* provider = web_app::WebAppProvider::Get(profile());
+  auto* provider = WebAppProvider::Get(profile());
   DCHECK(provider);
-  web_app::test::WaitUntilReady(provider);
+  test::WaitUntilReady(provider);
 
-  std::vector<web_app::AppId> app_ids = registrar().GetAppIds();
+  std::vector<AppId> app_ids = registrar().GetAppIds();
   EXPECT_EQ(app_ids.size(), 1u);
   EXPECT_TRUE(registrar()
                   .AsWebAppRegistrar()
                   ->GetAppById(app_ids[0])
                   ->file_handler_permission_blocked());
+}
+
+// Tests that when two apps are installed and share an origin (but not scope),
+// `GetFileHandlersForAllWebAppsWithOrigin` will report all the file handlers
+// across both apps.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
+                       FileHandlerAggregationForUi) {
+  InstallFileHandlingPWA();
+  EXPECT_EQ(3U,
+            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
+                .size());
+
+  InstallSecondFileHandlingPWASameOrigin();
+  EXPECT_EQ(2U, registrar().GetAppIds().size());
+  EXPECT_EQ(4U,
+            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
+                .size());
+  EXPECT_EQ(4U,
+            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecondAppUrl())
+                .size());
+
+  std::u16string display_string_app1 =
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
+                                                        GetSecureAppURL());
+  std::u16string display_string_app2 =
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
+                                                        GetSecondAppUrl());
+  EXPECT_EQ(display_string_app1, display_string_app2);
+#if defined(OS_LINUX)
+  std::u16string html = u"text/html";
+  std::u16string jpeg = u"image/jpeg";
+#else
+  std::u16string html = u"HTML";
+  std::u16string jpeg = u"JPEG";
+#endif
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(html));
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(jpeg));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -744,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
 // web_file_tasks.cc.
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        IsFileHandlerOnChromeOS) {
-  const web_app::AppId app_id = InstallFileHandlingWebApp();
+  const AppId app_id = InstallFileHandlingWebApp();
   GrantFileHandlingPermission();
   base::FilePath test_file_path = NewTestFilePath("txt");
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
@@ -762,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
 // inodes).
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        NotHandlerForNonNativeFiles) {
-  const web_app::AppId app_id = InstallFileHandlingWebApp();
+  const AppId app_id = InstallFileHandlingWebApp();
   GrantFileHandlingPermission();
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(profile());
@@ -781,3 +842,5 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+}  // namespace web_app

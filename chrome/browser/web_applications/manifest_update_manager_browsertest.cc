@@ -1782,8 +1782,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
-          browser()->profile(), GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
+                                                        GetAppURL());
 #if defined(OS_LINUX)
   EXPECT_EQ(u"text/plain", associations_list);
 #else
@@ -1816,8 +1816,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
-          browser()->profile(), GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
+                                                        GetAppURL());
 #if defined(OS_LINUX)
   EXPECT_EQ(u"text/plain", associations_list);
 #else
@@ -1857,8 +1857,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
-          browser()->profile(), GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
+                                                        GetAppURL());
 #if defined(OS_LINUX)
   EXPECT_EQ(u"long/type, text/plain", associations_list);
 #else

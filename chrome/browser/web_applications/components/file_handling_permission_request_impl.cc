@@ -34,8 +34,8 @@ FileHandlingPermissionRequestImpl::FileHandlingPermissionRequestImpl(
   DCHECK(profile);
 
   std::u16string extensions_list =
-      web_app::GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
-          profile, web_contents->GetLastCommittedURL());
+      web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(
+          profile, request_origin);
   message_text_fragment_ = l10n_util::GetStringFUTF16(
       IDS_WEB_APP_FILE_HANDLING_PERMISSION_TEXT, extensions_list);
 }
