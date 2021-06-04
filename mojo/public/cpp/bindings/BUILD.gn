@@ -138,6 +138,8 @@ component("bindings") {
     "callback_helpers.h",
     "connection_error_callback.h",
     "connector.h",
+    "generic_pending_associated_receiver.cc",
+    "generic_pending_associated_receiver.h",
     "generic_pending_receiver.cc",
     "generic_pending_receiver.h",
     "interface_endpoint_client.h",

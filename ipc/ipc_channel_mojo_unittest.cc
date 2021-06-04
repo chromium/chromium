@@ -980,7 +980,8 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
   // Send a bunch of interleaved messages, alternating between the associated
   // interface and a legacy IPC::Message.
   mojo::AssociatedRemote<IPC::mojom::SimpleTestDriver> driver;
-  proxy()->GetRemoteAssociatedInterface(&driver);
+  proxy()->GetRemoteAssociatedInterface(
+      driver.BindNewEndpointAndPassReceiver());
   for (int i = 0; i < ListenerWithSimpleProxyAssociatedInterface::kNumMessages;
        ++i) {
     driver->ExpectValue(i);
@@ -1073,7 +1074,8 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
   // processed on the IO thread.
   mojo::AssociatedRemote<IPC::mojom::IndirectTestDriver> driver;
   mojo::AssociatedRemote<IPC::mojom::PingReceiver> ping_receiver;
-  proxy()->GetRemoteAssociatedInterface(&driver);
+  proxy()->GetRemoteAssociatedInterface(
+      driver.BindNewEndpointAndPassReceiver());
   driver->GetPingReceiver(ping_receiver.BindNewEndpointAndPassReceiver());
 
   base::RunLoop loop;
@@ -1194,7 +1196,8 @@ TEST_F(IPCChannelProxyMojoTest, SyncAssociatedInterface) {
   // while waiting on it
   listener.set_response_value(42);
   mojo::AssociatedRemote<IPC::mojom::SimpleTestClient> client;
-  proxy()->GetRemoteAssociatedInterface(&client);
+  proxy()->GetRemoteAssociatedInterface(
+      client.BindNewEndpointAndPassReceiver());
   int32_t received_value;
   EXPECT_TRUE(client->RequestValue(&received_value));
   EXPECT_EQ(42, received_value);
@@ -1300,7 +1303,8 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
   RunProxy();
 
   mojo::AssociatedRemote<IPC::mojom::SimpleTestDriver> driver;
-  proxy()->GetRemoteAssociatedInterface(&driver);
+  proxy()->GetRemoteAssociatedInterface(
+      driver.BindNewEndpointAndPassReceiver());
   client_impl.set_driver(driver.get());
 
   // Simple sync message sanity check.
@@ -1432,7 +1436,8 @@ TEST_F(IPCChannelProxyMojoTest, AssociatedRequestClose) {
   RunProxy();
 
   mojo::AssociatedRemote<IPC::mojom::AssociatedInterfaceVendor> vendor;
-  proxy()->GetRemoteAssociatedInterface(&vendor);
+  proxy()->GetRemoteAssociatedInterface(
+      vendor.BindNewEndpointAndPassReceiver());
   mojo::AssociatedRemote<IPC::mojom::SimpleTestDriver> tester;
   vendor->GetTestInterface(tester.BindNewEndpointAndPassReceiver());
   base::RunLoop run_loop;
@@ -1440,7 +1445,8 @@ TEST_F(IPCChannelProxyMojoTest, AssociatedRequestClose) {
   run_loop.Run();
 
   tester.reset();
-  proxy()->GetRemoteAssociatedInterface(&tester);
+  proxy()->GetRemoteAssociatedInterface(
+      tester.BindNewEndpointAndPassReceiver());
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyProxy();
 }

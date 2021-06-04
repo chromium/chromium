@@ -179,23 +179,21 @@ void SyncMessageFilter::SignalAllEvents() {
   }
 }
 
-void SyncMessageFilter::GetGenericRemoteAssociatedInterface(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+void SyncMessageFilter::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
   base::AutoLock auto_lock(lock_);
   DCHECK(io_task_runner_ && io_task_runner_->BelongsToCurrentThread());
   if (!channel_) {
     // Attach the associated interface to a disconnected pipe, so that the
     // associated interface pointer can be used to make calls (which are
     // dropped).
-    mojo::AssociateWithDisconnectedPipe(std::move(handle));
+    mojo::AssociateWithDisconnectedPipe(receiver.PassHandle());
     return;
   }
 
   Channel::AssociatedInterfaceSupport* support =
       channel_->GetAssociatedInterfaceSupport();
-  support->GetGenericRemoteAssociatedInterface(
-      interface_name, std::move(handle));
+  support->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 }  // namespace IPC

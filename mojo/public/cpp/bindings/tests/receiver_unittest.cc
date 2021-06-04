@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -584,6 +585,26 @@ TEST_P(ReceiverTest, GenericPendingReceiver) {
   EXPECT_FALSE(receiver.is_valid());
 }
 
+TEST_P(ReceiverTest, GenericPendingAssociatedReceiver) {
+  AssociatedRemote<sample::Service> remote;
+  GenericPendingAssociatedReceiver receiver;
+  EXPECT_FALSE(receiver.is_valid());
+  EXPECT_FALSE(receiver.interface_name().has_value());
+
+  receiver =
+      GenericPendingAssociatedReceiver(remote.BindNewEndpointAndPassReceiver());
+  ASSERT_TRUE(receiver.is_valid());
+  EXPECT_EQ(sample::Service::Name_, receiver.interface_name());
+
+  auto ping_receiver = receiver.As<test::PingService>();
+  EXPECT_FALSE(ping_receiver.is_valid());
+  EXPECT_TRUE(receiver.is_valid());
+
+  auto sample_receiver = receiver.As<sample::Service>();
+  EXPECT_TRUE(sample_receiver.is_valid());
+  EXPECT_FALSE(receiver.is_valid());
+}
+
 class RebindTestImpl : public mojom::RebindTestInterface {
  public:
   explicit RebindTestImpl(base::WaitableEvent* event) : event_(event) {
@@ -660,6 +681,13 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
     wait_loop_->Run();
   }
 
+  void WaitForNextAssociatedReceiver(
+      GenericPendingAssociatedReceiver* storage) {
+    wait_loop_.emplace();
+    next_associated_receiver_storage_ = storage;
+    wait_loop_->Run();
+  }
+
   // mojom::TestGenericBinder:
   void BindOptionalReceiver(GenericPendingReceiver receiver) override {
     if (next_receiver_storage_) {
@@ -679,6 +707,26 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
       wait_loop_->Quit();
   }
 
+  void BindOptionalAssociatedReceiver(
+      GenericPendingAssociatedReceiver receiver) override {
+    if (next_associated_receiver_storage_) {
+      *next_associated_receiver_storage_ = std::move(receiver);
+      next_associated_receiver_storage_ = nullptr;
+    }
+    if (wait_loop_)
+      wait_loop_->Quit();
+  }
+
+  void BindAssociatedReceiver(
+      GenericPendingAssociatedReceiver receiver) override {
+    if (next_associated_receiver_storage_) {
+      *next_associated_receiver_storage_ = std::move(receiver);
+      next_associated_receiver_storage_ = nullptr;
+    }
+    if (wait_loop_)
+      wait_loop_->Quit();
+  }
+
  private:
   void OnDisconnect() {
     if (wait_loop_)
@@ -690,6 +738,7 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
   bool connected_ = true;
   absl::optional<base::RunLoop> wait_loop_;
   GenericPendingReceiver* next_receiver_storage_ = nullptr;
+  GenericPendingAssociatedReceiver* next_associated_receiver_storage_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestGenericBinderImpl);
 };
@@ -711,12 +760,14 @@ TEST_P(ReceiverSerializationTest, NullGenericPendingReceiver) {
       mojo::Remote<mojom::TestInterface1>().BindNewPipeAndPassReceiver());
   binder.WaitForNextReceiver(&receiver);
   EXPECT_TRUE(receiver.is_valid());
+  EXPECT_FALSE(receiver.As<mojom::TestInterface2>());
   EXPECT_TRUE(receiver.As<mojom::TestInterface1>());
 
   remote->BindReceiver(
       mojo::Remote<mojom::TestInterface2>().BindNewPipeAndPassReceiver());
   binder.WaitForNextReceiver(&receiver);
   EXPECT_TRUE(receiver.is_valid());
+  EXPECT_FALSE(receiver.As<mojom::TestInterface1>());
   EXPECT_TRUE(receiver.As<mojom::TestInterface2>());
 
   mojo::internal::SerializationWarningObserverForTesting observer;
@@ -740,6 +791,58 @@ TEST_P(ReceiverSerializationTest, NullGenericPendingReceiver) {
   // should be terminated by disconnection.
   receiver = mojo::Remote<mojom::TestInterface1>().BindNewPipeAndPassReceiver();
   binder.WaitForNextReceiver(&receiver);
+  EXPECT_TRUE(receiver.is_valid());
+  EXPECT_TRUE(receiver.As<mojom::TestInterface1>());
+  EXPECT_FALSE(binder.connected());
+}
+
+TEST_P(ReceiverSerializationTest, NullGenericPendingAssociatedReceiver) {
+  Remote<mojom::TestGenericBinder> remote;
+  TestGenericBinderImpl binder(remote.BindNewPipeAndPassReceiver());
+
+  // Bind a null, nullable associated receiver.
+  remote->BindOptionalAssociatedReceiver(GenericPendingAssociatedReceiver());
+  GenericPendingAssociatedReceiver receiver;
+  binder.WaitForNextAssociatedReceiver(&receiver);
+  EXPECT_FALSE(receiver.is_valid());
+
+  // Bind some valid non-null, non-nullable associated receivers.
+  remote->BindAssociatedReceiver(mojo::AssociatedRemote<mojom::TestInterface1>()
+                                     .BindNewEndpointAndPassReceiver());
+  binder.WaitForNextAssociatedReceiver(&receiver);
+  EXPECT_TRUE(receiver.is_valid());
+  EXPECT_FALSE(receiver.As<mojom::TestInterface2>());
+  EXPECT_TRUE(receiver.As<mojom::TestInterface1>());
+
+  remote->BindAssociatedReceiver(mojo::AssociatedRemote<mojom::TestInterface2>()
+                                     .BindNewEndpointAndPassReceiver());
+  binder.WaitForNextAssociatedReceiver(&receiver);
+  EXPECT_TRUE(receiver.is_valid());
+  EXPECT_FALSE(receiver.As<mojom::TestInterface1>());
+  EXPECT_TRUE(receiver.As<mojom::TestInterface2>());
+
+  mojo::internal::SerializationWarningObserverForTesting observer;
+
+  // Now attempt to send a null associated receiver for a non-nullable argument.
+  EXPECT_TRUE(binder.connected());
+  remote->BindAssociatedReceiver(GenericPendingAssociatedReceiver());
+
+  // We should see a validation warning at serialization time. Normally this
+  // results in a DCHECK, but it's suppressed by the testing observer we have on
+  // the stack. Note that this only works for DCHECK-enabled builds. For
+  // non-DCHECK-enabled builds, serialization will succeed above with no errors,
+  // but the receiver below will still reject the message and disconnect.
+#if DCHECK_IS_ON()
+  EXPECT_EQ(mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+            observer.last_warning());
+#endif
+
+  // `receiver` should not be modified again by the implementation in `binder`,
+  // because the it must never receive the invalid request. Instead the Wait
+  // should be terminated by disconnection.
+  receiver = mojo::AssociatedRemote<mojom::TestInterface1>()
+                 .BindNewEndpointAndPassReceiver();
+  binder.WaitForNextAssociatedReceiver(&receiver);
   EXPECT_TRUE(receiver.is_valid());
   EXPECT_TRUE(receiver.As<mojom::TestInterface1>());
   EXPECT_FALSE(binder.connected());

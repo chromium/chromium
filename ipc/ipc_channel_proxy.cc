@@ -602,13 +602,10 @@ void ChannelProxy::AddGenericAssociatedInterfaceForIOThread(
   context()->AddGenericAssociatedInterfaceForIOThread(name, factory);
 }
 
-void ChannelProxy::GetGenericRemoteAssociatedInterface(
-    const std::string& name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+void ChannelProxy::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
   DCHECK(did_init_);
-  context()->thread_safe_channel().GetAssociatedInterface(
-      name, mojo::PendingAssociatedReceiver<mojom::GenericInterface>(
-                std::move(handle)));
+  context()->thread_safe_channel().GetAssociatedInterface(std::move(receiver));
 }
 
 void ChannelProxy::ClearIPCTaskRunner() {

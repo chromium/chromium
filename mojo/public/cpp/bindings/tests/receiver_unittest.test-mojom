@@ -4,11 +4,16 @@
 
 module mojo.test.receiver_unittest.mojom;
 
+import "mojo/public/mojom/base/generic_pending_associated_receiver.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 
 interface TestGenericBinder {
   BindOptionalReceiver(mojo_base.mojom.GenericPendingReceiver? receiver);
   BindReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+  BindOptionalAssociatedReceiver(
+      mojo_base.mojom.GenericPendingAssociatedReceiver? receiver);
+  BindAssociatedReceiver(
+      mojo_base.mojom.GenericPendingAssociatedReceiver receiver);
 };
 
 interface TestInterface1 {};

@@ -131,6 +131,24 @@ struct Serializer<AssociatedInterfaceRequestDataView<Base>,
   }
 };
 
+template <typename T>
+struct Serializer<AssociatedInterfaceRequestDataView<T>,
+                  ScopedInterfaceEndpointHandle> {
+  static void Serialize(ScopedInterfaceEndpointHandle& input,
+                        AssociatedEndpointHandle_Data* output,
+                        Message* message) {
+    DCHECK(!input.is_valid() || input.pending_association());
+    SerializeAssociatedEndpoint(std::move(input), *message, *output);
+  }
+
+  static bool Deserialize(AssociatedEndpointHandle_Data* input,
+                          ScopedInterfaceEndpointHandle* output,
+                          Message* message) {
+    *output = DeserializeAssociatedEndpointHandle(*input, *message);
+    return true;
+  }
+};
+
 template <typename Base, typename T>
 struct Serializer<InterfacePtrDataView<Base>, InterfacePtr<T>> {
   static_assert(std::is_base_of<Base, T>::value, "Interface type mismatch.");

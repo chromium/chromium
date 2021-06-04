@@ -21,6 +21,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -55,8 +56,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
     virtual void OnBrokenDataReceived() = 0;
     virtual void OnPipeError() = 0;
     virtual void OnAssociatedInterfaceRequest(
-        const std::string& name,
-        mojo::ScopedInterfaceEndpointHandle handle) = 0;
+        mojo::GenericPendingAssociatedReceiver receiver) = 0;
   };
 
   // Builds a reader that reads messages from |receive_handle| and lets
@@ -89,8 +89,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   bool Send(std::unique_ptr<Message> message);
 
   // Requests an associated interface from the other end of the pipe.
-  void GetRemoteInterface(const std::string& name,
-                          mojo::ScopedInterfaceEndpointHandle handle);
+  void GetRemoteInterface(mojo::GenericPendingAssociatedReceiver receiver);
 
   mojo::AssociatedRemote<mojom::Channel>& sender() { return sender_; }
   mojom::Channel& thread_safe_sender() { return thread_safe_sender_->proxy(); }
@@ -104,9 +103,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   void SetPeerPid(int32_t peer_pid) override;
   void Receive(MessageView message_view) override;
   void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<mojom::GenericInterface> receiver)
-      override;
+      mojo::GenericPendingAssociatedReceiver receiver) override;
 
   void ForwardMessage(mojo::Message message);
 

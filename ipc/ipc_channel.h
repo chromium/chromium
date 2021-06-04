@@ -24,6 +24,7 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -104,9 +105,8 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
         const GenericAssociatedInterfaceFactory& factory) = 0;
 
     // Requests an associated interface from the remote endpoint.
-    virtual void GetGenericRemoteAssociatedInterface(
-        const std::string& name,
-        mojo::ScopedInterfaceEndpointHandle handle) = 0;
+    virtual void GetRemoteAssociatedInterface(
+        mojo::GenericPendingAssociatedReceiver receiver) = 0;
 
     // Template helper to add an interface factory to this channel.
     template <typename Interface>
@@ -119,14 +119,6 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
           Interface::Name_,
           base::BindRepeating(&BindPendingAssociatedReceiver<Interface>,
                               factory));
-    }
-
-    // Template helper to request a remote associated interface.
-    template <typename Interface>
-    void GetRemoteAssociatedInterface(
-        mojo::PendingAssociatedReceiver<Interface> receiver) {
-      GetGenericRemoteAssociatedInterface(Interface::Name_,
-                                          receiver.PassHandle());
     }
 
    private:

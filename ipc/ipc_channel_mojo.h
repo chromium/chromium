@@ -92,8 +92,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
   void OnBrokenDataReceived() override;
   void OnPipeError() override;
   void OnAssociatedInterfaceRequest(
-      const std::string& name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
+      mojo::GenericPendingAssociatedReceiver receiver) override;
 
  private:
   ChannelMojo(
@@ -112,9 +111,8 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
   void AddGenericAssociatedInterface(
       const std::string& name,
       const GenericAssociatedInterfaceFactory& factory) override;
-  void GetGenericRemoteAssociatedInterface(
-      const std::string& name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver) override;
 
   void FinishConnectOnIOThread();
 

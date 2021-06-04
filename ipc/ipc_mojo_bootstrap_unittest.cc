@@ -93,9 +93,7 @@ class PeerPidReceiver : public IPC::mojom::Channel {
   }
 
   void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<IPC::mojom::GenericInterface> receiver)
-      override {}
+      mojo::GenericPendingAssociatedReceiver receiver) override {}
 
   int32_t peer_pid() const { return peer_pid_; }
 

@@ -16,6 +16,7 @@ mojom_component("base") {
     "file_error.mojom",
     "file_info.mojom",
     "file_path.mojom",
+    "generic_pending_associated_receiver.mojom",
     "generic_pending_receiver.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
@@ -148,6 +149,21 @@ mojom_component("base") {
         "//base",
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.GenericPendingAssociatedReceiver"
+          cpp = "::mojo::GenericPendingAssociatedReceiver"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/generic_pending_associated_receiver_mojom_traits.h" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//mojo/public/cpp/bindings",
       ]
     },
     {
