@@ -33,7 +33,6 @@ font-weight: 400;
 margin-bottom: 2px;
     2px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-left: 0px;
-    1px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-right: 0px;
     0px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-top: 10px;
@@ -80,12 +79,11 @@ body .foo { (elements-pa…tyles.css:6 -> elements-panel-styles.css:6:12)
 .foo { (elements-pa…yles.css:21 -> elements-panel-styles.css:21:7)
 /-- overloaded --/     display: list-item;
 /-- overloaded --/     color: black;
-    margin-left: 1px;
+/-- overloaded --/     margin-left: 1px;
     margin: 10px 0 2px;
         margin-top: 10px;
         margin-right: 0px;
         margin-bottom: 2px;
-    /-- overloaded --/     margin-left: 1px;
     border-radius: 5px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
