@@ -126,13 +126,20 @@ Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
   return node ? node : GetClosestNodeForLayoutObject(layout_object->Parent());
 }
 
-// Return true if display locked, false otherwise.
+// Return true if display locked or inside slot recalc, false otherwise.
 // Also returns false if not a safe time to perform the check.
 bool IsDisplayLocked(const Node* node) {
   if (!node)
     return false;
-  if (node->GetDocument().IsFlatTreeTraversalForbidden())
+  // The NearestLockedExclusiveAncestor() function will attempt to do
+  // a flat tree traversal of ancestors. If we're in a flat tree traversal
+  // forbidden scope, return false. Additionally, flat tree traversal
+  // might call AssignedSlot, so if we're in a slot assignment recalc
+  // forbidden scope, return false.
+  if (node->GetDocument().IsFlatTreeTraversalForbidden() ||
+      node->GetDocument().IsSlotAssignmentRecalcForbidden()) {
     return false;  // Cannot safely perform this check now.
+  }
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(*node);
 }
 
