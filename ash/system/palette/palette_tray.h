@@ -39,7 +39,7 @@ class TrayBubbleWrapper;
 // The PaletteTray shows the palette in the bottom area of the screen. This
 // class also controls the lifetime for all of the tools available in the
 // palette. PaletteTray has one instance per-display. It is only made visible if
-// the display is primary and the display has stylus hardware.
+// the display has stylus hardware.
 class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
                                public ShellObserver,
@@ -57,8 +57,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   bool ContainsPointInScreen(const gfx::Point& point);
 
   // Returns true if the palette should be visible in the UI. This happens when
-  // there is a stylus input on an internal display and the user has not
-  // disabled it in settings. This can be overridden by passing switches.
+  // there is a stylus display and the user has not disabled it in settings.
+  // This can be overridden by passing switches.
   bool ShouldShowPalette() const;
 
   // Handles stylus events to show the welcome bubble on first usage.
@@ -110,9 +110,12 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void OnActiveToolChanged() override;
   aura::Window* GetWindow() override;
 
-  // Returns true if we're on an internal display with a stylus
-  // or on every display if requested from the command line.
+  // Returns true if we're on a display with a stylus or on every
+  // display if requested from the command line.
   bool ShouldShowOnDisplay();
+
+  // Returns true if our widget is on an internal display.
+  bool IsWidgetOnInternalDisplay();
 
   // Initializes with Shell's local state and starts to observe it.
   void InitializeWithLocalState();

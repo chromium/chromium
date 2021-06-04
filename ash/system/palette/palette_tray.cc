@@ -73,6 +73,16 @@ constexpr gfx::Insets kTitleViewPadding(8, 16, 8, 16);
 // Spacing between buttons in the title view (dp).
 constexpr int kTitleViewChildSpacing = 16;
 
+bool HasSomeStylusDisplay() {
+  for (const ui::TouchscreenDevice& device :
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+    if (device.has_stylus) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class BatteryView : public views::View {
  public:
   BatteryView() {
@@ -270,12 +280,13 @@ bool PaletteTray::ContainsPointInScreen(const gfx::Point& point) {
 
 bool PaletteTray::ShouldShowPalette() const {
   return is_palette_enabled_ && stylus_utils::HasStylusInput() &&
-         (display::Display::HasInternalDisplay() ||
+         (HasSomeStylusDisplay() ||
           stylus_utils::IsPaletteEnabledOnEveryDisplay());
 }
 
 bool PaletteTray::ShouldShowOnDisplay() {
-  if (stylus_utils::IsPaletteEnabledOnEveryDisplay())
+  if (stylus_utils::IsPaletteEnabledOnEveryDisplay() ||
+      display_has_stylus_for_testing_)
     return true;
 
   // |widget| is null when this function is called from PaletteTray constructor
@@ -288,9 +299,6 @@ bool PaletteTray::ShouldShowOnDisplay() {
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
-  if (!display.IsInternal())
-    return false;
-
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus && device.target_display_id == display.id()) {
@@ -298,7 +306,21 @@ bool PaletteTray::ShouldShowOnDisplay() {
     }
   }
 
-  return display_has_stylus_for_testing_;
+  return false;
+}
+
+bool PaletteTray::IsWidgetOnInternalDisplay() {
+  // |widget| is null when this function is called from PaletteTray constructor
+  // before it is added to a widget.
+  views::Widget* const widget = GetWidget();
+  if (!widget)
+    return false;
+
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          widget->GetNativeWindow());
+
+  return display.IsInternal();
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
@@ -406,6 +428,10 @@ void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
 
   // Don't do anything if the palette tray is not shown.
   if (!GetVisible())
+    return;
+
+  // Only respond on the internal display.
+  if (!IsWidgetOnInternalDisplay())
     return;
 
   // Auto show/hide the palette if allowed by the user.

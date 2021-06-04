@@ -38,7 +38,8 @@ bool HasStylusInput() {
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus &&
-        device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+        (device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL ||
+         device.type == ui::InputDeviceType::INPUT_DEVICE_USB)) {
       return true;
     }
   }

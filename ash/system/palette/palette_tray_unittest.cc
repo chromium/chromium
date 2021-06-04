@@ -725,7 +725,7 @@ TEST_F(PaletteTrayTestWithInternalStylus,
 TEST_F(PaletteTrayTestWithInternalStylus, PaletteBubbleShownOnEject) {
   active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
 
-  // kLaunchPaletteOnEjectEvent is true by default
+  // kLaunchPaletteOnEjectEvent is true by default.
   ASSERT_TRUE(active_user_pref_service()->GetBoolean(
       prefs::kLaunchPaletteOnEjectEvent));
 
@@ -858,6 +858,122 @@ TEST_F(PaletteTrayTestWithOOBE, StylusEventsSafeDuringOOBE) {
   generator->EnterPenPointerMode();
   generator->PressTouch();
   generator->ReleaseTouch();
+}
+
+// Base class for tests that need to simulate multiple pen
+// capable displays.
+class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
+ public:
+  PaletteTrayTestMultiDisplay() = default;
+  ~PaletteTrayTestMultiDisplay() override = default;
+  PaletteTrayTestMultiDisplay(const PaletteTrayTestMultiDisplay&) = delete;
+  PaletteTrayTestMultiDisplay& operator=(const PaletteTrayTestMultiDisplay&) =
+      delete;
+
+  // Performs a tap on the palette tray button.
+  void PerformTap(PaletteTray* tray) {
+    ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
+                         ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+    tray->PerformAction(tap);
+  }
+
+  // Fake a stylus ejection.
+  void EjectStylus() {
+    test_api_->OnStylusStateChanged(ui::StylusState::REMOVED);
+    test_api_external_->OnStylusStateChanged(ui::StylusState::REMOVED);
+  }
+
+  // Fake a stylus insertion.
+  void InsertStylus() {
+    test_api_->OnStylusStateChanged(ui::StylusState::INSERTED);
+    test_api_external_->OnStylusStateChanged(ui::StylusState::INSERTED);
+  }
+
+  // PaletteTrayTest:
+  void SetUp() override {
+    PaletteTrayTest::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kAshEnablePaletteOnAllDisplays);
+
+    // Add a external display, then sign in.
+    UpdateDisplay("200x200,200x200");
+    display::test::DisplayManagerTestApi(display_manager())
+        .SetFirstDisplayAsInternalDisplay();
+    Shell::RootWindowControllerList controllers =
+        Shell::GetAllRootWindowControllers();
+    ASSERT_EQ(2u, controllers.size());
+    SimulateUserLogin("test@test.com");
+
+    palette_tray_ = controllers[0]->GetStatusAreaWidget()->palette_tray();
+    palette_tray_external_ =
+        controllers[1]->GetStatusAreaWidget()->palette_tray();
+
+    ASSERT_TRUE(palette_tray_);
+    ASSERT_TRUE(palette_tray_external_);
+
+    test_api_external_ =
+        std::make_unique<PaletteTrayTestApi>(palette_tray_external_);
+
+    test_api_->SetDisplayHasStylus();
+    test_api_external_->SetDisplayHasStylus();
+  }
+
+ protected:
+  PaletteTray* palette_tray_external_ = nullptr;
+
+  std::unique_ptr<PaletteTrayTestApi> test_api_external_;
+};
+
+// Verify the palette welcome bubble is shown only on the internal display
+// the first time the stylus is removed.
+TEST_F(PaletteTrayTestMultiDisplay, WelcomeBubbleShownOnEject) {
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
+  active_user_pref_service()->SetBoolean(prefs::kLaunchPaletteOnEjectEvent,
+                                         false);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kHasInternalStylus);
+  ASSERT_FALSE(active_user_pref_service()->GetBoolean(
+      prefs::kShownPaletteWelcomeBubble));
+
+  EXPECT_FALSE(test_api_->welcome_bubble()->GetBubbleViewForTesting());
+  EXPECT_FALSE(test_api_external_->welcome_bubble()->GetBubbleViewForTesting());
+
+  EjectStylus();
+  EXPECT_TRUE(test_api_->welcome_bubble()->GetBubbleViewForTesting());
+  EXPECT_FALSE(test_api_external_->welcome_bubble()->GetBubbleViewForTesting());
+}
+
+// Verify that palette bubble does not open on the external display
+// on stylus eject/insert.
+TEST_F(PaletteTrayTestMultiDisplay, PaletteBubbleShownOnEject) {
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kHasInternalStylus);
+
+  // kLaunchPaletteOnEjectEvent is true by default.
+  ASSERT_TRUE(active_user_pref_service()->GetBoolean(
+      prefs::kLaunchPaletteOnEjectEvent));
+
+  // Removing the stylus shows the bubble on the internal display.
+  EjectStylus();
+  EXPECT_TRUE(palette_tray_->GetBubbleView());
+  EXPECT_FALSE(palette_tray_external_->GetBubbleView());
+
+  // Inserting the stylus hides the bubble.
+  InsertStylus();
+  EXPECT_FALSE(palette_tray_->GetBubbleView());
+  EXPECT_FALSE(palette_tray_external_->GetBubbleView());
+
+  // Inserting the stylus should disable a currently selected tool
+  // even if it is on an external display.
+  test_api_external_->palette_tool_manager()->ActivateTool(
+      PaletteToolId::LASER_POINTER);
+  EXPECT_TRUE(test_api_external_->palette_tool_manager()->IsToolActive(
+      PaletteToolId::LASER_POINTER));
+  InsertStylus();
+  EXPECT_FALSE(test_api_external_->palette_tool_manager()->IsToolActive(
+      PaletteToolId::LASER_POINTER));
 }
 
 }  // namespace ash
