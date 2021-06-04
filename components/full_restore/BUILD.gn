@@ -32,6 +32,7 @@ component("full_restore") {
   defines = [ "IS_FULL_RESTORE_IMPL" ]
 
   public_deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chromeos/ui/base:base",

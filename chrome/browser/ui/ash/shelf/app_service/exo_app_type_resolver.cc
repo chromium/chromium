@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"

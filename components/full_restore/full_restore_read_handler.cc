@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"

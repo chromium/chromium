@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"

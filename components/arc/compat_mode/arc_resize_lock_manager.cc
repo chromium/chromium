@@ -5,7 +5,7 @@
 #include "components/arc/compat_mode/arc_resize_lock_manager.h"
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"

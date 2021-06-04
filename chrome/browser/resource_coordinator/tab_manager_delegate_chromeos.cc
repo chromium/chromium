@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"

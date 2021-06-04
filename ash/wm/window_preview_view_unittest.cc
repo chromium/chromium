@@ -4,7 +4,7 @@
 
 #include "ash/wm/window_preview_view.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_preview_view_test_api.h"
 #include "ui/aura/client/aura_constants.h"

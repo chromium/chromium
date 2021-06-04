@@ -1,15 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_APP_TYPES_H_
-#define ASH_PUBLIC_CPP_APP_TYPES_H_
-
-#include "ash/public/cpp/ash_public_export.h"
-
-namespace aura {
-class Window;
-}
+#ifndef ASH_CONSTANTS_APP_TYPES_H_
+#define ASH_CONSTANTS_APP_TYPES_H_
 
 namespace ash {
 
@@ -28,9 +22,6 @@ enum class AppType {
   LACROS,
 };
 
-// Returns true if |window| is an ARC app window.
-ASH_PUBLIC_EXPORT bool IsArcWindow(const aura::Window* window);
-
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_APP_TYPES_H_
+#endif  // ASH_CONSTANTS_APP_TYPES_H_

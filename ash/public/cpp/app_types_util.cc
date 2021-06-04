@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 
+#include "ash/constants/app_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 

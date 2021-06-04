@@ -4,8 +4,8 @@
 
 #include "components/exo/ui_lock_controller.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_types.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/bind.h"

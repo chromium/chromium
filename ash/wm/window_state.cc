@@ -9,7 +9,7 @@
 
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"

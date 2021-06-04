@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"

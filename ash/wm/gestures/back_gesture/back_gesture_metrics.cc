@@ -4,8 +4,8 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_metrics.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/app_types.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/toast_manager.h"

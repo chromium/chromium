@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"

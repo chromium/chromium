@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 
 namespace arc {
 

@@ -7,7 +7,7 @@
 #include <set>
 #include <string>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
