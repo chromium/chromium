@@ -1860,6 +1860,85 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ("1\n2\n3\n4", test_delegate.last_message());
 }
 
+class WebContentsImplBrowserTestWithDifferentOriginSubframeDialogSuppression
+    : public WebContentsImplBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSuppressDifferentOriginSubframeJSDialogs);
+    WebContentsImplBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTestWithDifferentOriginSubframeDialogSuppression,
+    OriginTrialDisablesSuppression) {
+  // Generated with tools/origin_trials/generate_token.py --expire-days 5000
+  // http://allowdialogs.test:9999
+  // DisableDifferentOriginSubframeDialogSuppression
+  std::string origin_trial_token =
+      "AwcVbxsLRzn8IXBNaeCrK7amKs211vWkv5oCYo+gssujKeltEtcIaQD+O9hWO+"
+      "GT3WtKUFhEA30+QuqyU3TUvQkAAAB/"
+      "eyJvcmlnaW4iOiAiaHR0cDovL2FsbG93ZGlhbG9ncy50ZXN0Ojk5OTkiLCAiZmVhdHVyZSI6"
+      "ICJEaXNhYmxlRGlmZmVyZW50T3JpZ2luU3ViZnJhbWVEaWFsb2dTdXBwcmVzc2lvbiIsICJl"
+      "eHBpcnkiOiAyMDU0NzU5MTcyfQ==";
+  GURL origin_trial_url = GURL("http://allowdialogs.test:9999");
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  TestWCDelegateForDialogsAndFullscreen test_delegate(wc);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  FrameTreeNode* root = wc->GetFrameTree()->root();
+  ASSERT_EQ(0U, root->child_count());
+
+  std::string script =
+      "var iframe = document.createElement('iframe');"
+      "document.body.appendChild(iframe);";
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* frame = root->child_at(0);
+  ASSERT_NE(nullptr, frame);
+
+  // We need to use a URLLoaderInterceptor for the subframe since origin trial
+  // is origin bound, and embedded test server randomizes ports.
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != origin_trial_url)
+          return false;
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Origin-Trial: " +
+                origin_trial_token + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+
+  // A dialog from the subframe.
+  // Navigate the subframe to the site with the origin trial meta tag.
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, origin_trial_url));
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  // A dialog from the subframe, which should show even though different origin
+  // subframe dialog suppression is enabled, since the origin trial overrides
+  // it.
+  std::string alert_location = "alert(document.location)";
+  test_delegate.WillWaitForDialog();
+  EXPECT_TRUE(ExecJs(frame->current_frame_host(), alert_location));
+  test_delegate.Wait();
+  EXPECT_EQ(origin_trial_url, GURL(test_delegate.last_message()));
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        CreateWebContentsWithRendererProcess) {
   ASSERT_TRUE(embedded_test_server()->Start());
