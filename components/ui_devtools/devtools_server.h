@@ -36,13 +36,17 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   ~UiDevToolsServer() override;
 
   // Returns an empty unique_ptr if ui devtools flag isn't enabled or if a
-  // server instance has already been created.
+  // server instance has already been created. If |port| is 0, the server will
+  // choose an available port. If |port| is 0 and |active_port_output_directory|
+  // is present, the server will write the chosen port to
+  // |kUIDevToolsActivePortFileName| on |active_port_output_directory|.
   static std::unique_ptr<UiDevToolsServer> CreateForViews(
       network::mojom::NetworkContext* network_context,
-      int port);
+      int port,
+      const base::FilePath& active_port_output_directory = base::FilePath());
 
   // Assumes that the devtools flag is enabled, and was checked when the socket
-  // was created.
+  // was created. If |port| is 0, the server will choose an available port.
   static std::unique_ptr<UiDevToolsServer> CreateForViz(
       mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
       int port);
@@ -82,7 +86,9 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   void SetOnSessionEnded(base::OnceClosure callback) const;
 
  private:
-  UiDevToolsServer(int port, const net::NetworkTrafficAnnotationTag tag);
+  UiDevToolsServer(int port,
+                   const net::NetworkTrafficAnnotationTag tag,
+                   const base::FilePath& active_port_output_directory);
 
   void MakeServer(
       mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
@@ -108,7 +114,11 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   std::unique_ptr<network::server::HttpServer> server_;
 
   // The port the devtools server listens on
-  const int port_;
+  int port_;
+
+  // Output directory for |kUIDevToolsActivePortFileName| when
+  // --enable-ui-devtools=0.
+  base::FilePath active_port_output_directory_;
 
   const net::NetworkTrafficAnnotationTag tag_;
 

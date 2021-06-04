@@ -9,12 +9,15 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/ui_devtools/switches.h"
 #include "net/base/net_errors.h"
@@ -27,6 +30,18 @@ namespace ui_devtools {
 namespace {
 const char kChromeDeveloperToolsPrefix[] =
     "devtools://devtools/bundled/devtools_app.html?uiDevTools=true&ws=";
+
+const base::FilePath::CharType kUIDevToolsActivePortFileName[] =
+    FILE_PATH_LITERAL("UIDevToolsActivePort");
+
+void WriteUIDevtoolsPortToFile(base::FilePath output_dir, int port) {
+  base::FilePath path = output_dir.Append(kUIDevToolsActivePortFileName);
+  std::string port_target_string = base::StringPrintf("%d", port);
+  if (base::WriteFile(path, port_target_string.c_str(),
+                      static_cast<int>(port_target_string.length())) < 0) {
+    LOG(ERROR) << "Error writing UIDevTools active port to file";
+  }
+}
 }  // namespace
 
 UiDevToolsServer* UiDevToolsServer::devtools_server_ = nullptr;
@@ -73,9 +88,13 @@ const net::NetworkTrafficAnnotationTag UiDevToolsServer::kVizDevtoolsServerTag =
           "Not implemented, only used in Devtools and is behind a switch."
       })");
 
-UiDevToolsServer::UiDevToolsServer(int port,
-                                   net::NetworkTrafficAnnotationTag tag)
-    : port_(port), tag_(tag) {
+UiDevToolsServer::UiDevToolsServer(
+    int port,
+    net::NetworkTrafficAnnotationTag tag,
+    const base::FilePath& active_port_output_directory)
+    : port_(port),
+      active_port_output_directory_(active_port_output_directory),
+      tag_(tag) {
   DCHECK(!devtools_server_);
   devtools_server_ = this;
 }
@@ -87,10 +106,11 @@ UiDevToolsServer::~UiDevToolsServer() {
 // static
 std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
     network::mojom::NetworkContext* network_context,
-    int port) {
+    int port,
+    const base::FilePath& active_port_output_directory) {
   // TODO(mhashmi): Change port if more than one inspectable clients
-  auto server =
-      base::WrapUnique(new UiDevToolsServer(port, kUIDevtoolsServerTag));
+  auto server = base::WrapUnique(new UiDevToolsServer(
+      port, kUIDevtoolsServerTag, active_port_output_directory));
   mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket;
   auto receiver = server_socket.InitWithNewPipeAndPassReceiver();
   CreateTCPServerSocket(std::move(receiver), network_context, port,
@@ -105,8 +125,8 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
 std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViz(
     mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int port) {
-  auto server =
-      base::WrapUnique(new UiDevToolsServer(port, kVizDevtoolsServerTag));
+  auto server = base::WrapUnique(
+      new UiDevToolsServer(port, kVizDevtoolsServerTag, base::FilePath()));
   server->MakeServer(std::move(server_socket), net::OK, absl::nullopt);
   return server;
 }
@@ -190,6 +210,18 @@ void UiDevToolsServer::MakeServer(
   if (result == net::OK) {
     server_ = std::make_unique<network::server::HttpServer>(
         std::move(server_socket), this);
+    // When --enable-ui-devtools=0, the browser will pick an available port and
+    // write to |kUIDevToolsActivePortFileName|. The file is useful for other
+    // programs such as Telemetry to know which port to listen to.
+    if (port_ == 0 && local_addr) {
+      port_ = local_addr->port();
+      if (!active_port_output_directory_.empty()) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(&WriteUIDevtoolsPortToFile,
+                           active_port_output_directory_, port_));
+      }
+    }
   }
 }
 

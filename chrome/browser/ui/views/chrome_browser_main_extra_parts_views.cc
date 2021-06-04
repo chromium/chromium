@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/devtools_process_observer.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/ui_devtools/connector_delegate.h"
@@ -190,9 +192,12 @@ void ChromeBrowserMainExtraPartsViews::CreateUiDevTools() {
 
   // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
   auto connector = std::make_unique<UiDevtoolsConnector>();
+  base::FilePath output_dir;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+  DCHECK(result);
   devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
       g_browser_process->system_network_context_manager()->GetContext(),
-      std::move(connector));
+      std::move(connector), output_dir);
   devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
       devtools_server_->tracing_agent());
 }
