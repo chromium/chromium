@@ -137,7 +137,8 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
     v8::Local<v8::Signature> signature,
     v8::Local<v8::String> name,
     const Config& config,
-    const v8::CFunction* v8_c_function = nullptr) {
+    const v8::CFunction* v8_cfunction_table_data = nullptr,
+    uint32_t v8_cfunction_table_size = 0) {
   v8::FunctionCallback callback = GetConfigCallback<kind>(config);
   if (!callback)
     return v8::Local<v8::FunctionTemplate>();
@@ -152,9 +153,10 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
       (v8_cached_accessor ==
            V8PrivateProperty::CachedAccessor::kWindowDocument &&
        !world.IsMainWorld())) {
-    function_template = v8::FunctionTemplate::New(
+    function_template = v8::FunctionTemplate::NewWithCFunctionOverloads(
         isolate, callback, v8::Local<v8::Value>(), signature, length,
-        v8::ConstructorBehavior::kThrow, v8_side_effect, v8_c_function);
+        v8::ConstructorBehavior::kThrow, v8_side_effect,
+        {v8_cfunction_table_data, v8_cfunction_table_size});
   } else {
     function_template = v8::FunctionTemplate::NewWithCache(
         isolate, callback,
@@ -180,12 +182,14 @@ v8::Local<v8::Function> CreateFunction(
     v8::Local<v8::Signature> signature,
     v8::Local<v8::String> name,
     const Config& config,
-    const v8::CFunction* v8_c_function = nullptr) {
+    const v8::CFunction* v8_cfunction_table_data = nullptr,
+    uint32_t v8_cfunction_table_size = 0) {
   if (!GetConfigCallback<kind>(config))
     return v8::Local<v8::Function>();
 
   return CreateFunctionTemplate<kind>(isolate, world, signature, name, config,
-                                      v8_c_function)
+                                      v8_cfunction_table_data,
+                                      v8_cfunction_table_size)
       ->GetFunction(context)
       .ToLocalChecked();
 }
@@ -298,7 +302,8 @@ void InstallOperation(v8::Isolate* isolate,
                       v8::Local<v8::Template> interface_template,
                       v8::Local<v8::Signature> signature,
                       const IDLMemberInstaller::OperationConfig& config,
-                      const v8::CFunction* v8_c_function = nullptr) {
+                      const v8::CFunction* v8_cfunction_table_data = nullptr,
+                      uint32_t v8_cfunction_table_size = 0) {
   if (!DoesWorldMatch(config, world))
     return;
 
@@ -313,7 +318,8 @@ void InstallOperation(v8::Isolate* isolate,
   v8::Local<v8::String> name = V8AtomicString(isolate, config.name);
   v8::Local<v8::FunctionTemplate> func =
       CreateFunctionTemplate<FunctionKind::kOperation>(
-          isolate, world, signature, name, config, v8_c_function);
+          isolate, world, signature, name, config, v8_cfunction_table_data,
+          v8_cfunction_table_size);
 
   v8::Local<v8::Template> target_template;
   switch (location) {
@@ -342,7 +348,8 @@ void InstallOperation(v8::Isolate* isolate,
                       v8::Local<v8::Object> interface_object,
                       v8::Local<v8::Signature> signature,
                       const IDLMemberInstaller::OperationConfig& config,
-                      const v8::CFunction* v8_c_function = nullptr) {
+                      const v8::CFunction* v8_cfunction_table_data = nullptr,
+                      uint32_t v8_cfunction_table_size = 0) {
   if (!DoesWorldMatch(config, world))
     return;
 
@@ -356,7 +363,8 @@ void InstallOperation(v8::Isolate* isolate,
 
   v8::Local<v8::String> name = V8AtomicString(isolate, config.name);
   v8::Local<v8::Function> func = CreateFunction<FunctionKind::kOperation>(
-      isolate, context, world, signature, name, config, v8_c_function);
+      isolate, context, world, signature, name, config, v8_cfunction_table_data,
+      v8_cfunction_table_size);
 
   v8::Local<v8::Object> target_object;
   switch (location) {
@@ -511,7 +519,8 @@ void IDLMemberInstaller::InstallOperations(
   for (const auto& config : configs) {
     InstallOperation(isolate, world, instance_template, prototype_template,
                      interface_template, signature, config.operation_config,
-                     &config.v8_c_function);
+                     config.v8_cfunction_table_data,
+                     config.v8_cfunction_table_size);
   }
 }
 
@@ -528,7 +537,8 @@ void IDLMemberInstaller::InstallOperations(
   for (const auto& config : configs) {
     InstallOperation(isolate, context, world, instance_object, prototype_object,
                      interface_object, signature, config.operation_config,
-                     &config.v8_c_function);
+                     config.v8_cfunction_table_data,
+                     config.v8_cfunction_table_size);
   }
 }
 
