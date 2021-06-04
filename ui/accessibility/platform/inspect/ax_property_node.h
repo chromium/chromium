@@ -16,7 +16,7 @@ namespace ui {
 struct AXPropertyFilter;
 
 // Property node is a tree-like structure, representing a property or collection
-// of properties and its invocation parameters. A collection of properties is
+// of properties and its invocation arguments. A collection of properties is
 // specified by putting a wildcard into a property name, for exampe, AXRole*
 // will match both AXRole and AXRoleDescription properties. Parameters of a
 // property are given in parentheses like a conventional function call, for
@@ -37,29 +37,50 @@ class AX_EXPORT AXPropertyNode final {
   // Key name in case of { key: value } dictionary.
   std::string key;
 
-  // An object the property should be called for, designated by a line number
-  // in accessible tree the object is located at. For example, :1 indicates
-  // that the property should be called for an object located at first line.
-  std::string target;
-
-  // Value or a property name, for example 3 or AXLineForIndex
+  // Value or a property(method) name, for example 3 or AXLineForIndex
   std::string name_or_value;
 
-  // Parameters if it's a property, for example, it is a vector of a single
+  // Arguments if it's a method, for example, it is a vector of a single
   // value 3 in case of AXLineForIndex(3)
-  std::vector<AXPropertyNode> parameters;
+  std::vector<AXPropertyNode> arguments;
 
-  // Used to store the origianl unparsed property including invocation
-  // parameters if any.
+  // Next property node in a chain if any.
+  std::unique_ptr<AXPropertyNode> next;
+
+  // Used to store the original unparsed property including invocation
+  // arguments if any.
   std::string original_property;
 
   // The list of line indexes of accessible objects the property is allowed to
   // be called for, used if no property target is provided.
   std::vector<std::string> line_indexes;
 
+  template <class... Args>
+  AXPropertyNode* ConnectTo(bool chained, Args&&... args) {
+    return chained ? ChainToLastArgument(std::forward<Args>(args)...)
+                   : AppendToArguments(std::forward<Args>(args)...);
+  }
+
+  template <class... Args>
+  AXPropertyNode* AppendToArguments(Args&&... args) {
+    arguments.emplace_back(std::forward<Args>(args)...);
+    return &arguments.back();
+  }
+  template <class... Args>
+  AXPropertyNode* ChainToLastArgument(Args&&... args) {
+    auto* last = &arguments.back();
+    while (last->next) {
+      last = last->next.get();
+    }
+    last->next = std::make_unique<AXPropertyNode>(
+        AXPropertyNode(std::forward<Args>(args)...));
+    return last->next.get();
+  }
+
   bool IsMatching(const std::string& pattern) const;
 
   // Argument conversion methods.
+  bool IsTarget() const { return !!next; }
   bool IsArray() const;
   bool IsDict() const;
   absl::optional<int> AsInt() const;
@@ -67,7 +88,10 @@ class AX_EXPORT AXPropertyNode final {
   absl::optional<std::string> FindStringKey(const char* refkey) const;
   absl::optional<int> FindIntKey(const char* key) const;
 
+  // Returns a string representation of the node.
   std::string ToString() const;
+  // Returns a tree-like string representation of the node.
+  std::string ToTreeString(const std::string& indent = "") const;
 
  private:
   using iterator = std::string::const_iterator;
@@ -81,12 +105,11 @@ class AX_EXPORT AXPropertyNode final {
                  iterator value_begin,
                  iterator value_end);
 
-  // Helper to set context and name.
-  void Set(iterator begin, iterator end);
-
   // Builds a property node struct for a string of NAME(ARG1, ..., ARGN) format,
   // where each ARG is a scalar value or a string of the same format.
   static iterator Parse(AXPropertyNode* node, iterator begin, iterator end);
+
+  friend class std::allocator<AXPropertyNode>;
 };
 
 }  // namespace ui

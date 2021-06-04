@@ -372,4 +372,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
+  TestAndCheck(R"~~(data:text/html,
+                    <input id='input' aria-label='input'>)~~",
+               {{"input.AXFocusableAncestor.AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(input.AXFocusableAncestor.AXRole='AXTextField'
+)~~");
+}
+
 }  // namespace content

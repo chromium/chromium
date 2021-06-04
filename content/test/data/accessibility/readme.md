@@ -165,15 +165,25 @@ matches 'Foo'.
 
 ### Scripting
 
+Note: Mac platform is supported only.
+
 `Script tests` provide platform dependent `-SCRIPT` directive to indicate
 a script to run. For example:
 
 `MAC-SCRIPT: input.AXName`
 
 to dump accessible name of an accessible node for a DOM element having
-`input` DOM id on Mac platform. You can also you `:LINE_NUM` to indicate an
-accessible object, where `LINE_NUM` is a number of a line where the accessible
-object is placed at in the formatted tree.
+`input` DOM id on Mac platform. You can also use `:LINE_NUM` syntax to indicate
+an accessible object, where `LINE_NUM` is index of a line where
+the accessible object is placed in the formatted tree.
+
+Calls can be chained, for example:
+
+`input.AXFocusableAncestor.AXRole`
+
+Paramaterized attributes are also supported, for example:
+
+`textarea.AXPreviousWordStartTextMarkerForTextMarker({:3, 3, down})`
 
 ### Advanced directives
 
