@@ -179,6 +179,7 @@ source_set("common") {
     "service_worker/service_worker_status_code.cc",
     "service_worker/service_worker_type_converters.cc",
     "storage_key/storage_key.cc",
+    "storage_key/storage_key_mojom_traits.cc",
     "switches.cc",
     "thread_safe_browser_interface_broker_proxy.cc",
     "unique_name/unique_name_helper.cc",

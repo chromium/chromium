@@ -1447,7 +1447,13 @@ _CONFIG = [
             'third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h'
         ],
         'allowed': ['cc::DocumentTransitionSharedElementId'],
-    }
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/storage/',
+        ],
+        'allowed': ['blink::mojom::StorageKeyDataView'],
+    },
 ]
 
 
