@@ -11,6 +11,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.FooterStyle;
+import org.chromium.components.content_creation.notes.models.HighlightStyle;
 import org.chromium.components.content_creation.notes.models.LinearGradientBackground;
 import org.chromium.components.content_creation.notes.models.LinearGradientDirection;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
@@ -49,9 +50,10 @@ public class NoteTemplateConversionBridge {
 
     @CalledByNative
     private static TextStyle createTextStyle(String fontName, @ColorInt int fontColor, int weight,
-            boolean allCaps, int alignment, @ColorInt int highlightColor) {
+            boolean allCaps, int alignment, @ColorInt int highlightColor, int highlightStyle) {
         return new TextStyle(fontName, fontColor, weight, allCaps,
-                TextAlignment.fromInteger(alignment), highlightColor);
+                TextAlignment.fromInteger(alignment), highlightColor,
+                HighlightStyle.fromInteger(highlightStyle));
     }
 
     @CalledByNative

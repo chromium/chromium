@@ -37,7 +37,8 @@ ScopedJavaLocalRef<jobject> CreateJavaTextStyle(JNIEnv* env,
       env, ConvertUTF8ToJavaString(env, text_style.font_name()),
       text_style.font_color(), text_style.weight(), text_style.all_caps(),
       static_cast<uint16_t>(text_style.alignment()),
-      text_style.highlight_color());
+      text_style.highlight_color(),
+      static_cast<uint16_t>(text_style.highlight_style()));
 }
 
 ScopedJavaLocalRef<jobject> CreateJavaFooterStyle(

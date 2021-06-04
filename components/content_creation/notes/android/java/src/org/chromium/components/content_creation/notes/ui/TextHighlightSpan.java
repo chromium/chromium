@@ -10,6 +10,7 @@ import android.text.style.LineBackgroundSpan;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.components.content_creation.notes.models.HighlightStyle;
 import org.chromium.components.content_creation.notes.models.TextAlignment;
 
 /**
@@ -18,12 +19,17 @@ import org.chromium.components.content_creation.notes.models.TextAlignment;
 public class TextHighlightSpan implements LineBackgroundSpan {
     private static final int RIGHT_PADDING = 10;
 
+    private final HighlightStyle mStyle;
     private final @ColorInt int mColor;
     private final boolean mIsCentered;
     private final boolean mIsLeftAligned;
 
     /** Constructor. */
-    public TextHighlightSpan(@ColorInt int color, TextAlignment alignment, boolean isRtl) {
+    public TextHighlightSpan(
+            HighlightStyle style, @ColorInt int color, TextAlignment alignment, boolean isRtl) {
+        assert style != HighlightStyle.NONE;
+
+        this.mStyle = style;
         this.mColor = color;
         this.mIsCentered = alignment == TextAlignment.CENTER;
         this.mIsLeftAligned = (!isRtl && alignment == TextAlignment.START)
@@ -53,6 +59,10 @@ public class TextHighlightSpan implements LineBackgroundSpan {
             right = left + textWidth;
         } else {
             left = right - textWidth;
+        }
+
+        if (this.mStyle == HighlightStyle.HALF) {
+            top = top + (bottom - top) / 2;
         }
 
         // Add some padding to the right to prevent most of the clipping. It

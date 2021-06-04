@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/content_creation/notes/bridges/NoteTemplateConversionBridge.java",
     "java/src/org/chromium/components/content_creation/notes/models/Background.java",
     "java/src/org/chromium/components/content_creation/notes/models/FooterStyle.java",
+    "java/src/org/chromium/components/content_creation/notes/models/HighlightStyle.java",
     "java/src/org/chromium/components/content_creation/notes/models/LinearGradientBackground.java",
     "java/src/org/chromium/components/content_creation/notes/models/LinearGradientDirection.java",
     "java/src/org/chromium/components/content_creation/notes/models/NoteTemplate.java",

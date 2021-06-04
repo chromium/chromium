@@ -22,49 +22,53 @@ public class TextStyle {
     private static final int HIGHLIGHT_LEADING_PADDING = 10;
 
     public final String fontName;
-    public final @ColorInt int fontColor;
     public final int weight;
-    public final boolean allCaps;
-    public final TextAlignment alignment;
-    public final @ColorInt int highlightColor;
+
+    private final @ColorInt int mFontColor;
+    private final boolean mAllCaps;
+    private final TextAlignment mAlignment;
+    private final @ColorInt int mHighlightColor;
+    private final HighlightStyle mHighlightStyle;
 
     /** Constructor. */
     public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps,
-            TextAlignment alignment, @ColorInt int highlightColor) {
+            TextAlignment alignment, @ColorInt int highlightColor, HighlightStyle highlightStyle) {
         this.fontName = fontName;
-        this.fontColor = fontColor;
         this.weight = weight;
-        this.allCaps = allCaps;
-        this.alignment = alignment;
-        this.highlightColor = highlightColor;
+
+        this.mFontColor = fontColor;
+        this.mAllCaps = allCaps;
+        this.mAlignment = alignment;
+        this.mHighlightColor = highlightColor;
+        this.mHighlightStyle = highlightStyle;
     }
 
     /**
      * Returns true if this text style specifies a highlight color to draw behind the
      * text but on top of background colors.
      */
-    public boolean hasHighlightColor() {
+    public boolean hasHighlight() {
         // Sometimes colors' integers overflow, so negative numbers are valid.
-        return this.highlightColor != 0;
+        return this.mHighlightColor != 0 && this.mHighlightStyle != HighlightStyle.NONE;
     }
 
     /**
      * Applies the current styling to the |text| when setting it on |textView|.
      */
     public void apply(TextView textView, String text) {
-        textView.setTextColor(this.fontColor);
-        textView.setAllCaps(this.allCaps);
-        textView.setGravity(TextAlignment.toGravity(this.alignment));
+        textView.setTextColor(this.mFontColor);
+        textView.setAllCaps(this.mAllCaps);
+        textView.setGravity(TextAlignment.toGravity(this.mAlignment));
 
-        if (this.hasHighlightColor()) {
+        if (this.hasHighlight()) {
             int start = 0;
             int end = text.length();
 
             SpannableString spannableString = new SpannableString(text);
 
             boolean isRtl = textView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-            TextHighlightSpan highlightSpan =
-                    new TextHighlightSpan(this.highlightColor, this.alignment, isRtl);
+            TextHighlightSpan highlightSpan = new TextHighlightSpan(
+                    this.mHighlightStyle, this.mHighlightColor, this.mAlignment, isRtl);
             spannableString.setSpan(highlightSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Needs a small leading margin span otherwise the highlight appears as if it was

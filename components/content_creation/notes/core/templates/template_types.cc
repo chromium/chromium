@@ -47,20 +47,23 @@ TextStyle::TextStyle(const std::string& font_name,
       weight_(weight),
       all_caps_(all_caps),
       alignment_(alignment),
-      highlight_color_(0U) {}
+      highlight_color_(0U),
+      highlight_style_(HighlightStyle::kNone) {}
 
 TextStyle::TextStyle(const std::string& font_name,
                      ARGBColor font_color,
                      uint16_t weight,
                      bool all_caps,
                      TextAlignment alignment,
-                     ARGBColor highlight_color)
+                     ARGBColor highlight_color,
+                     HighlightStyle highlight_style)
     : font_name_(font_name),
       font_color_(font_color),
       weight_(weight),
       all_caps_(all_caps),
       alignment_(alignment),
-      highlight_color_(highlight_color) {}
+      highlight_color_(highlight_color),
+      highlight_style_(highlight_style) {}
 
 FooterStyle::FooterStyle(ARGBColor text_color, ARGBColor logo_color)
     : text_color_(text_color), logo_color_(logo_color) {}

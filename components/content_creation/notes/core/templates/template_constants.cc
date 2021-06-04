@@ -106,7 +106,6 @@ NoteTemplate GetPowerfulTemplate() {
 }
 
 NoteTemplate GetImpactfulTemplate() {
-  // TODO(crbug.com/1194168): Add offset text highlights support.
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kImpactful,
       l10n_util::GetStringUTF8(
@@ -115,7 +114,7 @@ NoteTemplate GetImpactfulTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
-                /*highlight_color=*/kWhiteColor),
+                /*highlight_color=*/kWhiteColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -141,7 +140,7 @@ NoteTemplate GetGroovyTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kYellow400Color, k400Weight,
                 /*all_caps=*/true, TextAlignment::kStart,
-                /*highlight_color=*/kBlue900Color),
+                /*highlight_color=*/kBlue900Color, HighlightStyle::kFull),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -158,7 +157,6 @@ NoteTemplate GetMonochromeTemplate() {
 }
 
 NoteTemplate GetBoldTemplate() {
-  // TODO(crbug.com/1194168): Add offset text highlights support.
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kBold,
       l10n_util::GetStringUTF8(IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_BOLD),
@@ -166,7 +164,7 @@ NoteTemplate GetBoldTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
-                /*highlight_color=*/kLightYellowColor),
+                /*highlight_color=*/kLightYellowColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
