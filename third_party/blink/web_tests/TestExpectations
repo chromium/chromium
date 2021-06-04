@@ -4029,8 +4029,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-with-text-c
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/css/text-shadow-multiple.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/acid3-test-77.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/alignment-baseline-modes.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/dominant-baseline-hanging.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/dominant-baseline-modes.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/empty-mask.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/focus-ring.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/focus-ring-text.svg [ Failure ]

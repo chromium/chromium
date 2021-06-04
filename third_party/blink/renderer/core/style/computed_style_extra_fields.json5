@@ -1083,11 +1083,12 @@
       // For now ComputedStyle for non-SVG elemnts always have the initial value
       // in order to disable the feature.
       name: "CssDominantBaseline",
-      field_group: "svg->misc",
+      field_group: "svg",
       field_template: "primitive",
       field_size: 4,
       type_name: "EDominantBaseline",
       default_value: "EDominantBaseline::kAuto",
+      inherited: true,
     },
     {
       name: "DependsOnContainerQueries",

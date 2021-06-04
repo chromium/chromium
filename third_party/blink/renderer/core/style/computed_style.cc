@@ -1695,6 +1695,9 @@ CSSTransitionData& ComputedStyle::AccessTransitions() {
 }
 
 FontBaseline ComputedStyle::GetFontBaseline() const {
+  // CssDominantBaseline() always returns kAuto for non-SVG elements,
+  // and never returns kUseScript, kNoChange, and kResetSize.
+  // See StyleAdjuster::AdjustComputedStyle().
   switch (CssDominantBaseline()) {
     case EDominantBaseline::kAuto:
       break;

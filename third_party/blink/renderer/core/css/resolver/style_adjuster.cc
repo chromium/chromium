@@ -812,8 +812,24 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (IsA<SVGTextElement>(*element))
       style.ClearMultiCol();
 
-    // TODO(crbug.com/1179585): Copy DominantBaseline to CssDominantBaseline
-    // with some adjustments.
+    // Copy DominantBaseline to CssDominantBaseline without 'no-change',
+    // 'reset-size', and 'use-script'.
+    auto baseline = style.DominantBaseline();
+    if (baseline == EDominantBaseline::kUseScript) {
+      // TODO(fs): The dominant-baseline and the baseline-table components
+      // are set by determining the predominant script of the character data
+      // content.
+      baseline = EDominantBaseline::kAlphabetic;
+    } else {
+      const ContainerNode* parent = element;
+      while (baseline == EDominantBaseline::kNoChange ||
+             baseline == EDominantBaseline::kResetSize) {
+        parent = LayoutTreeBuilderTraversal::Parent(*parent);
+        baseline = parent ? parent->GetComputedStyle()->DominantBaseline()
+                          : EDominantBaseline::kAuto;
+      }
+    }
+    style.SetCssDominantBaseline(baseline);
   } else if (element && element->IsMathMLElement()) {
     if (style.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
