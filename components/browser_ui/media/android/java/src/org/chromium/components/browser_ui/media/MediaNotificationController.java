@@ -614,7 +614,8 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.contentIntent != null) {
             mNotificationBuilder.setContentIntent(PendingIntent.getActivity(getContext(),
                     mMediaNotificationInfo.instanceId, mMediaNotificationInfo.contentIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                            | IntentUtils.getPendingIntentMutabilityFlag(false)));
             // Set FLAG_UPDATE_CURRENT so that the intent extras is updated, otherwise the
             // intent extras will stay the same for the same tab.
         }
