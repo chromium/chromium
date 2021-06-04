@@ -278,9 +278,14 @@ CupsPrintersHandler::~CupsPrintersHandler() = default;
 
 void CupsPrintersHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getCupsPrintersList",
-      base::BindRepeating(&CupsPrintersHandler::HandleGetCupsPrintersList,
+      "getCupsSavedPrintersList",
+      base::BindRepeating(&CupsPrintersHandler::HandleGetCupsSavedPrintersList,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCupsEnterprisePrintersList",
+      base::BindRepeating(
+          &CupsPrintersHandler::HandleGetCupsEnterprisePrintersList,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "updateCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleUpdateCupsPrinter,
@@ -365,7 +370,7 @@ void CupsPrintersHandler::SetWebUIForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-void CupsPrintersHandler::HandleGetCupsPrintersList(
+void CupsPrintersHandler::HandleGetCupsSavedPrintersList(
     const base::ListValue* args) {
   AllowJavascript();
 
@@ -375,6 +380,20 @@ void CupsPrintersHandler::HandleGetCupsPrintersList(
 
   std::vector<Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kSaved);
+
+  auto response = BuildCupsPrintersList(printers);
+  ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+void CupsPrintersHandler::HandleGetCupsEnterprisePrintersList(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args->GetSize());
+  std::string callback_id = args->GetList()[0].GetString();
+
+  std::vector<Printer> printers =
+      printers_manager_->GetPrinters(PrinterClass::kEnterprise);
 
   auto response = BuildCupsPrintersList(printers);
   ResolveJavascriptCallback(base::Value(callback_id), response);
@@ -990,12 +1009,13 @@ void CupsPrintersHandler::OnPrintersChanged(
       break;
     case PrinterClass::kSaved: {
       auto printers_list = BuildCupsPrintersList(printers);
-      FireWebUIListener("on-printers-changed", printers_list);
+      FireWebUIListener("on-saved-printers-changed", printers_list);
       break;
     }
     case PrinterClass::kEnterprise:
-      // These classes are not shown.
-      return;
+      auto enterprise_printers_list = BuildCupsPrintersList(printers);
+      FireWebUIListener("on-enterprise-printers-changed",
+                        enterprise_printers_list);
   }
 }
 

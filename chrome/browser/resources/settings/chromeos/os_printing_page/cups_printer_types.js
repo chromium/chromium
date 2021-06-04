@@ -25,4 +25,5 @@ export const PrinterType = {
   PRINTSERVER: 1,
   AUTOMATIC: 2,
   DISCOVERED: 3,
+  ENTERPRISE: 4,
 };

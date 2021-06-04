@@ -28,11 +28,11 @@ let PrintersListWithDeltasCallback;
  */
 let PrintersListCallback;
 
-  /**
-   * Class for managing printer entries. Holds both Saved, Nearby, Print Server
-   * printers and notifies observers of any applicable changes to either printer
-   * lists.
-   */
+/**
+ * Class for managing printer entries. Holds Saved, Nearby, Enterprise, Print
+ * Server printers and notifies observers of any applicable changes to either
+ * printer lists.
+ */
 export class CupsPrintersEntryManager {
   constructor() {
     /** @private {!Array<!PrinterListEntry>} */
@@ -40,6 +40,9 @@ export class CupsPrintersEntryManager {
 
     /** @private {!Array<!PrinterListEntry>} */
     this.nearbyPrinters_ = [];
+
+    /** @private {!Array<!PrinterListEntry>} */
+    this.enterprisePrinters_ = [];
 
     /** @private {!Array<PrintersListWithDeltasCallback>} */
     this.onSavedPrintersChangedListeners_ = [];
@@ -52,13 +55,23 @@ export class CupsPrintersEntryManager {
 
     /** @private {?WebUIListener} */
     this.onNearbyPrintersChangedListener_ = null;
+
+    /** @private {!Array<PrintersListCallback>} */
+    this.onEnterprisePrintersChangedListeners_ = [];
+
+    /** @private {?WebUIListener} */
+    this.onEnterprisePrintersChangedListener_ = null;
   }
 
   addWebUIListeners() {
-    // TODO(1005905): Add on-printers-changed listener here once legacy code
-    // is removed.
+    // TODO(1005905): Add on-saved-printers-changed listener here once legacy
+    // code is removed.
     this.onNearbyPrintersChangedListener_ = addWebUIListener(
         'on-nearby-printers-changed', this.setNearbyPrintersList.bind(this));
+
+    this.onEnterprisePrintersChangedListener_ = addWebUIListener(
+        'on-enterprise-printers-changed',
+        this.setEnterprisePrintersList.bind(this));
 
     CupsPrintersBrowserProxyImpl.getInstance().startDiscoveringPrinters();
   }
@@ -68,6 +81,12 @@ export class CupsPrintersEntryManager {
       removeWebUIListener(
           /** @type {WebUIListener} */ (this.onNearbyPrintersChangedListener_));
       this.onNearbyPrintersChangedListener_ = null;
+    }
+    if (this.onEnterprisePrintersChangedListener_) {
+      removeWebUIListener(
+          /** @type {WebUIListener} */ (
+              this.onEnterprisePrintersChangedListener_));
+      this.onEnterprisePrintersChangedListener_ = null;
     }
   }
 
@@ -79,6 +98,11 @@ export class CupsPrintersEntryManager {
   /** @return {!Array<!PrinterListEntry>} */
   get nearbyPrinters() {
     return this.nearbyPrinters_;
+  }
+
+  /** @return {!Array<!PrinterListEntry>} */
+  get enterprisePrinters() {
+    return this.enterprisePrinters_;
   }
 
   /** @param {PrintersListWithDeltasCallback} listener */
@@ -101,6 +125,18 @@ export class CupsPrintersEntryManager {
   removeOnNearbyPrintersChangedListener(listener) {
     this.onNearbyPrintersChangedListeners_ =
         this.onNearbyPrintersChangedListeners_.filter(lis => lis !== listener);
+  }
+
+  /** @param {PrintersListCallback} listener */
+  addOnEnterprisePrintersChangedListener(listener) {
+    this.onEnterprisePrintersChangedListeners_.push(listener);
+  }
+
+  /** @param {PrintersListCallback} listener */
+  removeOnEnterprisePrintersChangedListener(listener) {
+    this.onEnterprisePrintersChangedListeners_ =
+        this.onEnterprisePrintersChangedListeners_.filter(
+            lis => lis !== listener);
   }
 
   /**
@@ -157,6 +193,15 @@ export class CupsPrintersEntryManager {
   }
 
   /**
+   * Sets the enterprise printers list and notifies observers.
+   * @param {!Array<!PrinterListEntry>} enterprisePrinters
+   */
+  setEnterprisePrintersList(enterprisePrinters) {
+    this.enterprisePrinters_ = enterprisePrinters;
+    this.notifyOnEnterprisePrintersChangedListeners_();
+  }
+
+  /**
    * Adds the found print server printers to |printServerPrinters|.
    * |foundPrinters| consist of print server printers that have not been saved
    * and will appear in the nearby printers list.
@@ -196,6 +241,12 @@ export class CupsPrintersEntryManager {
   notifyOnNearbyPrintersChangedListeners_() {
     this.onNearbyPrintersChangedListeners_.forEach(
         listener => listener(this.nearbyPrinters_));
+  }
+
+  /** @private */
+  notifyOnEnterprisePrintersChangedListeners_() {
+    this.onEnterprisePrintersChangedListeners_.forEach(
+        listener => listener(this.enterprisePrinters_));
   }
 }
 

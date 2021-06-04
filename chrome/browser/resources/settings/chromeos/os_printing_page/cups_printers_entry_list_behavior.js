@@ -31,6 +31,12 @@ export const CupsPrintersEntryListBehavior = {
       type: Array,
       value: () => [],
     },
+
+    /** @type {!Array<!PrinterListEntry>} */
+    enterprisePrinters: {
+      type: Array,
+      value: () => [],
+    },
   },
 
   /** @override */
@@ -44,12 +50,15 @@ export const CupsPrintersEntryListBehavior = {
         this.onSavedPrintersChanged_.bind(this));
     this.entryManager_.addOnNearbyPrintersChangedListener(
         this.onNearbyPrintersChanged_.bind(this));
+    this.entryManager_.addOnEnterprisePrintersChangedListener(
+        this.onEnterprisePrintersChanged_.bind(this));
 
     // Initialize saved and nearby printers list.
     this.onSavedPrintersChanged_(
         this.entryManager_.savedPrinters, [] /* printerAdded */,
         [] /* printerRemoved */);
     this.onNearbyPrintersChanged_(this.entryManager_.nearbyPrinters);
+    this.onEnterprisePrintersChanged_(this.entryManager_.enterprisePrinters);
   },
 
   /** @override */
@@ -58,6 +67,8 @@ export const CupsPrintersEntryListBehavior = {
         this.onSavedPrintersChanged_.bind(this));
     this.entryManager_.removeOnNearbyPrintersChangedListener(
         this.onNearbyPrintersChanged_.bind(this));
+    this.entryManager_.removeOnEnterprisePrintersChangedListener(
+        this.onEnterprisePrintersChanged_.bind(this));
   },
 
   /**
@@ -96,6 +107,16 @@ export const CupsPrintersEntryListBehavior = {
     this.updateList(
         'nearbyPrinters', printer => printer.printerInfo.printerId,
         printerList);
+  },
+
+  /**
+   * @param {!Array<!PrinterListEntry>} enterprisePrinters
+   * @private
+   */
+  onEnterprisePrintersChanged_(enterprisePrinters) {
+    this.updateList(
+        'enterprisePrinters', printer => printer.printerInfo.printerId,
+        enterprisePrinters);
   },
 
   // CupsPrintersEntryListBehavior methods. Override these in the

@@ -442,6 +442,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_printing_page/cups_printers.js",
     "chromeos/os_printing_page/cups_printers_entry.js",
     "chromeos/os_printing_page/cups_saved_printers.js",
+    "chromeos/os_printing_page/cups_enterprise_printers.js",
     "chromeos/os_printing_page/cups_settings_add_printer_dialog.js",
     "chromeos/os_printing_page/os_printing_page.js",
     "chromeos/os_privacy_page/os_privacy_page.js",

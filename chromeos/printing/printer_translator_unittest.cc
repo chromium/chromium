@@ -369,4 +369,16 @@ TEST(PrinterTranslatorTest, GetCupsPrinterStatusTwoReasons) {
             status_reasons_list[1].FindIntPath("severity"));
 }
 
+TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
+  Printer printer = CreateGenericPrinter();
+  printer.set_source(Printer::Source::SRC_USER_PREFS);
+  std::unique_ptr<base::DictionaryValue> printer_info =
+      GetCupsPrinterInfo(printer);
+  ExpectDictBooleanValue(false, *printer_info, "isManaged");
+
+  printer.set_source(Printer::Source::SRC_POLICY);
+  printer_info = GetCupsPrinterInfo(printer);
+  ExpectDictBooleanValue(true, *printer_info, "isManaged");
+}
+
 }  // namespace chromeos

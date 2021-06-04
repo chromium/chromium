@@ -87,7 +87,8 @@ The following table contains message names as they appear in
 
 Message Name                        | Function
 :---------------------------------- | :-------
-`getCupsPrintersList`               | `HandleGetCupsPrintersList`
+`getCupsSavedPrintersList`          | `HandleGetCupsSavedPrintersList`
+`getCupsEnterprisePrintersList`     | `HandleGetCupsEnterprisePrintersList`
 `updateCupsPrinter`                 | `HandleUpdateCupsPrinter`
 `removeCupsPrinter`                 | `HandleRemoveCupsPrinter`
 `addCupsPrinter`                    | `HandleAddCupsPrinter`

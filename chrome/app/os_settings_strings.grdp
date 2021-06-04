@@ -1985,8 +1985,23 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_AVAILABLE_PRINTER_COUNT_NONE" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them there are no printers available to save.">
     There are no printers available to save.
   </message>
+  <message name="IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_TITLE" desc="Text for the title of the user's managed printers list.">
+    Managed printers
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_AVAILABLE_PRINTERS_COUNT_MANY" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them on the number of managed printers showing on the screen.">
+    There are <ph name="PRINTER_COUNT">$1<ex>3</ex></ph> managed printers.
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_AVAILABLE_PRINTER_COUNT_ONE" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them there is only 1 managed printer.">
+    There is 1 managed printer.
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_ENTERPRISE_PRINTERS_AVAILABLE_PRINTER_COUNT_NONE" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them there are no managed printers.">
+    There are no managed printers.
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_EDIT" desc="Text for the drop down menu which allows the user to edit the printer details.">
     Edit
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_VIEW" desc="Text for the drop down menu which allows the user to view the managed printer details.">
+    View
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_REMOVE" desc="Text for the drop down menu which allows the user to remove the selected printer.">
     Remove
@@ -2170,6 +2185,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_DIALOG_TITLE" desc="Text for the title of the dialog that is used to edit a CUPS printer's information.">
     Edit printer
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_VIEW_PRINTER_DIALOG_TITLE" desc="Text for the title of the dialog that is used to view a CUPS managed printer's information.">
+    View printer
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_BUTTON" desc="Text for the button which allows the user to save the modification of a CUPS printer.">
     Save

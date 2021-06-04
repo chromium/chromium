@@ -44,6 +44,10 @@
     border-bottom: var(--cr-separator-line);
   }
 
+  #enterprisePrintersContainer {
+    border-top: var(--cr-separator-line);
+  }
+
   :host(:not([can-add-printer])) #addPrinterSection,
   :host(:not([can-add-printer])) #nearbyPrinters {
     opacity: var(--cr-disabled-opacity);
@@ -120,6 +124,26 @@
         printers-count="{{nearbyPrinterCount_}}">
     </settings-cups-nearby-printers>
   </template>
+</template>
+
+<template is="dom-if"
+    if="[[doesAccountHaveEnterprisePrinters_(enterprisePrinters_)]]"
+    restamp>
+  <div id="enterprisePrintersContainer">
+    <div class="settings-box first">
+      <div class="start">
+        <span aria-label$="[[enterprisePrintersAriaLabel_]]">
+          $i18n{enterprisePrintersTitle}
+        </span>
+      </div>
+    </div>
+    <settings-cups-enterprise-printers
+        id="enterprisePrinters"
+        active-printer="{{activePrinter}}"
+        search-term="[[searchTerm]]"
+        printers-count="{{enterprisePrinterCount_}}">
+    </settings-cups-enterprise-printers>
+  </div>
 </template>
 
 <settings-cups-add-printer-dialog id="addPrinterDialog"

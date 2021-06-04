@@ -92,6 +92,7 @@ bool DictionaryToPrinter(const DictionaryValue& value, Printer* printer) {
 std::unique_ptr<base::DictionaryValue> CreateEmptyPrinterInfo() {
   std::unique_ptr<base::DictionaryValue> printer_info =
       std::make_unique<base::DictionaryValue>();
+  printer_info->SetBoolean("isManaged", false);
   printer_info->SetString("ppdManufacturer", "");
   printer_info->SetString("ppdModel", "");
   printer_info->SetString("printerAddress", "");
@@ -171,6 +172,8 @@ std::unique_ptr<base::DictionaryValue> GetCupsPrinterInfo(
   std::unique_ptr<base::DictionaryValue> printer_info =
       CreateEmptyPrinterInfo();
 
+  printer_info->SetBoolean("isManaged",
+                           printer.source() == Printer::Source::SRC_POLICY);
   printer_info->SetString("printerId", printer.id());
   printer_info->SetString("printerName", printer.display_name());
   printer_info->SetString("printerDescription", printer.description());

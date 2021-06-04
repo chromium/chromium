@@ -71,7 +71,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                       CupsPrintersManager* printers_manager);
 
   // Gets all CUPS printers and return it to WebUI.
-  void HandleGetCupsPrintersList(const base::ListValue* args);
+  void HandleGetCupsSavedPrintersList(const base::ListValue* args);
+  void HandleGetCupsEnterprisePrintersList(const base::ListValue* args);
   void HandleUpdateCupsPrinter(const base::ListValue* args);
   void HandleRemoveCupsPrinter(const base::ListValue* args);
 

@@ -1,6 +1,11 @@
 <style include="cr-shared-style cups-printer-shared"></style>
 <add-printer-dialog>
-  <div slot="dialog-title">$i18n{editPrinterDialogTitle}
+  <div slot="dialog-title">
+    <iron-icon
+      hidden="[[!pendingPrinter_.isManaged]]"
+      icon="cr20:domain">
+    </iron-icon>
+    [[getDialogTitle_(pendingPrinter_.isManaged)]]
     <printer-dialog-error error-text="[[errorText_]]">
     </printer-dialog-error>
   </div>
@@ -12,6 +17,7 @@
           on-input="onPrinterInfoChange_"
           label="$i18n{printerName}"
           aria-label="$i18n{printerName}"
+          readonly="[[pendingPrinter_.isManaged]]"
           maxlength=64>
       </cr-input>
     </div>
@@ -24,7 +30,8 @@
           disabled="[[!isInputFieldEnabled_(networkProtocolActive_,
               pendingPrinter_.printServerUri)]]"
           maxlength=63
-          readonly="[[!isOnline_]]">
+          readonly="[[isInputFieldReadonly_(pendingPrinter_.isManaged,
+              isOnline_)]]">
       </cr-input>
     </div>
     <div class="settings-box two-line">
@@ -39,7 +46,9 @@
               on-change="onProtocolChange_"
               disabled="[[!protocolSelectEnabled_(
                   networkProtocolActive_,
-                  pendingPrinter_.printServerUri)]]">
+                  pendingPrinter_.printServerUri,
+                  pendingPrinter_.isManaged,
+                  isOnline_)]]">
             <option value="ipp">
               $i18n{printerProtocolIpp}
             </option>
@@ -80,7 +89,8 @@
           maxlength=64
           disabled="[[!isInputFieldEnabled_(networkProtocolActive_,
               pendingPrinter_.printServerUri)]]"
-          readonly="[[!isOnline_]]">
+          readonly="[[isInputFieldReadonly_(pendingPrinter_.isManaged,
+              isOnline_)]]">
       </cr-input>
     </div>
     <div class="settings-box two-line">
@@ -88,7 +98,8 @@
           aria-label="$i18n{printerURI}"
           value="[[getPrinterURI_(pendingPrinter_)]]"
           disabled="[[!isInputFieldEnabled_(networkProtocolActive_,
-              pendingPrinter_.printServerUri)]]">
+              pendingPrinter_.printServerUri)]]"
+          readonly="[[pendingPrinter_.isManaged]]">
       </cr-input>
     </div>
     <template id="makeAndModelSection" is="dom-if"
@@ -99,7 +110,8 @@
             label="$i18n{printerManufacturer}"
             aria-label="$i18n{printerManufacturer}"
             value="{{pendingPrinter_.ppdManufacturer}}"
-            readonly="[[!isOnline_]]"
+            readonly="[[isInputFieldReadonly_(pendingPrinter_.isManaged,
+                isOnline_)]]"
             invalid="{{isManufacturerInvalid_}}">
         </cr-searchable-drop-down>
       </div>
@@ -108,16 +120,19 @@
             id="printerPPDModel"
             label="$i18n{printerModel}"
             value="{{pendingPrinter_.ppdModel}}"
-            readonly="[[!isOnline_]]"
+            readonly="[[isInputFieldReadonly_(pendingPrinter_.isManaged,
+                isOnline_)]]"
             invalid="{{isModelInvalid_}}">
         </cr-searchable-drop-down>
       </div>
-      <div id="ppdLabel" class="cr-form-field-label">
+      <div id="ppdLabel" class="cr-form-field-label"
+           hidden="[[pendingPrinter_.isManaged]]">
         <settings-localized-link localized-string="$i18n{selectDriver}"
             link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}">
         </settings-localized-link>
       </div>
-      <div class="settings-box two-line">
+      <div class="settings-box two-line"
+           hidden="[[pendingPrinter_.isManaged]]">
         <cr-input class="browse-file-input" readonly tabindex="-1"
             value="[[userPPD_]]" aria-labelledby="ppdLabel"
             error-message="$i18n{selectDriverErrorMessage}"
@@ -138,14 +153,20 @@
       </div>
     </div>
     <div>
-      <cr-button class="cancel-button" on-click="onCancelTap_">
+      <cr-button class="cancel-button" on-click="onCancelTap_"
+          hidden="[[pendingPrinter_.isManaged]]">
         $i18n{cancel}
       </cr-button>
       <cr-button class="action-button" on-click="onSaveTap_"
           disabled="[[!canSavePrinter_(pendingPrinter_.*,
               printerInfoChanged_,
-              isOnline_, isManufacturerInvalid_, isModelInvalid_)]]">
+              isOnline_, isManufacturerInvalid_, isModelInvalid_)]]"
+              hidden="[[pendingPrinter_.isManaged]]">
         $i18n{editPrinterButtonText}
+      </cr-button>
+      <cr-button class="close-button" on-click="onCancelTap_"
+       hidden="[[!pendingPrinter_.isManaged]]">
+       $i18n{close}
       </cr-button>
     </div>
   </div>

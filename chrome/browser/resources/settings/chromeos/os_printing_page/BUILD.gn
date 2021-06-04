@@ -15,6 +15,7 @@ js_type_check("closure_compile_module") {
     ":cups_add_printer_manually_dialog",
     ":cups_add_printer_manufacturer_model_dialog",
     ":cups_edit_printer_dialog",
+    ":cups_enterprise_printers",
     ":cups_nearby_printers",
     ":cups_printer_dialog_error",
     ":cups_printer_dialog_util",
@@ -70,10 +71,17 @@ js_library("cups_printer_dialog_error") {
 }
 
 js_library("cups_edit_printer_dialog") {
-  deps = [ ":cups_printer_dialog_util" ]
+  deps = [
+    ":cups_printer_dialog_util",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
 }
 
 js_library("cups_nearby_printers") {
+  deps = [ ":cups_printer_dialog_util" ]
+}
+
+js_library("cups_enterprise_printers") {
   deps = [ ":cups_printer_dialog_util" ]
 }
 
@@ -167,6 +175,7 @@ html_to_js("web_components") {
     "cups_printers.js",
     "cups_printers_entry.js",
     "cups_saved_printers.js",
+    "cups_enterprise_printers.js",
     "os_printing_page.js",
     "cups_printer_shared_css.js",
   ]

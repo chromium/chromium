@@ -7,6 +7,7 @@
  * printer.
  */
 import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared_css.js';
 
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
@@ -69,8 +70,9 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isSavedPrinter_() {
-    return this.printerEntry.printerType === PrinterType.SAVED;
+  showActionsMenu_() {
+    return this.printerEntry.printerType === PrinterType.SAVED ||
+        this.printerEntry.printerType === PrinterType.ENTERPRISE;
   },
 
   /**

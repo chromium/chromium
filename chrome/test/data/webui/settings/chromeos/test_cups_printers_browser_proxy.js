@@ -14,7 +14,8 @@ cr.define('printerBrowserProxy', function() {
       super([
         'addCupsPrinter',
         'addDiscoveredPrinter',
-        'getCupsPrintersList',
+        'getCupsSavedPrintersList',
+        'getCupsEnterprisePrintersList',
         'getCupsPrinterManufacturersList',
         'getCupsPrinterModelsList',
         'getPrinterInfo',
@@ -86,8 +87,14 @@ cr.define('printerBrowserProxy', function() {
     }
 
     /** @override */
-    getCupsPrintersList() {
-      this.methodCalled('getCupsPrintersList');
+    getCupsSavedPrintersList() {
+      this.methodCalled('getCupsSavedPrintersList');
+      return Promise.resolve(this.printerList);
+    }
+
+    /** @override */
+    getCupsEnterprisePrintersList() {
+      this.methodCalled('getCupsEnterprisePrintersList');
       return Promise.resolve(this.printerList);
     }
 

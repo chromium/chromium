@@ -6,7 +6,7 @@
   }
 
   #no-search-results {
-    margin-bottom: 20px;
+    margin-top: 20px;
   }
 
   /** Height of iron list row entry. */
@@ -34,10 +34,10 @@
 </style>
 
 <cr-action-menu role-description="$i18n{menu}">
-  <button id="editButton" class="dropdown-item" on-click="onEditTap_">
-    $i18n{editPrinter}
+  <button id="viewButton" class="dropdown-item" on-click="onViewTap_">
+    $i18n{viewPrinter}
   </button>
-  <button id="removeButton" class="dropdown-item" on-click="onRemoveTap_">
+  <button id="removeButton" class="dropdown-item" disabled>
     $i18n{removePrinter}
   </button>
 </cr-action-menu>
@@ -53,8 +53,8 @@
   </template>
 </iron-list>
 <template is="dom-if" id="show-more-button-section"
-    if="[[shouldPrinterListBeCollapsed_(searchTerm, savedPrinters.*,
-        newPrinters_.*, hasShowMoreBeenTapped_)]]" restamp>
+    if="[[shouldPrinterListBeCollapsed_(searchTerm, enterprisePrinters.*,
+    hasShowMoreBeenTapped_)]]" restamp>
   <div id="show-more-line-separator"></div>
   <div class="list-frame layout horizontal" id="show-more-container">
     <div id="show-more-text">$i18n{showMorePrinters}</div>
@@ -65,7 +65,6 @@
     </cr-icon-button>
   </div>
 </template>
-
 <div id="no-search-results"
     hidden="[[!showNoSearchResultsMessage_(searchTerm,
         filteredPrinters_.*)]]">

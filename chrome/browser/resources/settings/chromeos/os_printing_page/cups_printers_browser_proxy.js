@@ -11,6 +11,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 
 /**
  * @typedef {{
+ *   isManaged: boolean,
  *   ppdManufacturer: string,
  *   ppdModel: string,
  *   printerAddress: string,
@@ -125,7 +126,12 @@ export class CupsPrintersBrowserProxy {
   /**
    * @return {!Promise<!CupsPrintersList>}
    */
-  getCupsPrintersList() {}
+  getCupsSavedPrintersList() {}
+
+  /**
+   * @return {!Promise<!CupsPrintersList>}
+   */
+  getCupsEnterprisePrintersList() {}
 
   /**
    * @param {string} printerId
@@ -226,8 +232,13 @@ export class CupsPrintersBrowserProxy {
  */
 export class CupsPrintersBrowserProxyImpl {
   /** @override */
-  getCupsPrintersList() {
-    return sendWithPromise('getCupsPrintersList');
+  getCupsSavedPrintersList() {
+    return sendWithPromise('getCupsSavedPrintersList');
+  }
+
+  /** @override */
+  getCupsEnterprisePrintersList() {
+    return sendWithPromise('getCupsEnterprisePrintersList');
   }
 
   /** @override */

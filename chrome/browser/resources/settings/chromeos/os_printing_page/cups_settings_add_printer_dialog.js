@@ -30,6 +30,7 @@ const AddPrinterDialogs = {
  */
 function getEmptyPrinter_() {
   return {
+    isManaged: false,
     ppdManufacturer: '',
     ppdModel: '',
     printerAddress: '',

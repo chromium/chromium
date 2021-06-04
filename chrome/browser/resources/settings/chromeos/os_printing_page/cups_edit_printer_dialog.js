@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../localized_link/localized_link.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
@@ -21,6 +22,8 @@ import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/networ
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
@@ -33,6 +36,7 @@ Polymer({
   is: 'settings-cups-edit-printer-dialog',
 
   behaviors: [
+    I18nBehavior,
     NetworkListenerBehavior,
   ],
 
@@ -280,6 +284,16 @@ Polymer({
   },
 
   /**
+   * @return {string} The i18n string for the dialog title.
+   * @private
+   */
+  getDialogTitle_() {
+    return this.pendingPrinter_.isManaged ?
+        this.i18n('viewPrinterDialogTitle') :
+        this.i18n('editPrinterDialogTitle');
+  },
+
+  /**
    * @param {!CupsPrinterInfo} printer
    * @return {string} The printer's URI that displays in the UI
    * @private
@@ -500,10 +514,17 @@ Polymer({
    * @private
    */
   protocolSelectEnabled_() {
-    // Print server printer's protocol should not be editable; disable the
-    // drop down if the printer is from a print server.
-    if (this.pendingPrinter_.printServerUri) {
-      return false;
+    if (this.pendingPrinter_) {
+      // Print server printer's protocol should not be editable; disable the
+      // drop down if the printer is from a print server.
+      if (this.pendingPrinter_.printServerUri) {
+        return false;
+      }
+
+      // Managed printers are not editable.
+      if (this.pendingPrinter_.isManaged) {
+        return false;
+      }
     }
 
     return this.isOnline_ && this.networkProtocolActive_;
@@ -539,6 +560,15 @@ Polymer({
     }
 
     return this.networkProtocolActive_;
+  },
+
+  /**
+   * @return {boolean} True if the printer is managed or not online.
+   * @private
+   */
+  isInputFieldReadonly_() {
+    return !this.isOnline_ ||
+        (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
   },
 
 });
