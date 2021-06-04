@@ -26,11 +26,11 @@ test(function() {
 
     player.currentTime = 5;
     element.style.fontSize = '40px';
-    assert_equals(getComputedStyle(element).perspective, 'none');
+    assert_equals(getComputedStyle(element).perspective, '0px');
 
     player.currentTime = 7.5;
-    assert_equals(getComputedStyle(element).perspective, 'none');
-}, 'perspective clamped to none');
+    assert_equals(getComputedStyle(element).perspective, '0px');
+}, 'perspective clamped to 0px');
 
 test(function() {
     container.style.perspective = 'none';

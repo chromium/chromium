@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
 
+#include <algorithm>
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -33,18 +34,15 @@ namespace blink {
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Accumulate(
     const TransformOperation& other) {
   DCHECK(other.IsSameType(*this));
-  double other_p = To<PerspectiveTransformOperation>(other).p_;
-
-  if (p_ == 0 && other_p == 0)
-    return nullptr;
+  double other_p = To<PerspectiveTransformOperation>(other).UsedPerspective();
+  double p = UsedPerspective();
 
   // We want to solve:
   //   -1/p + -1/p' == -1/p'', where we know p and p'.
   //
   // This can be rewritten as:
   //   p'' == (p * p') / (p + p')
-  double p = (p_ * other_p) / (p_ + other_p);
-  return PerspectiveTransformOperation::Create(p);
+  return PerspectiveTransformOperation::Create((p * other_p) / (p + other_p));
 }
 
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
@@ -54,34 +52,27 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
   if (from && !from->IsSameType(*this))
     return this;
 
+  // https://drafts.csswg.org/css-transforms-2/#interpolation-of-transform-functions
+  // says that we should run matrix decomposition and then run the rules for
+  // interpolation of matrices, but we know what those rules are going to
+  // yield, so just do that directly.
+  double from_p_inverse, to_p_inverse;
   if (blend_to_identity) {
-    // FIXME: this seems wrong.  https://bugs.webkit.org/show_bug.cgi?id=52700
-    double p = blink::Blend(p_, 1., progress);
-    return PerspectiveTransformOperation::Create(clampTo<int>(p, 0));
+    from_p_inverse = 1.0 / UsedPerspective();
+    to_p_inverse = 0.0;
+  } else {
+    if (from) {
+      const PerspectiveTransformOperation* from_op =
+          static_cast<const PerspectiveTransformOperation*>(from);
+      from_p_inverse = 1.0 / from_op->UsedPerspective();
+    } else {
+      from_p_inverse = 0.0;
+    }
+    to_p_inverse = 1.0 / UsedPerspective();
   }
-
-  const PerspectiveTransformOperation* from_op =
-      static_cast<const PerspectiveTransformOperation*>(from);
-
-  TransformationMatrix from_t;
-  TransformationMatrix to_t;
-  from_t.ApplyPerspective(from_op ? from_op->p_ : 0);
-  to_t.ApplyPerspective(p_);
-  to_t.Blend(from_t, progress);
-
-  TransformationMatrix::DecomposedType decomp;
-  if (!to_t.Decompose(decomp)) {
-    // If we can't decompose, bail out of interpolation.
-    const PerspectiveTransformOperation* used_operation =
-        progress > 0.5 ? this : from_op;
-    return PerspectiveTransformOperation::Create(used_operation->Perspective());
-  }
-
-  if (decomp.perspective_z) {
-    double val = -1.0 / decomp.perspective_z;
-    return PerspectiveTransformOperation::Create(clampTo<double>(val, 0));
-  }
-  return PerspectiveTransformOperation::Create(0);
+  double p =
+      1.0 / std::max(0.0, blink::Blend(from_p_inverse, to_p_inverse, progress));
+  return PerspectiveTransformOperation::Create(clampTo<double>(p, 0));
 }
 
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Zoom(

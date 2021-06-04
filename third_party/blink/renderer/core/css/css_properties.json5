@@ -3323,7 +3323,7 @@
       interpolable: true,
       field_group: "*",
       field_template: "primitive",
-      default_value: "0.0",
+      default_value: "-1.0",
       type_name: "float",
       converter: "ConvertPerspective",
       keywords: ["none"],

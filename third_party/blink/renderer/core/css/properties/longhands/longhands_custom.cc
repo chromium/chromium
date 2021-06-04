@@ -5374,20 +5374,18 @@ const CSSValue* Perspective::ParseSingleValue(
   if (range.Peek().Id() == CSSValueID::kNone)
     return css_parsing_utils::ConsumeIdent(range);
   CSSPrimitiveValue* parsed_value =
-      css_parsing_utils::ConsumeLength(range, context, kValueRangeAll);
+      css_parsing_utils::ConsumeLength(range, context, kValueRangeNonNegative);
   bool use_legacy_parsing = localContext.UseAliasParsing();
   if (!parsed_value && use_legacy_parsing) {
     double perspective;
-    if (!css_parsing_utils::ConsumeNumberRaw(range, context, perspective))
+    if (!css_parsing_utils::ConsumeNumberRaw(range, context, perspective) ||
+        perspective < 0.0)
       return nullptr;
     context.Count(WebFeature::kUnitlessPerspectiveInPerspectiveProperty);
     parsed_value = CSSNumericLiteralValue::Create(
         perspective, CSSPrimitiveValue::UnitType::kPixels);
   }
-  if (parsed_value &&
-      (parsed_value->IsCalculated() || parsed_value->GetDoubleValue() > 0))
-    return parsed_value;
-  return nullptr;
+  return parsed_value;
 }
 
 const CSSValue* Perspective::CSSValueFromComputedStyleInternal(

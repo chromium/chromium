@@ -5446,11 +5446,9 @@ crbug.com/1008483 virtual/transform-interop/transforms/3d/point-mapping/3d-point
 
 crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-003.html [ Failure ]
 crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-004.html [ Failure ]
-crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-005.html [ Failure ]
 
 crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-003.html [ Pass ]
 crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-004.html [ Pass ]
-crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-005.html [ Pass ]
 
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-non-integer-innerwidth.html [ Crash Timeout ]

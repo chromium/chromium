@@ -32,7 +32,7 @@ assertInterpolation({
   from: '50px',
   to: '100px'
 }, [
-  {at: -20, is: 'none'}, // perspective does not accept 0 or negative values
+  {at: -20, is: '0px'},
   {at: -0.3, is: '35px'},
   {at: 0, is: '50px'},
   {at: 0.3, is: '65px'},

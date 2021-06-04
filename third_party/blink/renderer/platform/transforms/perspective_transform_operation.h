@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_PERSPECTIVE_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_PERSPECTIVE_TRANSFORM_OPERATION_H_
 
+#include <algorithm>
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -39,6 +40,8 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   }
 
   double Perspective() const { return p_; }
+
+  double UsedPerspective() const { return std::max(1.0, p_); }
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kPerspective;
@@ -56,7 +59,7 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   }
 
   void Apply(TransformationMatrix& transform, const FloatSize&) const override {
-    transform.ApplyPerspective(p_);
+    transform.ApplyPerspective(UsedPerspective());
   }
 
   scoped_refptr<TransformOperation> Accumulate(
