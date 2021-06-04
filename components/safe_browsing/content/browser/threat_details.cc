@@ -25,7 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"

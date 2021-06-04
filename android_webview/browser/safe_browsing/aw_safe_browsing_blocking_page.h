@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
-#include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 
 namespace security_interstitials {

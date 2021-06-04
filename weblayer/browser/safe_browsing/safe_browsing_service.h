@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SERVICE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SERVICE_H_
 
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

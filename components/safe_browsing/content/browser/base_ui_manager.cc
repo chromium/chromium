@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -12,7 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -201,8 +201,7 @@ content::WebContents* GetEmbeddingWebContentsForInterstitial(
 }
 }  // namespace
 
-void BaseUIManager::DisplayBlockingPage(
-    const UnsafeResource& resource) {
+void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (resource.is_subresource && !resource.is_subframe) {
     // Sites tagged as serving Unwanted Software should only show a warning for

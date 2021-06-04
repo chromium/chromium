@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"

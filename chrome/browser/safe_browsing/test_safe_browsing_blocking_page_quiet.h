@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_BLOCKING_PAGE_QUIET_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_BLOCKING_PAGE_QUIET_H_
 
-#include "components/safe_browsing/content/base_blocking_page.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/safe_browsing_quiet_error_ui.h"
 

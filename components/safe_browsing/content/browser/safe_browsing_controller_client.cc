@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
 
 #include "base/feature_list.h"
 #include "components/safe_browsing/core/features.h"

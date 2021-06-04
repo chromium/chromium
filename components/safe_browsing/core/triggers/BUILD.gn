@@ -19,7 +19,6 @@ source_set("triggers") {
     ":trigger_throttler",
     "//base:base",
     "//components/prefs:prefs",
-    "//components/safe_browsing/content",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:browser",

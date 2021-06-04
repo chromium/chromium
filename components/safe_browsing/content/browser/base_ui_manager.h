@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BASE_UI_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BASE_UI_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BASE_UI_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BASE_UI_MANAGER_H_
 
 #include <string>
 #include <utility>
@@ -31,8 +31,7 @@ namespace safe_browsing {
 class BaseBlockingPage;
 
 // Construction needs to happen on the main thread.
-class BaseUIManager
-    : public base::RefCountedThreadSafe<BaseUIManager> {
+class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
@@ -171,4 +170,4 @@ class BaseUIManager
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BASE_UI_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BASE_UI_MANAGER_H_

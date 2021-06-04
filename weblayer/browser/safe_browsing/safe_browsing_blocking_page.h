@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"

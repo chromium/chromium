@@ -235,7 +235,6 @@ source_set("browser") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/safe_browsing/android:remote_database_manager",
-    "//components/safe_browsing/content",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/web_ui",

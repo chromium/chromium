@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"

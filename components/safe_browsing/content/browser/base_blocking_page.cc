@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/content/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -140,8 +140,7 @@ void BaseBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
                                            int num_visits) {}
 
 // static
-BaseBlockingPage::UnsafeResourceMap*
-BaseBlockingPage::GetUnsafeResourcesMap() {
+BaseBlockingPage::UnsafeResourceMap* BaseBlockingPage::GetUnsafeResourcesMap() {
   return g_unsafe_resource_map.Pointer();
 }
 
@@ -222,8 +221,8 @@ const GURL BaseBlockingPage::main_frame_url() const {
   return main_frame_url_;
 }
 
-BaseBlockingPage::UnsafeResourceList
-BaseBlockingPage::unsafe_resources() const {
+BaseBlockingPage::UnsafeResourceList BaseBlockingPage::unsafe_resources()
+    const {
   return unsafe_resources_;
 }
 

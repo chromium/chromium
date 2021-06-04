@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_SAFE_BROWSING_CONTROLLER_CLIENT_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_SAFE_BROWSING_CONTROLLER_CLIENT_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_CONTROLLER_CLIENT_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_CONTROLLER_CLIENT_H_
 
 #include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -15,7 +15,7 @@ class WebContents;
 namespace security_interstitials {
 class MetricsHelper;
 class SettingsPageHelper;
-}
+}  // namespace security_interstitials
 
 class PrefService;
 
@@ -46,4 +46,4 @@ class SafeBrowsingControllerClient
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_SAFE_BROWSING_CONTROLLER_CLIENT_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_CONTROLLER_CLIENT_H_
