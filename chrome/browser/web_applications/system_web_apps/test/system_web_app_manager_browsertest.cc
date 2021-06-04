@@ -267,7 +267,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
         std::move(params));
   }
 
-  void GrantFileHandlingPermisson() {
+  void GrantFileHandlingPermission() {
     auto* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
     map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
@@ -332,7 +332,7 @@ class SystemWebAppManagerLaunchFilesBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchFilesForSystemWebApp) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -366,6 +366,33 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   EXPECT_EQ(temp_file_path2.BaseName().AsUTF8Unsafe(),
             GetJsStatementValueAsString(web_contents,
                                         "window.launchParams2.files[0].name"));
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
+                       LaunchMetricsWorks) {
+  WaitForTestSystemAppInstall();
+  GrantFileHandlingPermission();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_directory;
+  ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
+  base::FilePath temp_file_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_directory.GetPath(),
+                                             &temp_file_path));
+
+  base::HistogramTester histograms;
+
+  content::TestNavigationObserver navigation_observer(
+      maybe_installation_->GetAppUrl());
+  navigation_observer.StartWatchingNewWebContents();
+
+  SystemAppLaunchParams params;
+  params.launch_paths = {temp_file_path};
+  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
+
+  navigation_observer.Wait();
+  histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromOtherApp", 1);
 }
 
 // The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
@@ -516,7 +543,7 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        LaunchDirectoryForSystemWebApp) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -573,7 +600,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_OrdinaryDirectory) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
 
   // Test for ordinary directory.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -585,7 +612,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_SensitiveDirectory) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
 
   // Test for sensitive directory (which are otherwise blocked by
   // FileSystemAccess API). It is safe to use |chrome::DIR_DEFAULT_DOWNLOADS|,
@@ -683,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   // Launch from FileSystemProvider path.
@@ -733,7 +760,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =
@@ -758,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermisson();
+  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =

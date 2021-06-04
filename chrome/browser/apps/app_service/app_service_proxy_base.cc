@@ -217,11 +217,14 @@ void AppServiceProxyBase::LaunchAppWithFiles(
 
           RecordAppPlatformMetrics(profile_, update, launch_source, container);
 
-          // TODO(crbug/1117655): Presently, app launch metrics are recorded in
-          // the caller. We should record them here, with the same SWA logic as
-          // AppServiceProxy::Launch. There is an if statement to detect
-          // launches from the file manager in LaunchSystemWebApp that should be
-          // removed at the same time.
+          // TODO(crbug/1117655): File manager records metrics for apps it
+          // launched. So we only record launches from other places. We should
+          // eventually move those metrics here, after AppService supports all
+          // app types launched by file manager.
+          if (launch_source != apps::mojom::LaunchSource::kFromFileManager) {
+            RecordAppLaunch(update.AppId(), launch_source);
+          }
+
           app_service_->LaunchAppWithFiles(
               update.AppType(), update.AppId(), container, event_flags,
               launch_source, std::move(file_paths));

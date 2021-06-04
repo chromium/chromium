@@ -645,6 +645,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // handler for a given file.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
                        FileOpenUsesMediaApp) {
+  base::HistogramTester histograms;
+
   WaitForTestSystemAppInstall();
   Browser* test_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -666,6 +668,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   EXPECT_EQ(web_app::GetAppIdFromApplicationName(app_browser->app_name()),
             *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::MEDIA));
   EXPECT_EQ("800x600", WaitForImageAlt(web_ui, kFilePng800x600));
+
+  // Check the metric is recorded.
+  histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 1);
 }
 
 // Test that the MediaApp can navigate other files in the directory of a file
