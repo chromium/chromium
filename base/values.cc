@@ -1342,15 +1342,6 @@ bool DictionaryValue::GetBooleanWithoutPathExpansion(StringPiece key,
   return value->GetAsBoolean(out_value);
 }
 
-bool DictionaryValue::GetIntegerWithoutPathExpansion(StringPiece key,
-                                                     int* out_value) const {
-  const Value* value = FindKey(key);
-  if (!value)
-    return false;
-
-  return value->GetAsInteger(out_value);
-}
-
 bool DictionaryValue::GetDoubleWithoutPathExpansion(StringPiece key,
                                                     double* out_value) const {
   const Value* value = FindKey(key);

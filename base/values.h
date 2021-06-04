@@ -739,8 +739,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // to be used as paths.
   // DEPRECATED, use `Value::FindBoolKey(key)` instead.
   bool GetBooleanWithoutPathExpansion(StringPiece key, bool* out_value) const;
-  // DEPRECATED, use `Value::FindIntKey(key)` instead.
-  bool GetIntegerWithoutPathExpansion(StringPiece key, int* out_value) const;
   // DEPRECATED, use `Value::FindDoubleKey(key)` instead.
   bool GetDoubleWithoutPathExpansion(StringPiece key, double* out_value) const;
   // DEPRECATED, use `Value::FindStringKey(key)` instead.
