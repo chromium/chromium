@@ -90,12 +90,9 @@ base::Value PrepareReplyMessage(base::StringPiece reply_type,
                                 const base::Value& message) {
   DCHECK_EQ(reply_type, *message.FindStringKey("type") + "Reply");
 
-  const std::string* message_id = message.FindStringKey("messageId");
-  CHECK(message_id);
-
   base::Value reply(base::Value::Type::DICTIONARY);
   reply.SetStringKey("type", reply_type);
-  reply.SetStringKey("messageId", *message_id);
+  reply.SetStringKey("messageId", *message.FindStringKey("messageId"));
   return reply;
 }
 
@@ -432,12 +429,9 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
-  const std::string* type = message.FindStringKey("type");
-  CHECK(type);
-
   // TODO(crbug.com/1109796): Use `fixed_flat_map<>::at()` when migration is
   // complete to CHECK out-of-bounds lookups.
-  const auto* it = kMessageHandlers.find(*type);
+  const auto* it = kMessageHandlers.find(*message.FindStringKey("type"));
   if (it == kMessageHandlers.end()) {
     NOTIMPLEMENTED() << message;
     return;
@@ -747,12 +741,8 @@ void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
 
 void PdfViewPluginBase::HandleGetNamedDestinationMessage(
     const base::Value& message) {
-  const std::string* destination_name =
-      message.FindStringKey("namedDestination");
-  CHECK(destination_name);
-
   absl::optional<PDFEngine::NamedDestination> named_destination =
-      engine()->GetNamedDestination(*destination_name);
+      engine()->GetNamedDestination(*message.FindStringKey("namedDestination"));
 
   const int page_number = named_destination.has_value()
                               ? base::checked_cast<int>(named_destination->page)
@@ -779,10 +769,8 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
 
 void PdfViewPluginBase::HandleGetPasswordCompleteMessage(
     const base::Value& message) {
-  const std::string* password = message.FindStringKey("password");
-  CHECK(password);
-  DCHECK(!password_callback_.is_null());
-  std::move(password_callback_).Run(*password);
+  DCHECK(password_callback_);
+  std::move(password_callback_).Run(*message.FindStringKey("password"));
 }
 
 void PdfViewPluginBase::HandleGetSelectedTextMessage(
