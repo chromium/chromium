@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Test enabling controls on the video element with them enabled.
+Harness: the test ran to completion.
+

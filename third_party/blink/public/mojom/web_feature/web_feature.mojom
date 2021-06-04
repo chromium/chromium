@@ -3242,6 +3242,7 @@ enum WebFeature {
   kHiddenBackfaceWith3D = 3927,
   kMainFrameNonSecurePrivateAddressSpace = 3928,
   kCSSSelectorPseudoHas = 3929,
+  kHTMLMediaElementControlsListNoPlaybackRate = 3930,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

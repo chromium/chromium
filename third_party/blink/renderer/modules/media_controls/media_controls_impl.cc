@@ -152,6 +152,16 @@ void MaybeParserAppendChild(Element* parent, Element* child) {
     parent->ParserAppendChild(child);
 }
 
+bool ShouldShowPlaybackSpeedButton(HTMLMediaElement& media_element) {
+  // The page disabled the button via the controlsList attribute.
+  if (media_element.ControlsListInternal()->ShouldHidePlaybackRate()) {
+    UseCounter::Count(media_element.GetDocument(),
+                      WebFeature::kHTMLMediaElementControlsListNoPlaybackRate);
+    return false;
+  }
+  return true;
+}
+
 bool ShouldShowPictureInPictureButton(HTMLMediaElement& media_element) {
   return media_element.SupportsPictureInPicture();
 }
@@ -567,6 +577,8 @@ void MediaControlsImpl::InitializeControls() {
   if (base::FeatureList::IsEnabled(media::kPlaybackSpeedButton)) {
     playback_speed_button_ =
         MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this);
+    playback_speed_button_->SetIsWanted(
+        ShouldShowPlaybackSpeedButton(MediaElement()));
   }
   overflow_menu_ =
       MakeGarbageCollected<MediaControlOverflowMenuButtonElement>(*this);
@@ -927,6 +939,11 @@ void MediaControlsImpl::OnControlsListUpdated() {
 
   download_button_->SetIsWanted(
       download_button_->ShouldDisplayDownloadButton());
+
+  if (playback_speed_button_) {
+    playback_speed_button_->SetIsWanted(
+        ShouldShowPlaybackSpeedButton(MediaElement()));
+  }
 }
 
 LayoutObject* MediaControlsImpl::PanelLayoutObject() {

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Overflow menu children appear in correct order.
+Harness: the test ran to completion.
+
