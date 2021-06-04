@@ -5,7 +5,7 @@
 import("//chrome/browser/vr/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-group("vr_perf_tests") {
+group("vr_perf_tests_base") {
   testonly = true
   data = [
     "./data/",
@@ -26,8 +26,6 @@ group("vr_perf_tests") {
   ]
   data_deps = [ "//testing:run_perf_test" ]
 
-  deps = [ "//tools/perf:perf" ]
-
   if (is_android) {
     data += [
       "//chrome/android/shared_preference_files/test/",
@@ -47,7 +45,35 @@ group("vr_perf_tests") {
 
   if (is_win) {
     if (enable_openxr) {
-      deps += [ "//device/vr:openxr_mock" ]
+      data_deps += [ "//device/vr:openxr_mock" ]
+    }
+  }
+}
+
+group("vr_perf_tests") {
+  testonly = true
+  data_deps = [
+    ":vr_perf_tests_base",
+    "//tools/perf:perf",
+  ]
+}
+
+if (is_android) {
+  template("vr_perf_tests_android_template") {
+    forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+    group(target_name) {
+      testonly = true
+      data_deps = [
+        ":vr_perf_tests_base",
+        "//tools/perf:perf${telemetry_target_suffix}",
+      ]
+    }
+  }
+
+  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+  foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+    vr_perf_tests_android_template("vr_perf_tests${_target_suffix}") {
+      telemetry_target_suffix = _target_suffix
     }
   }
 }

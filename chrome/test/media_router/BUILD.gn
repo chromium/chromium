@@ -144,14 +144,42 @@ source_set("test_support") {
 }
 
 if (enable_downstream_media_tests) {
-  group("media_router_perf_tests") {
+  group("media_router_perf_tests_base") {
     testonly = true
     data = [
       "$root_out_dir/mr_extension/",
       "internal/",
       "telemetry/",
     ]
-    deps = [ "//tools/perf:perf" ]
     data_deps = [ "//tools/perf/contrib/media_router_benchmarks:telemetry_extension_resources" ]
+  }
+
+  group("media_router_perf_tests") {
+    testonly = true
+    data_deps = [
+      ":media_router_perf_tests_base",
+      "//tools/perf:perf",
+    ]
+  }
+
+  if (is_android) {
+    template("media_router_perf_tests_android_template") {
+      forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+      group(target_name) {
+        testonly = true
+        data_deps = [
+          ":media_router_perf_tests_base",
+          "//tools/perf:perf${telemetry_target_suffix}",
+        ]
+      }
+    }
+
+    import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+    foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+      media_router_perf_tests_android_template(
+          "media_router_perf_tests${_target_suffix}") {
+        telemetry_target_suffix = _target_suffix
+      }
+    }
   }
 }

@@ -4752,7 +4752,7 @@
 
     'rendering_mobile_representative_perf_tests_isolated_scripts': {
       'rendering_representative_perf_tests': {
-        'isolate_name': 'rendering_representative_perf_tests',
+        'isolate_name': 'rendering_representative_perf_tests_android_chrome',
         'args': [
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.mobile",
@@ -4764,7 +4764,7 @@
 
     'rendering_mobile_representative_perf_tests_isolated_scripts_experimental': {
       'rendering_representative_perf_tests': {
-        'isolate_name': 'rendering_representative_perf_tests',
+        'isolate_name': 'rendering_representative_perf_tests_android_chrome',
         'args': [
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.mobile",
@@ -5044,7 +5044,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'isolate_name': 'telemetry_perf_unittests',
+        'isolate_name': 'telemetry_perf_unittests_android_chrome',
         'resultdb': {
           'enable': True,
         },
@@ -5057,7 +5057,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'isolate_name': 'telemetry_perf_unittests',
+        'isolate_name': 'telemetry_perf_unittests_android_monochrome',
         'resultdb': {
           'enable': True,
         },
@@ -5082,6 +5082,23 @@
 
     'telemetry_perf_unittests_isolated_scripts': {
       'telemetry_perf_unittests': {
+        'args': [
+          # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+          '--extra-browser-args=--enable-crashpad',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 12,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
+    'telemetry_perf_unittests_isolated_scripts_android': {
+      'telemetry_perf_unittests': {
+        'isolate_name': 'telemetry_perf_unittests_android_chrome',
         'args': [
           # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
           '--extra-browser-args=--enable-crashpad',
@@ -6750,14 +6767,14 @@
       'components_perftests_isolated_scripts',
       'monochrome_public_apk_checker_isolated_script',
       'telemetry_android_minidump_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts_android',
     ],
 
     'marshmallow_pie_isolated_scripts': [
       'android_isolated_scripts',
       'components_perftests_isolated_scripts',
       'telemetry_android_minidump_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts_android',
     ],
 
     'mojo_android_gtests': [

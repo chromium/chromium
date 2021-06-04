@@ -2,38 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Keep in sync with group("perf_without_chrome").
 group("perf") {
   testonly = true
-  deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test" ]
-  data = [
-    "//tools/perf/",
-
-    # Field trial config
-    "//tools/variations/",
-    "//testing/variations/",
-
-    # Field trial dependencies
-    "//tools/json_comment_eater/",
-    "//tools/json_to_struct/",
-    "//components/variations/service/generate_ui_string_overrider.py",
-
-    # For blink_perf benchmarks.
-    "//third_party/blink/perf_tests/",
-
-    # For smoothness.tough_canvas_cases
-    "//chrome/test/data/perf/",
-
-    # For image_decoding.measurement
-    "//chrome/test/data/image_decoding/",
-
-    # For Pylib used by VR tests
-    "//build/android/pylib/",
+  data_deps = [
+    ":perf_without_chrome",
+    "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
   ]
+}
 
-  # Runs a script which generates the ad tagging ruleset.
-  if (!is_ios) {
-    data_deps = [ "//components/subresource_filter/tools:index_ruleset" ]
+if (is_android) {
+  template("perf_android_template") {
+    forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+    group(target_name) {
+      testonly = true
+      data_deps = [
+        ":perf_without_chrome",
+        "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
+      ]
+    }
+  }
+
+  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+  foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+    perf_android_template("perf${_target_suffix}") {
+      telemetry_target_suffix = _target_suffix
+    }
   }
 }
 
@@ -50,11 +43,10 @@ if (is_android) {
   }
 }
 
-# Group for running benchmarks without building Chrome. Keep in sync with
-# group("perf").
+# Group for running benchmarks without building Chrome.
 group("perf_without_chrome") {
   testonly = true
-  deps = [
+  data_deps = [
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
   ]
 
@@ -83,14 +75,9 @@ group("perf_without_chrome") {
     "//build/android/pylib/",
   ]
 
-  data_deps = []
-
   # Runs a script which generates the ad tagging ruleset.
   if (!is_ios) {
     data_deps += [ "//components/subresource_filter/tools:index_ruleset" ]
-  }
-  if (is_android) {
-    data_deps += [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
   }
 }
 

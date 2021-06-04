@@ -37,6 +37,9 @@ group("telemetry_chrome_test") {
   data = []
 
   if (is_android) {
+    # TODO(crbug.com/1213269): Remove these APK dependencies and fully switch to
+    # the separate Android targets below once all Android uses of the old target
+    # have been cleaned up.
     data_deps += [
       ":telemetry_weblayer_apks",
       "//android_webview:system_webview_apk",
@@ -96,6 +99,52 @@ group("telemetry_chrome_test") {
     data_deps += [
       "//build/win:copy_cdb_to_output",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
+    ]
+  }
+}
+
+# These telemetry_chrome_test_* targets exist to reduce the amount of data
+# included in swarming isolates. Including a bunch of different versions of
+# Chrome and their unstripped .so files that aren't actually used adds gigabytes
+# of data to the isolate, which in turn adds a non-trivial amount of swarming
+# overhead. A new one should be added each time a new type of APK is supported
+# and its suffix added to android_browser_types.gni.
+if (is_android) {
+  group("telemetry_chrome_test_android_chrome") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//chrome/android:chrome_public_apk",
+    ]
+  }
+
+  group("telemetry_chrome_test_android_monochrome") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//chrome/android:monochrome_public_apk",
+    ]
+  }
+
+  group("telemetry_chrome_test_android_weblayer") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      ":telemetry_weblayer_apks",
+    ]
+  }
+
+  group("telemetry_chrome_test_android_webview") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//android_webview:system_webview_apk",
+      "//android_webview/test:webview_instrumentation_apk",
+      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
     ]
   }
 }

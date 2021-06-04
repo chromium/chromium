@@ -30898,7 +30898,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -30927,7 +30927,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       }
     ],
     "junit_tests": [
@@ -35612,7 +35612,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -35641,7 +35641,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
         "args": [
@@ -35651,7 +35651,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -35680,13 +35680,13 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
       },
       {
         "args": [
           "--extra-browser-args=--enable-crashpad"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -35717,7 +35717,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       }
     ],
     "junit_tests": [
@@ -44301,7 +44301,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -44329,7 +44329,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
         "args": [
@@ -44339,7 +44339,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
+        "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -44367,7 +44367,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
       }
     ]
   },

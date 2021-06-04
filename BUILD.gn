@@ -257,6 +257,12 @@ group("gn_all") {
       "//media/cast:cast_unittests",
       "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     ]
+    if (is_android) {
+      import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+      foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+        deps += [ "//chrome/test:telemetry_perf_unittests${_target_suffix}" ]
+      }
+    }
   } else if (is_ios) {
     deps += [
       "//ios:all",
@@ -823,6 +829,12 @@ group("gn_all") {
     ]
     if (is_android) {
       deps += [ "//chrome/browser/android/vr:vr_android_unittests" ]
+      import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+      foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+        deps += [
+          "//tools/perf/contrib/vr_benchmarks:vr_perf_tests${_target_suffix}",
+        ]
+      }
     }
   }
 

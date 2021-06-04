@@ -1541,6 +1541,16 @@
     "script": "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
     "type": "script",
   },
+  "rendering_representative_perf_tests_android_chrome": {
+    "args": [
+      "--output-format=csv",
+      "--browser=release",
+      "--upload-results",
+    ],
+    "label": "//chrome/test:rendering_representative_perf_tests_android_chrome",
+    "script": "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
+    "type": "script",
+  },
   "resource_sizes_chrome_modern_public_minimal_apks": {
     "label": "//chrome/android:resource_sizes_chrome_modern_public_minimal_apks",
     "type": "generated_script",
@@ -1678,6 +1688,22 @@
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     "type": "script",
   },
+  "telemetry_gpu_integration_test_android_chrome": {
+    "args": [
+      "../../content/test/gpu/run_gpu_integration_test.py",
+    ],
+    "label": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
+    "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "type": "script",
+  },
+  "telemetry_gpu_integration_test_android_webview": {
+    "args": [
+      "../../content/test/gpu/run_gpu_integration_test.py",
+    ],
+    "label": "//chrome/test:telemetry_gpu_integration_test_android_webview",
+    "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "type": "script",
+  },
   "telemetry_gpu_integration_test_scripts_only": {
     "label": "//chrome/test:telemetry_gpu_integration_test_scripts_only",
     "type": "additional_compile_target",
@@ -1707,6 +1733,24 @@
       "-v",
     ],
     "label": "//chrome/test:telemetry_perf_unittests",
+    "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "type": "script",
+  },
+  "telemetry_perf_unittests_android_chrome": {
+    "args": [
+      "../../tools/perf/run_tests",
+      "-v",
+    ],
+    "label": "//chrome/test:telemetry_perf_unittests_android_chrome",
+    "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "type": "script",
+  },
+  "telemetry_perf_unittests_android_monochrome": {
+    "args": [
+      "../../tools/perf/run_tests",
+      "-v",
+    ],
+    "label": "//chrome/test:telemetry_perf_unittests_android_monochrome",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
   },

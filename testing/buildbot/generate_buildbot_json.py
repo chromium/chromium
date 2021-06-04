@@ -26,6 +26,13 @@ import buildbot_json_magic_substitutions as magic_substitutions
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+BROWSER_CONFIG_TO_TARGET_SUFFIX_MAP = {
+    'android-chromium': '_android_chrome',
+    'android-chromium-monochrome': '_android_monochrome',
+    'android-weblayer': '_android_weblayer',
+    'android-webview': '_android_webview',
+}
+
 
 class BBGenErr(Exception):
   def __init__(self, message):
@@ -921,12 +928,11 @@ class BBJSONGenerator(object):
     if not result:
       return None
     result['isolate_name'] = test_config.get(
-      'isolate_name', 'telemetry_gpu_integration_test')
+        'isolate_name',
+        self.get_default_isolate_name(tester_config, is_android_webview))
 
     # Populate test_id_prefix.
-    gn_entry = (
-        self.gn_isolate_map.get(result['isolate_name']) or
-        self.gn_isolate_map.get('telemetry_gpu_integration_test'))
+    gn_entry = self.gn_isolate_map[result['isolate_name']]
     result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
 
     args = result.get('args', [])
@@ -968,6 +974,16 @@ class BBJSONGenerator(object):
     result['args'] = self.maybe_fixup_args_array(self.substitute_gpu_args(
       tester_config, result['swarming'], args))
     return result
+
+  def get_default_isolate_name(self, tester_config, is_android_webview):
+    if self.is_android(tester_config):
+      if is_android_webview:
+        return 'telemetry_gpu_integration_test_android_webview'
+      return (
+          'telemetry_gpu_integration_test' +
+          BROWSER_CONFIG_TO_TARGET_SUFFIX_MAP[tester_config['browser_config']])
+    else:
+      return 'telemetry_gpu_integration_test'
 
   def get_test_generator_map(self):
     return {
