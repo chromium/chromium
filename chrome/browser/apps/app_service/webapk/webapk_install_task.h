@@ -47,11 +47,9 @@ class WebApkInstallTask {
   const std::string& app_id() { return app_id_; }
 
  private:
-  void OnArcFeaturesLoaded(std::unique_ptr<webapk::WebApk> webapk,
-                           ResultCallback callback,
+  void OnArcFeaturesLoaded(ResultCallback callback,
                            absl::optional<arc::ArcFeatures> arc_features);
-  void OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
-                    ResultCallback callback,
+  void OnLoadedIcon(ResultCallback callback,
                     IconPurpose purpose,
                     std::vector<uint8_t> data);
   void OnProtoSerialized(ResultCallback callback, std::string serialized_proto);
@@ -65,6 +63,7 @@ class WebApkInstallTask {
   web_app::WebAppProviderBase* web_app_provider_;
 
   const std::string app_id_;
+  std::unique_ptr<webapk::WebApk> webapk_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   base::WeakPtrFactory<WebApkInstallTask> weak_ptr_factory_{this};

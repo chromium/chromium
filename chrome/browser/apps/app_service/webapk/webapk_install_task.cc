@@ -135,7 +135,8 @@ WebApkInstallTask::WebApkInstallTask(Profile* profile,
                                      const std::string& app_id)
     : profile_(profile),
       web_app_provider_(web_app::WebAppProviderBase::GetProviderBase(profile_)),
-      app_id_(app_id) {
+      app_id_(app_id),
+      webapk_(std::make_unique<webapk::WebApk>()) {
   DCHECK(web_app_provider_);
 }
 
@@ -154,19 +155,17 @@ void WebApkInstallTask::Start(ResultCallback callback) {
     return;
   }
 
-  std::unique_ptr<webapk::WebApk> webapk = std::make_unique<webapk::WebApk>();
-  webapk->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
-  webapk->set_requester_application_package(kRequesterPackageName);
-  webapk->set_requester_application_version(version_info::GetVersionNumber());
-  webapk->add_update_reasons(webapk::WebApk::NONE);
+  webapk_->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
+  webapk_->set_requester_application_package(kRequesterPackageName);
+  webapk_->set_requester_application_version(version_info::GetVersionNumber());
+  webapk_->add_update_reasons(webapk::WebApk::NONE);
 
-  arc::ArcFeaturesParser::GetArcFeatures(base::BindOnce(
-      &WebApkInstallTask::OnArcFeaturesLoaded, weak_ptr_factory_.GetWeakPtr(),
-      std::move(webapk), std::move(callback)));
+  arc::ArcFeaturesParser::GetArcFeatures(
+      base::BindOnce(&WebApkInstallTask::OnArcFeaturesLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebApkInstallTask::OnArcFeaturesLoaded(
-    std::unique_ptr<webapk::WebApk> webapk,
     ResultCallback callback,
     absl::optional<arc::ArcFeatures> arc_features) {
   if (!arc_features) {
@@ -174,7 +173,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
     std::move(callback).Run(false);
     return;
   }
-  webapk->set_android_abi(GetArcAbi(arc_features.value()));
+  webapk_->set_android_abi(GetArcAbi(arc_features.value()));
 
   auto& icon_manager = web_app_provider_->icon_manager();
   absl::optional<web_app::AppIconManager::IconSizeAndPurpose>
@@ -206,7 +205,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   }
   std::string icon_url = it->url.spec();
 
-  webapk::WebAppManifest* web_app_manifest = webapk->mutable_manifest();
+  webapk::WebAppManifest* web_app_manifest = webapk_->mutable_manifest();
   web_app_manifest->set_short_name(registrar.GetAppShortName(app_id_));
   web_app_manifest->set_start_url(registrar.GetAppStartUrl(app_id_).spec());
   web_app_manifest->add_scopes(registrar.GetAppScope(app_id_).spec());
@@ -250,17 +249,15 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   icon_manager.ReadSmallestCompressedIcon(
       app_id_, {icon_size_and_purpose->purpose}, icon_size_and_purpose->size_px,
       base::BindOnce(&WebApkInstallTask::OnLoadedIcon,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(webapk),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
-                                     ResultCallback callback,
+void WebApkInstallTask::OnLoadedIcon(ResultCallback callback,
                                      IconPurpose purpose,
                                      std::vector<uint8_t> data) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(AddIconDataAndSerializeProto, std::move(webapk),
+      base::BindOnce(AddIconDataAndSerializeProto, std::move(webapk_),
                      std::move(data)),
       base::BindOnce(&WebApkInstallTask::OnProtoSerialized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
