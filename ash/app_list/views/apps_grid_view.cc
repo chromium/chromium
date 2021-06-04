@@ -452,12 +452,6 @@ bool AppsGridView::IsSelectedView(const AppListItemView* view) const {
   return selected_view_ == view;
 }
 
-AppListItemView* AppsGridView::GetSelectedView() const {
-  if (selected_view_)
-    return selected_view_;
-  return nullptr;
-}
-
 void AppsGridView::InitiateDrag(AppListItemView* view,
                                 const gfx::Point& location,
                                 const gfx::Point& root_location) {
@@ -513,7 +507,7 @@ bool AppsGridView::UpdateDragFromItem(bool is_touch,
   ExtractDragLocation(event.root_location(), &drag_point_in_grid_view);
   const Pointer pointer = is_touch ? TOUCH : MOUSE;
   UpdateDrag(pointer, drag_point_in_grid_view);
-  if (!dragging())
+  if (!IsDragging())
     return false;
 
   // If a drag and drop host is provided, see if the drag operation needs to be
@@ -537,7 +531,7 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
     return;  // Drag canceled.
 
   const gfx::Vector2d drag_vector(point - drag_start_grid_view_);
-  if (!dragging() && ExceededDragThreshold(drag_vector))
+  if (!IsDragging() && ExceededDragThreshold(drag_vector))
     TryStartDragAndDropHostDrag(pointer, point);
 
   if (drag_pointer_ != pointer)
@@ -648,7 +642,7 @@ void AppsGridView::EndDrag(bool cancel) {
       return;
     }
 
-    if (!cancel && dragging()) {
+    if (!cancel && IsDragging()) {
       // Regular drag ending path, ie, not for reparenting.
       UpdateDropTargetRegion();
       if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
@@ -847,7 +841,7 @@ void AppsGridView::UpdateDragFromReparentItem(Pointer pointer,
 }
 
 bool AppsGridView::IsDragging() const {
-  return dragging();
+  return drag_pointer_ != NONE;
 }
 
 bool AppsGridView::IsDraggedView(const AppListItemView* view) const {
@@ -2356,7 +2350,7 @@ void AppsGridView::OnAppListItemViewPressed(AppListItemView* pressed_item_view,
     return;
   }
 
-  if (dragging())
+  if (IsDragging())
     return;
 
   if (contents_view_->apps_container_view()

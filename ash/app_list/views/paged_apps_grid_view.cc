@@ -534,7 +534,7 @@ void PagedAppsGridView::TotalPagesChanged(int previous_page_count,
     AppListPageCreationType type = AppListPageCreationType::kSyncOrInstall;
     if (handling_keyboard_move())
       type = AppListPageCreationType::kMovingAppWithKeyboard;
-    else if (dragging())
+    else if (IsDragging())
       type = AppListPageCreationType::kDraggingApp;
     UMA_HISTOGRAM_ENUMERATION("Apps.AppList.AppsGridAddPage", type);
   }
@@ -543,7 +543,7 @@ void PagedAppsGridView::TotalPagesChanged(int previous_page_count,
 void PagedAppsGridView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   items_container()->layer()->SetTransform(gfx::Transform());
-  if (dragging()) {
+  if (IsDragging()) {
     drag_view_->layer()->SetTransform(gfx::Transform());
 
     // Sets the transform to locate the scrolled content.
@@ -563,18 +563,18 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
     Layout();
     MaybeStartPageFlipTimer(last_drag_point());
   } else {
-    AppListItemView* selected_view = GetSelectedView();
-    // If |selected_view| is no longer on the page, select the first item in
+    // If the selected view is no longer on the page, select the first item in
     // the page relative to the page swap in order to keep keyboard focus
     // movement predictable.
-    if (selected_view && GetIndexOfView(selected_view).page != new_selected) {
-      GetViewAtIndex(
-          GridIndex(new_selected, (old_selected < new_selected)
-                                      ? 0
-                                      : (GetItemsNumOfPage(new_selected) - 1)))
-          ->RequestFocus();
+    if (selected_view() &&
+        GetIndexOfView(selected_view()).page != new_selected) {
+      GridIndex new_index(new_selected,
+                          (old_selected < new_selected)
+                              ? 0
+                              : (GetItemsNumOfPage(new_selected) - 1));
+      GetViewAtIndex(new_index)->RequestFocus();
     } else {
-      ClearSelectedView(selected_view);
+      ClearSelectedView(selected_view());
     }
     Layout();
   }

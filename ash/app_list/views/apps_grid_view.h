@@ -164,13 +164,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Return true if the |bounds_animator_| is animating |view|.
   bool IsAnimatingView(AppListItemView* view);
 
-  // TODO(crbug.com/1211608): Replace these with selected_view().
   bool has_selected_view() const { return selected_view_ != nullptr; }
-  AppListItemView* GetSelectedView() const;
+  AppListItemView* selected_view() const { return selected_view_; }
 
   bool has_dragged_view() const { return drag_view_ != nullptr; }
-  // TODO(crbug.com/1211608): Remove this in favor of IsDragging().
-  bool dragging() const { return drag_pointer_ != NONE; }
   const AppListItemView* drag_view() const { return drag_view_; }
 
   // Gets the PaginationModel used for the grid view.

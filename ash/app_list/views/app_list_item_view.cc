@@ -745,7 +745,7 @@ bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
     // If the drag is no longer happening, it could be because this item
     // got removed, in which case this item has been destroyed. So, bail out
     // now as there will be nothing else to do anyway as
-    // grid_delegate_->dragging() will be false.
+    // grid_delegate_->IsDragging() will be false.
     if (!grid_delegate_->UpdateDragFromItem(/*is_touch=*/false, event))
       return true;
   }

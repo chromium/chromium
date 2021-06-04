@@ -1581,14 +1581,14 @@ TEST_F(AppListViewFocusTest, SelectionHighlightFollowsChangingPage) {
 
   // Test that focus followed to the next page.
   EXPECT_EQ(view_model->view_at(test_api()->TilesPerPage()),
-            apps_grid_view()->GetSelectedView());
+            apps_grid_view()->selected_view());
 
   // Select the first page.
   apps_grid_view()->pagination_model()->SelectPage(0, false);
 
   // Test that focus followed.
   EXPECT_EQ(view_model->view_at(test_api()->TilesPerPage() - 1),
-            apps_grid_view()->GetSelectedView());
+            apps_grid_view()->selected_view());
 }
 
 // Tests that the selection highlight only shows up inside a folder if the
@@ -1639,7 +1639,7 @@ TEST_F(AppListViewFocusTest, SelectionGoesIntoFolderIfSelected) {
 
   // Test that the focused view is also selected.
   AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
-  EXPECT_EQ(items_grid_view->GetSelectedView(), focused_view());
+  EXPECT_EQ(items_grid_view->selected_view(), focused_view());
   EXPECT_EQ(items_grid_view->view_model()->view_at(0), focused_view());
 
   // Hide the folder, expect that the folder is selected and focused.
