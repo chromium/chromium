@@ -2923,6 +2923,7 @@ FUNCTION_SETS = [
       'GLES2/gl2extchromium.h'
     ], [
       "GL_ANGLE_robust_resource_initialization",
+      "GL_ANGLE_webgl_compatibility",
       "GL_ARB_texture_swizzle",
       "GL_EXT_texture_swizzle",
       "GL_EXT_texture_format_BGRA8888",

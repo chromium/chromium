@@ -33,6 +33,10 @@
 #include "ui/gl/gl_implementation.h"                     // nogncheck
 #endif
 
+#if defined(OS_MAC)
+#include "ui/gl/gl_bindings.h"
+#endif
+
 namespace gl {
 
 // Used by chrome://gpucrash and gpu_benchmarking_extension's
@@ -185,5 +189,26 @@ void CollectX11GpuExtraInfo(bool enable_native_gpu_memory_buffers,
   }
 }
 #endif  // defined(USE_X11) || BUILDFLAG(OZONE_PLATFORM_X11)
+
+#if defined(OS_MAC)
+
+ScopedEnableTextureRectangleInShaderCompiler::
+    ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {
+  if (gl_api) {
+    DCHECK(!gl_api->glIsEnabledFn(GL_TEXTURE_RECTANGLE_ANGLE));
+    gl_api->glEnableFn(GL_TEXTURE_RECTANGLE_ANGLE);
+    gl_api_ = gl_api;
+  } else {
+    gl_api_ = nullptr;  // Signal to the destructor that this is a no-op.
+  }
+}
+
+ScopedEnableTextureRectangleInShaderCompiler::
+    ~ScopedEnableTextureRectangleInShaderCompiler() {
+  if (gl_api_)
+    gl_api_->glDisableFn(GL_TEXTURE_RECTANGLE_ANGLE);
+}
+
+#endif  // defined(OS_MAC)
 
 }  // namespace gl
