@@ -339,6 +339,14 @@ NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
 NET_EXPORT extern const base::Feature kDocumentReporting;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+// When this feature is enabled, redirected requests will be considered
+// cross-site for the purpose of SameSite cookies if any redirect hop was
+// cross-site to the target URL, even if the original initiator of the
+// redirected request was same-site with the target URL (and the
+// site-for-cookies).
+// See spec changes in https://github.com/httpwg/http-extensions/pull/1348
+NET_EXPORT extern const base::Feature kCookieSameSiteConsidersRedirectChain;
+
 }  // namespace features
 }  // namespace net
 

@@ -233,5 +233,8 @@ const base::Feature kDocumentReporting{"DocumentReporting",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+const base::Feature kCookieSameSiteConsidersRedirectChain{
+    "CookieSameSiteConsidersRedirectChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

@@ -145,8 +145,12 @@ std::pair<ContextType, bool> ComputeSameSiteContext(
       url_chain.size() == 1u ||
       base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
 
-  if (same_site_initiator && same_site_redirect_chain)
+  if (same_site_initiator &&
+      (!base::FeatureList::IsEnabled(
+           features::kCookieSameSiteConsidersRedirectChain) ||
+       same_site_redirect_chain)) {
     return {ContextType::SAME_SITE_STRICT, false};
+  }
 
   if (is_http) {
     base::UmaHistogramBoolean("Cookie.SameSiteContextAffectedByBugfix1166211",

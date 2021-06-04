@@ -363,17 +363,25 @@ std::string UrlChainToString(const std::vector<GURL>& url_chain) {
 // Tests for the various ComputeSameSiteContextFor*() functions. The first
 // boolean test param is whether the results of the computations are evaluated
 // schemefully. The second boolean test param is whether the fix for
-// crbug.com/1166211 is enabled.
+// crbug.com/1166211 is enabled. The third boolean param is whether SameSite
+// considers redirect chains.
 class CookieUtilComputeSameSiteContextTest
-    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
+    : public ::testing::TestWithParam<std::tuple<bool, bool, bool>> {
  public:
   CookieUtilComputeSameSiteContextTest() {
-    // No need to explicitly enable the feature because it is enabled by
-    // default.
-    if (!IsBugfix1166211Enabled()) {
-      feature_list_.InitAndDisableFeature(
-          features::kSameSiteCookiesBugfix1166211);
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    // No need to explicitly enable the Bugfix1166211 feature because it
+    // is enabled by default.
+    if (!IsBugfix1166211Enabled())
+      disabled_features.push_back(features::kSameSiteCookiesBugfix1166211);
+    // No need to explicitly disable the redirect chain feature because it
+    // is disabled by default.
+    if (DoesSameSiteConsiderRedirectChain()) {
+      enabled_features.push_back(
+          features::kCookieSameSiteConsidersRedirectChain);
     }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~CookieUtilComputeSameSiteContextTest() override = default;
 
@@ -383,6 +391,10 @@ class CookieUtilComputeSameSiteContextTest
   bool IsSchemeful() const { return std::get<0>(GetParam()); }
 
   bool IsBugfix1166211Enabled() const { return std::get<1>(GetParam()); }
+
+  bool DoesSameSiteConsiderRedirectChain() const {
+    return std::get<2>(GetParam());
+  }
 
   // Returns the proper gtest matcher to use for the schemeless/schemeful mode.
   auto ContextTypeIs(ContextType context_type) const {
@@ -967,38 +979,66 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
     bool url_chain_is_same_site;
     bool site_for_cookies_is_same_site;
     bool initiator_is_same_site;
+    // These are the expected context types considering redirect chains:
     ContextType expected_context_type;  // for non-main-frame-nav requests.
     ContextType expected_context_type_for_main_frame_navigation;
+    // These are the expected context types not considering redirect chains:
+    ContextType expected_context_type_without_chain;
+    ContextType expected_context_type_for_main_frame_navigation_without_chain;
   } kTestCases[] = {
+      // If the url chain is same-site, then the result is the same with or
+      // without considering the redirect chain.
       {"GET", true, true, true, ContextType::SAME_SITE_STRICT,
+       ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_STRICT,
        ContextType::SAME_SITE_STRICT},
-      {"GET", true, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX},
+      {"GET", true, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       incorrectly_lax, ContextType::SAME_SITE_LAX},
       {"GET", true, false, true, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
       {"GET", true, false, false, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
-      {"GET", false, true, true, incorrectly_lax, ContextType::SAME_SITE_LAX},
-      {"GET", false, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX},
+      // If the url chain is cross-site, then the result will differ depending
+      // on whether the redirect chain is considered, when the site-for-cookies
+      // and initiator are both same-site.
+      {"GET", false, true, true, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_STRICT},
+      {"GET", false, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       incorrectly_lax, ContextType::SAME_SITE_LAX},
       {"GET", false, false, true, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
       {"GET", false, false, false, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
+      // If the url chain is same-site, then the result is the same with or
+      // without considering the redirect chain.
       {"POST", true, true, true, ContextType::SAME_SITE_STRICT,
+       ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_STRICT,
        ContextType::SAME_SITE_STRICT},
       {"POST", true, true, false, incorrectly_lax_unsafe,
+       ContextType::SAME_SITE_LAX_METHOD_UNSAFE, incorrectly_lax_unsafe,
        ContextType::SAME_SITE_LAX_METHOD_UNSAFE},
       {"POST", true, false, true, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
       {"POST", true, false, false, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE},
+      // If the url chain is cross-site, then the result will differ depending
+      // on whether the redirect chain is considered, when the site-for-cookies
+      // and initiator are both same-site.
       {"POST", false, true, true, incorrectly_lax_unsafe,
-       ContextType::SAME_SITE_LAX_METHOD_UNSAFE},
+       ContextType::SAME_SITE_LAX_METHOD_UNSAFE, ContextType::SAME_SITE_STRICT,
+       ContextType::SAME_SITE_STRICT},
       {"POST", false, true, false, incorrectly_lax_unsafe,
+       ContextType::SAME_SITE_LAX_METHOD_UNSAFE, incorrectly_lax_unsafe,
        ContextType::SAME_SITE_LAX_METHOD_UNSAFE},
       {"POST", false, false, true, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
       {"POST", false, false, false, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1011,6 +1051,15 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
     std::vector<base::Optional<url::Origin>> initiators =
         test_case.initiator_is_same_site ? GetSameSiteInitiators()
                                          : GetCrossSiteInitiators();
+    ContextType expected_context_type =
+        DoesSameSiteConsiderRedirectChain()
+            ? test_case.expected_context_type
+            : test_case.expected_context_type_without_chain;
+    ContextType expected_context_type_for_main_frame_navigation =
+        DoesSameSiteConsiderRedirectChain()
+            ? test_case.expected_context_type_for_main_frame_navigation
+            : test_case
+                  .expected_context_type_for_main_frame_navigation_without_chain;
     for (const std::vector<GURL>& url_chain : url_chains) {
       for (const SiteForCookies& site_for_cookies : sites_for_cookies) {
         for (const base::Optional<url::Origin>& initiator : initiators) {
@@ -1018,7 +1067,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                           test_case.method, url_chain, site_for_cookies,
                           initiator, false /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(test_case.expected_context_type))
+                      ContextTypeIs(expected_context_type))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1029,8 +1078,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                   test_case.method, url_chain, site_for_cookies, initiator,
                   true /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */),
-              ContextTypeIs(
-                  test_case.expected_context_type_for_main_frame_navigation))
+              ContextTypeIs(expected_context_type_for_main_frame_navigation))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1220,18 +1268,34 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
     bool url_chain_is_same_site;
     bool site_for_cookies_is_same_site;
     bool initiator_is_same_site;
+    // These are the expected context types considering redirect chains:
     ContextType expected_context_type;  // for non-main-frame-nav requests.
     ContextType expected_context_type_for_main_frame_navigation;
+    // These are the expected context types not considering redirect chains:
+    ContextType expected_context_type_without_chain;
+    ContextType expected_context_type_for_main_frame_navigation_without_chain;
   } kTestCases[] = {
-      {true, true, true, ContextType::SAME_SITE_LAX,
-       ContextType::SAME_SITE_LAX},
-      {true, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX},
-      {true, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE},
-      {true, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE},
-      {false, true, true, incorrectly_lax, ContextType::SAME_SITE_LAX},
-      {false, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX},
-      {false, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE},
-      {false, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+      // If the url chain is same-site, then the result is the same with or
+      // without considering the redirect chain.
+      {true, true, true, ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX,
+       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX},
+      {true, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       incorrectly_lax, ContextType::SAME_SITE_LAX},
+      {true, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+      {true, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+      // If the url chain is cross-site, then the result will differ depending
+      // on whether the redirect chain is considered, when the site-for-cookies
+      // and initiator are both same-site.
+      {false, true, true, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX},
+      {false, true, false, incorrectly_lax, ContextType::SAME_SITE_LAX,
+       incorrectly_lax, ContextType::SAME_SITE_LAX},
+      {false, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+      {false, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
   };
   for (const auto& test_case : kTestCases) {
     std::vector<std::vector<GURL>> url_chains =
@@ -1243,6 +1307,15 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
     std::vector<base::Optional<url::Origin>> initiators =
         test_case.initiator_is_same_site ? GetSameSiteInitiators()
                                          : GetCrossSiteInitiators();
+    ContextType expected_context_type =
+        DoesSameSiteConsiderRedirectChain()
+            ? test_case.expected_context_type
+            : test_case.expected_context_type_without_chain;
+    ContextType expected_context_type_for_main_frame_navigation =
+        DoesSameSiteConsiderRedirectChain()
+            ? test_case.expected_context_type_for_main_frame_navigation
+            : test_case
+                  .expected_context_type_for_main_frame_navigation_without_chain;
     for (const std::vector<GURL>& url_chain : url_chains) {
       for (const SiteForCookies& site_for_cookies : sites_for_cookies) {
         for (const base::Optional<url::Origin>& initiator : initiators) {
@@ -1250,7 +1323,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                           url_chain, site_for_cookies, initiator,
                           false /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(test_case.expected_context_type))
+                      ContextTypeIs(expected_context_type))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1261,8 +1334,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                   url_chain, site_for_cookies, initiator,
                   true /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */),
-              ContextTypeIs(
-                  test_case.expected_context_type_for_main_frame_navigation))
+              ContextTypeIs(expected_context_type_for_main_frame_navigation))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1367,6 +1439,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          CookieUtilComputeSameSiteContextTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 TEST(CookieUtilTest, AdaptCookieAccessResultToBool) {
