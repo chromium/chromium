@@ -10,8 +10,66 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 
 namespace ash {
+
+// HoldingSpaceModel::ScopedItemUpdate -----------------------------------------
+
+HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
+  bool did_update = false;
+
+  // Update backing file.
+  if (file_path_ && file_system_url_) {
+    did_update |=
+        item_->SetBackingFile(file_path_.value(), file_system_url_.value());
+  }
+
+  // Update pause.
+  if (paused_)
+    did_update |= item_->SetPaused(paused_.value());
+
+  // Update progress.
+  if (progress_)
+    did_update |= item_->SetProgress(progress_.value());
+
+  // Notify observers if and only if an update occurred.
+  if (did_update) {
+    for (auto& observer : model_->observers_)
+      observer.OnHoldingSpaceItemUpdated(item_);
+  }
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
+    const base::FilePath& file_path,
+    const GURL& file_system_url) {
+  file_path_ = file_path;
+  file_system_url_ = file_system_url;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetPaused(bool paused) {
+  paused_ = paused;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetProgress(
+    const absl::optional<float>& progress) {
+  progress_ = progress;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate::ScopedItemUpdate(HoldingSpaceModel* model,
+                                                      HoldingSpaceItem* item)
+    : model_(model), item_(item) {
+  DCHECK(model_);
+  DCHECK(item_);
+}
+
+// HoldingSpaceModel -----------------------------------------------------------
 
 HoldingSpaceModel::HoldingSpaceModel() = default;
 
@@ -76,63 +134,15 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
     observer.OnHoldingSpaceItemInitialized(item);
 }
 
-void HoldingSpaceModel::UpdateBackingFileForItem(
-    const std::string& id,
-    const base::FilePath& file_path,
-    const GURL& file_system_url) {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return item->id() == id;
-      });
+std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate>
+HoldingSpaceModel::UpdateItem(const std::string& id) {
+  auto item_it =
+      std::find_if(items_.begin(), items_.end(),
+                   [&id](const std::unique_ptr<HoldingSpaceItem>& item) {
+                     return item->id() == id;
+                   });
   DCHECK(item_it != items_.end());
-
-  HoldingSpaceItem* item = item_it->get();
-  DCHECK(item->IsInitialized());
-
-  if (!item->UpdateBackingFile(file_path, file_system_url))
-    return;
-
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceItemUpdated(item);
-}
-
-void HoldingSpaceModel::UpdatePauseForItem(const std::string& id, bool paused) {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return item->id() == id;
-      });
-  DCHECK(item_it != items_.end());
-
-  HoldingSpaceItem* item = item_it->get();
-  DCHECK(item->IsInitialized());
-
-  if (!item->UpdatePause(paused))
-    return;
-
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceItemUpdated(item);
-}
-
-void HoldingSpaceModel::UpdateProgressForItem(
-    const std::string& id,
-    const absl::optional<float>& progress) {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return item->id() == id;
-      });
-  DCHECK(item_it != items_.end());
-
-  HoldingSpaceItem* item = item_it->get();
-  DCHECK(item->IsInitialized());
-
-  if (!item->UpdateProgress(progress))
-    return;
-
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceItemUpdated(item);
+  return base::WrapUnique(new ScopedItemUpdate(this, item_it->get()));
 }
 
 void HoldingSpaceModel::RemoveIf(Predicate predicate) {

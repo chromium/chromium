@@ -381,17 +381,13 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   }
 
   // Update.
-  // TODO(crbug.com/1213274): Perform a single atomic update of all attributes.
-  model()->UpdateBackingFileForItem(
-      in_progress_download->GetHoldingSpaceItem()->id(),
-      in_progress_download->GetFilePath(),
-      holding_space_util::ResolveFileSystemUrl(
-          profile(), in_progress_download->GetFilePath()));
-  model()->UpdatePauseForItem(in_progress_download->GetHoldingSpaceItem()->id(),
-                              in_progress_download->IsPaused());
-  model()->UpdateProgressForItem(
-      in_progress_download->GetHoldingSpaceItem()->id(),
-      in_progress_download->GetProgress());
+  model()
+      ->UpdateItem(in_progress_download->GetHoldingSpaceItem()->id())
+      ->SetBackingFile(in_progress_download->GetFilePath(),
+                       holding_space_util::ResolveFileSystemUrl(
+                           profile(), in_progress_download->GetFilePath()))
+      .SetPaused(in_progress_download->IsPaused())
+      .SetProgress(in_progress_download->GetProgress());
 }
 
 }  // namespace ash

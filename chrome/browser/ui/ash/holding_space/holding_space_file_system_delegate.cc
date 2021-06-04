@@ -473,9 +473,11 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     if (item_ids_to_remove.count(to_move.first))
       continue;
 
-    model()->UpdateBackingFileForItem(
-        to_move.first, to_move.second,
-        holding_space_util::ResolveFileSystemUrl(profile(), to_move.second));
+    model()
+        ->UpdateItem(/*id=*/to_move.first)
+        ->SetBackingFile(/*file_path=*/to_move.second,
+                         holding_space_util::ResolveFileSystemUrl(
+                             profile(), /*file_path=*/to_move.second));
   }
 
   // If a backing file update occurred, it's possible that there are no longer

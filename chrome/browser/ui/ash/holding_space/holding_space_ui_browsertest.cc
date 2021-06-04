@@ -1549,7 +1549,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   ASSERT_EQ(download_chips.size(), 2u);
 
   // The two download chips present should still be the original chips for the
-  // completed download and the (now paused) in-progress download.
+  // completed download and the (now paused or resumed) in-progress download.
   EXPECT_EQ(download_chips.at(0), completed_download_chip);
   EXPECT_EQ(download_chips.at(1), in_progress_download_chip);
 }

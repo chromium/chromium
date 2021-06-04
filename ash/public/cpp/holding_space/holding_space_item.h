@@ -104,18 +104,19 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // `Deserialize()`.
   void Initialize(const GURL& file_system_url);
 
-  // Updates the file backing the item to `file_path` and `file_system_url`,
-  // returning `false` to indicate no-op.
-  bool UpdateBackingFile(const base::FilePath& file_path,
-                         const GURL& file_system_url);
+  // Sets the file backing the item to `file_path` and `file_system_url`,
+  // returning `true` if a change occurred or `false` to indicate no-op.
+  bool SetBackingFile(const base::FilePath& file_path,
+                      const GURL& file_system_url);
 
   // Returns whether the item is in progress.
   bool IsInProgress() const;
 
-  // Updates the `progress_` of the item, returning `false` to indicate no-op.
+  // Sets the `progress_` of the item, returning `true` if a change occurred or
+  // `false` to indicate no-op.
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   // NOTE: Progress can only be updated for in progress items.
-  bool UpdateProgress(const absl::optional<float>& progress);
+  bool SetProgress(const absl::optional<float>& progress);
 
   // Invalidates the current holding space image, so fresh image representations
   // are loaded when the image is next needed.
@@ -128,10 +129,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // NOTE: Only in-progress items can be paused.
   bool IsPaused() const;
 
-  // Updates whether progress of this item is `paused_`, returning `false` to
-  // indicate no-op.
+  // Sets whether progress of this item is `paused_`, returning `true` if a
+  // change occurred or `false` to indicate no-op.
   // NOTE: Only in-progress items can be paused.
-  bool UpdatePause(bool paused);
+  bool SetPaused(bool paused);
 
   const std::string& id() const { return id_; }
 

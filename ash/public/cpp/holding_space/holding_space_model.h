@@ -26,8 +26,6 @@ namespace ash {
 
 class HoldingSpaceModelObserver;
 
-// TODO(crbug.com/1213274): Merge `Update*ForItem()` APIs to allow for updating
-// multiple holding space item attributes atomically.
 // The data model for the temporary holding space UI. It contains the list of
 // items that should be shown in the temporary holding space UI - each item will
 // represent a piece of data added to the holding space by the user (for
@@ -38,6 +36,41 @@ class HoldingSpaceModelObserver;
 class ASH_PUBLIC_EXPORT HoldingSpaceModel {
  public:
   using ItemList = std::vector<std::unique_ptr<HoldingSpaceItem>>;
+
+  // A class which performs an atomic update of a single holding space item on
+  // destruction, notifying model observers of the event if a change in state
+  // did in fact occur.
+  class ScopedItemUpdate {
+   public:
+    ScopedItemUpdate(const ScopedItemUpdate&) = delete;
+    ScopedItemUpdate& operator=(const ScopedItemUpdate&) = delete;
+    ~ScopedItemUpdate();
+
+    // Sets the backing file for the item and returns a reference to `this`.
+    ScopedItemUpdate& SetBackingFile(const base::FilePath& file_path,
+                                     const GURL& file_system_url);
+
+    // Sets if progress of the item is `paused` and returns a ref to `this`.
+    // NOTE: Only in-progress holding space items can be paused.
+    ScopedItemUpdate& SetPaused(bool paused);
+
+    // Sets the `progress` of the item and returns a reference to `this`.
+    // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
+    // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
+    ScopedItemUpdate& SetProgress(const absl::optional<float>& progress);
+
+   private:
+    friend class HoldingSpaceModel;
+    ScopedItemUpdate(HoldingSpaceModel* model, HoldingSpaceItem* item);
+
+    HoldingSpaceModel* const model_;
+    HoldingSpaceItem* const item_;
+
+    absl::optional<base::FilePath> file_path_;
+    absl::optional<GURL> file_system_url_;
+    absl::optional<bool> paused_;
+    absl::optional<absl::optional<float>> progress_;
+  };
 
   HoldingSpaceModel();
   HoldingSpaceModel(const HoldingSpaceModel& other) = delete;
@@ -62,21 +95,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   void InitializeOrRemoveItem(const std::string& id,
                               const GURL& file_system_url);
 
-  // Updates the backing file for a single holding space item to the specified
-  // `file_path` and `file_system_url`.
-  void UpdateBackingFileForItem(const std::string& id,
-                                const base::FilePath& file_path,
-                                const GURL& file_system_url);
-
-  // Updates whether progress is `paused` for a single holding space item.
-  // NOTE: Only in-progress holding space items can be paused.
-  void UpdatePauseForItem(const std::string& id, bool paused);
-
-  // Updates the progress for a single holding space item.
-  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
-  // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
-  void UpdateProgressForItem(const std::string& id,
-                             const absl::optional<float>& progress);
+  // Returns an object which, upon its destruction, performs an atomic update to
+  // the holding space item associated with the specified `id`.
+  std::unique_ptr<ScopedItemUpdate> UpdateItem(const std::string& id);
 
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true.

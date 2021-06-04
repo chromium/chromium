@@ -159,8 +159,8 @@ void HoldingSpaceItem::Initialize(const GURL& file_system_url) {
   file_system_url_ = file_system_url;
 }
 
-bool HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
-                                         const GURL& file_system_url) {
+bool HoldingSpaceItem::SetBackingFile(const base::FilePath& file_path,
+                                      const GURL& file_system_url) {
   if (file_path_ == file_path && file_system_url_ == file_system_url)
     return false;
 
@@ -176,7 +176,7 @@ bool HoldingSpaceItem::IsInProgress() const {
   return progress_ != 1.f;
 }
 
-bool HoldingSpaceItem::UpdateProgress(const absl::optional<float>& progress) {
+bool HoldingSpaceItem::SetProgress(const absl::optional<float>& progress) {
   // NOTE: Progress can only be updated for in progress items.
   if (progress_ == progress || !IsInProgress())
     return false;
@@ -220,7 +220,7 @@ bool HoldingSpaceItem::IsPaused() const {
   return paused_;
 }
 
-bool HoldingSpaceItem::UpdatePause(bool paused) {
+bool HoldingSpaceItem::SetPaused(bool paused) {
   if (!IsInProgress() || paused_ == paused)
     return false;
 
