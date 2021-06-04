@@ -21,10 +21,9 @@ import {ToolbarDelegate} from './toolbar.js';
  * @implements {ErrorPageDelegate}
  * @implements {ItemDelegate}
  * @implements {LoadErrorDelegate}
- * @implements {PackDialogDelegate}
  * @implements {ToolbarDelegate}
  */
-export class Service implements KeyboardShortcutDelegate {
+export class Service implements KeyboardShortcutDelegate, PackDialogDelegate {
   private isDeleting_: boolean = false;
   private eventsToIgnoreOnce_: Set<string> = new Set();
 

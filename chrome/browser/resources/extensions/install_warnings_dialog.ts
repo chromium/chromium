@@ -8,9 +8,15 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './code_section.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+interface ExtensionsInstallWarningsDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class ExtensionsInstallWarningsDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-install-warnings-dialog';
@@ -22,19 +28,18 @@ class ExtensionsInstallWarningsDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<string>} */
       installWarnings: Array,
     };
   }
 
-  /** @override */
+  installWarnings: Array<string>;
+
   connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onOkTap_() {
+  private onOkTap_() {
     this.$.dialog.close();
   }
 }

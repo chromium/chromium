@@ -12,7 +12,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {DragAndDropHandler} from './drag_and_drop_handler.js';
 
-/** @polymer */
 class ExtensionsDropOverlayElement extends PolymerElement {
   static get is() {
     return 'extensions-drop-overlay';
@@ -31,6 +30,9 @@ class ExtensionsDropOverlayElement extends PolymerElement {
       }
     };
   }
+
+  private dragWrapperHandler_: DragAndDropHandler;
+  private dragWrapper_: DragWrapper;
 
   constructor() {
     super();
@@ -54,11 +56,7 @@ class ExtensionsDropOverlayElement extends PolymerElement {
     this.dragWrapper_ = new DragWrapper(dragTarget, this.dragWrapperHandler_);
   }
 
-  /**
-   * @param {boolean} dragEnabled
-   * @private
-   */
-  dragEnabledChanged_(dragEnabled) {
+  private dragEnabledChanged_(dragEnabled: boolean) {
     this.dragWrapperHandler_.dragEnabled = dragEnabled;
   }
 }

@@ -10,22 +10,33 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 
+interface ExtensionsKioskDialogElement {
+  $: {
+    bailout: CrCheckboxElement,
+    'confirm-dialog': CrDialogElement,
+    dialog: CrDialogElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: KioskApp,
+  };
+}
+
 const ExtensionsKioskDialogElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
   static get is() {
     return 'extensions-kiosk-dialog';
@@ -37,38 +48,29 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
 
   static get properties() {
     return {
-      /** @private {?string} */
       addAppInput_: {
         type: String,
         value: null,
       },
 
-      /** @private {!Array<!KioskApp>} */
       apps_: Array,
-
-      /** @private */
       bailoutDisabled_: Boolean,
-
-      /** @private */
       canEditAutoLaunch_: Boolean,
-
-      /** @private */
       canEditBailout_: Boolean,
-
-      /** @private {?string} */
       errorAppId_: String,
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  private kioskBrowserProxy_: KioskBrowserProxy =
+      KioskBrowserProxyImpl.getInstance();
 
-    /** @private {!KioskBrowserProxy} */
-    this.kioskBrowserProxy_ = KioskBrowserProxyImpl.getInstance();
-  }
+  private addAppInput_: string|null;
+  private apps_: Array<KioskApp>;
+  private bailoutDisabled_: boolean;
+  private canEditAutoLaunch_: boolean;
+  private canEditBailout_: boolean;
+  private errorAppId_: string|null;
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -87,60 +89,37 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     this.$.dialog.showModal();
   }
 
-  /**
-   * @param {!KioskAppSettings} settings
-   * @private
-   */
-  setSettings_(settings) {
+  private setSettings_(settings: KioskAppSettings) {
     this.apps_ = settings.apps;
     this.bailoutDisabled_ = settings.disableBailout;
     this.canEditBailout_ = settings.hasAutoLaunchApp;
   }
 
-  /**
-   * @param {!KioskApp} app
-   * @private
-   */
-  updateApp_(app) {
+  private updateApp_(app: KioskApp) {
     const index = this.apps_.findIndex(a => a.id === app.id);
     assert(index < this.apps_.length);
     this.set('apps_.' + index, app);
   }
 
-  /**
-   * @param {string} appId
-   * @private
-   */
-  showError_(appId) {
+  private showError_(appId: string) {
     this.errorAppId_ = appId;
   }
 
-  /**
-   * @param {string} errorMessage
-   * @return {string}
-   * @private
-   */
-  getErrorMessage_(errorMessage) {
+  private getErrorMessage_(errorMessage: string): string {
     return this.errorAppId_ + ' ' + errorMessage;
   }
 
-  /** @private */
-  onAddAppTap_() {
+  private onAddAppTap_() {
     assert(this.addAppInput_);
-    this.kioskBrowserProxy_.addKioskApp(this.addAppInput_);
+    this.kioskBrowserProxy_.addKioskApp(this.addAppInput_!);
     this.addAppInput_ = null;
   }
 
-  /** @private */
-  clearInputInvalid_() {
+  private clearInputInvalid_() {
     this.errorAppId_ = null;
   }
 
-  /**
-   * @param {{model: {item: !KioskApp}}} event
-   * @private
-   */
-  onAutoLaunchButtonTap_(event) {
+  private onAutoLaunchButtonTap_(event: RepeaterEvent) {
     const app = event.model.item;
     if (app.autoLaunch) {  // If the app is originally set to
                            // auto-launch.
@@ -150,11 +129,7 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onBailoutChanged_(event) {
+  private onBailoutChanged_(event: Event) {
     event.preventDefault();
     if (this.$.bailout.checked) {
       this.$['confirm-dialog'].showModal();
@@ -164,47 +139,30 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     }
   }
 
-  /** @private */
-  onBailoutDialogCancelTap_() {
+  private onBailoutDialogCancelTap_() {
     this.$.bailout.checked = false;
     this.$['confirm-dialog'].cancel();
   }
 
-  /** @private */
-  onBailoutDialogConfirmTap_() {
+  private onBailoutDialogConfirmTap_() {
     this.kioskBrowserProxy_.setDisableBailoutShortcut(true);
     this.$['confirm-dialog'].close();
   }
 
-  /** @private */
-  onDoneTap_() {
+  private onDoneTap_() {
     this.$.dialog.close();
   }
 
-  /**
-   * @param {{model: {item: !KioskApp}}} event
-   * @private
-   */
-  onDeleteAppTap_(event) {
+  private onDeleteAppTap_(event: RepeaterEvent) {
     this.kioskBrowserProxy_.removeKioskApp(event.model.item.id);
   }
 
-  /**
-   * @param {boolean} autoLaunched
-   * @param {string} disableStr
-   * @param {string} enableStr
-   * @return {string}
-   * @private
-   */
-  getAutoLaunchButtonLabel_(autoLaunched, disableStr, enableStr) {
+  private getAutoLaunchButtonLabel_(
+      autoLaunched: boolean, disableStr: string, enableStr: string): string {
     return autoLaunched ? disableStr : enableStr;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  stopPropagation_(e) {
+  private stopPropagation_(e: Event) {
     e.stopPropagation();
   }
 }

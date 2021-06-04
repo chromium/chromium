@@ -8,7 +8,6 @@ import './shared_style.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 class ExtensionsCheckupElement extends PolymerElement {
   static get is() {
     return 'extensions-checkup';

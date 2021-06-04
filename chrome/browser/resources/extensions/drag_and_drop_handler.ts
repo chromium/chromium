@@ -7,6 +7,12 @@ import {DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
 import {Service} from './service.js';
 
 
+declare global {
+  interface HTMLElementEventMap {
+    'drag-and-drop-load-error': CustomEvent<chrome.developerPrivate.LoadError>;
+  }
+}
+
 export class DragAndDropHandler implements DragWrapperDelegate {
   dragEnabled: boolean;
   private eventTarget_: EventTarget;

@@ -7,14 +7,14 @@ import {CrContainerShadowBehavior} from '../cr_container_shadow_behavior.m.js';
 
 interface CrDialogElement extends CrContainerShadowBehavior, LegacyElementMixin,
                                   HTMLElement {
-  open: boolean|null|undefined;
+  open: boolean;
   closeText: string|null|undefined;
-  ignorePopstate: boolean|null|undefined;
-  ignoreEnterKey: boolean|null|undefined;
-  consumeKeydownEvent: boolean|null|undefined;
-  noCancel: boolean|null|undefined;
-  showCloseButton: boolean|null|undefined;
-  showOnAttach: boolean|null|undefined;
+  ignorePopstate: boolean;
+  ignoreEnterKey: boolean;
+  consumeKeydownEvent: boolean;
+  noCancel: boolean;
+  showCloseButton: boolean;
+  showOnAttach: boolean;
   showModal(): void;
   cancel(): void;
   close(): void;

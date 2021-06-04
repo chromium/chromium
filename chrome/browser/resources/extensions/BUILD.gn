@@ -63,7 +63,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "drag_and_drop_handler.ts",
     "extensions.ts",
-    "item_mixin.js",
+    "item_mixin.ts",
     "item_util.ts",
     "keyboard_shortcut_delegate.ts",
     "navigation_helper.ts",
@@ -82,7 +82,7 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "checkup.js",
+    "checkup.ts",
     "code_section.js",
     "activity_log/activity_log_history_item.js",
     "activity_log/activity_log_history.js",
@@ -90,31 +90,31 @@ preprocess_if_expr("preprocess_generated") {
     "activity_log/activity_log_stream_item.js",
     "activity_log/activity_log_stream.js",
     "detail_view.js",
-    "drop_overlay.js",
+    "drop_overlay.ts",
     "error_page.js",
     "host_permissions_toggle_list.js",
     "icons.ts",
-    "install_warnings_dialog.js",
+    "install_warnings_dialog.ts",
     "item.js",
     "item_list.js",
-    "keyboard_shortcuts.js",
+    "keyboard_shortcuts.ts",
     "load_error.js",
     "manager.js",
-    "options_dialog.js",
-    "pack_dialog_alert.js",
-    "pack_dialog.js",
+    "options_dialog.ts",
+    "pack_dialog_alert.ts",
+    "pack_dialog.ts",
     "runtime_host_permissions.js",
-    "runtime_hosts_dialog.js",
+    "runtime_hosts_dialog.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "shortcut_input.js",
-    "sidebar.js",
-    "toggle_row.js",
+    "sidebar.ts",
+    "toggle_row.ts",
     "toolbar.js",
   ]
 
   if (is_chromeos_ash) {
-    in_files += [ "kiosk_dialog.js" ]
+    in_files += [ "kiosk_dialog.ts" ]
   }
 }
 
@@ -127,34 +127,34 @@ group("web_components") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "checkup.js",
+    "checkup.ts",
     "code_section.js",
     "detail_view.js",
-    "drop_overlay.js",
+    "drop_overlay.ts",
     "error_page.js",
     "host_permissions_toggle_list.js",
     "icons.ts",
-    "install_warnings_dialog.js",
+    "install_warnings_dialog.ts",
     "item.js",
     "item_list.js",
-    "keyboard_shortcuts.js",
+    "keyboard_shortcuts.ts",
     "load_error.js",
     "manager.js",
-    "options_dialog.js",
-    "pack_dialog.js",
-    "pack_dialog_alert.js",
+    "options_dialog.ts",
+    "pack_dialog.ts",
+    "pack_dialog_alert.ts",
     "runtime_host_permissions.js",
-    "runtime_hosts_dialog.js",
+    "runtime_hosts_dialog.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "shortcut_input.js",
-    "sidebar.js",
-    "toggle_row.js",
+    "sidebar.ts",
+    "toggle_row.ts",
     "toolbar.js",
   ]
 
   if (is_chromeos_ash) {
-    js_files += [ "kiosk_dialog.js" ]
+    js_files += [ "kiosk_dialog.ts" ]
   }
 }
 
@@ -185,37 +185,37 @@ ts_library("build_ts") {
     "activity_log/activity_log.js",
     "activity_log/activity_log_stream_item.js",
     "activity_log/activity_log_stream.js",
-    "checkup.js",
+    "checkup.ts",
     "code_section.js",
     "detail_view.js",
     "drag_and_drop_handler.ts",
-    "drop_overlay.js",
+    "drop_overlay.ts",
     "error_page.js",
     "extensions.ts",
     "host_permissions_toggle_list.js",
     "icons.ts",
-    "install_warnings_dialog.js",
-    "item_mixin.js",
+    "install_warnings_dialog.ts",
+    "item_mixin.ts",
     "item.js",
     "item_list.js",
     "item_util.ts",
     "keyboard_shortcut_delegate.ts",
-    "keyboard_shortcuts.js",
+    "keyboard_shortcuts.ts",
     "load_error.js",
     "manager.js",
     "navigation_helper.ts",
-    "options_dialog.js",
-    "pack_dialog_alert.js",
-    "pack_dialog.js",
+    "options_dialog.ts",
+    "pack_dialog_alert.ts",
+    "pack_dialog.ts",
     "runtime_host_permissions.js",
-    "runtime_hosts_dialog.js",
+    "runtime_hosts_dialog.ts",
     "service.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "shortcut_input.js",
     "shortcut_util.ts",
-    "sidebar.js",
-    "toggle_row.js",
+    "sidebar.ts",
+    "toggle_row.ts",
     "toolbar.js",
   ]
   definitions = [
@@ -229,7 +229,7 @@ ts_library("build_ts") {
   if (is_chromeos_ash) {
     in_files += [
       "kiosk_browser_proxy.ts",
-      "kiosk_dialog.js",
+      "kiosk_dialog.ts",
     ]
     definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   }

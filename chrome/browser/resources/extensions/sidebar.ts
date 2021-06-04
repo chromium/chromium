@@ -7,11 +7,17 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
-/** @polymer */
+interface ExtensionsSidebarElement {
+  $: {
+    sectionMenu: IronSelectorElement,
+  };
+}
+
 class ExtensionsSidebarElement extends PolymerElement {
   static get is() {
     return 'extensions-sidebar';
@@ -21,13 +27,11 @@ class ExtensionsSidebarElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.setAttribute('role', 'navigation');
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -35,19 +39,15 @@ class ExtensionsSidebarElement extends PolymerElement {
         navigation.getCurrentPage().page === Page.SHORTCUTS ? 1 : 0);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onLinkTap_(e) {
+  private onLinkTap_(e: Event) {
     e.preventDefault();
-    navigation.navigateTo({page: e.target.dataset.path});
+    navigation.navigateTo(
+        {page: ((e.target as HTMLElement).dataset['path'] as Page)});
     this.dispatchEvent(
         new CustomEvent('close-drawer', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onMoreExtensionsTap_() {
+  private onMoreExtensionsTap_() {
     chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
   }
 }

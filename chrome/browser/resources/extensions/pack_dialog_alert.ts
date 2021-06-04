@@ -5,11 +5,18 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+interface ExtensionsPackDialogAlertElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class ExtensionsPackDialogAlertElement extends PolymerElement {
   static get is() {
     return 'extensions-pack-dialog-alert';
@@ -21,34 +28,23 @@ class ExtensionsPackDialogAlertElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {chrome.developerPrivate.PackDirectoryResponse} */
       model: Object,
-
-      /** @private */
       title_: String,
-
-      /** @private */
       message_: String,
-
-      /** @private {?string} */
       cancelLabel_: String,
-
-      /**
-       * This needs to be initialized to trigger data-binding.
-       * @private {?string}
-       */
-      confirmLabel_: {
-        type: String,
-        value: '',
-      }
+      confirmLabel_: String,
     };
   }
 
-  /** @return {string} */
-  get returnValue() {
-    return /** @type {!CrDialogElement} */ (this.$.dialog)
-        .getNative()
-        .returnValue;
+  private title_: string;
+  private message_: string;
+  private cancelLabel_: string|null = null;
+  /** This needs to be initialized to trigger data-binding. */
+  private confirmLabel_: string|null = '';
+  model: chrome.developerPrivate.PackDirectoryResponse;
+
+  get returnValue(): string {
+    return this.$.dialog.getNative().returnValue;
   }
 
   /** @override */
@@ -85,24 +81,24 @@ class ExtensionsPackDialogAlertElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getCancelButtonClass_() {
+  private getCancelButtonClass_(): string {
     return this.confirmLabel_ ? 'cancel-button' : 'action-button';
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onConfirmTap_() {
+  private onConfirmTap_() {
     // The confirm button should only be available in WARNING state.
     assert(this.model.status === chrome.developerPrivate.PackStatus.WARNING);
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-pack-dialog-alert': ExtensionsPackDialogAlertElement;
   }
 }
 
