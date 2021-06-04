@@ -265,7 +265,6 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!StateResult>}
    */
   setRsuDisableWriteProtectCode(code) {
-    // TODO(gavindodd): Send the code over mojo.
     return this.getNextStateForMethod_(
         'setRsuDisableWriteProtectCode', RmaState.kEnterRSUWPDisableCode);
   }
