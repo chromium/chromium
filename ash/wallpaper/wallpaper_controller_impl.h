@@ -26,7 +26,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/util/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/compositor/compositor_lock.h"
@@ -354,6 +356,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
 
+  // Exposed for testing.
+  void UpdateDailyRefreshWallpaperForTesting();
+  util::WallClockTimer& GetDailyRefreshTimerForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest,
@@ -558,13 +564,48 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const AccountId& account_id,
-                                   const GURL& url,
-                                   WallpaperLayout layout,
+                                   WallpaperInfo info,
                                    bool preview_mode,
                                    SetOnlineWallpaperCallback callback,
                                    bool success);
-
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
+
+  // If daily refresh wallpapers is enabled by the user.
+  bool IsDailyRefreshEnabled() const;
+
+  // The id of the collection to query for new wallpapers when daily refresh is
+  // enabled. Is an empty string when it is not enabled.
+  std::string GetCollectionId() const;
+
+  // With daily refresh enabled, this updates the wallpaper by asking for a
+  // wallpaper from within the user specified collection.
+  void UpdateDailyRefreshWallpaper();
+
+  // Callback from the client providing a url to a wallpaper from the user
+  // specified collection when daily refresh is enabled. If |image_url| is
+  // empty, fetching the url failed, and should be tried again soon.
+  void SetDailyWallpaper(const AccountId& account_id,
+                         WallpaperLayout layout,
+                         bool preview_mode,
+                         const std::string& image_url);
+
+  // Called after attempting to download and set a daily refresh wallpaper.
+  // On failure retry again in a while.
+  void OnSetDailyWallpaper(bool success);
+
+  // Starts a wall clock timer, to update the wallpaper 24 hours since the last
+  // wallpaper was set.
+  void StartDailyRefreshTimer();
+
+  // Starts a wall clock timer to retry fetching a daily refresh wallpaper.
+  void OnFetchDailyWallpaperFailed();
+
+  // Starts a wall clock timer with the specified |delay|.
+  void StartDailyRefreshTimer(base::TimeDelta delay);
+
+  // Time to next wallpaper update for daily refresh; 24 hours since last
+  // wallpaper set.
+  base::TimeDelta GetTimeToNextDailyRefreshUpdate() const;
 
   bool locked_ = false;
 
@@ -671,6 +712,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // Valid for the lifetime of ash::Shell which owns WallpaperControllerImpl.
   // May be null in tests.
   PrefService* local_state_ = nullptr;
+
+  util::WallClockTimer daily_refresh_timer_;
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 

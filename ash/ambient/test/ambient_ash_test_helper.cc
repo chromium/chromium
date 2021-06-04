@@ -5,12 +5,10 @@
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 
 #include "ash/ambient/test/test_ambient_client.h"
-#include "ash/public/cpp/test/test_image_downloader.h"
 
 namespace ash {
 
 AmbientAshTestHelper::AmbientAshTestHelper() {
-  image_downloader_ = std::make_unique<TestImageDownloader>();
   ambient_client_ = std::make_unique<TestAmbientClient>(&wake_lock_provider_);
 }
 

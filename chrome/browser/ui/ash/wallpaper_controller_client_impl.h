@@ -11,6 +11,7 @@
 #include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/macros.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
@@ -53,6 +54,9 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
   void MigrateCollectionIdFromChromeApp() override;
+  void FetchDailyRefreshWallpaper(
+      const std::string& collection_id,
+      DailyWallpaperUrlFetchedCallback callback) override;
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
@@ -144,6 +148,11 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // Passes |collection_id| to wallpaper controller on main task runner.
   void SetDailyRefreshCollectionId(const std::string& collection_id);
 
+  void OnDailyImageInfoFetched(DailyWallpaperUrlFetchedCallback callback,
+                               bool success,
+                               const backdrop::Image& image,
+                               const std::string& next_resume_token);
+
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;
 
@@ -156,6 +165,9 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // the login screen, which determines whether a user wallpaper or a default
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
+
+  std::unique_ptr<backdrop_wallpaper_handlers::SurpriseMeImageFetcher>
+      surprise_me_image_fetcher_;
 
   base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
   base::WeakPtrFactory<WallpaperControllerClientImpl> storage_weak_factory_{
