@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "cc/layers/surface_layer_impl.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -84,6 +85,14 @@ void ThrottleDecider::ProcessRenderPass(
     }
   }
   id_to_pass_map_.emplace(render_pass.id, &render_pass);
+}
+
+void ThrottleDecider::ProcessLayerNotToDraw(const LayerImpl* layer) {
+  if (layer->is_surface_layer()) {
+    const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
+    if (surface_layer->range().IsValid())
+      ids_.insert(surface_layer->range().end().frame_sink_id());
+  }
 }
 
 bool ThrottleDecider::HasThrottlingChanged() const {

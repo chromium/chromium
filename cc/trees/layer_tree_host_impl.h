@@ -865,6 +865,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return pending_raster_queries_.get();
   }
 
+  base::flat_set<viz::FrameSinkId> GetFrameSinksToThrottleForTesting() const {
+    return throttle_decider_.ids();
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,

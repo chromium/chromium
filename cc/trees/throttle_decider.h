@@ -12,6 +12,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 
 namespace cc {
+class LayerImpl;
 
 // This class is used to decide if any frame sinks in a render pass list
 // satisfies the compositing-based criteria to be throttled.
@@ -30,6 +31,9 @@ class CC_EXPORT ThrottleDecider {
   // intersection calculation of surface/quad rects are confined to the render
   // pass's constituent quads.
   void ProcessRenderPass(const viz::CompositorRenderPass& render_pass);
+  // Process a layer that will not draw. This is only relevant for surface
+  // layers and checks if the embedded frame sink is qualified for throttling.
+  void ProcessLayerNotToDraw(const LayerImpl* layer);
   bool HasThrottlingChanged() const;
   const base::flat_set<viz::FrameSinkId>& ids() const { return ids_; }
 
