@@ -35,14 +35,14 @@ void AudioContextManagerImpl::Create(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new AudioContextManagerImpl(render_frame_host, std::move(receiver));
 }
 
 AudioContextManagerImpl::AudioContextManagerImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(render_frame_host)),
       clock_(base::DefaultTickClock::GetInstance()) {

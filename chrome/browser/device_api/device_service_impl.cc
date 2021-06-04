@@ -43,7 +43,7 @@ bool IsTrustedContext(content::RenderFrameHost* host,
 DeviceServiceImpl::DeviceServiceImpl(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver)
-    : FrameServiceBase(host, std::move(receiver)), host_(host) {
+    : DocumentServiceBase(host, std::move(receiver)), host_(host) {
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
@@ -67,7 +67,7 @@ void DeviceServiceImpl::Create(
     return;
   }
   // The object is bound to the lifetime of |host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new DeviceServiceImpl(host, std::move(receiver));
 }
 

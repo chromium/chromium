@@ -70,7 +70,7 @@ void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
 
 HidService::HidService(RenderFrameHost* render_frame_host,
                        mojo::PendingReceiver<blink::mojom::HidService> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()) {
   watchers_.set_disconnect_handler(
       base::BindRepeating(&HidService::OnWatcherRemoved, base::Unretained(this),

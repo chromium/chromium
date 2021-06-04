@@ -93,14 +93,14 @@ void CdmPrefServiceImpl::Create(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // The object is bound to the lifetime of `render_frame_host` and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new CdmPrefServiceImpl(render_frame_host, std::move(receiver));
 }
 
 CdmPrefServiceImpl::CdmPrefServiceImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::CdmPrefService> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
 
 CdmPrefServiceImpl::~CdmPrefServiceImpl() = default;
 

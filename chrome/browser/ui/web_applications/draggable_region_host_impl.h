@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DRAGGABLE_REGION_HOST_IMPL_H_
 
 #include "chrome/common/draggable_regions.mojom.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 
 namespace content {
 class RenderFrameHost;
 }
 
 class DraggableRegionsHostImpl
-    : public content::FrameServiceBase<chrome::mojom::DraggableRegions> {
+    : public content::DocumentServiceBase<chrome::mojom::DraggableRegions> {
  public:
   DraggableRegionsHostImpl(const DraggableRegionsHostImpl&) = delete;
   DraggableRegionsHostImpl& operator=(const DraggableRegionsHostImpl&) = delete;

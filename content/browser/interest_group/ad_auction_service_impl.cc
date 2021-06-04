@@ -130,7 +130,7 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
 AdAuctionServiceImpl::AdAuctionServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
 
 AdAuctionServiceImpl::~AdAuctionServiceImpl() = default;
 
@@ -141,7 +141,7 @@ void AdAuctionServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of `render_frame_host` and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new AdAuctionServiceImpl(render_frame_host, std::move(receiver));
 }
 

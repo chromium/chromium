@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_FRAME_SERVICE_BASE_H_
-#define CONTENT_PUBLIC_BROWSER_FRAME_SERVICE_BASE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_
+#define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_
 
 #include <utility>
 
@@ -33,10 +33,10 @@ class RenderFrameHost;
 // origin() instead of from |render_frame_host| passed in the constructor.
 // See https://crbug.com/769189 for an example of such a race.
 template <typename Interface>
-class FrameServiceBase : public Interface, public WebContentsObserver {
+class DocumentServiceBase : public Interface, public WebContentsObserver {
  public:
-  FrameServiceBase(RenderFrameHost* render_frame_host,
-                   mojo::PendingReceiver<Interface> pending_receiver)
+  DocumentServiceBase(RenderFrameHost* render_frame_host,
+                      mojo::PendingReceiver<Interface> pending_receiver)
       : WebContentsObserver(
             WebContents::FromRenderFrameHost(render_frame_host)),
         render_frame_host_(render_frame_host),
@@ -44,12 +44,12 @@ class FrameServiceBase : public Interface, public WebContentsObserver {
         receiver_(this, std::move(pending_receiver)) {
     // |this| owns |receiver_|, so unretained is safe.
     receiver_.set_disconnect_handler(
-        base::BindOnce(&FrameServiceBase::Close, base::Unretained(this)));
+        base::BindOnce(&DocumentServiceBase::Close, base::Unretained(this)));
   }
 
  protected:
   // Make the destructor private since |this| can only be deleted by Close().
-  virtual ~FrameServiceBase() = default;
+  virtual ~DocumentServiceBase() = default;
 
   // All subclasses should use this function to obtain the origin instead of
   // trying to get it from the RenderFrameHost pointer directly.
@@ -64,8 +64,8 @@ class FrameServiceBase : public Interface, public WebContentsObserver {
 
  private:
   // Disallow calling web_contents() directly from the subclasses to ensure that
-  // tab-level state doesn't get queried or updated when the frame is
-  // not current.
+  // tab-level state doesn't get queried or updated when the RenderFrameHost is
+  // not active.
   // Use WebContents::From(render_frame_host()) instead, but please keep in mind
   // that the render_frame_host() might not be active. See
   // RenderFrameHost::IsActive() for details.
@@ -110,4 +110,4 @@ class FrameServiceBase : public Interface, public WebContentsObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_FRAME_SERVICE_BASE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_BASE_H_

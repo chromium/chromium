@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
@@ -43,7 +43,7 @@ extern const char kMediaDrmStorage[];
 // This file is located under components/ so that it can be shared by multiple
 // content embedders (e.g. chrome and chromecast).
 class MediaDrmStorageImpl final
-    : public content::FrameServiceBase<media::mojom::MediaDrmStorage> {
+    : public content::DocumentServiceBase<media::mojom::MediaDrmStorage> {
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
@@ -125,7 +125,7 @@ class MediaDrmStorageImpl final
                                RemovePersistentSessionCallback callback) final;
 
  private:
-  // |this| can only be destructed as a FrameServiceBase.
+  // |this| can only be destructed as a DocumentServiceBase.
   ~MediaDrmStorageImpl() final;
 
   // Called when |get_origin_id_cb_| asynchronously returns a origin ID as part

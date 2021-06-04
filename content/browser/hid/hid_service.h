@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/hid_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,9 +26,10 @@ class RenderFrameHost;
 
 // HidService provides an implementation of the HidService mojom interface. This
 // interface is used by Blink to implement the WebHID API.
-class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
-                   public device::mojom::HidConnectionWatcher,
-                   public HidDelegate::Observer {
+class HidService
+    : public content::DocumentServiceBase<blink::mojom::HidService>,
+      public device::mojom::HidConnectionWatcher,
+      public HidDelegate::Observer {
  public:
   HidService(HidService&) = delete;
   HidService& operator=(HidService&) = delete;

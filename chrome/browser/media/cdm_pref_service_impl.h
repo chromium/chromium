@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_IMPL_H_
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_IMPL_H_
 
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "media/mojo/mojom/cdm_pref_service.mojom.h"
 #include "url/origin.h"
 
@@ -17,7 +17,7 @@ class PrefRegistrySimple;
 // for origins serving hardware security protected contents and as such the size
 // of the CDM Origin ID dictionary should only contain a handful of items.
 class CdmPrefServiceImpl final
-    : public content::FrameServiceBase<media::mojom::CdmPrefService> {
+    : public content::DocumentServiceBase<media::mojom::CdmPrefService> {
  public:
   static void Create(
       content::RenderFrameHost* render_frame_host,
@@ -35,7 +35,7 @@ class CdmPrefServiceImpl final
   CdmPrefServiceImpl(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::CdmPrefService> receiver);
-  // `this` can only be destructed as a FrameServiceBase
+  // `this` can only be destructed as a DocumentServiceBase
   ~CdmPrefServiceImpl() final;
 };
 

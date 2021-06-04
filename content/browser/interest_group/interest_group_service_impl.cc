@@ -42,7 +42,7 @@ bool IsUrlAllowed(const GURL& url, const blink::mojom::InterestGroup& group) {
 InterestGroupServiceImpl::InterestGroupServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       interest_group_manager_(*static_cast<StoragePartitionImpl*>(
                                    render_frame_host->GetStoragePartition())
                                    ->GetInterestGroupStorage()) {}
@@ -55,7 +55,7 @@ void InterestGroupServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new InterestGroupServiceImpl(render_frame_host, std::move(receiver));
 }
 

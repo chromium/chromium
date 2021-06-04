@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "media/mojo/mojom/cast_application_media_info_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -24,7 +24,7 @@ namespace media {
 class ApplicationMediaInfoManagerTest;
 
 class ApplicationMediaInfoManager
-    : public ::content::FrameServiceBase<
+    : public ::content::DocumentServiceBase<
           ::media::mojom::CastApplicationMediaInfoManager>,
       public base::SupportsWeakPtr<ApplicationMediaInfoManager> {
  public:

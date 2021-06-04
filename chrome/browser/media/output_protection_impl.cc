@@ -24,14 +24,14 @@ void OutputProtectionImpl::Create(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new OutputProtectionImpl(render_frame_host, std::move(receiver));
 }
 
 OutputProtectionImpl::OutputProtectionImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       render_process_id_(render_frame_host->GetProcess()->GetID()),
       render_frame_id_(render_frame_host->GetRoutingID()) {}
 

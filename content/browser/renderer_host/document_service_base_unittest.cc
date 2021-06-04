@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
-// Unit test for FrameServiceBase in content/public/browser.
+// Unit test for DocumentServiceBase in content/public/browser.
 
 namespace content {
 
@@ -26,13 +26,13 @@ namespace {
 const char kFooOrigin[] = "https://foo.com";
 const char kBarOrigin[] = "https://bar.com";
 
-// Subclass of FrameServiceBase for test.
-class EchoImpl final : public FrameServiceBase<mojom::Echo> {
+// Subclass of DocumentServiceBase for test.
+class EchoImpl final : public DocumentServiceBase<mojom::Echo> {
  public:
   EchoImpl(RenderFrameHost* render_frame_host,
            mojo::PendingReceiver<mojom::Echo> receiver,
            base::OnceClosure destruction_cb)
-      : FrameServiceBase(render_frame_host, std::move(receiver)),
+      : DocumentServiceBase(render_frame_host, std::move(receiver)),
         destruction_cb_(std::move(destruction_cb)) {}
   ~EchoImpl() final { std::move(destruction_cb_).Run(); }
 
@@ -67,7 +67,7 @@ void DetachFrame(RenderFrameHost* rfh) {
 
 }  // namespace
 
-class FrameServiceBaseTest : public RenderViewHostTestHarness {
+class DocumentServiceBaseTest : public RenderViewHostTestHarness {
  protected:
   void SetUp() final {
     RenderViewHostTestHarness::SetUp();
@@ -83,7 +83,7 @@ class FrameServiceBaseTest : public RenderViewHostTestHarness {
   void CreateEchoImpl(RenderFrameHost* rfh) {
     DCHECK(!is_echo_impl_alive_);
     new EchoImpl(rfh, echo_remote_.BindNewPipeAndPassReceiver(),
-                 base::BindOnce(&FrameServiceBaseTest::OnEchoImplDestructed,
+                 base::BindOnce(&DocumentServiceBaseTest::OnEchoImplDestructed,
                                 base::Unretained(this)));
     is_echo_impl_alive_ = true;
   }
@@ -103,13 +103,13 @@ class FrameServiceBaseTest : public RenderViewHostTestHarness {
   bool is_echo_impl_alive_ = false;
 };
 
-TEST_F(FrameServiceBaseTest, ConnectionError) {
+TEST_F(DocumentServiceBaseTest, ConnectionError) {
   CreateEchoImpl(main_rfh_);
   ResetConnection();
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
-TEST_F(FrameServiceBaseTest, RenderFrameDeleted) {
+TEST_F(DocumentServiceBaseTest, RenderFrameDeleted) {
   // Needs to create a child frame so we can delete it using DetachFrame()
   // because it is not allowed to detach the main frame.
   RenderFrameHost* child_rfh = AddChildFrame(main_rfh_, GURL(kBarOrigin));
@@ -118,7 +118,7 @@ TEST_F(FrameServiceBaseTest, RenderFrameDeleted) {
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
-TEST_F(FrameServiceBaseTest, DidFinishNavigation) {
+TEST_F(DocumentServiceBaseTest, DidFinishNavigation) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
   // deleted.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
@@ -128,7 +128,7 @@ TEST_F(FrameServiceBaseTest, DidFinishNavigation) {
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
-TEST_F(FrameServiceBaseTest, SameDocumentNavigation) {
+TEST_F(DocumentServiceBaseTest, SameDocumentNavigation) {
   CreateEchoImpl(main_rfh_);
 
   // Must use the same origin to simulate same document navigation.
@@ -140,7 +140,7 @@ TEST_F(FrameServiceBaseTest, SameDocumentNavigation) {
   EXPECT_TRUE(is_echo_impl_alive_);
 }
 
-TEST_F(FrameServiceBaseTest, FailedNavigation) {
+TEST_F(DocumentServiceBaseTest, FailedNavigation) {
   CreateEchoImpl(main_rfh_);
 
   auto navigation_simulator =
@@ -151,7 +151,7 @@ TEST_F(FrameServiceBaseTest, FailedNavigation) {
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
-TEST_F(FrameServiceBaseTest, DeleteContents) {
+TEST_F(DocumentServiceBaseTest, DeleteContents) {
   CreateEchoImpl(main_rfh_);
   DeleteContents();
   EXPECT_FALSE(is_echo_impl_alive_);

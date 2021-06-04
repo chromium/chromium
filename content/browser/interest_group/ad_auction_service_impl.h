@@ -12,7 +12,7 @@
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,7 +29,7 @@ class RenderFrameHost;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
-    : public FrameServiceBase<blink::mojom::AdAuctionService>,
+    : public DocumentServiceBase<blink::mojom::AdAuctionService>,
       public AuctionRunner::Delegate {
  public:
   // Factory method for creating an instance of this interface that is
@@ -47,17 +47,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
   auction_worklet::mojom::AuctionWorkletService* GetWorkletService() override;
 
-  using FrameServiceBase::origin;
-  using FrameServiceBase::render_frame_host;
+  using DocumentServiceBase::origin;
+  using DocumentServiceBase::render_frame_host;
 
  private:
-  // `render_frame_host` must not be null, and FrameServiceBase guarantees
+  // `render_frame_host` must not be null, and DocumentServiceBase guarantees
   // `this` will not outlive the `render_frame_host`.
   AdAuctionServiceImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
 
-  // `this` can only be destroyed by FrameServiceBase.
+  // `this` can only be destroyed by DocumentServiceBase.
   ~AdAuctionServiceImpl() override;
 
   // Deletes `auction`.

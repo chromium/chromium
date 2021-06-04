@@ -7,7 +7,7 @@
 
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom.h"
 
@@ -17,7 +17,7 @@ class RenderFrameHost;
 
 // Implements the RestrictedInterestGroupStore service called by Blink code.
 class CONTENT_EXPORT InterestGroupServiceImpl final
-    : public FrameServiceBase<blink::mojom::RestrictedInterestGroupStore> {
+    : public DocumentServiceBase<blink::mojom::RestrictedInterestGroupStore> {
  public:
   // Factory method for creating an instance of this interface that is bound
   // to the lifetime of the frame or receiver (whichever is shorter).
@@ -32,14 +32,14 @@ class CONTENT_EXPORT InterestGroupServiceImpl final
                           const std::string& name) override;
 
  private:
-  // `render_frame_host` must not be null, and FrameServiceBase guarantees
+  // `render_frame_host` must not be null, and DocumentServiceBase guarantees
   // `this` will not outlive the `render_frame_host`.
   InterestGroupServiceImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::RestrictedInterestGroupStore>
           receiver);
 
-  // `this` can only be destroyed by FrameServiceBase.
+  // `this` can only be destroyed by DocumentServiceBase.
   ~InterestGroupServiceImpl() override;
 
   InterestGroupManager& interest_group_manager_;

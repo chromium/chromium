@@ -61,14 +61,14 @@ void PlatformVerificationImpl::Create(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new PlatformVerificationImpl(render_frame_host, std::move(receiver));
 }
 
 PlatformVerificationImpl::PlatformVerificationImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::PlatformVerification> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       render_frame_host_(render_frame_host) {}
 
 PlatformVerificationImpl::~PlatformVerificationImpl() {

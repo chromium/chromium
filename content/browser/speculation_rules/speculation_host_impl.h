@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
@@ -20,7 +20,7 @@ class PrerenderProcessor;
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
 class CONTENT_EXPORT SpeculationHostImpl final
-    : public content::FrameServiceBase<blink::mojom::SpeculationHost> {
+    : public content::DocumentServiceBase<blink::mojom::SpeculationHost> {
  public:
   // Creates and binds an instance of this per-frame.
   static void Bind(

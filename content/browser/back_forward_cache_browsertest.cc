@@ -43,7 +43,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/idle_manager.h"
 #include "content/public/browser/media_session.h"
@@ -9005,13 +9005,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 namespace {
 
-// Subclass of FrameServiceBase for test.
-class EchoImpl final : public FrameServiceBase<mojom::Echo> {
+// Subclass of DocumentServiceBase for test.
+class EchoImpl final : public DocumentServiceBase<mojom::Echo> {
  public:
   EchoImpl(RenderFrameHost* render_frame_host,
            mojo::PendingReceiver<mojom::Echo> receiver,
            bool* deleted)
-      : FrameServiceBase(render_frame_host, std::move(receiver)),
+      : DocumentServiceBase(render_frame_host, std::move(receiver)),
         deleted_(deleted) {}
   ~EchoImpl() final { *deleted_ = true; }
 
@@ -9026,7 +9026,7 @@ class EchoImpl final : public FrameServiceBase<mojom::Echo> {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FrameServiceBase) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DocumentServiceBase) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

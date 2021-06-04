@@ -18,7 +18,7 @@ namespace content {
 FederatedAuthResponseImpl::FederatedAuthResponseImpl(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthResponse> receiver)
-    : FrameServiceBase(host, std::move(receiver)) {}
+    : DocumentServiceBase(host, std::move(receiver)) {}
 
 // TODO(majidvp): We should reject any pending promise here.
 // http://crbug.com/1141125
@@ -34,7 +34,7 @@ void FederatedAuthResponseImpl::Create(
   // the mojo method is invoked, causing the promise to be rejected.
   // https://crbug.com/1141125
   // It is safe to access host->GetLastCommittedOrigin during construction
-  // but FrameServiceBase::origin() should be used thereafter.
+  // but DocumentServiceBase::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
         "WebID cannot be invoked from within cross-origin iframes.");

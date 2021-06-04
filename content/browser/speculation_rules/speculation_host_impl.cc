@@ -50,14 +50,14 @@ void SpeculationHostImpl::Bind(
     return;
   }
 
-  // FrameServiceBase will destroy this on pipe closure or frame destruction.
+  // DocumentServiceBase will destroy this on pipe closure or frame destruction.
   new SpeculationHostImpl(frame_host, std::move(receiver));
 }
 
 SpeculationHostImpl::SpeculationHostImpl(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver)
-    : FrameServiceBase(frame_host, std::move(receiver)) {
+    : DocumentServiceBase(frame_host, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_ = GetContentClient()->browser()->CreateSpeculationHostDelegate(
       *render_frame_host());

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
 
@@ -19,7 +19,7 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 
 class CONTENT_EXPORT KeyboardLockServiceImpl final
-    : public FrameServiceBase<blink::mojom::KeyboardLockService> {
+    : public DocumentServiceBase<blink::mojom::KeyboardLockService> {
  public:
   KeyboardLockServiceImpl(
       RenderFrameHost* render_frame_host,
@@ -36,7 +36,7 @@ class CONTENT_EXPORT KeyboardLockServiceImpl final
   void GetKeyboardLayoutMap(GetKeyboardLayoutMapCallback callback) override;
 
  private:
-  // |this| can only be destroyed by FrameServiceBase.
+  // |this| can only be destroyed by DocumentServiceBase.
   ~KeyboardLockServiceImpl() override;
 
   RenderFrameHostImpl* const render_frame_host_;

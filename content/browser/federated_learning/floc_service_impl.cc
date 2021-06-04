@@ -16,7 +16,7 @@ namespace content {
 FlocServiceImpl::FlocServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::FlocService> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
   DCHECK(render_frame_host_);
 }
@@ -28,7 +28,7 @@ void FlocServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new FlocServiceImpl(render_frame_host, std::move(receiver));
 }
 

@@ -16,7 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/search/ntp_features.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -82,13 +82,13 @@ void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
 // Implementation of the Mojo CommerceHintObserver. This is called by the
 // renderer to notify the browser that a commerce hint happens.
 class CommerceHintObserverImpl
-    : public content::FrameServiceBase<mojom::CommerceHintObserver> {
+    : public content::DocumentServiceBase<mojom::CommerceHintObserver> {
  public:
   explicit CommerceHintObserverImpl(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<mojom::CommerceHintObserver> receiver,
       base::WeakPtr<CommerceHintService> service)
-      : FrameServiceBase(render_frame_host, std::move(receiver)),
+      : DocumentServiceBase(render_frame_host, std::move(receiver)),
         binding_url_(render_frame_host->GetLastCommittedURL()),
         service_(std::move(service)) {}
 
@@ -166,7 +166,7 @@ void CommerceHintService::BindCommerceHintObserver(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<mojom::CommerceHintObserver> receiver) {
   // The object is bound to the lifetime of |host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new CommerceHintObserverImpl(host, std::move(receiver),
                                weak_factory_.GetWeakPtr());
 }

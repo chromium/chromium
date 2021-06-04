@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_response.mojom.h"
 
@@ -22,7 +22,7 @@ class RenderFrameHost;
 // FederatedAuthResponseImpl handles mojo connections from the renderer to
 // fulfill WebID-related response by an IDP.
 class FederatedAuthResponseImpl
-    : public FrameServiceBase<blink::mojom::FederatedAuthResponse> {
+    : public DocumentServiceBase<blink::mojom::FederatedAuthResponse> {
  public:
   // Creates a self-managed instance of FederatedAuthResponseImpl and binds it
   // to the receiver.

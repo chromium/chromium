@@ -21,7 +21,8 @@ void CreateApplicationMediaInfoManager(
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver) {
   // The created ApplicationMediaInfoManager will be deleted on connection
-  // error, or when the frame navigates away. See FrameServiceBase for details.
+  // error, or when the frame navigates away. See DocumentServiceBase for
+  // details.
   new ApplicationMediaInfoManager(render_frame_host, std::move(receiver),
                                   std::move(application_session_id),
                                   mixer_audio_enabled);
@@ -33,7 +34,7 @@ ApplicationMediaInfoManager::ApplicationMediaInfoManager(
         receiver,
     std::string application_session_id,
     bool mixer_audio_enabled)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       application_session_id_(std::move(application_session_id)),
       mixer_audio_enabled_(mixer_audio_enabled),
       renderer_blocked_(false) {

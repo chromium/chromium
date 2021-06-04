@@ -25,7 +25,7 @@ namespace content {
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
-    : FrameServiceBase(host, std::move(receiver)) {}
+    : DocumentServiceBase(host, std::move(receiver)) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
@@ -43,7 +43,7 @@ void FederatedAuthRequestImpl::Create(
   // the mojo method is invoked, causing the promise to be rejected.
   // https://crbug.com/1141125
   // It is safe to access host->GetLastCommittedOrigin during construction
-  // but FrameServiceBase::origin() should be used thereafter.
+  // but DocumentServiceBase::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
         "navigator.id.get cannot be invoked from within cross-origin iframes.");

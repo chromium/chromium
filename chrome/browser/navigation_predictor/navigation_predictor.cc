@@ -42,7 +42,7 @@ size_t kMaxClicksTracked = 10;
 NavigationPredictor::NavigationPredictor(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<AnchorElementMetricsHost> receiver)
-    : content::FrameServiceBase<blink::mojom::AnchorElementMetricsHost>(
+    : content::DocumentServiceBase<blink::mojom::AnchorElementMetricsHost>(
           render_frame_host,
           std::move(receiver)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -75,7 +75,7 @@ void NavigationPredictor::Create(
   }
 
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
+  // connection. See DocumentServiceBase for details.
   new NavigationPredictor(render_frame_host, std::move(receiver));
 }
 

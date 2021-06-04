@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -27,7 +27,7 @@
 namespace {
 
 class MediaResourceProviderImpl
-    : public content::FrameServiceBase<
+    : public content::DocumentServiceBase<
           media::mojom::FuchsiaMediaResourceProvider> {
  public:
   MediaResourceProviderImpl(
@@ -59,7 +59,7 @@ MediaResourceProviderImpl::MediaResourceProviderImpl(
     media::FuchsiaCdmManager* cdm_manager,
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
       cdm_manager_(cdm_manager) {
   DCHECK(cdm_manager_);
 }
