@@ -50,7 +50,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     chrome_browser_state_ = builder.Build();
 
     // Set the initial pref value.
-    chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+    chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                  true);
 
     // Set up the test browser and attach the browser agents.
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -101,7 +102,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 // been called.
 TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   // Set the initial pref value.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                true);
 
   // Set up the test browser and attach the browser agent under test.
   std::unique_ptr<Browser> browser =
@@ -116,16 +118,18 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   agent_->AddObserver(&bridge);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   agent_->RemoveObserver(&bridge);
 }
 
-// Tests that the browser agent monitors the kSigninAllowed pref and notifies
-// its observers when it changes.
-TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowed) {
+// Tests that the browser agent monitors the kSigninAllowedByPolicy pref and
+// notifies its observers when it changes.
+TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
   // Set the initial pref value.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                true);
   // Set up the mock observer handler.
   id mockObserver =
       OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
@@ -140,7 +144,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowed) {
       [mockObserver policyWatcherBrowserAgentNotifySignInDisabled:agent_]);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockObserver);
@@ -163,7 +168,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotSignedIn) {
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 }
 
 // Tests that the pref change triggers a command if the user is signed
@@ -183,7 +189,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   OCMExpect([mockHandler showPolicySignoutPrompt]);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockHandler);
@@ -209,7 +216,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   agent_->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
   EXPECT_FALSE(authentication_service->IsAuthenticated());
@@ -222,7 +230,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   // pref changed in background.
 
   // Update the pref and Sign in.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
@@ -260,7 +269,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
 // Tests that the command to show the UI isn't sent if the authentication
 // service is still signing out the user.
 TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
 
   AuthenticationService* authentication_service =
       static_cast<AuthenticationServiceFake*>(
@@ -299,7 +309,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
 // Tests that the command to show the UI is sent when the Browser Agent is
 // notified of the UI being dismissed.
 TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy,
+                                                false);
   SignIn();
 
   // Strict protocol: method calls will fail until the method is stubbed.

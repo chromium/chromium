@@ -55,7 +55,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "BrowserSignin": 0 },
-        "prefs": { "signin.allowed": {} }
+        "prefs": { "signin.allowed_by_policy": {} }
       }
     ]
   },

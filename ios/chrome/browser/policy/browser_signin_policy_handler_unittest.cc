@@ -72,7 +72,7 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
     bool value = false;
     PrefValueMap prefs;
     handler.ApplyPolicySettings(policies, &prefs);
-    EXPECT_TRUE(prefs.GetBoolean(prefs::kSigninAllowed, &value));
+    EXPECT_TRUE(prefs.GetBoolean(prefs::kSigninAllowedByPolicy, &value));
     EXPECT_EQ(test_case.expected_pref_value, value)
         << "For test case: mode = "
         << BrowserSigninModeToString(test_case.mode);

@@ -542,7 +542,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // If sign-in is disabled there should not be a sign-in promo.
   if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
-    item = signin::IsSigninAllowedByPolicy()
+    item = signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())
                ? [self signinDisabledTextItem]
                : [self signinDisabledByPolicyTextItem];
   } else if (self.shouldDisplaySyncPromo || self.shouldDisplaySigninPromo) {
@@ -1137,7 +1137,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case SettingsItemTypeSigninDisabled: {
       // Adds a trailing button with more information when the sign-in policy
       // has been enabled by the organization.
-      if (!signin::IsSigninAllowedByPolicy()) {
+      if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())) {
         TableViewInfoButtonCell* managedCell =
             base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
         [managedCell.trailingButton

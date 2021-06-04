@@ -73,10 +73,10 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       // sign-in enabled.
       FALLTHROUGH;
     case BrowserSigninMode::kEnabled:
-      prefs->SetBoolean(prefs::kSigninAllowed, true);
+      prefs->SetBoolean(prefs::kSigninAllowedByPolicy, true);
       break;
     case BrowserSigninMode::kDisabled:
-      prefs->SetBoolean(prefs::kSigninAllowed, false);
+      prefs->SetBoolean(prefs::kSigninAllowedByPolicy, false);
       break;
   }
 }

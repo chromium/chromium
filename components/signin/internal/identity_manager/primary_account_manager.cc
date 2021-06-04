@@ -56,6 +56,7 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAutologinEnabled, true);
   registry->RegisterListPref(prefs::kReverseAutologinRejectedEmailList);
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
+  registry->RegisterBooleanPref(prefs::kSigninAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
 }
 

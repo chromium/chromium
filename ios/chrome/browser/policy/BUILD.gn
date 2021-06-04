@@ -69,6 +69,7 @@ source_set("policy") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/common",
