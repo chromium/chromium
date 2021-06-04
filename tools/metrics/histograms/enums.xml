@@ -24776,6 +24776,7 @@ Called by update_document_policy_enum.py.-->
   <int value="860" label="ManagedAccountRestriction"/>
   <int value="861" label="LockIconInAddressBarEnabled"/>
   <int value="862" label="DeviceScheduledReboot"/>
+  <int value="863" label="ReportDeviceLoginLogout"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

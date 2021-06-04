@@ -5552,6 +5552,8 @@
 
   "ReportDevicePrintJobs": {},
 
+  "ReportDeviceLoginLogout": {},
+
   "ReportUploadFrequency": {},
 
   "DeviceAllowNewUsers": {},

@@ -213,6 +213,9 @@ const char kReportDeviceSystemInfo[] =
 // reported.
 const char kReportDevicePrintJobs[] = "cros.device_status.report_print_jobs";
 
+// A boolean pref that determines whether the login/logout events are reported.
+const char kReportDeviceLoginLogout[] = "cros.reporting.report_login_logout";
+
 // Determines whether heartbeats should be sent to the policy service via
 // the GCM channel.
 const char kHeartbeatEnabled[] = "cros.device_status.heartbeat_enabled";
