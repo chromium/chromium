@@ -1083,7 +1083,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.Events.DispatchToComponent" enum="ExtensionEvents"
-    expires_after="2021-06-01">
+    expires_after="never">
+<!-- expires-never: Monitoring core extensions platform behavior. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2546,7 +2548,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.LoadOffStoreItems" units="Number of items"
-    expires_after="2021-06-01">
+    expires_after="never">
+<!-- expires-never: Monitoring core extension usage. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3417,7 +3421,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.Toolbar.PinnedExtensionCount2"
-    units="pinned extensions" expires_after="2021-10-31">
+    units="pinned extensions" expires_after="never">
+<!-- expires-never: Monitoring core user behavior with extensions. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3428,7 +3434,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.Toolbar.PinnedExtensionPercentage3" units="%"
-    expires_after="2021-06-30">
+    expires_after="never">
+<!-- expires-never: Monitoring core user behavior with extensions. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
