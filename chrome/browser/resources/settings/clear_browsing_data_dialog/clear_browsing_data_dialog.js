@@ -619,6 +619,7 @@ Polymer({
    */
   computeIsSyncPaused_() {
     return !!this.syncStatus.hasError &&
+        !this.syncStatus.hasUnrecoverableError &&
         this.syncStatus.statusAction === StatusAction.REAUTHENTICATE;
   },
 
