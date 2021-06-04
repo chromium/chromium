@@ -21,7 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -347,4 +347,4 @@ TEST_F(ModelConfigLoaderImplTest, InvalidJsonFormat) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

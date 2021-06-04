@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -68,4 +68,4 @@ void AmbientLightSampleBuffer::Prune(base::TimeTicks now) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

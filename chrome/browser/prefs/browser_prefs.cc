@@ -857,8 +857,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
   chromeos::platform_keys::KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
       registry);
-  chromeos::power::auto_screen_brightness::MetricsReporter::
-      RegisterLocalStatePrefs(registry);
+  ash::power::auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(
+      registry);
   chromeos::Preferences::RegisterPrefs(registry);
   ash::ResetScreen::RegisterPrefs(registry);
   chromeos::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);

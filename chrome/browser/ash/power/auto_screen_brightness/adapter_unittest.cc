@@ -36,7 +36,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -174,8 +174,8 @@ class AdapterTest : public testing::Test {
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
         new user_prefs::PrefRegistrySyncable);
 
-    chromeos::power::auto_screen_brightness::MetricsReporter::
-        RegisterLocalStatePrefs(registry.get());
+    auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(
+        registry.get());
 
     sync_preferences::PrefServiceSyncable* regular_prefs =
         factory.CreateSyncable(registry.get()).release();
@@ -1284,4 +1284,4 @@ TEST_F(AdapterTest, SuspendDueToLidClosed) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

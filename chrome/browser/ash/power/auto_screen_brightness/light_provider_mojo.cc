@@ -28,7 +28,7 @@ constexpr char kAcpiAlsName[] = "acpi-als";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -388,4 +388,4 @@ void LightProviderMojo::SetupLightSamplesObserver() {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

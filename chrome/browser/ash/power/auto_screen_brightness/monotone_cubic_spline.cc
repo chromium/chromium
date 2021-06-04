@@ -13,7 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -254,4 +254,4 @@ MonotoneCubicSpline::MonotoneCubicSpline(const std::vector<double>& xs,
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -22,4 +22,4 @@ void FakeObserver::OnAlsReaderInitialized(AlsReader::AlsInitStatus status) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

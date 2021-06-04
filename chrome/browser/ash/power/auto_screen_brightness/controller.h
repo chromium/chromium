@@ -12,7 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -57,6 +57,16 @@ class Controller : public session_manager::SessionManagerObserver {
   DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
+}  // namespace auto_screen_brightness
+}  // namespace power
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace power {
+namespace auto_screen_brightness {
+using ::ash::power::auto_screen_brightness::Controller;
 }  // namespace auto_screen_brightness
 }  // namespace power
 }  // namespace chromeos

@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -78,6 +78,6 @@ class ModelConfigLoaderImpl : public ModelConfigLoader {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_MODEL_CONFIG_LOADER_IMPL_H_

@@ -29,7 +29,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -677,4 +677,4 @@ void ModellerImpl::ErasePersonalCurve() {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

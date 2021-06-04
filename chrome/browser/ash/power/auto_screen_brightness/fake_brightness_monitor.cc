@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_brightness_monitor.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -48,4 +48,4 @@ void FakeBrightnessMonitor::RemoveObserver(Observer* const observer) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

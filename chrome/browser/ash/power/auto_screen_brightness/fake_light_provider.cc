@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_light_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -25,4 +25,4 @@ void FakeLightProvider::ReportReaderInitialized() {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

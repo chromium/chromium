@@ -17,7 +17,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -108,6 +108,6 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_BRIGHTNESS_MONITOR_IMPL_H_

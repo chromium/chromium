@@ -29,7 +29,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -729,4 +729,4 @@ TEST_F(ModellerImplTest, CurveChangedSmallError) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

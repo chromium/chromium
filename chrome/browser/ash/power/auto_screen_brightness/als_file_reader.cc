@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -159,4 +159,4 @@ void AlsFileReader::OnAlsRead(const std::string& data) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

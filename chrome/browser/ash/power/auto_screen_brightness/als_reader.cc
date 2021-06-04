@@ -23,7 +23,7 @@
 #endif  // BUILDFLAG(USE_IIOSERVICE)
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -132,4 +132,4 @@ LightProviderInterface::~LightProviderInterface() = default;
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

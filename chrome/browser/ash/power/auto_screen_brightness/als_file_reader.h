@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -92,6 +92,6 @@ class AlsFileReader : public LightProviderInterface {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_

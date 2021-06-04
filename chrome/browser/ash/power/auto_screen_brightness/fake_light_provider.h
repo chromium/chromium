@@ -8,14 +8,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
 // This is a fake implementation of LightProviderInterface for testing only.
 class FakeLightProvider : public LightProviderInterface {
  public:
-  FakeLightProvider(AlsReader* als_reader);
+  explicit FakeLightProvider(AlsReader* als_reader);
   FakeLightProvider(const FakeLightProvider&) = delete;
   FakeLightProvider& operator=(const FakeLightProvider&) = delete;
   ~FakeLightProvider() override;
@@ -36,6 +36,6 @@ class FakeLightProvider : public LightProviderInterface {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_FAKE_LIGHT_PROVIDER_H_

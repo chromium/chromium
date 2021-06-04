@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -616,4 +616,4 @@ TEST_F(GaussianTrainerTest, InvalidParameters) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

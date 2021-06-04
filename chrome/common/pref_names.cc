@@ -2401,12 +2401,12 @@ const char kExtensionInstallEventLoggingEnabled[] =
 const char kRemoveUsersRemoteCommand[] = "remove_users_remote_command";
 
 // Integer pref used by the metrics::DailyEvent owned by
-// chromeos::power::auto_screen_brightness::MetricsReporter.
+// ash::power::auto_screen_brightness::MetricsReporter.
 const char kAutoScreenBrightnessMetricsDailySample[] =
     "auto_screen_brightness.metrics.daily_sample";
 
 // Integer prefs used to back event counts reported by
-// chromeos::power::auto_screen_brightness::MetricsReporter.
+// ash::power::auto_screen_brightness::MetricsReporter.
 const char kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount[] =
     "auto_screen_brightness.metrics.atlas_user_adjustment_count";
 const char kAutoScreenBrightnessMetricsEveUserAdjustmentCount[] =

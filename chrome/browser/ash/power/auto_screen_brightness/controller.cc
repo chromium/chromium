@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -96,4 +96,4 @@ void Controller::InitializeComponents() {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

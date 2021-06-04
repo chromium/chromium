@@ -23,7 +23,7 @@
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -298,4 +298,4 @@ void ModelConfigLoaderImpl::OnInitializationComplete() {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

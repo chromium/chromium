@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_model_config_loader.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -41,4 +41,4 @@ void FakeModelConfigLoader::NotifyObserver(Observer* const observer) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

@@ -15,7 +15,7 @@
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -316,4 +316,4 @@ TEST_F(BrightnessMonitorImplTest, UserAdjustmentsSeparatedByNonUser) {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

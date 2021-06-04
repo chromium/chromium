@@ -16,7 +16,7 @@
 #include "base/numerics/ranges.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -549,4 +549,4 @@ double GaussianTrainer::CalculateCurveError(
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 
-namespace chromeos {
+namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
@@ -103,6 +103,6 @@ class LightProviderInterface {
 
 }  // namespace auto_screen_brightness
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_READER_H_
