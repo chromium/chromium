@@ -68,6 +68,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/test_content_browser_client.h"
 #include "media/media_buildflags.h"
 #include "net/cert/cert_status_flags.h"
@@ -142,10 +143,7 @@ class WorkerStateObserver
   WorkerStateObserver(ServiceWorkerContextWrapper* context,
                       ServiceWorkerVersion::Status target)
       : context_(context), target_(target) {}
-  void Init() {
-    RunOnCoreThread(
-        base::BindOnce(&WorkerStateObserver::InitOnCoreThread, this));
-  }
+  void Init() { context_->AddObserver(this); }
   // ServiceWorkerContextCoreObserver overrides.
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
@@ -157,8 +155,7 @@ class WorkerStateObserver
       context_->RemoveObserver(this);
       version_id_ = version_id;
       registration_id_ = version->registration_id();
-      RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                            base::BindOnce(&WorkerStateObserver::Quit, this));
+      run_loop_.Quit();
     }
   }
   void Wait() { run_loop_.Run(); }
@@ -171,9 +168,6 @@ class WorkerStateObserver
   ~WorkerStateObserver() override = default;
 
  private:
-  void InitOnCoreThread() { context_->AddObserver(this); }
-  void Quit() { run_loop_.Quit(); }
-
   int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
@@ -181,6 +175,30 @@ class WorkerStateObserver
   ServiceWorkerContextWrapper* context_;
   const ServiceWorkerVersion::Status target_;
   DISALLOW_COPY_AND_ASSIGN(WorkerStateObserver);
+};
+
+class WorkerClientDestroyedObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  explicit WorkerClientDestroyedObserver(ServiceWorkerContextWrapper* context) {
+    // `context` must outlive this observer.
+    scoped_observation_.Observe(context);
+  }
+  ~WorkerClientDestroyedObserver() override = default;
+
+  void WaitUntilDestroyed() { run_loop_.Run(); }
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnClientDestroyed(ukm::SourceId client_source_id,
+                         const GURL& url,
+                         blink::mojom::ServiceWorkerClientType type) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      scoped_observation_{this};
 };
 
 std::unique_ptr<net::test_server::HttpResponse> VerifySaveDataHeaderInRequest(
@@ -3252,10 +3270,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests with BackForwardCache and KeepActiveFreezing enabled.
-class ServiceWorkerBackForwardCacheBrowserTest
+class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
     : public ServiceWorkerBrowserTest {
  protected:
-  ServiceWorkerBackForwardCacheBrowserTest() {
+  ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{{features::kBackForwardCache,
            {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
@@ -3299,8 +3317,9 @@ class ServiceWorkerBackForwardCacheBrowserTest
 
 // Tests that a service worker that shares a renderer process with a
 // back-forward cached page and an active page still runs normally.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
-                       ShareProcessWithBackForwardCachedPageAndLivePage) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest,
+    ShareProcessWithBackForwardCachedPageAndLivePage) {
   StartServerAndNavigateToSetup();
 
   GURL url_1(embedded_test_server()->GetURL(
@@ -3391,8 +3410,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
 
 // Tests that a service worker that shares a renderer process with a
 // back-forward cached page and no active pages still runs normally.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
-                       ShareProcessWithBackForwardCachedPageOnly) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest,
+    ShareProcessWithBackForwardCachedPageOnly) {
   StartServerAndNavigateToSetup();
 
   GURL url_1(embedded_test_server()->GetURL(
@@ -3495,6 +3515,96 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(rfh_1, current_frame_host());
+}
+
+// Tests with BackForwardCache enabled.
+class ServiceWorkerBackForwardCacheBrowserTest
+    : public ServiceWorkerBrowserTest {
+ protected:
+  ServiceWorkerBackForwardCacheBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kBackForwardCache, {{"enable_same_site", "true"}});
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetFrameTree()
+        ->root()
+        ->current_frame_host();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/1212618.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
+                       EvictionOfBackForwardCacheWithMultipleServiceWorkers) {
+  StartServerAndNavigateToSetup();
+
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  auto rfh = RenderFrameHostImplHolder(current_frame_host());
+
+  int first_worker_version_id;
+
+  {
+    // Register the first service worker.
+    WorkerRunningStatusObserver observer(public_context());
+    EXPECT_EQ(
+        "DONE",
+        EvalJs(current_frame_host(),
+               "register('skip_waiting_and_clients_claim_worker.js', '/');"));
+    observer.WaitUntilRunning();
+    first_worker_version_id = observer.version_id();
+  }
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/service_worker/"
+                                              "create_service_worker.html?1")));
+  EXPECT_TRUE(rfh->IsInBackForwardCache());
+
+  {
+    // Register the second service worker. `rfh` and the current frame host
+    // will be controlled by this new service worker. It doesn't await for
+    // navigator.serviceWorker.ready.
+    WorkerRunningStatusObserver observer(public_context());
+    EXPECT_EQ("DONE",
+              EvalJs(current_frame_host(),
+                     "registerWithoutAwaitingReady('clients_claim_worker.js', "
+                     "'/service_worker/');"));
+    observer.WaitUntilRunning();
+  }
+
+  {
+    // `update()` invokes ServiceWorkerContainerHost::UpdateController() which
+    // should updates controllees for the first service worker version and the
+    // second service worker version. It will cause the BFCache eviction and
+    // which causes the ServiceWorkerContainerHost to be destroyed.
+    WorkerClientDestroyedObserver observer(wrapper());
+    EXPECT_EQ("DONE", EvalJs(current_frame_host(), "update('/');"));
+    observer.WaitUntilDestroyed();
+  }
+
+  // Try to evict back forward cached controllees in the first service worker
+  // version. Since the ServiceWorkerContainerHost has been destroyed, it should
+  // have been removed from the first service worker's controllee map. If it
+  // hasn't, then calling version->EvictBackForwardCacheControllees() will do a
+  // UAF.
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(first_worker_version_id);
+  version->EvictBackForwardCachedControllees(
+      BackForwardCacheMetrics::NotRestoredReason::kUnknown);
+
+  {
+    base::RunLoop loop;
+    public_context()->UnregisterServiceWorker(
+        embedded_test_server()->GetURL("/"),
+        base::BindOnce(&ExpectUnregisterResultAndRun, true,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
 }
 
 }  // namespace content
