@@ -973,8 +973,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "none";
     case ax::mojom::BoolAttribute::kBusy:
       return "busy";
-    case ax::mojom::BoolAttribute::kContentEditableRoot:
-      return "contentEditableRoot";
+    case ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot:
+      return "nonAtomicTextFieldRoot";
     case ax::mojom::BoolAttribute::kContainerLiveAtomic:
       return "containerLiveAtomic";
     case ax::mojom::BoolAttribute::kContainerLiveBusy:

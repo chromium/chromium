@@ -1376,7 +1376,7 @@ var stringAttributes = [
 
 var boolAttributes = [
   'busy', 'clickable', 'containerLiveAtomic', 'containerLiveBusy',
-  'contentEditableRoot', 'liveAtomic', 'modal', 'notUserSelectableStyle',
+  'nonAtomicTextFieldRoot', 'liveAtomic', 'modal', 'notUserSelectableStyle',
   'scrollable', 'selected', 'supportsTextLocation'
 ];
 

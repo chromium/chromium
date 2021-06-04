@@ -2396,8 +2396,8 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kEditable);
   div_editable.AddState(ax::mojom::State::kRichlyEditable);
-  div_editable.AddBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot,
-                                true);
+  div_editable.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   div_editable.AddState(ax::mojom::State::kFocusable);
   div_editable.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                                   "Helvetica");

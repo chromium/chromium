@@ -5827,7 +5827,7 @@ int32_t AXPlatformNodeWin::ComputeIA2State() {
       // enable paste operations. Eventually this need should go away once IE11
       // support is no longer needed and Slides instead relies on paste events.
       if (!data.HasState(ax::mojom::State::kFocusable) ||
-          GetBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot))
+          GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot))
         break;  // Not used with activedescendant, so preserve editable state.
       FALLTHROUGH;  // Will clear editable state.
     case ax::mojom::Role::kMenuListPopup:
@@ -7406,7 +7406,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
     // Doing so helps Narrator find all the content of live regions.
     if (!data.GetBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute) &&
         !data.GetBoolAttribute(
-            ax::mojom::BoolAttribute::kContentEditableRoot) &&
+            ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot) &&
         GetName().empty() &&
         data.GetStringAttribute(ax::mojom::StringAttribute::kDescription)
             .empty() &&

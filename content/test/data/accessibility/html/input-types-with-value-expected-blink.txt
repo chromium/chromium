@@ -63,15 +63,15 @@ rootWebArea
 ++++++++++genericContainer editable
 ++++++++++++staticText editable name='Sometext'
 ++++++++++++++inlineTextBox editable name='Sometext'
-++++++genericContainer editable multiline value='Plain contenteditable' contentEditableRoot=true
+++++++genericContainer editable multiline value='Plain contenteditable' nonAtomicTextFieldRoot=true
 ++++++++staticText editable name='Plain contenteditable'
 ++++++++++inlineTextBox editable name='Plain contenteditable'
-++++++genericContainer editable multiline richlyEditable value='Rich contenteditable' contentEditableRoot=true
+++++++genericContainer editable multiline richlyEditable value='Rich contenteditable' nonAtomicTextFieldRoot=true
 ++++++++staticText editable richlyEditable name='Rich contenteditable'
 ++++++++++inlineTextBox editable richlyEditable name='Rich contenteditable'
-++++++textField editable multiline value='Plain contenteditable' contentEditableRoot=true
+++++++textField editable multiline value='Plain contenteditable' nonAtomicTextFieldRoot=true
 ++++++++staticText editable name='Plain contenteditable'
 ++++++++++inlineTextBox editable name='Plain contenteditable'
-++++++textField editable multiline richlyEditable value='Rich contenteditable' contentEditableRoot=true
+++++++textField editable multiline richlyEditable value='Rich contenteditable' nonAtomicTextFieldRoot=true
 ++++++++staticText editable richlyEditable name='Rich contenteditable'
 ++++++++++inlineTextBox editable richlyEditable name='Rich contenteditable'

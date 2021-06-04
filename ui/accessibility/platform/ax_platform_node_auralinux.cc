@@ -3773,7 +3773,8 @@ AXPlatformNodeAuraLinux& AXPlatformNodeAuraLinux::FindEditableRootOrDocument() {
   if (GetAtkRole() == ATK_ROLE_DOCUMENT_WEB)
     return *this;
   if (GetData().GetBoolAttribute(
-          ax::mojom::BoolAttribute::kContentEditableRoot))
+          ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot) &&
+      GetData().HasState(ax::mojom::State::kEditable))
     return *this;
   if (auto* parent = FromAtkObject(GetParent()))
     return parent->FindEditableRootOrDocument();

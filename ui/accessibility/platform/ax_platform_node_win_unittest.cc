@@ -4747,7 +4747,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
   update.nodes[12].AddState(ax::mojom::State::kEditable);
   update.nodes[12].AddState(ax::mojom::State::kRichlyEditable);
   update.nodes[12].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   update.nodes[13].id = 14;
   update.nodes[13].role = ax::mojom::Role::kGenericContainer;
   update.nodes[13].SetName("name");

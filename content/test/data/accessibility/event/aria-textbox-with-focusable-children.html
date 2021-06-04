@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div role="textbox" tabindex="0">
+  focusable:
+  <button id="btn1">not editable</button>
+</div>
+<div role="textbox" contenteditable>
+  focusable:
+  <button id="btn2">editable</button>
+</div>
+<script>
+  var go_passes = [
+    () => document.getElementById("btn1").focus(),
+    () => document.getElementById("btn2").focus(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

@@ -768,7 +768,8 @@ bool WebAXObjectProxy::IsRequired() {
 bool WebAXObjectProxy::IsEditableRoot() {
   UpdateLayout();
   return GetAXNodeData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot);
+             ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot) &&
+         GetAXNodeData().HasState(ax::mojom::State::kEditable);
 }
 
 bool WebAXObjectProxy::IsEditable() {

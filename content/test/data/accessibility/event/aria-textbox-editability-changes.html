@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="txt1" role="textbox" tabindex="0" aria-label="initially not editable">
+  foo <button>ok</button>
+</div>
+<div id="txt2" role="textbox" contenteditable aria-label="initially editable">
+  foo <button>ok</button>
+</div>
+<script>
+  var go_passes = [
+    () => document.getElementById("txt1").setAttribute("contenteditable", "true"),
+    () => document.getElementById("txt2").removeAttribute("contenteditable"),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

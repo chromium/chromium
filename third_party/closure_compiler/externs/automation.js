@@ -2018,11 +2018,11 @@ chrome.automation.AutomationNode.prototype.fontSize;
 chrome.automation.AutomationNode.prototype.fontFamily;
 
 /**
- * Indicates whether the object is at the root of a content editable region, or at a <body> element that has "design-mode" set to "on".
+ * Indicates whether the object functions as a text field which exposes its descendants. Use cases include the root of a content-editable region, an ARIA textbox which isn't currently editable and which has interactive descendants, and a <body> element that has "design-mode" set to "on".
  * @type {boolean}
- * @see https://developer.chrome.com/extensions/automation#type-contentEditableRoot
+ * @see https://developer.chrome.com/extensions/automation#type-nonAtomicTextFieldRoot
  */
-chrome.automation.AutomationNode.prototype.contentEditableRoot;
+chrome.automation.AutomationNode.prototype.nonAtomicTextFieldRoot;
 
 /**
  * Indicates aria-current state.

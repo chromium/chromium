@@ -1,0 +1,2 @@
+=== Start Continuation ===
+AXValueChanged on AXTextArea AXDescription="initially editable" AXValue="foo ok"

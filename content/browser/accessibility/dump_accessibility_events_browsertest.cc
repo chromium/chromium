@@ -396,6 +396,21 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaTextboxChildrenChange) {
+  RunEventTest(FILE_PATH_LITERAL("aria-textbox-children-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaTextboxEditabilityChanges) {
+  RunEventTest(FILE_PATH_LITERAL("aria-textbox-editability-changes.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaTextboxWithFocusableChildren) {
+  RunEventTest(FILE_PATH_LITERAL("aria-textbox-with-focusable-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaTreeCollapse) {
   RunEventTest(FILE_PATH_LITERAL("aria-tree-collapse.html"));
 }

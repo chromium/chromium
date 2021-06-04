@@ -3681,7 +3681,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetChildren) {
   generic_container_2.AddState(ax::mojom::State::kEditable);
   generic_container_2.AddState(ax::mojom::State::kRichlyEditable);
   generic_container_2.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   generic_container_2.child_ids = {static_text_3.id, static_text_6.id,
                                    static_text_7.id, button_8.id};
 
@@ -3698,9 +3698,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetChildren) {
   static_text_7.AddState(ax::mojom::State::kIgnored);
 
   button_8.role = ax::mojom::Role::kButton;
-  // Hack: The kEditableRoot attribute is needed to get a text range provider
-  // located on this element (see AXPlatformNodeWin::GetPatternProvider).
-  button_8.AddBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot,
+  // Hack: The kNonAtomicTextFieldRoot attribute is needed to get a text range
+  // provider located on this element (see
+  // AXPlatformNodeWin::GetPatternProvider).
+  button_8.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
                             true);
   // When kEditableRoot is set, kEditable is also expected.
   button_8.AddState(ax::mojom::State::kEditable);
@@ -5666,7 +5667,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   tree_update.nodes[1].AddState(ax::mojom::State::kEditable);
   tree_update.nodes[1].AddState(ax::mojom::State::kRichlyEditable);
   tree_update.nodes[1].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   tree_update.nodes[1].role = ax::mojom::Role::kGenericContainer;
 
   tree_update.nodes[2].id = 3;

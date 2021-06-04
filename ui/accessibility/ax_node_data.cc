@@ -1033,17 +1033,20 @@ bool AXNodeData::IsPasswordField() const {
 }
 
 bool AXNodeData::IsAtomicTextField() const {
-  // ARIA-based textboxes or searchboxes could mistakenly be identified as
-  // atomic text fields, i.e. be identified as an <input> or a <textarea>. This
-  // can only occur when the web author hasn't specified the "contenteditable"
-  // attribute. Since these kinds of text fields are not really usable, we
-  // decide not to support them.
+  // The ARIA spec suggests a textbox is a simple text field, like an <input> or
+  // <textarea> depending on aria-multiline. However there is nothing to stop
+  // an author from adding the textbox role to a non-contenteditable element,
+  // or from adding or removing non-plain-text nodes. If we treat the textbox
+  // role as atomic when contenteditable is not set, it can break accessibility
+  // by pruning interactive elements from the accessibility tree. Therefore,
+  // until we have a reliable means to identify truly atomic ARIA textboxes,
+  // treat them as non-atomic.
   return ui::IsTextField(role) &&
-         !HasBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot);
+         !GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
 }
 
 bool AXNodeData::IsNonAtomicTextField() const {
-  return HasBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot);
+  return GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
 }
 
 bool AXNodeData::IsReadOnlyOrDisabled() const {
@@ -1591,8 +1594,8 @@ std::string AXNodeData::ToString() const {
        bool_attributes) {
     std::string value = bool_attribute.second ? "true" : "false";
     switch (bool_attribute.first) {
-      case ax::mojom::BoolAttribute::kContentEditableRoot:
-        result += " contentEditable_root=" + value;
+      case ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot:
+        result += " non_atomic_text_field_root=" + value;
         break;
       case ax::mojom::BoolAttribute::kLiveAtomic:
         result += " atomic=" + value;

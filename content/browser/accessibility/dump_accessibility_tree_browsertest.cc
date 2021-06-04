@@ -1306,6 +1306,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTextbox) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaTextboxWithAriaTextboxChild) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-textbox-with-aria-textbox-child.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaTextboxWithNonTextChildren) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-textbox-with-non-text-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaTextboxWithRichText) {
   RunAriaTest(FILE_PATH_LITERAL("aria-textbox-with-rich-text.html"));
 }

@@ -1031,16 +1031,25 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     node_data->AddState(ax::mojom::blink::State::kInvisible);
 
   if (is_visible || is_focusable) {
+    // If the author applied the ARIA "textbox" role on something that is not
+    // (currently) editable, this may be read-only rich-text object. Or it
+    // might just be bad authoring. Either way, we want to expose its
+    // descendants, especially the interactive ones which might gain focus.
+    bool is_non_atomic_textfield_root = IsARIATextField();
+
     // Preserve continuity in subtrees of richly editable content by including
     // richlyEditable state even if ignored.
     if (IsEditable()) {
       node_data->AddState(ax::mojom::blink::State::kEditable);
-      if (IsEditableRoot()) {
-        node_data->AddBoolAttribute(
-            ax::mojom::blink::BoolAttribute::kContentEditableRoot, true);
-      }
+      if (!is_non_atomic_textfield_root)
+        is_non_atomic_textfield_root = IsEditableRoot();
+
       if (IsRichlyEditable())
         node_data->AddState(ax::mojom::blink::State::kRichlyEditable);
+    }
+    if (is_non_atomic_textfield_root) {
+      node_data->AddBoolAttribute(
+          ax::mojom::blink::BoolAttribute::kNonAtomicTextFieldRoot, true);
     }
   }
 

@@ -1,0 +1,30 @@
+[document web]
+++[entry] name='not editable' selectable-text
+++++[static] name='focusable: '
+++++[push button] name='ok'
+++++[link] name='link'
+++++++[static] name='link'
+++++[static] name=' '
+++++[label] label-for
+++++++[static] name='name: '
+++++++[entry] name='name:' selectable-text labelled-by
+++[entry] name='editable' selectable-text
+++++[static] name='focusable: '
+++++[push button] name='ok'
+++++[link] name='link'
+++++++[static] name='link'
+++++[static] name=' '
+++++[label] label-for
+++++++[static] name='name: '
+++++++[entry] name='name:' selectable-text labelled-by
+++[entry] name='not editable or focusable' selectable-text
+++++[static] name='focusable: '
+++++[push button] name='ok'
+++++[link] name='link'
+++++++[static] name='link'
+++++[static] name=' '
+++++[label] label-for
+++++++[static] name='name: '
+++++++[entry] name='name:' selectable-text labelled-by
+++[entry] name='not editable, img child' selectable-text
+++++[image]

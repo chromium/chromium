@@ -103,7 +103,7 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditable() {
   content_editable_node.AddState(ax::mojom::State::kEditable);
   content_editable_node.AddState(ax::mojom::State::kRichlyEditable);
   content_editable_node.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   content_editable_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;
@@ -123,7 +123,7 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditableWithSelectionRange(
   content_editable_node.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                                          true);
   content_editable_node.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kContentEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   content_editable_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;

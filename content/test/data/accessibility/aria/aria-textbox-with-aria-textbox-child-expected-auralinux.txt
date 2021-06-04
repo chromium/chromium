@@ -1,0 +1,27 @@
+[document web]
+++[entry] name='not editable' selectable-text
+++++[paragraph]
+++++++[static] name='Foo'
+++++[entry] name='nested, not editable, rich' selectable-text
+++++++[paragraph]
+++++++++[static] name='Bar'
+++++[entry] name='nested, not editable, plain' selectable-text
+++++++[static] name='Bar'
+++++[entry] name='nested, editable, rich' editable multi-line selectable-text
+++++++[paragraph] editable
+++++++++[static] name='Baz' editable
+++++[entry] name='nested, editable, plain' editable multi-line selectable-text
+++++++[static] name='Baz' editable
+++[entry] name='editable' editable multi-line selectable-text
+++++[paragraph] editable
+++++++[static] name='Foo' editable
+++++[entry] name='nested, not editable, rich' editable selectable-text
+++++++[paragraph] editable
+++++++++[static] name='Bar' editable
+++++[entry] name='nested, not editable, plain' editable selectable-text
+++++++[static] name='Bar' editable
+++++[entry] name='nested, editable, rich' editable multi-line selectable-text
+++++++[paragraph] editable
+++++++++[static] name='Baz' editable
+++++[entry] name='nested, editable, plain' editable multi-line selectable-text
+++++++[static] name='Baz' editable

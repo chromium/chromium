@@ -1195,7 +1195,7 @@ TEST_F('ChromeVoxEditingTest', 'BackwardWordDelete', function() {
     </div>
   `,
       function(root) {
-        const input = root.find({attributes: {contentEditableRoot: true}});
+        const input = root.find({attributes: {nonAtomicTextFieldRoot: true}});
         this.listenOnce(input, 'focus', function() {
           mockFeedback.call(this.press(KeyCode.END, {ctrl: true}))
               .expectSpeech('test')
