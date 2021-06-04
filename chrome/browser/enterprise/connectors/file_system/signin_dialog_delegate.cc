@@ -19,6 +19,7 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
+#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,6 +77,10 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
 
   std::string query = base::StringPrintf("client_id=%s&response_type=code",
                                          settings_.client_id.c_str());
+  std::string extra_params = GetProviderSpecificUrlParameters();
+  if (!extra_params.empty())
+    base::StringAppendF(&query, "&%s", extra_params.c_str());
+
   url::Replacements<char> replacements;
   replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
   GURL url = settings_.authorization_endpoint.ReplaceComponents(replacements);
@@ -190,6 +195,24 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
   token_fetcher_ = nullptr;
   std::move(callback_).Run(status, access_token, refresh_token);
   GetWidget()->Close();
+}
+
+std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
+  // If an email domain is specified, use it as a hint in the box authn URL.
+  // Make sure the domain has an @ prefix.
+  if (settings_.service_provider == kBoxProviderName) {
+    if (!settings_.email_domain.empty()) {
+      // If the domain does not already start with an @ sign, prepend the
+      // escaped version of it.
+      return base::StringPrintf(
+          "box_login=%s%s", settings_.email_domain[0] == '@' ? "" : "%40",
+          net::EscapeQueryParamValue(settings_.email_domain, true).c_str());
+    }
+  } else {
+    NOTREACHED() << "Unknown service provider: " << settings_.service_provider;
+  }
+
+  return std::string();
 }
 
 BEGIN_METADATA(FileSystemSigninDialogDelegate, views::DialogDelegateView)

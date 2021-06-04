@@ -21,7 +21,6 @@ constexpr char kAccessTokenPrefPathTemplate[] =
       "enterprise_connectors.file_system.%s.access_token";
 constexpr char kRefreshTokenPrefPathTemplate[] =
       "enterprise_connectors.file_system.%s.refresh_token";
-constexpr char kBoxProviderName[] = "box";
 
 // Traffic annotation strings must be fully defined at compile time.  They
 // can't be dynamically built at runtime based on the |service_provider|.

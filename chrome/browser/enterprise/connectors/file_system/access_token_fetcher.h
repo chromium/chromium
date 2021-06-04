@@ -15,6 +15,11 @@ class PrefRegistrySimple;
 
 namespace enterprise_connectors {
 
+// The unique key for the Box service provider.  This is used to generate the
+// correct network annotation tag as well as possible parameters in the
+// access token consent URL.
+constexpr char kBoxProviderName[] = "box";
+
 // Helper class to retrieve an access token for a file system service provider.
 class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
                            public OAuth2AccessTokenConsumer {

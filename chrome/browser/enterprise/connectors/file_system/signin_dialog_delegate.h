@@ -75,6 +75,10 @@ class FileSystemSigninDialogDelegate
                         const std::string& access_token,
                         const std::string& refresh_token);
 
+  // Return extra URL parameters that are specific to a given service provider.
+  // May return the empty string if there are none.
+  std::string GetProviderSpecificUrlParameters();
+
   const FileSystemSettings settings_;
   std::unique_ptr<views::WebView> web_view_;
   std::unique_ptr<OAuth2AccessTokenFetcherImpl> token_fetcher_;
