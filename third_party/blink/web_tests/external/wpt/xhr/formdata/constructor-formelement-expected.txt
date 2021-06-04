@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL test that FormData is correctly constructed from the form data set assert_array_equals: submit-me-16 expected property 0 to be "textarea value\nwith linebreaks set to LF" but got "textarea value\r\nwith linebreaks set to LF" (expected array ["textarea value\nwith linebreaks set to LF"] got ["textarea value\r\nwith linebreaks set to LF"])
+Harness: the test ran to completion.
+

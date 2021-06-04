@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Constructing the entry list shouldn't perform newline normalization: \n in the value assert_equals: expected "b\nc" but got "b\r\nc"
+FAIL Constructing the entry list shouldn't perform newline normalization: \r in the value assert_equals: expected "b\rc" but got "b\r\nc"
+PASS Constructing the entry list shouldn't perform newline normalization: \r\n in the value
+FAIL Constructing the entry list shouldn't perform newline normalization: \n\r in the value assert_equals: expected "b\n\rc" but got "b\r\n\r\nc"
+FAIL Constructing the entry list shouldn't perform newline normalization: \n in the name assert_equals: expected "a\nb" but got "a\r\nb"
+FAIL Constructing the entry list shouldn't perform newline normalization: \r in the name assert_equals: expected "a\rb" but got "a\r\nb"
+PASS Constructing the entry list shouldn't perform newline normalization: \r\n in the name
+FAIL Constructing the entry list shouldn't perform newline normalization: \n\r in the name assert_equals: expected "a\n\rb" but got "a\r\n\r\nb"
+PASS Constructing the entry list shouldn't perform newline normalization: \n in the filename
+PASS Constructing the entry list shouldn't perform newline normalization: \r in the filename
+PASS Constructing the entry list shouldn't perform newline normalization: \r\n in the filename
+PASS Constructing the entry list shouldn't perform newline normalization: \n\r in the filename
+Harness: the test ran to completion.
+

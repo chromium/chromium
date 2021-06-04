@@ -1,0 +1,5 @@
+CONSOLE MESSAGE: line 28: Got notification on web area
+This is a testharness.js-based test.
+FAIL This test ensures that scrolling the window sends a notification. assert_equals: expected 500 but got 0
+Harness: the test ran to completion.
+

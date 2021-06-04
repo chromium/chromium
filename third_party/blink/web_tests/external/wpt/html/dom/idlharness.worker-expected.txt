@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 804 tests; 796 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 805 tests; 797 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -358,6 +358,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute strokeStyle
 PASS OffscreenCanvasRenderingContext2D interface: attribute fillStyle
 PASS OffscreenCanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS OffscreenCanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetY

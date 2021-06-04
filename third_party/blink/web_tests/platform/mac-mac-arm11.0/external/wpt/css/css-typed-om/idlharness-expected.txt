@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 508 tests; 431 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 510 tests; 433 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -398,8 +398,13 @@ PASS CSSColorValue interface object name
 FAIL CSSColorValue interface: existence and properties of interface prototype object assert_equals: prototype of CSSColorValue.prototype is not CSSStyleValue.prototype expected [stringifying object threw TypeError: Illegal invocation with type object] but got object "[object Object]"
 PASS CSSColorValue interface: existence and properties of interface prototype object's "constructor" property
 PASS CSSColorValue interface: existence and properties of interface prototype object's @@unscopables property
-FAIL CSSColorValue interface: attribute colorSpace assert_true: The prototype object must have a property "colorSpace" expected true got false
-FAIL CSSColorValue interface: operation to(CSSKeywordish) assert_own_property: interface prototype object missing non-static operation expected property "to" missing
+PASS CSSColorValue interface: operation toRGB()
+PASS CSSColorValue interface: operation toHSL()
+FAIL CSSColorValue interface: operation toHWB() assert_own_property: interface prototype object missing non-static operation expected property "toHWB" missing
+FAIL CSSColorValue interface: operation toGray() assert_own_property: interface prototype object missing non-static operation expected property "toGray" missing
+FAIL CSSColorValue interface: operation toLCH() assert_own_property: interface prototype object missing non-static operation expected property "toLCH" missing
+FAIL CSSColorValue interface: operation toLab() assert_own_property: interface prototype object missing non-static operation expected property "toLab" missing
+FAIL CSSColorValue interface: operation toColor(CSSKeywordish) assert_own_property: interface prototype object missing non-static operation expected property "toColor" missing
 FAIL CSSColorValue interface: operation parse(USVString) assert_own_property: interface object missing static operation expected property "parse" missing
 PASS CSSRGB interface: existence and properties of interface object
 PASS CSSRGB interface object length
@@ -431,6 +436,14 @@ FAIL CSSHWB interface: attribute h assert_own_property: self does not have own p
 FAIL CSSHWB interface: attribute w assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
 FAIL CSSHWB interface: attribute b assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
 FAIL CSSHWB interface: attribute alpha assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSGray interface: existence and properties of interface object assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface object length assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface object name assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface: attribute gray assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
+FAIL CSSGray interface: attribute alpha assert_own_property: self does not have own property "CSSGray" expected property "CSSGray" missing
 FAIL CSSLCH interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
 FAIL CSSLCH interface object length assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
 FAIL CSSLCH interface object name assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
@@ -457,17 +470,6 @@ FAIL CSSColor interface object name assert_own_property: self does not have own 
 FAIL CSSColor interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface object length assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface object name assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute c assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute m assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute y assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute k assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute alpha assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
 PASS CSSStyleRule interface: attribute styleMap
 PASS CSS namespace: operation escape(CSSOMString)
 PASS CSS namespace: operation number(double)

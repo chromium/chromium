@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Textarea wrapping transformation: Newlines should be normalized to LF. assert_equals: expected "a\nb\nc\nd\n\ne" but got "a\r\nb\r\nc\r\nd\r\n\r\ne"
+FAIL Textarea wrapping transformation: Wrapping happens with LF newlines. assert_true: The wrapping done on the value must be LF, not CRLF. expected true got false
+Harness: the test ran to completion.
+

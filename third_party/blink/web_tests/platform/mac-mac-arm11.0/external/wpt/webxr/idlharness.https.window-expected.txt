@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 283 tests; 270 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 281 tests; 270 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -215,7 +215,6 @@ PASS XRWebGLLayer interface: existence and properties of interface prototype obj
 PASS XRWebGLLayer interface: existence and properties of interface prototype object's @@unscopables property
 PASS XRWebGLLayer interface: attribute antialias
 PASS XRWebGLLayer interface: attribute ignoreDepthValues
-FAIL XRWebGLLayer interface: attribute fixedFoveation assert_true: The prototype object must have a property "fixedFoveation" expected true got false
 PASS XRWebGLLayer interface: attribute framebuffer
 PASS XRWebGLLayer interface: attribute framebufferWidth
 PASS XRWebGLLayer interface: attribute framebufferHeight
@@ -225,7 +224,6 @@ PASS XRWebGLLayer must be primary interface of xrWebGLLayer
 PASS Stringification of xrWebGLLayer
 PASS XRWebGLLayer interface: xrWebGLLayer must inherit property "antialias" with the proper type
 PASS XRWebGLLayer interface: xrWebGLLayer must inherit property "ignoreDepthValues" with the proper type
-FAIL XRWebGLLayer interface: xrWebGLLayer must inherit property "fixedFoveation" with the proper type assert_inherits: property "fixedFoveation" not found in prototype chain
 PASS XRWebGLLayer interface: xrWebGLLayer must inherit property "framebuffer" with the proper type
 PASS XRWebGLLayer interface: xrWebGLLayer must inherit property "framebufferWidth" with the proper type
 PASS XRWebGLLayer interface: xrWebGLLayer must inherit property "framebufferHeight" with the proper type

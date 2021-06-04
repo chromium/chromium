@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1441 tests; 1410 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1445 tests; 1414 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -448,6 +448,7 @@ PASS CanvasRenderingContext2D interface: attribute strokeStyle
 PASS CanvasRenderingContext2D interface: attribute fillStyle
 PASS CanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS CanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS CanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS CanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS CanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS CanvasRenderingContext2D interface: attribute shadowOffsetY
@@ -540,6 +541,8 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling createLinearGradient(double, double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createRadialGradient(double, double, double, double, double, double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createRadialGradient(double, double, double, double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createConicGradient(double, double, double)" with the proper type
+PASS CanvasRenderingContext2D interface: calling createConicGradient(double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createPattern(CanvasImageSource, DOMString)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createPattern(CanvasImageSource, DOMString) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "shadowOffsetX" with the proper type
@@ -747,6 +750,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute strokeStyle
 PASS OffscreenCanvasRenderingContext2D interface: attribute fillStyle
 PASS OffscreenCanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS OffscreenCanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetY

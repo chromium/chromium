@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface HTMLAnchorElement: original interface defined
+PASS Partial interface HTMLAnchorElement: member names are unique
+PASS Partial interface HTMLAnchorElement[2]: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS HTMLAnchorElement includes HTMLHyperlinkElementUtils: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+FAIL HTMLAnchorElement interface: attribute attributionSourceId assert_true: The prototype object must have a property "attributionSourceId" expected true got false
+PASS HTMLAnchorElement interface: attribute attributionDestination
+FAIL HTMLAnchorElement interface: document.createElement("a") must inherit property "attributionSourceId" with the proper type assert_inherits: property "attributionSourceId" not found in prototype chain
+PASS HTMLAnchorElement interface: document.createElement("a") must inherit property "attributionDestination" with the proper type
+Harness: the test ran to completion.
+

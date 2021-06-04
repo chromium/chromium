@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 75 tests; 74 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 91 tests; 90 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS PaymentRequest interface: existence and properties of interface object
@@ -12,6 +12,11 @@ PASS PaymentRequest interface: operation show(optional Promise<PaymentDetailsUpd
 PASS PaymentRequest interface: operation abort()
 PASS PaymentRequest interface: operation canMakePayment()
 PASS PaymentRequest interface: attribute id
+PASS PaymentRequest interface: attribute shippingAddress
+PASS PaymentRequest interface: attribute shippingOption
+PASS PaymentRequest interface: attribute shippingType
+PASS PaymentRequest interface: attribute onshippingaddresschange
+PASS PaymentRequest interface: attribute onshippingoptionchange
 PASS PaymentRequest interface: attribute onpaymentmethodchange
 PASS PaymentRequest must be primary interface of paymentRequest
 PASS Stringification of paymentRequest
@@ -20,7 +25,29 @@ PASS PaymentRequest interface: calling show(optional Promise<PaymentDetailsUpdat
 PASS PaymentRequest interface: paymentRequest must inherit property "abort()" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "canMakePayment()" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "id" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "shippingAddress" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "shippingOption" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "shippingType" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "onshippingaddresschange" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "onshippingoptionchange" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "onpaymentmethodchange" with the proper type
+PASS PaymentAddress interface: existence and properties of interface object
+PASS PaymentAddress interface object length
+PASS PaymentAddress interface object name
+PASS PaymentAddress interface: existence and properties of interface prototype object
+PASS PaymentAddress interface: existence and properties of interface prototype object's "constructor" property
+PASS PaymentAddress interface: existence and properties of interface prototype object's @@unscopables property
+PASS PaymentAddress interface: operation toJSON()
+PASS PaymentAddress interface: attribute city
+PASS PaymentAddress interface: attribute country
+PASS PaymentAddress interface: attribute dependentLocality
+PASS PaymentAddress interface: attribute organization
+PASS PaymentAddress interface: attribute phone
+PASS PaymentAddress interface: attribute postalCode
+PASS PaymentAddress interface: attribute recipient
+PASS PaymentAddress interface: attribute region
+PASS PaymentAddress interface: attribute sortingCode
+PASS PaymentAddress interface: attribute addressLine
 PASS PaymentResponse interface: existence and properties of interface object
 PASS PaymentResponse interface object length
 PASS PaymentResponse interface object name
@@ -31,8 +58,14 @@ PASS PaymentResponse interface: operation toJSON()
 PASS PaymentResponse interface: attribute requestId
 PASS PaymentResponse interface: attribute methodName
 PASS PaymentResponse interface: attribute details
+PASS PaymentResponse interface: attribute shippingAddress
+PASS PaymentResponse interface: attribute shippingOption
+PASS PaymentResponse interface: attribute payerName
+PASS PaymentResponse interface: attribute payerEmail
+PASS PaymentResponse interface: attribute payerPhone
 PASS PaymentResponse interface: operation complete(optional PaymentComplete)
 PASS PaymentResponse interface: operation retry(optional PaymentValidationErrors)
+PASS PaymentResponse interface: attribute onpayerdetailchange
 PASS PaymentMethodChangeEvent interface: existence and properties of interface object
 PASS PaymentMethodChangeEvent interface object length
 PASS PaymentMethodChangeEvent interface object name
@@ -58,22 +91,5 @@ PASS PaymentRequestUpdateEvent must be primary interface of new PaymentRequestUp
 PASS Stringification of new PaymentRequestUpdateEvent("paymentrequestupdate")
 PASS PaymentRequestUpdateEvent interface: new PaymentRequestUpdateEvent("paymentrequestupdate") must inherit property "updateWith(Promise<PaymentDetailsUpdate>)" with the proper type
 PASS PaymentRequestUpdateEvent interface: calling updateWith(Promise<PaymentDetailsUpdate>) on new PaymentRequestUpdateEvent("paymentrequestupdate") with too few arguments must throw TypeError
-PASS PaymentAddress interface: existence and properties of interface object
-PASS PaymentAddress interface object length
-PASS PaymentAddress interface object name
-PASS PaymentAddress interface: existence and properties of interface prototype object
-PASS PaymentAddress interface: existence and properties of interface prototype object's "constructor" property
-PASS PaymentAddress interface: existence and properties of interface prototype object's @@unscopables property
-PASS PaymentAddress interface: operation toJSON()
-PASS PaymentAddress interface: attribute city
-PASS PaymentAddress interface: attribute country
-PASS PaymentAddress interface: attribute dependentLocality
-PASS PaymentAddress interface: attribute organization
-PASS PaymentAddress interface: attribute phone
-PASS PaymentAddress interface: attribute postalCode
-PASS PaymentAddress interface: attribute recipient
-PASS PaymentAddress interface: attribute region
-PASS PaymentAddress interface: attribute sortingCode
-PASS PaymentAddress interface: attribute addressLine
 Harness: the test ran to completion.
 
