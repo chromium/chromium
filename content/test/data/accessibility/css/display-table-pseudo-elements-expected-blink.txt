@@ -3,17 +3,61 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++heading name='Heading'
-++++++++++layoutTable
+++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
-++++++++++++++++genericContainer ignored
-++++++++++++++++++staticText name='  '
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='1'
+++++++++++++++++++++inlineTextBox name='1'
 ++++++++++staticText name='Heading'
 ++++++++++++inlineTextBox name='Heading'
-++++++++++layoutTable
+++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
-++++++++++++++++genericContainer ignored
-++++++++++++++++++staticText name='  '
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='1'
+++++++++++++++++++++inlineTextBox name='1'
+++++++++staticText name='\nParagraph'
+++++++++++inlineTextBox name='\nParagraph'
+++++++genericContainer ignored
+++++++++heading name='Heading'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='2'
+++++++++++++++++++inlineTextBox name='2'
+++++++++++staticText name='Heading'
+++++++++++++inlineTextBox name='Heading'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='2'
+++++++++++++++++++inlineTextBox name='2'
+++++++++staticText name='\nParagraph'
+++++++++++inlineTextBox name='\nParagraph'
+++++++genericContainer ignored
+++++++++heading name='Heading'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
+++++++++++staticText name='Heading'
+++++++++++++inlineTextBox name='Heading'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
+++++++++staticText name='\nParagraph'
+++++++++++inlineTextBox name='\nParagraph'
+++++++genericContainer ignored
+++++++++heading name='Heading'
+++++++++++genericContainer
+++++++++++++staticText name='4'
+++++++++++++++inlineTextBox name='4'
+++++++++++staticText name='Heading'
+++++++++++++inlineTextBox name='Heading'
+++++++++++genericContainer
+++++++++++++staticText name='4'
+++++++++++++++inlineTextBox name='4'
 ++++++++staticText name='\nParagraph'
 ++++++++++inlineTextBox name='\nParagraph'

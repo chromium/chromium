@@ -216,14 +216,19 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   // the screen reader determine what to do for CSS tables. If this line
   // is reached, then it is not an HTML table, and therefore will only be
   // considered a data table if ARIA markup indicates it is a table.
-  if (layout_object_->IsTable() && node)
-    return ax::mojom::blink::Role::kLayoutTable;
-  if (layout_object_->IsTableSection())
-    return DetermineTableSectionRole();
-  if (layout_object_->IsTableRow() && node)
-    return DetermineTableRowRole();
-  if (layout_object_->IsTableCell() && node)
-    return DetermineTableCellRole();
+  // Additionally, as pseudo elements don't have any structure it doesn't make
+  // sense to report their table-related layout roles that could be set via the
+  // display property.
+  if (node && !node->IsPseudoElement()) {
+    if (layout_object_->IsTable())
+      return ax::mojom::blink::Role::kLayoutTable;
+    if (layout_object_->IsTableSection())
+      return DetermineTableSectionRole();
+    if (layout_object_->IsTableRow())
+      return DetermineTableRowRole();
+    if (layout_object_->IsTableCell())
+      return DetermineTableCellRole();
+  }
 
   if (IsImageOrAltText(layout_object_, node)) {
     if (IsA<HTMLInputElement>(node))
