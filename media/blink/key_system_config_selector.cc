@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
@@ -634,14 +635,18 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // permission has already been denied. This would happen anyway later.
   EmeFeatureSupport distinctive_identifier_support =
       key_systems_->GetDistinctiveIdentifierSupport(key_system);
+#if !defined(OS_ANDROID)
   // NOTE: This is an additional action we are taking here that is not in the
   // spec currently.  Specifically, we are not allowing a distinctive identifier
-  // for cross-origin frames.
+  // for cross-origin frames. We do not do this on Android because there is no
+  // CDM selection available to Chrome that doesn't require a distinct
+  // identifier.
   if (web_frame_delegate_->IsCrossOriginToMainFrame()) {
     if (distinctive_identifier_support == EmeFeatureSupport::ALWAYS_ENABLED)
       return CONFIGURATION_NOT_SUPPORTED;
     distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
   }
+#endif  // !defined(OS_ANDROID)
   EmeConfigRule di_rule = GetDistinctiveIdentifierConfigRule(
       distinctive_identifier_support, distinctive_identifier);
   if (!config_state->IsRuleSupported(di_rule)) {
