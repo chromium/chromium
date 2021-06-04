@@ -14,7 +14,6 @@
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
-#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/test_data.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "media/base/media_util.h"
@@ -78,7 +77,7 @@ class CastStreamingDisabledTest : public CastStreamingBaseTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::BrowserTestBase::SetUpCommandLine(command_line);
-    command_line->RemoveSwitch(switches::kEnableCastStreamingReceiver);
+    command_line->RemoveSwitch("enable-cast-streaming-receiver");
   }
 };
 
@@ -94,7 +93,7 @@ class CastStreamingTest : public CastStreamingBaseTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::BrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableCastStreamingReceiver);
+    command_line->AppendSwitch("enable-cast-streaming-receiver");
   }
 };
 

@@ -89,7 +89,7 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
     // Set this flag early so that the fuchsia-dir:// scheme will be
     // registered at browser startup.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableContentDirectories);
+        "enable-content-directories");
 
     // Scheme initialization for the WebEngineContentClient depends on the above
     // command line modification, which won't have been present when the schemes
