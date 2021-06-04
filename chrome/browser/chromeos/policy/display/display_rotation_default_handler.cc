@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/display_rotation_default_handler.h"
+#include "chrome/browser/chromeos/policy/display/display_rotation_default_handler.h"
 #include "base/callback_helpers.h"
 
 #include <utility>

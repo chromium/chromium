@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_SETTINGS_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_SETTINGS_HANDLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_SETTINGS_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_SETTINGS_HANDLER_H_
 
 #include <memory>
 #include <vector>
@@ -110,4 +110,4 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_SETTINGS_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_SETTINGS_HANDLER_H_

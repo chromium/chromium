@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
-
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
 
 #include <set>
 #include <string>
 #include <vector>
 
 #include "ash/public/mojom/cros_display_config.mojom-forward.h"
-#include "chrome/browser/chromeos/policy/display_settings_handler.h"
+#include "chrome/browser/chromeos/policy/display/display_settings_handler.h"
 #include "ui/display/display.h"
 
 namespace policy {
@@ -51,4 +50,4 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DISPLAY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
