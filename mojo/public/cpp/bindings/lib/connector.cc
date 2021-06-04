@@ -204,10 +204,11 @@ void Connector::StartReceiving(
   DCHECK(!task_runner_);
   task_runner_ = std::move(task_runner);
   allow_woken_up_by_others_ = allow_woken_up_by_others;
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   if (task_runner_->RunsTasksInCurrentSequence()) {
     WaitToReadMore();
   } else {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&Connector::WaitToReadMore, weak_factory_.GetWeakPtr()));
@@ -313,7 +314,7 @@ bool Connector::PrefersSerializedMessages() {
 }
 
 bool Connector::Accept(Message* message) {
-  if (!lock_)
+  if (!lock_ && task_runner_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error_)

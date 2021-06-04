@@ -106,10 +106,16 @@ class COMPONENT_EXPORT(IPC) MojoBootstrap {
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
       const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker);
 
-  // Start the handshake over the underlying message pipe.
+  // Initialize the Channel pipe and interface endpoints. This performs all
+  // setup except actually starting to read messages off the pipe.
   virtual void Connect(
       mojo::PendingAssociatedRemote<mojom::Channel>* sender,
       mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) = 0;
+
+  // Enable incoming messages to start being read off the pipe and routed to
+  // endpoints. Must not be called until the pending endpoints created by
+  // Connect() are actually bound somewhere.
+  virtual void StartReceiving() = 0;
 
   // Stop transmitting messages and start queueing them instead.
   virtual void Pause() = 0;

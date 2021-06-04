@@ -30,6 +30,11 @@ class Connection {
     bootstrap_->Connect(&sender, &receiver_);
     sender_.Bind(std::move(sender));
     sender_->SetPeerPid(sender_id);
+
+    // It's OK to start receiving right away even though `receiver_` isn't
+    // bound, because all of these tests are single-threaded and it will be
+    // bound before any incoming messages can be scheduled for processing.
+    bootstrap_->StartReceiving();
   }
 
   void TakeReceiver(

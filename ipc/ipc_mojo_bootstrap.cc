@@ -173,29 +173,6 @@ class ChannelAssociatedGroupController
     *count = top_message_info_and_count.second;
   }
 
-  void Bind(mojo::ScopedMessagePipeHandle handle) {
-    connector_ = std::make_unique<mojo::Connector>(
-        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
-        "IPC Channel");
-    connector_->set_incoming_receiver(&dispatcher_);
-    connector_->set_connection_error_handler(
-        base::BindOnce(&ChannelAssociatedGroupController::OnPipeError,
-                       base::Unretained(this)));
-    connector_->set_enforce_errors_from_incoming_receiver(false);
-    if (quota_checker_)
-      connector_->SetMessageQuotaChecker(quota_checker_);
-
-    // Don't let the Connector do any sort of queuing on our behalf. Individual
-    // messages bound for the IPC::ChannelProxy thread (i.e. that vast majority
-    // of messages received by this Connector) are already individually
-    // scheduled for dispatch by ChannelProxy, so Connector's normal mode of
-    // operation would only introduce a redundant scheduling step for most
-    // messages.
-    connector_->set_force_immediate_dispatch(true);
-
-    connector_->StartReceiving(task_runner_);
-  }
-
   void Pause() {
     DCHECK(!paused_);
     paused_ = true;
@@ -219,9 +196,28 @@ class ChannelAssociatedGroupController
       SendMessage(&message);
   }
 
-  void CreateChannelEndpoints(
-      mojo::PendingAssociatedRemote<mojom::Channel>* sender,
-      mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) {
+  void Bind(mojo::ScopedMessagePipeHandle handle,
+            mojo::PendingAssociatedRemote<mojom::Channel>* sender,
+            mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) {
+    connector_ = std::make_unique<mojo::Connector>(
+        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
+        "IPC Channel");
+    connector_->set_incoming_receiver(&dispatcher_);
+    connector_->set_connection_error_handler(
+        base::BindOnce(&ChannelAssociatedGroupController::OnPipeError,
+                       base::Unretained(this)));
+    connector_->set_enforce_errors_from_incoming_receiver(false);
+    if (quota_checker_)
+      connector_->SetMessageQuotaChecker(quota_checker_);
+
+    // Don't let the Connector do any sort of queuing on our behalf. Individual
+    // messages bound for the IPC::ChannelProxy thread (i.e. that vast majority
+    // of messages received by this Connector) are already individually
+    // scheduled for dispatch by ChannelProxy, so Connector's normal mode of
+    // operation would only introduce a redundant scheduling step for most
+    // messages.
+    connector_->set_force_immediate_dispatch(true);
+
     mojo::InterfaceId sender_id, receiver_id;
     if (set_interface_id_namespace_bit_) {
       sender_id = 1 | mojo::kInterfaceIdNamespaceMask;
@@ -251,6 +247,8 @@ class ChannelAssociatedGroupController
     *receiver = mojo::PendingAssociatedReceiver<mojom::Channel>(
         std::move(receiver_handle));
   }
+
+  void StartReceiving() { connector_->StartReceiving(task_runner_); }
 
   void ShutDown() {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -1147,9 +1145,10 @@ class MojoBootstrapImpl : public MojoBootstrap {
   void Connect(
       mojo::PendingAssociatedRemote<mojom::Channel>* sender,
       mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) override {
-    controller_->Bind(std::move(handle_));
-    controller_->CreateChannelEndpoints(sender, receiver);
+    controller_->Bind(std::move(handle_), sender, receiver);
   }
+
+  void StartReceiving() override { controller_->StartReceiving(); }
 
   void Pause() override {
     controller_->Pause();

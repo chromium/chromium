@@ -209,6 +209,7 @@ bool ChannelMojo::Connect() {
 void ChannelMojo::FinishConnectOnIOThread() {
   DCHECK(message_reader_);
   message_reader_->FinishInitializationOnIOThread(GetSelfPID());
+  bootstrap_->StartReceiving();
 }
 
 void ChannelMojo::Pause() {
