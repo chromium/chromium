@@ -70,13 +70,6 @@ public abstract class FirstRunFlowSequencer  {
      * Once finished, calls onFlowIsKnown().
      */
     public void start() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-                || ApiCompatibilityUtils.isDemoUser()
-                || ApiCompatibilityUtils.isRunningInUserTestHarness()) {
-            onFlowIsKnown(null);
-            return;
-        }
-
         long childAccountStatusStart = SystemClock.elapsedRealtime();
         ChildAccountService.checkChildAccountStatus(status -> {
             RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
@@ -150,13 +143,6 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     void processFreEnvironmentPreNative() {
-        if (isFirstRunFlowComplete()) {
-            assert isFirstRunEulaAccepted();
-            // We do not need any interactive FRE.
-            onFlowIsKnown(null);
-            return;
-        }
-
         Bundle freProperties = new Bundle();
         freProperties.putInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
 
