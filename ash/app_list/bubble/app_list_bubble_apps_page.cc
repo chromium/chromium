@@ -13,6 +13,7 @@
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/bubble/simple_grid_layout.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/text_constants.h"
@@ -61,14 +62,13 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   auto* continue_section =
       scroll_contents->AddChildView(std::make_unique<views::View>());
-  // TODO(https://crbug.com/1204551): Extract SimpleGridLayout from
-  // HoldingSpaceItemChipsContainer and use it here.
-  const int kContinueSpacing = 16;
-  auto* continue_layout =
-      continue_section->SetLayoutManager(std::make_unique<BoxLayout>(
-          BoxLayout::Orientation::kVertical, gfx::Insets(), kContinueSpacing));
-  continue_layout->set_cross_axis_alignment(
-      BoxLayout::CrossAxisAlignment::kStretch);
+
+  const int kContinueColumnCount = 2;
+  const int kContinueColumnSpacing = 16;
+  const int kContinueRowSpacing = 10;
+  continue_section->SetLayoutManager(std::make_unique<SimpleGridLayout>(
+      kContinueColumnCount, kContinueColumnSpacing, kContinueRowSpacing));
+
   for (int i = 0; i < 4; ++i) {
     continue_section->AddChildView(CreateLabel(u"Item"));
   }

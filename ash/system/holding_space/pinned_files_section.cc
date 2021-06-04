@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/pinned_files_section.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -17,7 +18,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
-#include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -42,6 +42,8 @@ constexpr int kFilesAppChipHeight = 32;
 constexpr int kFilesAppChipIconSize = 20;
 constexpr gfx::Insets kFilesAppChipInsets(0, 8, 0, 16);
 constexpr int kPlaceholderChildSpacing = 16;
+constexpr int kNumberOfChipsPerRow = 2;
+constexpr int kChipSpacing = 8;
 
 // FilesAppChip ----------------------------------------------------------------
 
@@ -164,7 +166,11 @@ std::unique_ptr<views::View> PinnedFilesSection::CreateHeader() {
 }
 
 std::unique_ptr<views::View> PinnedFilesSection::CreateContainer() {
-  return std::make_unique<HoldingSpaceItemChipsContainer>();
+  auto container = std::make_unique<views::View>();
+  container->SetLayoutManager(std::make_unique<SimpleGridLayout>(
+      kNumberOfChipsPerRow, /*column_spacing=*/kChipSpacing,
+      /*row_spacing=*/kChipSpacing));
+  return container;
 }
 
 std::unique_ptr<HoldingSpaceItemView> PinnedFilesSection::CreateView(

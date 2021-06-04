@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/downloads_section.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -13,7 +14,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
-#include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +29,9 @@
 namespace ash {
 
 namespace {
+
+constexpr int kNumberOfChipsPerRow = 2;
+constexpr int kChipSpacing = 8;
 
 // CallbackPathGenerator -------------------------------------------------------
 
@@ -152,7 +155,11 @@ std::unique_ptr<views::View> DownloadsSection::CreateHeader() {
 }
 
 std::unique_ptr<views::View> DownloadsSection::CreateContainer() {
-  return std::make_unique<HoldingSpaceItemChipsContainer>();
+  auto container = std::make_unique<views::View>();
+  container->SetLayoutManager(std::make_unique<SimpleGridLayout>(
+      kNumberOfChipsPerRow, /*column_spacing=*/kChipSpacing,
+      /*row_spacing=*/kChipSpacing));
+  return container;
 }
 
 std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(
