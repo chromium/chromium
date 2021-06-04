@@ -65,7 +65,7 @@
 
       :host ::slotted([slot=body]) {
         color: var(--cr-secondary-text-color);
-        padding: 0 20px;
+        padding: 0 var(--cr-dialog-body-padding-horizontal, 20px);
       }
 
       :host ::slotted([slot=title]) {
@@ -83,9 +83,9 @@
       :host ::slotted([slot=button-container]) {
         display: flex;
         justify-content: flex-end;
-        padding-bottom: 16px;
-        padding-inline-end: 16px;
-        padding-inline-start: 16px;
+        padding-bottom: var(--cr-dialog-button-container-padding-bottom, 16px);
+        padding-inline-end: var(--cr-dialog-button-container-padding-horizontal, 16px);
+        padding-inline-start: var(--cr-dialog-button-container-padding-horizontal, 16px);
         padding-top: 24px;
       }
 
