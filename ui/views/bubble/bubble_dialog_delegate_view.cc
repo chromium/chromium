@@ -317,8 +317,15 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow)
     : arrow_(arrow), shadow_(shadow) {
-  SetAnchorView(anchor_view);
   SetOwnedByWidget(true);
+  SetAnchorView(anchor_view);
+  SetArrow(arrow);
+  SetShowCloseButton(false);
+
+  LayoutProvider* const layout_provider = LayoutProvider::Get();
+  set_margins(layout_provider->GetDialogInsetsForContentType(
+      DialogContentType::kText, DialogContentType::kText));
+  set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
 }
 
 BubbleDialogDelegate::~BubbleDialogDelegate() {
@@ -377,15 +384,6 @@ BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Shadow shadow)
     : BubbleDialogDelegate(anchor_view, arrow, shadow) {
   set_owned_by_client();
-  WidgetDelegate::SetShowCloseButton(false);
-
-  SetArrow(arrow);
-  LayoutProvider* provider = LayoutProvider::Get();
-  // An individual bubble should override these margins if its layout differs
-  // from the typical title/text/buttons.
-  set_margins(provider->GetDialogInsetsForContentType(
-      DialogContentType::kText, DialogContentType::kText));
-  set_title_margins(provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
   UMA_HISTOGRAM_BOOLEAN("Dialog.BubbleDialogDelegateView.Create", true);
 }
 
