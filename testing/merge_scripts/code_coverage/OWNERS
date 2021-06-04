@@ -1,4 +1,4 @@
 pasthana@google.com
 zhaoyangli@chromium.org
 liaoyuke@chromium.org
-per-file merge_js_lib.py,merge_js_lib_test.py=benreich@chromium.org
+per-file merge_js_lib.py,merge_js_lib_test.py,convert_to_istanbul.js=benreich@chromium.org
