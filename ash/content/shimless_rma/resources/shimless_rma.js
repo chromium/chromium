@@ -251,9 +251,8 @@ export class ShimlessRmaElement extends PolymerElement {
     assert(page);
 
     // Acquire promise to check whether current page is ready for next page.
-    const prepPageAdvance = page.onNextButtonClick ||
-        (() => Promise.resolve(
-             {state: RmaState.kUnknown, error: RmadErrorCode.kOk}));
+    const prepPageAdvance =
+        page.onNextButtonClick || (() => Promise.resolve(undefined));
     assert(typeof prepPageAdvance === 'function');
 
     // TODO(gavindodd): Handle stateResult.error
