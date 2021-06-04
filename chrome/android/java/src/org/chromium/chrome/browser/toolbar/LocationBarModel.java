@@ -449,6 +449,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public boolean isPaintPreview() {
+        // Start Surface homepage is not bound with a tab and mTab is kept as the previous tab if
+        // the homepage is shown. This is added here to make sure Start Surface homepage is not
+        // regarded as a paint preview.
+        if (isInOverviewAndShowingOmnibox()
+                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+            return false;
+        }
         return hasTab() && TabbedPaintPreview.get(mTab).isShowing();
     }
 
