@@ -17,7 +17,7 @@ namespace content {
 // cache with the reasons.
 // TODO(rakina): Rename this to use "Page" instead of "Document", to follow
 // the naming of BackForwardCacheImpl::CanStorePageNow().
-class BackForwardCacheCanStoreDocumentResult {
+class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
  public:
   using NotStoredReasons =
       std::bitset<static_cast<size_t>(

@@ -764,10 +764,8 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
     }
   }
 
-  bool has_navigation_request = rfh->frame_tree_node()->navigation_request() ||
-                                rfh->HasPendingCommitNavigation();
   // Do not cache if we have navigations in any of the subframes.
-  if (rfh->GetParent() && has_navigation_request) {
+  if (rfh->GetParent() && rfh->frame_tree_node()->HasNavigation()) {
     result->No(
         BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
   }

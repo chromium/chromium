@@ -31,6 +31,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/browser/presentation/presentation_test_utils.h"
+#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -57,6 +58,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/idle_test_utils.h"
@@ -11829,5 +11831,73 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   ExpectRestored(FROM_HERE);
 }
+
+namespace {
+enum class SubframeType { SameSite, CrossSite };
+}
+
+class BackForwardCacheEvictionDueToSubframeNavigationBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<SubframeType> {
+ public:
+  // Provides meaningful param names instead of /0 and /1.
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case SubframeType::SameSite:
+        return "SameSite";
+      case SubframeType::CrossSite:
+        return "CrossSite";
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheEvictionDueToSubframeNavigationBrowserTest,
+    SubframePendingCommitShouldPreventCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  bool use_cross_origin_subframe = GetParam() == SubframeType::CrossSite;
+  GURL subframe_url = embedded_test_server()->GetURL(
+      use_cross_origin_subframe ? "b.com" : "a.com", "/title1.html");
+
+  IsolateOriginsForTesting(embedded_test_server(), web_contents(),
+                           {"a.com", "b.com"});
+
+  // 1) Navigate to a.com.
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+  RenderFrameHostImpl* main_frame = current_frame_host();
+
+  // 2) Add subframe and wait for empty document to commit.
+  CreateSubframe(web_contents(), "child", GURL(""), true);
+
+  CommitMessageDelayer commit_message_delayer(
+      web_contents(), subframe_url,
+      base::BindLambdaForTesting([&](RenderFrameHost*) {
+        // 5) Test that page cannot be stored in bfcache when subframe is
+        // pending commit.
+        BackForwardCacheCanStoreDocumentResult can_store_result =
+            web_contents()
+                ->GetController()
+                .GetBackForwardCache()
+                .CanStorePageNow(static_cast<RenderFrameHostImpl*>(main_frame));
+        EXPECT_TRUE(can_store_result.HasNotStoredReason(
+            BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating));
+      }));
+
+  // 3) Start navigation in subframe to |subframe_url|.
+  EXPECT_TRUE(ExecJs(
+      main_frame,
+      JsReplace("document.querySelector('#child').src = $1;", subframe_url)));
+  // 4) Wait until subframe navigation is pending commit.
+  commit_message_delayer.Wait();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheEvictionDueToSubframeNavigationBrowserTest,
+    ::testing::Values(SubframeType::SameSite, SubframeType::CrossSite),
+    &BackForwardCacheEvictionDueToSubframeNavigationBrowserTest::
+        DescribeParams);
 
 }  // namespace content
