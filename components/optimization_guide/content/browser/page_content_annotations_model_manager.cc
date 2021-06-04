@@ -50,7 +50,13 @@ PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
 void PageContentAnnotationsModelManager::Annotate(
     const std::string& text,
     PageContentAnnotatedCallback callback) {
-  if (!page_topics_model_executor_handle_->ModelAvailable()) {
+  bool model_available = page_topics_model_executor_handle_->ModelAvailable();
+
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable",
+      model_available);
+
+  if (!model_available) {
     // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
     // model isn't ready, but if we call this when the model isn't ready, it
     // will just return absl::nullopt for now.

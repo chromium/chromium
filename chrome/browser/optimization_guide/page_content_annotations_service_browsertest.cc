@@ -144,6 +144,10 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     model_is_lazily_loaded_ = model_is_lazily_loaded;
   }
 
+  void set_load_model_on_startup(bool load_model_on_startup) {
+    load_model_on_startup_ = load_model_on_startup;
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
@@ -152,6 +156,12 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    if (load_model_on_startup_) {
+      LoadAndWaitForModel();
+    }
+  }
+
+  void LoadAndWaitForModel() {
     base::HistogramTester histogram_tester;
 
     proto::Any any_metadata;
@@ -240,6 +250,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool model_is_lazily_loaded_ = false;
+  bool load_model_on_startup_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
@@ -454,6 +465,60 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
       got_content_annotations->model_annotations.page_topics_model_version);
 }
 
+class PageContentAnnotationsServiceLoadEachExecutionNotStartupTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceLoadEachExecutionNotStartupTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOptimizationHints,
+                              features::kPageContentAnnotations,
+                              features::kLoadModelFileForEachExecution},
+        /*disabled_features=*/{});
+    set_model_is_lazily_loaded(true);
+    set_load_model_on_startup(false);
+  }
+  ~PageContentAnnotationsServiceLoadEachExecutionNotStartupTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceLoadEachExecutionNotStartupTest,
+    ModelNotAvailableForFirstNavigation) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", false,
+      1);
+
+  LoadAndWaitForModel();
+
+  GURL url2(
+      embedded_test_server()->GetURL("a.com", "/hello.html?totally=different"));
+  ui_test_utils::NavigateToURL(browser(), url2);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 2);
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", false,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 2);
+}
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 }  // namespace optimization_guide

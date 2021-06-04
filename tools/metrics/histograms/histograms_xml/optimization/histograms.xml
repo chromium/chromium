@@ -317,6 +317,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records whether the model file for {OptimizationTarget} is available on disk
     at the time when it needs to be loaded into memory for a requested
     execution. Recorded once per model load attempt for {OptimizationTarget}.
+    Note that callers may separately check whether a model is available before
+    calling the code path where this histogram is recorded. If this histogram
+    has 100% of samples in the true bucket, make sure to double-check that there
+    isn't a separate histogram specific to the model.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
@@ -444,6 +448,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the status of whether the content annotations were stored in History
     Service when the page content has been annotated successfully. This will
     approximately be once a page load after the page load has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ModelAvailable"
+    enum="BooleanAvailable" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Whether the page topics model was available to execute when requested.
+    Recorded once per execution attempt. Note that this histogram supersedes
+    OptimizationGuide.ModelExecutor.ModelAvailableToLoad.PageTopics.
   </summary>
 </histogram>
 
