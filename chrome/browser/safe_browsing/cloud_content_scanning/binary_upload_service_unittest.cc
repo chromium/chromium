@@ -80,11 +80,22 @@ class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
       enterprise_connectors::ContentAnalysisResponse response)
       : should_succeed_(should_succeed), response_(response) {}
 
-  std::unique_ptr<MultipartUploadRequest> Create(
+  std::unique_ptr<MultipartUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      MultipartUploadRequest::Callback callback) override {
+    return std::make_unique<FakeMultipartUploadRequest>(
+        should_succeed_, response_, std::move(callback));
+  }
+
+  std::unique_ptr<MultipartUploadRequest> CreateFileRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const base::FilePath& path,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(

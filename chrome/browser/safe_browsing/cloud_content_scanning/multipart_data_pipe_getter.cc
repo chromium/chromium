@@ -73,6 +73,16 @@ void MultipartDataPipeGetter::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
+void MultipartDataPipeGetter::Reset() {
+  watcher_.reset();
+  pipe_.reset();
+  write_position_ = 0;
+}
+
+std::unique_ptr<base::MemoryMappedFile> MultipartDataPipeGetter::ReleaseFile() {
+  return std::move(file_);
+}
+
 void MultipartDataPipeGetter::MojoReadyCallback(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
@@ -151,12 +161,6 @@ bool MultipartDataPipeGetter::Write(const char* data,
 
 int64_t MultipartDataPipeGetter::FullSize() {
   return metadata_.size() + file_->length() + last_boundary_.size();
-}
-
-void MultipartDataPipeGetter::Reset() {
-  watcher_.reset();
-  pipe_.reset();
-  write_position_ = 0;
 }
 
 }  // namespace safe_browsing

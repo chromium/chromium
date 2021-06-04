@@ -356,11 +356,18 @@ void BinaryUploadService::OnGetRequestData(Request* request,
   GURL url = request->GetUrlWithParams();
   if (!url.is_valid())
     url = GetUploadUrl(IsConsumerScanRequest(*request));
-  auto upload_request = MultipartUploadRequest::Create(
-      url_loader_factory_, std::move(url), metadata, data.contents,
-      GetTrafficAnnotationTag(IsConsumerScanRequest(*request)),
-      base::BindOnce(&BinaryUploadService::OnUploadComplete,
-                     weakptr_factory_.GetWeakPtr(), request));
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
+  auto callback = base::BindOnce(&BinaryUploadService::OnUploadComplete,
+                                 weakptr_factory_.GetWeakPtr(), request);
+  auto upload_request =
+      data.contents.empty()
+          ? MultipartUploadRequest::CreateFileRequest(
+                url_loader_factory_, std::move(url), metadata, data.path,
+                std::move(traffic_annotation), std::move(callback))
+          : MultipartUploadRequest::CreateStringRequest(
+                url_loader_factory_, std::move(url), metadata, data.contents,
+                std::move(traffic_annotation), std::move(callback));
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->tab_url(), request->per_profile_request(),
@@ -549,6 +556,8 @@ void BinaryUploadService::RecordRequestMetrics(
 }
 
 BinaryUploadService::Request::Data::Data() = default;
+BinaryUploadService::Request::Data::Data(const Data&) = default;
+BinaryUploadService::Request::Data::~Data() = default;
 
 BinaryUploadService::Request::Request(ContentAnalysisCallback callback,
                                       GURL url)

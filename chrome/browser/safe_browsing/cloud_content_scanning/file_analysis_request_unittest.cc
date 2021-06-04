@@ -73,6 +73,8 @@ class FileAnalysisRequestTest : public testing::Test {
     run_loop.Run();
 
     EXPECT_TRUE(called);
+    EXPECT_EQ(file_path, out_data->path);
+    EXPECT_TRUE(out_data->contents.empty());
   }
 
  private:
@@ -168,7 +170,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   GetResultsForFileContents(normal_contents, &result, &data);
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
   EXPECT_EQ(data.size, normal_contents.size());
-  EXPECT_EQ(data.contents, normal_contents);
+  EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
@@ -178,7 +180,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   GetResultsForFileContents(long_contents, &result, &data);
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
   EXPECT_EQ(data.size, long_contents.size());
-  EXPECT_EQ(data.contents, long_contents);
+  EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
@@ -352,6 +354,8 @@ TEST_F(FileAnalysisRequestTest, Encrypted) {
   EXPECT_EQ(data.hash,
             "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A");
   EXPECT_EQ(request->digest(), data.hash);
+  EXPECT_TRUE(data.contents.empty());
+  EXPECT_EQ(test_zip, data.path);
 }
 
 TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
@@ -387,7 +391,8 @@ TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
 
   EXPECT_EQ(result,
             BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE);
-  EXPECT_EQ(data.contents, normal_contents);
+  EXPECT_TRUE(data.contents.empty());
+  EXPECT_EQ(file_path, data.path);
   EXPECT_EQ(data.size, normal_contents.size());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
@@ -430,7 +435,8 @@ TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
   for (const std::string& tag : request->content_analysis_request().tags())
     EXPECT_NE("dlp", tag);
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
-  EXPECT_EQ(data.contents, normal_contents);
+  EXPECT_TRUE(data.contents.empty());
+  EXPECT_EQ(file_path, data.path);
   EXPECT_EQ(data.size, normal_contents.size());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,

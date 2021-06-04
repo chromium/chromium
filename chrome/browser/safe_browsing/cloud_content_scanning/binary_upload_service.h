@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -115,9 +116,14 @@ class BinaryUploadService : public KeyedService {
     // Structure of data returned in the callback to GetRequestData().
     struct Data {
       Data();
+      Data(const Data&);
+      ~Data();
 
-      // The data content.
+      // The data content. Only populated for string requests.
       std::string contents;
+
+      // The path to the file to be scanned. Only populated for file requests.
+      base::FilePath path;
 
       // The SHA256 of the data.
       std::string hash;

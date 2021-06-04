@@ -26,7 +26,8 @@ class MultipartDataPipeGetterTest : public testing::Test {
   }
 
   std::string GetBodyFromPipe(MultipartDataPipeGetter* data_pipe_getter,
-                              size_t expected_size) {
+                              size_t expected_size,
+                              size_t max_chunks = 0) {
     mojo::ScopedDataPipeProducerHandle data_pipe_producer;
 
     base::RunLoop run_loop;
@@ -45,6 +46,7 @@ class MultipartDataPipeGetterTest : public testing::Test {
     EXPECT_TRUE(data_pipe_consumer_.is_valid());
     std::string body;
     body.reserve(expected_size);
+    size_t read_chunks = 0;
     while (true) {
       char buffer[1024];
       uint32_t read_size = sizeof(buffer);
@@ -58,6 +60,9 @@ class MultipartDataPipeGetterTest : public testing::Test {
         break;
       }
       body.append(buffer, read_size);
+      ++read_chunks;
+      if (max_chunks != 0 && read_chunks == max_chunks)
+        break;
     }
 
     return body;
@@ -135,6 +140,59 @@ TEST_F(MultipartDataPipeGetterTest, LargeFileAndMetadata) {
   base::File file = CreateFile(large_data);
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       MultipartDataPipeGetter::Create("boundary", large_data, std::move(file));
+
+  ASSERT_EQ(expected_body,
+            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+}
+
+TEST_F(MultipartDataPipeGetterTest, MultipleReads) {
+  std::string expected_body =
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n"
+      "metadata\r\n"
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n"
+      "small file content\r\n"
+      "--boundary--\r\n";
+
+  base::File file = CreateFile("small file content");
+  std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
+      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_EQ(expected_body,
+              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  }
+}
+
+TEST_F(MultipartDataPipeGetterTest, ResetsCorrectly) {
+  std::string large_file_content = std::string(100 * 1024 * 1024, 'a');
+  std::string expected_body =
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n"
+      "metadata\r\n"
+      "--boundary\r\n"
+      "Content-Type: application/octet-stream\r\n"
+      "\r\n" +
+      large_file_content +
+      "\r\n"
+      "--boundary--\r\n";
+
+  base::File file = CreateFile(large_file_content);
+  std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
+      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+
+  // Reads part of the body, which validates that the next read is able to read
+  // the entire body correctly after a reset.
+  std::string partial_body = expected_body.substr(0, 5 * 1024);
+  ASSERT_EQ(partial_body,
+            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size(),
+                            /*max_chunks*/ 5));
+
+  data_pipe_getter->Reset();
 
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));

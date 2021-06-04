@@ -42,17 +42,9 @@ GetFileDataBlocking(const base::FilePath& path) {
                           BinaryUploadService::Request::Data());
   }
 
-  BinaryUploadService::Result result;
   BinaryUploadService::Request::Data file_data;
   file_data.size = file_size;
-
-  if (file_size <= BinaryUploadService::kMaxUploadSizeBytes) {
-    result = BinaryUploadService::Result::SUCCESS;
-    file_data.contents =
-        std::string(reinterpret_cast<char*>(mm_file.data()), file_size);
-  } else {
-    result = BinaryUploadService::Result::FILE_TOO_LARGE;
-  }
+  file_data.path = path;
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -62,7 +54,10 @@ GetFileDataBlocking(const base::FilePath& path) {
   file_data.hash =
       base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
 
-  return std::make_pair(result, file_data);
+  return {file_size <= BinaryUploadService::kMaxUploadSizeBytes
+              ? BinaryUploadService::Result::SUCCESS
+              : BinaryUploadService::Result::FILE_TOO_LARGE,
+          file_data};
 }
 
 }  // namespace
