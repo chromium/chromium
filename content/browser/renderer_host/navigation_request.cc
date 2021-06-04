@@ -913,8 +913,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       std::move(commit_params), browser_initiated,
       false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
       entry, std::move(navigation_ui_data), std::move(blob_url_loader_factory),
-      mojo::NullAssociatedRemote(), rfh_restored_from_back_forward_cache,
-      initiator_process_id, was_opener_suppressed));
+      mojo::NullAssociatedRemote(),
+      nullptr /* prefetched_signed_exchange_cache */,
+      nullptr /* web_bundle_handle_tracker */,
+      rfh_restored_from_back_forward_cache, initiator_process_id,
+      was_opener_suppressed));
 
   return navigation_request;
 }
@@ -1014,13 +1017,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       entry,
       nullptr,  // navigation_ui_data
       std::move(blob_url_loader_factory), std::move(navigation_client),
+      std::move(prefetched_signed_exchange_cache),
+      std::move(web_bundle_handle_tracker),
       nullptr,  // rfh_restored_from_back_forward_cache
       initiator_process_id,
       /*was_opener_suppressed=*/false));
-  navigation_request->prefetched_signed_exchange_cache_ =
-      std::move(prefetched_signed_exchange_cache);
-  navigation_request->web_bundle_handle_tracker_ =
-      std::move(web_bundle_handle_tracker);
 
   return navigation_request;
 }
@@ -1123,6 +1124,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
       nullptr /* navigation_ui_data */, nullptr /* blob_url_loader_factory */,
       mojo::NullAssociatedRemote(),
+      nullptr /* prefetched_signed_exchange_cache */,
+      nullptr /* web_bundle_handle_tracker */,
       nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */));
@@ -1163,6 +1166,9 @@ NavigationRequest::NavigationRequest(
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
+    scoped_refptr<PrefetchedSignedExchangeCache>
+        prefetched_signed_exchange_cache,
+    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
     RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed)
@@ -1186,6 +1192,9 @@ NavigationRequest::NavigationRequest(
       navigation_entry_offset_(
           EstimateHistoryOffset(frame_tree_node_->navigator().controller(),
                                 common_params_->should_replace_current_entry)),
+      prefetched_signed_exchange_cache_(
+          std::move(prefetched_signed_exchange_cache)),
+      web_bundle_handle_tracker_(std::move(web_bundle_handle_tracker)),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
