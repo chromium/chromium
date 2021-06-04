@@ -29,6 +29,7 @@
     clicked,
     collapsed,
     controlsChanged,
+    detailsChanged,
     describedByChanged,
     descriptionChanged,
     documentSelectionChanged,

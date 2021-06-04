@@ -48,6 +48,7 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
     this.node_ = evt.target;
     this.addListener_(
         EventType.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
+    this.addListener_(EventType.DETAILS_CHANGED, this.onDetailsChanged);
     this.addListener_(
         EventType.MENU_LIST_ITEM_SELECTED, this.onEventIfSelected);
     this.addListener_(
@@ -88,6 +89,30 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
             OutputEventType.NAVIGATE)
         .go();
     this.previousActiveDescendant_ = evt.target.activeDescendant;
+  }
+
+  /**
+   * Informs users that details are now available.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onDetailsChanged(evt) {
+    const range = ChromeVoxState.instance.currentRange;
+    let node = range.start ? range.start.node : null;
+    while (node && (!node.details || !node.details.length)) {
+      node = node.parent;
+    }
+    if (!node) {
+      return;
+    }
+
+    // Note that we only output speech. Braille output shows the entire line, so
+    // details output should not be based on an announcement like this. Don't
+    // allow interruption of this announcement which can occur in a slew of
+    // events (e.g. typing).
+    new Output()
+        .withInitialSpeechProperties({doNotInterrupt: true})
+        .formatForSpeech('@hint_details')
+        .go();
   }
 
   /**

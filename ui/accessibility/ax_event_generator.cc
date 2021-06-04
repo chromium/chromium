@@ -640,6 +640,9 @@ void AXEventGenerator::OnIntListAttributeChanged(
     case ax::mojom::IntListAttribute::kControlsIds:
       AddEvent(node, Event::CONTROLS_CHANGED);
       break;
+    case ax::mojom::IntListAttribute::kDetailsIds:
+      AddEvent(node, Event::DETAILS_CHANGED);
+      break;
     case ax::mojom::IntListAttribute::kDescribedbyIds:
       AddEvent(node, Event::DESCRIBED_BY_CHANGED);
       break;
@@ -1141,6 +1144,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:
       return "controlsChanged";
+    case AXEventGenerator::Event::DETAILS_CHANGED:
+      return "detailsChanged";
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       return "describedByChanged";
     case AXEventGenerator::Event::DESCRIPTION_CHANGED:

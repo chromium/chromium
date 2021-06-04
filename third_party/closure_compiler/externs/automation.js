@@ -35,6 +35,7 @@ chrome.automation.EventType = {
   CLICKED: 'clicked',
   COLLAPSED: 'collapsed',
   CONTROLS_CHANGED: 'controlsChanged',
+  DETAILS_CHANGED: 'detailsChanged',
   DESCRIBED_BY_CHANGED: 'describedByChanged',
   DESCRIPTION_CHANGED: 'descriptionChanged',
   DOCUMENT_SELECTION_CHANGED: 'documentSelectionChanged',
