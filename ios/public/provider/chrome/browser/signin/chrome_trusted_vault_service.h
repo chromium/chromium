@@ -74,6 +74,16 @@ class ChromeTrustedVaultService {
       UIViewController* presentingViewController,
       void (^callback)(BOOL success, NSError* error));
 
+  // Presents the trusted vault key reauthentication UI for |identity| for the
+  // purpose of opting into trusted vault passphrase. Once the reauth is done
+  // and the UI is dismissed, |callback| is called. |callback| is not called if
+  // the reauthentication is canceled.
+  // TODO(crbug.com/1202088): Make pure.
+  virtual void ReauthenticationForOptIn(
+      ChromeIdentity* chrome_identity,
+      UIViewController* presentingViewController,
+      void (^callback)(BOOL success, NSError* error));
+
   // Cancels the presented trusted vault reauthentication UI, triggered via
   // either ReauthenticationForFetchKeys() or via
   // ReauthenticationForDegradedRecoverability(). The reauthentication callback
