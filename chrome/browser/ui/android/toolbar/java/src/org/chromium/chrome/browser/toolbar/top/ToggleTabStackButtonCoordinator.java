@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
@@ -27,7 +24,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.GURL;
 
 /**
@@ -42,10 +38,6 @@ public class ToggleTabStackButtonCoordinator {
     static final String MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME = "isMainIntentFromLauncher";
     @VisibleForTesting
     static final String INTENT_WITH_EFFECT_PARAM_NAME = "intentWithEffect";
-    // This is used to lookup the name of a feature used to track a cohort of users who triggered
-    // a particular IPH, or would have triggered for control groups with the tracking_only
-    // configuration.
-    private static final String COHORT_FEATURE_NAME_PARAM_NAME = "cohortFeatureName";
 
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
@@ -73,7 +65,6 @@ public class ToggleTabStackButtonCoordinator {
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
      * @param activityTabSupplier Supplier of the activity tab.
-     * @param tracker Feature engagement interface to check triggered state.
      */
     public ToggleTabStackButtonCoordinator(Context context,
             ToggleTabStackButton toggleTabStackButton, UserEducationHelper userEducationHelper,
@@ -82,7 +73,7 @@ public class ToggleTabStackButtonCoordinator {
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             Callback<Boolean> setNewTabButtonHighlightCallback,
-            ObservableSupplier<Tab> activityTabSupplier, @NonNull Tracker tracker) {
+            ObservableSupplier<Tab> activityTabSupplier) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
@@ -99,9 +90,6 @@ public class ToggleTabStackButtonCoordinator {
                 handlePageLoadFinished();
             }
         }, /*swapCallback=*/null);
-
-        CohortUtils.tagCohortGroupIfTriggered(tracker, FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
-                COHORT_FEATURE_NAME_PARAM_NAME);
     }
 
     /** Cleans up callbacks and observers. */

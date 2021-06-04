@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,9 +37,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -80,8 +76,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     private UserEducationHelper mUserEducationHelper;
     @Mock
     private Callback<Boolean> mSetNewTabButtonHighlightCallback;
-    @Mock
-    private Tracker mTracker;
 
     @Captor
     private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
@@ -124,13 +118,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         when(mToggleTabStackButton.isShown()).thenReturn(true);
         ShadowChromeFeatureList.sParamMap = new HashMap<>();
         mIsIncognito = false;
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, true));
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestFeatures(null);
     }
 
     private ToggleTabStackButtonCoordinator newToggleTabStackButtonCoordinator(
@@ -139,7 +126,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         return new ToggleTabStackButtonCoordinator(mContext, toggleTabStackButton,
                 mUserEducationHelper, () -> mIsIncognito, mIntentMetadataOneshotSupplier,
                 mPromoShownOneshotSupplier, mLayoutSateProviderOneshotSupplier,
-                mSetNewTabButtonHighlightCallback, new ObservableSupplierImpl<>(), mTracker);
+                mSetNewTabButtonHighlightCallback, new ObservableSupplierImpl<>());
         // clang-format on
     }
 

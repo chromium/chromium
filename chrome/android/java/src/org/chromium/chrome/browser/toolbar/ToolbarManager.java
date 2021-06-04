@@ -140,7 +140,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1237,21 +1236,19 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
-            Tracker tracker =
-                    TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
             View homeButton = mControlContainer.findViewById(R.id.home_button);
             mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
                     userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
                     mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
                     HomepageManager::isHomepageNonNtp, FeedFeatures::isFeedEnabled,
-                    mActivityTabProvider, tracker);
+                    mActivityTabProvider);
             ToggleTabStackButton toggleTabStackButton =
                     mControlContainer.findViewById(R.id.tab_switcher_button);
             mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
                     toggleTabStackButton, userEducationHelper,
                     mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
                     mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
-                    mToolbar::setNewTabButtonHighlight, mActivityTabProvider, tracker);
+                    mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
         }
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }

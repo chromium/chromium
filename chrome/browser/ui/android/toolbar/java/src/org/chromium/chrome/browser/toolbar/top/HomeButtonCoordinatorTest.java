@@ -14,7 +14,6 @@ import android.view.View;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,11 +37,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,8 +78,6 @@ public class HomeButtonCoordinatorTest {
     private android.content.res.Resources mResources;
     @Mock
     private UserEducationHelper mUserEducationHelper;
-    @Mock
-    private Tracker mTracker;
 
     @Captor
     private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
@@ -109,21 +103,13 @@ public class HomeButtonCoordinatorTest {
         mIsFeedEnabled = true;
         mIsHomepageNonNtp = false;
         mIsIncognito = false;
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, true));
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestFeatures(null);
     }
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
         // clang-format off
         return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
                 mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>(),
-                mTracker);
+                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>());
         // clang-format on
     }
 
