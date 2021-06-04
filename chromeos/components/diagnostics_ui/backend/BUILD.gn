@@ -80,6 +80,8 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash/public/cpp",
+    "//ash/public/cpp/holding_space:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/diagnostics_ui/mojom",

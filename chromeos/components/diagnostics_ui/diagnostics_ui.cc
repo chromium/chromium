@@ -143,10 +143,12 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 DiagnosticsDialogUI::DiagnosticsDialogUI(
     content::WebUI* web_ui,
     const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
-        select_file_policy_creator)
+        select_file_policy_creator,
+    ash::HoldingSpaceClient* holding_space_client)
     : ui::MojoWebDialogUI(web_ui),
       session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
-          select_file_policy_creator)) {
+          select_file_policy_creator,
+          holding_space_client)) {
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
       session_log_handler_.get());
 
@@ -163,7 +165,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
                        IDR_DIAGNOSTICS_APP_INDEX_HTML);
 
   auto handler = std::make_unique<diagnostics::SessionLogHandler>(
-      select_file_policy_creator);
+      select_file_policy_creator, holding_space_client);
   diagnostics_manager_ =
       std::make_unique<diagnostics::DiagnosticsManager>(handler.get());
   web_ui->AddMessageHandler(std::move(handler));

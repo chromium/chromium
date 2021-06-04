@@ -15,6 +15,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+namespace ash {
+
+class HoldingSpaceClient;
+
+}  // namespace ash
+
 namespace chromeos {
 namespace diagnostics {
 
@@ -28,7 +34,8 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
   explicit DiagnosticsDialogUI(
       content::WebUI* web_ui,
       const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
-          select_file_policy_creator);
+          select_file_policy_creator,
+      ash::HoldingSpaceClient* holding_space_client);
   ~DiagnosticsDialogUI() override;
 
   DiagnosticsDialogUI(const DiagnosticsDialogUI&) = delete;

@@ -23,6 +23,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace ash {
+class HoldingSpaceClient;
+}  // namespace ash
+
 namespace chromeos {
 namespace diagnostics {
 
@@ -35,13 +39,14 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   using SelectFilePolicyCreator =
       base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
           content::WebContents*)>;
-  explicit SessionLogHandler(
-      const SelectFilePolicyCreator& select_file_policy_creator);
+  SessionLogHandler(const SelectFilePolicyCreator& select_file_policy_creator,
+                    ash::HoldingSpaceClient* holding_space_client);
 
   // Constructor for testing. Should not be called outside of tests.
   SessionLogHandler(const SelectFilePolicyCreator& select_file_policy_creator,
                     std::unique_ptr<TelemetryLog> telemetry_log,
-                    std::unique_ptr<RoutineLog> routine_log);
+                    std::unique_ptr<RoutineLog> routine_log,
+                    ash::HoldingSpaceClient* holding_space_client);
 
   ~SessionLogHandler() override;
 
@@ -53,7 +58,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
                     int index,
                     void* params) override;
 
-  void OnSessionLogCreated(const bool success);
+  void OnSessionLogCreated(const base::FilePath& path, bool success);
 
   void FileSelectionCanceled(void* params) override;
 
@@ -64,6 +69,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   RoutineLog* GetRoutineLog() const;
 
   void SetWebUIForTest(content::WebUI* web_ui);
+  void SetLogCreatedClosureForTest(base::OnceClosure closure);
 
  private:
   // Creates a session log at `file_path`. The session log includes the contents
@@ -80,8 +86,10 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   SelectFilePolicyCreator select_file_policy_creator_;
   std::unique_ptr<TelemetryLog> telemetry_log_;
   std::unique_ptr<RoutineLog> routine_log_;
+  ash::HoldingSpaceClient* const holding_space_client_;
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  base::OnceClosure log_created_closure_;
 
   base::WeakPtrFactory<SessionLogHandler> weak_factory_{this};
 };

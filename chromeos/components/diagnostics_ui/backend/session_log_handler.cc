@@ -4,6 +4,7 @@
 
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -30,19 +31,25 @@ const char kRoutineLogPath[] = "/tmp/diagnostics/diagnostics_routine_log";
 }  // namespace
 
 SessionLogHandler::SessionLogHandler(
-    const SelectFilePolicyCreator& select_file_policy_creator)
+    const SelectFilePolicyCreator& select_file_policy_creator,
+    ash::HoldingSpaceClient* holding_space_client)
     : SessionLogHandler(
           select_file_policy_creator,
           std::make_unique<TelemetryLog>(),
-          std::make_unique<RoutineLog>(base::FilePath(kRoutineLogPath))) {}
+          std::make_unique<RoutineLog>(base::FilePath(kRoutineLogPath)),
+          holding_space_client) {}
 
 SessionLogHandler::SessionLogHandler(
     const SelectFilePolicyCreator& select_file_policy_creator,
     std::unique_ptr<TelemetryLog> telemetry_log,
-    std::unique_ptr<RoutineLog> routine_log)
+    std::unique_ptr<RoutineLog> routine_log,
+    ash::HoldingSpaceClient* holding_space_client)
     : select_file_policy_creator_(select_file_policy_creator),
       telemetry_log_(std::move(telemetry_log)),
-      routine_log_(std::move(routine_log)) {}
+      routine_log_(std::move(routine_log)),
+      holding_space_client_(holding_space_client) {
+  DCHECK(holding_space_client_);
+}
 
 SessionLogHandler::~SessionLogHandler() = default;
 
@@ -62,15 +69,23 @@ void SessionLogHandler::FileSelected(const base::FilePath& path,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SessionLogHandler::CreateSessionLog,
-                     base::Unretained(this), std::move(path)),
+                     base::Unretained(this), path),
       base::BindOnce(&SessionLogHandler::OnSessionLogCreated,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), path));
 }
 
-void SessionLogHandler::OnSessionLogCreated(const bool success) {
+void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
+                                            bool success) {
+  if (success) {
+    holding_space_client_->AddDiagnosticsLog(file_path);
+  }
+
   ResolveJavascriptCallback(base::Value(save_session_log_callback_id_),
                             base::Value(success));
   save_session_log_callback_id_ = "";
+
+  if (log_created_closure_)
+    std::move(log_created_closure_).Run();
 }
 
 void SessionLogHandler::FileSelectionCanceled(void* params) {
@@ -89,6 +104,10 @@ RoutineLog* SessionLogHandler::GetRoutineLog() const {
 
 void SessionLogHandler::SetWebUIForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
+}
+
+void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
+  log_created_closure_ = std::move(closure);
 }
 
 bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {

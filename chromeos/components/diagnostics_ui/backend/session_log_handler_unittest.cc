@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,8 +23,8 @@
 #include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -147,9 +148,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 class SessionLogHandlerTest : public testing::Test {
  public:
   SessionLogHandlerTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        web_ui_(),
-        session_log_handler_() {
+      : task_environment_(), web_ui_(), session_log_handler_() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath routine_log_path =
         temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
@@ -159,7 +158,8 @@ class SessionLogHandlerTest : public testing::Test {
     routine_log_ = routine_log.get();
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
         base::BindRepeating(&CreateTestSelectFilePolicy),
-        std::move(telemetry_log), std::move(routine_log));
+        std::move(telemetry_log), std::move(routine_log),
+        &holding_space_client_);
     session_log_handler_->SetWebUIForTest(&web_ui_);
     session_log_handler_->RegisterMessages();
 
@@ -175,12 +175,17 @@ class SessionLogHandlerTest : public testing::Test {
     return *web_ui_.call_data()[index];
   }
 
+  testing::NiceMock<ash::MockHoldingSpaceClient>& holding_space_client() {
+    return holding_space_client_;
+  }
+
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   content::TestWebUI web_ui_;
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   TelemetryLog* telemetry_log_;
   RoutineLog* routine_log_;
+  testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -211,8 +216,10 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
   base::ListValue args;
   args.Append(kHandlerFunctionName);
+  base::RunLoop run_loop;
+  session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
   const std::string expected_telemetry_log_header = "=== Telemetry Log ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
@@ -258,8 +265,10 @@ TEST_F(SessionLogHandlerTest, SelectDirectory) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::ListValue args;
   args.Append(kHandlerFunctionName);
+  base::RunLoop run_loop;
+  session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =
@@ -286,6 +295,21 @@ TEST_F(SessionLogHandlerTest, CancelDialog) {
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
   EXPECT_FALSE(/*success=*/call_data.arg2()->GetBool());
+}
+
+// Validates that saving a session log results in the session log file being
+// added to the holding space.
+TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
+  base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
+  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+
+  EXPECT_CALL(holding_space_client(), AddDiagnosticsLog(testing::Eq(log_path)));
+  base::RunLoop run_loop;
+  session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
+  web_ui_.HandleReceivedMessage("saveSessionLog", &args);
+  run_loop.Run();
 }
 
 }  // namespace diagnostics
