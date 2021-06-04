@@ -2884,7 +2884,6 @@ void PrintRenderFrameHelper::PrintPreviewContext::CalculatePluginAttributes() {
 void PrintRenderFrameHelper::SetPrintPagesParams(
     const mojom::PrintPagesParams& settings) {
   print_pages_params_ = settings.Clone();
-  GetPrintManagerHost()->DidGetDocumentCookie(settings.params->document_cookie);
 }
 
 void PrintRenderFrameHelper::QuitActiveRunLoops() {

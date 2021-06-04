@@ -166,6 +166,7 @@ void HeadlessPrintManager::GetPDFContents(content::RenderFrameHost* rfh,
   print_params_ = GetPrintParamsFromSettings(settings);
   page_ranges_text_ = settings.page_ranges;
   ignore_invalid_page_ranges_ = settings.ignore_invalid_page_ranges;
+  set_cookie(print_params_->params->document_cookie);
   GetPrintRenderFrame(rfh)->PrintRequestedPages();
 }
 

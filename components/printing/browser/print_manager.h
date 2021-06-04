@@ -40,7 +40,6 @@ class PrintManager : public content::WebContentsObserver,
 
   // printing::mojom::PrintManagerHost:
   void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override;
-  void DidGetDocumentCookie(int32_t cookie) override;
   void DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override;
   void DidShowPrintDialog() override;
