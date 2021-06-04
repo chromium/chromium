@@ -46,23 +46,27 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }
 }
 
-void EnablePCScanForMallocPartitionsIfNeeded() {
+bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
     base::allocator::EnablePCScan();
+    return true;
   }
 #endif
+  return false;
 }
 
-void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
+bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
     base::allocator::EnablePCScan();
+    return true;
   }
 #endif
+  return false;
 }
 
 // This function should be executed as early as possible once we can get the
@@ -196,12 +200,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  EnablePCScanForMallocPartitionsIfNeeded();
+  bool pcscan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
   // No specified process type means this is the Browser process.
   if (process_type.empty()) {
-    EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
+    pcscan_enabled = pcscan_enabled ||
+                     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
-  SetProcessNameForPCScan(process_type);
+  if (pcscan_enabled) {
+    SetProcessNameForPCScan(process_type);
+  }
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
