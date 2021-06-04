@@ -23,8 +23,11 @@ namespace chromeos {
 
 namespace {
 
-const char kCellularDeviceObjectPath[] =
-    "/org/freedesktop/ModemManager1/stub/0";
+const char kCellularDevicePath[] = "/org/freedesktop/ModemManager1/stub/0";
+const char kCellularDeviceObjectPath1[] =
+    "/org/freedesktop/ModemManager1/stub/0/Modem/0";
+const char kCellularDeviceObjectPath2[] =
+    "/org/freedesktop/ModemManager1/stub/0/Modem/1";
 const char kSmsPath[] = "/SMS/0";
 
 class TestObserver : public NetworkSmsHandler::Observer {
@@ -68,11 +71,17 @@ class NetworkSmsHandlerTest : public testing::Test {
     command_line->AppendSwitch(chromeos::switches::kSmsTestMessages);
 
     shill_clients::InitializeFakes();
-    ShillDeviceClient::TestInterface* device_test =
-        ShillDeviceClient::Get()->GetTestInterface();
-    ASSERT_TRUE(device_test);
-    device_test->AddDevice(kCellularDeviceObjectPath, shill::kTypeCellular,
-                           "stub_cellular_device2");
+    device_test_ = ShillDeviceClient::Get()->GetTestInterface();
+    ASSERT_TRUE(device_test_);
+
+    // We want to have only 1 cellular device.
+    device_test_->ClearDevices();
+    device_test_->AddDevice(kCellularDevicePath, shill::kTypeCellular,
+                            "stub_cellular_device2");
+    device_test_->SetDeviceProperty(
+        kCellularDevicePath, shill::kDBusObjectProperty,
+        base::Value(kCellularDeviceObjectPath1), /*notify_changed=*/false);
+    modem_messaging_test_ = ModemMessagingClient::Get()->GetTestInterface();
 
     // This relies on the stub dbus implementations for ShillManagerClient,
     // ShillDeviceClient, ModemMessagingClient and SMSClient.
@@ -92,6 +101,8 @@ class NetworkSmsHandlerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  ShillDeviceClient::TestInterface* device_test_;
+  ModemMessagingClient::TestInterface* modem_messaging_test_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<TestObserver> test_observer_;
 };
@@ -109,10 +120,39 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
-  ModemMessagingClient::TestInterface* modem_messaging_test =
-      ModemMessagingClient::Get()->GetTestInterface();
-  modem_messaging_test->ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath),
-                                   dbus::ObjectPath(kSmsPath));
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1), dbus::ObjectPath(kSmsPath));
+  base::RunLoop().RunUntilIdle();
+
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(test_observer_->message_count(), 1);
+  EXPECT_NE(messages.find(kMessage1), messages.end());
+}
+
+TEST_F(NetworkSmsHandlerTest, SmsHandlerDeviceObjectPathChange) {
+  // Fake the SIM being switched to a different SIM.
+  device_test_->SetDeviceProperty(
+      kCellularDevicePath, shill::kDBusObjectProperty,
+      base::Value(kCellularDeviceObjectPath2), /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(test_observer_->message_count(), 0);
+
+  // Test that no messages have been received yet
+  const std::set<std::string>& messages(test_observer_->messages());
+  // Note: The following string corresponds to values in
+  // ModemMessagingClientStubImpl and SmsClientStubImpl.
+  // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
+  const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
+  EXPECT_EQ(messages.find(kMessage1), messages.end());
+
+  // Test for messages delivered by signals.
+  test_observer_->ClearMessages();
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath2), dbus::ObjectPath(kSmsPath));
   base::RunLoop().RunUntilIdle();
 
   network_sms_handler_->RequestUpdate();

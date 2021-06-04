@@ -89,9 +89,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void DevicePropertiesCallback(const std::string& device_path,
                                 absl::optional<base::Value> properties);
 
+  // Called when the cellular device's object path changes. This means that
+  // there has been an update to the device's SIM (removed or inserted) and that
+  // a new handler should be created for the device's new object path.
+  void OnObjectPathChanged(const base::Value& object_path);
+
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::vector<std::unique_ptr<NetworkSmsDeviceHandler>> device_handlers_;
   std::vector<base::Value> received_messages_;
+  std::string cellular_device_path_;
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkSmsHandler);
