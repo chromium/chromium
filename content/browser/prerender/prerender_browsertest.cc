@@ -2468,50 +2468,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessIsKilled) {
       PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
 }
 
-class PrerenderSingleProcessBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderSingleProcessBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    PrerenderBrowserTest::SetUpCommandLine(cmd_line);
-    cmd_line->AppendSwitch("single-process");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrerenderSingleProcessBrowserTest,
-                       SessionStorageAfterBackNavigation) {
-  // Official Chrome builds (except Android) don't support single-process mode.
-  if (!RenderProcessHost::run_renderer_in_process())
-    return;
-
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  // Navigate back to the initial page.
-  content::TestNavigationObserver observer(shell()->web_contents());
-  shell()->GoBackOrForward(-1);
-  observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
 class PrerenderBackForwardCacheBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderBackForwardCacheBrowserTest() {
