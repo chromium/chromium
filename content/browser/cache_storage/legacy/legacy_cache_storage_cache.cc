@@ -543,6 +543,13 @@ struct LegacyCacheStorageCache::QueryCacheContext {
   DISALLOW_COPY_AND_ASSIGN(QueryCacheContext);
 };
 
+struct LegacyCacheStorageCache::BatchInfo {
+  int remaining_operations = 0;
+  VerboseErrorCallback callback;
+  absl::optional<std::string> message;
+  const int64_t trace_id = 0;
+};
+
 // static
 std::unique_ptr<LegacyCacheStorageCache>
 LegacyCacheStorageCache::CreateMemoryCache(
@@ -836,20 +843,11 @@ void LegacyCacheStorageCache::BatchDidGetUsageAndQuota(
   }
   bool skip_side_data = safe_space_required_with_side_data.ValueOrDie() > quota;
 
-  // The following relies on the guarantee that the RepeatingCallback returned
-  // from AdaptCallbackForRepeating invokes the original callback on the first
-  // invocation, and (critically) that subsequent invocations are ignored.
-  // TODO(jsbell): Replace AdaptCallbackForRepeating with ...? crbug.com/730593
-  auto callback_copy = base::AdaptCallbackForRepeating(std::move(callback));
-  auto barrier_closure = base::BarrierClosure(
-      operations.size(),
-      base::BindOnce(&LegacyCacheStorageCache::BatchDidAllOperations,
-                     weak_ptr_factory_.GetWeakPtr(), callback_copy, message,
-                     trace_id));
   auto completion_callback = base::BindRepeating(
       &LegacyCacheStorageCache::BatchDidOneOperation,
-      weak_ptr_factory_.GetWeakPtr(), std::move(barrier_closure),
-      std::move(callback_copy), std::move(message), trace_id);
+      weak_ptr_factory_.GetWeakPtr(),
+      base::OwnedRef(BatchInfo{operations.size(), std::move(callback),
+                               std::move(message), trace_id}));
 
   // Operations may synchronously invoke |callback| which could release the
   // last reference to this instance. Hold a handle for the duration of this
@@ -882,38 +880,31 @@ void LegacyCacheStorageCache::BatchDidGetUsageAndQuota(
   }
 }
 
-void LegacyCacheStorageCache::BatchDidOneOperation(
-    base::OnceClosure completion_closure,
-    VerboseErrorCallback error_callback,
-    absl::optional<std::string> message,
-    int64_t trace_id,
-    CacheStorageError error) {
+void LegacyCacheStorageCache::BatchDidOneOperation(BatchInfo& batch_status,
+                                                   CacheStorageError error) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "LegacyCacheStorageCache::BatchDidOneOperation",
-                         TRACE_ID_GLOBAL(trace_id),
+                         TRACE_ID_GLOBAL(batch_status.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  // Nothing further to report after the callback is called.
+  if (!batch_status.callback)
+    return;
+
+  batch_status.remaining_operations--;
+
   if (error != CacheStorageError::kSuccess) {
-    // This relies on |callback| being created by AdaptCallbackForRepeating
-    // and ignoring anything but the first invocation.
-    std::move(error_callback)
-        .Run(CacheStorageVerboseError::New(error, std::move(message)));
+    std::move(batch_status.callback)
+        .Run(CacheStorageVerboseError::New(error,
+                                           std::move(batch_status.message)));
+  } else if (batch_status.remaining_operations == 0) {
+    TRACE_EVENT_WITH_FLOW0(
+        "CacheStorage", "LegacyCacheStorageCache::BatchDidAllOperations",
+        TRACE_ID_GLOBAL(batch_status.trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    std::move(batch_status.callback)
+        .Run(CacheStorageVerboseError::New(CacheStorageError::kSuccess,
+                                           batch_status.message));
   }
-
-  std::move(completion_closure).Run();
-}
-
-void LegacyCacheStorageCache::BatchDidAllOperations(
-    VerboseErrorCallback callback,
-    absl::optional<std::string> message,
-    int64_t trace_id) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "LegacyCacheStorageCache::BatchDidAllOperations",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  // This relies on |callback| being created by AdaptCallbackForRepeating
-  // and ignoring anything but the first invocation.
-  std::move(callback).Run(CacheStorageVerboseError::New(
-      CacheStorageError::kSuccess, std::move(message)));
 }
 
 void LegacyCacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
@@ -2181,9 +2172,9 @@ void LegacyCacheStorageCache::UpdateCacheSize(base::OnceClosure callback) {
   // Note that the callback holds a cache handle to keep the cache alive during
   // the operation since this UpdateCacheSize is often run after an operation
   // completes and runs its callback.
-  CalculateCacheSize(base::AdaptCallbackForRepeating(base::BindOnce(
+  CalculateCacheSize(base::BindOnce(
       &LegacyCacheStorageCache::UpdateCacheSizeGotSize,
-      weak_ptr_factory_.GetWeakPtr(), CreateHandle(), std::move(callback))));
+      weak_ptr_factory_.GetWeakPtr(), CreateHandle(), std::move(callback)));
 }
 
 void LegacyCacheStorageCache::UpdateCacheSizeGotSize(

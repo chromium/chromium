@@ -114,19 +114,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       blink::mojom::QuotaStatusCode status_code,
       int64_t usage,
       int64_t quota);
-  // Callback passed to operations. If |error| is a real error, invokes
-  // |error_callback|. Always invokes |completion_closure| to signal
-  // completion.
-  void BatchDidOneOperation(base::OnceClosure completion_closure,
-                            VerboseErrorCallback error_callback,
-                            absl::optional<std::string> message,
-                            int64_t trace_id,
-                            blink::mojom::CacheStorageError error);
-  // Callback invoked once all BatchDidOneOperation() calls have run.
-  // Invokes |error_callback|.
-  void BatchDidAllOperations(VerboseErrorCallback error_callback,
-                             absl::optional<std::string> message,
-                             int64_t trace_id);
 
   void Keys(blink::mojom::FetchAPIRequestPtr request,
             blink::mojom::CacheQueryOptionsPtr options,
@@ -221,6 +208,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   struct QueryCacheContext;
   struct QueryCacheResult;
+  struct BatchInfo;
 
   using QueryTypes = int32_t;
   using QueryCacheResults = std::vector<QueryCacheResult>;
@@ -243,6 +231,15 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
       int64_t cache_padding);
+
+  // Callback passed to operations. If |error| is a real error, invokes
+  // |error_callback|. Always invokes |completion_closure| to signal
+  // completion.
+  void BatchDidOneOperation(BatchInfo& batch_status,
+                            blink::mojom::CacheStorageError error);
+  // Callback invoked once all BatchDidOneOperation() calls have run.
+  // Invokes |error_callback|.
+  void BatchDidAllOperations(BatchInfo& batch_status);
 
   // Runs |callback| with matching requests/response data. The data provided
   // in the QueryCacheResults depends on the |query_type|. If |query_type| is
