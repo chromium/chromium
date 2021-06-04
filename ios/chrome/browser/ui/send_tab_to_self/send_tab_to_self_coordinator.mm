@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/check.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -100,10 +101,19 @@ NSString* const kActivityServicesSnackbarCategory =
 
 #pragma mark - SendTabToSelfModalPositioner
 
-- (CGFloat)modalHeight {
-  UITableView* tableView = self.sendTabToSelfViewController.tableView;
-  [tableView setNeedsLayout];
-  [tableView layoutIfNeeded];
+- (CGFloat)modalHeightForWidth:(CGFloat)width {
+  UIView* view = self.sendTabToSelfViewController.view;
+  CGSize contentSize = CGSizeZero;
+  if (UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(view)) {
+    CGRect layoutFrame = self.baseViewController.view.bounds;
+    layoutFrame.size.width = width;
+    scrollView.frame = layoutFrame;
+    [scrollView setNeedsLayout];
+    [scrollView layoutIfNeeded];
+    contentSize = scrollView.contentSize;
+  } else {
+    contentSize = [view sizeThatFits:CGSizeMake(width, CGFLOAT_MAX)];
+  }
 
   // Since the TableView is contained in a NavigationController get the
   // navigation bar height.
@@ -111,7 +121,7 @@ NSString* const kActivityServicesSnackbarCategory =
       self.sendTabToSelfViewController.navigationController.navigationBar.frame
           .size.height;
 
-  return tableView.contentSize.height + navigationBarHeight;
+  return contentSize.height + navigationBarHeight;
 }
 
 #pragma mark-- SendTabToSelfModalDelegate

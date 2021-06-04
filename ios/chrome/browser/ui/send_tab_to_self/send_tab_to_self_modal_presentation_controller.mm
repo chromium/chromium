@@ -45,7 +45,8 @@ const CGFloat kContainerCornerRadius = 13.0;
   CGFloat maxAvailableWidth = safeAreaWidth - 2 * kPresentedViewMargin;
   CGFloat frameWidth = fmin(maxAvailableWidth, kPresentedViewMaxWidth);
 
-  CGFloat modalTargetHeight = [self.modalPositioner modalHeight];
+  CGFloat modalTargetHeight =
+      [self.modalPositioner modalHeightForWidth:frameWidth];
   CGFloat maxAvailableHeight = safeAreaHeight - 2 * kPresentedViewMargin;
   CGFloat frameHeight = fmin(maxAvailableHeight, modalTargetHeight);
 
