@@ -25,7 +25,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemBehavior} from './item_behavior.js';
+import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, SourceType, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
@@ -122,7 +122,7 @@ export class ItemDelegate {
  * @implements {I18nBehaviorInterface}
  */
 const ExtensionsItemElementBase =
-    mixinBehaviors([I18nBehavior, ItemBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], ItemMixin(PolymerElement));
 
 /** @polymer */
 class ExtensionsItemElement extends ExtensionsItemElementBase {

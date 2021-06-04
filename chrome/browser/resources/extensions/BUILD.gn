@@ -63,7 +63,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "drag_and_drop_handler.ts",
     "extensions.ts",
-    "item_behavior.js",
+    "item_mixin.js",
     "item_util.ts",
     "keyboard_shortcut_delegate.ts",
     "navigation_helper.ts",
@@ -195,7 +195,7 @@ ts_library("build_ts") {
     "host_permissions_toggle_list.js",
     "icons.ts",
     "install_warnings_dialog.js",
-    "item_behavior.js",
+    "item_mixin.js",
     "item.js",
     "item_list.js",
     "item_util.ts",

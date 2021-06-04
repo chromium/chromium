@@ -30,7 +30,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
-import {ItemBehavior} from './item_behavior.js';
+import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
@@ -39,7 +39,7 @@ import {navigation, Page} from './navigation_helper.js';
  * @extends {PolymerElement}
  */
 const ExtensionsDetailViewElementBase =
-    mixinBehaviors([CrContainerShadowBehavior, ItemBehavior], PolymerElement);
+    mixinBehaviors([CrContainerShadowBehavior], ItemMixin(PolymerElement));
 
 /** @polymer */
 class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
