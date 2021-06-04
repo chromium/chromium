@@ -104,6 +104,8 @@ class URLSchemesRegistry final {
   URLSchemesSet error_schemes;
   URLSchemesSet wasm_eval_csp_schemes;
   URLSchemesSet allowing_shared_array_buffer_schemes;
+  URLSchemesSet extension_schemes;
+  URLSchemesSet web_ui_schemes;
 
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
@@ -447,6 +449,38 @@ bool SchemeRegistry::SchemeSupportsWasmEvalCSP(const String& scheme) {
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().wasm_eval_csp_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsExtension(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().extension_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsExtension(const String& scheme) {
+  GetMutableURLSchemesRegistry().extension_schemes.erase(scheme);
+}
+
+bool SchemeRegistry::IsExtensionScheme(const String& scheme) {
+  if (scheme.IsEmpty())
+    return false;
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  return GetURLSchemesRegistry().extension_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsWebUI(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().web_ui_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsWebUI(const String& scheme) {
+  GetMutableURLSchemesRegistry().web_ui_schemes.erase(scheme);
+}
+
+bool SchemeRegistry::IsWebUIScheme(const String& scheme) {
+  if (scheme.IsEmpty())
+    return false;
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  return GetURLSchemesRegistry().web_ui_schemes.Contains(scheme);
 }
 
 }  // namespace blink

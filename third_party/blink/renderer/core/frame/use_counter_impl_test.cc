@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace {
 const char kExtensionFeaturesHistogramName[] =
@@ -129,6 +130,7 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   constexpr auto item = mojom::WebFeature::kFetch;
   constexpr auto second_item = WebFeature::kFetchBodyStream;
   const std::string url = kExtensionUrl;
+  SchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
   UseCounterImpl::Context context = UseCounterImpl::kExtensionContext;
   int page_visits_bucket = GetPageVisitsBucketforHistogram(histogram);
 
@@ -170,6 +172,7 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   EXPECT_TRUE(use_counter1.IsCounted(item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 2);
   histogram_tester_.ExpectTotalCount(histogram, 4);
+  SchemeRegistry::RemoveURLSchemeAsExtension("chrome-extension");
 }
 
 TEST_F(UseCounterImplTest, CSSSelectorPseudoWhere) {

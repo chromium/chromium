@@ -68,5 +68,57 @@ TEST_F(SchemeRegistryTest, BypassSecureContextCheck) {
   EXPECT_TRUE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme3));
 }
 
+TEST_F(SchemeRegistryTest, WebUIScheme) {
+  const char* kChromeUIScheme = "chrome";
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUI(kTestScheme);
+
+  EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUI(kChromeUIScheme);
+
+  EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUI(kTestScheme);
+
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUI(kChromeUIScheme);
+
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
+}
+
+TEST_F(SchemeRegistryTest, ExtensionScheme) {
+  const char* kExtensionScheme = "chrome-extension";
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
+
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsExtension(kTestScheme);
+
+  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsExtension(kExtensionScheme);
+
+  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsExtension(kTestScheme);
+
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+}
+
 }  // namespace
 }  // namespace blink

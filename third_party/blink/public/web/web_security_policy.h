@@ -130,6 +130,12 @@ class WebSecurityPolicy {
   // Registers an URL scheme as an error page.
   BLINK_EXPORT static void RegisterURLSchemeAsError(const WebString&);
 
+  // Registers an URL scheme as a browser extension.
+  BLINK_EXPORT static void RegisterURLSchemeAsExtension(const WebString&);
+
+  // Registers an URL scheme as trusted browser UI.
+  BLINK_EXPORT static void RegisterURLSchemeAsWebUI(const WebString&);
+
  private:
   WebSecurityPolicy() = delete;
 };

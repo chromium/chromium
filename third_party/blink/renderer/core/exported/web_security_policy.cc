@@ -144,4 +144,12 @@ void WebSecurityPolicy::RegisterURLSchemeAsError(const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsError(scheme);
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsExtension(const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsExtension(scheme);
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsWebUI(const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsWebUI(scheme);
+}
+
 }  // namespace blink

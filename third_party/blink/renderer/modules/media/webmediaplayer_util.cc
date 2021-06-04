@@ -15,6 +15,8 @@
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace {
@@ -67,9 +69,10 @@ media::mojom::MediaURLScheme GetMediaURLScheme(const WebURL& url) {
     return media::mojom::MediaURLScheme::kContentId;
 
   // Some internals pages and extension pages play media.
-  if (url.ProtocolIs("chrome"))
+  KURL kurl(url);
+  if (SchemeRegistry::IsWebUIScheme(kurl.Protocol()))
     return media::mojom::MediaURLScheme::kChrome;
-  if (url.ProtocolIs("chrome-extension"))
+  if (SchemeRegistry::IsExtensionScheme(kurl.Protocol()))
     return media::mojom::MediaURLScheme::kChromeExtension;
 
   return media::mojom::MediaURLScheme::kUnknown;

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -339,7 +340,8 @@ bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
         GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
     is_in_pwa_window = display_mode != mojom::blink::DisplayMode::kBrowser;
   }
-  if (!(GetSupplementable()->Url().ProtocolIs("chrome-extension") ||
+  if (!(SchemeRegistry::IsExtensionScheme(
+            GetSupplementable()->Url().Protocol()) ||
         Fullscreen::FullscreenElementFrom(*GetSupplementable()) ||
         (is_in_pwa_window && GetSupplementable()->IsInWebAppScope()))) {
     return false;

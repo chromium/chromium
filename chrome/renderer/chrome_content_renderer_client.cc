@@ -397,6 +397,8 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()->RenderThreadStarted();
+  WebSecurityPolicy::RegisterURLSchemeAsExtension(
+      WebString::FromASCII(extensions::kExtensionScheme));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

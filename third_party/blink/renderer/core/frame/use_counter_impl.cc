@@ -104,7 +104,7 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (url.ProtocolIs("chrome-extension")) {
+  if (SchemeRegistry::IsExtensionScheme(url.Protocol())) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;

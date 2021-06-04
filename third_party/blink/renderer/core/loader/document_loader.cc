@@ -2428,7 +2428,8 @@ void DocumentLoader::CreateParserPostCommit() {
     // Enable Auto Picture-in-Picture feature for the built-in Chrome OS Video
     // Player app.
     const url::Origin origin = window->GetSecurityOrigin()->ToUrlOrigin();
-    if (origin.scheme() == "chrome-extension" &&
+    if (SchemeRegistry::IsExtensionScheme(
+            String(origin.scheme().c_str(), origin.scheme().size())) &&
         origin.DomainIs("jcgeabjmjgoblfofpppfkcoakmfobdko") &&
         origin.port() == 0) {
       window->GetOriginTrialContext()->AddFeature(

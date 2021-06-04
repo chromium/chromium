@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -71,7 +72,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
 
   // All chrome extensions need to share the same agent because they can
   // access each other's windows directly.
-  if (origin->Protocol() == "chrome-extension") {
+  if (SchemeRegistry::IsExtensionScheme(origin->Protocol())) {
     DEFINE_STATIC_LOCAL(Persistent<TupleOriginAgents>, static_origin_agents,
                         (MakeGarbageCollected<TupleOriginAgents>()));
     tuple_origin_agents = static_origin_agents;

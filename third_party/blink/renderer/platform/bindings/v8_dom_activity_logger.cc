@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -81,7 +82,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(int world_id,
   // To find an activity logger that corresponds to the main world of an
   // extension, we need to obtain the extension ID. Extension ID is a hostname
   // of a background page's URL.
-  if (!url.ProtocolIs("chrome-extension"))
+  if (!SchemeRegistry::IsExtensionScheme(url.Protocol()))
     return nullptr;
 
   return ActivityLogger(world_id, url.Host());
