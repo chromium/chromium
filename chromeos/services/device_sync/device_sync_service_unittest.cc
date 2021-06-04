@@ -916,8 +916,8 @@ class DeviceSyncServiceTest
   }
 
   void MakePrimaryAccountAvailable() {
-    identity_test_environment_->MakeUnconsentedPrimaryAccountAvailable(
-        kTestEmail);
+    identity_test_environment_->MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
   }
 
   void SetInitialRegistrationId(const std::string& registration_id) {

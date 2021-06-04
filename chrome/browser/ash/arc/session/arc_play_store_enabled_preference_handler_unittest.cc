@@ -91,7 +91,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     GetFakeUserManager()->LoginUser(account_id);
 
     identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakeUnconsentedPrimaryAccountAvailable(kTestEmail);
+        ->MakePrimaryAccountAvailable(kTestEmail,
+                                      signin::ConsentLevel::kSignin);
   }
 
   void TearDown() override {

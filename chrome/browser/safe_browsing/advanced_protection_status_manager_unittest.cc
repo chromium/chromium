@@ -405,9 +405,8 @@ TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
   ASSERT_TRUE(aps_manager.GetUnconsentedPrimaryAccountId().empty());
 
   // Sign in, but don't set this as the primary account.
-  AccountInfo account_info =
-      identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-          "test@test.com");
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@test.com", signin::ConsentLevel::kSignin);
   account_info.is_under_advanced_protection = true;
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
 

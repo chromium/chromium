@@ -90,7 +90,8 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
 
   // Create a sync consented account so revoking the refresh token also triggers
   // the preference updated observer.
-  identity_test_env()->MakePrimaryAccountAvailable(kTestProfileName);
+  identity_test_env()->MakePrimaryAccountAvailable(kTestProfileName,
+                                                   signin::ConsentLevel::kSync);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 
@@ -142,7 +143,8 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
   prefs()->SetDefaultPrefValue(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       base::Value(false));
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestProfileName, signin::ConsentLevel::kSignin);
 
   // Check setting the generated pref updates the underlying preference.
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
@@ -183,7 +185,8 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
 
   // Check when signed in and Safe Browsing set to standard, both user control
   // and the pref are enabled.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestProfileName, signin::ConsentLevel::kSignin);
   prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
@@ -237,7 +240,8 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
 
   // Check that the preference cannot be changed when the backing preference is
   // managed, but the preference could otherwise be changed.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestProfileName, signin::ConsentLevel::kSignin);
   prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,

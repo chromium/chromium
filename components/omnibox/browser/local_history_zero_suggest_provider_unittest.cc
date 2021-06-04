@@ -216,7 +216,8 @@ void LocalHistoryZeroSuggestProviderTest::ExpectMatches(
 }
 
 void LocalHistoryZeroSuggestProviderTest::SignIn() {
-  identity_env_->MakeUnconsentedPrimaryAccountAvailable("test@email.com");
+  identity_env_->MakePrimaryAccountAvailable("test@email.com",
+                                             signin::ConsentLevel::kSignin);
 }
 
 void LocalHistoryZeroSuggestProviderTest::SignOut() {

@@ -1302,7 +1302,8 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
 
 TEST_F(PeopleHandlerTest, TurnOffSync) {
   // Simulate a user who previously turned on sync.
-  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
+                                                   ConsentLevel::kSync);
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   CreatePeopleHandler();
@@ -1314,7 +1315,8 @@ TEST_F(PeopleHandlerTest, TurnOffSync) {
 
 TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   // Chrome OS sets an unconsented primary account on login.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
+                                                   ConsentLevel::kSignin);
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   CreatePeopleHandler();

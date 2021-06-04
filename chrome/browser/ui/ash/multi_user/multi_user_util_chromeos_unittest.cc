@@ -56,8 +56,8 @@ class MultiUserUtilTest : public ChromeAshTestBase {
 
   // Add a user to the identity manager with given gaia_id and email.
   CoreAccountId AddUserAndSignIn(const std::string& email) {
-    AccountInfo account_info =
-        identity_test_env()->MakePrimaryAccountAvailable(email);
+    AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSync);
     fake_user_manager_->AddUser(
         multi_user_util::GetAccountIdFromEmail(account_info.email));
     fake_user_manager_->UserLoggedIn(

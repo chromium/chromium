@@ -75,8 +75,8 @@ class AmbientClientImplTest : public testing::Test {
   void MaybeMakeAccountAsPrimaryAccount(const AccountId& account_id) {
     if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSignin)) {
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          account_id.GetUserEmail());
+      identity_test_env()->MakePrimaryAccountAvailable(
+          account_id.GetUserEmail(), signin::ConsentLevel::kSignin);
     }
   }
 

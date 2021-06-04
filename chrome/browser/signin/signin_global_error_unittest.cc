@@ -59,7 +59,8 @@ class SigninGlobalErrorTest : public testing::Test {
 
     AccountInfo account_info =
         identity_test_env_profile_adaptor_->identity_test_env()
-            ->MakePrimaryAccountAvailable(kTestEmail);
+            ->MakePrimaryAccountAvailable(kTestEmail,
+                                          signin::ConsentLevel::kSync);
     ProfileAttributesEntry* entry =
         profile_manager_.profile_attributes_storage()
             ->GetProfileAttributesWithPath(profile()->GetPath());

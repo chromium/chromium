@@ -184,7 +184,8 @@ class DeviceSyncCryptAuthClientTest : public testing::Test {
     device_classifier.set_device_software_package(kDeviceSoftwarePackage);
     device_classifier.set_device_type(DeviceTypeEnumToString(kDeviceType));
 
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(kEmail);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
 
     client_ = std::make_unique<CryptAuthClientImpl>(
         base::WrapUnique(api_call_flow_),

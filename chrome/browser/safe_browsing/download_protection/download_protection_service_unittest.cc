@@ -3717,7 +3717,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com");
+      "test@example.com", signin::ConsentLevel::kSync);
   identity_test_env_adaptor_->identity_test_env()
       ->SetAutomaticIssueOfAccessTokens(/*grant=*/true);
 
@@ -3834,7 +3834,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
   }
 
   identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com");
+      "test@example.com", signin::ConsentLevel::kSync);
 
   {
     NiceMockDownloadItem item;

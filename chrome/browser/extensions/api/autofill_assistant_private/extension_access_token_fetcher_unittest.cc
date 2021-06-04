@@ -18,7 +18,8 @@ class ExtensionAccessTokenFetcherTest : public testing::Test {
   ~ExtensionAccessTokenFetcherTest() override = default;
 
   void SetUp() override {
-    identity_test_env_.MakePrimaryAccountAvailable("primary@example.com");
+    identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                   signin::ConsentLevel::kSync);
   }
 
   void TearDown() override {}

@@ -372,7 +372,7 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
 TEST_F(DiceResponseHandlerTest, Reauth) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_params.signin_info->account_info.email);
+      dice_params.signin_info->account_info.email, signin::ConsentLevel::kSync);
   dice_params.signin_info->account_info.gaia_id = account_info.gaia;
   CoreAccountId account_id = account_info.account_id;
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -608,8 +608,8 @@ TEST_F(DiceResponseHandlerTest, SignoutMainAccount) {
   const auto& dice_account_info = dice_params.signout_info->account_infos[0];
   // User is signed in to Chrome, and has some refresh token for a secondary
   // account.
-  AccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(dice_account_info.email);
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      dice_account_info.email, signin::ConsentLevel::kSync);
   AccountInfo secondary_account_info =
       identity_test_env_.MakeAccountAvailable(kSecondaryEmail);
   EXPECT_TRUE(
@@ -657,7 +657,8 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
   // User is signed in to Chrome, and has some refresh token for a secondary
   // account.
   AccountInfo main_account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(kMainEmail);
+      identity_test_env_.MakePrimaryAccountAvailable(
+          kMainEmail, signin::ConsentLevel::kSync);
   AccountInfo secondary_account_info = identity_test_env_.MakeAccountAvailable(
       secondary_dice_account_info.email);
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
@@ -714,8 +715,8 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutSameAccount) {
   const auto& dice_account_info = dice_params.signout_info->account_infos[0];
 
   // User is signed in to Chrome.
-  AccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(dice_account_info.email);
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      dice_account_info.email, signin::ConsentLevel::kSync);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_FALSE(

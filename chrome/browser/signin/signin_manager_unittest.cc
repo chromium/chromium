@@ -133,7 +133,8 @@ class SigninManagerTest : public testing::Test {
   }
 
   AccountInfo MakeSyncAccountAvailableWithCookies(const std::string& email) {
-    AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(email);
+    AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSync);
     identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
     EXPECT_EQ(account,
               identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));

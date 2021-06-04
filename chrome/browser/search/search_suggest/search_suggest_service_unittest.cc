@@ -74,7 +74,8 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
     service_ = std::make_unique<SearchSuggestService>(
         profile(), identity_env_->identity_manager(), std::move(loader));
 
-    identity_env_->MakePrimaryAccountAvailable("example@gmail.com");
+    identity_env_->MakePrimaryAccountAvailable("example@gmail.com",
+                                               signin::ConsentLevel::kSync);
     identity_env_->SetAutomaticIssueOfAccessTokens(true);
   }
 

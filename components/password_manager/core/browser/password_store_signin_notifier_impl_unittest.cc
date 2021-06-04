@@ -45,7 +45,8 @@ class PasswordStoreSigninNotifierImplTest : public testing::Test {
 TEST_F(PasswordStoreSigninNotifierImplTest, Subscribed) {
   PasswordStoreSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(store_.get());
-  identity_test_env()->MakePrimaryAccountAvailable("test@example.com");
+  identity_test_env()->MakePrimaryAccountAvailable("test@example.com",
+                                                   signin::ConsentLevel::kSync);
   testing::Mock::VerifyAndClearExpectations(store_.get());
   EXPECT_CALL(*store_, ClearAllGaiaPasswordHash());
   identity_test_env()->ClearPrimaryAccount();
@@ -59,7 +60,8 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Unsubscribed) {
   notifier.SubscribeToSigninEvents(store_.get());
   notifier.UnsubscribeFromSigninEvents();
   EXPECT_CALL(*store_, ClearAllGaiaPasswordHash()).Times(0);
-  identity_test_env()->MakePrimaryAccountAvailable("test@example.com");
+  identity_test_env()->MakePrimaryAccountAvailable("test@example.com",
+                                                   signin::ConsentLevel::kSync);
   identity_test_env()->ClearPrimaryAccount();
 }
 
@@ -71,7 +73,8 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   PasswordStoreSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(store_.get());
 
-  identity_test_env()->MakePrimaryAccountAvailable("username");
+  identity_test_env()->MakePrimaryAccountAvailable("username",
+                                                   signin::ConsentLevel::kSync);
   testing::Mock::VerifyAndClearExpectations(store_.get());
   EXPECT_CALL(*store_, ClearGaiaPasswordHash("username2"));
   auto* identity_manager = identity_test_env()->identity_manager();

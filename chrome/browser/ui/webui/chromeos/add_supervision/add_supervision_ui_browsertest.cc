@@ -39,8 +39,8 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
     // TODO(danan):  See if this is possible to do this instead using
     // FakeGaia.IssueOAuthToken().
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-    identity_test_env_->MakeUnconsentedPrimaryAccountAvailable(
-        "example@gmail.com");
+    identity_test_env_->MakePrimaryAccountAvailable(
+        "example@gmail.com", signin::ConsentLevel::kSignin);
     // This makes the identity manager return the string "access_token" for the
     // access token.
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);

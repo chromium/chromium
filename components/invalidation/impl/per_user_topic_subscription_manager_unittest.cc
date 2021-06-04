@@ -139,8 +139,8 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
   void SetUp() override {
     PerUserTopicSubscriptionManager::RegisterProfilePrefs(
         pref_service_.registry());
-    AccountInfo account =
-        identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com");
+    AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+        "example@gmail.com", signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     identity_provider_ = std::make_unique<ProfileIdentityProvider>(
         identity_test_env_.identity_manager());

@@ -247,8 +247,8 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   // - other enterprise account that is not primary (should be ignored)
   // - intercepted account.
   AccountInfo primary_account_info =
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          "alice@example.com");
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "alice@example.com", signin::ConsentLevel::kSignin);
   AccountInfo other_account_info =
       identity_test_env()->MakeAccountAvailable("dummy@example.com");
   MakeValidAccountInfo(&other_account_info);
@@ -492,8 +492,8 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
 TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          "bob@example.com");
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);
@@ -757,8 +757,8 @@ TEST_F(DiceWebSigninInterceptorTest, ProfileCreationDisallowed) {
 TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoAvailable) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          "bob@example.com");
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   EXPECT_FALSE(interceptor()
@@ -789,8 +789,8 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoAvailable) {
 TEST_F(DiceWebSigninInterceptorTest, AccountInfoAlreadyAvailable) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          "bob@example.com");
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);
@@ -816,8 +816,8 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoAlreadyAvailable) {
 TEST_F(DiceWebSigninInterceptorTest, MultiUserInterception) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          "bob@example.com");
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);

@@ -70,8 +70,8 @@ class WebRtcSignalingMessengerTest : public testing::Test {
   ~WebRtcSignalingMessengerTest() override = default;
 
   void SetUp() override {
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-        kTestAccount);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kTestAccount, signin::ConsentLevel::kSignin);
   }
 
   void SetOAuthTokenSuccessful(bool success) {

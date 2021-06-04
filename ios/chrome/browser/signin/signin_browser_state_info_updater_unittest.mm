@@ -103,8 +103,8 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
 
   // Signin.
-  AccountInfo account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(kEmail);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
@@ -129,8 +129,8 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, AuthError) {
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
 
   // Signin.
-  AccountInfo account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(kEmail);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));

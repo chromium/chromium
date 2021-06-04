@@ -139,7 +139,9 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
       run_loop.QuitClosure());
 
   CoreAccountId account_id =
-      identity_test_env()->MakePrimaryAccountAvailable(kTestEmail).account_id;
+      identity_test_env()
+          ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
+          .account_id;
   run_loop.Run();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);

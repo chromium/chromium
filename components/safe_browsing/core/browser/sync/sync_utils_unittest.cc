@@ -98,7 +98,8 @@ TEST_F(SyncUtilsTest,
   // to perform URL lookups with tokens (even though the
   // kRealTimeLookupEnabledWithToken feature and sync/history sync are
   // disabled).
-  identity_test_env->MakeUnconsentedPrimaryAccountAvailable("test@example.com");
+  identity_test_env->MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
   EXPECT_TRUE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
       /* user_has_enabled_enhanced_protection=*/true));

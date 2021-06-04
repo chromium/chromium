@@ -585,7 +585,8 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
   // Signs in (at sync consent level) and returns the account ID of the primary
   // account.
   CoreAccountId SignIn(const std::string& email) {
-    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(email);
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSync);
     EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
         signin::ConsentLevel::kSync));
     return account_info.account_id;
@@ -760,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInUnconsented) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-      "test@example.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
   std::unique_ptr<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
@@ -831,8 +832,8 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedInUnconsented) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-      "test@example.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
   std::unique_ptr<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   // The unconsented (Sync off) primary account is returned conditionally,

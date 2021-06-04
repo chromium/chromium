@@ -51,7 +51,8 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
             .email,
         email);
   } else {
-    identity_test_env_.MakePrimaryAccountAvailable(email);
+    identity_test_env_.MakePrimaryAccountAvailable(email,
+                                                   signin::ConsentLevel::kSync);
   }
 }
 

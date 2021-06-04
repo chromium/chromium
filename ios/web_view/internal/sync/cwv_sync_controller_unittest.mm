@@ -114,7 +114,8 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
 
 TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
   CoreAccountInfo account_info =
-      identity_test_environment_.MakePrimaryAccountAvailable(kTestEmail);
+      identity_test_environment_.MakePrimaryAccountAvailable(
+          kTestEmail, signin::ConsentLevel::kSync);
 
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_

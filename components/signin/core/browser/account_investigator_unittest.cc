@@ -379,7 +379,8 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimary) {
   std::string email("f@bar.com");
   identity_test_env()->SetCookieAccounts(
       {{email, signin::GetTestGaiaIdForEmail(email)}});
-  identity_test_env()->MakePrimaryAccountAvailable(email);
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   signin::ConsentLevel::kSync);
 
   const HistogramTester histogram_tester;
   TryPeriodicReport();
@@ -400,7 +401,8 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithUnconsentedPrimary) {
   std::string email("f@bar.com");
   identity_test_env()->SetCookieAccounts(
       {{email, signin::GetTestGaiaIdForEmail(email)}});
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(email);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      email, signin::ConsentLevel::kSignin);
 
   const HistogramTester histogram_tester;
   TryPeriodicReport();
@@ -420,8 +422,8 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
   std::string email("f@bar.com");
   identity_test_env()->SetCookieAccounts(
       {{email, signin::GetTestGaiaIdForEmail(email)}});
-  AccountInfo account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(email);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      email, signin::ConsentLevel::kSync);
   account_info.hosted_domain = "bar.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 

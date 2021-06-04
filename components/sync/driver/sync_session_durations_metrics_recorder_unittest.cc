@@ -5,6 +5,7 @@
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
 #include <memory>
+#include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -30,7 +31,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   ~SyncSessionDurationsMetricsRecorderTest() override {}
 
   void EnableSync() {
-    identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com");
+    identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com",
+                                                   signin::ConsentLevel::kSync);
     sync_service_.SetIsAuthenticatedAccountPrimary(true);
     sync_service_.SetDisableReasons(SyncService::DisableReasonSet());
     sync_service_.FireStateChanged();

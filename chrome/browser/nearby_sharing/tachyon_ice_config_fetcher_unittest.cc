@@ -67,8 +67,8 @@ class TachyonIceConfigFetcherTest : public testing::Test {
                 &test_url_loader_factory_)),
         ice_config_fetcher_(identity_test_environment_.identity_manager(),
                             test_shared_loader_factory_) {
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-        kTestAccount);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kTestAccount, signin::ConsentLevel::kSignin);
   }
   ~TachyonIceConfigFetcherTest() override = default;
 

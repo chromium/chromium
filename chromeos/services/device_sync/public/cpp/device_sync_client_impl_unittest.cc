@@ -157,9 +157,10 @@ class DeviceSyncClientImplTest : public testing::Test {
 
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
-    // "Unconsented" because this feature is not tied to browser sync consent.
-    identity_test_environment_->MakeUnconsentedPrimaryAccountAvailable(
-        kTestEmail);
+    // ConsentLevel::kSignin because this feature is not tied to browser sync
+    // consent.
+    identity_test_environment_->MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
 
     auto fake_device_sync = std::make_unique<FakeDeviceSync>();
     fake_device_sync_ = fake_device_sync.get();

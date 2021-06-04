@@ -111,7 +111,8 @@ class MockBlocklistStore : public suggestions::BlocklistStore {
 class SuggestionsServiceTest : public testing::Test {
  protected:
   SuggestionsServiceTest() {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail);
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
+                                                   signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 

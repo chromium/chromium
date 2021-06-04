@@ -152,7 +152,8 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
     // Seed account info properly.
-    identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kFakeUserName);
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kFakeUserName, signin::ConsentLevel::kSignin);
 
     profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
     profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);

@@ -97,7 +97,10 @@ class SyncServiceImplTest : public ::testing::Test {
     ShutdownAndDeleteService();
   }
 
-  void SignIn() { identity_test_env()->MakePrimaryAccountAvailable(kTestUser); }
+  void SignIn() {
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kTestUser, signin::ConsentLevel::kSync);
+  }
 
   void CreateService(SyncServiceImpl::StartBehavior behavior,
                      policy::PolicyService* policy_service = nullptr,

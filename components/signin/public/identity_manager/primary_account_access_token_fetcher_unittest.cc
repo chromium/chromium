@@ -82,7 +82,9 @@ class PrimaryAccountAccessTokenFetcherTest
 
   // Signs the user in to the primary account, returning the account ID.
   CoreAccountId SignIn() {
-    return identity_test_env_->MakePrimaryAccountAvailable("me@gmail.com")
+    return identity_test_env_
+        ->MakePrimaryAccountAvailable("me@gmail.com",
+                                      signin::ConsentLevel::kSync)
         .account_id;
   }
 
@@ -465,7 +467,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   TestTokenCallback callback;
 
   // Simulate login.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("me@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "me@gmail.com", signin::ConsentLevel::kSignin);
 
   // Perform an immediate fetch with consent not required.
   auto fetcher = CreateFetcher(
@@ -485,7 +488,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   TestTokenCallback callback;
 
   // Simulate login.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("me@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "me@gmail.com", signin::ConsentLevel::kSignin);
 
   // Try an immediate fetch with consent required.
   auto fetcher = CreateFetcher(
@@ -508,7 +512,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
 
   // Simulate login.
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("me@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "me@gmail.com", signin::ConsentLevel::kSignin);
 
   // Once the access token request is fulfilled, we should get called back with
   // the access token.

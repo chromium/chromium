@@ -7348,7 +7348,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   sync_service_.SetIsAuthenticatedAccountPrimary(true);
 // MakePrimaryAccountAvailable is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email);
+  identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email,
+                                                 signin::ConsentLevel::kSync);
 #endif
 
   // Check that the sync state is |SignedInAndSyncFeature| if the sync feature
@@ -7377,9 +7378,8 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   // Make a primary account with no sync consent available to be in Sync
   // Transport for Wallet mode.
-  CoreAccountInfo active_info =
-      identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-          kSyncTransportAccountEmail);
+  CoreAccountInfo active_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kSyncTransportAccountEmail, signin::ConsentLevel::kSignin);
   sync_service_.SetAuthenticatedAccountInfo(active_info);
   sync_service_.SetIsAuthenticatedAccountPrimary(false);
   sync_service_.SetActiveDataTypes(

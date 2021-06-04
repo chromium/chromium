@@ -109,7 +109,8 @@ class PaymentsClientTest : public testing::Test {
         test_shared_loader_factory_, identity_test_env_.identity_manager(),
         &test_personal_data_);
     test_personal_data_.SetAccountInfoForPayments(
-        identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com"));
+        identity_test_env_.MakePrimaryAccountAvailable(
+            "example@gmail.com", signin::ConsentLevel::kSync));
   }
 
   void TearDown() override { client_.reset(); }

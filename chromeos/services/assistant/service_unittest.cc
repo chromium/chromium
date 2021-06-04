@@ -91,7 +91,8 @@ class AssistantServiceTest : public testing::Test {
     assistant_state_.RegisterPrefChanges(&pref_service_);
 
     // In production the primary account is set before the service is created.
-    identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(kEmailAddress);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kEmailAddress, signin::ConsentLevel::kSignin);
 
     service_ = std::make_unique<Service>(shared_url_loader_factory_->Clone(),
                                          identity_test_env_.identity_manager());

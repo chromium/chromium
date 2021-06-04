@@ -187,7 +187,10 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         ConsentLevel consent_level) {
   CoreAccountInfo account_info =
       SetPrimaryAccount(identity_manager, email, consent_level);
-  SetRefreshTokenForPrimaryAccount(identity_manager);
+  // TODO(https://crbug.com/1176695): Refactor
+  // SetRefreshTokenForPrimaryAccount() to set the refresh token for
+  // signin::kSignin and use it here.
+  SetRefreshTokenForAccount(identity_manager, account_info.account_id);
   AccountInfo primary_account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(
           account_info.account_id);

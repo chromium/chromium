@@ -64,7 +64,8 @@ class GCDApiFlowTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    identity_test_environment_.MakePrimaryAccountAvailable(kAccountId);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kAccountId, signin::ConsentLevel::kSync);
 
     std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
     mock_delegate_ = delegate.get();

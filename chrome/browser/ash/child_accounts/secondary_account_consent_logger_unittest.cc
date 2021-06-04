@@ -100,7 +100,8 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
   }
 
   void IssueRefreshTokenForPrimaryAccount() {
-    identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(kAccountEmail);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kAccountEmail, signin::ConsentLevel::kSignin);
   }
 
   void SendResponse(int net_error, int response_code) {

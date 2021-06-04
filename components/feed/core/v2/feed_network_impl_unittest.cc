@@ -89,7 +89,8 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
 class FeedNetworkTest : public testing::Test {
  public:
   FeedNetworkTest() {
-    identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com");
+    identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com",
+                                                   signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
   FeedNetworkTest(FeedNetworkTest&) = delete;

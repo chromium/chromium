@@ -228,7 +228,8 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("test_user@gmail.com");
+      ->MakePrimaryAccountAvailable("test_user@gmail.com",
+                                    signin::ConsentLevel::kSync);
 
   // App sync will wait for priority sync to complete.
   service_->CheckForExternalUpdates();

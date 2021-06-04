@@ -73,7 +73,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
   void SimulateTestUserSignin() {
     profile_sync_service_bundle_.identity_test_env()
-        ->MakePrimaryAccountAvailable(kEmail);
+        ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSync);
   }
 
   void SimulateTestUserSigninWithoutRefreshToken() {

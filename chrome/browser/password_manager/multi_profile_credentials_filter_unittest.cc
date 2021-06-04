@@ -122,7 +122,8 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
     // arbitrary primary account here, so that any follow-up signs to the Gaia
     // page aren't considered primary account sign-ins and hence trigger the
     // password save prompt.
-    identity_test_env()->MakePrimaryAccountAvailable("primary@example.org");
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "primary@example.org", signin::ConsentLevel::kSync);
   }
 
   void TearDown() override {

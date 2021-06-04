@@ -97,7 +97,8 @@ class TurnSyncOnHelperTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(TurnSyncOnHelperTest, UserAcceptsDefaults) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
@@ -120,7 +121,8 @@ TEST_F(TurnSyncOnHelperTest, UserAcceptsDefaults) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UserClicksSettings) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
@@ -139,7 +141,8 @@ TEST_F(TurnSyncOnHelperTest, UserClicksSettings) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
@@ -158,7 +161,8 @@ TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
@@ -177,7 +181,8 @@ TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   // Simulate a user who previously completed the first-run flow.
@@ -195,7 +200,8 @@ TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UserPreviouslyAcceptedSync) {
-  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
+                                                   ConsentLevel::kSync);
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   auto test_delegate = std::make_unique<TestDelegate>();
@@ -210,7 +216,8 @@ TEST_F(TurnSyncOnHelperTest, UserPreviouslyAcceptedSync) {
 }
 
 TEST_F(TurnSyncOnHelperTest, UrlKeyedMetricsConsent) {
-  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
 
   // User is not consented by default.
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> consent_helper =

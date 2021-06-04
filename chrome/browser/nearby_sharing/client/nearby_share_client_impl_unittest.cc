@@ -188,7 +188,8 @@ class NearbyShareClientImplTest : public testing::Test,
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kNearbyShareHTTPHost, kTestGoogleApisUrl);
 
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(kEmail);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
 
     std::unique_ptr<FakeNearbyShareApiCallFlow> api_call_flow =
         std::make_unique<FakeNearbyShareApiCallFlow>();

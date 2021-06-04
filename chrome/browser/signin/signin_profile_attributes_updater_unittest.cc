@@ -106,7 +106,8 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
   EXPECT_FALSE(entry->IsSigninRequired());
 
   // Signin.
-  identity_test_env_.MakePrimaryAccountAvailable(kEmail);
+  identity_test_env_.MakePrimaryAccountAvailable(kEmail,
+                                                 signin::ConsentLevel::kSync);
   EXPECT_TRUE(entry->IsAuthenticated());
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kEmail), entry->GetGAIAId());
   EXPECT_EQ(kEmail, base::UTF16ToUTF8(entry->GetUserName()));
@@ -126,7 +127,9 @@ TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
   ASSERT_NE(entry, nullptr);
 
   CoreAccountId account_id =
-      identity_test_env_.MakePrimaryAccountAvailable(kEmail).account_id;
+      identity_test_env_
+          .MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSync)
+          .account_id;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS only observes signin state at initial creation of the updater, so
@@ -163,9 +166,8 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
   SetProfilePrefs(pref_service);
 
   // Set UPA should reset profile prefs.
-  AccountInfo account_info =
-      identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-          "email1@example.com");
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "email1@example.com", signin::ConsentLevel::kSignin);
   EXPECT_FALSE(entry->IsAuthenticated());
   CheckProfilePrefsReset(pref_service, false);
   SetProfilePrefs(pref_service);
@@ -176,8 +178,8 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
 
   SetProfilePrefs(pref_service);
   // Set primary account should reset profile prefs.
-  AccountInfo primary_account =
-      identity_test_env_.MakePrimaryAccountAvailable("primary@example.com");
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSync);
   CheckProfilePrefsReset(pref_service, false);
   SetProfilePrefs(pref_service);
   // Disabling sync should reset profile prefs.
@@ -194,9 +196,8 @@ TEST_F(SigninProfileAttributesUpdaterTest,
           ->GetProfileAttributesWithPath(profile_->GetPath());
   ASSERT_NE(entry, nullptr);
   // Set UPA.
-  AccountInfo account_info =
-      identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-          "email1@example.com");
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "email1@example.com", signin::ConsentLevel::kSignin);
   EXPECT_FALSE(entry->IsAuthenticated());
   SetProfilePrefs(pref_service);
   // Set primary account to be the same as the UPA.
@@ -216,14 +217,13 @@ TEST_F(SigninProfileAttributesUpdaterTest,
       profile_manager_.profile_attributes_storage()
           ->GetProfileAttributesWithPath(profile_->GetPath());
   ASSERT_NE(entry, nullptr);
-  AccountInfo account_info =
-      identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-          "email1@example.com");
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "email1@example.com", signin::ConsentLevel::kSignin);
   EXPECT_FALSE(entry->IsAuthenticated());
   SetProfilePrefs(pref_service);
   // Set primary account to a different account than the UPA.
-  AccountInfo primary_account =
-      identity_test_env_.MakePrimaryAccountAvailable("primary@example.com");
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSync);
   EXPECT_TRUE(entry->IsAuthenticated());
   CheckProfilePrefsReset(pref_service, false);
 }
@@ -247,8 +247,8 @@ TEST_F(SigninProfileAttributesUpdaterWithForceSigninTest, IsSigninRequired) {
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_TRUE(entry->IsSigninRequired());
 
-  AccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(kEmail);
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(entry->IsAuthenticated());
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kEmail), entry->GetGAIAId());

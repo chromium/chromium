@@ -1487,7 +1487,8 @@ TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationIdentityFailure) {
       prefs::kPrivacySandboxPreferencesReconciled));
 
   // An account becoming available should not result in reconciliation.
-  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+  identity_test_env()->MakePrimaryAccountAvailable("test@test.com",
+                                                   signin::ConsentLevel::kSync);
 
   EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
       prefs::kPrivacySandboxPreferencesReconciled));

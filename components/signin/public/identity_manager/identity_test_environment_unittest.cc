@@ -30,7 +30,8 @@ TEST_F(IdentityTestEnvironmentTest,
   std::unique_ptr<IdentityTestEnvironment> identity_test_environment =
       std::make_unique<IdentityTestEnvironment>();
 
-  identity_test_environment->MakePrimaryAccountAvailable("primary@example.com");
+  identity_test_environment->MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSync);
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   std::set<std::string> scopes{"scope"};
@@ -65,6 +66,7 @@ TEST_F(IdentityTestEnvironmentTest,
   identity_test_environment->SetPrimaryAccount(primary_account_email,
                                                ConsentLevel::kSync);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 
 TEST_F(IdentityTestEnvironmentTest,
@@ -80,6 +82,36 @@ TEST_F(IdentityTestEnvironmentTest,
       identity_test_environment->MakeAccountAvailable(primary_account_email);
   identity_test_environment->SetPrimaryAccount(primary_account_email,
                                                ConsentLevel::kSignin);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+}
+
+TEST_F(IdentityTestEnvironmentTest,
+       IdentityTestEnvironmentMakePrimaryAccountAvailableWithSyncConsent) {
+  std::unique_ptr<IdentityTestEnvironment> identity_test_environment =
+      std::make_unique<IdentityTestEnvironment>();
+  IdentityManager* identity_manager =
+      identity_test_environment->identity_manager();
+  std::string primary_account_email = "primary@example.com";
+
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  identity_test_environment->MakePrimaryAccountAvailable(primary_account_email,
+                                                         ConsentLevel::kSync);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+
+TEST_F(IdentityTestEnvironmentTest,
+       IdentityTestEnvironmentMakePrimaryAccountAvailableWithoutSyncConsent) {
+  std::unique_ptr<IdentityTestEnvironment> identity_test_environment =
+      std::make_unique<IdentityTestEnvironment>();
+  IdentityManager* identity_manager =
+      identity_test_environment->identity_manager();
+  std::string primary_account_email = "primary@example.com";
+
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  identity_test_environment->MakePrimaryAccountAvailable(primary_account_email,
+                                                         ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 }

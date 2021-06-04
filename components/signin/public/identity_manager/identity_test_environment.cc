@@ -393,40 +393,10 @@ void IdentityTestEnvironment::RemoveRefreshTokenForPrimaryAccount() {
 }
 
 AccountInfo IdentityTestEnvironment::MakePrimaryAccountAvailable(
-    const std::string& email) {
+    const std::string& email,
+    ConsentLevel consent_level) {
   return signin::MakePrimaryAccountAvailable(identity_manager(), email,
-                                             signin::ConsentLevel::kSync);
-}
-
-AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
-    const std::string& email) {
-  DCHECK(!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Chrome OS sets the unconsented primary account during login and does not
-  // allow signout.
-  AccountInfo account_info = MakeAccountAvailable(email);
-  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSignin);
-#elif defined(OS_IOS)
-  // iOS only support the primary account.
-  AccountInfo account_info = MakePrimaryAccountAvailable(email);
-#else
-  // Android and Desktop platforms.
-  AccountInfo account_info =
-      MakeAccountAvailableWithCookies(email, GetTestGaiaIdForEmail(email));
-  base::RunLoop().RunUntilIdle();
-  // Tests that don't use the |SigninManager| needs the unconsented primary
-  // account to be set manually.
-  if (!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin)) {
-    identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        account_info.account_id, signin::ConsentLevel::kSignin);
-  }
-#endif
-  DCHECK(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  DCHECK_EQ(
-      email,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
-  return account_info;
+                                             consent_level);
 }
 
 void IdentityTestEnvironment::RevokeSyncConsent() {

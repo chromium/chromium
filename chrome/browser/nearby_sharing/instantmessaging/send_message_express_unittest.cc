@@ -37,8 +37,8 @@ class SendMessageExpressTest : public testing::Test {
                 &test_url_loader_factory_)),
         send_message_express_(identity_test_environment_.identity_manager(),
                               test_shared_loader_factory_) {
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-        kTestAccount);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kTestAccount, signin::ConsentLevel::kSignin);
   }
   ~SendMessageExpressTest() override = default;
 

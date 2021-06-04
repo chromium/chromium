@@ -204,7 +204,10 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
     fetcher_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
-  void SignIn() { identity_test_env_.MakePrimaryAccountAvailable(kTestEmail); }
+  void SignIn() {
+    identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
+                                                   signin::ConsentLevel::kSync);
+  }
 
   RemoteSuggestionsFetcher::SnippetsAvailableCallback
   ToSnippetsAvailableCallback(MockSnippetsAvailableCallback* callback) {

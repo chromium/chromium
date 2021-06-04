@@ -140,7 +140,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile);
     identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakeUnconsentedPrimaryAccountAvailable(kEmail);
+        ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSignin);
 
     auto* user_manager = GetFakeUserManager();
     user_manager->AddUser(account_id);

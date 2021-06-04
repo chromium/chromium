@@ -67,7 +67,8 @@ class DriveFsAuthTest : public ::testing::Test {
  protected:
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
-    identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(kTestEmail);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
     auto timer = std::make_unique<base::MockOneShotTimer>();
     timer_ = timer.get();
     delegate_ = std::make_unique<AuthDelegateImpl>(

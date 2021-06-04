@@ -67,7 +67,8 @@ class EndpointFetcherTest : public testing::Test {
   }
 
   void SignIn() {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail);
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
+                                                   signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 

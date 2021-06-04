@@ -79,7 +79,8 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     // The code under test should not be tied to browser sync consent.
     identity_test_env_adaptor_->identity_test_env()
-        ->MakeUnconsentedPrimaryAccountAvailable("testing@account.com");
+        ->MakePrimaryAccountAvailable("testing@account.com",
+                                      signin::ConsentLevel::kSignin);
 
     support_host_ = std::make_unique<ArcSupportHost>(profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());

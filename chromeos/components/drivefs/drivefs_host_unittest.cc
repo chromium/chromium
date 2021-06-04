@@ -207,8 +207,8 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     account_id_ = AccountId::FromUserEmailGaiaId("test@example.com", "ID");
 
     disk_manager_ = std::make_unique<chromeos::disks::MockDiskMountManager>();
-    identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
-        "test@example.com");
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
     host_delegate_ = std::make_unique<TestingDriveFsHostDelegate>(
         identity_test_env_.identity_manager(), account_id_);
     auto timer = std::make_unique<base::MockOneShotTimer>();
