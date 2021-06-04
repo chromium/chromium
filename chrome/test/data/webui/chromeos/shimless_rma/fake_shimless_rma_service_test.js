@@ -145,16 +145,69 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('UpdateChromeDefaultUndefined', () => {
-    return service.updateChrome().then((error) => {
-      assertEquals(error, undefined);
+  test('UpdateChromeOk', () => {
+    let states = [
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.updateChrome().then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('SetUpdateChromeResultUpdatesResult', () => {
-    service.setUpdateChromeResult(RmadErrorCode.kRequestInvalid);
-    return service.updateChrome().then((error) => {
-      assertEquals(error.error, RmadErrorCode.kRequestInvalid);
+  test('UpdateChromeWhenRmaNotRequired', () => {
+    return service.updateChrome().then((state) => {
+      assertEquals(state.state, RmaState.kUnknown);
+      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
+    });
+  });
+
+  test('UpdateChromeWrongStateFails', () => {
+    let states = [
+      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.updateChrome().then((state) => {
+      assertEquals(state.state, RmaState.kWelcomeScreen);
+      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
+  });
+
+  test('UpdateChromeSkippedOk', () => {
+    let states = [
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.updateChromeSkipped().then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('UpdateChromeSkippedWhenRmaNotRequired', () => {
+    return service.updateChrome().then((state) => {
+      assertEquals(state.state, RmaState.kUnknown);
+      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
+    });
+  });
+
+  test('UpdateChromeSkippedWrongStateFails', () => {
+    let states = [
+      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.updateChrome().then((state) => {
+      assertEquals(state.state, RmaState.kWelcomeScreen);
+      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
 

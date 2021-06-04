@@ -196,17 +196,19 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{error: !RmadErrorCode}>}
+   * @return {!Promise<!StateResult>}
    */
   updateChrome() {
-    return this.methods_.resolveMethod('updateChrome');
+    return this.getNextStateForMethod_(
+      'updateChrome', RmaState.kUpdateChrome);
   }
 
   /**
-   * @param {!RmadErrorCode} error
+   * @return {!Promise<!StateResult>}
    */
-  setUpdateChromeResult(error) {
-    this.methods_.setResult('updateChrome', {error: error});
+  updateChromeSkipped() {
+    return this.getNextStateForMethod_(
+      'updateChromeSkipped', RmaState.kUpdateChrome);
   }
 
   /**
@@ -687,6 +689,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('getCurrentChromeVersion');
     this.methods_.register('checkForChromeUpdates');
     this.methods_.register('updateChrome');
+    this.methods_.register('updateChromeSkipped');
 
     this.methods_.register('setSameOwner');
     this.methods_.register('setDifferentOwner');
