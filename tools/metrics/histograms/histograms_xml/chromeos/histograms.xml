@@ -1450,11 +1450,31 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Sharesheet.AppCount.{AppType}" units="apps"
     expires_after="M95">
+  <obsolete>
+    Replaced with pattern histogram ChromeOS.Sharesheet.AppCount2.{AppType}.
+    (2021-06)
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
     Records number of {AppType} apps found for a given intent in the Sharesheet
     when the sharesheet is invoked.
+  </summary>
+  <token key="AppType">
+    <variant name="All" summary="all apps"/>
+    <variant name="Arc" summary="arc app"/>
+    <variant name="Web" summary="web app"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
+    expires_after="M95">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records number of {AppType} apps found for a given intent in the Sharesheet
+    when the sharesheet is invoked. Has 100 exponential buckets. (The original
+    histogram had 1000 linear buckets).
   </summary>
   <token key="AppType">
     <variant name="All" summary="all apps"/>

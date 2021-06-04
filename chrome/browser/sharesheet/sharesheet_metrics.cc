@@ -6,12 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace {
-// Should be comfortably larger than any max number of apps
-// a user could have installed.
-constexpr size_t kMaxAppCount = 1000;
-}  // namespace
-
 namespace sharesheet {
 
 SharesheetMetrics::SharesheetMetrics() = default;
@@ -21,18 +15,15 @@ void SharesheetMetrics::RecordSharesheetActionMetrics(const UserAction action) {
 }
 
 void SharesheetMetrics::RecordSharesheetAppCount(const int app_count) {
-  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.All", app_count,
-                                kMaxAppCount);
+  base::UmaHistogramCounts100("ChromeOS.Sharesheet.AppCount2.All", app_count);
 }
 
 void SharesheetMetrics::RecordSharesheetArcAppCount(const int app_count) {
-  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.Arc", app_count,
-                                kMaxAppCount);
+  base::UmaHistogramCounts100("ChromeOS.Sharesheet.AppCount2.Arc", app_count);
 }
 
 void SharesheetMetrics::RecordSharesheetWebAppCount(const int app_count) {
-  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.Web", app_count,
-                                kMaxAppCount);
+  base::UmaHistogramCounts100("ChromeOS.Sharesheet.AppCount2.Web", app_count);
 }
 
 void SharesheetMetrics::RecordSharesheetShareAction(const UserAction action) {
