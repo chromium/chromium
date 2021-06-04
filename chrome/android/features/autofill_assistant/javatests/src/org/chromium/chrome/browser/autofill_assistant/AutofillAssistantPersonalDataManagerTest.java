@@ -872,21 +872,20 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1213197")
     public void testEditOfServerCard() throws Exception {
         String profileId = mHelper.addDummyProfile("Adam West", "adamwest@google.com");
         mHelper.addServerCreditCard(mHelper.createDummyCreditCard(
                 profileId, "4111111111111111", /* isLocal = */ false));
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
                                                      .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Payment")))
@@ -900,7 +899,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
 
         onView(withText("Payment method")).perform(click());
-        waitUntilViewMatchesCondition(withContentDescription("Edit card"), isDisplayed());
+        waitUntilViewMatchesCondition(withContentDescription("Edit card"), isCompletelyDisplayed());
         onView(withContentDescription("Edit card")).perform(click());
         waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());
         // TODO(b/155624806) edit billing address and fill/check values on test website.
