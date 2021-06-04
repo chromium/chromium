@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -158,11 +160,10 @@ public class DownloadController {
     /**
      * Requests the stoarge permission from Java.
      * @param delegate The permission delegate to be used for file access request.
-     * TODO(crbug/1209228): Make the delegate non-null.
      * @param callback Callback to notify if the permission is granted or not.
      */
     public static void requestFileAccessPermission(
-            AndroidPermissionDelegate delegate, final Callback<Boolean> callback) {
+            @NonNull AndroidPermissionDelegate delegate, final Callback<Boolean> callback) {
         requestFileAccessPermissionHelper(delegate, result -> {
             boolean granted = result.first;
             String permissions = result.second;

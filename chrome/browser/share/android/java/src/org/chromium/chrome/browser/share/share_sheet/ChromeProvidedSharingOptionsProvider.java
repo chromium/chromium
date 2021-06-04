@@ -410,7 +410,8 @@ class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.qr_code, R.string.qr_code_share_icon_label)
                 .setFeatureNameForMetrics("SharingHubAndroid.QRCodeSelected")
                 .setOnClickCallback((view) -> {
-                    QrCodeCoordinator qrCodeCoordinator = new QrCodeCoordinator(mActivity, mUrl);
+                    QrCodeCoordinator qrCodeCoordinator = new QrCodeCoordinator(
+                            mActivity, mUrl, mTabProvider.get().getWindowAndroid());
                     qrCodeCoordinator.show();
                 })
                 .build();

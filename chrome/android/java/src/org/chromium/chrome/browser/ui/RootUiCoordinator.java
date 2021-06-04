@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
@@ -293,6 +295,13 @@ public class RootUiCoordinator
      */
     public TopUiThemeColorProvider getTopUiThemeColorProvider() {
         return mTopUiThemeColorProvider;
+    }
+
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof QrCodeDialog) {
+            QrCodeDialog qrCodeDialog = (QrCodeDialog) fragment;
+            qrCodeDialog.setAndroidPermissionDelegate(mActivity.getWindowAndroid());
+        }
     }
 
     @Override

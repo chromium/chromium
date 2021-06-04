@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -19,9 +20,11 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
     private final QrCodeShareView mShareView;
     private final QrCodeShareMediator mMediator;
 
-    public QrCodeShareCoordinator(Context context, Runnable closeDialog, String url) {
+    public QrCodeShareCoordinator(Context context, Runnable closeDialog, String url,
+            AndroidPermissionDelegate windowAndroid) {
         PropertyModel shareViewModel = new PropertyModel(QrCodeShareViewProperties.ALL_KEYS);
-        mMediator = new QrCodeShareMediator(context, shareViewModel, closeDialog, url);
+        mMediator =
+                new QrCodeShareMediator(context, shareViewModel, closeDialog, url, windowAndroid);
         mShareView = new QrCodeShareView(context, mMediator::downloadQrCode);
         PropertyModelChangeProcessor.create(
                 shareViewModel, mShareView, new QrCodeShareViewBinder());

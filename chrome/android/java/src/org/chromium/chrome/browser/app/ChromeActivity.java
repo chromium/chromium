@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.SearchManager;
 import android.app.assist.AssistContent;
 import android.content.ActivityNotFoundException;
@@ -2505,6 +2506,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getWindow().getAttributes().token, getComponentName().flattenToString(),
                     true /* hardwareAccelerated */);
         }
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (mRootUiCoordinator == null) return;
+        mRootUiCoordinator.onAttachFragment(fragment);
     }
 
     private boolean shouldDisableHardwareAcceleration() {

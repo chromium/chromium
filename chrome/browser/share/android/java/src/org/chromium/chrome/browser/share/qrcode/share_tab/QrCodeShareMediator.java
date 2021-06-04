@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.qrcode.share_tab;
 
 import android.Manifest.permission;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,11 +23,8 @@ import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.chrome.browser.share.qrcode.QRCodeGenerationRequest;
-import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.lang.ref.WeakReference;
 
 /**
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
@@ -53,17 +49,17 @@ class QrCodeShareMediator {
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialog The {@link Runnable} to close the dialog.
      * @param url The url to create the QRCode.
+     * @param permissionDelegate The delegate to help with downloading QRCode.
      */
-    QrCodeShareMediator(
-            Context context, PropertyModel propertyModel, Runnable closeDialog, String url) {
+    QrCodeShareMediator(Context context, PropertyModel propertyModel, Runnable closeDialog,
+            String url, AndroidPermissionDelegate permissionDelegate) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
         mUrl = url;
         ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
                 () -> refreshQrCode(mUrl));
-        mPermissionDelegate = new ActivityAndroidPermissionDelegate(
-                new WeakReference<Activity>((Activity) mContext));
+        mPermissionDelegate = permissionDelegate;
         updatePermissionSettings();
     }
 
@@ -105,9 +101,8 @@ class QrCodeShareMediator {
         logDownload();
         Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
         if (qrcodeBitmap != null && !mIsDownloadInProgress) {
-            // TODO(crbug/1209228): Pass the window android.
             DownloadController.requestFileAccessPermission(
-                    null, this::finishDownloadWithPermission);
+                    mPermissionDelegate, this::finishDownloadWithPermission);
             return;
         }
     }

@@ -18,6 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -29,17 +30,21 @@ public class QrCodeDialog extends DialogFragment {
     // Used to pass the URL in the bundle.
     public static String URL_KEY = "url_key";
 
+    private AndroidPermissionDelegate mWindowAndroid;
     private ArrayList<QrCodeDialogTab> mTabs;
     private TabLayoutPageListener mTabLayoutPageListener;
 
     /**
      * Create a new instance of {@link QrCodeDialog} and set the URL.
+     * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
      */
-    static QrCodeDialog newInstance(String url) {
+    static QrCodeDialog newInstance(String url, AndroidPermissionDelegate windowAndroid) {
+        assert windowAndroid != null;
         QrCodeDialog qrCodeDialog = new QrCodeDialog();
         Bundle args = new Bundle();
         args.putString(URL_KEY, url);
         qrCodeDialog.setArguments(args);
+        qrCodeDialog.setAndroidPermissionDelegate(windowAndroid);
         return qrCodeDialog;
     }
 
@@ -71,6 +76,15 @@ public class QrCodeDialog extends DialogFragment {
             tab.onDestroy();
         }
         mTabs.clear();
+        mWindowAndroid = null;
+    }
+
+    /**
+     * Setter for the current WindowAndroid.
+     * @param windowAndroid The windowAndroid to set.
+     */
+    public void setAndroidPermissionDelegate(AndroidPermissionDelegate windowAndroid) {
+        mWindowAndroid = windowAndroid;
     }
 
     private View getDialogView() {
@@ -99,7 +113,7 @@ public class QrCodeDialog extends DialogFragment {
         Context context = getActivity();
 
         QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(
-                context, this::dismiss, getArguments().getString(URL_KEY));
+                context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
         QrCodeScanCoordinator scanCoordinator = new QrCodeScanCoordinator(context, this::dismiss);
 
         mTabs = new ArrayList<>();
