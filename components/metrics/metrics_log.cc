@@ -51,6 +51,23 @@ using base::SampleCountIterator;
 
 namespace metrics {
 
+LogMetadata::LogMetadata()
+    : samples_count(absl::nullopt), user_id(absl::nullopt) {}
+LogMetadata::LogMetadata(
+    const absl::optional<base::HistogramBase::Count> samples_count,
+    const absl::optional<uint64_t> user_id)
+    : samples_count(samples_count), user_id(user_id) {}
+LogMetadata::LogMetadata(const LogMetadata& other) = default;
+LogMetadata::~LogMetadata() = default;
+
+void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
+  if (samples_count.has_value()) {
+    samples_count = samples_count.value() + sample_count;
+  } else {
+    samples_count = sample_count;
+  }
+}
+
 namespace {
 
 // A simple class to write histogram data to a log.
@@ -134,8 +151,7 @@ MetricsLog::MetricsLog(const std::string& client_id,
   RecordCoreSystemProfile(client_, system_profile);
 }
 
-MetricsLog::~MetricsLog() {
-}
+MetricsLog::~MetricsLog() = default;
 
 // static
 void MetricsLog::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -270,7 +286,7 @@ void MetricsLog::RecordCoreSystemProfile(
 void MetricsLog::RecordHistogramDelta(const std::string& histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
-  samples_count_ += snapshot.TotalCount();
+  log_metadata_.AddSampleCount(snapshot.TotalCount());
   EncodeHistogramDelta(histogram_name, snapshot, &uma_proto_);
 }
 

@@ -29,6 +29,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   // MetricsServiceClient:
   metrics::MetricsService* GetMetricsService() override;
   void SetMetricsClientId(const std::string& client_id) override;
+  bool ShouldUploadMetricsForUserId(uint64_t user_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
   bool GetBrand(std::string* brand_code) override;
@@ -48,6 +49,11 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   std::string GetAppPackageName() override;
   bool ShouldResetClientIdsOnClonedInstall() override;
   MetricsLogStore::StorageLimits GetStorageLimits() const override;
+
+  // Adds/removes |user_id| from the set of user ids that have metrics consent
+  // as true.
+  void AllowMetricUploadForUserId(uint64_t user_id);
+  void RemoveMetricUploadForUserId(uint64_t user_id);
 
   const std::string& get_client_id() const { return client_id_; }
   // Returns a weak ref to the last created uploader.
@@ -75,9 +81,10 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   EnableMetricsDefault enable_default_;
   bool should_reset_client_ids_on_cloned_install_ = false;
   MetricsLogStore::StorageLimits storage_limits_;
+  std::set<uint64_t> allowed_user_ids_;
 
   // A weak ref to the last created TestMetricsLogUploader.
-  TestMetricsLogUploader* uploader_;
+  TestMetricsLogUploader* uploader_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestMetricsServiceClient);
 };

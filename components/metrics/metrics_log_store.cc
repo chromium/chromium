@@ -48,17 +48,16 @@ void MetricsLogStore::LoadPersistedUnsentLogs() {
   unsent_logs_loaded_ = true;
 }
 
-void MetricsLogStore::StoreLog(
-    const std::string& log_data,
-    MetricsLog::LogType log_type,
-    absl::optional<base::HistogramBase::Count> samples_count) {
+void MetricsLogStore::StoreLog(const std::string& log_data,
+                               MetricsLog::LogType log_type,
+                               const LogMetadata& log_metadata) {
   switch (log_type) {
     case MetricsLog::INITIAL_STABILITY_LOG:
-      initial_log_queue_.StoreLog(log_data, samples_count);
+      initial_log_queue_.StoreLog(log_data, log_metadata);
       break;
     case MetricsLog::ONGOING_LOG:
     case MetricsLog::INDEPENDENT_LOG:
-      ongoing_log_queue_.StoreLog(log_data, samples_count);
+      ongoing_log_queue_.StoreLog(log_data, log_metadata);
       break;
   }
 }
@@ -88,6 +87,12 @@ const std::string& MetricsLogStore::staged_log_signature() const {
   return initial_log_queue_.has_staged_log()
              ? initial_log_queue_.staged_log_signature()
              : ongoing_log_queue_.staged_log_signature();
+}
+
+absl::optional<uint64_t> MetricsLogStore::staged_log_user_id() const {
+  // MetricsLogStore base class should never have any logs associated with a
+  // user ID.
+  return absl::nullopt;
 }
 
 void MetricsLogStore::StageNextLog() {

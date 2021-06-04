@@ -64,7 +64,7 @@ class MetricsLogStore : public LogStore {
   // Saves |log_data| as the given type.
   void StoreLog(const std::string& log_data,
                 MetricsLog::LogType log_type,
-                absl::optional<base::HistogramBase::Count> samples_count);
+                const LogMetadata& log_metadata);
 
   // LogStore:
   bool has_unsent_logs() const override;
@@ -72,6 +72,7 @@ class MetricsLogStore : public LogStore {
   const std::string& staged_log() const override;
   const std::string& staged_log_hash() const override;
   const std::string& staged_log_signature() const override;
+  absl::optional<uint64_t> staged_log_user_id() const override;
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;

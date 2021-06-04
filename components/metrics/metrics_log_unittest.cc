@@ -292,6 +292,29 @@ TEST_F(MetricsLogTest, HistogramBucketFields) {
   EXPECT_EQ(12, histogram_proto.bucket(4).max());
 }
 
+TEST_F(MetricsLogTest, HistogramSamplesCount) {
+  const std::string histogram_name = "test";
+  TestMetricsServiceClient client;
+  TestingPrefServiceSimple prefs;
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+
+  // Create buckets: 1-5.
+  base::BucketRanges ranges(2);
+  ranges.set_range(0, 1);
+  ranges.set_range(1, 5);
+
+  // Add two samples.
+  base::SampleVector samples(1, &ranges);
+  samples.Accumulate(3, 2);
+  log.RecordHistogramDelta(histogram_name, samples);
+
+  EXPECT_EQ(2, log.log_metadata().samples_count.value());
+
+  // Add two more samples.
+  log.RecordHistogramDelta(histogram_name, samples);
+  EXPECT_EQ(4, log.log_metadata().samples_count.value());
+}
+
 TEST_F(MetricsLogTest, RecordEnvironment) {
   TestMetricsServiceClient client;
   TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);

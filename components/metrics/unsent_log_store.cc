@@ -32,6 +32,7 @@ const char kLogDataKey[] = "data";
 const char kLogUnsentCountKey[] = "unsent_samples_count";
 const char kLogSentCountKey[] = "sent_samples_count";
 const char kLogPersistedSizeInKbKey[] = "unsent_persisted_size_in_kb";
+const char kLogUserIdKey[] = "user_id";
 
 std::string EncodeToBase64(const std::string& to_convert) {
   DCHECK(to_convert.data());
@@ -53,12 +54,11 @@ UnsentLogStore::LogInfo::LogInfo(const UnsentLogStore::LogInfo& other) =
     default;
 UnsentLogStore::LogInfo::~LogInfo() = default;
 
-void UnsentLogStore::LogInfo::Init(
-    UnsentLogStoreMetrics* metrics,
-    const std::string& log_data,
-    const std::string& log_timestamp,
-    const std::string& signing_key,
-    absl::optional<base::HistogramBase::Count> samples_count) {
+void UnsentLogStore::LogInfo::Init(UnsentLogStoreMetrics* metrics,
+                                   const std::string& log_data,
+                                   const std::string& log_timestamp,
+                                   const std::string& signing_key,
+                                   const LogMetadata& optional_log_metadata) {
   DCHECK(!log_data.empty());
 
   if (!compression::GzipCompress(log_data, &compressed_log_data)) {
@@ -75,7 +75,7 @@ void UnsentLogStore::LogInfo::Init(
   }
 
   timestamp = log_timestamp;
-  this->samples_count = samples_count;
+  this->log_metadata = optional_log_metadata;
 }
 
 UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
@@ -135,6 +135,12 @@ const std::string& UnsentLogStore::staged_log_timestamp() const {
   return list_[staged_log_index_]->timestamp;
 }
 
+// Returns the user id of the current staged log.
+absl::optional<uint64_t> UnsentLogStore::staged_log_user_id() const {
+  DCHECK(has_staged_log());
+  return list_[staged_log_index_]->log_metadata.user_id;
+}
+
 // static
 bool UnsentLogStore::ComputeHMACForLog(const std::string& log_data,
                                        const std::string& signing_key,
@@ -166,8 +172,9 @@ void UnsentLogStore::DiscardStagedLog() {
 void UnsentLogStore::MarkStagedLogAsSent() {
   DCHECK(has_staged_log());
   DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
-  if (list_[staged_log_index_]->samples_count.has_value())
-    total_samples_sent_ += list_[staged_log_index_]->samples_count.value();
+  auto samples_count = list_[staged_log_index_]->log_metadata.samples_count;
+  if (samples_count.has_value())
+    total_samples_sent_ += samples_count.value();
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs() {
@@ -178,16 +185,15 @@ void UnsentLogStore::TrimAndPersistUnsentLogs() {
 
 void UnsentLogStore::LoadPersistedUnsentLogs() {
   ReadLogsFromPrefList(*local_state_->GetList(log_data_pref_name_));
-  RecordMetaDataMertics();
+  RecordMetaDataMetrics();
 }
 
-void UnsentLogStore::StoreLog(
-    const std::string& log_data,
-    absl::optional<base::HistogramBase::Count> samples_count) {
+void UnsentLogStore::StoreLog(const std::string& log_data,
+                              const LogMetadata& log_metadata) {
   LogInfo info;
   info.Init(metrics_.get(), log_data,
             base::NumberToString(base::Time::Now().ToTimeT()), signing_key_,
-            samples_count);
+            log_metadata);
   list_.emplace_back(std::make_unique<LogInfo>(info));
 }
 
@@ -197,10 +203,9 @@ const std::string& UnsentLogStore::GetLogAtIndex(size_t index) {
   return list_[index]->compressed_log_data;
 }
 
-std::string UnsentLogStore::ReplaceLogAtIndex(
-    size_t index,
-    const std::string& new_log_data,
-    absl::optional<base::HistogramBase::Count> samples_count) {
+std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
+                                              const std::string& new_log_data,
+                                              const LogMetadata& log_metadata) {
   DCHECK_GE(index, 0U);
   DCHECK_LT(index, list_.size());
 
@@ -214,7 +219,7 @@ std::string UnsentLogStore::ReplaceLogAtIndex(
   // just return a pointer to the logInfo so we could combine the next 3 lines.
   LogInfo info;
   info.Init(metrics_.get(), new_log_data, old_timestamp, signing_key_,
-            samples_count);
+            log_metadata);
 
   list_[index] = std::make_unique<LogInfo>(info);
   return old_log_data;
@@ -262,6 +267,16 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
     info.hash = DecodeFromBase64(info.hash);
     info.signature = DecodeFromBase64(info.signature);
     // timestamp doesn't need to be decoded.
+
+    // Extract user id of the log if it exists.
+    std::string user_id_str;
+    if (dict->GetString(kLogUserIdKey, &user_id_str)) {
+      uint64_t user_id;
+
+      // Only initialize the metadata if conversion was successful.
+      if (base::StringToUint64(DecodeFromBase64(user_id_str), &user_id))
+        info.log_metadata.user_id = user_id;
+    }
 
     list_[i] = std::make_unique<LogInfo>(info);
   }
@@ -332,10 +347,17 @@ void UnsentLogStore::WriteLogsToPrefList(base::ListValue* list_value) const {
     dict_value->SetString(kLogDataKey,
                           EncodeToBase64(log->compressed_log_data));
     dict_value->SetString(kLogTimestampKey, log->timestamp);
+
+    auto user_id = log->log_metadata.user_id;
+    if (user_id.has_value()) {
+      dict_value->SetString(
+          kLogUserIdKey, EncodeToBase64(base::NumberToString(user_id.value())));
+    }
     list_value->Append(std::move(dict_value));
 
-    if (log->samples_count.has_value()) {
-      unsent_samples_count += log->samples_count.value();
+    auto samples_count = log->log_metadata.samples_count;
+    if (samples_count.has_value()) {
+      unsent_samples_count += samples_count.value();
     }
     unsent_persisted_size += log->compressed_log_data.length();
   }
@@ -360,7 +382,7 @@ void UnsentLogStore::WriteToMetricsPref(
       base::Value(static_cast<int>(std::ceil(unsent_persisted_size / 1024.0))));
 }
 
-void UnsentLogStore::RecordMetaDataMertics() {
+void UnsentLogStore::RecordMetaDataMetrics() {
   if (metadata_pref_name_ == nullptr)
     return;
 

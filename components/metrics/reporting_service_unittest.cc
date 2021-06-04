@@ -26,6 +26,18 @@ namespace metrics {
 
 namespace {
 
+// Represent a flushed log and its metadata to be used for testing.
+struct TestLog {
+  explicit TestLog(const std::string& log) : log(log), user_id(absl::nullopt) {}
+  TestLog(const std::string& log, uint64_t user_id)
+      : log(log), user_id(user_id) {}
+  TestLog(const TestLog& other) = default;
+  ~TestLog() = default;
+
+  const std::string log;
+  const absl::optional<uint64_t> user_id;
+};
+
 const char kTestUploadUrl[] = "test_url";
 const char kTestMimeType[] = "test_mime_type";
 
@@ -34,21 +46,25 @@ class TestLogStore : public LogStore {
   TestLogStore() {}
   ~TestLogStore() {}
 
-  void AddLog(const std::string& log) { logs_.push_back(log); }
+  void AddLog(const TestLog& log) { logs_.push_back(log); }
 
   // LogStore:
   bool has_unsent_logs() const override { return !logs_.empty(); }
   bool has_staged_log() const override { return !staged_log_hash_.empty(); }
-  const std::string& staged_log() const override { return logs_.front(); }
+  const std::string& staged_log() const override { return logs_.front().log; }
   const std::string& staged_log_hash() const override {
     return staged_log_hash_;
+  }
+  absl::optional<uint64_t> staged_log_user_id() const override {
+    return logs_.front().user_id;
   }
   const std::string& staged_log_signature() const override {
     return base::EmptyString();
   }
   void StageNextLog() override {
-    if (has_unsent_logs())
-      staged_log_hash_ = base::SHA1HashString(logs_.front());
+    if (has_unsent_logs()) {
+      staged_log_hash_ = base::SHA1HashString(logs_.front().log);
+    }
   }
   void DiscardStagedLog() override {
     if (!has_staged_log())
@@ -62,7 +78,7 @@ class TestLogStore : public LogStore {
 
  private:
   std::string staged_log_hash_;
-  std::deque<std::string> logs_;
+  std::deque<TestLog> logs_;
 };
 
 class TestReportingService : public ReportingService {
@@ -73,7 +89,7 @@ class TestReportingService : public ReportingService {
   }
   ~TestReportingService() override {}
 
-  void AddLog(const std::string& log) { log_store_.AddLog(log); }
+  void AddLog(const TestLog& log) { log_store_.AddLog(log); }
 
  private:
   // ReportingService:
@@ -117,8 +133,8 @@ class ReportingServiceTest : public testing::Test {
 
 TEST_F(ReportingServiceTest, BasicTest) {
   TestReportingService service(&client_, GetLocalState());
-  service.AddLog("log1");
-  service.AddLog("log2");
+  service.AddLog(TestLog("log1"));
+  service.AddLog(TestLog("log2"));
 
   service.EnableReporting();
   task_runner_->RunPendingTasks();
@@ -142,6 +158,43 @@ TEST_F(ReportingServiceTest, BasicTest) {
   client_.uploader()->CompleteUpload(200);
   EXPECT_EQ(0U, task_runner_->NumPendingTasks());
   EXPECT_FALSE(client_.uploader()->is_uploading());
+}
+
+TEST_F(ReportingServiceTest, UserIdLogsUploadedIfUserConsented) {
+  uint64_t user_id = 12345;
+
+  TestReportingService service(&client_, GetLocalState());
+  service.AddLog(TestLog("log1", user_id));
+  service.AddLog(TestLog("log2", user_id));
+  service.EnableReporting();
+  client_.AllowMetricUploadForUserId(user_id);
+
+  task_runner_->RunPendingTasks();
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  EXPECT_EQ(1, client_.uploader()->reporting_info().attempt_count());
+  EXPECT_FALSE(client_.uploader()->reporting_info().has_last_response_code());
+  client_.uploader()->CompleteUpload(200);
+
+  // Upload 2nd log and last response code logged.
+  task_runner_->RunPendingTasks();
+  EXPECT_EQ(200, client_.uploader()->reporting_info().last_response_code());
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+
+  client_.uploader()->CompleteUpload(200);
+  EXPECT_EQ(0U, task_runner_->NumPendingTasks());
+  EXPECT_FALSE(client_.uploader()->is_uploading());
+}
+
+TEST_F(ReportingServiceTest, UserIdLogsNotUploadedIfUserNotConsented) {
+  TestReportingService service(&client_, GetLocalState());
+  service.AddLog(TestLog("log1", 12345));
+  service.AddLog(TestLog("log2", 12345));
+  service.EnableReporting();
+
+  // Log with user id should never be in uploading state if user upload
+  // disabled. |client_.uploader()| should be nullptr since it is lazily
+  // created when a log is to be uploaded for the first time.
+  EXPECT_EQ(client_.uploader(), nullptr);
 }
 
 }  // namespace metrics

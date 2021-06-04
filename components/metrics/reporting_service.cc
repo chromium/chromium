@@ -6,6 +6,7 @@
 
 #include "components/metrics/reporting_service.h"
 
+#include <cstdio>
 #include <memory>
 
 #include "base/base64.h"
@@ -114,6 +115,25 @@ void ReportingService::SendNextLog() {
   if (!log_store()->has_staged_log()) {
     reporting_info_.set_attempt_count(0);
     log_store()->StageNextLog();
+  }
+
+  // Check whether the log should be uploaded based on user id. If it should not
+  // be sent, then discard the log from the store and notify the scheduler.
+  auto staged_user_id = log_store()->staged_log_user_id();
+  if (staged_user_id.has_value() &&
+      !client_->ShouldUploadMetricsForUserId(staged_user_id.value())) {
+    // Remove the log and update list to disk.
+    log_store()->DiscardStagedLog();
+    log_store()->TrimAndPersistUnsentLogs();
+
+    // Notify the scheduler that the next log should be uploaded. If there are
+    // no more logs, then stop the scheduler.
+    if (!log_store()->has_unsent_logs()) {
+      DVLOG(1) << "Stopping upload_scheduler_.";
+      upload_scheduler_->Stop();
+    }
+    upload_scheduler_->UploadFinished(true);
+    return;
   }
 
   // Proceed to stage the log for upload if log size satisfies cellular log

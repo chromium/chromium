@@ -306,7 +306,8 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   report.SerializeToString(&serialized_log);
   // Makes sure that the serialized ukm report can be parsed.
   ASSERT_TRUE(UkmService::LogCanBeParsed(serialized_log));
-  unsent_log_store->StoreLog(serialized_log, absl::nullopt);
+  metrics::LogMetadata log_metadata;
+  unsent_log_store->StoreLog(serialized_log, log_metadata);
 
   // Do extension purging.
   service.PurgeExtensions();
@@ -464,8 +465,7 @@ TEST_F(UkmServiceTest, AddUserDemograhicsWhenAvailableAndFeatureEnabled) {
         ++number_of_invocations;
       });
 
-  UkmService service(&prefs_, &client_,
-                     std::move(provider));
+  UkmService service(&prefs_, &client_, std::move(provider));
   TestRecordingHelper recorder(&service);
 
   service.Initialize();
@@ -505,8 +505,7 @@ TEST_F(UkmServiceTest,
       .Times(2)
       .WillRepeatedly([](Report* report) {});
 
-  UkmService service(&prefs_, &client_,
-                     std::move(provider));
+  UkmService service(&prefs_, &client_, std::move(provider));
   TestRecordingHelper recorder(&service);
   service.Initialize();
 
@@ -538,8 +537,7 @@ TEST_F(UkmServiceTest, DontAddUserDemograhicsWhenFeatureDisabled) {
               ProvideSyncedUserNoisedBirthYearAndGenderToReport(testing::_))
       .Times(0);
 
-  UkmService service(&prefs_, &client_,
-                     std::move(provider));
+  UkmService service(&prefs_, &client_, std::move(provider));
   TestRecordingHelper recorder(&service);
 
   service.Initialize();

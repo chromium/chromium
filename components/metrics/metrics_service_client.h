@@ -49,7 +49,7 @@ class MetricsServiceClient {
 
   // Returns true if metrics should be uploaded for the given |user_id|, which
   // corresponds to the |user_id| field in ChromeUserMetricsExtension.
-  virtual bool ShouldUploadMetricsForUserId(const uint64_t user_id);
+  virtual bool ShouldUploadMetricsForUserId(uint64_t user_id);
 
   // Registers the client id with other services (e.g. crash reporting), called
   // when metrics recording gets enabled.

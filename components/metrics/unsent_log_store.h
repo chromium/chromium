@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
+#include "components/metrics/metrics_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -62,26 +63,25 @@ class UnsentLogStore : public LogStore {
   const std::string& staged_log() const override;
   const std::string& staged_log_hash() const override;
   const std::string& staged_log_signature() const override;
+  absl::optional<uint64_t> staged_log_user_id() const override;
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;
   void TrimAndPersistUnsentLogs() override;
   void LoadPersistedUnsentLogs() override;
 
-  // Adds a UMA log to the list, |samples_count| is the total number of samples
-  // in the log (if available).
-  void StoreLog(const std::string& log_data,
-                absl::optional<base::HistogramBase::Count> samples_count);
+  // Adds a UMA log to the list. |log_metadata| refers to metadata associated
+  // with the log.
+  void StoreLog(const std::string& log_data, const LogMetadata& log_metadata);
 
   // Gets log data at the given index in the list.
   const std::string& GetLogAtIndex(size_t index);
 
-  // Replaces the compressed log at |index| in the store with given log data
-  // reusing the same timestamp from the original log, and returns old log data.
-  std::string ReplaceLogAtIndex(
-      size_t index,
-      const std::string& new_log_data,
-      absl::optional<base::HistogramBase::Count> samples_count);
+  // Replaces the compressed log at |index| in the store with given log data and
+  // |log_metadata| reusing the same timestamp.
+  std::string ReplaceLogAtIndex(size_t index,
+                                const std::string& new_log_data,
+                                const LogMetadata& log_metadata);
 
   // Deletes all logs, in memory and on disk.
   void Purge();
@@ -119,7 +119,7 @@ class UnsentLogStore : public LogStore {
                           size_t persisted_size) const;
 
   // Records the info in |metadata_pref_name_| as UMA metrics.
-  void RecordMetaDataMertics();
+  void RecordMetaDataMetrics();
 
   // An object for recording UMA metrics.
   std::unique_ptr<UnsentLogStoreMetrics> metrics_;
@@ -159,13 +159,14 @@ class UnsentLogStore : public LogStore {
     // serialized log protobuf. A hash and a signature are computed from
     // |log_data|. The signature is produced using |signing_key|. |log_data|
     // will be compressed and stored in |compressed_log_data|. |log_timestamp|
-    // is stored as is.
+    // is stored as is. |log_metadata| is any optional metadata that will be
+    // attached to the log.
     // |metrics| is the parent's metrics_ object, and should not be held.
     void Init(UnsentLogStoreMetrics* metrics,
               const std::string& log_data,
               const std::string& log_timestamp,
               const std::string& signing_key,
-              absl::optional<base::HistogramBase::Count> samples_count);
+              const LogMetadata& log_metadata);
 
     // Compressed log data - a serialized protobuf that's been gzipped.
     std::string compressed_log_data;
@@ -182,8 +183,8 @@ class UnsentLogStore : public LogStore {
     // The timestamp of when the log was created as a time_t value.
     std::string timestamp;
 
-    // The total number of samples in this log if applicable.
-    absl::optional<base::HistogramBase::Count> samples_count;
+    // Properties of the log.
+    LogMetadata log_metadata;
   };
   // A list of all of the stored logs, stored with SHA1 hashes to check for
   // corruption while they are stored in memory.

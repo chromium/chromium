@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -31,6 +32,10 @@ metrics::MetricsService* TestMetricsServiceClient::GetMetricsService() {
 void TestMetricsServiceClient::SetMetricsClientId(
     const std::string& client_id) {
   client_id_ = client_id;
+}
+
+bool TestMetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
+  return base::Contains(allowed_user_ids_, user_id);
 }
 
 int32_t TestMetricsServiceClient::GetProduct() {
@@ -97,6 +102,14 @@ bool TestMetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
 MetricsLogStore::StorageLimits TestMetricsServiceClient::GetStorageLimits()
     const {
   return storage_limits_;
+}
+
+void TestMetricsServiceClient::AllowMetricUploadForUserId(uint64_t user_id) {
+  allowed_user_ids_.insert(user_id);
+}
+
+void TestMetricsServiceClient::RemoveMetricUploadForUserId(uint64_t user_id) {
+  allowed_user_ids_.erase(user_id);
 }
 
 }  // namespace metrics
