@@ -323,19 +323,6 @@ proto_library("cloud_policy_proto_generated_compile_proto") {
   proto_deps = [ ":policy_code_generate" ]
 }
 
-# This target generates the "full" protobuf library used by policy_fuzzer.
-if (use_libfuzzer) {
-  fuzzable_proto_library("cloud_policy_full_runtime_proto") {
-    proto_out_dir = "components/policy/proto/fuzzer"
-
-    sources = [ cloud_policy_proto_path ]
-
-    import_dirs = [ "//components/policy/proto" ]
-
-    proto_deps = [ ":policy_code_generate" ]
-  }
-}
-
 # This target builds the "full" protobuf, used for tests only.
 component("chrome_settings_proto_generated_compile") {
   testonly = true

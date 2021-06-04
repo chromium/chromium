@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # The proto files need to be a component to avoid duplicate symbols the way the
@@ -64,15 +63,4 @@ proto_library("proto_internal") {
   cc_include = "components/policy/proto/policy_proto_export.h"
   component_build_force_source_set = true
   defines = [ "POLICY_PROTO_COMPILATION" ]
-}
-
-if (use_libfuzzer) {
-  fuzzable_proto_library("chrome_device_policy_full_runtime_proto") {
-    proto_out_dir = "components/policy/proto/fuzzer"
-
-    sources = [
-      "chrome_device_policy.proto",
-      "policy_common_definitions.proto",
-    ]
-  }
 }
