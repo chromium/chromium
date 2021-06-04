@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_WEBRTC_TACHYON_ICE_CONFIG_FETCHER_H_
-#define CHROME_BROWSER_SHARING_WEBRTC_TACHYON_ICE_CONFIG_FETCHER_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
+#define CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -63,4 +63,4 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   base::WeakPtrFactory<TachyonIceConfigFetcher> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SHARING_WEBRTC_TACHYON_ICE_CONFIG_FETCHER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_

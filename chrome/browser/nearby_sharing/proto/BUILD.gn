@@ -17,3 +17,13 @@ proto_library("proto") {
     "timestamp.proto",
   ]
 }
+
+proto_library("tachyon_proto") {
+  sources = [
+    "duration.proto",
+    "ice.proto",
+    "tachyon.proto",
+    "tachyon_common.proto",
+    "tachyon_enums.proto",
+  ]
+}
