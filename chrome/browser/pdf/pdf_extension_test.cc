@@ -92,6 +92,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -401,13 +402,9 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
  protected:
   // Hooks to set up feature flags.
-  virtual const std::vector<base::Feature> GetEnabledFeatures() const {
-    return {};
-  }
+  virtual std::vector<base::Feature> GetEnabledFeatures() const { return {}; }
 
-  virtual const std::vector<base::Feature> GetDisabledFeatures() const {
-    return {};
-  }
+  virtual std::vector<base::Feature> GetDisabledFeatures() const { return {}; }
 
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
@@ -2937,7 +2934,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
   }
 
  protected:
-  const std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::Feature> GetEnabledFeatures() const override {
     std::vector<base::Feature> enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
@@ -3144,7 +3141,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  protected:
-  const std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::Feature> GetEnabledFeatures() const override {
     std::vector<base::Feature> enabled = {
         chrome_pdf::features::kAccessiblePDFForm,
     };
@@ -3443,4 +3440,86 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
 
   prerender_helper().NavigatePrimaryPage(pdf_url);
   ASSERT_EQ(web_contents->GetURL(), pdf_url);
+}
+
+class PDFExtensionUnseasonedTest
+    : public PDFExtensionTestWithTestGuestViewManager {
+ protected:
+  static extensions::StreamContainer* GetStreamContainer(
+      WebContents* guest_contents) {
+    extensions::MimeHandlerViewGuest* guest =
+        extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
+    if (!guest) {
+      ADD_FAILURE() << "No MimeHandlerViewGuest";
+      return nullptr;
+    }
+
+    extensions::StreamContainer* container = guest->GetStreamWeakPtr().get();
+    EXPECT_TRUE(container);
+    return container;
+  }
+
+  // Loads a PDF viewer's guest `WebContents`. Unlike `EnsurePDFHasLoaded()`,
+  // this does not require that the PDF viewer loads completely, which is useful
+  // for testing the (currently) incomplete unseasoned PDF viewer.
+  WebContents* LoadGuestContentsOnly() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), embedded_test_server()->GetURL("/pdf/test.pdf"))) {
+      ADD_FAILURE() << "Initial navigation failed";
+      return nullptr;
+    }
+
+    WebContents* guest_contents =
+        GetGuestViewManager()->WaitForSingleGuestCreated();
+    if (!guest_contents) {
+      ADD_FAILURE() << "No guest WebContents";
+      return nullptr;
+    }
+
+    WaitForLoadStart(guest_contents);
+    EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
+    return guest_contents;
+  }
+};
+
+class PDFExtensionUnseasonedDisabledTest : public PDFExtensionUnseasonedTest {
+ protected:
+  std::vector<base::Feature> GetDisabledFeatures() const override {
+    std::vector<base::Feature> disabled =
+        PDFExtensionUnseasonedTest::GetDisabledFeatures();
+    disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
+    return disabled;
+  }
+};
+
+class PDFExtensionUnseasonedEnabledTest : public PDFExtensionUnseasonedTest {
+ protected:
+  std::vector<base::Feature> GetEnabledFeatures() const override {
+    std::vector<base::Feature> enabled =
+        PDFExtensionUnseasonedTest::GetEnabledFeatures();
+    enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionUnseasonedDisabledTest,
+                       StreamLoaderRegisteredAsSubresource) {
+  WebContents* guest_contents = LoadGuestContentsOnly();
+  ASSERT_TRUE(guest_contents);
+
+  extensions::StreamContainer* container = GetStreamContainer(guest_contents);
+  ASSERT_TRUE(container);
+
+  EXPECT_FALSE(container->TakeTransferrableURLLoader());
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionUnseasonedEnabledTest,
+                       StreamLoaderNotRegisteredAsSubresource) {
+  WebContents* guest_contents = LoadGuestContentsOnly();
+  ASSERT_TRUE(guest_contents);
+
+  extensions::StreamContainer* container = GetStreamContainer(guest_contents);
+  ASSERT_TRUE(container);
+
+  EXPECT_TRUE(container->TakeTransferrableURLLoader());
 }

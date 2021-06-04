@@ -28,6 +28,8 @@ include_rules = [
   "+net/url_request/redirect_util.h",
   # Needed for a flag.
   "+net/url_request/url_request.h",
+  "+pdf/buildflags.h",
+  "+pdf/pdf_features.h",
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",
   "+services/data_decoder/public",
