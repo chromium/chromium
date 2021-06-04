@@ -284,12 +284,10 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountAvatar(
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
     return ui::ImageModel();
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin));
-  DCHECK(primary_account_info.has_value());
-  gfx::Image account_icon = primary_account_info->account_image;
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  DCHECK(!primary_account_info.IsEmpty());
+  gfx::Image account_icon = primary_account_info.account_image;
   if (account_icon.IsEmpty()) {
     account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
         profiles::GetPlaceholderAvatarIconResourceID());

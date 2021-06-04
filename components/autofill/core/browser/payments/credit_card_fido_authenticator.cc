@@ -582,16 +582,13 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
                            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                            .email;
 
-  absl::optional<AccountInfo> account_info =
-      autofill_client_->GetIdentityManager()
-          ->FindExtendedAccountInfoForAccountWithRefreshToken(
-              autofill_client_->GetPersonalDataManager()
-                  ->GetAccountInfoForPaymentsServer());
-  if (account_info.has_value()) {
-    options->user.display_name = account_info.value().given_name;
-    options->user.icon_url = GURL(account_info.value().picture_url);
-  } else {
-    options->user.display_name = "";
+  AccountInfo account_info =
+      autofill_client_->GetIdentityManager()->FindExtendedAccountInfo(
+          autofill_client_->GetPersonalDataManager()
+              ->GetAccountInfoForPaymentsServer());
+  options->user.display_name = account_info.given_name;
+  if (!account_info.IsEmpty()) {
+    options->user.icon_url = GURL(account_info.picture_url);
   }
 
   const auto* challenge = creation_options.FindStringKey("challenge");

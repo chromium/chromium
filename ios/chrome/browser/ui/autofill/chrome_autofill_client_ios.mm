@@ -257,13 +257,11 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
 
 void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync));
-  std::u16string account_name =
-      primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
-                           : std::u16string();
+  std::u16string account_name = base::UTF8ToUTF16(
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync))
+          .full_name);
 
   card_name_fix_flow_controller_.Show(
       // CardNameFixFlowViewBridge manages its own lifetime, so

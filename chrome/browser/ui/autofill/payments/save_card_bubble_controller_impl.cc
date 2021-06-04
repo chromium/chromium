@@ -529,10 +529,8 @@ void SaveCardBubbleControllerImpl::FetchAccountInfo() {
       PersonalDataManagerFactory::GetForProfile(profile);
   if (!personal_data_manager)
     return;
-  absl::optional<AccountInfo> account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          personal_data_manager->GetAccountInfoForPaymentsServer());
-  account_info_ = account_info.value_or(AccountInfo{});
+  account_info_ = identity_manager->FindExtendedAccountInfo(
+      personal_data_manager->GetAccountInfoForPaymentsServer());
 }
 
 void SaveCardBubbleControllerImpl::ShowBubble() {

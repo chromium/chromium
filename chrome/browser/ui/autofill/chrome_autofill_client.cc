@@ -865,12 +865,9 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
     return std::u16string();
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  return primary_account_info
-             ? base::UTF8ToUTF16(primary_account_info->full_name)
-             : std::u16string();
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+  return base::UTF8ToUTF16(primary_account_info.full_name);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient)

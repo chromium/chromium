@@ -27,10 +27,8 @@ absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  absl::optional<AccountInfo> account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
   bool is_single_account_user =
       identity_manager->GetAccountsWithRefreshTokens().size() == 1;
 
@@ -39,9 +37,11 @@ absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
        base::FeatureList::IsEnabled(
            autofill::features::
                kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)) &&
-      account_info.has_value();
+      !account_info.IsEmpty();
 
-  return should_show_account_footer ? account_info : absl::nullopt;
+  return should_show_account_footer
+             ? absl::make_optional<AccountInfo>(account_info)
+             : absl::nullopt;
 }
 
 absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
@@ -54,9 +54,11 @@ absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  return identity_manager
-      ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-          account_id);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.IsEmpty()
+             ? absl::nullopt
+             : absl::make_optional<AccountInfo>(account_info);
 }
 
 }  // namespace password_manager
