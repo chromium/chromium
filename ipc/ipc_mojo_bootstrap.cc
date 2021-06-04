@@ -510,6 +510,11 @@ class ChannelAssociatedGroupController
       return client_;
     }
 
+    void CountDroppedMessage() {
+      controller_->lock_.AssertAcquired();
+      ++num_dropped_messages_;
+    }
+
     void AttachClient(mojo::InterfaceEndpointClient* client,
                       scoped_refptr<base::SequencedTaskRunner> runner) {
       controller_->lock_.AssertAcquired();
@@ -519,6 +524,15 @@ class ChannelAssociatedGroupController
 
       task_runner_ = std::move(runner);
       client_ = client;
+
+      CHECK_EQ(num_dropped_messages_, 0u)
+          << "A Channel-associated interface endpoint for "
+          << client->interface_name() << " received undeliverable messages "
+          << "prior to being bound. This means the endpoint was held in a "
+          << "pending state longer than allowed. Channel-associated interface "
+          << "endpoints must be bound ASAP once received; either immediately "
+          << "on the IO or main thread, or after a single task hop from the IO "
+          << "thread to main thread where applicable.";
     }
 
     void DetachClient() {
@@ -672,6 +686,7 @@ class ChannelAssociatedGroupController
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
     base::queue<std::pair<uint32_t, MessageWrapper>> sync_messages_;
     uint32_t next_sync_message_id_ = 0;
+    size_t num_dropped_messages_ = 0;
 
     DISALLOW_COPY_AND_ASSIGN(Endpoint);
   };
@@ -932,8 +947,10 @@ class ChannelAssociatedGroupController
       return;
 
     mojo::InterfaceEndpointClient* client = endpoint->client();
-    if (!client)
+    if (!client) {
+      endpoint->CountDroppedMessage();
       return;
+    }
 
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
