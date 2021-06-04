@@ -93,7 +93,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
   // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR after each accessing.
   if (android_backing()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_QUEUE_FAMILY_IGNORED);
+        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_FOREIGN_EXT);
   }
 
   return surface_;
@@ -115,7 +115,7 @@ SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
   // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR after each accessing.
   if (android_backing()->usage() & SHARED_IMAGE_USAGE_SCANOUT) {
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_QUEUE_FAMILY_IGNORED);
+        VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_FOREIGN_EXT);
   }
 
   return promise_texture_;

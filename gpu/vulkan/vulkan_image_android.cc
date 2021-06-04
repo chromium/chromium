@@ -133,7 +133,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   }
 
   // VkImage is imported from external.
-  queue_family_index_ = VK_QUEUE_FAMILY_EXTERNAL;
+  queue_family_index_ = VK_QUEUE_FAMILY_FOREIGN_EXT;
 
   if (ahb_format_props.format == VK_FORMAT_UNDEFINED) {
     ycbcr_info_.emplace(VK_FORMAT_UNDEFINED, ahb_format_props.externalFormat,
