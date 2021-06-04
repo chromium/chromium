@@ -410,15 +410,24 @@ export class DestinationStore extends EventTarget {
         this.startLoadDestinations_(printerType);
       }
     }
+
+    // Start a 10s timeout so that we never hang forever.
+    window.setTimeout(() => {
+      this.tryToSelectInitialDestination_(true);
+    }, 10000);
   }
 
-  /** @private */
-  tryToSelectInitialDestination_() {
+  /**
+   * @param {boolean=} timeoutExpired Whether the select timeout is expired.
+   *     Defaults to false.
+   * @private
+   */
+  tryToSelectInitialDestination_(timeoutExpired = false) {
     if (this.initialDestinationSelected_) {
       return;
     }
 
-    const success = this.selectInitialDestination_();
+    const success = this.selectInitialDestination_(timeoutExpired);
     if (!success && !this.isPrintDestinationSearchInProgress &&
         this.typesToSearch_.size === 0) {
       // No destinations
@@ -441,11 +450,12 @@ export class DestinationStore extends EventTarget {
    * Called when destinations are added to the store when the initial
    * destination has not yet been set. Selects the initial destination based on
    * relevant policies, recent printers, and system default.
+   * @param {boolean} timeoutExpired Whether the initial timeout has expired.
    * @return {boolean} Whether an initial destination was successfully selected.
    * @private
    */
-  selectInitialDestination_() {
-    const searchInProgress = this.typesToSearch_.size !== 0;
+  selectInitialDestination_(timeoutExpired) {
+    const searchInProgress = this.typesToSearch_.size !== 0 && !timeoutExpired;
 
     // System default printer policy takes priority.
     if (this.useSystemDefaultAsDefault_) {
