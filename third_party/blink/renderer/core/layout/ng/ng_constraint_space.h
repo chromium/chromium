@@ -151,6 +151,20 @@ class CORE_EXPORT NGConstraintSpace final {
     return *this;
   }
 
+  NGConstraintSpace CloneWithoutFragmentation() const {
+    DCHECK(HasBlockFragmentation());
+    NGConstraintSpace copy = *this;
+    DCHECK(copy.rare_data_);
+    copy.rare_data_->block_direction_fragmentation_type = kFragmentNone;
+    return copy;
+  }
+
+  NGConstraintSpace CloneWithSideEffectsDisabled() const {
+    NGConstraintSpace copy = *this;
+    copy.DisableSideEffects();
+    return copy;
+  }
+
   ~NGConstraintSpace() {
     if (HasRareData())
       delete rare_data_;

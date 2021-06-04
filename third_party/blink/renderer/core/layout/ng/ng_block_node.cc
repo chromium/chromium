@@ -811,8 +811,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       // |SideEffectsDisabled| so that |Layout| does not update the
       // |LayoutObject| tree and other global states.
       NGConstraintSpace side_effects_disabled =
-          NGConstraintSpaceBuilder::CloneWithSideEffectsDisabled(
-              constraint_space);
+          constraint_space.CloneWithSideEffectsDisabled();
       layout_result = Layout(side_effects_disabled);
     }
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);

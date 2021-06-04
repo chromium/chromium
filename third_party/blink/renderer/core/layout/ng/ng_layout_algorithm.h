@@ -167,8 +167,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     // right thing, since, as far as input is concerned, this node is meant to
     // perform block fragmentation (and it may already have produced multiple
     // fragment, but this one will be the last).
-    NGConstraintSpace new_space =
-        NGConstraintSpaceBuilder::CloneWithoutFragmentation(ConstraintSpace());
+    NGConstraintSpace new_space = ConstraintSpace().CloneWithoutFragmentation();
 
     NGLayoutAlgorithmParams params(Node(),
                                    container_builder_.InitialFragmentGeometry(),

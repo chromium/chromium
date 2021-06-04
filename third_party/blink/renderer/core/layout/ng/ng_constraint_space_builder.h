@@ -474,22 +474,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     return std::move(space_);
   }
 
-  static NGConstraintSpace CloneWithoutFragmentation(
-      const NGConstraintSpace& other) {
-    DCHECK(other.HasBlockFragmentation());
-    NGConstraintSpace copy = other;
-    DCHECK(copy.rare_data_);
-    copy.rare_data_->block_direction_fragmentation_type = kFragmentNone;
-    return copy;
-  }
-
-  static NGConstraintSpace CloneWithSideEffectsDisabled(
-      const NGConstraintSpace& other) {
-    NGConstraintSpace copy = other;
-    copy.DisableSideEffects();
-    return copy;
-  }
-
  private:
   NGConstraintSpace space_;
 
