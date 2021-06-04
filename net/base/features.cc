@@ -239,5 +239,8 @@ const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
+const base::Feature kCookieSameSiteConsidersRedirectChain{
+    "CookieSameSiteConsidersRedirectChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

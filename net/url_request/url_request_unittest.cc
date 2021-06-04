@@ -2185,7 +2185,26 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
   }
 }
 
-TEST_F(URLRequestTest, SameSiteCookies) {
+// Tests for SameSite cookies. The test param indicates whether the same-site
+// calculation considers redirect chains.
+class URLRequestSameSiteCookiesTest
+    : public URLRequestTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  URLRequestSameSiteCookiesTest() {
+    if (DoesCookieSameSiteConsiderRedirectChain()) {
+      feature_list_.InitAndEnableFeature(
+          features::kCookieSameSiteConsidersRedirectChain);
+    }
+  }
+
+  bool DoesCookieSameSiteConsiderRedirectChain() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2390,7 +2409,7 @@ TEST_F(URLRequestTest, SameSiteCookies) {
   }
 }
 
-TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -2505,10 +2524,14 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
   }
 
+  // If redirect chains are considered:
   // Verify that the Strict cookie may or may not be sent for a cross-scheme
   // (same-registrable-domain) redirected top level navigation, depending on the
   // status of Schemeful Same-Site. The Lax cookie is sent regardless, because
   // this is a top-level navigation.
+  //
+  // If redirect chains are not considered:
+  // Verify that both cookies are sent, because this is a top-level navigation.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
@@ -2524,7 +2547,7 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     req->set_first_party_url_policy(
         RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
     req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kHttpOrigin);
+    req->set_initiator(kOrigin);
     req->Start();
     d.RunUntilComplete();
 
@@ -2548,18 +2571,20 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     req->set_first_party_url_policy(
         RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
     req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kHttpOrigin);
+    req->set_initiator(kOrigin);
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(2u, req->url_chain().size());
-    EXPECT_EQ(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
   }
 
-  // Verify that the Strict cookie is not sent for a cross-site redirected top
-  // level navigation...
+  // Verify that (depending on whether redirect chains are considered), the
+  // Strict cookie is (not) sent for a cross-site redirected top level
+  // navigation...
   {
     TestDelegate d;
     GURL url = https_server.GetURL(
@@ -2579,8 +2604,9 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     d.RunUntilComplete();
 
     EXPECT_EQ(2u, req->url_chain().size());
-    EXPECT_EQ(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
   }
   // ... even if the initial URL is same-site.
@@ -2605,13 +2631,15 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     d.RunUntilComplete();
 
     EXPECT_EQ(3u, req->url_chain().size());
-    EXPECT_EQ(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
   }
 
-  // Verify that neither SameSite cookie is sent for a cross-site redirected
-  // subresource request...
+  // Verify that (depending on whether redirect chains are considered), neither
+  // (or both) SameSite cookie is sent for a cross-site redirected subresource
+  // request...
   {
     TestDelegate d;
     GURL url = https_server.GetURL(
@@ -2629,9 +2657,12 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     d.RunUntilComplete();
 
     EXPECT_EQ(2u, req->url_chain().size());
-    EXPECT_EQ(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
-    EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("LaxSameSiteCookie=1"));
   }
   // ... even if the initial URL is same-site.
   {
@@ -2653,13 +2684,16 @@ TEST_F(URLRequestTest, SameSiteCookies_Redirect) {
     d.RunUntilComplete();
 
     EXPECT_EQ(3u, req->url_chain().size());
-    EXPECT_EQ(std::string::npos,
-              d.data_received().find("StrictSameSiteCookie=1"));
-    EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("LaxSameSiteCookie=1"));
   }
 }
 
-TEST_F(URLRequestTest, SettingSameSiteCookies) {
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2855,7 +2889,7 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
 
 // Tests special chrome:// scheme that is supposed to always attach SameSite
 // cookies if the requested site is secure.
-TEST_F(URLRequestTest, SameSiteCookiesSpecialScheme) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesSpecialScheme) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SchemeType::SCHEME_WITH_HOST);
 
@@ -2947,7 +2981,7 @@ TEST_F(URLRequestTest, SameSiteCookiesSpecialScheme) {
   }
 }
 
-TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -3115,9 +3149,9 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
   }
 
-  // Verify that SameSite cookies *cannot* be set for a cross-site redirected
-  // subresource request, even if the site-for-cookies and initiator are
-  // same-site, ...
+  // Verify that (depending on whether redirect chains are considered) SameSite
+  // cookies can/cannot be set for a cross-site redirected subresource request,
+  // even if the site-for-cookies and initiator are same-site, ...
   {
     TestDelegate d;
     GURL set_cookie_url = https_server.GetURL(
@@ -3132,7 +3166,7 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     req->set_site_for_cookies(kSiteForCookies);
     req->set_initiator(kOrigin);
 
-    expected_cookies += 0;
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
     expected_set_cookie_count += 2;
 
     req->Start();
@@ -3158,7 +3192,7 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     req->set_site_for_cookies(kSiteForCookies);
     req->set_initiator(kOrigin);
 
-    expected_cookies += 0;
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
     expected_set_cookie_count += 2;
 
     req->Start();
@@ -3170,7 +3204,7 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
 
   // Verify that SameSite cookies may or may not be set for a cross-scheme
   // (same-registrable-domain) redirected subresource request, depending on the
-  // status of Schemeful Same-Site.
+  // status of Schemeful Same-Site and whether redirect chains are considered.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
@@ -3184,8 +3218,10 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     req->set_isolation_info(IsolationInfo::Create(
         IsolationInfo::RequestType::kOther, kHttpOrigin, kHttpOrigin,
         kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
     req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kHttpOrigin);
+    req->set_initiator(kOrigin);
 
     expected_cookies += 2;
     expected_set_cookie_count += 2;
@@ -3209,10 +3245,12 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     req->set_isolation_info(IsolationInfo::Create(
         IsolationInfo::RequestType::kOther, kHttpOrigin, kHttpOrigin,
         kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
     req->set_site_for_cookies(kHttpSiteForCookies);
-    req->set_initiator(kHttpOrigin);
+    req->set_initiator(kOrigin);
 
-    expected_cookies += 0;
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
     expected_set_cookie_count += 2;
 
     req->Start();
@@ -3222,6 +3260,10 @@ TEST_F(URLRequestTest, SettingSameSiteCookies_Redirect) {
     EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         URLRequestSameSiteCookiesTest,
+                         ::testing::Bool());
 
 // Tests that __Secure- cookies can't be set on non-secure origins.
 TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {

@@ -67,6 +67,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "content/test/test_content_browser_client.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -3989,7 +3990,25 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeBlobURL) {
                download->GetTargetFilePath().BaseName().value().c_str());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeSameSiteCookie) {
+class DownloadContentSameSiteCookieTest
+    : public DownloadContentTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DownloadContentSameSiteCookieTest() {
+    if (DoesCookieSameSiteConsiderRedirectChain()) {
+      inner_feature_list_.InitAndEnableFeature(
+          net::features::kCookieSameSiteConsidersRedirectChain);
+    }
+  }
+
+  bool DoesCookieSameSiteConsiderRedirectChain() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList inner_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DownloadContentSameSiteCookieTest,
+                       DownloadAttributeSameSiteCookie) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   net::EmbeddedTestServer test_server;
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -4048,7 +4067,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeSameSiteCookie) {
   EXPECT_STREQ("B=C", file_contents.c_str());
 
   // OriginOne redirects through OriginTwo. Because the redirect chain contains
-  // a cross-site redirect, SameSite=Strict cookies are not sent.
+  // a cross-site redirect, SameSite=Strict cookies are not sent (if redirect
+  // chains are considered).
   //
   //  Initiator origin: kOriginOne
   //  Redirect chain contains: kOriginTwo
@@ -4063,8 +4083,16 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeSameSiteCookie) {
 
   ASSERT_TRUE(
       base::ReadFileToString(download->GetTargetFilePath(), &file_contents));
-  EXPECT_STREQ("B=C", file_contents.c_str());
+  if (DoesCookieSameSiteConsiderRedirectChain()) {
+    EXPECT_STREQ("B=C", file_contents.c_str());
+  } else {
+    EXPECT_STREQ("A=B; B=C", file_contents.c_str());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         DownloadContentSameSiteCookieTest,
+                         ::testing::Bool());
 
 // The file empty.bin is served with a MIME type of application/octet-stream.
 // The content body is empty. Make sure this case is handled properly and we
