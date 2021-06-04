@@ -209,8 +209,7 @@ export class Preview {
     });
     await video.play();
     this.video_.parentElement.replaceChild(tpl, this.video_);
-    this.video_.removeAttribute('srcObject');
-    this.video_.load();
+    this.video_.srcObject = null;
     this.video_ = video;
     video.addEventListener('resize', () => this.onIntrinsicSizeChanged_());
     video.addEventListener(
