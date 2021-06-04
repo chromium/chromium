@@ -9,7 +9,9 @@
 #include "base/files/file_path.h"
 #include "chromeos/components/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -33,6 +35,9 @@ class InputDataProvider : public mojom::InputDataProvider,
   // mojom::InputDataProvider:
   void GetConnectedDevices(GetConnectedDevicesCallback callback) override;
 
+  void ObserveConnectedDevices(
+      mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
@@ -48,6 +53,8 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, mojom::TouchDeviceInfoPtr> touch_devices_;
+
+  mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 

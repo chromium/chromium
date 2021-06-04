@@ -4,7 +4,7 @@
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
+import {ConnectedDevicesObserverReceiver, ConnectedDevicesObserverInterface, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
 import {getInputDataProvider} from './mojo_interface_provider.js'
 
 /**
@@ -19,6 +19,9 @@ Polymer({
 
   /** @private {?InputDataProviderInterface} */
   inputDataProvider_: null,
+
+  /** @private {?ConnectedDevicesObserverReceiver} */
+  connectedDevicesObserverReceiver_: null,
 
   properties: {
     /** @private {!Array<!KeyboardInfo>} */
@@ -44,6 +47,7 @@ Polymer({
   created() {
     this.inputDataProvider_ = getInputDataProvider();
     this.loadInitialDevices_();
+    this.observeConnectedDevices_();
   },
 
   /** @private */
@@ -55,5 +59,65 @@ Polymer({
       this.touchscreens_ = devices.touchDevices.filter(
           (device) => device.type === TouchDeviceType.kDirect);
     });
+  },
+
+  /** @private */
+  observeConnectedDevices_() {
+    this.connectedDevicesObserverReceiver_ =
+      new ConnectedDevicesObserverReceiver(
+        /** @type {!ConnectedDevicesObserverInterface} */(this));
+    this.inputDataProvider_.observeConnectedDevices(
+      this.connectedDevicesObserverReceiver_.$.bindNewPipeAndPassRemote());
+  },
+
+  /**
+   * Implements ConnectedDevicesObserver.OnKeyboardConnected.
+   * @param {!KeyboardInfo} newKeyboard
+   */
+  onKeyboardConnected(newKeyboard) {
+    this.push('keyboards_', newKeyboard);
+  },
+
+  /**
+   * Removes the device with the given evdev ID from one of the device list
+   * properties.
+   * @param {(string | !Array.<(string | number)>)} path the property's path
+   * @param {number} id
+   * @private
+   */
+  removeDeviceById_(path, id) {
+    const index = this.get(path).findIndex((device) => device.id === id);
+    if (index !== -1) {
+      this.splice(path, index, 1);
+    }
+  },
+
+  /**
+   * Implements ConnectedDevicesObserver.OnKeyboardDisconnected.
+   * @param {number} id
+   */
+  onKeyboardDisconnected(id) {
+    this.removeDeviceById_('keyboards_', id);
+  },
+
+  /**
+   * Implements ConnectedDevicesObserver.OnTouchDeviceConnected.
+   * @param {!TouchDeviceInfo} newTouchDevice
+   */
+  onTouchDeviceConnected(newTouchDevice) {
+    if (newTouchDevice.type === TouchDeviceType.kPointer) {
+      this.push('touchpads_', newTouchDevice);
+    } else {
+      this.push('touchscreens_', newTouchDevice);
+    }
+  },
+
+  /**
+   * Implements ConnectedDevicesObserver.OnTouchDeviceDisconnected.
+   * @param {number} id
+   */
+  onTouchDeviceDisconnected(id) {
+    this.removeDeviceById_('touchpads_', id);
+    this.removeDeviceById_('touchscreens_', id);
   },
 });

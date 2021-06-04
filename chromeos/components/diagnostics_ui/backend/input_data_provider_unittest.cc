@@ -30,6 +30,31 @@ class FakeDeviceManager : public ui::DeviceManager {
   void RemoveObserver(ui::DeviceEventObserver* observer) override {}
 };
 
+class FakeConnectedDevicesObserver : public mojom::ConnectedDevicesObserver {
+ public:
+  // mojom::ConnectedDevicesObserver:
+  void OnTouchDeviceConnected(
+      mojom::TouchDeviceInfoPtr new_touch_device) override {
+    touch_devices_connected.push_back(std::move(new_touch_device));
+  }
+  void OnTouchDeviceDisconnected(uint32_t id) override {
+    touch_devices_disconnected.push_back(id);
+  }
+  void OnKeyboardConnected(mojom::KeyboardInfoPtr new_keyboard) override {
+    keyboards_connected.push_back(std::move(new_keyboard));
+  }
+  void OnKeyboardDisconnected(uint32_t id) override {
+    keyboards_disconnected.push_back(id);
+  }
+
+  std::vector<mojom::TouchDeviceInfoPtr> touch_devices_connected;
+  std::vector<uint32_t> touch_devices_disconnected;
+  std::vector<mojom::KeyboardInfoPtr> keyboards_connected;
+  std::vector<uint32_t> keyboards_disconnected;
+
+  mojo::Receiver<mojom::ConnectedDevicesObserver> receiver{this};
+};
+
 class TestInputDataProvider : public InputDataProvider {
  public:
   TestInputDataProvider(std::unique_ptr<ui::DeviceManager> device_manager)
@@ -199,6 +224,50 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
       }));
 
   run_loop.Run();
+}
+
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {
+  FakeConnectedDevicesObserver fake_observer;
+  provider_->ObserveConnectedDevices(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(add_keyboard_event);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1ul, fake_observer.keyboards_connected.size());
+  EXPECT_EQ(4u, fake_observer.keyboards_connected[0]->id);
+
+  ui::DeviceEvent remove_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
+                                        ui::DeviceEvent::ActionType::REMOVE,
+                                        base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(remove_keyboard_event);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1ul, fake_observer.keyboards_disconnected.size());
+  EXPECT_EQ(4u, fake_observer.keyboards_disconnected[0]);
+}
+
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
+  FakeConnectedDevicesObserver fake_observer;
+  provider_->ObserveConnectedDevices(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  ui::DeviceEvent add_touch_event(ui::DeviceEvent::DeviceType::INPUT,
+                                  ui::DeviceEvent::ActionType::ADD,
+                                  base::FilePath("/dev/input/event1"));
+  provider_->OnDeviceEvent(add_touch_event);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1ul, fake_observer.touch_devices_connected.size());
+  EXPECT_EQ(1u, fake_observer.touch_devices_connected[0]->id);
+
+  ui::DeviceEvent remove_touch_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::REMOVE,
+                                     base::FilePath("/dev/input/event1"));
+  provider_->OnDeviceEvent(remove_touch_event);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1ul, fake_observer.touch_devices_disconnected.size());
+  EXPECT_EQ(1u, fake_observer.touch_devices_disconnected[0]);
 }
 
 }  // namespace diagnostics

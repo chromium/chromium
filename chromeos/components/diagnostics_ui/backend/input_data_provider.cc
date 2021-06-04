@@ -91,6 +91,11 @@ void InputDataProvider::GetConnectedDevices(
                           std::move(touch_device_vector));
 }
 
+void InputDataProvider::ObserveConnectedDevices(
+    mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) {
+  connected_devices_observers_.Add(std::move(observer));
+}
+
 void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   if (event.device_type() != ui::DeviceEvent::DeviceType::INPUT ||
       event.action_type() == ui::DeviceEvent::ActionType::CHANGE) {
@@ -120,8 +125,14 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   } else {
     if (keyboards_.contains(id)) {
       keyboards_.erase(id);
+      for (auto& observer : connected_devices_observers_) {
+        observer->OnKeyboardDisconnected(id);
+      }
     } else if (touch_devices_.contains(id)) {
       touch_devices_.erase(id);
+      for (auto& observer : connected_devices_observers_) {
+        observer->OnTouchDeviceDisconnected(id);
+      }
     }
   }
 }
@@ -152,6 +163,10 @@ void InputDataProvider::AddTouchDevice(int id,
                                  ? mojom::TouchDeviceType::kPointer
                                  : mojom::TouchDeviceType::kDirect;
   touch_devices_[id]->name = device_info->name();
+
+  for (auto& observer : connected_devices_observers_) {
+    observer->OnTouchDeviceConnected(touch_devices_[id]->Clone());
+  }
 }
 
 void InputDataProvider::AddKeyboard(int id,
@@ -161,6 +176,10 @@ void InputDataProvider::AddKeyboard(int id,
   keyboards_[id]->connection_type =
       ConnectionTypeFromInputDeviceType(device_info->device_type());
   keyboards_[id]->name = device_info->name();
+
+  for (auto& observer : connected_devices_observers_) {
+    observer->OnKeyboardConnected(keyboards_[id]->Clone());
+  }
 }
 
 }  // namespace diagnostics

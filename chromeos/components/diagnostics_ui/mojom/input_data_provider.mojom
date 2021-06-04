@@ -33,6 +33,21 @@ struct TouchDeviceInfo {
   string name;
 };
 
+// Implemented by clients that wish to be updated when input devices are
+// connected or disconnected.
+interface ConnectedDevicesObserver {
+  // OnKeyboardConnected calls are triggered when a new keyboard is connected.
+  OnKeyboardConnected(KeyboardInfo new_keyboard);
+  // OnKeyboardDisconnected calls are triggered when a keyboard is disconnected.
+  OnKeyboardDisconnected(uint32 id);
+  // OnTouchDeviceConnected calls are triggered when a new touch device is
+  // connected.
+  OnTouchDeviceConnected(TouchDeviceInfo new_touch_device);
+  // OnTouchDeviceDisconnected calls are triggered when a touch device is
+  // disconnected.
+  OnTouchDeviceDisconnected(uint32 id);
+};
+
 // Provides information about input devices connected to the system. Implemented
 // in the browser process and called by the Diagnostics SWA (a renderer
 // process).
@@ -41,4 +56,6 @@ interface InputDataProvider {
   GetConnectedDevices() =>
     (array<KeyboardInfo> keyboards,
      array<TouchDeviceInfo> touch_devices);
+  // Registers an observer of connected input devices.
+  ObserveConnectedDevices(pending_remote<ConnectedDevicesObserver> observer);
 };

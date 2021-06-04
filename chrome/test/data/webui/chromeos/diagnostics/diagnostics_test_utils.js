@@ -135,7 +135,31 @@ export function assertElementContainsText(element, text) {
  * @throws {Error}
  */
 export function assertTextContains(text, subStr) {
-  assertTrue(text.trim().indexOf(subStr) !== -1);
+  assertTrue(
+      text.trim().indexOf(subStr) !== -1,
+      `expected text "${text}" to contain "${subStr}"`);
+}
+
+/**
+ * Helper function to check that a substring does not exist in an element.
+ * @param {?Element} element
+ * @param {string} text substring to check
+ * @throws {Error}
+ */
+export function assertElementDoesNotContainText(element, text) {
+  assertTextDoesNotContain(element.textContent, text);
+}
+
+/**
+ * Helper function to check that a substring does not exist in a string.
+ * @param {string} text
+ * @param {string} subStr substring to check
+ * @throws {Error}
+ */
+export function assertTextDoesNotContain(text, subStr) {
+  assertTrue(
+      text.trim().indexOf(subStr) === -1,
+      `expected text "${text}" not to contain "${subStr}"`);
 }
 
 /**

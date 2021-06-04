@@ -374,6 +374,34 @@ export let TouchDeviceInfo =
     chromeos.diagnostics.mojom.TouchDeviceInfo;
 
 /**
+ * Type alias for ConnectedDevicesObserver.
+ * @typedef {chromeos.diagnostics.mojom.ConnectedDevicesObserver}
+ */
+export let ConnectedDevicesObserver = chromeos.diagnostics.mojom.CpuUsageObserver;
+
+/**
+ * Type alias for ConnectedDevicesObserverRemote.
+ * @typedef {chromeos.diagnostics.mojom.ConnectedDevicesObserverRemote}
+ */
+export let ConnectedDevicesObserverRemote =
+    chromeos.diagnostics.mojom.ConnectedDevicesObserverRemote;
+
+/**
+ * Type alias for ConnectedDevicesObserverInterface.
+ * @typedef {chromeos.diagnostics.mojom.ConnectedDevicesObserverInterface}
+ */
+export let ConnectedDevicesObserverInterface =
+    chromeos.diagnostics.mojom.ConnectedDevicesObserverInterface;
+
+/**
+ * Type alias for ConnectedDevicesObserverReceiver.
+ * @typedef {chromeos.diagnostics.mojom.ConnectedDevicesObserverReceiver}
+ */
+export let ConnectedDevicesObserverReceiver =
+    chromeos.diagnostics.mojom.ConnectedDevicesObserverReceiver;
+
+
+/**
  * Type alias for the the response from InputDataProvider.GetConnectedDevices.
  * @typedef {{keyboards: !Array<!KeyboardInfo>,
  *            touchDevices: !Array<!TouchDeviceInfo>}}
