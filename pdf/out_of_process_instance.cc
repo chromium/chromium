@@ -28,6 +28,7 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -565,9 +566,9 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   // can be restarted by exiting annotation mode on ChromeOS, which can set the
   // document to an edited state.
   set_edit_mode(has_edits);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(ENABLE_INK)
   DCHECK(!edit_mode());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(ENABLE_INK)
 
   pp::PDF::SetCrashData(GetPluginInstance(), original_url, top_level_url);
   return engine()->New(original_url, headers);
@@ -1095,10 +1096,14 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
       dict.Get(pp::Var(kJSSaveRequestType)).AsInt());
   switch (request_type) {
     case SaveRequestType::kAnnotation:
+#if BUILDFLAG(ENABLE_INK)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
       SetPluginCanSave(true);
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_INK)
       break;
     case SaveRequestType::kOriginal:
       SetPluginCanSave(false);

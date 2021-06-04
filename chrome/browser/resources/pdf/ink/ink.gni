@@ -1,7 +1,0 @@
-import("//build/config/chrome_build.gni")
-import("//chromeos/components/media_app_ui/media_app_ui.gni")
-
-declare_args() {
-  # Ink libraries are provided by the ChromeOS media app dependency.
-  enable_ink = enable_cros_media_app
-}

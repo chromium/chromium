@@ -3,12 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//chromeos/components/media_app_ui/media_app_ui.gni")
 
 # Most build code won't need to include this file. Instead you can
 # unconditionally depend on "//pdf" which will be a no-op when PDF support is
 # disabled.
 
 declare_args() {
+  # Enable ink libraries provided by the ChromeOS media app dependency.
+  #
+  # This argument indicates whether the ink libraries provided by the ChromeOS
+  # media app dependency is enabled. It also determines whether the annotation
+  # feature is enabled for the PDF viewer.
+  enable_ink = enable_cros_media_app
+
   # TODO(crbug.com/702993): Currently disabled on Fuchsia because the PDF Viewer
   # currently depends on PPAPI. It does not make sense to port PPAPI, which is
   # being deprecated, to Fuchsia. Once the PDF Viewer no longer uses PPAPI, the

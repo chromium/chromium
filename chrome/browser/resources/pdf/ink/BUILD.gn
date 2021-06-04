@@ -3,28 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//chrome/browser/resources/pdf/ink/ink.gni")
+import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-# Guard the typepchecking targets so the buildflag header can be provided
-# without coupling to enable_pdf.
+assert(enable_pdf, "enable_pdf check failed")
+assert(enable_ink, "ink_api dependencies should be guarded by enable_ink")
 
-if (enable_ink) {
-  js_type_check("closure_compile") {
-    deps = [ ":ink_api" ]
-  }
-
-  js_library("ink_api") {
-    deps = [ "..:annotation_tool" ]
-    externs_list = [
-      "$externs_path/pending.js",
-      "drawing_canvas_externs.js",
-    ]
-  }
+js_type_check("closure_compile") {
+  deps = [ ":ink_api" ]
 }
 
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  flags = [ "ENABLE_INK=$enable_ink" ]
+js_library("ink_api") {
+  deps = [ "..:annotation_tool" ]
+  externs_list = [
+    "$externs_path/pending.js",
+    "drawing_canvas_externs.js",
+  ]
 }

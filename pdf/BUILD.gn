@@ -14,6 +14,7 @@ import("//v8/gni/v8.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "ENABLE_INK=$enable_ink",
     "ENABLE_PDF=$enable_pdf",
     "ENABLE_PDF_UNSEASONED=$enable_pdf_unseasoned",
   ]
@@ -181,6 +182,7 @@ if (enable_pdf) {
       "//components/strings",
       "//gin",
       "//net",
+      "//pdf:buildflags",
       "//pdf/pdfium/fuzzers",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
@@ -312,6 +314,7 @@ if (enable_pdf) {
       "//base:i18n",
       "//build:chromeos_buildflags",
       "//net",
+      "//pdf:buildflags",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//skia",

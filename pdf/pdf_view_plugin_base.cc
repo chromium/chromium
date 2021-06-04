@@ -34,6 +34,7 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -455,7 +456,7 @@ void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
     if (IsSaveDataSizeValid(data.size()))
       data_to_save = base::Value(std::move(data));
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_INK)
     uint32_t length = engine()->GetLoadedByteSize();
     if (IsSaveDataSizeValid(length)) {
       base::Value::BlobStorage data(length);
@@ -464,7 +465,7 @@ void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
     }
 #else
     NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_INK)
   }
 
   message.SetKey("dataToSave", std::move(data_to_save));
