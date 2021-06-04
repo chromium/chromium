@@ -521,7 +521,7 @@ class TestImporter(object):
         self.fs.remove(dest)
 
     def _upload_patchset(self, message):
-        self.git_cl.run(['upload', '-f', '-t', message])
+        self.git_cl.run(['upload', '--bypass-hooks', '-f', '-t', message])
 
     def _upload_cl(self):
         _log.info('Uploading change list.')
@@ -535,6 +535,7 @@ class TestImporter(object):
 
         self.git_cl.run([
             'upload',
+            '--bypass-hooks',
             '-f',
             '--message-file',
             temp_path,
