@@ -45,6 +45,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
 
   void FlushForTesting();
 
+  // Please see comments on the same method of InterfaceEndpointClient.
+  void ResetFromAnotherSequenceUnsafe() {
+    if (endpoint_client_)
+      endpoint_client_->ResetFromAnotherSequenceUnsafe();
+  }
+
  protected:
   ~AssociatedReceiverBase();
 

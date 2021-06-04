@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -32,12 +33,10 @@ class SharedAssociatedRemote {
   explicit SharedAssociatedRemote(
       PendingAssociatedRemote<Interface> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-          base::SequencedTaskRunnerHandle::Get())
-      : remote_(pending_remote.is_valid()
-                    ? SharedRemoteBase<AssociatedRemote<Interface>>::Create(
-                          std::move(pending_remote),
-                          std::move(bind_task_runner))
-                    : nullptr) {}
+          base::SequencedTaskRunnerHandle::Get()) {
+    if (pending_remote.is_valid())
+      Bind(std::move(pending_remote), std::move(bind_task_runner));
+  }
 
   bool is_bound() const { return remote_ != nullptr; }
   explicit operator bool() const { return is_bound(); }
@@ -50,6 +49,27 @@ class SharedAssociatedRemote {
   // close the remote's endpoint as other SharedAssociatedRemote instances may
   // reference the same underlying endpoint.
   void reset() { remote_.reset(); }
+
+  // Creates a new pair of endpoints and binds this SharedAssociatedRemote to
+  // one of them, on `task_runner`. The other is returned as a receiver.
+  mojo::PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
+          base::SequencedTaskRunnerHandle::Get()) {
+    mojo::PendingAssociatedRemote<Interface> remote;
+    auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+    Bind(std::move(remote), std::move(bind_task_runner));
+    return receiver;
+  }
+
+  // Binds to `pending_remote` on `bind_task_runner`.
+  void Bind(PendingAssociatedRemote<Interface> pending_remote,
+            scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
+                base::SequencedTaskRunnerHandle::Get()) {
+    DCHECK(!remote_);
+    DCHECK(pending_remote.is_valid());
+    remote_ = SharedRemoteBase<AssociatedRemote<Interface>>::Create(
+        std::move(pending_remote), std::move(bind_task_runner));
+  }
 
  private:
   scoped_refptr<SharedRemoteBase<AssociatedRemote<Interface>>> remote_;

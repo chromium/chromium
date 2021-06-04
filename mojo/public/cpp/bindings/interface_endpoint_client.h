@@ -192,6 +192,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   }
 #endif
 
+  // This allows the endpoint to be reset from a sequence other than the one on
+  // which it was bound. This should only be used with caution, and it is
+  // critical that the calling sequence cannot run tasks concurrently with the
+  // bound sequence. There's no practical way for this to be asserted, so we
+  // have to take your word for it. If this constraint is not upheld, there will
+  // be data races internal to the bindings object which can lead to UAFs or
+  // surprise message dispatches.
+  void ResetFromAnotherSequenceUnsafe();
+
  private:
   // Maps from the id of a response to the MessageReceiver that handles the
   // response.

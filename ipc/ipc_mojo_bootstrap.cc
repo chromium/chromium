@@ -27,6 +27,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -50,6 +51,15 @@ namespace IPC {
 namespace {
 
 class ChannelAssociatedGroupController;
+
+base::ThreadLocalBoolean& GetOffSequenceBindingAllowedFlag() {
+  static base::NoDestructor<base::ThreadLocalBoolean> flag;
+  return *flag;
+}
+
+bool CanBindOffSequence() {
+  return GetOffSequenceBindingAllowedFlag().Get();
+}
 
 // Used to track some internal Channel state in pursuit of message leaks.
 //
@@ -505,6 +515,8 @@ class ChannelAssociatedGroupController
       return task_runner_.get();
     }
 
+    bool was_bound_off_sequence() const { return was_bound_off_sequence_; }
+
     mojo::InterfaceEndpointClient* client() const {
       controller_->lock_.AssertAcquired();
       return client_;
@@ -515,16 +527,25 @@ class ChannelAssociatedGroupController
       controller_->lock_.AssertAcquired();
       DCHECK(!client_);
       DCHECK(!closed_);
-      DCHECK(runner->RunsTasksInCurrentSequence());
 
       task_runner_ = std::move(runner);
       client_ = client;
+
+      const bool binding_to_calling_sequence =
+          task_runner_->RunsTasksInCurrentSequence();
+      const bool binding_to_channel_sequence =
+          binding_to_calling_sequence &&
+          (controller_->proxy_task_runner_->RunsTasksInCurrentSequence() ||
+           controller_->task_runner_->RunsTasksInCurrentSequence());
+      const bool tried_to_bind_off_sequence =
+          !binding_to_calling_sequence || !binding_to_channel_sequence;
+      if (tried_to_bind_off_sequence && CanBindOffSequence())
+        was_bound_off_sequence_ = true;
     }
 
     void DetachClient() {
       controller_->lock_.AssertAcquired();
       DCHECK(client_);
-      DCHECK(task_runner_->RunsTasksInCurrentSequence());
       DCHECK(!closed_);
 
       task_runner_ = nullptr;
@@ -666,6 +687,7 @@ class ChannelAssociatedGroupController
     bool closed_ = false;
     bool peer_closed_ = false;
     bool handle_created_ = false;
+    bool was_bound_off_sequence_ = false;
     absl::optional<mojo::DisconnectReason> disconnect_reason_;
     mojo::InterfaceEndpointClient* client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -867,13 +889,34 @@ class ChannelAssociatedGroupController
 
     mojo::InterfaceEndpointClient* client = endpoint->client();
     if (!client || !endpoint->task_runner()->RunsTasksInCurrentSequence()) {
-      // No client has been bound yet or the client runs tasks on another
-      // thread. We assume the other thread must always be the one on which
-      // |proxy_task_runner_| runs tasks, since that's the only valid scenario.
+      // The ChannelProxy for this channel is bound to `proxy_task_runner_` and
+      // by default legacy IPCs must dispatch to either the IO thread or the
+      // proxy task runner. We generally impose the same constraint on
+      // associated interface endpoints so that FIFO can be guaranteed across
+      // all interfaces without stalling any of them to wait for a pending
+      // endpoint to be bound.
       //
-      // If the client is not yet bound, it must be bound by the time this task
-      // runs or else it's programmer error.
-      DCHECK(proxy_task_runner_);
+      // This allows us to assume that if an endpoint is not yet bound when we
+      // receive a message targeting it, it *will* be bound on the proxy task
+      // runner by the time a newly posted task runs there. Hence we simply post
+      // a hopeful dispatch task to that task runner.
+      //
+      // As it turns out, there are even some instances of endpoints binding to
+      // alternative (non-IO-thread, non-proxy) task runners, but still
+      // ultimately relying on the fact that we schedule their messages on the
+      // proxy task runner. So even if the endpoint is already bound, we
+      // default to scheduling it on the proxy task runner as long as it's not
+      // bound specifically to the IO task runner.
+      // TODO(rockot): Try to sort out these cases and maybe eliminate them.
+      //
+      // Finally, it's also possible that an endpoint was bound to an
+      // alternative task runner and it really does want its messages to
+      // dispatch there. In that case `was_bound_off_sequence()` will be true to
+      // signal that we should really use that task runner.
+      const scoped_refptr<base::SequencedTaskRunner> task_runner =
+          client && endpoint->was_bound_off_sequence()
+              ? endpoint->task_runner()
+              : proxy_task_runner_.get();
 
       if (message->has_flag(mojo::Message::kFlagIsSync)) {
         MessageWrapper message_wrapper(this, std::move(*message));
@@ -884,28 +927,27 @@ class ChannelAssociatedGroupController
         // call will dequeue the message and dispatch it.
         uint32_t message_id =
             endpoint->EnqueueSyncMessage(std::move(message_wrapper));
-        proxy_task_runner_->PostTask(
+        task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(&ChannelAssociatedGroupController::AcceptSyncMessage,
                            this, id, message_id));
         return true;
       }
 
-      // If |proxy_task_runner_| has been torn down already, this PostTask will
-      // fail and destroy |message|. That operation may need to in turn destroy
+      // If |task_runner| has been torn down already, this PostTask will fail
+      // and destroy |message|. That operation may need to in turn destroy
       // in-transit associated endpoints and thus acquire |lock_|. We no longer
-      // need the lock to be held now since |proxy_task_runner_| is safe to
-      // access unguarded.
+      // need the lock to be held now, so we can release it before the PostTask.
       {
         // Grab interface name from |client| before releasing the lock to ensure
         // that |client| is safe to access.
         base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(
             client ? client->interface_name() : "unknown interface");
         locker.Release();
-        proxy_task_runner_->PostTask(
+        task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(
-                &ChannelAssociatedGroupController::AcceptOnProxyThread, this,
+                &ChannelAssociatedGroupController::AcceptOnEndpointThread, this,
                 std::move(*message)));
       }
       return true;
@@ -918,10 +960,9 @@ class ChannelAssociatedGroupController
     return client->HandleIncomingMessage(message);
   }
 
-  void AcceptOnProxyThread(mojo::Message message) {
-    DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  void AcceptOnEndpointThread(mojo::Message message) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
-                 "ChannelAssociatedGroupController::AcceptOnProxyThread");
+                 "ChannelAssociatedGroupController::AcceptOnEndpointThread");
 
     mojo::InterfaceId id = message.interface_id();
     DCHECK(mojo::IsValidInterfaceId(id) && !mojo::IsPrimaryInterfaceId(id));
@@ -938,7 +979,8 @@ class ChannelAssociatedGroupController
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
     TRACE_EVENT0("mojom", client->interface_name());
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence());
+    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
+           proxy_task_runner_->RunsTasksInCurrentSequence());
 
     // Sync messages should never make their way to this method.
     DCHECK(!message.has_flag(mojo::Message::kFlagIsSync));
@@ -1134,6 +1176,17 @@ class MojoBootstrapImpl : public MojoBootstrap {
 };
 
 }  // namespace
+
+ScopedAllowOffSequenceChannelAssociatedBindings::
+    ScopedAllowOffSequenceChannelAssociatedBindings()
+    : outer_flag_(GetOffSequenceBindingAllowedFlag().Get()) {
+  GetOffSequenceBindingAllowedFlag().Set(true);
+}
+
+ScopedAllowOffSequenceChannelAssociatedBindings::
+    ~ScopedAllowOffSequenceChannelAssociatedBindings() {
+  GetOffSequenceBindingAllowedFlag().Set(outer_flag_);
+}
 
 // static
 std::unique_ptr<MojoBootstrap> MojoBootstrap::Create(
