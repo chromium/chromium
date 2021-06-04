@@ -25,6 +25,9 @@
   <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for the button to allow the user to go to resize settings.">
     Settings
   </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE" desc="Title for the menu window that shows predefined resize buttons.">
+    Resize toggle menu
+  </message>
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE" desc="A Dialog title of splash screen to advertise the app is designed for mobile.">
     This app is designed for mobile
   </message>

@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -70,6 +71,8 @@ class MenuButtonView : public views::Button {
                      .Build());
     SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderThicknessDp)));
     SetPreferredSize(gfx::Size(96, 86));
+    SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   }
   MenuButtonView(const MenuButtonView&) = delete;
   MenuButtonView& operator=(const MenuButtonView&) = delete;
@@ -194,6 +197,10 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   delegate_view->set_title_margins(gfx::Insets());
   delegate_view->set_margins(gfx::Insets());
   delegate_view->SetAnchorRect(anchor_rect);
+  delegate_view->SetTitle(
+      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
+  delegate_view->SetShowTitle(false);
+  delegate_view->SetAccessibleRole(ax::mojom::Role::kMenu);
 
   // Setup view.
   auto* const provider = views::LayoutProvider::Get();
