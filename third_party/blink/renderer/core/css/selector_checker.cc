@@ -236,9 +236,17 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   if (sub_result.dynamic_pseudo != kPseudoIdNone)
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
 
-  if (context.selector->IsLastInTagHistory()) {
-    result.has_argument_leftmost_compound_match = context.element;
-    return kSelectorMatches;
+  // Fix the perf test regression : https://crbug.com/1216100
+  // Place the LIKELY conditional branch early to separate the
+  // ':has' argument matching sequence.
+  if (LIKELY(!context.in_has_argument_selector)) {
+    if (context.selector->IsLastInTagHistory())
+      return kSelectorMatches;
+  } else {
+    if (context.selector->IsLastInTagHistory()) {
+      result.has_argument_leftmost_compound_match = context.element;
+      return kSelectorMatches;
+    }
   }
 
   MatchStatus match;
@@ -317,8 +325,13 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
-          if (context.scope->IsDocumentFragment() ||
-              UNLIKELY(context.in_has_argument_selector)) {
+          // Fix the perf test regression : https://crbug.com/1216100
+          // Place the LIKELY conditional branch early to separate the
+          // ':has' argument matching sequence.
+          if (LIKELY(!context.in_has_argument_selector)) {
+            if (context.scope->IsDocumentFragment())
+              return kSelectorMatches;
+          } else {
             result.has_argument_leftmost_compound_match = context.element;
             return kSelectorMatches;
           }
