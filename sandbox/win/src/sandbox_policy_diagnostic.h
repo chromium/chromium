@@ -30,7 +30,7 @@ class PolicyBase;
 class PolicyDiagnostic final : public PolicyInfo {
  public:
   // This should quickly copy what it needs from PolicyBase.
-  PolicyDiagnostic(PolicyBase* policy);
+  explicit PolicyDiagnostic(PolicyBase* policy);
   ~PolicyDiagnostic() override;
   const char* JsonString() override;
 

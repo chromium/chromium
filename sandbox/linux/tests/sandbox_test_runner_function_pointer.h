@@ -12,7 +12,7 @@ namespace sandbox {
 
 class SandboxTestRunnerFunctionPointer : public SandboxTestRunner {
  public:
-  SandboxTestRunnerFunctionPointer(void (*function_to_run)(void));
+  explicit SandboxTestRunnerFunctionPointer(void (*function_to_run)());
   ~SandboxTestRunnerFunctionPointer() override;
   void Run() override;
 

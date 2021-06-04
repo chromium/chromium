@@ -47,7 +47,8 @@ class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
  public:
   TestDiagnosticsReceiver() {}
   ~TestDiagnosticsReceiver() final {}
-  TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter) { waiter_ = waiter; }
+  explicit TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter)
+      : waiter_(waiter) {}
   PolicyDiagnosticsWaiter* waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);

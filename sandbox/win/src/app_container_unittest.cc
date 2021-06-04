@@ -103,7 +103,7 @@ std::wstring GenerateRandomPackageName() {
 
 class SECURITY_ATTRIBUTES_SDDL : public SECURITY_ATTRIBUTES {
  public:
-  SECURITY_ATTRIBUTES_SDDL(LPCWSTR sddl) : SECURITY_ATTRIBUTES() {
+  explicit SECURITY_ATTRIBUTES_SDDL(LPCWSTR sddl) : SECURITY_ATTRIBUTES() {
     nLength = sizeof(SECURITY_ATTRIBUTES);
     if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
             sddl, SDDL_REVISION_1, &lpSecurityDescriptor, nullptr)) {

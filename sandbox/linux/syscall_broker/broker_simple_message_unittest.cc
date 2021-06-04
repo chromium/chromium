@@ -61,7 +61,7 @@ class ExpectedResultDataValue : public ExpectedResultValue {
 
 class ExpectedResultIntValue : public ExpectedResultValue {
  public:
-  ExpectedResultIntValue(int value);
+  explicit ExpectedResultIntValue(int value);
 
   bool NextMessagePieceMatches(BrokerSimpleMessage* message) override;
   size_t Size() override;

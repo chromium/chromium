@@ -103,8 +103,8 @@ class IfThenResultExprImpl : public internal::ResultExprImpl {
 
 class ConstBoolExprImpl : public internal::BoolExprImpl {
  public:
-  ConstBoolExprImpl(bool value) : value_(value) {}
-  ~ConstBoolExprImpl() override {}
+  explicit ConstBoolExprImpl(bool value) : value_(value) {}
+  ~ConstBoolExprImpl() override = default;
 
   CodeGen::Node Compile(PolicyCompiler* pc,
                         CodeGen::Node then_node,

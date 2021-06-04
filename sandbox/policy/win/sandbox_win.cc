@@ -155,7 +155,7 @@ const base::Feature kEnableCsrssLockdownFeature{
 // chrome.exe and chrome.dll.
 class PolicyTraceHelper : public base::trace_event::ConvertableToTraceFormat {
  public:
-  PolicyTraceHelper(TargetPolicy* policy) {
+  explicit PolicyTraceHelper(TargetPolicy* policy) {
     // |info| must live until JsonString() output is copied.
     std::unique_ptr<PolicyInfo> info = policy->GetPolicyInfo();
     json_string_ = std::string(info->JsonString());

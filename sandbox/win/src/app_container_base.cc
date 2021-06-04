@@ -67,7 +67,7 @@ bool GetGenericMappingForType(SE_OBJECT_TYPE object_type,
 
 class ScopedImpersonation {
  public:
-  ScopedImpersonation(const base::win::ScopedHandle& token) {
+  explicit ScopedImpersonation(const base::win::ScopedHandle& token) {
     BOOL result = ::ImpersonateLoggedOnUser(token.Get());
     DCHECK(result);
   }
