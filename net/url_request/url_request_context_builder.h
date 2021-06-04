@@ -231,7 +231,7 @@ class NET_EXPORT URLRequestContextBuilder {
   // used.
   void set_host_resolver_factory(HostResolver::Factory* factory);
 
-  // Uses BasicNetworkDelegate by default. Note that calling Build will unset
+  // Uses NetworkDelegateImpl by default. Note that calling Build will unset
   // any custom delegate in builder, so this must be called each time before
   // Build is called.
   void set_network_delegate(std::unique_ptr<NetworkDelegate> delegate) {

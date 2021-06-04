@@ -30,43 +30,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
  private:
   // NetworkDelegate implementation.
-  int OnBeforeURLRequest(URLRequest* request,
-                         CompletionOnceCallback callback,
-                         GURL* new_url) override {
-    return OK;
-  }
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override {
-    return OK;
-  }
-  int OnHeadersReceived(
-      URLRequest* request,
-      CompletionOnceCallback callback,
-      const HttpResponseHeaders* original_response_headers,
-      scoped_refptr<HttpResponseHeaders>* override_response_headers,
-      const net::IPEndPoint& endpoint,
-      absl::optional<GURL>* preserve_fragment_on_redirect_url) override {
-    return OK;
-  }
-  void OnBeforeRedirect(URLRequest* request,
-                        const GURL& new_location) override {}
-  void OnResponseStarted(URLRequest* request, int net_error) override {}
-  void OnCompleted(URLRequest* request, bool started, int net_error) override {}
-  void OnURLRequestDestroyed(URLRequest* request) override {}
-
   void OnPACScriptError(int line_number, const std::u16string& error) override {
     got_pac_error_ = true;
-  }
-  bool OnCanGetCookies(const URLRequest& request,
-                       bool allowed_from_caller) override {
-    return allowed_from_caller;
-  }
-  bool OnCanSetCookie(const URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override {
-    return allowed_from_caller;
   }
 
   bool got_pac_error_;

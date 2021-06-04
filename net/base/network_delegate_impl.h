@@ -32,7 +32,10 @@ class URLRequest;
 
 class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
  public:
-  ~NetworkDelegateImpl() override {}
+  NetworkDelegateImpl() = default;
+  NetworkDelegateImpl(const NetworkDelegateImpl&) = delete;
+  NetworkDelegateImpl& operator=(const NetworkDelegateImpl&) = delete;
+  ~NetworkDelegateImpl() override = default;
 
  private:
   int OnBeforeURLRequest(URLRequest* request,
