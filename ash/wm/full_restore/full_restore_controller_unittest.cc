@@ -330,7 +330,6 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     out_dst->activation_index = src.activation_index;
     out_dst->desk_id = src.desk_id;
     out_dst->visible_on_all_workspaces = src.visible_on_all_workspaces;
-    out_dst->restore_bounds = src.restore_bounds;
     out_dst->current_bounds = src.current_bounds;
     out_dst->window_state_type = src.window_state_type;
     out_dst->display_id = src.display_id;

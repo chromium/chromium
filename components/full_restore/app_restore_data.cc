@@ -26,9 +26,6 @@ constexpr char kFilePathsKey[] = "file_paths";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kDeskIdKey[] = "desk_id";
 constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
-// TODO(sammiequon): This may not be needed as restore bounds are saved in
-// current_bounds if needed. See WindowInfo for more details.
-constexpr char kRestoreBoundsKey[] = "restore_bounds";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kMinimumSizeKey[] = "min_size";
@@ -198,7 +195,6 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
   visible_on_all_workspaces =
       GetBoolValueFromDict(*data_dict, kVisibleOnAllWorkspacesKey);
-  restore_bounds = GetBoundsRectFromDict(*data_dict, kRestoreBoundsKey);
   current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
   maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
@@ -259,9 +255,6 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (visible_on_all_workspaces.has_value())
     data->visible_on_all_workspaces = visible_on_all_workspaces.value();
-
-  if (restore_bounds.has_value())
-    data->restore_bounds = restore_bounds.value();
 
   if (current_bounds.has_value())
     data->current_bounds = current_bounds.value();
@@ -327,11 +320,6 @@ base::Value AppRestoreData::ConvertToValue() const {
                                 visible_on_all_workspaces.value());
   }
 
-  if (restore_bounds.has_value()) {
-    launch_info_dict.SetKey(kRestoreBoundsKey,
-                            ConvertRectToValue(restore_bounds.value()));
-  }
-
   if (current_bounds.has_value()) {
     launch_info_dict.SetKey(kCurrentBoundsKey,
                             ConvertRectToValue(current_bounds.value()));
@@ -375,9 +363,6 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
   if (window_info.visible_on_all_workspaces.has_value())
     visible_on_all_workspaces = window_info.visible_on_all_workspaces.value();
 
-  if (window_info.restore_bounds.has_value())
-    restore_bounds = std::move(window_info.restore_bounds.value());
-
   if (window_info.current_bounds.has_value())
     current_bounds = window_info.current_bounds.value();
 
@@ -403,7 +388,6 @@ void AppRestoreData::ClearWindowInfo() {
   activation_index.reset();
   desk_id.reset();
   visible_on_all_workspaces.reset();
-  restore_bounds.reset();
   current_bounds.reset();
   window_state_type.reset();
   minimum_size.reset();
@@ -423,9 +407,6 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (visible_on_all_workspaces.has_value())
     window_info->visible_on_all_workspaces = visible_on_all_workspaces.value();
-
-  if (restore_bounds.has_value())
-    window_info->restore_bounds = restore_bounds.value();
 
   if (current_bounds.has_value())
     window_info->current_bounds = current_bounds.value();

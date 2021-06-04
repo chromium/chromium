@@ -97,7 +97,6 @@ constexpr char kTestAppActivity2[] = "test.arc.app.package.activity2";
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
 constexpr int kDeskId = 2;
-constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
     chromeos::WindowStateType::kPrimarySnapped;
@@ -142,7 +141,6 @@ class TestFullRestoreInfoObserver
 
 // Creates a WindowInfo object and then saves it.
 void CreateAndSaveWindowInfo(int desk_id,
-                             const gfx::Rect& restore_bounds,
                              const gfx::Rect& current_bounds,
                              chromeos::WindowStateType window_state_type) {
   // A window is needed for SaveWindowInfo, but all it needs is a layer and
@@ -155,7 +153,6 @@ void CreateAndSaveWindowInfo(int desk_id,
   ::full_restore::WindowInfo window_info;
   window_info.window = window.get();
   window_info.desk_id = desk_id;
-  window_info.restore_bounds = restore_bounds;
   window_info.current_bounds = current_bounds;
   window_info.window_state_type = window_state_type;
   ::full_restore::SaveWindowInfo(window_info);
@@ -166,7 +163,6 @@ void SaveWindowInfo(aura::Window* window) {
   window_info.window = window;
   window_info.activation_index = kActivationIndex;
   window_info.desk_id = kDeskId;
-  window_info.restore_bounds = kRestoreBounds;
   window_info.current_bounds = kCurrentBounds;
   window_info.window_state_type = ash::WindowState::Get(window)->GetStateType();
   ::full_restore::SaveWindowInfo(window_info);
@@ -584,8 +580,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
-  CreateAndSaveWindowInfo(kDeskId, kRestoreBounds, kCurrentBounds,
-                          kWindowStateType);
+  CreateAndSaveWindowInfo(kDeskId, kCurrentBounds, kWindowStateType);
   WaitForAppLaunchInfoSaved();
 
   // Launch the browser.
@@ -602,7 +597,6 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   window->SetProperty(::full_restore::kRestoreWindowIdKey, kWindowId1);
   auto stored_window_info = ::full_restore::GetWindowInfo(window.get());
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
-  EXPECT_EQ(kRestoreBounds, *stored_window_info->restore_bounds);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
 }

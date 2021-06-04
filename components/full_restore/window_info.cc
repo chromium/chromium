@@ -49,7 +49,6 @@ std::string WindowInfo::ToString() const {
          ToPrefixedString(desk_id, "Desk") +
          ToPrefixedString(visible_on_all_workspaces,
                           "Visible on all workspaces") +
-         ToPrefixedString(restore_bounds, "Restore bounds") +
          ToPrefixedString(current_bounds, "Current bounds") +
          ToPrefixedString(window_state_type, "Window state") +
          ToPrefixedString(display_id, "Display id");

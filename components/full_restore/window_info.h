@@ -44,15 +44,6 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
   // Whether the |window| is visible on all workspaces.
   absl::optional<bool> visible_on_all_workspaces;
 
-  // The restored bounds in screen coordinates. Empty if the window is not
-  // snapped/maximized/minimized.
-  // TODO(sammiequon): This may not be needed as we save the restore bounds in
-  // screen coordinates into |current_bounds|. On creating the widget,
-  // |current_bounds| will be stored as restore bounds and the maximized or
-  // snapped bounds will be determined by the system. Update the comment below
-  // if this is removed.
-  absl::optional<gfx::Rect> restore_bounds;
-
   // Current bounds in screen in coordinates. If the window has restore bounds,
   // then this contains the restore bounds.
   absl::optional<gfx::Rect> current_bounds;
