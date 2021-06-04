@@ -330,6 +330,21 @@ def ModifySemiStaleExpectations(stale_expectation_map, expectation_file):
     elif response == 'm':
       expectations_to_modify.append(e)
 
+  # It's possible that the user will introduce a typo while manually modifying
+  # an expectation, which will cause a parser error. Catch that now and give
+  # them chances to fix it so that they don't lose all of their work due to an
+  # early exit.
+  while True:
+    try:
+      with open(expectation_file) as infile:
+        file_contents = infile.read()
+      _ = expectations_parser.TaggedTestListParser(file_contents)
+      break
+    except expectations_parser.ParseError as error:
+      logging.error('Got parser error: %s', error)
+      logging.error('This probably means you introduced a typo, please fix it.')
+      _WaitForAnyUserInput()
+
   modified_urls = RemoveExpectationsFromFile(expectations_to_remove,
                                              expectation_file)
   for e in expectations_to_modify:
@@ -419,6 +434,14 @@ def _ConvertBuilderMapToPassOrderedStringDict(builder_map):
       str_dict[result_output.PARTIAL_PASS].setdefault(
           builder_name, {})[step_str] = list(stats.failure_links)
   return str_dict
+
+
+def _WaitForAnyUserInput():
+  """Waits for any user input.
+
+  Split out for testing purposes.
+  """
+  raw_input('Press any key to continue')
 
 
 def _WaitForUserInputOnModification():

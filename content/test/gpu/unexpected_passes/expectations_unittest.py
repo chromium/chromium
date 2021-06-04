@@ -36,6 +36,17 @@ crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
 
+FAKE_EXPECTATION_FILE_CONTENTS_WITH_TYPO = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip ]
+crbug.com/1234 [ wine ] foo/test [ Failure ]
+
+[ linux ] foo/test [ Failure ]
+
+crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+"""
+
 
 class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
@@ -1247,6 +1258,38 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
     self.assertEqual(modified_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+  def testParserErrorCorrection(self):
+    """Tests that parser errors are caught and users can fix them."""
+
+    def TypoSideEffect():
+      with open(self.filename, 'w') as outfile:
+        outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_TYPO)
+      return 'm'
+
+    def CorrectionSideEffect():
+      with open(self.filename, 'w') as outfile:
+        outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
+
+    self._input_mock.side_effect = TypoSideEffect
+    with mock.patch.object(expectations,
+                           '_WaitForAnyUserInput') as any_input_mock:
+      any_input_mock.side_effect = CorrectionSideEffect
+      # yapf: disable
+      test_expectation_map = data_types.TestExpectationMap({
+          'foo/test':
+          data_types.ExpectationBuilderMap({
+              data_types.Expectation(
+                  'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+              data_types.BuilderStepMap(),
+          }),
+      })
+      # yapf: enable
+      expectations.ModifySemiStaleExpectations(test_expectation_map,
+                                               self.filename)
+      any_input_mock.assert_called_once()
+      with open(self.filename) as infile:
+        self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS)
 
 
 class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
