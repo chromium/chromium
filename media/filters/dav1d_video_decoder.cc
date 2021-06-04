@@ -19,6 +19,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_util.h"
 
 extern "C" {
@@ -441,7 +442,7 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
 
   auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
-      GetNaturalSize(gfx::Rect(visible_size), config_.GetPixelAspectRatio()),
+      config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
       pic->stride[0], uv_plane_stride, uv_plane_stride,
       static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
       base::TimeDelta::FromMicroseconds(pic->m.timestamp));

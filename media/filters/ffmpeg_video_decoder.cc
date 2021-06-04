@@ -20,6 +20,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -139,15 +140,13 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   if (ret < 0)
     return ret;
 
-  gfx::Size natural_size;
-  if (codec_context->sample_aspect_ratio.num > 0) {
-    natural_size = GetNaturalSize(size,
-                                  codec_context->sample_aspect_ratio.num,
-                                  codec_context->sample_aspect_ratio.den);
-  } else {
-    natural_size =
-        GetNaturalSize(gfx::Rect(size), config_.GetPixelAspectRatio());
+  VideoAspectRatio aspect_ratio = config_.aspect_ratio();
+  if (!aspect_ratio.IsValid() && codec_context->sample_aspect_ratio.num > 0) {
+    aspect_ratio =
+        VideoAspectRatio::PAR(codec_context->sample_aspect_ratio.num,
+                              codec_context->sample_aspect_ratio.den);
   }
+  gfx::Size natural_size = aspect_ratio.GetNaturalSize(gfx::Rect(size));
 
   // FFmpeg has specific requirements on the allocation size of the frame.  The
   // following logic replicates FFmpeg's allocation strategy to ensure buffers

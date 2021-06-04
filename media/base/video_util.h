@@ -30,37 +30,6 @@ namespace media {
 class VideoFramePool;
 class VideoFrame;
 
-// Computes the pixel aspect ratio of a given |visible_rect| from its
-// |natural_size|.
-//
-// See https://en.wikipedia.org/wiki/Pixel_aspect_ratio for a detailed
-// definition.
-//
-// Returns NaN or Infinity if |visible_rect| or |natural_size| are empty.
-//
-// Note: Something has probably gone wrong if you need to call this function;
-// pixel aspect ratios should be the source of truth.
-//
-// TODO(crbug.com/837337): Decide how to encode 'not provided' for pixel aspect
-// ratios, and return that if one of the inputs is empty.
-MEDIA_EXPORT double GetPixelAspectRatio(const gfx::Rect& visible_rect,
-                                        const gfx::Size& natural_size);
-
-// Increases (at most) one of the dimensions of |visible_rect| to produce
-// a |natural_size| with the given pixel aspect ratio.
-//
-// Returns gfx::Size() if |pixel_aspect_ratio| is not finite and positive.
-MEDIA_EXPORT gfx::Size GetNaturalSize(const gfx::Rect& visible_rect,
-                                      double pixel_aspect_ratio);
-
-// Overload that takes the pixel aspect ratio as an integer fraction (and
-// |visible_size| instead of |visible_rect|).
-//
-// Returns gfx::Size() if numerator or denominator are not positive.
-MEDIA_EXPORT gfx::Size GetNaturalSize(const gfx::Size& visible_size,
-                                      int aspect_ratio_numerator,
-                                      int aspect_ratio_denominator);
-
 // Fills |frame| containing YUV data to the given color values.
 MEDIA_EXPORT void FillYUV(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v);
 

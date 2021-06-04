@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "media/base/cdm_context.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -170,8 +171,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // The default value is only used at the first time of
   // DmabufVideoFramePool::Initialize() during Initialize().
   size_t num_output_frames_ = 1;
-  // Ratio of natural_size to visible_rect of the output frame.
-  double pixel_aspect_ratio_ = 0.0;
+
+  // Aspect ratio from config to use for output frames.
+  VideoAspectRatio aspect_ratio_;
 
   // Callbacks passed from Initialize().
   OutputCB output_cb_;

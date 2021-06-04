@@ -28,6 +28,7 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/decryptor.h"
 #include "media/base/media_export.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -241,7 +242,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   ChannelLayout audio_channel_layout_ = CHANNEL_LAYOUT_NONE;
 
   // Keep track of aspect ratio from the latest configuration.
-  double pixel_aspect_ratio_ = 0.0;
+  VideoAspectRatio aspect_ratio_;
 
   // Whether the current video config is encrypted.
   bool is_video_encrypted_ = false;

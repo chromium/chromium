@@ -287,7 +287,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(client_);
   frame_pool_ = client_->GetVideoFramePool();
 
-  pixel_aspect_ratio_ = config.GetPixelAspectRatio();
+  aspect_ratio_ = config.aspect_ratio();
 
   output_cb_ = std::move(output_cb);
   waiting_cb_ = std::move(waiting_cb);
@@ -588,7 +588,7 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
 
   if (video_frame->visible_rect() != visible_rect ||
       video_frame->timestamp() != timestamp) {
-    gfx::Size natural_size = GetNaturalSize(visible_rect, pixel_aspect_ratio_);
+    gfx::Size natural_size = aspect_ratio_.GetNaturalSize(visible_rect);
     scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
         video_frame, video_frame->format(), visible_rect, natural_size);
     wrapped_frame->set_timestamp(timestamp);
@@ -774,7 +774,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     }
   }
   const gfx::Size natural_size =
-      GetNaturalSize(output_visible_rect, pixel_aspect_ratio_);
+      aspect_ratio_.GetNaturalSize(output_visible_rect);
   if (!frame_pool_->Initialize(
           *format_fourcc, output_pic_size, output_visible_rect, natural_size,
           decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_)) {

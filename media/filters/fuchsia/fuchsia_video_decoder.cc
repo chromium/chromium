@@ -30,6 +30,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -268,9 +269,8 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
 
-  // Aspect ratio specified in container, or 1.0 if it's not specified. This
-  // value is used only if the aspect ratio is not specified in the bitstream.
-  float container_pixel_aspect_ratio_ = 1.0;
+  // Aspect ratio specified in container.
+  VideoAspectRatio container_aspect_ratio_;
 
   std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
 
@@ -362,7 +362,7 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
-  container_pixel_aspect_ratio_ = config.GetPixelAspectRatio();
+  container_aspect_ratio_ = config.aspect_ratio();
 
   // Keep decoder and decryptor if the configuration hasn't changed.
   if (decoder_ && current_config_.is_encrypted() == config.codec() &&
@@ -646,13 +646,11 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   auto display_rect = gfx::Rect(output_format_.primary_display_width_pixels,
                                 output_format_.primary_display_height_pixels);
 
-  float pixel_aspect_ratio;
-  if (output_format_.has_pixel_aspect_ratio) {
-    pixel_aspect_ratio =
-        static_cast<float>(output_format_.pixel_aspect_ratio_width) /
-        static_cast<float>(output_format_.pixel_aspect_ratio_height);
-  } else {
-    pixel_aspect_ratio = container_pixel_aspect_ratio_;
+  VideoAspectRatio aspect_ratio = container_aspect_ratio_;
+  if (!aspect_ratio.IsValid() && output_format_.has_pixel_aspect_ratio) {
+    aspect_ratio =
+        VideoAspectRatio::PAR(output_format_.pixel_aspect_ratio_width,
+                              output_format_.pixel_aspect_ratio_height);
   }
 
   auto timestamp = output_packet.timestamp();
@@ -670,7 +668,7 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
 
   auto frame = output_mailboxes_[buffer_index]->CreateFrame(
       pixel_format, coded_size, display_rect,
-      GetNaturalSize(display_rect, pixel_aspect_ratio), timestamp,
+      aspect_ratio.GetNaturalSize(display_rect), timestamp,
       base::BindOnce(&FuchsiaVideoDecoder::ReleaseOutputPacket,
                      base::Unretained(this), std::move(output_packet)));
 

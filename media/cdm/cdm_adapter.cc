@@ -525,7 +525,7 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
     return;
   }
 
-  pixel_aspect_ratio_ = config.GetPixelAspectRatio();
+  aspect_ratio_ = config.aspect_ratio();
   is_video_encrypted_ = config.is_encrypted();
 
   if (status == cdm::kDeferredInitialization) {
@@ -605,7 +605,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
 
   gfx::Rect visible_rect(video_frame->Size().width, video_frame->Size().height);
   scoped_refptr<VideoFrame> decoded_frame = video_frame->TransformToVideoFrame(
-      GetNaturalSize(visible_rect, pixel_aspect_ratio_));
+      aspect_ratio_.GetNaturalSize(visible_rect));
   if (!decoded_frame) {
     DLOG(ERROR) << __func__ << ": TransformToVideoFrame failed.";
     std::move(video_decode_cb).Run(Decryptor::kError, nullptr);
@@ -640,7 +640,7 @@ void CdmAdapter::DeinitializeDecoder(StreamType stream_type) {
       audio_channel_layout_ = CHANNEL_LAYOUT_NONE;
       break;
     case Decryptor::kVideo:
-      pixel_aspect_ratio_ = 0.0;
+      aspect_ratio_ = VideoAspectRatio();
       break;
   }
 }

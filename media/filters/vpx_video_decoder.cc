@@ -24,7 +24,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
-#include "media/base/video_util.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/filters/frame_buffer_pool.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
@@ -547,7 +547,7 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
   // vpx_video_decoder inconsistent with decoders where changes to
   // pixel aspect ratio are not surfaced (e.g. Android MediaCodec).
   const gfx::Size natural_size =
-      GetNaturalSize(gfx::Rect(visible_size), config_.GetPixelAspectRatio());
+      config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size));
 
   if (memory_pool_) {
     DCHECK_EQ(kCodecVP9, config_.codec());

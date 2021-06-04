@@ -25,6 +25,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -172,8 +173,8 @@ class VaapiVideoDecoder : public DecoderInterface,
   VideoColorSpace color_space_;
   absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
-  // Ratio of natural size to |visible_rect_| of the output frames.
-  double pixel_aspect_ratio_ = 0.0;
+  // Aspect ratio from the config.
+  VideoAspectRatio aspect_ratio_;
 
   // Video frame pool used to allocate and recycle video frames.
   DmabufVideoFramePool* frame_pool_ = nullptr;

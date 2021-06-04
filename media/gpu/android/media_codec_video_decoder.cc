@@ -27,10 +27,10 @@
 #include "media/base/scoped_async_trace.h"
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_util.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
 #include "media/gpu/android/codec_allocator.h"
 #include "media/media_buildflags.h"
@@ -980,7 +980,7 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   }
   video_frame_factory_->CreateVideoFrame(
       std::move(output_buffer), presentation_time,
-      GetNaturalSize(visible_rect, decoder_config_.GetPixelAspectRatio()),
+      decoder_config_.aspect_ratio().GetNaturalSize(visible_rect),
       CreatePromotionHintCB(),
       base::BindOnce(&MediaCodecVideoDecoder::ForwardVideoFrame,
                      weak_factory_.GetWeakPtr(), reset_generation_,

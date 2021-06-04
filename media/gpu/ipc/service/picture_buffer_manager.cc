@@ -15,7 +15,6 @@
 #include "base/thread_annotations.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
-#include "media/base/video_util.h"
 
 namespace media {
 
@@ -219,10 +218,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       DLOG(WARNING) << "visible_rect " << visible_rect.ToString()
                     << " exceeds coded_size "
                     << picture_buffer_data.texture_size.ToString();
-      double pixel_aspect_ratio =
-          GetPixelAspectRatio(visible_rect, natural_size);
       visible_rect.Intersect(gfx::Rect(picture_buffer_data.texture_size));
-      natural_size = GetNaturalSize(visible_rect, pixel_aspect_ratio);
     }
 
     // Record the output.

@@ -173,7 +173,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(!output_queue_);
 
   profile_ = config.profile();
-  pixel_aspect_ratio_ = config.GetPixelAspectRatio();
+  aspect_ratio_ = config.aspect_ratio();
 
   if (profile_ == VIDEO_CODEC_PROFILE_UNKNOWN) {
     VLOGF(1) << "Unknown profile.";
@@ -376,7 +376,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   if (pool) {
     absl::optional<GpuBufferLayout> layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
-        GetNaturalSize(visible_rect, pixel_aspect_ratio_), num_output_frames_,
+        aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,
         /*use_protected=*/false);
     if (!layout) {
       VLOGF(1) << "Failed to setup format to VFPool";
@@ -683,7 +683,7 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
 
   if (frame->visible_rect() != visible_rect ||
       frame->timestamp() != timestamp) {
-    gfx::Size natural_size = GetNaturalSize(visible_rect, pixel_aspect_ratio_);
+    gfx::Size natural_size = aspect_ratio_.GetNaturalSize(visible_rect);
     scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
         frame, frame->format(), visible_rect, natural_size);
     wrapped_frame->set_timestamp(timestamp);

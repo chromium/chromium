@@ -23,6 +23,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -825,8 +826,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     visible_rect = config_.visible_rect();
 
   // TODO(https://crbug.com/843150): Use aspect ratio from decoder (SPS) if
-  // stream metadata doesn't overrride it.
-  double pixel_aspect_ratio = config_.GetPixelAspectRatio();
+  // the config's aspect ratio isn't valid.
+  gfx::Size natural_size = config_.aspect_ratio().GetNaturalSize(visible_rect);
 
   base::TimeDelta timestamp = picture_buffer->timestamp_;
 
@@ -843,7 +844,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
       texture_selector_->PixelFormat(), mailbox_holders,
       VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-      GetNaturalSize(visible_rect, pixel_aspect_ratio), timestamp);
+      natural_size, timestamp);
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of

@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame_pool.h"
 #include "media/filters/offloading_video_decoder.h"
@@ -73,7 +74,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
 
   // Info configured in Initialize(). These are used in outputting frames.
   VideoColorSpace color_space_;
-  double pixel_aspect_ratio_;
+  VideoAspectRatio aspect_ratio_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 

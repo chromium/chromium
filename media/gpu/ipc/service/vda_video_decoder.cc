@@ -23,6 +23,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -635,7 +636,7 @@ void VdaVideoDecoder::PictureReadyOnParentThread(Picture picture) {
   // Create a VideoFrame for the picture.
   scoped_refptr<VideoFrame> frame = picture_buffer_manager_->CreateVideoFrame(
       picture, timestamp, visible_rect,
-      GetNaturalSize(visible_rect, config_.GetPixelAspectRatio()));
+      config_.aspect_ratio().GetNaturalSize(visible_rect));
   if (!frame) {
     EnterErrorState();
     return;
