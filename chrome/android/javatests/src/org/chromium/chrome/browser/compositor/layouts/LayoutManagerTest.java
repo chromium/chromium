@@ -49,6 +49,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
@@ -498,6 +499,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = N_MR1, message = "crbug.com/1139943")
     @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
+    @DisabledTest(message = "crbug.com/1216438") // Failures on N.
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
     public void testLayoutObserverNotification_ShowAndHide_TabSwitcher() throws TimeoutException {
         LayoutObserverCallbackHelper startedShowingCallback = new LayoutObserverCallbackHelper();
