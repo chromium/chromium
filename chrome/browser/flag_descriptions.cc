@@ -4444,6 +4444,10 @@ const char kFiltersInRecentsDescription[] =
     "Enable file-type filters (Audio, Images, Videos) in Files App Recents "
     "view.";
 
+const char kFocusFollowsCursorName[] = "Focus follows cursor";
+const char kFocusFollowsCursorDescription[] =
+    "Enable window focusing by moving the cursor.";
+
 const char kFrameThrottleFpsName[] = "Set frame throttling fps.";
 const char kFrameThrottleFpsDescription[] =
     "Set the throttle fps for compositor frame submission.";

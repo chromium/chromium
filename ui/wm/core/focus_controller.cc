@@ -10,6 +10,7 @@
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/focus_rules.h"
 #include "ui/wm/core/window_util.h"
@@ -37,7 +38,10 @@ void StackTransientParentsBelowModalWindow(aura::Window* window) {
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, public:
 
-FocusController::FocusController(FocusRules* rules) : rules_(rules) {
+FocusController::FocusController(FocusRules* rules)
+    : rules_(rules),
+      focus_follows_cursor_(
+          base::FeatureList::IsEnabled(features::kFocusFollowsCursor)) {
   DCHECK(rules);
 }
 
@@ -95,7 +99,8 @@ void FocusController::RemoveObserver(
 
 void FocusController::FocusWindow(aura::Window* window) {
   FocusAndActivateWindow(
-      ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT, window);
+      ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT, window,
+      /*no_stacking=*/false);
 }
 
 void FocusController::ResetFocusWithinActiveWindow(aura::Window* window) {
@@ -116,7 +121,9 @@ aura::Window* FocusController::GetFocusedWindow() {
 void FocusController::OnKeyEvent(ui::KeyEvent* event) {}
 
 void FocusController::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED && !event->handled())
+  if ((event->type() == ui::ET_MOUSE_PRESSED ||
+       (event->type() == ui::ET_MOUSE_ENTERED && focus_follows_cursor_)) &&
+      !event->handled())
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
 }
@@ -185,10 +192,13 @@ void FocusController::OnWindowHierarchyChanged(
 
 void FocusController::FocusAndActivateWindow(
     ActivationChangeObserver::ActivationReason reason,
-    aura::Window* window) {
+    aura::Window* window,
+    bool no_stacking) {
   if (window &&
       (window->Contains(focused_window_) || window->Contains(active_window_))) {
-    StackActiveWindow();
+    if (!no_stacking) {
+      StackActiveWindow();
+    }
     return;
   }
 
@@ -215,7 +225,7 @@ void FocusController::FocusAndActivateWindow(
       focusable = nullptr;
     }
 
-    if (!SetActiveWindow(reason, window, activatable))
+    if (!SetActiveWindow(reason, window, activatable, no_stacking))
       return;
 
     if (!focusable_window_tracker.windows().empty())
@@ -302,7 +312,8 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
 bool FocusController::SetActiveWindow(
     ActivationChangeObserver::ActivationReason reason,
     aura::Window* requested_window,
-    aura::Window* window) {
+    aura::Window* window,
+    bool no_stacking) {
   if (pending_activation_)
     return false;
 
@@ -346,7 +357,7 @@ bool FocusController::SetActiveWindow(
 
   active_window_ = window;
 
-  if (active_window_)
+  if (active_window_ && !no_stacking)
     StackActiveWindow();
 
   MAYBE_ACTIVATION_INTERRUPTED();
@@ -423,7 +434,8 @@ void FocusController::WindowLostFocusFromDispositionChange(aura::Window* window,
     aura::Window* next_activatable = rules_->GetNextActivatableWindow(window);
     if (!SetActiveWindow(ActivationChangeObserver::ActivationReason::
                              WINDOW_DISPOSITION_CHANGED,
-                         nullptr, next_activatable)) {
+                         nullptr, next_activatable,
+                         /*no_stacking=*/false)) {
       return;
     }
 
@@ -453,7 +465,8 @@ void FocusController::WindowFocusedFromInputEvent(aura::Window* window,
   // currently focused one.
   if (rules_->CanFocusWindow(GetToplevelWindow(window), event)) {
     FocusAndActivateWindow(
-        ActivationChangeObserver::ActivationReason::INPUT_EVENT, window);
+        ActivationChangeObserver::ActivationReason::INPUT_EVENT, window,
+        event->type() == ui::ET_MOUSE_ENTERED);
   }
 }
 

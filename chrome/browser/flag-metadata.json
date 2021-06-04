@@ -2894,6 +2894,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "focus-follows-cursor",
+    "owners": [ "dandersson", "tclaiborne" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "focus-mode",
     "owners": [ "dfried", "pbos" ],
     "expiry_milestone": 82

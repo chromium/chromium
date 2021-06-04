@@ -147,8 +147,11 @@ const base::Feature kElasticOverscroll = {"ElasticOverscroll",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN) || defined(OS_ANDROID)
 
-#if defined(OS_WIN)
+// Enables focus follow follow cursor (sloppyfocus).
+const base::Feature kFocusFollowsCursor = {"FocusFollowsCursor",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_WIN)
 // Enables InputPane API for controlling on screen keyboard.
 const base::Feature kInputPaneOnScreenKeyboard = {
     "InputPaneOnScreenKeyboard", base::FEATURE_ENABLED_BY_DEFAULT};

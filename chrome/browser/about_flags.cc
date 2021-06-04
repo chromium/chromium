@@ -7199,6 +7199,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsLinux | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
+     flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(::features::kFocusFollowsCursor)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

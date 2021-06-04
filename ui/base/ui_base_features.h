@@ -21,6 +21,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCompositorThreadedScrollbarScrolling;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kExperimentalFlingAnimation;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kFocusFollowsCursor;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kSettingsShowsPerKeyboardSettings;

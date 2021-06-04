@@ -2572,6 +2572,9 @@ extern const char kFilesZipUnpackDescription[];
 extern const char kFiltersInRecentsName[];
 extern const char kFiltersInRecentsDescription[];
 
+extern const char kFocusFollowsCursorName[];
+extern const char kFocusFollowsCursorDescription[];
+
 extern const char kFrameThrottleFpsName[];
 extern const char kFrameThrottleFpsDescription[];
 extern const char kFrameThrottleFpsDefault[];
