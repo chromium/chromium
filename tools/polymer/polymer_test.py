@@ -46,7 +46,7 @@ class PolymerModulizerTest(unittest.TestCase):
     actual_js = self._read_out_file(js_out_file)
     expected_js = open(os.path.join(
         _HERE_DIR, 'tests', js_file_expected), 'rb').read()
-    self.assertEquals(expected_js.split('\n'), actual_js.split('\n'))
+    self.assertEqual(expected_js.split(b'\n'), actual_js.split(b'\n'))
 
   # Test case where HTML is extracted from a Polymer2 <dom-module>.
   def testDomModule(self):
@@ -178,7 +178,7 @@ class PolymerModulizerTest(unittest.TestCase):
 
     def assert_html_to_js(html, expected_js):
       actual_js = polymer.Dependency(src, html).to_js_import(auto_imports)
-      self.assertEquals(expected_js, actual_js)
+      self.assertEqual(expected_js, actual_js)
 
     cases = [
         # Relative paths cases.
