@@ -77,6 +77,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -177,6 +178,10 @@ public class MainSettingsFragmentTest {
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
+        // Waiting for sync to become active might take some time, so the scrollbar on the settings
+        // view starts to fade, making the test flaky due to differences in the rendered image.
+        // Sanitize the view to hide scrollbars (see https://crbug.com/1204117 for details).
+        RenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
 

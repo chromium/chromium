@@ -234,6 +234,8 @@ public class RenderTestRule extends TestWatcher {
                 ((AnimatedVectorDrawableCompat) drawable).stop();
             }
         }
+        // Scrollbars fade slowly, making tests flaky due to differences in rendered images.
+        view.setVerticalScrollBarEnabled(false);
     }
 
     /**
