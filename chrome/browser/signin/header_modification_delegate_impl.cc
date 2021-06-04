@@ -81,12 +81,11 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       identity_manager->GetPrimaryAccountInfo(consent_level);
   absl::optional<bool> is_child_account = absl::nullopt;
   if (!account.IsEmpty()) {
-    absl::optional<AccountInfo> extended_account_info =
-        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-            account);
-    if (extended_account_info.has_value()) {
-      is_child_account = absl::make_optional<bool>(
-          extended_account_info.value().is_child_account);
+    AccountInfo extended_account_info =
+        identity_manager->FindExtendedAccountInfo(account);
+    if (!extended_account_info.IsEmpty()) {
+      is_child_account =
+          absl::make_optional<bool>(extended_account_info.is_child_account);
     }
   }
 

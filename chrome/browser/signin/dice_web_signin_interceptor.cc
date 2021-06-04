@@ -70,12 +70,11 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   if (primary_core_account_info.IsEmpty())
     return AccountInfo();
 
-  absl::optional<AccountInfo> primary_account_info =
-      manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          primary_core_account_info);
+  AccountInfo primary_account_info =
+      manager->FindExtendedAccountInfo(primary_core_account_info);
 
-  if (primary_account_info)
-    return *primary_account_info;
+  if (!primary_account_info.IsEmpty())
+    return primary_account_info;
 
   // Return an AccountInfo without extended fields, based on the core info.
   AccountInfo account_info;
@@ -260,14 +259,12 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     return;
   }
 
-  absl::optional<AccountInfo> account_info =
-      identity_manager_
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
-  DCHECK(account_info) << "Intercepting unknown account.";
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  DCHECK(!account_info.IsEmpty()) << "Intercepting unknown account.";
   const ProfileAttributesEntry* entry = nullptr;
   absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
-      GetHeuristicOutcome(is_new_account, is_sync_signin, account_info->email,
+      GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
                           &entry);
   account_id_ = account_id;
   is_interception_in_progress_ = true;
@@ -279,14 +276,14 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch) {
       DCHECK(entry);
       Delegate::BubbleParameters bubble_parameters{
-          SigninInterceptionType::kProfileSwitch, *account_info,
+          SigninInterceptionType::kProfileSwitch, account_info,
           GetPrimaryAccountInfo(identity_manager_),
           entry->GetProfileThemeColors().profile_highlight_color,
           /*show_guest_option=*/false};
       interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
           web_contents, bubble_parameters,
           base::BindOnce(&DiceWebSigninInterceptor::OnProfileSwitchChoice,
-                         base::Unretained(this), account_info->email,
+                         base::Unretained(this), account_info.email,
                          entry->GetPath()));
       was_interception_ui_displayed_ = true;
     } else {
@@ -298,8 +295,8 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   }
 
   account_info_fetch_start_time_ = base::TimeTicks::Now();
-  if (account_info->IsValid()) {
-    OnExtendedAccountInfoUpdated(*account_info);
+  if (account_info.IsValid()) {
+    OnExtendedAccountInfoUpdated(account_info);
   } else {
     on_account_info_update_timeout_.Reset(base::BindOnce(
         &DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout,
@@ -382,11 +379,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
   if (intercepted_account_info.IsManaged())
     return true;
 
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          primary_core_account_info);
-
-  return primary_account_info && primary_account_info->IsManaged();
+  return identity_manager_->FindExtendedAccountInfo(primary_core_account_info)
+      .IsManaged();
 }
 
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(

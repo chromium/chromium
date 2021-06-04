@@ -256,12 +256,9 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(1, reconcilor_unblocked_count_);
   // Check that the AccountInfo::is_under_advanced_protection is set.
-  EXPECT_TRUE(
-      identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id)
-          .value()
-          .is_under_advanced_protection);
+  EXPECT_TRUE(identity_manager()
+                  ->FindExtendedAccountInfoByAccountId(account_id)
+                  .is_under_advanced_protection);
 }
 
 // Checks that the account reconcilor is blocked when where was OAuth
@@ -360,12 +357,9 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Check that the AccountInfo::is_under_advanced_protection is set.
-  EXPECT_TRUE(
-      identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id_2)
-          .value()
-          .is_under_advanced_protection);
+  EXPECT_TRUE(identity_manager()
+                  ->FindExtendedAccountInfoByAccountId(account_id_2)
+                  .is_under_advanced_protection);
   task_environment_.FastForwardBy(
       base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours + 1));
   // Check that the reconcilor was unblocked.
@@ -460,12 +454,9 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
       false /* is_advanced_protection*/));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_FALSE(
-      identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id)
-          .value()
-          .is_under_advanced_protection);
+  EXPECT_FALSE(identity_manager()
+                   ->FindExtendedAccountInfoByAccountId(account_id)
+                   .is_under_advanced_protection);
 }
 
 // Checks that two SIGNIN requests can happen concurrently.
@@ -501,24 +492,18 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
       true /* is_advanced_protection*/));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_1));
-  EXPECT_TRUE(
-      identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id_1)
-          .value()
-          .is_under_advanced_protection);
+  EXPECT_TRUE(identity_manager()
+                  ->FindExtendedAccountInfoByAccountId(account_id_1)
+                  .is_under_advanced_protection);
   // Simulate GaiaAuthFetcher success for the second request.
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
       "refresh_token", "access_token", 10, false /* is_child_account */,
       false /* is_advanced_protection*/));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_2));
-  EXPECT_FALSE(
-      identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id_2)
-          .value()
-          .is_under_advanced_protection);
+  EXPECT_FALSE(identity_manager()
+                   ->FindExtendedAccountInfoByAccountId(account_id_2)
+                   .is_under_advanced_protection);
   // Check that the reconcilor was blocked and unblocked exactly once.
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(1, reconcilor_unblocked_count_);

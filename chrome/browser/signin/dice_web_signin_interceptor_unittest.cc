@@ -265,9 +265,8 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   // The primary account does not have full account info (empty domain).
   ASSERT_TRUE(identity_test_env()
                   ->identity_manager()
-                  ->FindExtendedAccountInfoForAccountWithRefreshToken(
-                      primary_account_info)
-                  ->hosted_domain.empty());
+                  ->FindExtendedAccountInfo(primary_account_info)
+                  .hosted_domain.empty());
   EXPECT_FALSE(interceptor()->ShouldShowEnterpriseBubble(account_info));
   account_info.hosted_domain = "example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
@@ -711,12 +710,10 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterceptionWithOneAccount) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   // Interception aborts even if the account info is not available.
-  ASSERT_FALSE(
-      identity_test_env()
-          ->identity_manager()
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_info.account_id)
-          ->IsValid());
+  ASSERT_FALSE(identity_test_env()
+                   ->identity_manager()
+                   ->FindExtendedAccountInfoByAccountId(account_info.account_id)
+                   .IsValid());
   TestSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kAbortSingleAccount);

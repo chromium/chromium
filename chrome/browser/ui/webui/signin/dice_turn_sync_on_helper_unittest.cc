@@ -317,12 +317,11 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     user_policy_signin_service_->set_account(account_id_, kEnterpriseEmail);
 
     // Update the account info to have a consistent hosted domain field.
-    absl::optional<AccountInfo> account_info =
-        identity_manager()->FindExtendedAccountInfoForAccountWithRefreshToken(
-            core_account_info);
-    EXPECT_TRUE(account_info);
-    account_info->hosted_domain = kEnterpriseHostedDomain;
-    signin::UpdateAccountInfoForAccount(identity_manager(), *account_info);
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfo(core_account_info);
+    EXPECT_FALSE(account_info.IsEmpty());
+    account_info.hosted_domain = kEnterpriseHostedDomain;
+    signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
   }
 
   void UseInvalidAccount() { account_id_ = CoreAccountId("invalid_account"); }

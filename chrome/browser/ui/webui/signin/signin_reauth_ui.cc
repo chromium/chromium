@@ -47,13 +47,11 @@ std::string GetAccountImageURL(Profile* profile) {
   // Sync shouldn't be enabled. Otherwise, the primary account and the first
   // cookie account may diverge.
   DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  absl::optional<AccountInfo> account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 
-  return account_info && !account_info->account_image.IsEmpty()
-             ? webui::GetBitmapDataUrl(account_info->account_image.AsBitmap())
+  return !account_info.account_image.IsEmpty()
+             ? webui::GetBitmapDataUrl(account_info.account_image.AsBitmap())
              : profiles::GetPlaceholderAvatarIconUrl();
 }
 

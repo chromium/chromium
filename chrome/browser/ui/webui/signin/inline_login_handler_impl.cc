@@ -239,13 +239,12 @@ void OnSyncSetupComplete(Profile* profile,
   if (has_primary_account && is_force_sign_in_with_usermanager) {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-    absl::optional<AccountInfo> primary_account_info =
-        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-            primary_account);
+    AccountInfo primary_account_info =
+        identity_manager->FindExtendedAccountInfo(primary_account);
     std::u16string profile_name;
-    if (primary_account_info.has_value()) {
+    if (!primary_account_info.IsEmpty()) {
       profile_name =
-          profiles::GetDefaultNameForNewSignedInProfile(*primary_account_info);
+          profiles::GetDefaultNameForNewSignedInProfile(primary_account_info);
     } else {
       profile_name =
           profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(

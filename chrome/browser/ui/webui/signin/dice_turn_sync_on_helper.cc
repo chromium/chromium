@@ -87,16 +87,6 @@ class DiceTurnSyncOnHelperShutdownNotifierFactory
   DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperShutdownNotifierFactory);
 };
 
-AccountInfo GetAccountInfo(signin::IdentityManager* identity_manager,
-                           const CoreAccountId& account_id) {
-  auto maybe_account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
-  return maybe_account_info.has_value() ? maybe_account_info.value()
-                                        : AccountInfo();
-}
-
 // User input handler for the signin confirmation dialog.
 class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
  public:
@@ -209,7 +199,8 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
       signin_promo_action_(signin_promo_action),
       signin_reason_(signin_reason),
       signin_aborted_mode_(signin_aborted_mode),
-      account_info_(GetAccountInfo(identity_manager_, account_id)),
+      account_info_(
+          identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
       shutdown_subscription_(
           DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()

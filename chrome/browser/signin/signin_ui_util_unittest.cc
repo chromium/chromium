@@ -260,10 +260,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
                      "Signin_Signin_FromBookmarkBubble"));
 
     EnableSync(
-        GetIdentityManager()
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                account_id)
-            .value(),
+        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
     signin_metrics::PromoAction expected_promo_action =
         is_default_promo_account
@@ -320,10 +317,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
                      "Signin_Signin_FromBookmarkBubble"));
 
     EnableSync(
-        GetIdentityManager()
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                account_id)
-            .value(),
+        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
     ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
 

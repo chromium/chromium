@@ -339,15 +339,14 @@ std::u16string GetShortProfileIdentityToDisplay(
   if (core_info.IsEmpty())
     return profile_attributes_entry.GetName();
 
-  absl::optional<AccountInfo> extended_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              core_info.account_id);
+  AccountInfo extended_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          core_info.account_id);
   // If there's no given name available, return the user email.
-  if (!extended_info.has_value() || extended_info->given_name.empty())
+  if (extended_info.given_name.empty())
     return base::UTF8ToUTF16(core_info.email);
 
-  return base::UTF8ToUTF16(extended_info->given_name);
+  return base::UTF8ToUTF16(extended_info.given_name);
 }
 
 std::string GetAllowedDomain(std::string signin_pattern) {

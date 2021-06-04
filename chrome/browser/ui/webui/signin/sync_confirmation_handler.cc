@@ -106,16 +106,15 @@ void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
 void SyncConfirmationHandler::HandleAccountInfoRequest(
     const base::ListValue* args) {
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   // Fire the "account-info-changed" listener from |SetAccountInfo()|.
   // Note: If the account info is not available yet in the
   // IdentityManager, i.e. account_info is empty, the listener will be
   // fired again through |OnAccountUpdated()|.
-  if (primary_account_info && primary_account_info->IsValid())
-    SetAccountInfo(*primary_account_info);
+  if (primary_account_info.IsValid())
+    SetAccountInfo(primary_account_info);
 }
 
 void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
@@ -217,19 +216,18 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     const base::ListValue* args) {
   AllowJavascript();
 
-  absl::optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
-  if (!primary_account_info) {
+  AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  if (primary_account_info.IsEmpty()) {
     // No account is signed in, so there is nothing to be displayed in the sync
     // confirmation dialog.
     return;
   }
 
-  if (!primary_account_info->IsValid()) {
+  if (!primary_account_info.IsValid()) {
     identity_manager_->AddObserver(this);
   } else {
-    SetAccountInfo(*primary_account_info);
+    SetAccountInfo(primary_account_info);
   }
 
   if (browser_)

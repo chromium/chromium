@@ -70,18 +70,18 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       return absl::nullopt;
     }
 
-    absl::optional<AccountInfo> account_info =
-        identity_manager_
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                cookie_accounts[0].id);
+    AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfoByAccountId(
+            cookie_accounts[0].id);
 
     // Verify the first account in cookies has a refresh token that is valid.
     bool error_state =
-        !account_info.has_value() ||
+        account_info.IsEmpty() ||
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account_info->account_id);
+            account_info.account_id);
 
-    return error_state ? absl::nullopt : account_info;
+    return error_state ? absl::nullopt
+                       : absl::make_optional<CoreAccountInfo>(account_info);
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))

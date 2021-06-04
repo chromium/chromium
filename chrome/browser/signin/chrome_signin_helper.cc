@@ -296,15 +296,14 @@ void ProcessMirrorHeader(
     // invalid, so that if/when this account is re-authenticated, we can force a
     // reconciliation for this account instead of treating it as a no-op.
     // See https://crbug.com/1012649 for details.
-    absl::optional<AccountInfo> maybe_account_info =
-        identity_manager
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                manage_accounts_params.email);
-    if (maybe_account_info.has_value()) {
+    AccountInfo maybe_account_info =
+        identity_manager->FindExtendedAccountInfoByEmailAddress(
+            manage_accounts_params.email);
+    if (!maybe_account_info.IsEmpty()) {
       CookieReminter* const cookie_reminter =
           CookieReminterFactory::GetForProfile(profile);
       cookie_reminter->ForceCookieRemintingOnNextTokenUpdate(
-          maybe_account_info.value());
+          maybe_account_info);
     }
 
     // Display a re-authentication dialog.

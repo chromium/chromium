@@ -394,11 +394,11 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
   const std::string& gaia_id = token_fetcher->gaia_id();
   VLOG(1) << "[Dice] OAuth success for email " << email;
   bool should_enable_sync = token_fetcher->should_enable_sync();
+  CoreAccountId account_id =
+      identity_manager_->PickAccountIdForAccount(gaia_id, email);
   bool is_new_account =
-      !identity_manager_
-           ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id);
-  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-  CoreAccountId account_id = accounts_mutator->AddOrUpdateAccount(
+      !identity_manager_->HasAccountWithRefreshToken(account_id);
+  identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);

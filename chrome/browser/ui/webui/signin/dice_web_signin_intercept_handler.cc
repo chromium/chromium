@@ -126,16 +126,13 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  absl::optional<AccountInfo> updated_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          intercepted_account());
-  if (updated_info)
-    bubble_parameters_.intercepted_account = updated_info.value();
-  updated_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          primary_account());
-  if (updated_info)
-    bubble_parameters_.primary_account = updated_info.value();
+  AccountInfo updated_info =
+      identity_manager->FindExtendedAccountInfo(intercepted_account());
+  if (!updated_info.IsEmpty())
+    bubble_parameters_.intercepted_account = updated_info;
+  updated_info = identity_manager->FindExtendedAccountInfo(primary_account());
+  if (!updated_info.IsEmpty())
+    bubble_parameters_.primary_account = updated_info;
 
   // If there is no extended info for the primary account, populate with
   // reasonable defaults.
