@@ -30,21 +30,26 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
 
   // Creates a cursor that doesn't need backing bitmaps (for example, a
   // server-side cursor for Lacros).
-  explicit BitmapCursorOzone(mojom::CursorType type);
+  explicit BitmapCursorOzone(mojom::CursorType type,
+                             float cursor_image_scale_factor);
 
   // Creates a cursor with a single backing bitmap.
   BitmapCursorOzone(mojom::CursorType type,
                     const SkBitmap& bitmap,
-                    const gfx::Point& hotspot);
+                    const gfx::Point& hotspot,
+                    float cursor_image_scale_factor);
 
   // Creates a cursor with multiple bitmaps for animation.
   BitmapCursorOzone(mojom::CursorType type,
                     const std::vector<SkBitmap>& bitmaps,
                     const gfx::Point& hotspot,
-                    base::TimeDelta frame_delay);
+                    base::TimeDelta frame_delay,
+                    float cursor_image_scale_factor);
 
   // Creates a cursor with external storage.
-  BitmapCursorOzone(mojom::CursorType type, void* platform_data);
+  BitmapCursorOzone(mojom::CursorType type,
+                    void* platform_data,
+                    float cursor_image_scale_factor);
 
   mojom::CursorType type() const { return type_; }
   const gfx::Point& hotspot();
@@ -56,6 +61,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
 
   // For theme cursors.
   void* platform_data() { return platform_data_; }
+
+  float cursor_image_scale_factor() const { return cursor_image_scale_factor_; }
 
  private:
   friend class base::RefCounted<PlatformCursor>;
@@ -69,6 +76,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   // Platform cursor data.  Having this non-nullptr means that this cursor
   // is supplied by the platform.
   void* const platform_data_ = nullptr;
+
+  float cursor_image_scale_factor_ = 1.f;
 
   DISALLOW_COPY_AND_ASSIGN(BitmapCursorOzone);
 };
@@ -95,10 +104,12 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
       base::TimeDelta frame_delay) override;
+  void SetDeviceScaleFactor(float scale) override;
 
  private:
   std::map<mojom::CursorType, scoped_refptr<BitmapCursorOzone>>
       default_cursors_;
+  float cursor_scale_factor_ = 1.f;
 
   DISALLOW_COPY_AND_ASSIGN(BitmapCursorFactoryOzone);
 };

@@ -866,11 +866,15 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
   absl::optional<int32_t> shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
+  // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
+  // only integers.
   if (cursor->type() == CursorType::kNone) {  // Hide the cursor.
-    connection_->SetCursorBitmap({}, gfx::Point(), buffer_scale());
+    connection_->SetCursorBitmap(
+        {}, gfx::Point(), std::ceil(cursor->cursor_image_scale_factor()));
   } else if (cursor->platform_data()) {  // Check for theme-provided cursor.
     connection_->SetPlatformCursor(
-        reinterpret_cast<wl_cursor*>(cursor->platform_data()), buffer_scale());
+        reinterpret_cast<wl_cursor*>(cursor->platform_data()),
+        std::ceil(cursor->cursor_image_scale_factor()));
   } else if (connection_->zcr_cursor_shapes() &&
              shape.has_value()) {  // Check for Wayland server-side cursor
                                    // support (e.g. exo for lacros).
@@ -884,8 +888,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
     // Translate physical pixels to DIPs.
     gfx::Point hotspot_in_dips =
         gfx::ScaleToRoundedPoint(cursor->hotspot(), 1.0f / ui_scale_);
-    connection_->SetCursorBitmap(cursor->bitmaps(), hotspot_in_dips,
-                                 buffer_scale());
+    connection_->SetCursorBitmap(
+        cursor->bitmaps(), hotspot_in_dips,
+        std::ceil(cursor->cursor_image_scale_factor()));
   }
   // The new cursor needs to be stored last to avoid deleting the old cursor
   // while it's still in use.

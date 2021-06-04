@@ -58,7 +58,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
         continue;
 
       current_theme_->cache[type] =
-          base::MakeRefCounted<BitmapCursorOzone>(type, cursor);
+          base::MakeRefCounted<BitmapCursorOzone>(type, cursor, scale_);
       break;
     }
   }

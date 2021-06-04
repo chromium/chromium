@@ -86,6 +86,9 @@ class MockSurface : public ServerObject {
                            gfx::GpuFenceHandle release_fence);
   void SendFrameCallback();
 
+  int32_t buffer_scale() const { return buffer_scale_; }
+  void set_buffer_scale(int32_t buffer_scale) { buffer_scale_ = buffer_scale; }
+
  private:
   MockXdgSurface* xdg_surface_ = nullptr;
   TestSubSurface* sub_surface_ = nullptr;
@@ -98,6 +101,8 @@ class MockSurface : public ServerObject {
 
   wl_resource* attached_buffer_ = nullptr;
   wl_resource* prev_attached_buffer_ = nullptr;
+
+  int32_t buffer_scale_ = -1;
 
   DISALLOW_COPY_AND_ASSIGN(MockSurface);
 };

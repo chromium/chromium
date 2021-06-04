@@ -61,6 +61,8 @@ namespace ui {
 
 namespace {
 
+constexpr float kDefaultCursorScale = 1.f;
+
 struct PopupPosition {
   gfx::Rect anchor_rect;
   gfx::Size size;
@@ -1031,27 +1033,27 @@ TEST_P(WaylandWindowTest, SetCursorUsesZcrCursorShapesForCommonTypes) {
   // Verify some commonly-used cursors.
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_POINTER));
-  auto pointer_cursor =
-      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kPointer);
+  auto pointer_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+      mojom::CursorType::kPointer, kDefaultCursorScale);
   window_->SetCursor(pointer_cursor.get());
 
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_HAND));
-  auto hand_cursor =
-      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kHand);
+  auto hand_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+      mojom::CursorType::kHand, kDefaultCursorScale);
   window_->SetCursor(hand_cursor.get());
 
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_IBEAM));
-  auto ibeam_cursor =
-      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kIBeam);
+  auto ibeam_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+      mojom::CursorType::kIBeam, kDefaultCursorScale);
   window_->SetCursor(ibeam_cursor.get());
 }
 
 TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
   MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-  auto hand_cursor =
-      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kHand);
+  auto hand_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+      mojom::CursorType::kHand, kDefaultCursorScale);
   // Setting the same cursor twice on the client only calls the server once.
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(1);
   window_->SetCursor(hand_cursor.get());
@@ -1061,8 +1063,8 @@ TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
 TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForNoneCursor) {
   MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
-  auto none_cursor =
-      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kNone);
+  auto none_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+      mojom::CursorType::kNone, kDefaultCursorScale);
   window_->SetCursor(none_cursor.get());
 }
 
@@ -1072,7 +1074,8 @@ TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForCustomCursors) {
   // Custom cursors require bitmaps, so they do not use server-side cursors.
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
   auto custom_cursor = base::MakeRefCounted<BitmapCursorOzone>(
-      mojom::CursorType::kCustom, SkBitmap(), gfx::Point());
+      mojom::CursorType::kCustom, SkBitmap(), gfx::Point(),
+      kDefaultCursorScale);
   window_->SetCursor(custom_cursor.get());
 }
 

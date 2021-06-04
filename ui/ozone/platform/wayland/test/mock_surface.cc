@@ -61,7 +61,9 @@ void Commit(wl_client* client, wl_resource* resource) {
 }
 
 void SetBufferScale(wl_client* client, wl_resource* resource, int32_t scale) {
-  GetUserDataAs<MockSurface>(resource)->SetBufferScale(scale);
+  auto* mock_surface = GetUserDataAs<MockSurface>(resource);
+  mock_surface->SetBufferScale(scale);
+  mock_surface->set_buffer_scale(scale);
 }
 
 void DamageBuffer(struct wl_client* client,
