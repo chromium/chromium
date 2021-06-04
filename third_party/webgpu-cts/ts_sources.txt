@@ -74,6 +74,7 @@ src/webgpu/listing.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
+src/webgpu/api/operation/adapter/requestDevice.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
 src/webgpu/api/operation/buffers/map.spec.ts
 src/webgpu/api/operation/buffers/map_detach.spec.ts
