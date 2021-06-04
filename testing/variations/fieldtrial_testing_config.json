@@ -5782,6 +5782,27 @@
             ]
         }
     ],
+    "PageContentAnnotationsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "PageContentAnnotationsMemImproved_20210604",
+                    "params": {
+                        "allowed_field_trial_names": "PageContentAnnotationsAndroid",
+                        "write_to_history_service": "false"
+                    },
+                    "enable_features": [
+                        "LoadModelFileForEachExecution",
+                        "OptimizationHintsFieldTrials",
+                        "PageContentAnnotations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoDiscoverability": [
         {
             "platforms": [
