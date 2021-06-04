@@ -16,6 +16,27 @@ namespace {
 
 constexpr base::TimeDelta kMaxExpiry = base::TimeDelta::FromDays(30);
 
+// Check if `url` can be used as an interest group's ad render URL. Ad URLs can
+// be cross origin, unlike other interest group URLs, but are still restricted
+// to HTTPS with no reference or embedded credentials.
+bool IsUrlAllowedForRenderUrls(const GURL& url) {
+  if (url.scheme() != url::kHttpsScheme)
+    return false;
+
+  return !url.has_ref() && !url.has_username() && !url.has_password();
+}
+
+// Check if `url` can be used with the specified interest group for any of
+// script URL, update URL, or realtime data URL. Ad render URLs should be
+// checked with IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
+// check.
+bool IsUrlAllowed(const GURL& url, const blink::mojom::InterestGroup& group) {
+  if (url::Origin::Create(url) != group.owner)
+    return false;
+
+  return IsUrlAllowedForRenderUrls(url);
+}
+
 }  // namespace
 
 InterestGroupServiceImpl::InterestGroupServiceImpl(
@@ -51,27 +72,33 @@ void InterestGroupServiceImpl::JoinInterestGroup(
   // to devtools to get a better error debugging experience.
   if (origin().scheme() != url::kHttpsScheme)
     return;
+
   if (group->owner != origin())
     return;
-  if (group->bidding_url &&
-      url::Origin::Create(*group->bidding_url) != origin()) {
+
+  if (group->bidding_url && !IsUrlAllowed(*group->bidding_url, *group))
     return;
-  }
-  if (group->update_url &&
-      url::Origin::Create(*group->update_url) != origin()) {
+
+  if (group->update_url && !IsUrlAllowed(*group->update_url, *group))
     return;
+
+  if (group->trusted_bidding_signals_url) {
+    if (!IsUrlAllowed(*group->trusted_bidding_signals_url, *group))
+      return;
+
+    // `trusted_bidding_signals_url` must not have a query string, since the
+    // query parameter needs to be set as part of running an auction.
+    if (group->trusted_bidding_signals_url->has_query())
+      return;
   }
-  if (group->trusted_bidding_signals_url &&
-      url::Origin::Create(*group->trusted_bidding_signals_url) != origin()) {
-    return;
-  }
+
   if (group->ads) {
     for (const auto& ad : group->ads.value()) {
-      if (!ad->render_url.SchemeIs(url::kHttpsScheme)) {
+      if (!IsUrlAllowedForRenderUrls(ad->render_url))
         return;
-      }
     }
   }
+
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (group->expiry > max_expiry)
     group->expiry = max_expiry;
@@ -86,12 +113,12 @@ void InterestGroupServiceImpl::LeaveInterestGroup(const url::Origin& owner,
     return;
   }
 
-  if (origin().scheme() != url::kHttpsScheme) {
+  if (origin().scheme() != url::kHttpsScheme)
     return;
-  }
-  if (owner != origin()) {
+
+  if (owner != origin())
     return;
-  }
+
   interest_group_manager_.LeaveInterestGroup(owner, name);
 }
 
