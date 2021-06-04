@@ -160,7 +160,7 @@ chrome.test.runTests(function() {
       chrome.test.succeed();
     },
 
-    function testMultiplePdfZoomChanges() {
+    async function testMultiplePdfZoomChanges() {
       const viewport = new MockViewport();
       const browserZoomSetter = new MockBrowserZoomSetter();
       const zoomManager = ZoomManager.create(
@@ -174,12 +174,11 @@ chrome.test.runTests(function() {
       chrome.test.assertTrue(browserZoomSetter.started);
       chrome.test.assertEq(2, browserZoomSetter.zoom);
       browserZoomSetter.complete();
-      Promise.resolve().then(function() {
-        chrome.test.assertTrue(browserZoomSetter.started);
-        chrome.test.assertEq(3, browserZoomSetter.zoom);
-        viewport.removeListeners();
-        chrome.test.succeed();
-      });
+      await Promise.resolve();
+      chrome.test.assertTrue(browserZoomSetter.started);
+      chrome.test.assertEq(3, browserZoomSetter.zoom);
+      viewport.removeListeners();
+      chrome.test.succeed();
     },
 
     function testMultipleBrowserZoomChanges() {

@@ -142,17 +142,18 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testRotateButton() {
+  async function testRotateButton() {
     const toolbar = createToolbar();
     const rotateButton = getCrIconButtons(toolbar, 'center')[3];
     chrome.test.assertEq('pdf:rotate-left', rotateButton.ironIcon);
 
-    const promise = eventToPromise('rotate-left', toolbar);
+    const whenRotateLeft = eventToPromise('rotate-left', toolbar);
     rotateButton.click();
-    promise.then(() => chrome.test.succeed());
+    await whenRotateLeft;
+    chrome.test.succeed();
   },
 
-  function testZoomField() {
+  async function testZoomField() {
     const toolbar = createToolbar();
     toolbar.viewportZoom = .8;
     toolbar.zoomBounds = {min: 25, max: 500};
@@ -172,41 +173,35 @@ const tests = [
     const whenSent = eventToPromise('zoom-changed', toolbar);
     zoomField.value = '90000%';
     zoomField.dispatchEvent(new CustomEvent('change'));
-    whenSent
-        .then(e => {
-          chrome.test.assertEq(500, e.detail);
+    let event = await whenSent;
+    chrome.test.assertEq(500, event.detail);
 
-          // This happens in the parent.
-          toolbar.viewportZoom = 5;
-          chrome.test.assertEq('500%', zoomField.value);
+    // This happens in the parent.
+    toolbar.viewportZoom = 5;
+    chrome.test.assertEq('500%', zoomField.value);
 
-          // Setting a value that is over the maximum again restores the max
-          // value, even though no event is sent.
-          zoomField.value = '80000%';
-          zoomField.dispatchEvent(new CustomEvent('change'));
-          chrome.test.assertEq('500%', zoomField.value);
+    // Setting a value that is over the maximum again restores the max
+    // value, even though no event is sent.
+    zoomField.value = '80000%';
+    zoomField.dispatchEvent(new CustomEvent('change'));
+    chrome.test.assertEq('500%', zoomField.value);
 
-          // Setting a new value sends the value in a zoom-changed event.
-          const whenSentNew = eventToPromise('zoom-changed', toolbar);
-          zoomField.value = '110%';
-          zoomField.dispatchEvent(new CustomEvent('change'));
-          return whenSentNew;
-        })
-        .then(e => {
-          chrome.test.assertEq(110, e.detail);
+    // Setting a new value sends the value in a zoom-changed event.
+    const whenSentNew = eventToPromise('zoom-changed', toolbar);
+    zoomField.value = '110%';
+    zoomField.dispatchEvent(new CustomEvent('change'));
+    event = await whenSentNew;
+    chrome.test.assertEq(110, event.detail);
 
-          // Setting a new value and blurring sends the value in a zoom-changed
-          // event. If the value is below the minimum, this sends the minimum
-          // zoom.
-          const whenSentFromBlur = eventToPromise('zoom-changed', toolbar);
-          zoomField.value = '18%';
-          zoomField.dispatchEvent(new CustomEvent('blur'));
-          return whenSentFromBlur;
-        })
-        .then(e => {
-          chrome.test.assertEq(25, e.detail);
-          chrome.test.succeed();
-        });
+    // Setting a new value and blurring sends the value in a zoom-changed
+    // event. If the value is below the minimum, this sends the minimum
+    // zoom.
+    const whenSentFromBlur = eventToPromise('zoom-changed', toolbar);
+    zoomField.value = '18%';
+    zoomField.dispatchEvent(new CustomEvent('blur'));
+    event = await whenSentFromBlur;
+    chrome.test.assertEq(25, event.detail);
+    chrome.test.succeed();
   },
 
   // Test that the overflow menu closes when an action is triggered.
@@ -229,7 +224,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testTwoPageViewToggle() {
+  async function testTwoPageViewToggle() {
     const toolbar = createToolbar();
     toolbar.twoUpViewEnabled = false;
     const button = /** @type {!HTMLElement} */ (
@@ -238,26 +233,24 @@ const tests = [
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
     button.click();
-    whenChanged
-        .then(e => {
-          // Happens in the parent.
-          toolbar.twoUpViewEnabled = true;
-          chrome.test.assertEq(true, e.detail);
-          assertCheckboxMenuButton(button, true);
-          whenChanged = eventToPromise('two-up-view-changed', toolbar);
-          button.click();
-          return whenChanged;
-        })
-        .then(e => {
-          // Happens in the parent.
-          toolbar.twoUpViewEnabled = false;
-          chrome.test.assertEq(false, e.detail);
-          assertCheckboxMenuButton(button, false);
-          chrome.test.succeed();
-        });
+    let event = await whenChanged;
+
+    // Happens in the parent.
+    toolbar.twoUpViewEnabled = true;
+    chrome.test.assertEq(true, event.detail);
+    assertCheckboxMenuButton(button, true);
+    whenChanged = eventToPromise('two-up-view-changed', toolbar);
+    button.click();
+    event = await whenChanged;
+
+    // Happens in the parent.
+    toolbar.twoUpViewEnabled = false;
+    chrome.test.assertEq(false, event.detail);
+    assertCheckboxMenuButton(button, false);
+    chrome.test.succeed();
   },
 
-  function testShowAnnotationsToggle() {
+  async function testShowAnnotationsToggle() {
     const toolbar = createToolbar();
     const button = /** @type {!HTMLElement} */ (
         toolbar.shadowRoot.querySelector('#show-annotations-button'));
@@ -265,19 +258,17 @@ const tests = [
 
     let whenChanged = eventToPromise('display-annotations-changed', toolbar);
     button.click();
-    whenChanged
-        .then(e => {
-          chrome.test.assertEq(false, e.detail);
-          assertCheckboxMenuButton(button, false);
-          whenChanged = eventToPromise('display-annotations-changed', toolbar);
-          button.click();
-          return whenChanged;
-        })
-        .then(e => {
-          chrome.test.assertEq(true, e.detail);
-          assertCheckboxMenuButton(button, true);
-          chrome.test.succeed();
-        });
+    let event = await whenChanged;
+
+    chrome.test.assertEq(false, event.detail);
+    assertCheckboxMenuButton(button, false);
+    whenChanged = eventToPromise('display-annotations-changed', toolbar);
+    button.click();
+    event = await whenChanged;
+
+    chrome.test.assertEq(true, event.detail);
+    assertCheckboxMenuButton(button, true);
+    chrome.test.succeed();
   },
 
   function testSidenavToggleButton() {

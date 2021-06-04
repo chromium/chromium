@@ -165,7 +165,7 @@ chrome.test.runTests(function() {
       chrome.test.succeed();
     },
 
-    function testZoomWithWheel() {
+    async function testZoomWithWheel() {
       stubElement = new EventTarget();
       const gestureDetector = new GestureDetector(stubElement);
       const pinchListener = new PinchListener(gestureDetector);
@@ -203,7 +203,9 @@ chrome.test.runTests(function() {
       chrome.test.assertEq(
           {x: position.clientX, y: position.clientY}, detail.center);
 
-      pinchSequenceListener.endPromise.then(chrome.test.succeed);
+      await pinchSequenceListener.endPromise;
+
+      chrome.test.succeed();
     },
 
     function testIgnoreTouchScrolling() {

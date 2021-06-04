@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, RedirectsFailInPlugin) {
   RunTestsInJsModule("redirects_fail_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPdfToolbar) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerToolbar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_toolbar_test.js", "test.pdf");
