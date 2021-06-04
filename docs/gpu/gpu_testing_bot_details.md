@@ -46,7 +46,7 @@ to target the pool of Windows 10-like NVIDIA machines. (There are a few Windows
 7-like NVIDIA bots in the pool, which necessitates the OS specifier.)
 
 Details about the bots can be found on [chromium-swarm.appspot.com] and by
-using `src/tools/swarming_client/swarming.py`, for example `swarming.py bots`.
+using `src/tools/luci-go/swarming`, for example `swarming bots`.
 If you are authenticated with @google.com credentials you will be able to make
 queries of the bots and see, for example, which GPUs are available.
 
@@ -120,11 +120,8 @@ If `cd`'d into `src/`:
 
 1.  `./tools/mb/mb.py isolate //out/Release [target name]`
     *   For example: `./tools/mb/mb.py isolate //out/Release angle_end2end_tests`
-1.  `python tools/swarming_client/isolate.py batcharchive -I https://isolateserver.appspot.com out/Release/[target name].isolated.gen.json`
-    *   For example: `python tools/swarming_client/isolate.py batcharchive -I https://isolateserver.appspot.com out/Release/angle_end2end_tests.isolated.gen.json`
-1.  This will write a hash to stdout. You can run it via:
-    `python tools/swarming_client/run_isolated.py -I https://isolateserver.appspot.com -s [HASH] -- [any additional args for the isolate]`
-
+1.  `./tools/luci-go/isolate batcharchive -I https://isolateserver.appspot.com out/Release/[target name].isolated.gen.json`
+    *   For example: `./tools/luci-go/isolate batcharchive -I https://isolateserver.appspot.com out/Release/angle_end2end_tests.isolated.gen.json`
 See the section below on [isolate server credentials](#Isolate-server-credentials).
 
 ### Adding your new isolate to the tests that are run on the bots
@@ -212,7 +209,7 @@ In the [`chromium/src`][chromium/src] workspace:
     *   Definitions of how bots are organized on the waterfall,
         how builds are triggered, which VMs or machines are used for the
         builder itself, i.e. for compilation and scheduling swarmed tasks
-        on GPU hardware. See 
+        on GPU hardware. See
         [README.md](https://chromium.googlesource.com/chromium/src/+/main/infra/config/README.md)
         in this directory for up to date information.
 
@@ -331,7 +328,7 @@ The process is:
        GCEs from this small pool.
     1. Run [`main.star`][main.star] to regenerate
        `configs/chromium-swarm/bots.cfg` and `configs/gce-provider/vms.cfg`.
-       Double-check your work there.  
+       Double-check your work there.
        Note that previously [`vms.cfg`][vms.cfg] had to be edited manually.
        Part of the difficulty was in choosing a zone. This should soon no
        longer be necessary per [crbug.com/942301](http://crbug.com/942301),
@@ -341,7 +338,7 @@ The process is:
        [dashboard](https://viceroy.corp.google.com/chrome_infra/Quota/chrome?duration=7d).
     1. Get this reviewed and landed. This step associates the VM or pool of VMs
        with the bot's name on the waterfall for "builderful" bots or increases
-       swarmed pool capacity for "builderless" bots.  
+       swarmed pool capacity for "builderless" bots.
        Note: CR+1 is not sticky in this repo, so you'll have to ping for
        re-review after every change, like rebase.
 
@@ -369,7 +366,7 @@ Builder].
 
 1.  Work with the Chrome Infrastructure Labs team to get the (minimum 4)
     physical machines added to the Swarming pool. Use
-    [chromium-swarm.appspot.com] or `src/tools/swarming_client/swarming.py bots`
+    [chromium-swarm.appspot.com] or `src/tools/luci-go/swarming bots`
     to determine the PCI IDs of the GPUs in the bots. (These instructions will
     need to be updated for Android bots which don't have PCI buses.)
 
@@ -732,8 +729,7 @@ server, the swarming server, and cloud storage.
 To upload and download isolates you must first authenticate to the isolate
 server. From a Chromium checkout, run:
 
-*   `./src/tools/swarming_client/auth.py login
-    --service=https://isolateserver.appspot.com`
+*   `./src/tools/luci-go/isolate login`
 
 This will open a web browser to complete the authentication flow. A @google.com
 email address is required in order to properly authenticate.
@@ -743,14 +739,6 @@ instructions on [Running Binaries from the Bots Locally] to find a random hash
 from a target like `gl_tests`. Then run the following:
 
 [Running Binaries from the Bots Locally]: https://www.chromium.org/developers/testing/gpu-testing#TOC-Running-Binaries-from-the-Bots-Locally
-
-If authentication succeeded, this will silently download a file called
-`delete_me` into the current working directory. If it failed, the script will
-report multiple authentication errors. In this case, use the following command
-to log out and then try again:
-
-*   `./src/tools/swarming_client/auth.py logout
-    --service=https://isolateserver.appspot.com`
 
 ### Swarming server credentials
 

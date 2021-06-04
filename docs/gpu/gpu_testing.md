@@ -368,7 +368,7 @@ machine loosely matches the architecture and OS of the bot.
 The easiest way to do this is to find the ID of the swarming task and use
 "swarming.py reproduce" to re-run it:
 
-*   `./src/tools/swarming_client/swarming.py reproduce -S https://chromium-swarm.appspot.com [task ID]`
+*   `./src/tools/luci-go/swarming reproduce -S https://chromium-swarm.appspot.com [task ID]`
 
 The task ID can be found in the stdio for the "trigger" step for the test. For
 example, look at a recent build from the [Mac Release (Intel)] bot, and
@@ -405,8 +405,7 @@ Before attempting to download an isolate, you must ensure you have permission
 to access the isolate server. Full instructions can be [found
 here][isolate-server-credentials]. For most cases, you can simply run:
 
-*   `./src/tools/swarming_client/auth.py login
-    --service=https://isolateserver.appspot.com`
+*   `./src/tools/luci-go/isolate login`
 
 The above link requires that you log in with your @google.com credentials. It's
 not known at the present time whether this works with @chromium.org accounts.
@@ -420,7 +419,7 @@ See the [Swarming documentation] for instructions on how to upload your binaries
 
 Be sure to use the correct swarming dimensions for your desired GPU e.g. "1002:6613" instead of "AMD Radeon R7 240 (1002:6613)" which is how it appears on swarming task page.  You can query bots in the chromium.tests.gpu pool to find the correct dimensions:
 
-*   `vpython tools\swarming_client\swarming.py bots -S chromium-swarm.appspot.com -d pool chromium.tests.gpu`
+*   `tools\luci-go\swarming bots -S chromium-swarm.appspot.com -d pool=chromium.tests.gpu`
 
 [Swarming documentation]: https://www.chromium.org/developers/testing/isolated-testing/for-swes#TOC-Run-a-test-built-locally-on-Swarming
 
@@ -492,11 +491,7 @@ all you need to do is make sure that your new test runs correctly via isolates.
 See the documentation from the GPU bot details on [adding new isolated
 tests][new-isolates] for the gn args and authentication needed to upload
 isolates to the isolate server. Most likely the new test will be Telemetry
-based, and included in the `telemetry_gpu_test_run` isolate. You can then
-invoke it via:
-
-*   `./src/tools/swarming_client/run_isolated.py -s [HASH]
-    -I https://isolateserver.appspot.com -- [TEST_NAME] [TEST_ARGUMENTS]`
+based, and included in the `telemetry_gpu_test_run` isolate.
 
 [new-isolates]: gpu_testing_bot_details.md#Adding-a-new-isolated-test-to-the-bots
 
