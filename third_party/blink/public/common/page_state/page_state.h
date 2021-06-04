@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 class GURL;
 
@@ -58,6 +59,8 @@ class BLINK_COMMON_EXPORT PageState {
   bool operator!=(const PageState& other) const {
     return !(this->Equals(other));
   }
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   PageState(const std::string& data);

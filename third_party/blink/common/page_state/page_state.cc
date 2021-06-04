@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace {
@@ -178,6 +179,11 @@ PageState::PageState(const std::string& data) : data_(data) {
   // TODO(darin): Enable this DCHECK once tests have been fixed up to not pass
   // bogus encoded data to CreateFromEncodedData.
   // DCHECK(IsValid());
+}
+
+void PageState::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("data", data_);
 }
 
 }  // namespace blink

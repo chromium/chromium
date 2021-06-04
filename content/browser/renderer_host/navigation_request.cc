@@ -5553,8 +5553,15 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
   // TODO(https://crbug.com/1179428): Investigate when a new entry should
   // replace an old one when prerendering a page.
   params->did_create_new_entry = true;
-  // Unlike bfcache restore, Prerendering makes a new navigation entry, so it
-  // doesn't need to set params->page_state..
+  // Prerendering already has a navigation entry which has correct PageState.
+  // Set params->page_state accordingly to ensure that DCHECKs expecting them to
+  // match are happy.
+  // Note: |params| are using last commit params as a basis (via
+  // TakeLastCommitParams call), which have a page state from the last commit,
+  // but the page state might have been updated since the last commit.
+  params->page_state =
+      prerender_navigation_entry_->GetFrameEntry(frame_tree_node())
+          ->page_state();
   return params;
 }
 
