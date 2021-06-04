@@ -605,6 +605,12 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (Shell::Get()
             ->window_cycle_controller()
             ->IsInteractiveAltTabModeAllowed()) {
+      // |mirror_container_| can have window list with width smaller the tab
+      // slider's width. The padding should be 64px from the tab slider.
+      const int min_width =
+          tab_slider_container_->GetPreferredSize().width() +
+          2 * WindowCycleList::kInsideBorderHorizontalPaddingDp;
+      size.set_width(std::max(size.width(), min_width));
       size.Enlarge(0, tab_slider_container_->GetPreferredSize().height() +
                           kTabSliderContainerVerticalPaddingDp);
     }
