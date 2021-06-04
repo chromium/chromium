@@ -29,11 +29,9 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                                  const std::string& app_id,
                                  const std::vector<std::string>& args,
                                  OnLaunchedCallback callback) {
-  // Do not launch anything when using the installer app.
-  //
-  // TODO(b/170677773): Launch a _certain_ application...
+  // Launching the borealis app is a legacy way of launching its main app
   if (app_id == kBorealisAppId) {
-    std::move(callback).Run(LaunchResult::kSuccess);
+    Launch(ctx, kBorealisMainAppId, args, std::move(callback));
     return;
   }
 

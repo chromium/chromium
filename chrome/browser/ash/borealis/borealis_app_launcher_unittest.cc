@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
@@ -55,8 +56,8 @@ class BorealisAppLauncherTest : public testing::Test {
  public:
   BorealisAppLauncherTest()
       : ctx_(BorealisContext::CreateBorealisContextForTesting(&profile_)) {
-    ctx_->set_vm_name("test_vm_name");
-    ctx_->set_container_name("test_container_name");
+    ctx_->set_vm_name("borealis");
+    ctx_->set_container_name("penguin");
   }
 
  protected:
@@ -89,10 +90,27 @@ class BorealisAppLauncherTest : public testing::Test {
   std::unique_ptr<BorealisContext> ctx_;
 };
 
-TEST_F(BorealisAppLauncherTest, LauncherAppAlwaysWorks) {
+TEST_F(BorealisAppLauncherTest, LauncherAppLaunchesMainApp) {
   CallbackFactory callback_check;
+
+  // We add the main app to the registry, so that it will be launched.
+  std::string desktop_file_id;
+  ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
+  ASSERT_EQ(SetDummyApp(desktop_file_id), kBorealisMainAppId);
+
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
+  Cicerone()->SetOnLaunchContainerApplicationCallback(
+      base::BindLambdaForTesting(
+          [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
+                  request,
+              chromeos::DBusMethodCallback<
+                  vm_tools::cicerone::LaunchContainerApplicationResponse>
+                  callback) {
+            vm_tools::cicerone::LaunchContainerApplicationResponse response;
+            response.set_success(true);
+            std::move(callback).Run(response);
+          }));
   BorealisAppLauncher::Launch(Context(), kBorealisAppId,
                               callback_check.BindOnce());
 }
