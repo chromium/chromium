@@ -43,7 +43,7 @@ source_set("unit_tests") {
     sources = [ "soda_client_unittest.cc" ]
 
     if (is_mac) {
-      data_deps = [ "//third_party/soda-mac:soda_resources" ]
+      data_deps = [ "//third_party/soda-mac64:soda_resources" ]
     } else if (is_win && target_cpu == "x86") {
       data_deps = [ "//third_party/soda-win32:soda_resources" ]
     } else if (is_win && target_cpu == "x64") {
