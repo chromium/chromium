@@ -340,6 +340,75 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertFalse(actionMenu.open);
     });
 
+    test('dismiss the last cart would hide the module', async () => {
+      // Arrange.
+      const data = [
+        {
+          merchant: 'Foo',
+          cartUrl: {url: 'https://foo.com'},
+          productImageUrls: [],
+        },
+      ];
+      let carts = data;
+      testProxy.handler.setResultFor(
+          'getMerchantCarts', Promise.resolve({carts}));
+
+      // Arrange.
+      const moduleElement = await chromeCartDescriptor.initialize();
+      document.body.append(moduleElement);
+      moduleElement.$.cartItemRepeat.render();
+
+      // Assert.
+      let cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+      assertEquals(1, cartItems.length);
+      const actionMenu = $$(moduleElement, '#cartActionMenu');
+      assertFalse(actionMenu.open);
+
+      // Act.
+      cartItems[0].querySelector('.icon-more-vert').click();
+
+      // Assert.
+      assertTrue(actionMenu.open);
+      assertEquals(0, testProxy.handler.getCallCount('hideCart'));
+
+      // Act.
+      carts = [];
+      testProxy.handler.setResultFor(
+          'getMerchantCarts', Promise.resolve({carts}));
+      const waitForDismissEvent =
+          eventToPromise('dismiss-module', moduleElement);
+      actionMenu.querySelector('#hideCartButton').click();
+      const hideEvent = await waitForDismissEvent;
+      const hideToastMessage = hideEvent.detail.message;
+      const hideRestoreCallback = hideEvent.detail.restoreCallback;
+      cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+
+      // Assert.
+      assertFalse($$(moduleElement, '#dismissCartToast').open);
+      assertEquals(1, testProxy.handler.getCallCount('hideCart'));
+      assertEquals(0, cartItems.length);
+      assertEquals(
+          loadTimeData.getStringF(
+              'modulesCartCartMenuHideMerchantToastMessage', 'Foo'),
+          hideToastMessage);
+      assertEquals(
+          1, metrics.count('NewTabPage.Carts.DismissLastCartHidesModule'));
+
+      // Act.
+      carts = data;
+      testProxy.handler.setResultFor(
+          'getMerchantCarts', Promise.resolve({carts}));
+      hideRestoreCallback();
+      await flushTasks();
+      cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+
+      // Assert.
+      assertEquals(1, testProxy.handler.getCallCount('restoreHiddenCart'));
+      assertEquals(1, cartItems.length);
+      assertEquals(
+          1, metrics.count('NewTabPage.Carts.RestoreLastCartRestoresModule'));
+    });
+
     test('scroll with full width module', async () => {
       // Arrange.
       const dummyMerchant = {
