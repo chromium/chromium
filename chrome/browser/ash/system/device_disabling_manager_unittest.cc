@@ -20,7 +20,7 @@
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/browser/chromeos/policy/server_backed_device_state.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

@@ -32,7 +32,7 @@
 #include "chrome/browser/chromeos/policy/policy_pref_names.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_commands_factory_chromeos.h"
 #include "chrome/browser/chromeos/policy/rsu/lookup_key_uploader.h"
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/chromeos/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/system_log_uploader.h"

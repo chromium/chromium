@@ -14,7 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

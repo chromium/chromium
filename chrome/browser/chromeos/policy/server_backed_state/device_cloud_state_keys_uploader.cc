@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/device_cloud_state_keys_uploader.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/device_cloud_state_keys_uploader.h"
 
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
 #include "chrome/browser/chromeos/policy/dm_token_storage.h"
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"

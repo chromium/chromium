@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -28,9 +28,7 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
   }
   ~ServerBackedStateKeysBrokerTest() override {}
 
-  void StateKeysUpdated() {
-    updated_ = true;
-  }
+  void StateKeysUpdated() { updated_ = true; }
 
   void ExpectGood() {
     EXPECT_TRUE(broker_.available());

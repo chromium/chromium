@@ -23,7 +23,7 @@
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/enrollment_handler_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
-#include "chrome/browser/chromeos/policy/server_backed_device_state.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/chromeos/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/enrollment_status.h"

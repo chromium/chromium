@@ -24,7 +24,7 @@
 #include "chrome/browser/chromeos/policy/active_directory_join_delegate.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/dm_token_storage.h"
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/attestation/attestation_flow.h"

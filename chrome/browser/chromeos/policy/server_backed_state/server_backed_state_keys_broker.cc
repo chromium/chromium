@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -27,8 +27,7 @@ ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
     chromeos::SessionManagerClient* session_manager_client)
     : session_manager_client_(session_manager_client), requested_(false) {}
 
-ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {
-}
+ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {}
 
 base::CallbackListSubscription
 ServerBackedStateKeysBroker::RegisterUpdateCallback(
