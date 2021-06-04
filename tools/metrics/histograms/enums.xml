@@ -17918,6 +17918,7 @@ Called by update_debug_scenarios.py.-->
 
   <int value="1" label="kDebugSameDocNavigationDocIdMismatch"/>
   <int value="2" label="kDebugNonMainFrameWithOldPageInfo"/>
+  <int value="3" label="kDebugBackForwardCacheMetricsMismatch"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">

@@ -30,9 +30,12 @@ enum class DebugScenario {
   // A non-main frame navigation with old_page_info set was detected.
   kDebugNonMainFrameWithOldPageInfo = 2,
 
+  // Metrics and the bfcache situations do not match.
+  kDebugBackForwardCacheMetricsMismatch = 3,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugNonMainFrameWithOldPageInfo
+  kMaxValue = kDebugBackForwardCacheMetricsMismatch
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be
