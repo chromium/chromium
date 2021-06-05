@@ -249,6 +249,30 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
   return reservation_start;
 }
 
+// Returns true if |address| is the beginning of the first super page of a
+// reservation, i.e. either a normal bucket super page, or the first super page
+// of direct map.
+ALWAYS_INLINE bool IsReservationStart(const void* address) {
+  uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
+  return ((*offset_ptr == NotInDirectMapOffsetTag()) || (*offset_ptr == 0)) &&
+         (address_as_uintptr % kSuperPageSize == 0);
+}
+
+// Returns true if |address| belongs to a normal bucket super page.
+ALWAYS_INLINE bool IsManagedByNormalBuckets(const void* address) {
+  uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
+  return *offset_ptr == NotInDirectMapOffsetTag();
+}
+
+// Returns true if |address| belongs to a direct map region.
+ALWAYS_INLINE bool IsManagedByDirectMap(const void* address) {
+  uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
+  return *offset_ptr != NotInDirectMapOffsetTag();
+}
+
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal

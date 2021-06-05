@@ -545,7 +545,6 @@ ALWAYS_INLINE QuarantineBitmap* PCScanTask::TryFindScannerBitmapForPointer(
 template <typename LookupPolicy>
 ALWAYS_INLINE size_t
 PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK in the |else| case.
   using AccessType = QuarantineBitmap::AccessType;
   // Check if |maybe_ptr| points somewhere to the heap.
   auto* scanner_bitmap =
@@ -553,6 +552,9 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   if (!scanner_bitmap)
     return 0;
 
+  // Beyond this point, we know that |maybe_ptr| is a pointer within a
+  // normal-bucket super page.
+  PA_DCHECK(IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr)));
   auto* root =
       Root::FromPointerInNormalBuckets(reinterpret_cast<char*>(maybe_ptr));
 

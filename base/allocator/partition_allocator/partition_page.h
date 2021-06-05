@@ -290,10 +290,8 @@ static_assert(offsetof(PartitionPage<NotThreadSafe>,
                        subsequent_page_metadata) == 0,
               "");
 
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
 ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
+  PA_DCHECK(IsReservationStart(ptr));
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK(!(pointer_as_uint & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
@@ -341,10 +339,12 @@ ALWAYS_INLINE char* SuperPagePayloadEnd(char* super_page_base) {
   return super_page_base + kSuperPageSize - PartitionPageSize();
 }
 
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// Returns whether the pointer lies within a normal-bucket super page's payload
+// area (i.e. area devoted to slot spans). It doesn't check whether it's within
+// a valid slot span. It merely ensures it doesn't fall in a meta-data region
+// that would surely never contain user data.
 ALWAYS_INLINE bool IsWithinSuperPagePayload(void* ptr, bool with_quarantine) {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
+  PA_DCHECK(IsManagedByNormalBuckets(ptr));
   char* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
   void* payload_start = SuperPagePayloadBegin(super_page_base, with_quarantine);
@@ -352,19 +352,17 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(void* ptr, bool with_quarantine) {
   return ptr >= payload_start && ptr < payload_end;
 }
 
-// Returns the start of a slot or nullptr if |maybe_inner_ptr| is not inside of
-// an existing slot span. The function may return a pointer even inside a
-// decommitted or free slot span, it's the caller responsibility to check if
-// memory is actually allocated.
+// Returns the start of a slot, or nullptr if |maybe_inner_ptr| is not inside of
+// an existing slot span. The function may return a non-nullptr pointer even
+// inside a decommitted or free slot span, it's the caller responsibility to
+// check if memory is actually allocated.
 //
-// Furthermore, |maybe_inner_ptr| must point to payload of a valid super page.
-//
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// |maybe_inner_ptr| must be within a normal-bucket super page, and more
+// specifically within the payload area (i.e. area devoted to slot spans).
 template <bool thread_safe>
 ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
 #if DCHECK_IS_ON()
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
+  PA_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr));
   char* super_page_ptr = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(maybe_inner_ptr) & kSuperPageBaseMask);
   auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
@@ -414,9 +412,9 @@ ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
 
 // Converts from a pointer inside a super page into a pointer to the
 // PartitionPage object (within super pages's metadata) that describes the
-// partition page where |ptr| is located. |ptr| doesn't have to be a located
+// partition page where |ptr| is located. |ptr| doesn't have to be located
 // within a valid (i.e. allocated) slot span, but must be within the super
-// page's payload (i.e. region devoted to slot spans).
+// page's payload area (i.e. area devoted to slot spans).
 //
 // While it is generally valid for |ptr| to be in the middle of an allocation,
 // care has to be taken with direct maps that span multiple super pages. This
@@ -424,13 +422,23 @@ ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
 template <bool thread_safe>
 ALWAYS_INLINE PartitionPage<thread_safe>* PartitionPage<thread_safe>::FromPtr(
     void* ptr) {
-  // Force |with_quarantine=false|, because we don't know whether its direct map
-  // and direct map allocations don't have quarantine bitmaps.
-  PA_DCHECK(IsWithinSuperPagePayload(ptr, /* with_quarantine= */ false));
-
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
   char* super_page_ptr =
       reinterpret_cast<char*>(pointer_as_uint & kSuperPageBaseMask);
+
+#if DCHECK_IS_ON()
+  PA_DCHECK(IsReservationStart(super_page_ptr));
+  if (IsManagedByNormalBuckets(ptr)) {
+    auto* extent =
+        reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+            PartitionSuperPageToMetadataArea(super_page_ptr));
+    PA_DCHECK(
+        IsWithinSuperPagePayload(ptr, extent->root->IsQuarantineAllowed()));
+  } else {
+    PA_CHECK(ptr >= super_page_ptr + PartitionPageSize());
+  }
+#endif
+
   uintptr_t partition_page_index =
       (pointer_as_uint & kSuperPageOffsetMask) >> PartitionPageShift();
   // Index 0 is invalid because it is the super page extent metadata and the
@@ -444,15 +452,12 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionPage<thread_safe>::FromPtr(
       (partition_page_index << kPageMetadataShift));
 }
 
-// Converts from a pointer to the SlotSpanMetadata object (within super pages's
-// metadata) into a pointer to the beginning of the slot span.
-//
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// Converts from a pointer to the SlotSpanMetadata object (within a super
+// pages's metadata) into a pointer to the beginning of the slot span. This
+// works on direct maps too.
 template <bool thread_safe>
 ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
     const SlotSpanMetadata* slot_span) {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
 
@@ -480,12 +485,11 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
 // object (within super pages's metadata) that describes the slot span
 // containing that slot.
 //
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// CAUTION! For direct-mapped allocation, |ptr| has to be within the first
+// partition page.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   auto* page = PartitionPage<thread_safe>::FromPtr(ptr);
   PA_DCHECK(page->is_valid);
   // Partition pages in the same slot span share the same slot span metadata
@@ -494,11 +498,16 @@ SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
   page -= page->slot_span_metadata_offset;
   PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
-  return &page->slot_span_metadata;
+  auto* slot_span = &page->slot_span_metadata;
+  // For direct map, if |ptr| doesn't point within the first partition page,
+  // |slot_span_metadata_offset| will be 0, |page| won't get shifted, leaving
+  // |slot_size| at 0.
+  PA_DCHECK(slot_span->bucket->slot_size);
+  return slot_span;
 }
 
 // Like |FromSlotInnerPtr|, but asserts that pointer points to the beginning of
-// the slot.
+// the slot. This works on direct maps too.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotStartPtr(void* slot_start) {
@@ -615,13 +624,12 @@ ALWAYS_INLINE void DeferredUnmap::Run() {
 
 enum class QuarantineBitmapType { kMutator, kScanner };
 
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// Returns a quarantine bitmap from a pointer within a normal-bucket super page.
 ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
     QuarantineBitmapType type,
     size_t pcscan_epoch,
     void* ptr) {
-  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
+  PA_DCHECK(IsManagedByNormalBuckets(ptr));
   auto* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
   auto* first_bitmap = SuperPageQuarantineBitmaps(super_page_base);
