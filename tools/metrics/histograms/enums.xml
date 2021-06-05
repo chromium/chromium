@@ -56393,6 +56393,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Remove service failed"/>
 </enum>
 
+<enum name="NetworkCellularInhibitResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UninhibitTimeout"/>
+  <int value="2" label="SetInhibitFailed"/>
+  <int value="3" label="SetInhibitTimeout"/>
+  <int value="4" label="SetInhibitNoDevice"/>
+</enum>
+
 <enum name="NetworkCellularOutOfCreditsReason">
   <int value="0" label="Connect-Disconnect Loop"/>
   <int value="1" label="TX-Queue Congestion"/>

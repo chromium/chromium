@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -28,6 +29,9 @@ namespace chromeos {
 namespace {
 
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
+
+const char kInhibitOperationResultHistogram[] =
+    "Network.Cellular.InhibitResult";
 
 constexpr base::TimeDelta kScanningChangeTimeout =
     base::TimeDelta::FromSeconds(120);
@@ -154,6 +158,8 @@ class CellularInhibitorTest : public testing::Test {
     return observer_.num_observer_events();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   void GetPropertiesCallback(const std::string& device_path,
                              absl::optional<base::Value> properties) {
@@ -167,6 +173,7 @@ class CellularInhibitorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   NetworkStateTestHelper helper_;
   CellularInhibitor cellular_inhibitor_;
   TestObserver observer_;
@@ -205,6 +212,10 @@ TEST_F(CellularInhibitorTest, SuccessSingleRequest) {
   SetScanning(false);
   EXPECT_EQ(2u, GetNumObserverEvents());
   EXPECT_FALSE(GetInhibitReason().has_value());
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kSuccess,
+      /*expected_count=*/1);
 }
 
 TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
@@ -251,6 +262,10 @@ TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
   // Change scanning back to false, which should trigger the second lock being
   // set.
   SetScanning(false);
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kSuccess,
+      /*expected_count=*/1);
   EXPECT_TRUE(inhibit_lock2);
   EXPECT_EQ(3u, GetNumObserverEvents());
   EXPECT_EQ(CellularInhibitor::InhibitReason::kRemovingProfile,
@@ -264,6 +279,14 @@ TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
   EXPECT_EQ(CellularInhibitor::InhibitReason::kRemovingProfile,
             GetInhibitReason());
   EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
+
+  SetScanning(true);
+  SetScanning(false);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kSuccess,
+      /*expected_count=*/2);
 }
 
 TEST_F(CellularInhibitorTest, Failure) {
@@ -276,6 +299,10 @@ TEST_F(CellularInhibitorTest, Failure) {
   EXPECT_EQ(GetInhibitedPropertyResult::kOperationFailed,
             GetInhibitedProperty());
   EXPECT_FALSE(inhibit_lock);
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kSetInhibitNoDevice,
+      /*expected_count=*/1);
 }
 
 TEST_F(CellularInhibitorTest, FailurePropertySetTimeout) {
@@ -290,6 +317,10 @@ TEST_F(CellularInhibitorTest, FailurePropertySetTimeout) {
   FastForwardInhibitPropertyChangeTimeout();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(inhibit_lock);
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kSetInhibitTimeout,
+      /*expected_count=*/1);
 }
 
 TEST_F(CellularInhibitorTest, FailureScanningChangeTimeout) {
@@ -313,6 +344,10 @@ TEST_F(CellularInhibitorTest, FailureScanningChangeTimeout) {
             GetInhibitReason());
   FastForwardScanningChangeTimeout();
   EXPECT_FALSE(GetInhibitReason().has_value());
+  histogram_tester().ExpectBucketCount(
+      kInhibitOperationResultHistogram,
+      CellularInhibitor::InhibitOperationResult::kUninhibitTimeout,
+      /*expected_count=*/1);
 }
 
 }  // namespace chromeos
