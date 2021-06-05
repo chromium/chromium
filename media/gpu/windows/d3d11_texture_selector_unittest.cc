@@ -88,7 +88,7 @@ TEST_F(D3D11TextureSelectorUnittest, NV12BindsToNV12) {
 }
 
 TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithoutSharingSupport) {
-  // EXPECT_CALL(format_checker_, CheckOutputFormatSupport(_)).Times(1);
+  AllowFormatCheckerSupportExcept({});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12, ZeroCopyEnabled::kFalse);
 
@@ -98,8 +98,7 @@ TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithoutSharingSupport) {
 }
 
 TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithWorkaround) {
-  // Nothing should ask about VideoProcessor support, since we're binding.
-  EXPECT_CALL(format_checker_, CheckOutputFormatSupport(_)).Times(0);
+  AllowFormatCheckerSupportExcept({});
   auto tex_sel = CreateWithDefaultGPUInfo(
       DXGI_FORMAT_NV12, ZeroCopyEnabled::kTrue,
       TextureSelector::HDRMode::kSDROnly, ZeroCopyDisabledByWorkaround::kTrue);
@@ -109,43 +108,42 @@ TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithWorkaround) {
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
-TEST_F(D3D11TextureSelectorUnittest, P010CopiesToFP16InHDR) {
-  // Allow all output formats, since it should prefer fp16 if possible.
+TEST_F(D3D11TextureSelectorUnittest, P010BindsP010InHDR) {
+  // Allow all output formats, p010 should be the default.
   AllowFormatCheckerSupportExcept({});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROrHDR);
 
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
+  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_FALSE(tex_sel->WillCopyForTesting());
+  // TODO(liberato): Check output color space.
+}
+
+TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo16bitRGBInHDR) {
+  // 16 bit float should be the second choice after p010 zero copy.
+  AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
+  auto tex_sel =
+      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse,
+                               TextureSelector::HDRMode::kSDROrHDR);
+
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_RGBAF16);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R16G16B16A16_FLOAT);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
-  // TODO(liberato): Check output color space, somehow.
 }
 
 TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGBInHDR) {
-  // 10 bit RGB should be the second choice, if fp16 isn't available.
-  AllowFormatCheckerSupportExcept({DXGI_FORMAT_R16G16B16A16_FLOAT});
+  // 10 bit unorm should be the third and final choice.
+  AllowFormatCheckerSupportExcept(
+      {DXGI_FORMAT_P010, DXGI_FORMAT_R16G16B16A16_FLOAT});
   auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
+      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse,
                                TextureSelector::HDRMode::kSDROrHDR);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_XB30);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R10G10B10A2_UNORM);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
-}
-
-TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010InHDR) {
-  // If none of our output formats is supported by the video processor, then it
-  // should bind P010 directly.
-  AllowFormatCheckerSupportExcept(
-      {DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R10G10B10A2_UNORM});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
-                               TextureSelector::HDRMode::kSDROrHDR);
-
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
-  EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
 TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8BitInSDR) {
@@ -172,7 +170,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010InSDR) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }

@@ -52,90 +52,60 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   DXGI_FORMAT output_dxgi_format;
   absl::optional<gfx::ColorSpace> output_color_space;
 
+  bool needs_texture_copy =
+      !SupportsZeroCopy(gpu_preferences, workarounds) ||
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
+
+#define SUPPORTS(fmt) format_checker->CheckOutputFormatSupport(fmt)
   // TODO(liberato): add other options here, like "copy to rgb" for NV12.
   switch (decoder_output_format) {
     case DXGI_FORMAT_NV12: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing NV12";
-      output_pixel_format = PIXEL_FORMAT_NV12;
-      output_dxgi_format = DXGI_FORMAT_NV12;
-      // Leave |output_color_space| the same, since we'll bind either the
-      // original or the copy.  Downstream will handle it, either in the shaders
-      // or in the overlay, if needed.
-      output_color_space.reset();
+      if (!needs_texture_copy || SUPPORTS(DXGI_FORMAT_NV12)) {
+        output_pixel_format = PIXEL_FORMAT_NV12;
+        output_dxgi_format = DXGI_FORMAT_NV12;
+        // Leave |output_color_space| the same, since we'll bind either the
+        // original or the copy. Downstream will handle it, either in the
+        // shaders or in the overlay, if needed.
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
+      } else if (SUPPORTS(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+      } else {
+        MEDIA_LOG(INFO, media_log) << "NV12 not supported";
+        return nullptr;
+      }
       break;
     }
     case DXGI_FORMAT_P010: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
-
-      // TODO(liberato): handle case where we bind P010 directly (see dxva).
-
-      // Note that all of this should be handled later; we really don't know
-      // enough about how this decoded frame will be used.  For example, we have
-      // no idea if we should downsample while converting for display, or even
-      // if it will be displayed on an HDR or SDR monitor, if there's more than
-      // one.  However, to hide latency, we guess and do the conversion now.  If
-      // the decoded frame is sampled by the web, then converting it might even
-      // be the wrong thing to do; it's not unreasonable that it's expecting the
-      // original data.
-      //
-      // In the future, consider just binding the P010 or NV12 texture directly,
-      // and let the consumer figure out what to do with it.
-
-      // Assume that we want HDR if it's supported by the display, and if we're
-      // using an 11.1-capable device.
-      // TODO(liberato): Get the context and ask it.
-      const bool is_d3d_11_1 = true;
-
-      if (!is_d3d_11_1 || hdr_output_mode == HDRMode::kSDROnly) {
-        if (format_checker->CheckOutputFormatSupport(
-                DXGI_FORMAT_B8G8R8A8_UNORM)) {
-          // SDR output, so just use 8 bit and sRGB.
-          // TODO(liberato): use the format checker, else bind P010.
-          MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: 8 bit sRGB";
-          output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-          output_pixel_format = PIXEL_FORMAT_ARGB;
-          output_color_space = gfx::ColorSpace::CreateSRGB();
-        } else {
-          // Bind P010 directly, since we can't copy.
-          MEDIA_LOG(INFO, media_log)
-              << "D3D11VideoDecoder: binding P010, no SDR output support";
-          output_dxgi_format = DXGI_FORMAT_P010;
-          // PIXEL_FORMAT_YUV422P10 would probably be a better choice, but it's
-          // not supported by the rest of the pipeline yet.
-          output_pixel_format = PIXEL_FORMAT_NV12;
-          output_color_space.reset();
-        }
+      if (hdr_output_mode == HDRMode::kSDROnly &&
+          SUPPORTS(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        output_color_space = gfx::ColorSpace::CreateSRGB();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+      } else if (!needs_texture_copy || SUPPORTS(DXGI_FORMAT_P010)) {
+        output_dxgi_format = DXGI_FORMAT_P010;
+        output_pixel_format = PIXEL_FORMAT_P016LE;
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010";
+      } else if (SUPPORTS(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
+        output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        output_pixel_format = PIXEL_FORMAT_RGBAF16;
+        output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected RGBAF16";
+      } else if (SUPPORTS(DXGI_FORMAT_R10G10B10A2_UNORM)) {
+        output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
+        output_pixel_format = PIXEL_FORMAT_XB30;
+        output_color_space = gfx::ColorSpace::CreateHDR10();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected XB30";
       } else {
-        // Will (may) be displayed in HDR, so switch to a high precision format.
-        // For full screen, we might want 10 bit unorm instead of fp16.
-        if (format_checker->CheckOutputFormatSupport(
-                DXGI_FORMAT_R16G16B16A16_FLOAT)) {
-          MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: fp16 scRGBLinear";
-          output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-          output_pixel_format = PIXEL_FORMAT_RGBAF16;
-          output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
-        } else if (format_checker->CheckOutputFormatSupport(
-                       DXGI_FORMAT_R10G10B10A2_UNORM)) {
-          MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: RGB10A2 HDR10/PQ";
-          output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
-          output_pixel_format = PIXEL_FORMAT_XB30;
-          output_color_space = gfx::ColorSpace::CreateHDR10();
-        } else {
-          // No support at all.  Just bind P010, and hope for the best.
-          MEDIA_LOG(INFO, media_log)
-              << "D3D11VideoDecoder: binding P010, no HDR output support";
-          output_dxgi_format = DXGI_FORMAT_P010;
-          // PIXEL_FORMAT_YUV422P10 would probably be a better choice, but it's
-          // not supported by the rest of the pipeline yet.
-          output_pixel_format = PIXEL_FORMAT_NV12;
-          output_color_space.reset();
-        }
-
-        // TODO(liberato): Handle HLG, if we can get the input color space. The
-        // VideoProcessor doesn't support HLG, so we need to use it only for YUV
-        // -> RGB conversion by setting the input color space to PQ YUV and the
-        // output color space to PQ RGB. The texture should then be marked as
-        // full range HLG so that Chrome's color management can fix it up.
+        MEDIA_LOG(INFO, media_log) << "P010 not supported";
+        return nullptr;
       }
       break;
     }
@@ -146,14 +116,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       return nullptr;
     }
   }
+#undef SUPPORTS
 
   // If we're trying to produce an output texture that's different from what
-  // the decoder is providing, then we need to copy it.  If sharing decoder
+  // the decoder is providing, then we need to copy it. If sharing decoder
   // textures is not allowed, then copy either way.
-  bool needs_texture_copy =
-      !SupportsZeroCopy(gpu_preferences, workarounds) ||
-      (decoder_output_format != output_dxgi_format) ||
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
+  needs_texture_copy |= (decoder_output_format != output_dxgi_format);
 
   MEDIA_LOG(INFO, media_log)
       << "D3D11VideoDecoder output color space: "
@@ -167,7 +135,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
         output_color_space, std::move(video_device), std::move(device_context));
   } else {
     MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
-    // Binding can't change the color space.  The consumer has to do it, if they
+    // Binding can't change the color space. The consumer has to do it, if they
     // want to.
     DCHECK(!output_color_space);
     return std::make_unique<TextureSelector>(
