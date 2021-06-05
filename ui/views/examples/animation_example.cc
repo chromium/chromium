@@ -21,9 +21,9 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
 #include "ui/views/examples/animation_builder.h"
-#include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -61,10 +61,6 @@ AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
-  layer()->SetAnimator(new ui::LayerAnimator(base::TimeDelta::FromSeconds(1)));
-  layer()->GetAnimator()->set_tween_type(gfx::Tween::EASE_IN_OUT);
-  layer()->GetAnimator()->set_preemption_strategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
 
 void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {
@@ -102,10 +98,14 @@ class SquaresLayoutManager : public LayoutManagerBase {
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
+  void LayoutImpl() override;
+  void OnInstalled(View* host) override;
 
  private:
   static constexpr int kPadding = 25;
   static constexpr gfx::Size kSize = gfx::Size(100, 100);
+
+  std::unique_ptr<BoundsAnimator> bounds_animator_;
 };
 
 // static
@@ -138,6 +138,19 @@ ProposedLayout SquaresLayoutManager::CalculateProposedLayout(
       std::max(kPadding + item_height, size_bounds.height().min_of(max_height));
   layout.host_size = {bounds_width, bounds_height};
   return layout;
+}
+
+void SquaresLayoutManager::LayoutImpl() {
+  ProposedLayout proposed_layout = GetProposedLayout(host_view()->size());
+  for (auto child_layout : proposed_layout.child_layouts) {
+    bounds_animator_->AnimateViewTo(child_layout.child_view,
+                                    child_layout.bounds);
+  }
+}
+
+void SquaresLayoutManager::OnInstalled(View* host) {
+  bounds_animator_ = std::make_unique<BoundsAnimator>(host, true);
+  bounds_animator_->SetAnimationDuration(base::TimeDelta::FromSeconds(1));
 }
 
 void AnimationExample::CreateExampleView(View* container) {
