@@ -64,15 +64,18 @@ void DecodeImage(DataDecoder* data_decoder,
   data_decoder->GetService()->BindImageDecoder(
       decoder.BindNewPipeAndPassReceiver());
 
-  // |call_once| runs |callback| on its first invocation.
-  auto call_once = base::AdaptCallbackForRepeating(std::move(callback));
-  decoder.set_disconnect_handler(base::BindOnce(call_once, SkBitmap()));
+  // `callback` will be run exactly once. Disconnect implies no response, and
+  // OnDecodeImage promptly discards the decoder preventing further disconnect
+  // calls.
+  auto callback_pair = base::SplitOnceCallback(std::move(callback));
+  decoder.set_disconnect_handler(
+      base::BindOnce(std::move(callback_pair.first), SkBitmap()));
 
   mojom::ImageDecoder* raw_decoder = decoder.get();
-  raw_decoder->DecodeImage(
-      encoded_bytes, codec, shrink_to_fit, max_size_in_bytes,
-      desired_image_frame_size,
-      base::BindOnce(&OnDecodeImage, std::move(decoder), std::move(call_once)));
+  raw_decoder->DecodeImage(encoded_bytes, codec, shrink_to_fit,
+                           max_size_in_bytes, desired_image_frame_size,
+                           base::BindOnce(&OnDecodeImage, std::move(decoder),
+                                          std::move(callback_pair.second)));
 }
 
 void DecodeAnimationIsolated(
@@ -103,16 +106,18 @@ void DecodeAnimation(DataDecoder* data_decoder,
   data_decoder->GetService()->BindImageDecoder(
       decoder.BindNewPipeAndPassReceiver());
 
-  // |call_once| runs |callback| on its first invocation.
-  auto call_once = base::AdaptCallbackForRepeating(std::move(callback));
-  decoder.set_disconnect_handler(
-      base::BindOnce(call_once, std::vector<mojom::AnimationFramePtr>()));
+  // `callback` will be run exactly once. Disconnect implies no response, and
+  // OnDecodeImages promptly discards the decoder preventing further disconnect
+  // calls.
+  auto callback_pair = base::SplitOnceCallback(std::move(callback));
+  decoder.set_disconnect_handler(base::BindOnce(
+      std::move(callback_pair.first), std::vector<mojom::AnimationFramePtr>()));
 
   mojom::ImageDecoder* raw_decoder = decoder.get();
   raw_decoder->DecodeAnimation(
       encoded_bytes, shrink_to_fit, max_size_in_bytes,
       base::BindOnce(&OnDecodeImages, std::move(decoder),
-                     std::move(call_once)));
+                     std::move(callback_pair.second)));
 }
 
 }  // namespace data_decoder
