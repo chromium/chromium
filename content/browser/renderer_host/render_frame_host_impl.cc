@@ -3604,6 +3604,7 @@ void RenderFrameHostImpl::ResetChildren() {
 
 void RenderFrameHostImpl::SetLastCommittedUrl(const GURL& url) {
   last_committed_url_ = url;
+  last_url_in_renderer_ = url;
 }
 
 void RenderFrameHostImpl::Detach() {
@@ -3822,6 +3823,26 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
 
   // Since we didn't early return, it's safe to keep the commit state.
   commit_state_resetter.disable();
+}
+
+void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
+  // Check if the URL can actually be committed to the current origin. When
+  // checking, the restrictions should be the same as a same-document navigation
+  // since document.open() can only update the URL to a same-origin URL.
+  if (!ValidateURLAndOrigin(url, last_committed_origin_,
+                            true /* is_same_document_navigation */,
+                            nullptr /* navigation_request */)) {
+    return;
+  }
+  // Filter the URL, then update `last_url_in_renderer_`. Note that we won't
+  // update `last_committed_url_` because this doesn't really count as
+  // committing a real navigation and won't update NavigationEntry etc.
+  // See https://crbug.com/1046898 and https://github.com/whatwg/html/pull/6649
+  // for more details.
+  GURL filtered_url(url);
+  GetProcess()->FilterURL(false /* empty_allowed */, &filtered_url);
+  last_url_in_renderer_ = filtered_url;
+  frame_tree_node_->DidOpenDocumentInputStream();
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetRenderWidgetHost() {
@@ -9333,48 +9354,10 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   }
 
   if (!bypass_checks_for_error_page && !bypass_checks_for_file_scheme &&
-      !bypass_checks_for_disable_web_security && !bypass_checks_for_webview) {
-    // Attempts to commit certain off-limits URL should be caught more strictly
-    // than our FilterURL checks.  If a renderer violates this policy, it
-    // should be killed.
-    switch (CanCommitOriginAndUrl(params->origin, params->url,
-                                  is_same_document_navigation)) {
-      case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
-        // The origin and URL are safe to commit.
-        break;
-      case CanCommitStatus::CANNOT_COMMIT_URL:
-        DLOG(ERROR) << "CANNOT_COMMIT_URL url '" << params->url << "'"
-                    << " origin '" << params->origin << "'"
-                    << " lock '"
-                    << ChildProcessSecurityPolicyImpl::GetInstance()
-                           ->GetProcessLock(process->GetID())
-                           .ToString()
-                    << "'";
-        VLOG(1) << "Blocked URL " << params->url.spec();
-        LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
-                                    navigation_request);
-
-        // Kills the process.
-        bad_message::ReceivedBadMessage(
-            process, bad_message::RFH_CAN_COMMIT_URL_BLOCKED);
-        return false;
-      case CanCommitStatus::CANNOT_COMMIT_ORIGIN:
-        DLOG(ERROR) << "CANNOT_COMMIT_ORIGIN url '" << params->url << "'"
-                    << " origin '" << params->origin << "'"
-                    << " lock '"
-                    << ChildProcessSecurityPolicyImpl::GetInstance()
-                           ->GetProcessLock(process->GetID())
-                           .ToString()
-                    << "'";
-        DEBUG_ALIAS_FOR_ORIGIN(origin_debug_alias, params->origin);
-        LogCannotCommitOriginCrashKeys(is_same_document_navigation,
-                                       navigation_request);
-
-        // Kills the process.
-        bad_message::ReceivedBadMessage(
-            process, bad_message::RFH_INVALID_ORIGIN_ON_COMMIT);
-        return false;
-    }
+      !bypass_checks_for_disable_web_security && !bypass_checks_for_webview &&
+      !ValidateURLAndOrigin(params->url, params->origin,
+                            is_same_document_navigation, navigation_request)) {
+    return false;
   }
 
   // Without this check, an evil renderer can trick the browser into creating
@@ -9426,6 +9409,55 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     return false;
   }
 
+  return true;
+}
+
+bool RenderFrameHostImpl::ValidateURLAndOrigin(
+    const GURL& url,
+    const url::Origin& origin,
+    bool is_same_document_navigation,
+    NavigationRequest* navigation_request) {
+  RenderProcessHost* process = GetProcess();
+  // Attempts to commit certain off-limits URL should be caught more strictly
+  // than our FilterURL checks.  If a renderer violates this policy, it
+  // should be killed.
+  switch (CanCommitOriginAndUrl(origin, url, is_same_document_navigation)) {
+    case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
+      // The origin and URL are safe to commit.
+      break;
+    case CanCommitStatus::CANNOT_COMMIT_URL:
+      DLOG(ERROR) << "CANNOT_COMMIT_URL url '" << url << "'"
+                  << " origin '" << origin << "'"
+                  << " lock '"
+                  << ChildProcessSecurityPolicyImpl::GetInstance()
+                         ->GetProcessLock(process->GetID())
+                         .ToString()
+                  << "'";
+      VLOG(1) << "Blocked URL " << url.spec();
+      LogCannotCommitUrlCrashKeys(url, is_same_document_navigation,
+                                  navigation_request);
+
+      // Kills the process.
+      bad_message::ReceivedBadMessage(process,
+                                      bad_message::RFH_CAN_COMMIT_URL_BLOCKED);
+      return false;
+    case CanCommitStatus::CANNOT_COMMIT_ORIGIN:
+      DLOG(ERROR) << "CANNOT_COMMIT_ORIGIN url '" << url << "'"
+                  << " origin '" << origin << "'"
+                  << " lock '"
+                  << ChildProcessSecurityPolicyImpl::GetInstance()
+                         ->GetProcessLock(process->GetID())
+                         .ToString()
+                  << "'";
+      DEBUG_ALIAS_FOR_ORIGIN(origin_debug_alias, origin);
+      LogCannotCommitOriginCrashKeys(is_same_document_navigation,
+                                     navigation_request);
+
+      // Kills the process.
+      bad_message::ReceivedBadMessage(
+          process, bad_message::RFH_INVALID_ORIGIN_ON_COMMIT);
+      return false;
+  }
   return true;
 }
 
@@ -10520,7 +10552,7 @@ bool CalculateShouldReplaceCurrentEntry(
     NavigationRequest* request,
     const mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
     FrameTreeNode* node,
-    const GURL& last_committed_url,
+    const GURL& last_url_in_renderer,
     bool previous_commit_is_loaded_from_load_data_with_base_url,
     const GURL& last_base_url) {
   // We want to predict the value of DidCommitProvisionalLoadParams'
@@ -10533,11 +10565,13 @@ bool CalculateShouldReplaceCurrentEntry(
 
   // -- Prepare the values needed for prediction.
 
-  // For URLs loaded with base URL, use the base URL instead of the last commit
-  // URL when doing comparisons.
+  // For URLs loaded with base URL, use the base URL as the previous URL.
+  // Otherwise, use the last URL in the renderer (note this might not be the
+  // same as the last *committed* URL, e.g. if a document.open() happened
+  // afterwards).
   GURL previous_url = previous_commit_is_loaded_from_load_data_with_base_url
                           ? last_base_url
-                          : last_committed_url;
+                          : last_url_in_renderer;
   const bool is_restore =
       NavigationTypeUtils::IsRestore(request->common_params().navigation_type);
   const bool is_history =
@@ -10724,17 +10758,8 @@ void RenderFrameHostImpl::
   const bool browser_should_replace_current_entry =
       CalculateShouldReplaceCurrentEntry(
           request, same_document_params.Clone(), frame_tree_node_,
-          last_committed_url_, is_loaded_from_load_data_with_base_url_,
+          last_url_in_renderer_, is_loaded_from_load_data_with_base_url_,
           last_base_url_);
-  // Currently it's not possible to correctly predict the value of
-  // should_replace_current_entry in the browser for iframes with
-  // has_committed_real_load == false because some cases like document.open()
-  // will affect the result in the renderer (through EmptyDocumentStatus) but
-  // the browser don't have a way to know that it happened.
-  // See https://crbug.com/1204981 and https://crrev.com/c/2818538.
-  const bool ignore_should_replace_current_entry_difference =
-      (!frame_tree_node_->IsMainFrame() &&
-       !frame_tree_node_->has_committed_real_load());
 
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
@@ -10751,7 +10776,6 @@ void RenderFrameHostImpl::
        browser_should_update_history == params.should_update_history) &&
       (!ShouldVerify("gesture") || browser_gesture == renderer_gesture) &&
       (!ShouldVerify("should_replace_current_entry") ||
-       ignore_should_replace_current_entry_difference ||
        browser_should_replace_current_entry ==
            params.should_replace_current_entry)) {
     return;
@@ -10899,6 +10923,8 @@ void RenderFrameHostImpl::
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_url_in_renderer",
+                             last_url_in_renderer().spec());
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_empty",
                         GetLastCommittedURL().is_empty());

@@ -3036,7 +3036,7 @@ void Document::open(LocalDOMWindow* entered_window,
       new_url.SetFragmentIdentifier(String());
     SetURL(new_url);
     if (Loader())
-      Loader()->UpdateUrlForDocumentOpen(new_url);
+      Loader()->DidOpenDocumentInputStream(new_url);
 
     if (dom_window_ != entered_window) {
       // We inherit the sandbox flags of the entered document, so mask on

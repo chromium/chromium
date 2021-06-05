@@ -134,6 +134,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
                                                bool is_synchronously_committed,
                                                bool is_history_api_navigation,
                                                bool is_client_redirect) {}
+  virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidCommitLoad(
       HistoryItem* item,

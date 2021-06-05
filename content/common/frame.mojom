@@ -614,6 +614,12 @@ interface FrameHost {
       DidCommitProvisionalLoadParams params,
       DidCommitSameDocumentNavigationParams same_document_params);
 
+  // Sent by the renderer to indicate that the document input stream has
+  // been updated using document.open() and that the URL for the current
+  // document in the frame should be updated to `url` per step 12 of
+  // https://whatwg.org/C/dynamic-markup-insertion.html#document-open-steps.
+  DidOpenDocumentInputStream(url.mojom.Url url);
+
   // Sent by the renderer to request a navigation.
   // |blob_url_token| should be non-null when this is a navigation to a blob:
   // URL. The token will then be used to look up the blob associated with the

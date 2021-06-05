@@ -3964,6 +3964,10 @@ void RenderFrameImpl::WillFreezePage() {
   SendUpdateState();
 }
 
+void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
+  GetFrameHost()->DidOpenDocumentInputStream(url);
+}
+
 void RenderFrameImpl::DidSetPageLifecycleState() {
   for (auto& observer : observers_)
     observer.DidSetPageLifecycleState();

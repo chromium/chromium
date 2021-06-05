@@ -548,6 +548,7 @@ class CONTENT_EXPORT RenderFrameImpl
                                        bool is_history_api_navigation,
                                        bool is_client_redirect) override;
   void WillFreezePage() override;
+  void DidOpenDocumentInputStream(const blink::WebURL& url) override;
   void DidSetPageLifecycleState() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;

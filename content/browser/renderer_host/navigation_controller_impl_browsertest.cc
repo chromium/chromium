@@ -1636,6 +1636,174 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(new_root->current_frame_host()->IsRenderFrameLive());
 }
 
+// Test that a frame's url is correctly updated after a document.open() from
+// another frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromSibling) {
+  // Open a page with iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+  EXPECT_EQ(1U, root->child_count());
+
+  GURL first_frame_url = root->child_at(0)->current_url();
+  GURL second_frame_url(embedded_test_server()->GetURL("/title2.html"));
+  // Make a new iframe.
+  {
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(
+        ExecJs(root, JsReplace(kAddFrameWithSrcScript, second_frame_url)));
+    capturer.Wait();
+  }
+  EXPECT_EQ(2U, root->child_count());
+  // Call document.open() on the first iframe from the second iframe.
+  EXPECT_TRUE(ExecJs(
+      root->child_at(1),
+      "parent.document.getElementById(\"frame\").contentDocument.open();"));
+  // Run script in the iframes to ensure that the URL update is already sent
+  // to the browser before continuing.
+  EXPECT_TRUE(ExecJs(root->child_at(1), "true"));
+  EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+
+  RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
+  // The value of "last committed URL" in child0 is not updated, but "last URL
+  // in renderer" is updated correctly to be the same as the child1's URL.
+  EXPECT_EQ(first_frame_url, child0->GetLastCommittedURL());
+  EXPECT_EQ(second_frame_url, child0->last_url_in_renderer());
+  EXPECT_EQ(second_frame_url, child1->GetLastCommittedURL());
+  EXPECT_EQ(second_frame_url, child1->last_url_in_renderer());
+}
+
+// Test that a frame's url is correctly updated after a document.open() from
+// an about:blank frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromAboutBlank) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL frame_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new about:blank iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    EXPECT_EQ("done", EvalJs(root->current_frame_host(), R"(
+      new Promise(async resolve => {
+        const blank_iframe = document.createElement('iframe');
+        await new Promise(resolve => {
+          blank_iframe.onload = resolve;
+          document.body.appendChild(blank_iframe);
+        });
+
+        let script = document.createElement('script');
+        script.text = `
+          const sibling = parent.document.getElementById("frame")
+          sibling.contentDocument.open();
+        `;
+        blank_iframe.contentDocument.body.appendChild(script);
+        resolve("done");
+      })
+    )"));
+    capturer.Wait();
+  }
+  // Run script in the iframes to ensure that the URL update is already sent
+  // to the browser before continuing.
+  EXPECT_TRUE(ExecJs(root->child_at(1), "true"));
+  EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+
+  ASSERT_EQ(2U, root->child_count());
+  RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
+  // The value of "last committed URL" in child0 is not updated, but "last URL
+  // in renderer" is updated correctly to "about:blank".
+  EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child0->last_url_in_renderer());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child1->GetLastCommittedURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child1->last_url_in_renderer());
+}
+
+// Test that a frame's url is partially updated after a document.open() from
+// an about:srcdoc frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromSrcdoc) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL frame_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new about:srcdoc iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    std::string script =
+        "let origin = document.createElement('iframe');"
+        "origin.srcdoc = '<script>parent.document.getElementById(\"frame\")"
+        ".contentDocument.open();</script>';"
+        "document.body.appendChild(origin);";
+    EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
+    capturer.Wait();
+  }
+  // Run script in the iframes to ensure that the URL update is already sent
+  // to the browser before continuing.
+  EXPECT_TRUE(ExecJs(root->child_at(1), "true"));
+  EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+
+  ASSERT_EQ(2U, root->child_count());
+  RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
+  // The value of "last committed URL" in child0 is not updated, but "last URL
+  // in renderer" is updated correctly to "about:srdoc".
+  EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
+  EXPECT_EQ(GURL("about:srcdoc"), child0->last_url_in_renderer());
+  EXPECT_EQ(GURL("about:srcdoc"), child1->GetLastCommittedURL());
+  EXPECT_EQ(GURL("about:srcdoc"), child1->last_url_in_renderer());
+}
+
+// Test that a frame's url is partially updated after a document.open() from
+// a blob: url.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromBloblIframe) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL frame_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new blob iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    std::string script =
+        "let origin = document.createElement('iframe');"
+        "let blob = new Blob(['<script>"
+        "parent.document.getElementById(\"frame\").contentDocument.open();"
+        "</script>'], { type: 'text/html' });"
+        "origin.src = URL.createObjectURL(blob);"
+        "document.body.appendChild(origin);";
+    EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
+    capturer.Wait();
+  }
+  // Run script in the iframes to ensure that the URL update is already sent
+  // to the browser before continuing.
+  EXPECT_TRUE(ExecJs(root->child_at(1), "true"));
+  EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+
+  ASSERT_EQ(2U, root->child_count());
+  RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
+  // The value of "last committed URL" in child0 is not updated, but "last URL
+  // in renderer" is updated correctly to the blob URL.
+  EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
+  EXPECT_TRUE(child0->last_url_in_renderer().SchemeIsBlob());
+  EXPECT_TRUE(child1->GetLastCommittedURL().SchemeIsBlob());
+  EXPECT_TRUE(child1->last_url_in_renderer().SchemeIsBlob());
+  EXPECT_EQ(child0->last_url_in_renderer(), child1->last_url_in_renderer());
+}
+
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
   NavigationController& controller = shell()->web_contents()->GetController();
   GURL error_url = embedded_test_server()->GetURL("/close-socket");
@@ -2932,6 +3100,10 @@ class InitialEmptyDocNavigationControllerBrowserTest
 // loaded the initial empty document (but might have done other navigations that
 // stay in the initial empty document), to see if the initial empty documents
 // get replaced/not replaced.
+// TODO(https://crbug.com/1215096): Most of these cases are not actually running
+// on the initial empty document because they have committed the synchronous
+// non-initial about:blank document. Update these tests or remove the
+// synchronous navigation entirely.
 IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
                        NavigateNewSubframe) {
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
@@ -3046,6 +3218,51 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
   }
 
+  // 5) Navigate to |url_2| on a new subframe that has done a document.open().
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 5.");
+
+    // Create the "child5" subframe.
+    CreateSubframe(contents(), "child5", GURL(),
+                   false /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+    EXPECT_EQ(GURL("about:blank"),
+              root->child_at(subframe_index)->current_url());
+    EXPECT_FALSE(root->child_at(subframe_index)->has_committed_real_load());
+
+    // Do a document.open() on it.
+    EXPECT_TRUE(ExecJs(shell(), R"(
+          var iframeDoc = document.getElementById("child5").contentDocument;
+          iframeDoc.open();
+          iframeDoc.write("foo");
+          iframeDoc.close();
+      )"));
+
+    // Ensure the URL update from the document.open() above has finished before
+    // continuing by waiting for a renderer round-trip to run this script.
+    EXPECT_TRUE(ExecJs(root->child_at(subframe_index), "true"));
+
+    // The document.open() changed the iframe's URL in the renderer to be the
+    // same as the main frame's URL, but doesn't actually commit a navigation.
+    EXPECT_EQ(GURL("about:blank"), root->child_at(subframe_index)
+                                       ->current_frame_host()
+                                       ->GetLastCommittedURL());
+    EXPECT_EQ(url_1, root->child_at(subframe_index)
+                         ->current_frame_host()
+                         ->last_url_in_renderer());
+    EXPECT_TRUE(root->child_at(subframe_index)->has_committed_real_load());
+
+    // Do a navigation on the "child5" subframe to |url_2|.
+    // The navigation is classified as a new navigation, and appended a new
+    // NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child5", url_2,
+        NAVIGATION_TYPE_NEW_SUBFRAME);
+    expected_entry_count++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
   // 6) Navigate to |url_2| on a new subframe that has done a navigation to
   // a javascript: url that replaces the document.
   {
@@ -3071,6 +3288,10 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 // the initial empty document (but might have done other navigations that stay
 // in the initial empty document), to see if the initial empty documents get
 // replaced/not replaced.
+// TODO(rakina): Most of these cases are not actually running on the initial
+// empty document because they have committed the synchronous non-initial
+// about:blank document. Update these tests or remove the synchronous
+// navigation entirely.
 IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
                        NavigateNewWindow) {
   GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
@@ -3198,6 +3419,49 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     // navigation to finish.
     NavigateWindowAndCheckNavigationTypeIsNewEntry(
         new_contents, url_2, false /* wait_for_previous_navigations */);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 6) Navigate to |url_2| on a new window that has done a document.open().
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 6.");
+
+    // Create a new blank window that won't create a NavigationEntry.
+    Shell* new_shell = OpenBlankWindow(contents());
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+    EXPECT_FALSE(
+        new_contents->GetFrameTree()->root()->has_committed_real_load());
+
+    // Do a document.open() on the blank window.
+    TestNavigationObserver nav_observer(new_contents);
+    EXPECT_TRUE(ExecJs(contents(), R"(
+      last_opened_window.document.open();
+          last_opened_window.document.write("foo");
+          last_opened_window.document.close();
+    )"));
+
+    // Ensure the URL update from the document.open() above has finished before
+    // continuing by waiting for a renderer round-trip to run this script.
+    EXPECT_TRUE(ExecJs(new_contents, "true"));
+
+    // The document.open() changed the window's URL in the renderer to be the
+    // same as the main tab's URL, but doesn't actually commit a navigation.
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_EQ(GURL("about:blank"),
+              new_contents->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(main_window_url,
+              new_contents->GetMainFrame()->last_url_in_renderer());
+    EXPECT_TRUE(
+        new_contents->GetFrameTree()->root()->has_committed_real_load());
+
+    // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
+    // add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_TRUE(controller.GetLastCommittedEntry());
   }

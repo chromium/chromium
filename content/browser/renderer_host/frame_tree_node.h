@@ -168,8 +168,15 @@ class CONTENT_EXPORT FrameTreeNode {
   // has_committed_real_load accordingly.
   void SetCurrentURL(const GURL& url);
 
-  // Returns true iff SetCurrentURL has been called with a non-blank URL.
+  // Returns true if SetCurrentURL has been called with a non-blank URL or
+  // if the current document's input stream has been opened with
+  // document.open(). See the definition of `has_committed_real_load_` for more
+  // details.
   bool has_committed_real_load() const { return has_committed_real_load_; }
+
+  // Sets has_committed_real_load to true. Must only be called after the current
+  // document's input stream has been opened with document.open().
+  void DidOpenDocumentInputStream() { has_committed_real_load_ = true; }
 
   // Returns whether the frame's owner element in the parent document is
   // collapsed, that is, removed from the layout as if it did not exist, as per
@@ -536,8 +543,17 @@ class CONTENT_EXPORT FrameTreeNode {
   // Please refer to {Get,Set}PopupCreatorOrigin() documentation.
   url::Origin popup_creator_origin_;
 
-  // Whether this frame has committed any real load, replacing its initial
-  // about:blank page.
+  // Whether this frame has committed a "real load", replacing its initial
+  // about:blank document and possibly other subsequent about:blank documents
+  // after the initial about:blank document. This will be marked as true if
+  // either of these has happened:
+  // - SetCurrentUrl() has been called with a non about:blank URL.
+  // - The document's input stream has been opened with document.open().
+  // See:
+  // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+  // TODO(https://crbug.com/1215096): Make this true after non-initial
+  // about:blank commits as well, making this only track whether the current
+  // document is the initial empty document or not.
   bool has_committed_real_load_ = false;
 
   // Whether the frame's owner element in the parent document is collapsed.

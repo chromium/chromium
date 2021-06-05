@@ -321,7 +321,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return last_navigation_had_trusted_initiator_;
   }
 
-  void UpdateUrlForDocumentOpen(const KURL& url) { url_ = url; }
+  // Called when the URL needs to be updated due to a document.open() call.
+  void DidOpenDocumentInputStream(const KURL& url);
 
   enum class HistoryNavigationType {
     kDifferentDocument,

@@ -579,6 +579,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // cases, use GetLastCommittedURL instead.
   const GURL& last_successful_url() { return last_successful_url_; }
 
+  // The current URL of the document in the renderer process. Note that this
+  // includes URL updates due to document.open(), so it might be different than
+  // the "last committed URL" provided by GetLastCommittedURL(). In almost all
+  // cases, use GetLastCommittedURL() instead, as this should only be used when
+  // the caller wants to know the current state of the URL in the renderer (e.g.
+  // when predicting whether a navigation will do a replacement or not).
+  const GURL& last_url_in_renderer() const { return last_url_in_renderer_; }
+
   // Returns the http method of the last committed navigation.
   const std::string& last_http_method() { return last_http_method_; }
 
@@ -2348,7 +2356,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)
       override;
-
+  void DidOpenDocumentInputStream(const GURL& url) override;
   // |initiator_policy_container_host_keep_alive_handle| is needed to
   // ensure that the PolicyContainerHost of the initiator RenderFrameHost
   // can still be retrieved even if the RenderFrameHost has been deleted in
@@ -2702,6 +2710,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool ValidateDidCommitParams(NavigationRequest* navigation_request,
                                mojom::DidCommitProvisionalLoadParams* params,
                                bool is_same_document_navigation);
+  // Validates whether we can commit |url| and |origin| for a navigation or a
+  // document.open() URL update.
+  // A return value of true means that the URL & origin can be committed.
+  bool ValidateURLAndOrigin(const GURL& url,
+                            const url::Origin& origin,
+                            bool is_same_document_navigation,
+                            NavigationRequest* navigation_request);
 
   // Updates the site url if the navigation was successful and the page is not
   // an interstitial.
@@ -2964,8 +2979,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // FrameTreeNode has changed its current RenderFrameHost.
   RenderFrameHostImpl* const parent_;
 
-  // Track this frame's last committed URL.
+  // Track this frame's last committed URL. Note that this will be empty before
+  // the first commit in this *RenderFrameHost*, even if the FrameTreeNode has
+  // committed before with a different RenderFrameHost.
   GURL last_committed_url_;
+
+  // Track this frame's last URL on the renderer side, which might be different
+  // than `last_committed_url_` if the frame did document.open().
+  GURL last_url_in_renderer_;
 
   // Track this frame's last committed origin.
   //

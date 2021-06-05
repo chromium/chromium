@@ -427,6 +427,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Called before a frame's page is frozen.
   virtual void WillFreezePage() {}
 
+  // The frame's document changed its URL due to document.open().
+  virtual void DidOpenDocumentInputStream(const WebURL&) {}
+
   // Called when a frame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
 

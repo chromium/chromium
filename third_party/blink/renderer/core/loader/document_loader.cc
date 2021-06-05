@@ -805,6 +805,12 @@ const KURL& DocumentLoader::UrlForHistory() const {
   return UnreachableURL().IsEmpty() ? Url() : UnreachableURL();
 }
 
+void DocumentLoader::DidOpenDocumentInputStream(const KURL& url) {
+  url_ = url;
+  // Let the browser know that we have done a document.open().
+  GetLocalFrameClient().DispatchDidOpenDocumentInputStream(url_);
+}
+
 void DocumentLoader::SetHistoryItemStateForCommit(
     HistoryItem* old_item,
     WebFrameLoadType load_type,

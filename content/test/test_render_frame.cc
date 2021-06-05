@@ -165,6 +165,8 @@ class MockFrameHost : public mojom::FrameHost {
     last_commit_params_ = std::move(params);
   }
 
+  void DidOpenDocumentInputStream(const GURL& url) override {}
+
   void BeginNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_params,
