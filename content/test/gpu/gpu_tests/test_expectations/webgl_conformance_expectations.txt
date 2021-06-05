@@ -422,6 +422,8 @@ crbug.com/1017162 [ win nvidia angle-vulkan passthrough ] conformance/extensions
 crbug.com/angleproject/1506 [ win amd angle-vulkan passthrough ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1004581 [ win amd angle-vulkan passthrough ] conformance/rendering/multisample-corruption.html [ Failure ]
 crbug.com/1010942 [ win amd angle-vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
+crbug.com/1216686 [ win7 amd angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
+crbug.com/1216686 [ win7 amd angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
 ####################
 # Mac failures     #
