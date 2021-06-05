@@ -154,7 +154,13 @@ void Sequence::ReleaseTaskRunner() {
 Sequence::Sequence(const TaskTraits& traits,
                    TaskRunner* task_runner,
                    TaskSourceExecutionMode execution_mode)
-    : TaskSource(traits, task_runner, execution_mode) {}
+    : TaskSource(traits, task_runner, execution_mode) {
+  // Leak sequences when recording/replaying to avoid problems with destructor
+  // behavior running at non-deterministic points due to the threadsafe refcount.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    AddRef();
+  }
+}
 
 Sequence::~Sequence() = default;
 
