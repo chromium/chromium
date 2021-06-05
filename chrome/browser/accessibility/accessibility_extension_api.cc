@@ -494,6 +494,8 @@ AccessibilityPrivateToggleDictationFunction::Run() {
     source = ash::DictationToggleSource::kSwitchAccess;
   else if (extension()->id() == extension_misc::kChromeVoxExtensionId)
     source = ash::DictationToggleSource::kChromevox;
+  else if (extension()->id() == extension_misc::kAccessibilityCommonExtensionId)
+    source = ash::DictationToggleSource::kAccessibilityCommon;
   else
     NOTREACHED();
 

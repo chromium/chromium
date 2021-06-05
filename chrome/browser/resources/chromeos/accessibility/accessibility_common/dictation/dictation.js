@@ -8,5 +8,21 @@
  * --enable-experimental-accessibility-dictation-extension
  */
 export class Dictation {
-  constructor() {}
+  constructor() {
+    chrome.accessibilityPrivate.onToggleDictation.addListener(
+        this.onToggleDictation_.bind(this));
+  }
+
+  /**
+   * Called when Dictation is toggled.
+   * @param {boolean} activated Whether Dictation was just activated.
+   * @private
+   */
+  onToggleDictation_(activated) {
+    if (activated) {
+      // Dictation as a JS extension isn't actually implemented yet, so just
+      // turn off again.
+      chrome.accessibilityPrivate.toggleDictation();
+    }
+  }
 }

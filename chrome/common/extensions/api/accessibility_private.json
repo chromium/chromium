@@ -789,6 +789,19 @@
         "description": "Fired when ChromeVox should show its tutorial.",
         "parameters": [],
         "platforms": ["chromeos"]
+      },
+      {
+        "name": "onToggleDictation",
+        "type": "function",
+        "description": "Fired when Dictation is activated or deactivated using a keyboard shortcut, the button in the tray, or after a call from accessibilityPrivate.toggleDictation",
+        "parameters": [
+          {
+            "name": "activated",
+            "type": "boolean",
+            "description": "True if Dictation was activated, false if it was deactivated."
+          }
+        ],
+        "platforms": ["chromeos"]
       }
     ]
   }

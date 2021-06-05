@@ -68,7 +68,10 @@ enum class DictationToggleSource {
   // Chromevox chrome extension.
   kChromevox,
 
-  kMaxValue = kChromevox
+  // Accessibility Common chrome extension.
+  kAccessibilityCommon,
+
+  kMaxValue = kAccessibilityCommon
 };
 
 enum class SelectToSpeakState {

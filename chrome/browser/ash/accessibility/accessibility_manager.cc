@@ -1584,10 +1584,29 @@ bool AccessibilityManager::ToggleDictation() {
   if (!profile_)
     return false;
 
-  if (!dictation_.get())
-    dictation_ = std::make_unique<Dictation>(profile_);
+  if (!::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+    if (!dictation_.get())
+      dictation_ = std::make_unique<Dictation>(profile_);
 
-  return dictation_->OnToggleDictation();
+    return dictation_->OnToggleDictation();
+  }
+
+  // We are using AccessibilityCommon extension instead of Dictation C++,
+  // so track Dictation state and simply send a notification to the
+  // AccessibilityPrivate API.
+  dictation_active_ = !dictation_active_;
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+  auto event_args = std::vector<base::Value>();
+  event_args.emplace_back(dictation_active_);
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
+      extensions::api::accessibility_private::OnToggleDictation::kEventName,
+      std::move(event_args));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
+
+  return dictation_active_;
 }
 
 const std::string AccessibilityManager::GetFocusRingId(
