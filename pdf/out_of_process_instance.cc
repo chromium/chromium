@@ -89,10 +89,6 @@ constexpr char kJSAttachmentIndex[] = "attachmentIndex";
 // Save attachment data (Plugin -> Page)
 constexpr char kJSSaveAttachmentDataType[] = "saveAttachmentData";
 constexpr char kJSAttachmentDataToSave[] = "dataToSave";
-// Save (Page -> Plugin)
-constexpr char kJSSaveType[] = "save";
-constexpr char kJSToken[] = "token";
-constexpr char kJSSaveRequestType[] = "saveRequestType";
 // Reset print preview mode (Page -> Plugin)
 constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
 constexpr char kJSPrintPreviewUrl[] = "url";
@@ -587,8 +583,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     Print();
   } else if (type == kJSSaveAttachmentType) {
     HandleSaveAttachmentMessage(dict);
-  } else if (type == kJSSaveType) {
-    HandleSaveMessage(dict);
   } else if (type == kJSResetPrintPreviewModeType) {
     HandleResetPrintPreviewModeMessage(dict);
   } else if (type == kJSLoadPreviewPageType) {
@@ -905,12 +899,6 @@ void OutOfProcessInstance::NotifySelectedFindResultChanged(
   SelectedFindResultChanged(current_find_index);
 }
 
-void OutOfProcessInstance::SaveToFile(const std::string& token) {
-  engine()->KillFormFocus();
-  ConsumeSaveToken(token);
-  SaveAs();
-}
-
 void OutOfProcessInstance::Alert(const std::string& message) {
   pp::PDF::ShowAlertDialog(this, message.c_str());
 }
@@ -1088,36 +1076,6 @@ void OutOfProcessInstance::HandleSaveAttachmentMessage(
     message.Set(kJSAttachmentDataToSave, buffer);
   }
   PostMessage(message);
-}
-
-void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
-  if (!(dict.Get(pp::Var(kJSToken)).is_string() &&
-        dict.Get(pp::Var(kJSSaveRequestType)).is_int())) {
-    NOTREACHED();
-    return;
-  }
-  const SaveRequestType request_type = static_cast<SaveRequestType>(
-      dict.Get(pp::Var(kJSSaveRequestType)).AsInt());
-  switch (request_type) {
-    case SaveRequestType::kAnnotation:
-#if BUILDFLAG(ENABLE_INK)
-      // In annotation mode, assume the user will make edits and prefer saving
-      // using the plugin data.
-      SetPluginCanSave(true);
-      SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
-#else
-      NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK)
-      break;
-    case SaveRequestType::kOriginal:
-      SetPluginCanSave(false);
-      SaveToFile(dict.Get(pp::Var(kJSToken)).AsString());
-      SetPluginCanSave(edit_mode());
-      break;
-    case SaveRequestType::kEdited:
-      SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
-      break;
-  }
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {

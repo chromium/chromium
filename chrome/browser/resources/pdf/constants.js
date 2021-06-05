@@ -57,8 +57,8 @@ export const FittingType = {
 export let NamedDestinationMessageData;
 
 /**
- * Enumeration of save message request types. Must Match SaveRequestType in
- * pdf/out_of_process_instance.h.
+ * Enumeration of save message request types. Must match `SaveRequestType` in
+ * pdf/pdf_view_plugin_base.h.
  * @enum {number}
  */
 export const SaveRequestType = {

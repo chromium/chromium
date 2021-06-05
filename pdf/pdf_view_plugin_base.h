@@ -52,6 +52,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
  public:
   using PDFEngine::Client::ScheduleTaskOnMainThread;
 
+  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.js.
+  enum class SaveRequestType {
+    kAnnotation = 0,
+    kOriginal = 1,
+    kEdited = 2,
+  };
+
   PdfViewPluginBase(const PdfViewPluginBase& other) = delete;
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
@@ -327,6 +334,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleGetThumbnailMessage(const base::Value& message);
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
+  void HandleSaveMessage(const base::Value& message);
   void HandleSelectAllMessage(const base::Value& /*message*/);
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
@@ -334,6 +342,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleStopScrollingMessage(const base::Value& /*message*/);
   void HandleUpdateScrollMessage(const base::Value& message);
   void HandleViewportMessage(const base::Value& message);
+
+  // Saves the document to a file.
+  void SaveToFile(const std::string& token);
 
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.

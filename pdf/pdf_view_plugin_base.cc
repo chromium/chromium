@@ -420,6 +420,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
+          {"save", &PdfViewPluginBase::HandleSaveMessage},
           {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
           {"setBackgroundColor",
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
@@ -804,6 +805,34 @@ void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
   engine()->RotateCounterclockwise();
 }
 
+void PdfViewPluginBase::HandleSaveMessage(const base::Value& message) {
+  const std::string& token = *message.FindStringKey("token");
+  int request_type = message.FindIntKey("saveRequestType").value();
+  DCHECK_GE(request_type, static_cast<int>(SaveRequestType::kAnnotation));
+  DCHECK_LE(request_type, static_cast<int>(SaveRequestType::kEdited));
+
+  switch (static_cast<SaveRequestType>(request_type)) {
+    case SaveRequestType::kAnnotation:
+#if BUILDFLAG(ENABLE_INK)
+      // In annotation mode, assume the user will make edits and prefer saving
+      // using the plugin data.
+      SetPluginCanSave(true);
+      SaveToBuffer(token);
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_INK)
+      break;
+    case SaveRequestType::kOriginal:
+      SetPluginCanSave(false);
+      SaveToFile(token);
+      SetPluginCanSave(edit_mode_);
+      break;
+    case SaveRequestType::kEdited:
+      SaveToBuffer(token);
+      break;
+  }
+}
+
 void PdfViewPluginBase::HandleSelectAllMessage(const base::Value& /*message*/) {
   engine()->SelectAll();
 }
@@ -951,6 +980,12 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   scroll_position = BoundScrollPositionToDocument(scroll_position);
   engine()->ScrolledToXPosition(scroll_position.x() * device_scale_);
   engine()->ScrolledToYPosition(scroll_position.y() * device_scale_);
+}
+
+void PdfViewPluginBase::SaveToFile(const std::string& token) {
+  engine()->KillFormFocus();
+  ConsumeSaveToken(token);
+  SaveAs();
 }
 
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
