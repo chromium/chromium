@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -142,10 +143,8 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
     embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
     ASSERT_TRUE(embedded_test_server()->Start());
-
     InProcessBrowserTest::SetUp();
   }
 
@@ -161,19 +160,20 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
         "    -webkit-app-region: drag;"
         "     height: 100px;"
         "     width: 100px;"
+        "     padding-left: env(titlebar-area-x);"
+        "     padding-right: env(titlebar-area-width);"
+        "     padding-top: env(titlebar-area-y);"
+        "     padding-bottom: env(titlebar-area-height);"
         "  }"
         "</style>"
         "<div id=target></div>";
 
     base::FilePath file_path = temp_dir_.GetPath().AppendASCII(
         base::StringPrintf("test_file_%d.html", s_test_file_number++));
-
     base::ScopedAllowBlockingForTesting allow_temp_file_writing;
     base::WriteFile(file_path, kTestHTML);
-
     GURL url = embedded_test_server()->GetURL(
         "/" + file_path.BaseName().AsUTF8Unsafe());
-
     return url;
   }
 
@@ -223,6 +223,75 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     return true;
   }
 
+  void RunCallbackAndWaitForGeometryChangeEvent(
+      base::OnceCallback<void()> callback) {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    EXPECT_TRUE(
+        ExecJs(web_contents->GetMainFrame(),
+               "geometrychangeCount = 0;"
+               "document.title = 'beforegeometrychange';"
+               "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+               "  geometrychangeCount++;"
+               "  overlay_rect_from_event = e.boundingRect;"
+               "  overlay_visible_from_event = e.visible;"
+               "  document.title = 'ongeometrychange';"
+               "}"));
+
+    std::move(callback).Run();
+    content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
+    ignore_result(title_watcher.WaitAndGetTitle());
+  }
+
+  void ToggleWindowControlsOverlayEnabledAndWait() {
+    RunCallbackAndWaitForGeometryChangeEvent(base::BindLambdaForTesting(
+        [this]() { browser_view_->ToggleWindowControlsOverlayEnabled(); }));
+  }
+
+  void ResizeWindowBoundsAndWait(const gfx::Rect& new_bounds) {
+    // Changing the width of widget should trigger a "geometrychange" event.
+    EXPECT_NE(new_bounds.width(), browser_view_->GetLocalBounds().width());
+    RunCallbackAndWaitForGeometryChangeEvent(base::BindLambdaForTesting(
+        [&]() { browser_view_->GetWidget()->SetBounds(new_bounds); }));
+  }
+
+  gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    return gfx::Rect(
+        EvalJs(web_contents, "overlay_rect_from_event.x").ExtractInt(),
+        EvalJs(web_contents, "overlay_rect_from_event.y").ExtractInt(),
+        EvalJs(web_contents, "overlay_rect_from_event.width").ExtractInt(),
+        EvalJs(web_contents, "overlay_rect_from_event.height").ExtractInt());
+  }
+
+  gfx::Rect GetWindowControlOverlayBoundingClientRect() {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    return gfx::Rect(
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().x")
+            .ExtractInt(),
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().y")
+            .ExtractInt(),
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().width")
+            .ExtractInt(),
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().height")
+            .ExtractInt());
+  }
+
+  bool GetWindowControlOverlayVisibility() {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    return EvalJs(web_contents,
+                  "window.navigator.windowControlsOverlay.visible")
+        .ExtractBool();
+  }
+
+  bool GetWindowControlOverlayVisibilityFromEvent() {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
+  }
+
   Browser* app_browser_ = nullptr;
   BrowserView* browser_view_ = nullptr;
   GlassBrowserFrameView* glass_frame_view_ = nullptr;
@@ -234,17 +303,257 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       WindowControlsOverlay) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  // Toggle overlay on, and validate JS API reflects the expected
+  // values.
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
+  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
+  EXPECT_EQ(0, bounds.x());
+  EXPECT_EQ(0, bounds.y());
+  EXPECT_NE(0, bounds.width());
+  EXPECT_NE(0, bounds.height());
+
+  // Toggle overlay off, and validate JS API reflects the expected
+  // values.
+  ToggleWindowControlsOverlayEnabledAndWait();
+  bounds = GetWindowControlOverlayBoundingClientRect();
+  EXPECT_EQ(false, GetWindowControlOverlayVisibility());
+  EXPECT_EQ(0, bounds.x());
+  EXPECT_EQ(0, bounds.y());
+  EXPECT_EQ(0, bounds.width());
+  EXPECT_EQ(0, bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       GeometryChangeEvent) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Store the initial bounding client rect for comparison later.
+  gfx::Rect initial_js_overlay_bounds =
+      GetWindowControlOverlayBoundingClientRect();
+  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
+  new_bounds.set_width(new_bounds.width() - 1);
+  ResizeWindowBoundsAndWait(new_bounds);
+
+  // Validate both the event payload and JS bounding client rect reflect
+  // the new size.
+  gfx::Rect resized_js_overlay_bounds =
+      GetWindowControlOverlayBoundingClientRect();
+  gfx::Rect resized_js_overlay_event_bounds =
+      GetWindowControlOverlayBoundingClientRectFromEvent();
+  EXPECT_EQ(
+      1, EvalJs(browser_view_->GetActiveWebContents(), "geometrychangeCount"));
+  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
+  EXPECT_EQ(true, GetWindowControlOverlayVisibilityFromEvent());
+  EXPECT_EQ(resized_js_overlay_bounds, resized_js_overlay_event_bounds);
+  EXPECT_EQ(initial_js_overlay_bounds.origin(),
+            resized_js_overlay_bounds.origin());
+  EXPECT_NE(initial_js_overlay_bounds.width(),
+            resized_js_overlay_bounds.width());
+  EXPECT_EQ(initial_js_overlay_bounds.height(),
+            resized_js_overlay_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       NoGeometryChangeEventIfOverlayIsOff) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  const char kTestSCript[] =
+      "document.title = 'beforeevent';"
+      "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+      "  document.title = 'ongeometrychange';"
+      "};"
+      "window.onresize = (e) => {"
+      "  document.title = 'onresize';"
+      "};";
+
+  // Window Control Overlay is off by default.
+  auto* web_contents = browser_view_->GetActiveWebContents();
+  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
+  new_bounds.set_width(new_bounds.width() + 10);
+  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestSCript));
+  browser_view_->GetWidget()->SetBounds(new_bounds);
+  content::TitleWatcher title_watcher(web_contents, u"onresize");
+  title_watcher.AlsoWaitForTitle(u"ongeometrychange");
+  EXPECT_EQ(u"onresize", title_watcher.WaitAndGetTitle());
+
+  // Toggle Window Control Ovleray on and then off.
+  ToggleWindowControlsOverlayEnabledAndWait();
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Validate event is not fired
+  new_bounds.set_width(new_bounds.width() - 10);
+  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), kTestSCript));
+  browser_view_->GetWidget()->SetBounds(new_bounds);
+  content::TitleWatcher title_watcher2(web_contents, u"onresize");
+  title_watcher2.AlsoWaitForTitle(u"ongeometrychange");
+  EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
                        WindowControlsOverlayDraggableRegions) {
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
-  browser_view_->ToggleWindowControlsOverlayEnabled();
-  static_cast<views::View*>(glass_frame_view_)->Layout();
+  ToggleWindowControlsOverlayEnabledAndWait();
 
   constexpr gfx::Point kPoint(50, 50);
   EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
   EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetNativeWindow(), kPoint));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       WindowControlsOverlayRTL) {
+  base::i18n::SetICUDefaultLocale("ar");
+  ASSERT_TRUE(base::i18n::IsRTL());
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
+  EXPECT_EQ(true, GetWindowControlOverlayVisibility());
+  EXPECT_NE(0, bounds.x());
+  EXPECT_EQ(0, bounds.y());
+  EXPECT_NE(0, bounds.width());
+  EXPECT_NE(0, bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       CSSRectTestLTR) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  const char kTestScript[] =
+      "var element = document.getElementById('target');"
+      "var titlebarAreaX = "
+      "    getComputedStyle(element).getPropertyValue('padding-left');"
+      "var titlebarAreaXInt = parseInt(titlebarAreaX.split('px')[0]);"
+      "var titlebarAreaY = "
+      "    getComputedStyle(element).getPropertyValue('padding-top');"
+      "var titlebarAreaYInt = parseInt(titlebarAreaY.split('px')[0]);"
+      "var titlebarAreaWidthRect = "
+      "    getComputedStyle(element).getPropertyValue('padding-right');"
+      "var titlebarAreaWidthRectInt = "
+      "    parseInt(titlebarAreaWidthRect.split('px')[0]);"
+      "var titlebarAreaHeightRect = "
+      "    getComputedStyle(element).getPropertyValue('padding-bottom');"
+      "var titlebarAreaHeightRectInt = "
+      "    parseInt(titlebarAreaHeightRect.split('px')[0]);";
+
+  auto* web_contents = browser_view_->GetActiveWebContents();
+  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
+
+  int initial_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  int initial_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  int initial_width_value =
+      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
+  int initial_height_value =
+      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
+
+  EXPECT_EQ(0, initial_x_value);
+  EXPECT_EQ(0, initial_y_value);
+  EXPECT_NE(0, initial_width_value);
+  EXPECT_NE(0, initial_height_value);
+
+  // Change bounds so new values get sent.
+  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
+  new_bounds.set_width(new_bounds.width() + 20);
+  new_bounds.set_height(new_bounds.height() + 20);
+  ResizeWindowBoundsAndWait(new_bounds);
+
+  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
+
+  int updated_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  int updated_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  int updated_width_value =
+      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
+  int updated_height_value =
+      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
+
+  // Changing the window dimensions should only change the overlay width. The
+  // overlay height should remain the same.
+  EXPECT_EQ(initial_x_value, updated_x_value);
+  EXPECT_EQ(initial_y_value, updated_y_value);
+  EXPECT_NE(initial_width_value, updated_width_value);
+  EXPECT_EQ(initial_height_value, updated_height_value);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       CSSRectTestRTL) {
+  base::i18n::SetICUDefaultLocale("ar");
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  const char kTestScript[] =
+      "var element = document.getElementById('target');"
+      "var titlebarAreaX = "
+      "    getComputedStyle(element).getPropertyValue('padding-left');"
+      "var titlebarAreaXInt = parseInt(titlebarAreaX.split('px')[0]);"
+      "var titlebarAreaY = "
+      "    getComputedStyle(element).getPropertyValue('padding-top');"
+      "var titlebarAreaYInt = parseInt(titlebarAreaY.split('px')[0]);"
+      "var titlebarAreaWidthRect = "
+      "    getComputedStyle(element).getPropertyValue('padding-right');"
+      "var titlebarAreaWidthRectInt = "
+      "    parseInt(titlebarAreaWidthRect.split('px')[0]);"
+      "var titlebarAreaHeightRect = "
+      "    getComputedStyle(element).getPropertyValue('padding-bottom');"
+      "var titlebarAreaHeightRectInt = "
+      "    parseInt(titlebarAreaHeightRect.split('px')[0]);";
+
+  auto* web_contents = browser_view_->GetActiveWebContents();
+  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
+
+  int initial_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  int initial_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  int initial_width_value =
+      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
+  int initial_height_value =
+      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
+
+  EXPECT_NE(0, initial_x_value);
+  EXPECT_EQ(0, initial_y_value);
+  EXPECT_NE(0, initial_width_value);
+  EXPECT_NE(0, initial_height_value);
+
+  // Change bounds so new values get sent.
+  gfx::Rect new_bounds = browser_view_->GetLocalBounds();
+  new_bounds.set_width(new_bounds.width() + 15);
+  new_bounds.set_height(new_bounds.height() + 15);
+  ResizeWindowBoundsAndWait(new_bounds);
+
+  EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kTestScript));
+
+  int updated_x_value = EvalJs(web_contents, "titlebarAreaXInt").ExtractInt();
+  int updated_y_value = EvalJs(web_contents, "titlebarAreaYInt").ExtractInt();
+  int updated_width_value =
+      EvalJs(web_contents, "titlebarAreaWidthRectInt").ExtractInt();
+  int updated_height_value =
+      EvalJs(web_contents, "titlebarAreaHeightRectInt").ExtractInt();
+
+  // Changing the window dimensions should only change the overlay width. The
+  // overlay height should remain the same.
+  EXPECT_EQ(initial_x_value, updated_x_value);
+  EXPECT_EQ(initial_y_value, updated_y_value);
+  EXPECT_NE(initial_width_value, updated_width_value);
+  EXPECT_EQ(initial_height_value, updated_height_value);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
