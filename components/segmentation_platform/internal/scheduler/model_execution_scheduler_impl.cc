@@ -8,16 +8,17 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 
 namespace segmentation_platform {
 
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     Observer* observer,
     SegmentInfoDatabase* segment_database,
-    ModelExecutor* model_executor)
+    ModelExecutionManager* model_execution_manager)
     : observer_(observer),
       segment_database_(segment_database),
-      model_executor_(model_executor) {}
+      model_execution_manager_(model_execution_manager) {}
 
 ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
 
@@ -46,8 +47,8 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       segment_id,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_id)));
-  model_executor_->ExecuteModel(segment_id,
-                                outstanding_requests_[segment_id].callback());
+  model_execution_manager_->ExecuteModel(
+      segment_id, outstanding_requests_[segment_id].callback());
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,9 +27,9 @@ class MockModelExecutionObserver : public ModelExecutionScheduler::Observer {
   MOCK_METHOD(void, OnModelExecutionCompleted, (OptimizationTarget));
 };
 
-class MockModelExecutor : public ModelExecutor {
+class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MockModelExecutor() = default;
+  MockModelExecutionManager() = default;
   MOCK_METHOD(void, ExecuteModel, (OptimizationTarget, ModelExecutionCallback));
 };
 
@@ -40,12 +41,12 @@ class ModelExecutionSchedulerTest : public testing::Test {
   void SetUp() override {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-        &observer_, segment_database_.get(), &model_executor_);
+        &observer_, segment_database_.get(), &model_execution_manager_);
   }
 
   base::test::TaskEnvironment task_environment_;
   MockModelExecutionObserver observer_;
-  MockModelExecutor model_executor_;
+  MockModelExecutionManager model_execution_manager_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;
 };
@@ -53,7 +54,8 @@ class ModelExecutionSchedulerTest : public testing::Test {
 TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   segment_database_->FindOrCreateSegment(kTestOptimizationTarget);
 
-  EXPECT_CALL(model_executor_, ExecuteModel(kTestOptimizationTarget, _))
+  EXPECT_CALL(model_execution_manager_,
+              ExecuteModel(kTestOptimizationTarget, _))
       .Times(1);
   model_execution_scheduler_->OnNewModelInfoReady(kTestOptimizationTarget);
 }
@@ -64,7 +66,8 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
   // TODO(shaktisahu): Add tests for expired segments, freshly computed segments
   // etc.
 
-  EXPECT_CALL(model_executor_, ExecuteModel(kTestOptimizationTarget, _))
+  EXPECT_CALL(model_execution_manager_,
+              ExecuteModel(kTestOptimizationTarget, _))
       .Times(1);
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);
 }
