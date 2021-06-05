@@ -154,6 +154,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.EnableProfile.Result"
+    enum="HermesResponseStatus" expires_after="2021-11-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the success rate of enabling an eSIM profile. Note that the result
+    for &quot;already enabled&quot; is considered a success for this metric.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.InstallPendingProfile.Result"
     enum="HermesResponseStatus" expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>
@@ -325,6 +338,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="UnblockSuccess"/>
     <variant name="UnlockSuccess"/>
   </token>
+</histogram>
+
+<histogram name="Network.Cellular.PrepareForConnection.OperationResult"
+    enum="NetworkCellularPrepareForConnectionResult" expires_after="2021-11-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of the high-level operation of preparing a cellular
+    network for a connection. For eSIM networks, this involves several steps
+    such as enabling the profile, each of which can fail or succeed.
+
+    Emitted once the operation completes.
+  </summary>
 </histogram>
 
 <histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"

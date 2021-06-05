@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -221,6 +222,19 @@ class CellularConnectionHandlerTest : public testing::Test {
     return inhibit_lock;
   }
 
+  void SetEnableProfileBehavior(
+      HermesProfileClient::TestInterface::EnableProfileBehavior behavior) {
+    helper_.hermes_profile_test()->SetEnableProfileBehavior(behavior);
+  }
+
+  void ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult result,
+      int expected_count = 1) {
+    histogram_tester_.ExpectBucketCount(
+        "Network.Cellular.PrepareCellularConnection.OperationResult", result,
+        expected_count);
+  }
+
  private:
   void OnSuccess(const std::string& service_path) {
     EXPECT_EQ(expected_service_path_, service_path);
@@ -236,6 +250,7 @@ class CellularConnectionHandlerTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   NetworkStateTestHelper helper_;
   FakeStubCellularNetworksProvider fake_stubs_provider_;
   CellularInhibitor inhibitor_;
@@ -256,6 +271,9 @@ TEST_F(CellularConnectionHandlerTest, NoService) {
                 NetworkConnectionHandler::kErrorNotFound, &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kCouldNotFindNetworkWithIccid);
 }
 
 TEST_F(CellularConnectionHandlerTest, ServiceAlreadyConnectable) {
@@ -268,6 +286,9 @@ TEST_F(CellularConnectionHandlerTest, ServiceAlreadyConnectable) {
   ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
 TEST_F(CellularConnectionHandlerTest, FailsInhibiting) {
@@ -283,11 +304,15 @@ TEST_F(CellularConnectionHandlerTest, FailsInhibiting) {
                 &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kInhibitFailed);
 }
 
 TEST_F(CellularConnectionHandlerTest, NoRelevantEuicc) {
   AddCellularDevice();
   AddCellularService(/*profile_num=*/1);
+  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
   SetServiceIccid(/*profile_num=*/1);
 
   base::RunLoop run_loop;
@@ -295,6 +320,9 @@ TEST_F(CellularConnectionHandlerTest, NoRelevantEuicc) {
                 NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kCouldNotFindRelevantEuicc);
 }
 
 TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
@@ -310,11 +338,17 @@ TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
                 NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kRefreshProfilesFailed);
 }
 
 TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable) {
   const base::TimeDelta kWaitingForConnectableTimeout =
       base::TimeDelta::FromSeconds(30);
+
+  SetEnableProfileBehavior(HermesProfileClient::TestInterface::
+                               EnableProfileBehavior::kNotConnectable);
 
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -323,16 +357,18 @@ TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable) {
   SetServiceIccid(/*profile_num=*/1);
 
   base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
                 NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
+  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
 
   // Let all operations run, then wait for the timeout to occur.
   base::RunLoop().RunUntilIdle();
   AdvanceClock(kWaitingForConnectableTimeout);
 
   run_loop.Run();
+
+  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
+                   kTimeoutWaitingForConnectable);
 }
 
 TEST_F(CellularConnectionHandlerTest, Success) {
@@ -346,7 +382,10 @@ TEST_F(CellularConnectionHandlerTest, Success) {
   ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   run_loop.Run();
+
   ExpectServiceConnectable(/*profile_num=*/1);
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
 TEST_F(CellularConnectionHandlerTest, Success_AlreadyEnabled) {
@@ -364,7 +403,10 @@ TEST_F(CellularConnectionHandlerTest, Success_AlreadyEnabled) {
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
   SetServiceConnectable(/*profile_num=*/1);
   run_loop.Run();
+
   ExpectServiceConnectable(/*profile_num=*/1);
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
 TEST_F(CellularConnectionHandlerTest, ConnectToStub) {
@@ -390,6 +432,8 @@ TEST_F(CellularConnectionHandlerTest, ConnectToStub) {
 
   run_loop.Run();
   ExpectServiceConnectable(/*profile_num=*/1);
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
 TEST_F(CellularConnectionHandlerTest, MultipleRequests) {
@@ -419,6 +463,10 @@ TEST_F(CellularConnectionHandlerTest, MultipleRequests) {
   // Verify that the second service becomes connectable.
   run_loop2.Run();
   ExpectServiceConnectable(/*profile_num=*/2);
+
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess,
+      /*expected_count=*/2);
 }
 
 TEST_F(CellularConnectionHandlerTest, NewProfile) {
@@ -435,6 +483,8 @@ TEST_F(CellularConnectionHandlerTest, NewProfile) {
   // connectable.
   run_loop.Run();
   ExpectServiceConnectable(/*profile_num=*/1);
+  ExpectResult(
+      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
 }  // namespace chromeos

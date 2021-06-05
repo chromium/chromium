@@ -56407,6 +56407,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Elongated Time Wait"/>
 </enum>
 
+<enum name="NetworkCellularPrepareForConnectionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Inhibit failed"/>
+  <int value="3" label="EUICC not found"/>
+  <int value="4" label="Refresh profiles failed"/>
+  <int value="5" label="eSIM profile not found"/>
+  <int value="6" label="Enable profile failed"/>
+  <int value="7" label="Timeout waiting for connectable"/>
+</enum>
+
 <enum name="NetworkCellularPSimActivationState">
   <int value="0" label="Activated"/>
   <int value="1" label="Activating"/>
