@@ -142,6 +142,9 @@ class GpuIntegrationTest(
       # running in emulator on bots.
       browser_args.append('--gpu-watchdog-timeout-seconds=60')
 
+      # Force device scale factor to avoid dependency on
+      browser_args.append('--force-device-scale-factor=1.71875')
+
     return browser_args
 
   @classmethod
