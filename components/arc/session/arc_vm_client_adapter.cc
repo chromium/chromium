@@ -30,6 +30,7 @@
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -223,7 +224,8 @@ std::vector<std::string> GenerateKernelCmdline(
                          BUILDFLAG(USE_IIOSERVICE)),
   };
 
-  ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
+  const ArcVmUreadaheadMode mode =
+      GetArcVmUreadaheadMode(base::BindRepeating(&base::GetSystemMemoryInfo));
   switch (mode) {
     case ArcVmUreadaheadMode::READAHEAD:
       result.push_back("androidboot.arcvm_ureadahead_mode=readahead");
