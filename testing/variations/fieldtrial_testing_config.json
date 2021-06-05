@@ -2294,10 +2294,12 @@
                 {
                     "name": "MinFilelist0MbLockedBrowserText",
                     "params": {
+                        "CrOSLockMainProgramTextMaxSize": "31457280",
                         "CrOSMinFilelistMb": "0"
                     },
                     "enable_features": [
                         "CrOSHugepageRemapAndLockInZygote",
+                        "CrOSLockMainProgramText",
                         "CrOSTuneMinFilelist"
                     ]
                 }
