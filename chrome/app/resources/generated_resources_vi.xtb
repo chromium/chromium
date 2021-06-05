@@ -682,6 +682,7 @@
 <translation id="1706625117072057435">Mức thu phóng</translation>
 <translation id="1708338024780164500">(Không hoạt động)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">Trình duyệt thử nghiệm! Bạn có thể bị mất dữ liệu hay bị xâm phạm quyền riêng tư hoặc sự bảo mật. Vui lòng báo cáo sự cố tại phần: Trợ giúp &gt; "Báo cáo sự cố...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Gốc)</translation>
 <translation id="1709217939274742847">Chọn một phiếu để dùng cho việc xác thực. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Không thể chia sẻ</translation>
@@ -1100,6 +1101,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2144557304298909478">Phát triển ứng dụng Android trong Linux</translation>
 <translation id="2146263598007866206">Các trang web có thể tự động tải những tệp liên quan xuống cùng nhau để tiết kiệm thời gian cho bạn</translation>
 <translation id="2147151613919729065">Để xóa nhật ký ở Chế độ khách, hãy đóng tất cả cửa sổ Khách.</translation>
+<translation id="2147218225094845757">Ẩn bảng điều khiển bên</translation>
 <translation id="2148219725039824548">Lỗi khi kết nối với thư mục chia sẻ. Không tìm thấy thư mục chia sẻ đã chỉ định trên mạng.</translation>
 <translation id="2148756636027685713">Định dạng hoàn tất</translation>
 <translation id="2148892889047469596">Truyền thẻ</translation>
@@ -3179,6 +3181,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4410545552906060960">Dùng một số (mã PIN) thay cho mật khẩu để mở khóa thiết bị. Để đặt mã PIN vào thời điểm khác, hãy chuyển đến mục Cài đặt.</translation>
 <translation id="4411578466613447185">Trình ký mã</translation>
 <translation id="4412698727486357573">Trung tâm trợ giúp</translation>
+<translation id="4413088271097062326">Bạn muốn dùng ứng dụng nào?</translation>
 <translation id="44141919652824029">Cho phép "<ph name="APP_NAME" />" nhận danh sách các thiết bị USB đính kèm?</translation>
 <translation id="4414232939543644979">Cửa sổ ẩn &amp;danh mới</translation>
 <translation id="4414515549596849729">cookie và dữ liệu trang web</translation>
@@ -3952,6 +3955,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5275352920323889391">Cún</translation>
 <translation id="527605982717517565">Luôn cho phép JavaScript trên <ph name="HOST" /></translation>
+<translation id="5277127016695466621">Hiện bảng điều khiển bên</translation>
 <translation id="5278823018825269962">Mã trạng thái</translation>
 <translation id="5280064835262749532">Cập nhật thông tin đăng nhập cho <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Xóa cookie và dữ liệu trang web khi bạn đóng tất cả các cửa sổ</translation>

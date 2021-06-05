@@ -681,6 +681,7 @@
 <translation id="1706625117072057435">జూమ్ స్థాయిలు</translation>
 <translation id="1708338024780164500">(క్రియారహితం)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708860176443612387">ప్రయోగాత్మక బ్రౌజర్! డేటాను కోల్పోవచ్చు లేదా గోప్యత లేదా సెక్యూరిటీకి ప్రమాదం కలగవచ్చు. సహాయం &gt; "సమస్యను రిపోర్ట్ చేయి..."తో దయచేసి సమస్యలను రిపోర్ట్ చేయండి.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (స్థానికం)</translation>
 <translation id="1709217939274742847">ప్రామాణీకరణ కోసం ఉపయోగించాల్సిన టిక్కెట్‌ను ఎంచుకోండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">షేర్ చేయడం సాధ్యపడలేదు</translation>
@@ -1099,6 +1100,7 @@
 <translation id="2144557304298909478">Linux Android యాప్ డెవలప్‌మెంట్</translation>
 <translation id="2146263598007866206">మీ సమయాన్ని సేవ్ చేయడానికి సైట్‌లు ఆటోమేటిక్‌గా సంబంధిత ఫైల్‌లను కలిపి డౌన్‌లోడ్ చేయవచ్చు</translation>
 <translation id="2147151613919729065">గెస్ట్ మోడ్ హిస్టరీని క్లియర్ చేయడానికి, అన్ని గెస్ట్ విండోలను మూసివేయండి.</translation>
+<translation id="2147218225094845757">సైడ్ ప్యానెల్‌ను దాచండి</translation>
 <translation id="2148219725039824548">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. పేర్కొన్న షేర్ నెట్‌వర్క్‌లో కనుగొనబడలేదు.</translation>
 <translation id="2148756636027685713">ఆకృతీకరణ పూర్తి అయ్యింది</translation>
 <translation id="2148892889047469596">ట్యాబ్‌ను ప్రసారం చేయండి</translation>
@@ -3178,6 +3180,7 @@
 <translation id="4410545552906060960">మీ పరికరాన్ని అన్‌లాక్ చేయడానికి పాస్‌వర్డ్‌‌కు బదులుగా సంఖ్య (పిన్)ని ఉపయోగించండి. తర్వాత మీ పిన్‌ను సెట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="4411578466613447185">కోడ్ సైనర్</translation>
 <translation id="4412698727486357573">సహాయ కేంద్రం</translation>
+<translation id="4413088271097062326">మీరు ఏ యాప్‌ను ఉపయోగించాలనుకుంటున్నారు?</translation>
 <translation id="44141919652824029">మీ జోడించబడిన USB పరికరాల జాబితాని పొందడానికి "<ph name="APP_NAME" />"ని అనుమతించాలా?</translation>
 <translation id="4414232939543644979">కొత్త &amp;అజ్ఞాత విండో</translation>
 <translation id="4414515549596849729">కుక్కీలు, సైట్ డేటా</translation>
@@ -3951,6 +3954,7 @@
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
 <translation id="5275352920323889391">కుక్క</translation>
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
+<translation id="5277127016695466621">సైడ్ ప్యానెల్‌ను చూడండి</translation>
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> కోసం ఆధారాలు అప్‌డేట్ చేయండి</translation>
 <translation id="5280243692621919988">మీరు అన్ని బ్రౌజర్ విండోలను మూసివేసేటప్పుడు కుక్కీ‌లు, సైట్ డేటాను క్లియర్ చేయండి</translation>

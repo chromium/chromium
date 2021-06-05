@@ -3166,6 +3166,7 @@
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
+<translation id="4413088271097062326">どのアプリケーションを使用しますか？</translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
@@ -6826,7 +6827,7 @@
 <translation id="8440630305826533614">Linux アプリ</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8447409163267621480">Ctrl キーまたは Alt キーが必要です</translation>
-<translation id="8448729345478502352">画面上のアイテムのサイズを変更します</translation>
+<translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>
 <translation id="8449008133205184768">ペーストしてスタイルを合わせる</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>
