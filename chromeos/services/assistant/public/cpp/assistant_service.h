@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
@@ -155,10 +155,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
 };
 
 using ScopedAssistantInteractionSubscriber =
-    ScopedObserver<Assistant,
-                   AssistantInteractionSubscriber,
-                   &Assistant::AddAssistantInteractionSubscriber,
-                   &Assistant::RemoveAssistantInteractionSubscriber>;
+    base::ScopedObservation<Assistant,
+                            AssistantInteractionSubscriber,
+                            &Assistant::AddAssistantInteractionSubscriber,
+                            &Assistant::RemoveAssistantInteractionSubscriber>;
 
 // Main interface between browser and |chromeos::assistant::Service|.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantService {

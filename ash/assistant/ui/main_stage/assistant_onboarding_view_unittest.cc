@@ -81,7 +81,7 @@ class MockAssistantInteractionSubscriber
           chromeos::assistant::AssistantInteractionSubscriber> {
  public:
   explicit MockAssistantInteractionSubscriber(Assistant* service) {
-    scoped_subscriber_.Add(service);
+    scoped_subscriber_.Observe(service);
   }
 
   ~MockAssistantInteractionSubscriber() override = default;

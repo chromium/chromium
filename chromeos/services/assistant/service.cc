@@ -191,7 +191,7 @@ Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
   DCHECK(identity_manager_);
   chromeos::PowerManagerClient* power_manager_client =
       context_->power_manager_client();
-  power_manager_observer_.Add(power_manager_client);
+  power_manager_observation_.Observe(power_manager_client);
   power_manager_client->RequestStatusUpdate();
 }
 

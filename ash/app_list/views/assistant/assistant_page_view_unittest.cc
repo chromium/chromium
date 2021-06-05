@@ -222,7 +222,7 @@ class AssistantInteractionCounter
  public:
   explicit AssistantInteractionCounter(
       chromeos::assistant::Assistant* service) {
-    interaction_observer_.Add(service);
+    interaction_observer_.Observe(service);
   }
   AssistantInteractionCounter(AssistantInteractionCounter&) = delete;
   AssistantInteractionCounter& operator=(AssistantInteractionCounter&) = delete;
