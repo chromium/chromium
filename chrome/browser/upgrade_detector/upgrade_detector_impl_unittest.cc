@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@ class TestUpgradeDetectorImpl : public UpgradeDetectorImpl {
   ~TestUpgradeDetectorImpl() override = default;
 
   // Exposed for testing.
+  using UpgradeDetector::set_upgrade_detected_time;
   using UpgradeDetectorImpl::clock;
   using UpgradeDetectorImpl::GetThresholdForLevel;
   using UpgradeDetectorImpl::NotifyOnUpgradeWithTimePassed;
@@ -155,6 +157,25 @@ class UpgradeDetectorImplTest : public ::testing::Test {
     }
   }
 
+  // Sets the browser.relaunch_window preference in Local State.
+  void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
+    // Create the dict representing relaunch time interval.
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetIntPath("start.hour", hour);
+    entry.SetIntPath("start.minute", minute);
+    entry.SetIntKey("duration_mins", duration_mins);
+    // Put it in a list.
+    base::Value entries(base::Value::Type::LIST);
+    entries.Append(std::move(entry));
+    // Put the list in the policy value.
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.SetKey("entries", std::move(entries));
+
+    scoped_local_state_.Get()->SetManagedPref(
+        prefs::kRelaunchWindow,
+        std::make_unique<base::Value>(std::move(value)));
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   // Fast-forwards virtual time by |delta|.
@@ -230,34 +251,21 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
   upgrade_detector.Init();
 
-  // Changing the period when no upgrade has been detected updates the
-  // thresholds and nothing else.
-  SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
-
-  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
-                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
-            base::TimeDelta::FromDays(1));
-  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
-                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
-            base::TimeDelta::FromHours(16));
-  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
-                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
-            base::TimeDelta::FromHours(8));
-  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
-                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
-            base::TimeDelta::FromHours(1));
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
-  // Back to default.
-  SetNotificationPeriodPref(base::TimeDelta());
-  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
-                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
-            base::TimeDelta::FromDays(7));
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
   // Pretend that an upgrade was just detected now.
   upgrade_detector.UpgradeDetected(
       TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::TimeDelta::FromDays(7));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            base::TimeDelta::FromDays(4));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            base::TimeDelta::FromDays(2));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            base::TimeDelta::FromHours(1));
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Fast forward an amount that is still in the "don't annoy me" period at the
@@ -267,7 +275,20 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
 
   // Drop the period and notice that nothing changes (still below "very low").
   SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::TimeDelta::FromHours(24));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            base::TimeDelta::FromHours(16));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            base::TimeDelta::FromHours(8));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            base::TimeDelta::FromHours(1));
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
 
@@ -287,6 +308,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Bring it back up.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -302,6 +324,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Drop the period so that the current time is in the "low" annoyance level.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_LOW);
@@ -309,6 +332,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Bring it back up.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -324,6 +348,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Drop the period so that the current time is in the "elevated" level.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
@@ -331,6 +356,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Bring it back up.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -346,6 +372,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Drop the period so that the current time is in the "high" level.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
@@ -359,6 +386,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Bring the period back up.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -374,6 +402,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Drop the period so that the current time is deep in the "high" level.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
@@ -381,6 +410,7 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Bring it back up.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -430,6 +460,8 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
   TestUpgradeDetectorImpl detector(GetMockClock(), GetMockTickClock());
   ::testing::StrictMock<MockUpgradeObserver> mock_observer(&detector);
   detector.Init();
+  // Pretend that an upgrade is detected.
+  detector.UpgradeDetected(TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
 
   // Cache the thresholds for the detector's annoyance levels.
   const base::TimeDelta thresholds[4] = {
@@ -441,8 +473,6 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
       detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
   };
 
-  // Pretend that there's an update.
-  detector.UpgradeDetected(TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Fast forward to the time that very low annoyance should be reached. One
@@ -511,4 +541,105 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   detector.Shutdown();
+}
+
+// Tests that the thresholds are adjusted according to the value of the relaunch
+// window policy when default relaunch notification period is used.
+TEST_F(UpgradeDetectorImplTest, TestDeadlineAdjustmentDefaultPeriod) {
+  TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+
+  upgrade_detector.Init();
+  SetRelaunchWindowPref(/*hour=*/7, /*minute=*/30, /*duration_mins=*/180);
+  RunUntilIdle();
+
+  // Set a custom time to be used as upgrade detected time.
+  base::Time detect_time;
+  ASSERT_TRUE(base::Time::FromString("1 Jan 2018 06:00", &detect_time));
+  upgrade_detector.set_upgrade_detected_time(detect_time);
+  upgrade_detector.UpgradeDetected(
+      TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
+
+  // Deadline is adjusted to fall within relaunch window.
+  base::Time deadline_lower_border, deadline_upper_border;
+  ASSERT_TRUE(
+      base::Time::FromString("8 Jan 2018 07:30", &deadline_lower_border));
+  ASSERT_TRUE(
+      base::Time::FromString("8 Jan 2018 10:30", &deadline_upper_border));
+  EXPECT_GE(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_lower_border - detect_time);
+  EXPECT_LT(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_upper_border - detect_time);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Change in relaunch window preference forces to re-calculate the deadline to
+  // fall within the new time interval.
+  SetRelaunchWindowPref(/*hour=*/12, /*minute=*/30, /*duration_mins=*/120);
+  RunUntilIdle();
+  ASSERT_TRUE(
+      base::Time::FromString("8 Jan 2018 12:30", &deadline_lower_border));
+  ASSERT_TRUE(
+      base::Time::FromString("8 Jan 2018 14:30", &deadline_upper_border));
+  EXPECT_GE(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_lower_border - detect_time);
+  EXPECT_LT(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_upper_border - detect_time);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  upgrade_detector.Shutdown();
+}
+
+// Tests that the thresholds are adjusted according to the value of the relaunch
+// window policy when a custom relaunch notification period is specified.
+TEST_F(UpgradeDetectorImplTest, TestDeadlineAdjustmentCustomPeriod) {
+  TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+
+  upgrade_detector.Init();
+  SetNotificationPeriodPref(base::TimeDelta::FromDays(5));
+  SetRelaunchWindowPref(/*hour=*/7, /*minute=*/30, /*duration_mins=*/180);
+  RunUntilIdle();
+
+  // Set a custom time to be used as upgrade detected time.
+  base::Time detect_time;
+  ASSERT_TRUE(base::Time::FromString("5 Jan 2018 16:00", &detect_time));
+  upgrade_detector.set_upgrade_detected_time(detect_time);
+  upgrade_detector.UpgradeDetected(
+      TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
+
+  // Deadline is adjusted to fall within relaunch window on next day.
+  base::Time deadline_lower_border, deadline_upper_border;
+  ASSERT_TRUE(
+      base::Time::FromString("11 Jan 2018 07:30", &deadline_lower_border));
+  ASSERT_TRUE(
+      base::Time::FromString("11 Jan 2018 10:30", &deadline_upper_border));
+  EXPECT_GE(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_lower_border - detect_time);
+  EXPECT_LT(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_upper_border - detect_time);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Change in relaunch window preference forces to re-calculate the deadline to
+  // fall within the new time interval.
+  SetRelaunchWindowPref(/*hour=*/20, /*minute=*/30, /*duration_mins=*/120);
+  RunUntilIdle();
+  ASSERT_TRUE(
+      base::Time::FromString("10 Jan 2018 20:30", &deadline_lower_border));
+  ASSERT_TRUE(
+      base::Time::FromString("10 Jan 2018 22:30", &deadline_upper_border));
+  EXPECT_GE(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_lower_border - detect_time);
+  EXPECT_LT(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline_upper_border - detect_time);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  upgrade_detector.Shutdown();
 }

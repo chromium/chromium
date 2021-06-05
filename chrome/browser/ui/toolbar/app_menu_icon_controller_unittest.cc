@@ -51,8 +51,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
   base::Time GetHighAnnoyanceDeadline() override;
 
  private:
-  // UpgradeDetector:
-  void OnRelaunchNotificationPeriodPrefChanged() override;
 
   DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);
 };
@@ -66,8 +64,6 @@ base::Time FakeUpgradeDetector::GetHighAnnoyanceDeadline() {
   // This value is not important for this test.
   return base::Time();
 }
-
-void FakeUpgradeDetector::OnRelaunchNotificationPeriodPrefChanged() {}
 
 }  // namespace
 

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
@@ -63,20 +62,12 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // policy settings.
   void CalculateDeadlines();
 
-  // Handles a change to the browser.relaunch_heads_up_period or
-  // browser.relaunch_notification Local State preferences. Calls
-  // NotifyUpgrade() if an upgrade is available.
-  void OnRelaunchPrefChanged();
-
   // UpgradeDetector:
-  void OnRelaunchNotificationPeriodPrefChanged() override;
+  void OnMonitoredPrefsChanged() override;
 
   // chromeos::UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
   void OnUpdateOverCellularOneTimePermissionGranted() override;
-
-  // Triggers NotifyOnUpgrade if thresholds have been changed.
-  void OnThresholdPrefChanged();
 
   // The function that sends out a notification (after a certain time has
   // elapsed) that lets the rest of the UI know we should start notifying the
@@ -109,8 +100,6 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
 
   // Indicates whether there is an update in progress.
   bool update_in_progress_;
-
-  base::WeakPtrFactory<UpgradeDetectorChromeos> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorChromeos);
 };

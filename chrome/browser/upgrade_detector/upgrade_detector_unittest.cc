@@ -9,8 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/json/json_reader.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -39,7 +37,6 @@ class TestUpgradeDetector : public UpgradeDetector {
     return base::TimeDelta();
   }
   base::Time GetHighAnnoyanceDeadline() override { return base::Time(); }
-  void OnRelaunchNotificationPeriodPrefChanged() override {}
 
   // Exposed for testing.
   using UpgradeDetector::AdjustDeadline;
@@ -88,30 +85,20 @@ class UpgradeDetectorTest : public ::testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void DecodeJsonStringAndNormalize(const std::string& json_string,
-                                    base::Value* value) {
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_EQ(parsed_json.error_message, "");
-    ASSERT_TRUE(parsed_json.value);
-    *value = std::move(*parsed_json.value);
-  }
-
-  std::string CreateRelaunchWindowPolicyJson(int hour,
-                                             int minute,
-                                             int duration) {
-    return base::StringPrintf(
-        "{\"entries\": [{\"start\": {\"hour\": %d, \"minute\": %d}, "
-        "\"duration_mins\": %d}]}",
-        hour, minute, duration);
-  }
-
   // Sets the browser.relaunch_window preference in Local State.
   void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
-    base::Value value;
-    DecodeJsonStringAndNormalize(
-        CreateRelaunchWindowPolicyJson(hour, minute, duration_mins), &value);
+    // Create the dict representing relaunch time interval.
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetIntPath("start.hour", hour);
+    entry.SetIntPath("start.minute", minute);
+    entry.SetIntKey("duration_mins", duration_mins);
+    // Put it in a list.
+    base::Value entries(base::Value::Type::LIST);
+    entries.Append(std::move(entry));
+    // Put the list in the policy value.
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.SetKey("entries", std::move(entries));
+
     scoped_local_state_.Get()->SetManagedPref(
         prefs::kRelaunchWindow,
         std::make_unique<base::Value>(std::move(value)));

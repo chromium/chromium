@@ -155,9 +155,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
   base::TimeDelta high_threshold() const { return high_threshold_; }
 
  private:
-  // UpgradeDetector:
-  void OnRelaunchNotificationPeriodPrefChanged() override {}
-
   base::TimeDelta high_threshold_ = base::TimeDelta::FromDays(7);
 
   DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);

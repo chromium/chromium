@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_H_
 #define CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -14,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class UpgradeObserver;
@@ -199,6 +203,9 @@ class UpgradeDetector {
 
   UpgradeDetector(const base::Clock* clock, const base::TickClock* tick_clock);
 
+  // Starts observing changes to Local State preference `pref`.
+  void MonitorPrefChanges(const std::string& pref);
+
   // Returns the notification period specified via the
   // RelaunchNotificationPeriod policy setting, or a zero delta if unset or out
   // of range.
@@ -215,6 +222,10 @@ class UpgradeDetector {
   // setting, or the default one via
   // 'UpgradeDetector::GetDefaultRelaunchWindow()` if unset or set incorrectly.
   static RelaunchWindow GetRelaunchWindow();
+
+  // Returns the relaunch window specified via the RelaunchWindow policy
+  // setting, or nullopt if unset or set incorrectly.
+  static absl::optional<RelaunchWindow> GetRelaunchWindowPolicyValue();
 
   // Returns the default relaunch window within which the relaunch should take
   // place. It is 2am to 4am from Chrome OS and the whole day for others.
@@ -313,14 +324,19 @@ class UpgradeDetector {
   FRIEND_TEST_ALL_PREFIXES(SystemTrayClientTest, UpdateTrayIcon);
   friend class UpgradeMetricsProviderTest;
 
-  // Handles a change to the browser.relaunch_notification_period Local State
-  // preference. Subclasses should call NotifyUpgrade if observers are to be
-  // notified of the change (generally speaking, if an upgrade is available).
-  virtual void OnRelaunchNotificationPeriodPrefChanged() = 0;
+  // Called on the UI thread after one or more monitored prefs have changed. If
+  // an update has been detected, subclasses may need to recompute the schedule
+  // for advancing through the annoyance levels.
+  virtual void OnMonitoredPrefsChanged() {}
 
   // Initiates an Idle check. Tells us whether Chrome has received any
   // input events since the specified time.
   void CheckIdle();
+
+  // Handles a change to the relaunch notification related Local State
+  // preferences. Posts a task to call OnThresholdPrefChanged() if it isn't
+  // already posted and pending for execution.
+  void OnRelaunchPrefChanged();
 
   // A provider of Time to the detector.
   const base::Clock* const clock_;
@@ -348,6 +364,10 @@ class UpgradeDetector {
   // Whether the user has acknowledged the critical update.
   bool critical_update_acknowledged_;
 
+  // Whether a task posted on any relaunch preference change is still pending
+  // for execution.
+  bool pref_change_task_pending_ = false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Whether a factory reset is needed to complete an update.
   bool is_factory_reset_required_ = false;
@@ -373,6 +393,8 @@ class UpgradeDetector {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::ObserverList<UpgradeObserver>::Unchecked observer_list_;
+
+  base::WeakPtrFactory<UpgradeDetector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UpgradeDetector);
 };

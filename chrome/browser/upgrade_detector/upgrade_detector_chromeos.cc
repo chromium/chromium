@@ -9,11 +9,9 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -62,22 +60,7 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
       upgrade_notification_timer_(tick_clock),
       initialized_(false),
       toggled_update_flag_(false),
-      update_in_progress_(false) {
-  // Not all tests provide a PrefService for local_state().
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
-    pref_change_registrar_.Init(local_state);
-    // base::Unretained is safe here because |this| outlives the registrar.
-    pref_change_registrar_.Add(
-        prefs::kRelaunchHeadsUpPeriod,
-        base::BindRepeating(&UpgradeDetectorChromeos::OnRelaunchPrefChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kRelaunchNotification,
-        base::BindRepeating(&UpgradeDetectorChromeos::OnRelaunchPrefChanged,
-                            base::Unretained(this)));
-  }
-}
+      update_in_progress_(false) {}
 
 UpgradeDetectorChromeos::~UpgradeDetectorChromeos() {}
 
@@ -89,6 +72,8 @@ void UpgradeDetectorChromeos::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void UpgradeDetectorChromeos::Init() {
   UpgradeDetector::Init();
+  MonitorPrefChanges(prefs::kRelaunchHeadsUpPeriod);
+  MonitorPrefChanges(prefs::kRelaunchNotification);
   DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
   auto* const build_state = g_browser_process->GetBuildState();
   build_state->AddObserver(this);
@@ -103,7 +88,6 @@ void UpgradeDetectorChromeos::Shutdown() {
   installed_version_updater_.reset();
   g_browser_process->GetBuildState()->RemoveObserver(this);
   DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
-  weak_factory_.InvalidateWeakPtrs();
   upgrade_notification_timer_.Stop();
   UpgradeDetector::Shutdown();
   initialized_ = false;
@@ -187,19 +171,6 @@ void UpgradeDetectorChromeos::CalculateDeadlines() {
   }
 }
 
-void UpgradeDetectorChromeos::OnRelaunchNotificationPeriodPrefChanged() {
-  OnRelaunchPrefChanged();
-}
-
-void UpgradeDetectorChromeos::OnRelaunchPrefChanged() {
-  // Run OnThresholdPrefChanged using SequencedTaskRunner to avoid double
-  // NotifyUpgrade calls in case multiple policies are changed at one moment.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpgradeDetectorChromeos::OnThresholdPrefChanged,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void UpgradeDetectorChromeos::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
   if (status.current_operation() ==
@@ -228,7 +199,7 @@ void UpgradeDetectorChromeos::OnUpdateOverCellularOneTimePermissionGranted() {
   NotifyUpdateOverCellularOneTimePermissionGranted();
 }
 
-void UpgradeDetectorChromeos::OnThresholdPrefChanged() {
+void UpgradeDetectorChromeos::OnMonitoredPrefsChanged() {
   // Check the current stage and potentially notify observers now if a change to
   // the observed policies results in changes to the thresholds.
   if (upgrade_detected_time().is_null())
