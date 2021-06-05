@@ -660,6 +660,8 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
+  // Represents when the traffic counters for a Service were last reset.
+  mojo_base.mojom.Time? traffic_counter_reset_time;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level

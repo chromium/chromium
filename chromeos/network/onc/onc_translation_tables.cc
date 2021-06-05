@@ -234,6 +234,8 @@ const FieldTranslationEntry network_fields[] = {
     // {::onc::network_config::kRestrictedConnectivity, shill::kStateProperty },
     // {::onc::network_config::kSource, shill::kProfileProperty },
     // {::onc::network_config::kMacAddress, shill::kAddressProperty },
+    // {::onc::network_config::kTrafficCounterResetTime,
+    // shill::kTrafficCountersResetTime },
     {nullptr}};
 
 const FieldTranslationEntry ipconfig_fields[] = {

@@ -61,6 +61,7 @@ const char kSourceUserPolicy[] = "UserPolicy";
 const char kSource[] = "Source";
 const char kStaticIPConfig[] = "StaticIPConfig";
 const char kTether[] = "Tether";
+const char kTrafficCounterResetTime[] = "TrafficCounterResetTime";
 const char kType[] = "Type";
 const char kVPN[] = "VPN";
 const char kWiFi[] = "WiFi";

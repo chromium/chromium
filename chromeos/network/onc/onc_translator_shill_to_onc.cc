@@ -663,6 +663,13 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
       }
     }
   }
+
+  absl::optional<double> traffic_counter_reset_time =
+      shill_dictionary_->FindDoubleKey(shill::kTrafficCounterResetTimeProperty);
+  if (traffic_counter_reset_time.has_value()) {
+    onc_object_->SetKey(::onc::network_config::kTrafficCounterResetTime,
+                        base::Value(traffic_counter_reset_time.value()));
+  }
 }
 
 void ShillToONCTranslator::TranslateIPConfig() {

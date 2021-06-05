@@ -84,6 +84,7 @@ ONC_EXPORT extern const char kRestrictedConnectivity[];
 ONC_EXPORT extern const char kConnectable[];
 ONC_EXPORT extern const char kErrorState[];
 ONC_EXPORT extern const char kTether[];
+ONC_EXPORT extern const char kTrafficCounterResetTime[];
 ONC_EXPORT extern const char kType[];
 ONC_EXPORT extern const char kVPN[];
 ONC_EXPORT extern const char kWiFi[];

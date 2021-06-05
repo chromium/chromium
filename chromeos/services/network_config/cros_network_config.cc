@@ -582,6 +582,15 @@ int32_t GetInt32(const base::Value* dict, const char* key) {
   return v ? v->GetInt() : false;
 }
 
+double GetDouble(const base::Value* dict, const char* key) {
+  const base::Value* v = dict->FindKey(key);
+  if (v && !v->is_double()) {
+    NET_LOG(ERROR) << "Expected double, found: " << *v;
+    return false;
+  }
+  return v ? v->GetDouble() : false;
+}
+
 std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
   std::vector<int32_t> result;
   const base::Value* v = dict->FindKey(key);
@@ -1328,6 +1337,11 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       GetDictionary(properties, ::onc::network_config::kSavedIPConfig);
   if (saved_ip_config)
     result->saved_ip_config = GetIPConfig(saved_ip_config);
+
+  double traffic_counter_reset_time =
+      GetDouble(properties, ::onc::network_config::kTrafficCounterResetTime);
+  result->traffic_counter_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMilliseconds(traffic_counter_reset_time));
 
   // Managed properties
   result->ip_address_config_type = GetRequiredManagedString(
