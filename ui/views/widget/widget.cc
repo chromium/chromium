@@ -1136,7 +1136,7 @@ void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
   native_theme_observation_.Reset();
   if (native_theme)
     native_theme_observation_.Observe(native_theme);
-  PropagateNativeThemeChanged();
+  ThemeChanged();
 }
 
 int Widget::GetX() const {
@@ -1626,15 +1626,11 @@ View* Widget::GetFocusTraversableParentView() {
 
 void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   TRACE_EVENT0("ui", "Widget::OnNativeThemeUpdated");
-  PropagateNativeThemeChanged();
+  ThemeChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
-
-void Widget::PropagateNativeThemeChanged() {
-  root_view_->PropagateThemeChanged();
-}
 
 internal::RootView* Widget::CreateRootView() {
   return new internal::RootView(this);
