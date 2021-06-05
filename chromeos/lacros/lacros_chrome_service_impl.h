@@ -37,6 +37,7 @@ namespace chromeos {
 
 class LacrosChromeServiceDelegate;
 class SystemIdleCache;
+class NativeThemeCache;
 
 // Forward declaration for class defined in .cc file that holds most of the
 // business logic of this class.
@@ -308,6 +309,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Requests ash-chrome to send idle info updates.
   void StartSystemIdleCache();
 
+  // Requests ash-chrome to send native theme info updates.
+  void StartNativeThemeCache();
+
   // This function binds a pending receiver or remote by posting the
   // corresponding bind task to the |never_blocking_sequence_|.
   template <typename PendingReceiverOrRemote,
@@ -345,6 +349,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // Receiver and cache of system idle info updates.
   std::unique_ptr<SystemIdleCache> system_idle_cache_;
+
+  // Receiver and cache of native theme info updates.
+  std::unique_ptr<NativeThemeCache> native_theme_cache_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

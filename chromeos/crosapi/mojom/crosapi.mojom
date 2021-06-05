@@ -23,6 +23,7 @@ import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
+import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
@@ -61,8 +62,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 33
-// Next method id: 38
+// Next version: 34
+// Next method id: 39
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -160,6 +161,11 @@ interface Crosapi {
   // Binds the MessageCenter interface for showing notification messages.
   // Added in M86.
   BindMessageCenter@3(pending_receiver<MessageCenter> receiver);
+
+  // Binds the NativeThemeService interface for reading native theme changes.
+  // Added in M93.
+  [MinVersion=33]
+  BindNativeThemeService@38(pending_receiver<NativeThemeService> receiver);
 
   // Binds the MetricsReporting interface for metrics reporting consent.
   // Added in M89.
@@ -364,8 +370,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 20
-// Next id: 20
+// Next version: 21
+// Next id: 21
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -495,6 +501,9 @@ struct BrowserInitParams {
   // on the assumption that Ash is always available as a browser.
   [MinVersion=19]
   bool standalone_browser_is_primary@19;
+
+  [MinVersion=20]
+  NativeThemeInfo? native_theme_info@20;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

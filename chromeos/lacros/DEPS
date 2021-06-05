@@ -4,4 +4,6 @@
 include_rules = [
   "-chrome",
   "-content",
+
+  "+ui/native_theme",
 ]

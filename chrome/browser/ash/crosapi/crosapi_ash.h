@@ -34,6 +34,7 @@ class KeystoreServiceAsh;
 class LocalPrinterAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
+class NativeThemeServiceAsh;
 class PrefsAsh;
 class RemotingAsh;
 class ScreenManagerAsh;
@@ -93,6 +94,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
   void BindMetricsReporting(
       mojo::PendingReceiver<mojom::MetricsReporting> receiver) override;
+  void BindNativeThemeService(
+      mojo::PendingReceiver<mojom::NativeThemeService> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
   void BindScreenManager(
@@ -169,6 +172,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
+  std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;

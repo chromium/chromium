@@ -41,6 +41,7 @@
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
+#include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
@@ -154,6 +155,18 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       system_idle_cache_ = std::make_unique<SystemIdleCache>();
     }
 
+    if (init_params_->native_theme_info) {
+      // Start Lacros' native theme caching, since it is available in Ash.
+      native_theme_cache_ =
+          std::make_unique<NativeThemeCache>(*init_params_->native_theme_info);
+
+      // After construction finishes, start caching.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LacrosChromeServiceImpl::StartNativeThemeCache,
+                         weak_factory_.GetWeakPtr()));
+    }
+
     // Short term workaround: if --crosapi-mojo-platform-channel-handle is
     // available, close --mojo-platform-channel-handle, and remove it
     // from command line. It is for backward compatibility support by
@@ -239,6 +252,10 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::MessageCenter,
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::NativeThemeService,
+      &crosapi::mojom::Crosapi::BindNativeThemeService,
+      Crosapi::MethodMinVersions::kBindNativeThemeServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
   ConstructRemote<crosapi::mojom::Remoting,
@@ -542,6 +559,10 @@ absl::optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
 
 void LacrosChromeServiceImpl::StartSystemIdleCache() {
   system_idle_cache_->Start();
+}
+
+void LacrosChromeServiceImpl::StartNativeThemeCache() {
+  native_theme_cache_->Start();
 }
 
 template <typename PendingReceiverOrRemote,

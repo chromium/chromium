@@ -28,6 +28,7 @@ mojom("mojom") {
     "local_printer.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",
+    "native_theme.mojom",
     "notification.mojom",
     "prefs.mojom",
     "remoting.mojom",

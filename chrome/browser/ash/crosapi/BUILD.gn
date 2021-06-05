@@ -63,6 +63,8 @@ source_set("crosapi") {
     "message_center_ash.h",
     "metrics_reporting_ash.cc",
     "metrics_reporting_ash.h",
+    "native_theme_service_ash.cc",
+    "native_theme_service_ash.h",
     "prefs_ash.cc",
     "prefs_ash.h",
     "remoting_ash.cc",
