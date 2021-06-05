@@ -37,6 +37,10 @@ using MockTerminateGpuCallback =
 
 constexpr gfx::Size kDefaultSize(1024, 768);
 
+// TODO(msisov): add a test to exercise buffer management with non-default scale
+// once all the patches land.
+constexpr int32_t kDefaultScale = 1;
+
 struct InputData {
   bool has_file = false;
   gfx::Size size;
@@ -348,7 +352,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
                                                       kBufferId1);
 
     buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, window_->GetBounds(),
-                                      window_->GetBounds());
+                                      kDefaultScale, window_->GetBounds());
 
     CreateDmabufBasedBufferAndSetTerminateExpectation(true /*fail*/,
                                                       kBufferId1);
@@ -372,7 +376,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
                                                       kBufferId1);
 
     buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, window_->GetBounds(),
-                                      window_->GetBounds());
+                                      kDefaultScale, window_->GetBounds());
 
     DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
                                             kBufferId1, true /*fail*/);
@@ -394,7 +398,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
                                                       kBufferId1);
     // Attach to a surface.
     buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, window_->GetBounds(),
-                                      window_->GetBounds());
+                                      kDefaultScale, window_->GetBounds());
 
     // Created non-attached buffer as well.
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
@@ -427,7 +431,8 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
   // Can't commit for non-existing buffer id.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 5u,
-                                    window_->GetBounds(), window_->GetBounds());
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
 
   Sync();
 }
@@ -442,12 +447,12 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
-      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false,
-      gfx::GpuFenceHandle()));
+      kDefaultScale, window_->GetBounds(), gfx::RectF(), window_->GetBounds(),
+      false, gfx::GpuFenceHandle()));
 
   // Non-existing buffer id
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u,
+      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
       window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false,
       gfx::GpuFenceHandle()));
 
@@ -465,7 +470,8 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
   // Can't commit for non-existing widget.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(gfx::kNullAcceleratedWidget, kBufferId,
-                                    window_->GetBounds(), window_->GetBounds());
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
 
   Sync();
 }
@@ -508,7 +514,8 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   ASSERT_TRUE(!connection_->presentation());
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -519,7 +526,8 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   Sync();
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -548,7 +556,8 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
       .Times(1);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -625,7 +634,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(mock_surface_gpu,
               OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -634,7 +644,8 @@ TEST_P(WaylandBufferManagerTest,
   mock_wp_presentation->set_presentation_callback(nullptr);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -655,7 +666,8 @@ TEST_P(WaylandBufferManagerTest,
   // Commit buffer 3 then send the presentation callback for it. This should
   // not call OnPresentation as OnSubmission hasn't been called yet.
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   mock_wp_presentation->SendPresentationCallback();
   Sync();
@@ -737,7 +749,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   // Commit first buffer
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -755,7 +768,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   // Commit second buffer
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -775,7 +789,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
   // Commit third buffer
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -860,7 +875,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId,
-                                    window_->GetBounds(), window_->GetBounds());
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
   Sync();
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
@@ -893,7 +909,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId2,
-                                    window_->GetBounds(), window_->GetBounds());
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
 
   Sync();
 
@@ -954,8 +971,9 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
     EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
-    buffer_manager_gpu_->CommitBuffer(
-        widget, kDmabufBufferId, window_->GetBounds(), window_->GetBounds());
+    buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId,
+                                      window_->GetBounds(), kDefaultScale,
+                                      window_->GetBounds());
     Sync();
 
     DCHECK(mock_surface->xdg_surface());
@@ -1016,7 +1034,8 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1040,7 +1059,8 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1064,7 +1084,8 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
       .Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId3, _)).Times(0);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1101,7 +1122,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferForDestroyedWindow) {
   Sync();
 
   buffer_manager_gpu_->CommitBuffer(widget, kBufferId, temp_window->GetBounds(),
-                                    temp_window->GetBounds());
+                                    kDefaultScale, temp_window->GetBounds());
 
   Sync();
 
@@ -1133,7 +1154,8 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionSingleBuffer) {
 
   temp_window.reset();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1174,7 +1196,8 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
   EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1194,7 +1217,8 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1206,7 +1230,8 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   temp_window.reset();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1242,7 +1267,8 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1251,11 +1277,13 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
   EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -1306,7 +1334,8 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1316,11 +1345,13 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
   EXPECT_CALL(mock_surface_gpu, OnSubmission(_, _, _)).Times(0);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -1371,7 +1402,8 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1382,12 +1414,14 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
   EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(2);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
   auto* wl_buffer2 = mock_surface->attached_buffer();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -1457,7 +1491,8 @@ TEST_P(WaylandBufferManagerTest,
       .Times(1);
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1479,7 +1514,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1520,7 +1556,8 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   // Commit second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1554,7 +1591,8 @@ TEST_P(WaylandBufferManagerTest,
       .Times(1);
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
 
   Sync();
 
@@ -1603,7 +1641,8 @@ TEST_P(WaylandBufferManagerTest, OnSubmissionCalledForSingleBuffer) {
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   Sync();
 
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
@@ -1650,13 +1689,16 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      bounds, gfx::RectF(), bounds, false, gfx::GpuFenceHandle()));
+      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      gfx::GpuFenceHandle()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2, bounds,
-      gfx::RectF(), bounds, false, gfx::GpuFenceHandle()));
+      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
+      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      gfx::GpuFenceHandle()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3, bounds,
-      gfx::RectF(), bounds, false, gfx::GpuFenceHandle()));
+      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
+      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      gfx::GpuFenceHandle()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
   Sync();
@@ -1715,12 +1757,14 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
       OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK,
                    Truly([](const auto& fence) { return fence.is_null(); })))
       .Times(1);
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
   // Commit the second buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 
@@ -1740,7 +1784,8 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
   Sync();
 
   // Commit the third buffer now.
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, kDefaultScale,
+                                    bounds);
   mock_surface->SendFrameCallback();
   Sync();
 

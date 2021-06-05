@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 
 #include <sync/sync.h>
+#include <cmath>
 #include <memory>
 
 #include "base/bind.h"
@@ -197,6 +198,14 @@ gfx::SurfaceOrigin GbmSurfacelessWayland::GetOrigin() const {
   return gfx::SurfaceOrigin::kTopLeft;
 }
 
+bool GbmSurfacelessWayland::Resize(const gfx::Size& size,
+                                   float scale_factor,
+                                   const gfx::ColorSpace& color_space,
+                                   bool has_alpha) {
+  surface_scale_factor_ = std::ceil(scale_factor);
+  return gl::SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha);
+}
+
 GbmSurfacelessWayland::~GbmSurfacelessWayland() {
   buffer_manager_->UnregisterSurface(widget_);
 }
@@ -243,6 +252,9 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       overlay_configs.push_back(
           ui::ozone::mojom::WaylandOverlayConfig::From(plane.second));
       overlay_configs.back()->buffer_id = plane.first;
+      // The current scale factor of the surface, which is used to determine
+      // the size in pixels of resources allocated by the GPU process.
+      overlay_configs.back()->surface_scale_factor = surface_scale_factor_;
       if (plane.second.z_order == 0)
         overlay_configs.back()->damage_region = submitted_frame->damage_region_;
 #if DCHECK_IS_ON()
