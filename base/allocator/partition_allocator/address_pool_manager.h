@@ -72,7 +72,6 @@ class BASE_EXPORT AddressPoolManager {
     return AddressPoolManagerBitmap::IsManagedByBRPPool(address);
   }
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   static constexpr uint16_t kNotInDirectMap =
       std::numeric_limits<uint16_t>::max();
 
@@ -115,8 +114,6 @@ class BASE_EXPORT AddressPoolManager {
   static const uint16_t* EndOfReservationOffsetTable() {
     return reservation_offset_table_ + kReservationOffsetTableSize;
   }
-
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
  private:
@@ -177,10 +174,9 @@ class BASE_EXPORT AddressPoolManager {
   // supports BackupRefPtr and one that doesn't.
   static constexpr pool_handle kNonBRPPoolHandle = 1;
   static constexpr pool_handle kBRPPoolHandle = 2;
-  friend internal::pool_handle GetNonBRPPool();
-  friend internal::pool_handle GetBRPPool();
+  friend pool_handle GetNonBRPPool();
+  friend pool_handle GetBRPPool();
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   // Allocation size is a multiple of DirectMapAllocationGranularity(), but
   // alignment is kSuperPageSize.
   static constexpr size_t kReservationOffsetTableSize =
@@ -191,7 +187,6 @@ class BASE_EXPORT AddressPoolManager {
                 "kReservationOffsetTableSize should be smaller than 65536.");
 
   static uint16_t reservation_offset_table_[kReservationOffsetTableSize];
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
@@ -200,56 +195,60 @@ class BASE_EXPORT AddressPoolManager {
 };
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
-ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
+ALWAYS_INLINE pool_handle GetNonBRPPool() {
   return AddressPoolManager::kNonBRPPoolHandle;
 }
 
-ALWAYS_INLINE internal::pool_handle GetBRPPool() {
+ALWAYS_INLINE pool_handle GetBRPPool() {
   return AddressPoolManager::kBRPPoolHandle;
 }
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 ALWAYS_INLINE constexpr uint16_t NotInDirectMapOffsetTag() {
-  return internal::AddressPoolManager::kNotInDirectMap;
+  return AddressPoolManager::kNotInDirectMap;
 }
 
 ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
   unsigned table_offset = address >> kSuperPageShift;
-  return internal::AddressPoolManager::ReservationOffsetTable() + table_offset;
+  return AddressPoolManager::ReservationOffsetTable() + table_offset;
 }
 
 ALWAYS_INLINE const uint16_t* EndOfReservationOffsetTable() {
-  return internal::AddressPoolManager::EndOfReservationOffsetTable();
+  return AddressPoolManager::EndOfReservationOffsetTable();
 }
 
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
 ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
-  PA_DCHECK(internal::AddressPoolManager::IsManagedByBRPPool(address));
+#if DCHECK_IS_ON()
+  bool is_in_brp_pool = AddressPoolManager::IsManagedByBRPPool(address);
+  bool is_in_non_brp_pool = AddressPoolManager::IsManagedByNonBRPPool(address);
+#endif
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
-  uint16_t* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
-  if (*offset_ptr == internal::NotInDirectMapOffsetTag())
+  uint16_t* offset_ptr = ReservationOffsetPointer(ptr_as_uintptr);
+  if (*offset_ptr == NotInDirectMapOffsetTag())
     return 0;
   uintptr_t reservation_start =
       (ptr_as_uintptr & kSuperPageBaseMask) -
       (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
-  // Because the first
-  // internal::AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
-  // internal::AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap bytes
-  // of each reserved memory are used as guard pages,
-  // IsManagedByBRPPool(reservation_start) returns false. Need to use
-  // reservation_start + kBytesPer1BitOfBRPPoolBitmap *
-  // kGuardOffsetOfBRPPoolBitmap.
-  PA_DCHECK(internal::AddressPoolManager::IsManagedByBRPPool(reinterpret_cast<
-                                                             void*>(
-      reservation_start +
-      internal::AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
-          internal::AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap)));
-  PA_DCHECK(*internal::ReservationOffsetPointer(reservation_start) == 0);
+#if DCHECK_IS_ON()
+
+  // Make sure the reservation start is in the same pool as |address|.
+  // The beginning of a reservation may be excluded from the BRP pool, so shift
+  // the pointer. Non-BRP pool doesn't have logic.
+  PA_DCHECK(is_in_brp_pool ==
+            AddressPoolManager::IsManagedByBRPPool(reinterpret_cast<void*>(
+                reservation_start +
+                AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+                    AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap)));
+  PA_DCHECK(is_in_non_brp_pool ==
+            AddressPoolManager::IsManagedByNonBRPPool(
+                reinterpret_cast<void*>(reservation_start)));
+  PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
+#endif  // DCHECK_IS_ON()
+
   return reservation_start;
 }
 
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal

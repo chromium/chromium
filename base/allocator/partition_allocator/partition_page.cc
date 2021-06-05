@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
@@ -58,11 +59,13 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   // allocation address.
   ptr -= PartitionPageSize();
 
+  // Make the same GigaCage pool choice as PartitionDirectMap().
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  return {ptr, reserved_size, root->UseBRPPool()};
+  pool_handle pool = root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool();
 #else
-  return {ptr, reserved_size};
+  pool_handle pool = GetNonBRPPool();
 #endif
+  return {ptr, reserved_size, pool == GetBRPPool()};
 }
 
 template <bool thread_safe>
@@ -216,30 +219,44 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 
 void DeferredUnmap::Unmap() {
   PA_DCHECK(ptr && size > 0);
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  if (use_brp_pool) {
-    uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-    uintptr_t ptr_end = ptr_as_uintptr + size;
-    auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
-    // Reset the offset table entries for the given memory before unreserving
-    // it. Since the memory is not unreserved and not available for other
-    // threads, the table entries for the memory are not modified by other
-    // threads either. So we can update the table entries without race
-    // condition.
-    while (ptr_as_uintptr < ptr_end) {
-      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
-      *offset_ptr++ = internal::NotInDirectMapOffsetTag();
-      ptr_as_uintptr += kSuperPageSize;
-    }
-    // After resetting the table entries, unreserve and decommit the memory.
-    internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        internal::GetBRPPool(), ptr, size);
-    return;
+
+  // Make sure the reservation is in the expected pool.
+  // In 32-bit mode, the beginning of a reservation may be excluded from the BRP
+  // pool, so shift the pointer. Non-BRP pool doesn't have logic.
+  PA_DCHECK(use_brp_pool == IsManagedByPartitionAllocBRPPool(
+#if defined(PA_HAS_64_BITS_POINTERS)
+                                ptr
+#else
+                                reinterpret_cast<char*>(ptr) +
+                                AddressPoolManagerBitmap::
+                                        kBytesPer1BitOfBRPPoolBitmap *
+                                    internal::AddressPoolManagerBitmap::
+                                        kGuardOffsetOfBRPPoolBitmap
+#endif
+                                ));
+  PA_DCHECK(use_brp_pool != IsManagedByPartitionAllocNonBRPPool(ptr));
+
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+  PA_DCHECK((ptr_as_uintptr & kSuperPageOffsetMask) == 0);
+  uintptr_t ptr_end = ptr_as_uintptr + size;
+  auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
+  // Reset the offset table entries for the given memory before unreserving
+  // it. Since the memory is not unreserved and not available for other
+  // threads, the table entries for the memory are not modified by other
+  // threads either. So we can update the table entries without race
+  // condition.
+  uint16_t i = 0;
+  while (ptr_as_uintptr < ptr_end) {
+    PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+    PA_DCHECK(*offset_ptr == i++);
+    *offset_ptr++ = internal::NotInDirectMapOffsetTag();
+    ptr_as_uintptr += kSuperPageSize;
   }
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(ptr));
+
+  // After resetting the table entries, unreserve and decommit the memory.
   internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-      internal::GetNonBRPPool(), ptr, size);
+      use_brp_pool ? internal::GetBRPPool() : internal::GetNonBRPPool(), ptr,
+      size);
 }
 
 template struct SlotSpanMetadata<ThreadSafe>;

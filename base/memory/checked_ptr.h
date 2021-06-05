@@ -138,6 +138,9 @@ struct BackupRefPtrImpl {
     // partition page.
 #if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
     if (ret) {
+      // TODO(bartekn): Keep the assert for non-DirectMap as well as for the
+      // first page of DirectMap allocations when ENABLE_BRP_DIRECTMAP_SUPPORT
+      // is on.
       DCHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
              PartitionPageSize());
     }

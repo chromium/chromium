@@ -254,25 +254,21 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       return nullptr;
     }
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-    if (pool == GetBRPPool()) {
-      // No need to hold root->lock_. Now that memory is reserved, no other
-      // overlapping region can be allocated (because of how GigaCage works),
-      // so no other thread can update the same offset table entries at the
-      // same time. Furthermore, nobody will be ready these offsets until this
-      // function returns.
-      uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
-      uintptr_t ptr_end = ptr_start + reserved_size;
-      auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
-      int offset = 0;
-      while (ptr_start < ptr_end) {
-        PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
-        PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
-        *offset_ptr++ = offset++;
-        ptr_start += kSuperPageSize;
-      }
+    // No need to hold root->lock_. Now that memory is reserved, no other
+    // overlapping region can be allocated (because of how GigaCage works),
+    // so no other thread can update the same offset table entries at the
+    // same time. Furthermore, nobody will be ready these offsets until this
+    // function returns.
+    uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t ptr_end = ptr_start + reserved_size;
+    auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
+    int offset = 0;
+    while (ptr_start < ptr_end) {
+      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+      PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
+      *offset_ptr++ = offset++;
+      ptr_start += kSuperPageSize;
     }
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
     auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
         PartitionSuperPageToMetadataArea(ptr));
@@ -492,16 +488,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   if (UNLIKELY(!super_page))
     return nullptr;
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  if (pool == GetBRPPool()) {
-    // The reservation offset table is used to see whether the given SuperPage
-    // is DirectMap allocated or not by comparing the table entry with
-    // NotInDirectMapOffsetTag (!=0). Since the SuperPage is not DirectMap
-    // allocated, the table entry must be NotInDirectMapOffsetTag.
-    *base::internal::ReservationOffsetPointer(reinterpret_cast<uintptr_t>(
-        super_page)) = base::internal::NotInDirectMapOffsetTag();
-  }
-#endif
+  // The reservation offset table is used to see whether the given SuperPage
+  // is DirectMap allocated or not by comparing the table entry with
+  // NotInDirectMapOffsetTag (!=0). Since the SuperPage is not DirectMap
+  // allocated, the table entry must be NotInDirectMapOffsetTag.
+  *base::internal::ReservationOffsetPointer(reinterpret_cast<uintptr_t>(
+      super_page)) = base::internal::NotInDirectMapOffsetTag();
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);

@@ -82,19 +82,21 @@ void PartitionAddressSpace::Init() {
   SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  // Allocate the BRP pool offset table in the BRP pool.
-  void* requested_offset_table_address = reinterpret_cast<void*>(
-      brp_pool_base_address_ + kBRPPoolSize - kBRPPoolOffsetTableSize);
-  void* actual_offset_table_address =
+  // Allocate the reservation offset table from GigaCage. We arbitrarily
+  // picked the end of the BRP pool, so that it can be easily located.
+  void* requested_reservation_offset_table_address =
+      reinterpret_cast<void*>(brp_pool_base_address_ + kBRPPoolSize -
+                              kReservationOffsetTableSizeInMemory);
+  void* actual_reservation_offset_table_address =
       internal::AddressPoolManager::GetInstance()->Reserve(
-          brp_pool_, requested_offset_table_address, kBRPPoolOffsetTableSize);
-  PA_CHECK(requested_offset_table_address == actual_offset_table_address)
-      << "ReservationStartOffsetTable is required to be allocated in the end "
-         "of the BRPPool";
-  RecommitSystemPages(actual_offset_table_address, kBRPPoolOffsetTableSize,
-                      PageReadWrite, PageUpdatePermissions);
-#endif
+          brp_pool_, requested_reservation_offset_table_address,
+          kReservationOffsetTableSizeInMemory);
+  PA_CHECK(requested_reservation_offset_table_address ==
+           actual_reservation_offset_table_address)
+      << "Reservation offset table has to be in a predictable location";
+  RecommitSystemPages(actual_reservation_offset_table_address,
+                      kReservationOffsetTableSizeInMemory, PageReadWrite,
+                      PageUpdatePermissions);
 
   PA_DCHECK(reserved_base_address_ + properties.size == current);
 }

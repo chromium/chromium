@@ -10,6 +10,7 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -48,9 +49,7 @@ static_assert(
 struct DeferredUnmap {
   void* ptr = nullptr;
   size_t size = 0;
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   bool use_brp_pool = false;
-#endif
 
   // In most cases there is no page to unmap and ptr == nullptr. This function
   // is inlined to avoid the overhead of a function call in the common case.

@@ -403,8 +403,8 @@ struct BASE_EXPORT PartitionRoot {
     // On 32-bit systems, we need PartitionPageSize() guard pages at both the
     // beginning and the end of each direct-map allocated memory. This is needed
     // for the BRP pool bitmap which excludes guard pages and operates at
-    // PartitionPageSize() granularity. This is the same as normal buckets
-    // allocations.
+    // PartitionPageSize() granularity. This is to match the behavior of normal
+    // buckets allocations.
     return PartitionPageSize() + PartitionPageSize();
 #else
     return PartitionPageSize() + SystemPageSize();
@@ -789,16 +789,14 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   return slot_span;
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
   uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
   if (!reservation_start)
     return nullptr;
   return reinterpret_cast<void*>(reservation_start + PartitionPageSize());
 }
-#endif
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Gets the pointer to the beginning of the allocated slot.
 //
@@ -822,11 +820,9 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(ptr);
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   void* directmap_slot_start = PartitionAllocGetDirectMapSlotStart(ptr);
   if (UNLIKELY(directmap_slot_start))
     return directmap_slot_start;
-#endif
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
@@ -864,7 +860,6 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   void* directmap_old_slot_start =
       PartitionAllocGetDirectMapSlotStart(adjusted_ptr);
   if (UNLIKELY(directmap_old_slot_start)) {
@@ -872,7 +867,6 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
         reinterpret_cast<char*>(ptr) + delta);
     return directmap_old_slot_start == new_slot_start;
   }
-#endif
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           adjusted_ptr);

@@ -2971,10 +2971,8 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-
 TEST_F(PartitionAllocTest, ReservationOffset) {
-  // For normal buckets, offsets should be 0.
+  // For normal buckets, offsets should be kNotInDirectMap.
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
@@ -3055,8 +3053,6 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
 
   allocator.root()->Free(ptr);
 }
-
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
 // Test for crash http://crbug.com/1169003.
 TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {

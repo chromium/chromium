@@ -236,10 +236,8 @@ AddressPoolManager::Pool::~Pool() = default;
 
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 uint16_t AddressPoolManager::reservation_offset_table_
     [AddressPoolManager::kReservationOffsetTableSize] = {};
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
 static_assert(
     kSuperPageSize % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
