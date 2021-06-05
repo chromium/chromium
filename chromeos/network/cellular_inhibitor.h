@@ -136,6 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   bool HasScanningStarted();
   void CheckForScanningStopped();
   bool HasScanningStopped();
+  void OnScanningChangeTimeout();
 
   void CheckInhibitPropertyIfNeeded();
   void CheckForInhibit();
@@ -160,6 +161,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
 
   size_t uninhibit_attempts_so_far_ = 0;
   base::OneShotTimer set_inhibit_timer_;
+  base::OneShotTimer scanning_change_timer_;
 
   base::ObserverList<Observer> observer_list_;
 

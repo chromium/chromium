@@ -27,6 +27,11 @@ namespace {
 constexpr base::TimeDelta kUninhibitRetryDelay =
     base::TimeDelta::FromSeconds(2);
 
+// Timeout waiting for Cellular device scanning state to change
+// to true and back to false.
+constexpr base::TimeDelta kScanningChangeTimeout =
+    base::TimeDelta::FromSeconds(120);
+
 }  // namespace
 
 CellularInhibitor::InhibitRequest::InhibitRequest(
@@ -184,6 +189,10 @@ void CellularInhibitor::OnUninhibit(bool success) {
     return;
   }
 
+  scanning_change_timer_.Start(
+      FROM_HERE, kScanningChangeTimeout,
+      base::BindOnce(&CellularInhibitor::OnScanningChangeTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
   TransitionToState(State::kWaitingForScanningToStart);
   CheckForScanningStarted();
 }
@@ -229,7 +238,15 @@ bool CellularInhibitor::HasScanningStopped() {
   return !cellular_device->scanning();
 }
 
+void CellularInhibitor::OnScanningChangeTimeout() {
+  NET_LOG(ERROR)
+      << "Timeout waiting for cellular device scanning state to change.";
+  // Assume that inhibit has completed and continue processing other requests.
+  PopRequestAndProcessNext();
+}
+
 void CellularInhibitor::PopRequestAndProcessNext() {
+  scanning_change_timer_.Stop();
   inhibit_requests_.pop();
   TransitionToState(State::kIdle);
   ProcessRequests();
@@ -312,7 +329,7 @@ void CellularInhibitor::CheckInhibitPropertyIfNeeded() {
 }
 
 void CellularInhibitor::OnInhibitPropertyChangeTimeout() {
-  NET_LOG(EVENT) << "Timeout waiting for inhibit property change state_"
+  NET_LOG(EVENT) << "Timeout waiting for inhibit property change state "
                  << state_;
   ReturnSetInhibitPropertyResult(/*success=*/false);
 }

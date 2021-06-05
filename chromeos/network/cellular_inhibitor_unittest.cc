@@ -29,6 +29,9 @@ namespace {
 
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
 
+constexpr base::TimeDelta kScanningChangeTimeout =
+    base::TimeDelta::FromSeconds(120);
+
 enum class GetInhibitedPropertyResult { kTrue, kFalse, kOperationFailed };
 
 class TestObserver : public CellularInhibitor::Observer {
@@ -141,6 +144,10 @@ class CellularInhibitorTest : public testing::Test {
   void FastForwardInhibitPropertyChangeTimeout() {
     task_environment_.FastForwardBy(
         CellularInhibitor::kInhibitPropertyChangeTimeout);
+  }
+
+  void FastForwardScanningChangeTimeout() {
+    task_environment_.FastForwardBy(kScanningChangeTimeout);
   }
 
   size_t GetNumObserverEvents() const {
@@ -283,6 +290,29 @@ TEST_F(CellularInhibitorTest, FailurePropertySetTimeout) {
   FastForwardInhibitPropertyChangeTimeout();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(inhibit_lock);
+}
+
+TEST_F(CellularInhibitorTest, FailureScanningChangeTimeout) {
+  AddCellularDevice();
+
+  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock =
+      InhibitCellularScanningSync(
+          CellularInhibitor::InhibitReason::kInstallingProfile);
+  // Ensure that a valid lock is returned and inhibit reason is returned.
+  EXPECT_TRUE(inhibit_lock);
+  EXPECT_EQ(CellularInhibitor::InhibitReason::kInstallingProfile,
+            GetInhibitReason());
+
+  // Delete lock to start uninhibiting and run till uninhibit is waiting for
+  // scanning state change.
+  inhibit_lock.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that no inhibit reason is returned after timeout.
+  EXPECT_EQ(CellularInhibitor::InhibitReason::kInstallingProfile,
+            GetInhibitReason());
+  FastForwardScanningChangeTimeout();
+  EXPECT_FALSE(GetInhibitReason().has_value());
 }
 
 }  // namespace chromeos
