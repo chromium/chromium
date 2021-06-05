@@ -3648,6 +3648,22 @@
             ]
         }
     ],
+    "GoogleOnContent": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxMostVisitedTiles",
+                        "OmniboxOnFocusSuggestionsContextualWebOnContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "GwpAsanAndroid": [
         {
             "platforms": [
@@ -5332,8 +5348,6 @@
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
-                        "OmniboxMostVisitedTiles",
-                        "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
                     ]
