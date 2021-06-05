@@ -140,6 +140,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
   void SendMessage(base::Value message) override;
+  void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   Image GetPluginImageData() const override;
   void SetFormFieldInFocus(bool in_focus) override;

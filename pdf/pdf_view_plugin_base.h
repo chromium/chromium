@@ -165,6 +165,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // non-blocking.
   virtual void SendMessage(base::Value message) = 0;
 
+  // Invokes the "SaveAs" dialog.
+  virtual void SaveAs() = 0;
+
   void SaveToBuffer(const std::string& token);
 
   // Consumes a token for saving the document.

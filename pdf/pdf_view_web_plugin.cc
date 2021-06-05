@@ -551,6 +551,12 @@ void PdfViewWebPlugin::SendMessage(base::Value message) {
   post_message_sender_.Post(std::move(message));
 }
 
+// TODO(https://crbug.com/1213294): Add a Pepper-free implementation that is
+// equivalent to pp::PDF::SaveAs().
+void PdfViewWebPlugin::SaveAs() {
+  NOTIMPLEMENTED();
+}
+
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
   mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }

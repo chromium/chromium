@@ -177,6 +177,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
   void SendMessage(base::Value message) override;
+  void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   void SetFormFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;

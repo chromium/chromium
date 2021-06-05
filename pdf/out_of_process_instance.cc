@@ -825,6 +825,10 @@ void OutOfProcessInstance::SendMessage(base::Value message) {
   PostMessage(VarFromValue(message));
 }
 
+void OutOfProcessInstance::SaveAs() {
+  pp::PDF::SaveAs(this);
+}
+
 void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
   pepper_image_data_ =
       pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL, PPSizeFromSize(size),
@@ -904,7 +908,7 @@ void OutOfProcessInstance::NotifySelectedFindResultChanged(
 void OutOfProcessInstance::SaveToFile(const std::string& token) {
   engine()->KillFormFocus();
   ConsumeSaveToken(token);
-  pp::PDF::SaveAs(this);
+  SaveAs();
 }
 
 void OutOfProcessInstance::Alert(const std::string& message) {
