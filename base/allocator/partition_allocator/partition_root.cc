@@ -656,10 +656,11 @@ void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
 }
 
 template <bool thread_safe>
-bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
+bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     internal::SlotSpanMetadata<thread_safe>* slot_span,
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
+  PA_DCHECK(internal::IsManagedByDirectMap(slot_span));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   // Note that the new size isn't a bucketed size; this function is called
@@ -733,9 +734,12 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 }
 
 template <bool thread_safe>
-bool PartitionRoot<thread_safe>::TryReallocInPlace(void* ptr,
-                                                   SlotSpan* slot_span,
-                                                   size_t new_size) {
+bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
+    void* ptr,
+    SlotSpan* slot_span,
+    size_t new_size) {
+  PA_DCHECK(internal::IsManagedByNormalBuckets(ptr));
+
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we
   // determine it is a win.
@@ -817,6 +821,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
     auto* old_root = PartitionRoot::FromSlotSpan(slot_span);
     bool success = false;
+    bool tried_in_place_for_direct_map = false;
     {
       internal::ScopedGuard<thread_safe> guard{old_root->lock_};
       // TODO(palmer): See if we can afford to make this a CHECK.
@@ -824,10 +829,11 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       old_usable_size = slot_span->GetUsableSize(old_root);
 
       if (UNLIKELY(slot_span->bucket->is_direct_mapped())) {
+        tried_in_place_for_direct_map = true;
         // We may be able to perform the realloc in place by changing the
         // accessibility of memory pages and, if reducing the size, decommitting
         // them.
-        success = old_root->ReallocDirectMappedInPlace(slot_span, new_size);
+        success = old_root->TryReallocInPlaceForDirectMap(slot_span, new_size);
       }
     }
     if (success) {
@@ -838,8 +844,10 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       return ptr;
     }
 
-    if (old_root->TryReallocInPlace(ptr, slot_span, new_size))
-      return ptr;
+    if (LIKELY(!tried_in_place_for_direct_map)) {
+      if (old_root->TryReallocInPlaceForNormalBuckets(ptr, slot_span, new_size))
+        return ptr;
+    }
   }
 
   // This realloc cannot be resized in-place. Sadness.
