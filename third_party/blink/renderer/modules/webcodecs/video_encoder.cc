@@ -698,21 +698,11 @@ void VideoEncoder::CallOutputCallback(
     decoder_config->setCodedHeight(active_config->options.frame_size.height());
     decoder_config->setCodedWidth(active_config->options.frame_size.width());
 
-    auto* visible_region = VideoFrameRegion::Create();
-    decoder_config->setVisibleRegion(visible_region);
-    visible_region->setTop(0);
-    visible_region->setLeft(0);
-    visible_region->setHeight(active_config->options.frame_size.height());
-    visible_region->setWidth(active_config->options.frame_size.width());
-
     if (active_config->display_size.has_value()) {
-      decoder_config->setDisplayHeight(
+      decoder_config->setDisplayAspectHeight(
           active_config->display_size.value().height());
-      decoder_config->setDisplayWidth(
+      decoder_config->setDisplayAspectWidth(
           active_config->display_size.value().width());
-    } else {
-      decoder_config->setDisplayHeight(visible_region->height());
-      decoder_config->setDisplayWidth(visible_region->width());
     }
 
     if (codec_desc.has_value()) {

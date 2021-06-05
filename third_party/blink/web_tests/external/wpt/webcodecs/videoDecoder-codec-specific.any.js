@@ -10,9 +10,8 @@ const VP9_DATA = {
     codec: 'vp09.00.10.08',
     codedWidth: 320,
     codedHeight: 240,
-    visibleRegion: {left: 0, top: 0, width: 320, height: 240},
-    displayWidth: 320,
-    displayHeight: 240,
+    displayAspectWidth: 320,
+    displayAspectHeight: 240,
   },
   chunks: [
     {offset: 44, size: 3315}, {offset: 3359, size: 203},
@@ -30,9 +29,8 @@ const H264_AVC_DATA = {
     description: {offset: 9490, size: 45},
     codedWidth: 320,
     codedHeight: 240,
-    visibleRegion: {left: 0, top: 0, width: 320, height: 240},
-    displayWidth: 320,
-    displayHeight: 240,
+    displayAspectWidth: 320,
+    displayAspectHeight: 240,
   },
   chunks: [
     {offset: 48, size: 4140}, {offset: 4188, size: 604},
@@ -49,9 +47,8 @@ const H264_ANNEXB_DATA = {
     codec: 'avc1.64000b',
     codedWidth: 320,
     codedHeight: 240,
-    visibleRegion: {left: 0, top: 0, width: 320, height: 240},
-    displayWidth: 320,
-    displayHeight: 240,
+    displayAspectWidth: 320,
+    displayAspectHeight: 240,
   },
   chunks: [
     {offset: 0, size: 4175}, {offset: 4175, size: 602},
@@ -137,9 +134,8 @@ promise_test(async t => {
     codec: CONFIG.codec,
     codedWidth: 1920,
     codedHeight: 1088,
-    visibleRegion: {left: 0, top: 0, width: 1920, height: 1080},
-    displayWidth: 1920,
-    displayHeight: 1080,
+    displayAspectWidth: 1920,
+    displayAspectHeight: 1080,
   };
 
   const support = await(VideoDecoder.isConfigSupported(config));
@@ -161,9 +157,8 @@ promise_test(async t => {
   assert_equals(support.config.codec, config.codec, 'codec');
   assert_equals(support.config.codedWidth, config.codedWidth, 'codedWidth');
   assert_equals(support.config.codedHeight, config.codedHeight, 'codedHeight');
-  assert_object_equals(support.config.visibleRegion, config.visibleRegion, 'visibleRegion');
-  assert_equals(support.config.displayWidth, config.displayWidth, 'displayWidth');
-  assert_equals(support.config.displayHeight, config.displayHeight, 'displayHeight');
+  assert_equals(support.config.displayAspectWidth, config.displayAspectWidth, 'displayAspectWidth');
+  assert_equals(support.config.displayAspectHeight, config.displayAspectHeight, 'displayAspectHeight');
   assert_false(support.config.hasOwnProperty('futureConfigFeature'), 'futureConfigFeature');
 
   if (config.description) {
@@ -187,8 +182,7 @@ promise_test(async t => {
   }
 
   await test(t, {...CONFIG, codedWidth: 0}, 'invalid codedWidth');
-  await test(t, {...CONFIG, visibleRegion: {...CONFIG.visibleRegion, left: 1}}, 'out of bounds visibleRegion');
-  await test(t, {...CONFIG, displayWidth: 0}, 'invalid displayWidth');
+  await test(t, {...CONFIG, displayAspectWidth: 0}, 'invalid displayAspectWidth');
 }, 'Test invalid configs');
 
 promise_test(async t => {
@@ -206,7 +200,6 @@ promise_test(async t => {
   let outputs = 0;
   callbacks.output = frame => {
     outputs++;
-    assert_object_equals(frame.visibleRegion, CONFIG.visibleRegion, 'visibleRegion');
     assert_equals(frame.timestamp, CHUNKS[0].timestamp, 'timestamp');
     frame.close();
   };

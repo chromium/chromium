@@ -18,16 +18,12 @@ dictionary VideoDecoderConfig {
   BufferSource description;
 
   // Hint about the encoded size of the content.
-  // TODO(sandersd): Draft spec marks these as required.
   [EnforceRange] unsigned long codedWidth;
   [EnforceRange] unsigned long codedHeight;
 
-  // Hint about the visible region of the content.
-  VideoFrameRegion visibleRegion;
-
-  // Hint about the pixel aspect ratio of the content.
-  [EnforceRange] unsigned long displayWidth;
-  [EnforceRange] unsigned long displayHeight;
+  // Display aspect ratio of the content.
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
 
   // TODO(sandersd): color space.
   // TODO(sandersd): Constraints (sequential access) and requirements
@@ -37,10 +33,4 @@ dictionary VideoDecoderConfig {
 
   // Hint that decoders should be configured for latency versus throughput.
   boolean optimizeForLatency;
-
-  // DEPRECATED: Use visibleRegion.
-  [EnforceRange] unsigned long cropLeft;
-  [EnforceRange] unsigned long cropTop;
-  [EnforceRange] unsigned long cropWidth;
-  [EnforceRange] unsigned long cropHeight;
 };
