@@ -34,5 +34,10 @@ void LogUninstallProfileResult(HermesResponseStatus status) {
                                 status);
 }
 
+void LogRequestPendingProfilesResult(HermesResponseStatus status) {
+  base::UmaHistogramEnumeration(
+      "Network.Cellular.ESim.RequestPendingProfiles.Result", status);
+}
+
 }  // namespace hermes_metrics
 }  // namespace chromeos
