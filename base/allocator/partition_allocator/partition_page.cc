@@ -227,11 +227,9 @@ void DeferredUnmap::Unmap() {
 #if defined(PA_HAS_64_BITS_POINTERS)
                                 ptr
 #else
-                                reinterpret_cast<char*>(ptr) +
-                                AddressPoolManagerBitmap::
-                                        kBytesPer1BitOfBRPPoolBitmap *
-                                    internal::AddressPoolManagerBitmap::
-                                        kGuardOffsetOfBRPPoolBitmap
+                reinterpret_cast<char*>(ptr) +
+                AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+                    AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap
 #endif
                                 ));
   PA_DCHECK(use_brp_pool != IsManagedByPartitionAllocNonBRPPool(ptr));
@@ -239,7 +237,7 @@ void DeferredUnmap::Unmap() {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK((ptr_as_uintptr & kSuperPageOffsetMask) == 0);
   uintptr_t ptr_end = ptr_as_uintptr + size;
-  auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
+  auto* offset_ptr = ReservationOffsetPointer(ptr_as_uintptr);
   // Reset the offset table entries for the given memory before unreserving
   // it. Since the memory is not unreserved and not available for other
   // threads, the table entries for the memory are not modified by other
@@ -247,16 +245,15 @@ void DeferredUnmap::Unmap() {
   // condition.
   uint16_t i = 0;
   while (ptr_as_uintptr < ptr_end) {
-    PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+    PA_DCHECK(offset_ptr < EndOfReservationOffsetTable());
     PA_DCHECK(*offset_ptr == i++);
-    *offset_ptr++ = internal::NotInDirectMapOffsetTag();
+    *offset_ptr++ = NotInDirectMapOffsetTag();
     ptr_as_uintptr += kSuperPageSize;
   }
 
   // After resetting the table entries, unreserve and decommit the memory.
-  internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-      use_brp_pool ? internal::GetBRPPool() : internal::GetNonBRPPool(), ptr,
-      size);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+      use_brp_pool ? GetBRPPool() : GetNonBRPPool(), ptr, size);
 }
 
 template struct SlotSpanMetadata<ThreadSafe>;
