@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -786,8 +787,15 @@ void LocalFrameView::PerformLayout() {
       }
       HashSet<LayoutBlock*> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Ordered()) {
-        if (!LayoutFromRootObject(*root))
-          continue;
+        {
+#if DCHECK_IS_ON()
+          // TODO(crbug.com/1214198): This should not be needed, but DCHECK
+          // hits.
+          NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
+#endif
+          if (!LayoutFromRootObject(*root))
+            continue;
+        }
 
         // TODO(jfernandez): Perhaps we should store the whole spine instead of
         // the immediate ancestor, so that we could avoid rebuilding the common
@@ -809,6 +817,14 @@ void LocalFrameView::PerformLayout() {
       // Ensure fragment-tree consistency after a subtree layout.
       for (auto* cb : fragment_tree_spines)
         cb->RebuildFragmentTreeSpine();
+#if DCHECK_IS_ON()
+      for (auto* cb : fragment_tree_spines) {
+        // |LayoutNGMixin::UpdateInFlowBlockLayout| may |SetNeedsLayout| to its
+        // containing block. Don't check if it will be re-laid out.
+        if (!cb->NeedsLayout())
+          cb->AssertFragmentTree();
+      }
+#endif
       fragment_tree_spines.clear();
     } else {
       if (HasOrthogonalWritingModeRoots())

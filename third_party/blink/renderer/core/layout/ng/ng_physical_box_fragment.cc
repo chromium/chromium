@@ -26,6 +26,10 @@
 
 namespace blink {
 
+#if DCHECK_IS_ON()
+unsigned NGPhysicalBoxFragment::AllowPostLayoutScope::allow_count_ = 0;
+#endif
+
 namespace {
 
 struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
@@ -398,6 +402,9 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
   // To ensure the fragment tree is consistent, use the post-layout fragment.
+#if DCHECK_IS_ON()
+  AllowPostLayoutScope allow_post_layout_scope;
+#endif
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     children_[i].offset = other.children_[i].offset;
     scoped_refptr<const NGPhysicalFragment> post_layout =
@@ -587,6 +594,9 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   const wtf_size_t fragment_count = box->PhysicalFragmentCount();
   if (UNLIKELY(fragment_count == 0)) {
     // This should not happen, but DCHECK hits. crbug.com/1107204
+#if DCHECK_IS_ON()
+    DCHECK(AllowPostLayoutScope::IsAllowed());
+#endif
     return nullptr;
   }
   if (fragment_count == 1) {
@@ -595,6 +605,9 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     if (UNLIKELY(post_layout != this)) {
       // This can happen at the relayout boundary crbug.com/829028
       // but DCHECKing |IsRelayoutBoundary()| hits. crbug.com/1107204
+#if DCHECK_IS_ON()
+      DCHECK(AllowPostLayoutScope::IsAllowed());
+#endif
       return post_layout;
     }
   }
@@ -1504,6 +1517,15 @@ NGPixelSnappedPhysicalBoxStrut NGPhysicalBoxFragment::BorderWidths() const {
 }
 
 #if DCHECK_IS_ON()
+NGPhysicalBoxFragment::AllowPostLayoutScope::AllowPostLayoutScope() {
+  ++allow_count_;
+}
+
+NGPhysicalBoxFragment::AllowPostLayoutScope::~AllowPostLayoutScope() {
+  DCHECK(allow_count_);
+  --allow_count_;
+}
+
 void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
     const NGPhysicalBoxFragment& other,
     bool check_same_block_size) const {

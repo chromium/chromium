@@ -72,6 +72,20 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     }
   }
 
+#if DCHECK_IS_ON()
+  class AllowPostLayoutScope {
+    STACK_ALLOCATED();
+
+   public:
+    AllowPostLayoutScope();
+    ~AllowPostLayoutScope();
+    static bool IsAllowed() { return allow_count_; }
+
+   private:
+    static unsigned allow_count_;
+  };
+#endif
+
   const NGPhysicalBoxFragment* PostLayout() const;
 
   // Returns the children of |this|.
