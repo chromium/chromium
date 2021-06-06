@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 interface DictionaryTest {
-    void set(optional InternalDictionary testingDictionary = {});
+    [CallWith=Isolate] void set(optional InternalDictionary testingDictionary = {});
     [CallWith=Isolate] InternalDictionary get();
 
-    void setDerived(InternalDictionaryDerived derived);
+    [CallWith=Isolate] void setDerived(InternalDictionaryDerived derived);
     [CallWith=Isolate] InternalDictionaryDerived getDerived();
 
-    void setDerivedDerived(InternalDictionaryDerivedDerived derived);
+    [CallWith=Isolate] void setDerivedDerived(InternalDictionaryDerivedDerived derived);
     [CallWith=Isolate] InternalDictionaryDerivedDerived getDerivedDerived();
 };
