@@ -144,6 +144,12 @@ class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
   PropertyTreeState() = default;
 };
 
+PLATFORM_EXPORT inline PropertyTreeState PropertyTreeStateOrAlias::Unalias()
+    const {
+  return PropertyTreeState(Transform().Unalias(), Clip().Unalias(),
+                           Effect().Unalias());
+}
+
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const PropertyTreeStateOrAlias&);
 

@@ -16,11 +16,6 @@ const PropertyTreeState& PropertyTreeState::Root() {
   return root;
 }
 
-PropertyTreeState PropertyTreeStateOrAlias::Unalias() const {
-  return PropertyTreeState(Transform().Unalias(), Clip().Unalias(),
-                           Effect().Unalias());
-}
-
 String PropertyTreeStateOrAlias::ToString() const {
   return String::Format("t:%p c:%p e:%p", transform_, clip_, effect_);
 }
