@@ -281,7 +281,7 @@ def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):
     Output path.
   """
   trace_processor_path = _EnsureTraceProcessor(trace_processor_path)
-  with tempfile_ext.NamedTemporaryFile() as query_file:
+  with tempfile_ext.NamedTemporaryFile(mode='w+') as query_file:
     query_file.write(EXPORT_JSON_QUERY_TEMPLATE % _SqlString(json_path))
     query_file.close()
     _RunTraceProcessor(

@@ -129,7 +129,7 @@ def _AmortizeProcessingDuration(processing_duration, test_results):
       if 'runDuration' in result and result['runDuration']:
         current_duration = float(result['runDuration'].rstrip('s'))
         new_story_cost = current_duration + per_story_cost
-        result['runDuration'] = unicode(str(new_story_cost) + 's', 'utf-8')
+        result['runDuration'] = str(new_story_cost) + 's'
 
 
 def _AddExtraMetrics(test_results, extra_metrics):
