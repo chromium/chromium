@@ -57,12 +57,17 @@ namespace {
 
 bool RemoveContentType(base::ListValue* args,
                        ContentSettingsType* content_type) {
-  std::string content_type_str;
-  if (!args->GetString(0, &content_type_str))
+  base::Value::ListView args_view = args->GetList();
+
+  if (args_view.empty() || !args_view[0].is_string())
     return false;
+
+  // Not a ref since we remove the underlying value after.
+  std::string content_type_str = args_view[0].GetString();
+
   // We remove the ContentSettingsType parameter since this is added by the
   // renderer, and is not part of the JSON schema.
-  args->Remove(0, nullptr);
+  args->EraseListIter(args_view.begin());
   *content_type =
       extensions::content_settings_helpers::StringToContentSettingsType(
           content_type_str);

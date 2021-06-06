@@ -98,18 +98,17 @@ void SaveDevicePermissionEntry(BrowserContext* context,
     devices = update.Create();
   }
 
-  std::unique_ptr<base::Value> device_entry(entry->ToValue());
+  base::Value device_entry(entry->ToValue());
   // TODO(crbug.com/1187106): Use base::Contains once |devices| not a ListValue.
   DCHECK(std::find(devices->GetList().begin(), devices->GetList().end(),
-                   *device_entry) == devices->GetList().end());
+                   device_entry) == devices->GetList().end());
   devices->Append(std::move(device_entry));
 }
 
 bool MatchesDevicePermissionEntry(const base::DictionaryValue* value,
                                   scoped_refptr<DevicePermissionEntry> entry) {
-  std::string type;
-  if (!value->GetStringWithoutPathExpansion(kDeviceType, &type) ||
-      type != TypeToString(entry->type())) {
+  const std::string* type = value->FindStringKey(kDeviceType);
+  if (!type || *type != TypeToString(entry->type())) {
     return false;
   }
   absl::optional<int> vendor_id = value->FindIntKey(kDeviceVendorId);
@@ -120,10 +119,9 @@ bool MatchesDevicePermissionEntry(const base::DictionaryValue* value,
   if (!product_id || product_id.value() != entry->product_id()) {
     return false;
   }
-  std::u16string serial_number;
-  if (!value->GetStringWithoutPathExpansion(kDeviceSerialNumber,
-                                            &serial_number) ||
-      serial_number != entry->serial_number()) {
+  const std::string* serial_number = value->FindStringKey(kDeviceSerialNumber);
+  if (!serial_number ||
+      base::UTF8ToUTF16(*serial_number) != entry->serial_number()) {
     return false;
   }
   return true;
@@ -141,15 +139,17 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
     return;
   }
 
-  for (size_t i = 0; i < devices->GetSize(); ++i) {
+  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
+       ++it) {
     base::DictionaryValue* dict_value;
-    if (!devices->GetDictionary(i, &dict_value)) {
+    if (!it->GetAsDictionary(&dict_value)) {
       continue;
     }
     if (!MatchesDevicePermissionEntry(dict_value, entry)) {
       continue;
     }
-    devices->Set(i, entry->ToValue());
+
+    *it = entry->ToValue();
     break;
   }
 }
@@ -165,15 +165,16 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
     return;
   }
 
-  for (size_t i = 0; i < devices->GetSize(); ++i) {
+  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
+       ++it) {
     base::DictionaryValue* dict_value;
-    if (!devices->GetDictionary(i, &dict_value)) {
+    if (!it->GetAsDictionary(&dict_value)) {
       continue;
     }
     if (!MatchesDevicePermissionEntry(dict_value, entry)) {
       continue;
     }
-    devices->Remove(i, nullptr);
+    devices->EraseListIter(it);
     break;
   }
 }
@@ -312,34 +313,30 @@ bool DevicePermissionEntry::IsPersistent() const {
   return !serial_number_.empty();
 }
 
-std::unique_ptr<base::Value> DevicePermissionEntry::ToValue() const {
+base::Value DevicePermissionEntry::ToValue() const {
   if (!IsPersistent()) {
-    return nullptr;
+    return base::Value();
   }
 
   DCHECK(!serial_number_.empty());
-  std::unique_ptr<base::DictionaryValue> entry_dict(
-      DictionaryBuilder()
-          .Set(kDeviceType, TypeToString(type_))
-          .Set(kDeviceVendorId, vendor_id_)
-          .Set(kDeviceProductId, product_id_)
-          .Set(kDeviceSerialNumber, serial_number_)
-          .Build());
+  base::Value entry_dict(base::Value::Type::DICTIONARY);
+  entry_dict.SetStringKey(kDeviceType, TypeToString(type_));
+  entry_dict.SetIntKey(kDeviceVendorId, vendor_id_);
+  entry_dict.SetIntKey(kDeviceProductId, product_id_);
+  entry_dict.SetStringKey(kDeviceSerialNumber, serial_number_);
 
   if (!manufacturer_string_.empty()) {
-    entry_dict->SetKey(kDeviceManufacturerString,
-                       base::Value(manufacturer_string_));
+    entry_dict.SetStringKey(kDeviceManufacturerString, manufacturer_string_);
   }
   if (!product_string_.empty()) {
-    entry_dict->SetKey(kDeviceProductString, base::Value(product_string_));
+    entry_dict.SetStringKey(kDeviceProductString, product_string_);
   }
   if (!last_used_.is_null()) {
-    entry_dict->SetKey(
-        kDeviceLastUsed,
-        base::Value(base::NumberToString(last_used_.ToInternalValue())));
+    entry_dict.SetStringKey(kDeviceLastUsed,
+                            base::NumberToString(last_used_.ToInternalValue()));
   }
 
-  return std::move(entry_dict);
+  return entry_dict;
 }
 
 std::u16string DevicePermissionEntry::GetPermissionMessageString() const {

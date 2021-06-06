@@ -145,7 +145,7 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
   std::string storage_area_string;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &storage_area_string));
 
-  args_->Remove(0, nullptr);
+  args_->EraseListIter(args_->GetList().begin());
   storage_area_ = StorageAreaFromString(storage_area_string);
   EXTENSION_FUNCTION_VALIDATE(storage_area_ != StorageAreaNamespace::kInvalid);
 

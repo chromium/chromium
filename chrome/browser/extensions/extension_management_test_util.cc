@@ -313,7 +313,7 @@ void ExtensionManagementPrefUpdaterBase::RemoveStringFromList(
     const std::string& str) {
   base::ListValue* list_value = nullptr;
   if (pref_->GetList(path, &list_value))
-    CHECK(list_value->Remove(base::Value(str), nullptr));
+    CHECK_GT(list_value->EraseListValue(base::Value(str)), 0u);
 }
 
 // ExtensionManagementPolicyUpdater --------------------------------------------

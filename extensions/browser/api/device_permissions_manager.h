@@ -62,9 +62,9 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
   // it to ExtensionPrefs. Currently this means it has a serial number string.
   bool IsPersistent() const;
 
-  // Convert the device to a serializable value, returns a null pointer if the
-  // entry is not persistent.
-  std::unique_ptr<base::Value> ToValue() const;
+  // Convert the device to a serializable value, returns an is_none() value
+  // if the entry is not persistent.
+  base::Value ToValue() const;
 
   std::u16string GetPermissionMessageString() const;
 

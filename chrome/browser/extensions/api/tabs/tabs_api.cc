@@ -1557,7 +1557,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 
   int new_index = params->move_properties.index;
   int* window_id = params->move_properties.window_id.get();
-  std::unique_ptr<base::ListValue> tab_values(new base::ListValue());
+  base::ListValue tab_values;
 
   size_t num_tabs = 0;
   std::string error;
@@ -1565,13 +1565,13 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
     std::vector<int>& tab_ids = *params->tab_ids.as_integers;
     num_tabs = tab_ids.size();
     for (int tab_id : tab_ids) {
-      if (!MoveTab(tab_id, &new_index, tab_values.get(), window_id, &error))
+      if (!MoveTab(tab_id, &new_index, &tab_values, window_id, &error))
         return RespondNow(Error(std::move(error)));
     }
   } else {
     EXTENSION_FUNCTION_VALIDATE(params->tab_ids.as_integer);
     num_tabs = 1;
-    if (!MoveTab(*params->tab_ids.as_integer, &new_index, tab_values.get(),
+    if (!MoveTab(*params->tab_ids.as_integer, &new_index, &tab_values,
                  window_id, &error)) {
       return RespondNow(Error(std::move(error)));
     }
@@ -1585,15 +1585,12 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   if (num_tabs == 0)
     return RespondNow(Error("No tabs given."));
   if (num_tabs == 1) {
-    std::unique_ptr<base::Value> value;
-    CHECK(tab_values->Remove(0, &value));
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(value))));
+    CHECK_EQ(1u, tab_values.GetList().size());
+    return RespondNow(OneArgument(std::move(tab_values.GetList()[0])));
   }
 
   // Return the results as an array if there are multiple tabs.
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(tab_values))));
+  return RespondNow(OneArgument(std::move(tab_values)));
 }
 
 bool TabsMoveFunction::MoveTab(int tab_id,

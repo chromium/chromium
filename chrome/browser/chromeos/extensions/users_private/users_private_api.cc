@@ -104,7 +104,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   // asynchronous and sequential. Before previous write comes back, cached
   // list is stale and should not be used for appending. See
   // http://crbug.com/127215
-  std::unique_ptr<base::ListValue> email_list;
+  base::Value email_list(base::Value::Type::LIST);
 
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
@@ -112,12 +112,8 @@ std::unique_ptr<base::ListValue> GetUsersList(
 
   std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
       prefs_util->GetPref(chromeos::kAccountsPrefUsers);
-  if (users_pref_object->value) {
-    const base::ListValue* existing = nullptr;
-    users_pref_object->value->GetAsList(&existing);
-    email_list.reset(existing->DeepCopy());
-  } else {
-    email_list = std::make_unique<base::ListValue>();
+  if (users_pref_object->value && users_pref_object->value->is_list()) {
+    email_list = users_pref_object->value->Clone();
   }
 
   const user_manager::UserManager* user_manager =
@@ -126,12 +122,12 @@ std::unique_ptr<base::ListValue> GetUsersList(
   // Remove all supervised users. On the next step only supervised users
   // present on the device will be added back. Thus not present SU are
   // removed. No need to remove usual users as they can simply login back.
-  for (size_t i = 0; i < email_list->GetSize(); ++i) {
-    std::string email;
-    email_list->GetString(i, &email);
-    if (user_manager->IsDeprecatedSupervisedAccountId(
-            AccountId::FromUserEmail(email))) {
-      email_list->Remove(i, nullptr);
+  base::Value::ListView email_list_view = email_list.GetList();
+  for (size_t i = 0; i < email_list_view.size(); ++i) {
+    const std::string* email = email_list_view[i].GetIfString();
+    if (email && user_manager->IsDeprecatedSupervisedAccountId(
+                     AccountId::FromUserEmail(*email))) {
+      email_list.EraseListIter(email_list_view.begin() + i);
       --i;
     }
   }
@@ -139,20 +135,20 @@ std::unique_ptr<base::ListValue> GetUsersList(
   const user_manager::UserList& users = user_manager->GetUsers();
   for (const auto* user : users) {
     base::Value email_value(user->GetAccountId().GetUserEmail());
-    if (!base::Contains(email_list->GetList(), email_value))
-      email_list->Append(std::move(email_value));
+    if (!base::Contains(email_list_view, email_value))
+      email_list.Append(std::move(email_value));
   }
 
   if (ash::OwnerSettingsServiceAsh* service =
           ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
               browser_context)) {
-    service->Set(chromeos::kAccountsPrefUsers, *email_list.get());
+    service->Set(chromeos::kAccountsPrefUsers, email_list);
   }
 
   // Now populate the list of User objects for returning to the JS.
-  for (size_t i = 0; i < email_list->GetSize(); ++i) {
-    std::string email;
-    email_list->GetString(i, &email);
+  for (size_t i = 0; i < email_list_view.size(); ++i) {
+    const std::string* maybe_email = email_list_view[i].GetIfString();
+    std::string email = maybe_email ? *maybe_email : std::string();
     AccountId account_id = AccountId::FromUserEmail(email);
     const user_manager::User* user = user_manager->FindUser(account_id);
     user_list->Append(

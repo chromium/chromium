@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
@@ -707,15 +708,8 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
       !filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
     return;
   }
-
-  for (size_t i = 0; i < filter_list->GetSize(); i++) {
-    DictionaryValue* filter_value = nullptr;
-    CHECK(filter_list->GetDictionary(i, &filter_value));
-    if (*filter_value == *filter) {
-      filter_list->Remove(i, nullptr);
-      break;
-    }
-  }
+  filter_list->EraseListIter(
+      base::ranges::find(filter_list->GetList(), *filter));
 }
 
 const DictionaryValue* EventRouter::GetFilteredEvents(

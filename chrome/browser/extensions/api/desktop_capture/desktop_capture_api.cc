@@ -45,7 +45,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
                                                             request_id_, this);
 
-  args_->Remove(0, NULL);
+  args_->EraseListIter(args_->GetList().begin());
 
   std::unique_ptr<api::desktop_capture::ChooseDesktopMedia::Params> params =
       api::desktop_capture::ChooseDesktopMedia::Params::Create(*args_);
