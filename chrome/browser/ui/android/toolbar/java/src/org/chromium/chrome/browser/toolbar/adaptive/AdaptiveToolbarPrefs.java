@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 
 /**
- * A utility class for handling adaptive toolbar cuistomization user settings used by {@link
+ * A utility class for handling adaptive toolbar customization user settings used by {@link
  * AdaptiveToolbarButtonController}.
  */
 public class AdaptiveToolbarPrefs {
@@ -42,7 +42,7 @@ public class AdaptiveToolbarPrefs {
 
     /**
      * Set customization setting.
-     * @param setting The {@link AdaptiveToolbarButtonVariant} for this Preference.
+     * @param settings The {@link AdaptiveToolbarButtonVariant} for this Preference.
      */
     public static void saveToolbarButtonManualOverride(@AdaptiveToolbarButtonVariant int settings) {
         SharedPreferencesManager.getInstance().writeInt(

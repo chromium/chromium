@@ -703,7 +703,8 @@ public class RootUiCoordinator
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
                             mActivityTabProvider, mActivity.getLifecycleDispatcher(),
                             mActivity.getModalDialogManager(), voiceSearchDelegate);
-            if (AdaptiveToolbarFeatures.isEnabled()) {
+            // TODO(shaktisahu): Add async mechanism for handling segmentation.
+            if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
                 OptionalNewTabButtonController newTabButtonController =
                         new OptionalNewTabButtonController(mActivity,
                                 mActivity.getLifecycleDispatcher(),

@@ -49,7 +49,8 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
      */
     public void addButtonVariant(
             @AdaptiveToolbarButtonVariant int variant, ButtonDataProvider buttonProvider) {
-        assert AdaptiveToolbarFeatures.isEnabled() : "Adaptive toolbar button is disabled";
+        assert AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
+            : "Adaptive toolbar button is disabled";
         assert variant >= 0
                 && variant < AdaptiveToolbarButtonVariant.NUM_ENTRIES
             : "invalid adaptive button variant: "

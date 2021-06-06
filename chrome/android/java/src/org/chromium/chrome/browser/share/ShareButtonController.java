@@ -187,7 +187,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     }
 
     private static boolean isFeatureEnabled() {
-        if (AdaptiveToolbarFeatures.isEnabled()) {
+        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
             return AdaptiveToolbarFeatures.getSingleVariantMode()
                     == AdaptiveToolbarButtonVariant.SHARE;
         } else {
