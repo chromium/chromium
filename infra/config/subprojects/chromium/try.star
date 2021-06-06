@@ -679,26 +679,6 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
-    name = "android_angle_vk32_deqp_rel_ng",
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-try_.chromium_angle_builder(
-    name = "android_angle_vk32_rel_ng",
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-try_.chromium_angle_builder(
-    name = "android_angle_vk64_deqp_rel_ng",
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-try_.chromium_angle_builder(
-    name = "android_angle_vk64_rel_ng",
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-try_.chromium_angle_builder(
     name = "fuchsia-angle-rel",
     os = os.LINUX_BIONIC_REMOVE,
 )

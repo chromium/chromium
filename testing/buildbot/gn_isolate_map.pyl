@@ -112,10 +112,6 @@
     "label": "//android_webview/test:android_webview_unittests",
     "type": "console_test_launcher",
   },
-  "angle_apks": {
-    "label": "//third_party/angle:angle_apks",
-    "type": "additional_compile_target",
-  },
   "angle_deqp_egl_tests": {
     "label": "//third_party/angle/src/tests:angle_deqp_egl_tests",
     "type": "script",

@@ -1185,55 +1185,6 @@
           'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
         },
       },
-      'android-angle-perf-arm64-builder': {},
-      'android-angle-perf-arm64-pixel2': {
-        'os_type': 'android',
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'gpu_angle_perf_isolated_scripts',
-        },
-      },
-      'android-angle-vk-arm-builder': {
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
-      },
-      'android-angle-vk-arm-pixel2': {
-        'os_type': 'android',
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_android_vulkan_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
-        },
-      },
-      'android-angle-vk-arm64-builder': {
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
-      },
-      'android-angle-vk-arm64-pixel2': {
-        'os_type': 'android',
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_android_vulkan_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
-        },
-      },
       'fuchsia-angle-builder': {
         'additional_compile_targets': [
           'angle_end2end_tests',
@@ -3847,78 +3798,6 @@
         },
       },
       # END Fake builder used as mirror targets for ANGLE's GPU tryservers
-      'Android FYI 32 Vk Release (Pixel 2)': {
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
-        },
-      },
-      'Android FYI 32 dEQP Vk Release (Pixel 2)': {
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_android_vulkan_gtests',
-        },
-      },
-      'Android FYI 64 Perf (Pixel 2)': {
-        'os_type': 'android',
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'gpu_angle_perf_isolated_scripts',
-        },
-      },
-      'Android FYI 64 Vk Release (Pixel 2)': {
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_gtests',
-          'isolated_scripts': 'gpu_angle_isolated_scripts',
-        },
-      },
-      'Android FYI 64 dEQP Vk Release (Pixel 2)': {
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'enable_resultdb',
-          'gpu-swarming-pool',
-          'android_q',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_android_vulkan_gtests',
-        },
-      },
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',

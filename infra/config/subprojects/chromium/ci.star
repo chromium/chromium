@@ -139,10 +139,9 @@ consoles.console_view(
 consoles.console_view(
     name = "chromium.angle",
     ordering = {
-        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "Mac", "iOS", "Windows", "Perf"],
+        None: ["Android", "Fuchsia", "Linux", "Mac", "iOS", "Windows", "Perf"],
         "*builder*": ["Builder"],
         "Android": "*builder*",
-        "AndroidVk": "*builder*",
         "Fuchsia": "*builder*",
         "Linux": "*builder*",
         "Mac": "*builder*",
@@ -1171,40 +1170,6 @@ ci.angle_thin_tester(
 )
 
 ci.angle_linux_builder(
-    name = "android-angle-vk-arm-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "AndroidVk|Builder|ANGLE",
-        short_name = "arm",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "android-angle-vk-arm-pixel2",
-    console_view_entry = consoles.console_view_entry(
-        category = "AndroidVk|Pixel2|ANGLE",
-        short_name = "arm",
-    ),
-    triggered_by = ["android-angle-vk-arm-builder"],
-)
-
-ci.angle_linux_builder(
-    name = "android-angle-vk-arm64-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "AndroidVk|Builder|ANGLE",
-        short_name = "arm64",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "android-angle-vk-arm64-pixel2",
-    console_view_entry = consoles.console_view_entry(
-        category = "AndroidVk|Pixel2|ANGLE",
-        short_name = "arm64",
-    ),
-    triggered_by = ["android-angle-vk-arm64-builder"],
-)
-
-ci.angle_linux_builder(
     name = "fuchsia-angle-builder",
     console_view_entry = consoles.console_view_entry(
         category = "Fuchsia|Builder|ANGLE",
@@ -1436,23 +1401,6 @@ ci.angle_thin_tester(
         short_name = "x86",
     ),
     triggered_by = ["win-angle-x86-builder"],
-)
-
-ci.angle_linux_builder(
-    name = "android-angle-perf-arm64-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Perf|Android|Builder",
-        short_name = "arm64",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "android-angle-perf-arm64-pixel2",
-    console_view_entry = consoles.console_view_entry(
-        category = "Perf|Android|Pixel2",
-        short_name = "arm64",
-    ),
-    triggered_by = ["android-angle-perf-arm64-builder"],
 )
 
 ci.chromium_builder(
@@ -4457,47 +4405,6 @@ ci.gpu_thin_tester(
 )
 
 ci.gpu_fyi_linux_builder(
-    name = "Android FYI 32 Vk Release (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|vk|Q32",
-        short_name = "P2",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
-    name = "Android FYI 32 dEQP Vk Release (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|dqp|vk|Q32",
-        short_name = "P2",
-    ),
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Android FYI 64 Perf (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|Perf|Q64",
-        short_name = "P2",
-    ),
-    triggered_by = ["GPU FYI Perf Android 64 Builder"],
-)
-
-ci.gpu_fyi_linux_builder(
-    name = "Android FYI 64 Vk Release (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|vk|Q64",
-        short_name = "P2",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
-    name = "Android FYI 64 dEQP Vk Release (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|dqp|vk|Q64",
-        short_name = "P2",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
     name = "Android FYI Release (NVIDIA Shield TV)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|N64|NVDA",
@@ -4622,14 +4529,6 @@ ci.gpu_fyi_linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
         short_name = "dqp",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
-    name = "GPU FYI Perf Android 64 Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|Perf|Builder",
-        short_name = "64",
     ),
 )
 

@@ -164,13 +164,6 @@
       ]
     },
   },
-  'android_q': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'Q',
-      },
-    },
-  },
   'android_r': {
     'swarming': {
       'dimensions': {
