@@ -113,27 +113,36 @@ TEST(PartitionAllocAsMalloc, Memalign) {
 }
 
 TEST(PartitionAllocAsMalloc, AlignedAlloc) {
-  constexpr size_t alloc_size = 100;
-  constexpr size_t alignment = 1024;
-  void* data = PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
-  EXPECT_TRUE(data);
-  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
-  PartitionFree(nullptr, data, nullptr);
+  for (size_t alloc_size : {100, 100000, 10000000}) {
+    for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
+         alignment <<= 1) {
+      void* data =
+          PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
+      EXPECT_TRUE(data);
+      EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
+      PartitionFree(nullptr, data, nullptr);
+    }
+  }
 }
 
 TEST(PartitionAllocAsMalloc, AlignedRealloc) {
-  constexpr size_t alloc_size = 100;
-  constexpr size_t alignment = 1024;
-  void* data = PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
-  EXPECT_TRUE(data);
+  for (size_t alloc_size : {100, 100000, 10000000}) {
+    for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
+         alignment <<= 1) {
+      void* data =
+          PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
+      EXPECT_TRUE(data);
 
-  void* data2 = PartitionAlignedRealloc(nullptr, data, alloc_size + 1,
-                                        alignment, nullptr);
-  EXPECT_TRUE(data2);
+      void* data2 = PartitionAlignedRealloc(nullptr, data, alloc_size,
+                                            alignment, nullptr);
+      EXPECT_TRUE(data2);
 
-  EXPECT_NE(reinterpret_cast<uintptr_t>(data),
-            reinterpret_cast<uintptr_t>(data2));
-  PartitionFree(nullptr, data2, nullptr);
+      // Aligned realloc always relocates.
+      EXPECT_NE(reinterpret_cast<uintptr_t>(data),
+                reinterpret_cast<uintptr_t>(data2));
+      PartitionFree(nullptr, data2, nullptr);
+    }
+  }
 }
 
 TEST(PartitionAllocAsMalloc, Realloc) {

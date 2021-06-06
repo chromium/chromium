@@ -1103,18 +1103,15 @@ TEST_F(PartitionAllocTest, Realloc) {
   size = kMaxBucketed + 16 * SystemPageSize();
   ptr = allocator.root()->Alloc(size, type_name);
   size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
-  ptr2 = allocator.root()->Realloc(ptr, kMaxBucketed + 8 * SystemPageSize(),
-                                   type_name);
-  EXPECT_EQ(ptr, ptr2);
-  EXPECT_EQ(actual_capacity - 8 * SystemPageSize(),
+  ptr2 = allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
+  EXPECT_EQ(actual_capacity - SystemPageSize(),
             allocator.root()->AllocationCapacityFromPtr(ptr2));
 
   // Test that a previously in-place shrunk direct mapped allocation can be
-  // expanded up again within its original size.
-  ptr = allocator.root()->Realloc(ptr2, size - SystemPageSize(), type_name);
+  // expanded up again up to its original size.
+  ptr = allocator.root()->Realloc(ptr2, size, type_name);
   EXPECT_EQ(ptr2, ptr);
-  EXPECT_EQ(actual_capacity - SystemPageSize(),
-            allocator.root()->AllocationCapacityFromPtr(ptr));
+  EXPECT_EQ(actual_capacity, allocator.root()->AllocationCapacityFromPtr(ptr));
 
   // Test that a direct mapped allocation is performed not in-place when the
   // new size is small enough.
@@ -1122,6 +1119,42 @@ TEST_F(PartitionAllocTest, Realloc) {
   EXPECT_NE(ptr, ptr2);
 
   allocator.root()->Free(ptr2);
+}
+
+TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
+  size_t alignments[] = {
+      PartitionPageSize(),
+      2 * PartitionPageSize(),
+      kMaxSupportedAlignment / 2,
+      kMaxSupportedAlignment,
+  };
+
+  for (size_t alignment : alignments) {
+    // Test that shrinking a direct mapped allocation happens in-place.
+    size_t size = kMaxBucketed + 2 * SystemPageSize();
+    void* ptr =
+        allocator.root()->AllocFlagsInternal(0, size, alignment, type_name);
+    size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
+    void* ptr2 =
+        allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
+    EXPECT_EQ(ptr, ptr2);
+    EXPECT_EQ(actual_capacity - SystemPageSize(),
+              allocator.root()->AllocationCapacityFromPtr(ptr2));
+
+    // Test that a previously in-place shrunk direct mapped allocation can be
+    // expanded up again up to its original size.
+    ptr = allocator.root()->Realloc(ptr2, size, type_name);
+    EXPECT_EQ(ptr2, ptr);
+    EXPECT_EQ(actual_capacity,
+              allocator.root()->AllocationCapacityFromPtr(ptr));
+
+    // Test that a direct mapped allocation is performed not in-place when the
+    // new size is small enough.
+    ptr2 = allocator.root()->Realloc(ptr, SystemPageSize(), type_name);
+    EXPECT_NE(ptr, ptr2);
+
+    allocator.root()->Free(ptr2);
+  }
 }
 
 // Tests the handing out of freelists for partial slot spans.
@@ -2698,12 +2731,23 @@ void VerifyAlignment(PartitionRoot<ThreadSafe>* root,
 }
 
 TEST_F(PartitionAllocTest, AlignedAllocations) {
-  size_t alloc_sizes[] = {1,     10,    100,    1000,   10000,
-                          60000, 70000, 130000, 500000, 900000};
-  size_t max_alignment = 1048576;
-
+  size_t alloc_sizes[] = {1,
+                          10,
+                          100,
+                          1000,
+                          10000,
+                          60000,
+                          70000,
+                          130000,
+                          500000,
+                          900000,
+                          kMaxBucketed + 1,
+                          2 * kMaxBucketed,
+                          base::kSuperPageSize - 2 * PartitionPageSize(),
+                          10 * kMaxBucketed};
   for (size_t alloc_size : alloc_sizes) {
-    for (size_t alignment = 1; alignment <= max_alignment; alignment <<= 1) {
+    for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
+         alignment <<= 1) {
       VerifyAlignment(aligned_allocator.root(), alloc_size, alignment);
 
       // AlignedAllocFlags() can't be called on regular allocator, if there are
@@ -2849,28 +2893,43 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       kSuperPageSize + PageAllocationGranularity(),
       kSuperPageSize + DirectMapAllocationGranularity(),
   };
+  size_t alignments[] = {
+      PartitionPageSize(),
+      2 * PartitionPageSize(),
+      kMaxSupportedAlignment / 2,
+      kMaxSupportedAlignment,
+  };
   for (size_t huge_size : huge_sizes) {
-    // For direct map, we commit only as many pages as needed.
-    size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
-    ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
-    expected_committed_size += aligned_size;
-    size_t surrounding_pages_size =
-        PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize();
-    size_t expected_direct_map_size =
-        bits::AlignUp(aligned_size + surrounding_pages_size,
-                      DirectMapAllocationGranularity());
-    EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-    EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
-    EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+    for (size_t alignment : alignments) {
+      // For direct map, we commit only as many pages as needed.
+      size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
+      ptr = root.AllocFlagsInternal(0, huge_size - kExtraAllocSize, alignment,
+                                    type_name);
+      expected_committed_size += aligned_size;
+      // The total reserved map includes metadata and guard pages at the ends.
+      // It also includes alignment. However, these would double count the first
+      // partition page, so it needs to be subtracted.
+      size_t surrounding_pages_size =
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize() +
+          alignment - PartitionPageSize();
+      size_t expected_direct_map_size =
+          bits::AlignUp(aligned_size + surrounding_pages_size,
+                        DirectMapAllocationGranularity());
+      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+      EXPECT_EQ(expected_direct_map_size,
+                root.total_size_of_direct_mapped_pages);
 
-    // Freeing memory in the diret map decommits pages right away. The address
-    // space is released for re-use too.
-    root.Free(ptr);
-    expected_committed_size -= aligned_size;
-    expected_direct_map_size = 0;
-    EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-    EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
-    EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);
+      // Freeing memory in the diret map decommits pages right away. The address
+      // space is released for re-use too.
+      root.Free(ptr);
+      expected_committed_size -= aligned_size;
+      expected_direct_map_size = 0;
+      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
+      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+      EXPECT_EQ(expected_direct_map_size,
+                root.total_size_of_direct_mapped_pages);
+    }
   }
 }
 

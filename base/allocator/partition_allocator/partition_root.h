@@ -421,13 +421,14 @@ struct BASE_EXPORT PartitionRoot {
     return bits::AlignUp(raw_size, SystemPageSize());
   }
 
-  static ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t raw_size) {
+  static ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
-    PA_DCHECK(raw_size <= MaxDirectMapped());
-    return bits::AlignUp(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
-                         DirectMapAllocationGranularity());
+    PA_DCHECK(padded_raw_size <= MaxDirectMapped());
+    return bits::AlignUp(
+        padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
+        DirectMapAllocationGranularity());
   }
 
 // PartitionRefCount contains a cookie if slow checks are enabled or
@@ -794,7 +795,28 @@ ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
   uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
   if (!reservation_start)
     return nullptr;
-  return reinterpret_cast<void*>(reservation_start + PartitionPageSize());
+
+  // The direct map allocation may not start exactly from the first page, as
+  // there may be padding for alignment. The first page metadata holds an offset
+  // to where direct map metadata, and thus direct map start, are located.
+  auto* first_page = PartitionPage<ThreadSafe>::FromPtr(
+      reinterpret_cast<void*>(reservation_start + PartitionPageSize()));
+  auto* page = first_page + first_page->slot_span_metadata_offset;
+  PA_DCHECK(page->is_valid);
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  auto* ret = SlotSpanMetadata<ThreadSafe>::ToSlotSpanStartPtr(
+      &page->slot_span_metadata);
+#if DCHECK_IS_ON()
+  auto* metadata =
+      reinterpret_cast<PartitionDirectMapMetadata<ThreadSafe>*>(page);
+  size_t padding_for_alignment =
+      metadata->direct_map_extent.padding_for_alignment;
+  PA_DCHECK(padding_for_alignment == (page - first_page) * PartitionPageSize());
+  PA_DCHECK(ret ==
+            reinterpret_cast<void*>(reservation_start + PartitionPageSize() +
+                                    padding_for_alignment));
+#endif  // DCHECK_IS_ON()
+  return ret;
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -1601,8 +1623,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= kMaxSupportedAlignment);
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  // TODO(bartekn): Support direct map. Until then, catch unsupported requests.
-  PA_CHECK(alignment <= PartitionPageSize() || raw_size <= kMaxBucketed);
 
   size_t adjusted_size = requested_size;
   if (alignment <= PartitionPageSize()) {

@@ -251,8 +251,12 @@ struct PartitionPage {
 
   // The first PartitionPage of the slot span holds its metadata. This offset
   // tells how many pages in from that first page we are.
+  // For direct maps, the first page metadata (that isn't super page extent
+  // entry) uses this field to tell how many pages to the right the direct map
+  // metadata starts.
+  //
   // 6 bits is enough to represent all possible offsets, given that the smallest
-  // partition page is 16kiB and normal buckets won't exceed 1MiB.
+  // partition page is 16kiB and the offset won't exceed 1MiB.
   static constexpr uint16_t kMaxSlotSpanMetadataBits = 6;
   static constexpr uint16_t kMaxSlotSpanMetadataOffset =
       (1 << kMaxSlotSpanMetadataBits) - 1;
