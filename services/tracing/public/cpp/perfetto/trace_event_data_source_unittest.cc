@@ -1935,6 +1935,7 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
   UMA_HISTOGRAM_BOOLEAN("Foo1.Bar1", true);
   UMA_HISTOGRAM_BOOLEAN("Foo2.Bar2", true);
   UMA_HISTOGRAM_BOOLEAN("Foo3.Bar3", true);
+  base::RunLoop().RunUntilIdle();
 
   size_t packet_index = ExpectStandardPreamble();
 

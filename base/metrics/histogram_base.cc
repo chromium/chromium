@@ -162,19 +162,19 @@ void HistogramBase::WriteJSON(std::string* output,
   serializer.Serialize(root);
 }
 
-void HistogramBase::FindAndRunCallback(HistogramBase::Sample sample) const {
+void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
   StatisticsRecorder::GlobalSampleCallback global_sample_callback =
       StatisticsRecorder::global_sample_callback();
   if (global_sample_callback)
     global_sample_callback(histogram_name(), name_hash(), sample);
 
+  // We check the flag first since it is very cheap and we can avoid the
+  // function call and lock overhead of FindAndRunHistogramCallbacks().
   if ((flags() & kCallbackExists) == 0)
     return;
 
-  StatisticsRecorder::OnSampleCallback cb =
-      StatisticsRecorder::FindCallback(histogram_name());
-  if (!cb.is_null())
-    cb.Run(histogram_name(), name_hash(), sample);
+  StatisticsRecorder::FindAndRunHistogramCallbacks(
+      base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample);
 }
 
 void HistogramBase::GetCountAndBucketData(Count* count,
