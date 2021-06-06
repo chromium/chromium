@@ -131,7 +131,7 @@ void ChildWindowWin::Initialize() {
 
   thread_ = std::make_unique<base::Thread>("Window owner thread");
   base::Thread::Options options(base::MessagePumpType::UI, 0);
-  thread_->StartWithOptions(options);
+  thread_->StartWithOptions(std::move(options));
 
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
