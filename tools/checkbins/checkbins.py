@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,8 +10,6 @@ In essense it runs a subset of BinScope tests ensuring that binaries have
 /NXCOMPAT, /DYNAMICBASE and /SAFESEH.
 """
 
-from __future__ import print_function
-
 import json
 import os
 import optparse
@@ -20,7 +18,7 @@ import sys
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 FILES_CFG = os.path.join(REPO_ROOT, 'chrome', 'tools', 'build', 'win',
                          'FILES.cfg')
-PEFILE_DIR = os.path.join(REPO_ROOT, 'third_party', 'pefile')
+PEFILE_DIR = os.path.join(REPO_ROOT, 'third_party', 'pefile_py3')
 sys.path.append(PEFILE_DIR)
 
 import pefile
@@ -34,8 +32,8 @@ GUARD_CF_FLAG = 0x4000
 MACHINE_TYPE_AMD64 = 0x8664
 
 # Please do not add your file here without confirming that it indeed doesn't
-# require /NXCOMPAT and /DYNAMICBASE.  Contact cpu@chromium.org or your local
-# Windows guru for advice.
+# require /NXCOMPAT and /DYNAMICBASE.  Contact //sandbox/win/OWNERS or your
+# local Windows guru for advice.
 EXCLUDED_FILES = [
                   'crashpad_util_test_process_info_test_child.exe',
                   'mini_installer.exe',
@@ -56,9 +54,11 @@ def main(options, args):
 
   failures = []
 
-  # Load FILES.cfg
+  # Load FILES.cfg - it is a python file setting a FILES variable.
   exec_globals = {'__builtins__': None}
-  execfile(FILES_CFG, exec_globals)
+  with open(FILES_CFG, encoding="utf-8") as f:
+    code = compile(f.read(), FILES_CFG, 'exec')
+    exec(code, exec_globals)
   files_cfg = exec_globals['FILES']
 
   # Determines whether a specified file is in the 'default'
