@@ -33,7 +33,7 @@ def ApplyInParallel(function, work_list, on_failure=None):
   try:
     # Note that this is speculatively halved as an attempt to fix
     # crbug.com/953365.
-    cpu_count = multiprocessing.cpu_count() / 2
+    cpu_count = multiprocessing.cpu_count() // 2
     if sys.platform == 'win32':
       # TODO(crbug.com/1190269) - we can't use more than 56
       # cores on Windows or Python3 may hang.
