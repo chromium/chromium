@@ -275,4 +275,10 @@ interface LocalPrinter {
 
   // Gets print policies.
   GetPolicies@9() => (Policies policies);
+
+  // Checks if |kPrintingSendUsernameAndFilenameEnabled| is enabled for the
+  // current Ash profile. Returns the profile's corresponding username if pref
+  // enabled.
+  [MinVersion=1]
+  IsSendUsernameFilenameEnabled@10() => (string? username);
 };

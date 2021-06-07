@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -48,8 +50,16 @@ class LocalPrinterHandlerLacros : public PrinterHandler {
  private:
   explicit LocalPrinterHandlerLacros(
       content::WebContents* preview_web_contents);
+
+  void OnProfileUsernameReady(base::Value settings,
+                              scoped_refptr<base::RefCountedMemory> print_data,
+                              PrinterHandler::PrintCallback callback,
+                              const absl::optional<std::string>& username);
+
   content::WebContents* const preview_web_contents_;
   chromeos::LacrosChromeServiceImpl* const service_;
+
+  base::WeakPtrFactory<LocalPrinterHandlerLacros> weak_ptr_factory_{this};
 };
 
 }  // namespace printing

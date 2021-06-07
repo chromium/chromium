@@ -340,6 +340,10 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
     std::move(callback).Run(policies_->Clone());
     policies_.reset();
   }
+  void IsSendUsernameFilenameEnabled(
+      IsSendUsernameFilenameEnabledCallback callback) override {
+    FAIL();
+  }
 
  private:
   absl::optional<crosapi::mojom::Policies> policies_;

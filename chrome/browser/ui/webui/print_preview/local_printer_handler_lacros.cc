@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -30,6 +31,9 @@
 namespace printing {
 
 namespace {
+
+// We only support sending username for named users but just in case.
+const char kUsernamePlaceholder[] = "chronos";
 
 base::Value PrinterToValue(const crosapi::mojom::LocalDestinationInfo& p) {
   base::Value value(base::Value::Type::DICTIONARY);
@@ -164,8 +168,31 @@ void LocalPrinterHandlerLacros::StartPrint(
     PrintCallback callback) {
   size_t size_in_kb = print_data->size() / 1024;
   base::UmaHistogramMemoryKB("Printing.CUPS.PrintDocumentSize", size_in_kb);
-  // TODO(crbug.com/1206495): add support for
-  // printing.send_username_and_filename_enabled flag.
+  if (!service_->IsAvailable<crosapi::mojom::LocalPrinter>()) {
+    LOG(ERROR) << "Local printer not available";
+    OnProfileUsernameReady(std::move(settings), std::move(print_data),
+                           std::move(callback), absl::nullopt);
+    return;
+  }
+
+  service_->GetRemote<crosapi::mojom::LocalPrinter>()
+      ->IsSendUsernameFilenameEnabled(
+          base::BindOnce(&LocalPrinterHandlerLacros::OnProfileUsernameReady,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(settings),
+                         std::move(print_data), std::move(callback)));
+}
+
+void LocalPrinterHandlerLacros::OnProfileUsernameReady(
+    base::Value settings,
+    scoped_refptr<base::RefCountedMemory> print_data,
+    PrinterHandler::PrintCallback callback,
+    const absl::optional<std::string>& username) {
+  if (username.has_value()) {
+    settings.SetKey(kSettingUsername,
+                    base::Value(username.value().empty() ? kUsernamePlaceholder
+                                                         : username.value()));
+    settings.SetKey(kSettingSendUserInfo, base::Value(true));
+  }
   StartLocalPrint(std::move(settings), std::move(print_data),
                   preview_web_contents_, std::move(callback));
 }

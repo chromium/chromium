@@ -158,6 +158,10 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
     std::move(callback).Run();
   }
   void GetPolicies(GetPoliciesCallback callback) override { FAIL(); }
+  void IsSendUsernameFilenameEnabled(
+      IsSendUsernameFilenameEnabledCallback callback) override {
+    FAIL();
+  }
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;

@@ -36,6 +36,7 @@
 #include "chromeos/printing/ppd_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/prefs_util.h"
+#include "components/user_manager/user.h"
 #include "printing/backend/print_backend.h"
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
@@ -343,6 +344,19 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
     }
   }
   std::move(callback).Run(std::move(policies));
+}
+
+void LocalPrinterAsh::IsSendUsernameFilenameEnabled(
+    IsSendUsernameFilenameEnabledCallback callback) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  PrefService* prefs = profile->GetPrefs();
+  const std::string username = chromeos::ProfileHelper::Get()
+                                   ->GetUserByProfile(profile)
+                                   ->display_email();
+  std::move(callback).Run(
+      prefs->GetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled)
+          ? absl::optional<std::string>(username)
+          : absl::nullopt);
 }
 
 Profile* LocalPrinterAsh::GetActiveUserProfile() {
