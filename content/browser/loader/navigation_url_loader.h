@@ -71,6 +71,7 @@ class CONTENT_EXPORT NavigationURLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+      network::mojom::URLResponseHeadPtr cached_response_head = nullptr,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors = {});
 

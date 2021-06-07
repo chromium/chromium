@@ -35,6 +35,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    network::mojom::URLResponseHeadPtr cached_response_head,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors) {
   if (g_loader_factory) {
@@ -44,8 +45,11 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
         loader_type);
   }
 
-  if (loader_type == LoaderType::kNoop)
-    return CachedNavigationURLLoader::Create(std::move(request_info), delegate);
+  if (loader_type == LoaderType::kNoop) {
+    DCHECK(cached_response_head);
+    return CachedNavigationURLLoader::Create(std::move(request_info), delegate,
+                                             std::move(cached_response_head));
+  }
 
   return std::make_unique<NavigationURLLoaderImpl>(
       browser_context, storage_partition, std::move(request_info),

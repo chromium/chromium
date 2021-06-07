@@ -2566,11 +2566,6 @@ void NavigationRequest::OnResponseStarted(
       early_hints.was_preload_link_header_received;
   early_hints_manager_ = std::move(early_hints.manager);
 
-  if (IsServedFromBackForwardCache()) {
-    response_head_ =
-        rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
-  }
-
   bool is_mhtml_archive = response_head_->mime_type == "multipart/related" ||
                           response_head_->mime_type == "message/rfc822";
   if (is_mhtml_archive)
@@ -3372,8 +3367,29 @@ void NavigationRequest::OnStartChecksComplete(
   }
 
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
-  if (IsPageActivation())
+  network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
+  if (IsServedFromBackForwardCache()) {
     loader_type = NavigationURLLoader::LoaderType::kNoop;
+    DCHECK(rfh_restored_from_back_forward_cache_);
+    cached_response_head =
+        rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
+  } else if (IsPrerenderedPageActivation()) {
+    loader_type = NavigationURLLoader::LoaderType::kNoop;
+    DCHECK(prerender_frame_tree_node_id_.has_value());
+    const network::mojom::URLResponseHeadPtr& last_response_head =
+        GetPrerenderHostRegistry()
+            .GetRenderFrameHostForReservedHost(*prerender_frame_tree_node_id_)
+            ->last_response_head();
+    if (last_response_head) {
+      cached_response_head = last_response_head->Clone();
+    } else {
+      // TODO(https://crbug.com/1216997): Support the case the initial
+      // navigation haven't received the response head at this point.
+      cached_response_head = network::mojom::URLResponseHead::New();
+      cached_response_head->parsed_headers =
+          network::mojom::ParsedHeaders::New();
+    }
+  }
 
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
@@ -3396,7 +3412,7 @@ void NavigationRequest::OnStartChecksComplete(
           ->CreateURLLoaderNetworkObserverForNavigationRequest(
               frame_tree_node_->frame_tree_node_id()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
-      std::move(interceptor));
+      std::move(cached_response_head), std::move(interceptor));
 
   DCHECK(!render_frame_host_);
 }

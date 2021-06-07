@@ -16,13 +16,16 @@ namespace content {
 // prerendered).
 class CachedNavigationURLLoader : public NavigationURLLoader {
  public:
-  CachedNavigationURLLoader(std::unique_ptr<NavigationRequestInfo> request_info,
-                            NavigationURLLoaderDelegate* delegate);
+  CachedNavigationURLLoader(
+      std::unique_ptr<NavigationRequestInfo> request_info,
+      NavigationURLLoaderDelegate* delegate,
+      network::mojom::URLResponseHeadPtr cached_response_head);
   ~CachedNavigationURLLoader() override;
 
   static std::unique_ptr<NavigationURLLoader> Create(
       std::unique_ptr<NavigationRequestInfo> request_info,
-      NavigationURLLoaderDelegate* delegate);
+      NavigationURLLoaderDelegate* delegate,
+      network::mojom::URLResponseHeadPtr cached_response_head);
 
   // NavigationURLLoader implementation.
   void FollowRedirect(
@@ -35,6 +38,7 @@ class CachedNavigationURLLoader : public NavigationURLLoader {
   void OnResponseStarted();
   std::unique_ptr<NavigationRequestInfo> request_info_;
   NavigationURLLoaderDelegate* delegate_;
+  network::mojom::URLResponseHeadPtr cached_response_head_;
   base::WeakPtrFactory<CachedNavigationURLLoader> weak_factory_{this};
 };
 

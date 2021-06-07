@@ -47,6 +47,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -343,6 +344,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
 
   // The prerender host should be destroyed.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/set-header?X-Foo: bar");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+
+  // Start prerendering `kPrerenderingUrl` and check if `X-Foo` header is
+  // observed.
+  NavigationHandleObserver observer1(web_contents(), kPrerenderingUrl);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_TRUE(observer1.has_committed());
+  EXPECT_EQ("bar", observer1.GetNormalizedResponseHeader("x-foo"));
+
+  // Activate the page and check if `X-Foo` header is observed again.
+  NavigationHandleObserver observer2(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_TRUE(observer2.has_committed());
+  EXPECT_EQ("bar", observer2.GetNormalizedResponseHeader("x-foo"));
 }
 
 // Tests that prerendering triggered by prerendered pages is deferred until
