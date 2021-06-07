@@ -983,10 +983,13 @@ message ClientToServerResponse {
   // which clients experience as NOT_MY_BIRTHDAY error, and involves clearing
   // all local sync metadata including the cached store birthday.
   //
-  // This mechanism allows the server to deal reliably with in-flight changes
-  // from other clients upon ClearServerDataMessage (or equivalent triggers),
-  // because all writes issued with an outdated birthday (which in-flight writes
-  // would use) can be detected by the server.
+  // This mechanism allows the server to implement clear-data/reset
+  // functionality that reliably identifies and deletes sync entities uploaded
+  // before the clear-data/reset event (e.g. via ClearServerDataMessage).
+  // Furthermore, it allows the server to deal reliably with in-flight changes
+  // from other clients upon clear-data event, because all writes issued with an
+  // outdated birthday (which in-flight writes would use) can be detected by the
+  // server.
   optional string store_birthday = 6;
 
   optional ClientCommand client_command = 7;
