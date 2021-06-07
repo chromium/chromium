@@ -14,11 +14,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace recording {
-class RecordingServiceTestApi;
-}  // namespace recording
-
 namespace ash {
+
+class FakeRecordingService;
 
 class TestCaptureModeDelegate : public CaptureModeDelegate {
  public:
@@ -27,26 +25,18 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   TestCaptureModeDelegate& operator=(const TestCaptureModeDelegate&) = delete;
   ~TestCaptureModeDelegate() override;
 
-  recording::RecordingServiceTestApi* recording_service() const {
-    return recording_service_.get();
-  }
-
-  // Gets the current frame sink id being captured by the service.
+  // Gets the current frame sink id being captured by the fake service.
   viz::FrameSinkId GetCurrentFrameSinkId() const;
 
   // Gets the current size of the frame sink being recorded.
   gfx::Size GetCurrentFrameSinkSize() const;
 
-  // Gets the current video size being captured by the service.
+  // Gets the current video size being captured by the fake service.
   gfx::Size GetCurrentVideoSize() const;
 
-  // Gets the thumbnail image that will be used by the service to provide it to
-  // the client.
-  gfx::ImageSkia GetVideoThumbnail() const;
-
-  // Requests a video frame from the video capturer and waits for it to be
-  // delivered to the service.
-  void RequestAndWaitForVideoFrame();
+  // Sets the thumbnail image that will be used by the fake service to provide
+  // it to the client.
+  void SetVideoThumbnail(const gfx::ImageSkia& thumbnail);
 
   // CaptureModeDelegate:
   base::FilePath GetScreenCaptureDir() const override;
@@ -69,10 +59,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;
   void OnSessionStateChanged(bool started) override;
-  void OnServiceRemoteReset() override;
 
  private:
-  std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
+  std::unique_ptr<FakeRecordingService> fake_service_;
   base::FilePath fake_downloads_dir_;
 };
 

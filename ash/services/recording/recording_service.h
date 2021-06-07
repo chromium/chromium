@@ -33,8 +33,6 @@
 
 namespace recording {
 
-class RecordingServiceTestApi;
-
 // Implements the mojo interface of the recording service which handles
 // recording audio and video of the screen or portion of it, and writes the webm
 // muxed video chunks directly to a file at a path provided to the Record*()
@@ -105,8 +103,6 @@ class RecordingService : public mojom::RecordingService,
   void OnCaptureMuted(bool is_muted) override;
 
  private:
-  friend class RecordingServiceTestApi;
-
   void StartNewRecording(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
@@ -202,14 +198,6 @@ class RecordingService : public mojom::RecordingService,
   // A mojo remote end of client of this service (e.g. Ash). There can only be
   // a single client of this service.
   mojo::Remote<mojom::RecordingServiceClient> client_remote_
-      GUARDED_BY_CONTEXT(main_thread_checker_);
-
-  // A callback used for testing, which will be triggered when a video frame is
-  // delivered to the service from the Viz capturer.
-  using OnVideoFrameDeliveredCallback =
-      base::OnceCallback<void(const media::VideoFrame& frame,
-                              const gfx::Rect& content_rect)>;
-  OnVideoFrameDeliveredCallback on_video_frame_delivered_callback_for_testing_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // A cached scaled down rgb image of the first valid video frame which will be

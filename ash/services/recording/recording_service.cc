@@ -322,11 +322,6 @@ void RecordingService::OnFrameCaptured(
   if (video_thumbnail_.isNull())
     video_thumbnail_ = ExtractImageFromVideoFrame(*frame);
 
-  if (on_video_frame_delivered_callback_for_testing_) {
-    std::move(on_video_frame_delivered_callback_for_testing_)
-        .Run(*frame, content_rect);
-  }
-
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo).WithArgs(frame);
 }
 
