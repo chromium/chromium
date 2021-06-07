@@ -19,8 +19,6 @@ dgozman@chromium.org
 dlibby@microsoft.com
 # drott reviews font specific changes.
 drott@chromium.org
-dsinclair@chromium.org
-dstockwell@chromium.org
 # dtapuska reviews input-related changes
 dtapuska@chromium.org
 enne@chromium.org
@@ -37,17 +35,14 @@ haraken@chromium.org
 hayato@chromium.org
 hiroshige@chromium.org
 ikilpatrick@chromium.org
-inferno@chromium.org
 japhet@chromium.org
 jarhar@chromium.org
 jbroman@chromium.org
 jfernandez@igalia.com
-jianli@chromium.org
 jochen@chromium.org
 junov@chromium.org
 kbr@chromium.org
 keishi@chromium.org
-kenneth.r.christiansen@intel.com
 kinuko@chromium.org
 kojii@chromium.org
 kouhei@chromium.org
@@ -61,7 +56,6 @@ pdr@chromium.org
 pfeldman@chromium.org
 pkasting@chromium.org
 rego@igalia.com
-rbyers@chromium.org
 rbuis@igalia.com
 robhogan@gmail.com
 schenney@chromium.org
@@ -70,7 +64,6 @@ skobes@chromium.org
 svillar@igalia.com
 szager@chromium.org
 thakis@chromium.org
-timloh@chromium.org
 tkent@chromium.org
 vmpstr@chromium.org
 vollick@chromium.org
