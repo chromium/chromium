@@ -153,7 +153,7 @@ public class ContinuousSearchContainerMediatorTest {
         // State 3. Top controls are fully visible.
         updateBrowserControlParamsAndAssertModel(
                 DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT + DEFAULT_MIN_HEIGHT, DEFAULT_MIN_HEIGHT,
-                true, 0, DEFAULT_CONTAINER_HEIGHT + DEFAULT_MIN_HEIGHT, false, View.VISIBLE);
+                true, 0, DEFAULT_CONTAINER_HEIGHT + DEFAULT_MIN_HEIGHT, true, View.VISIBLE);
 
         Assert.assertNotNull(
                 "Mediator should be registered as a BrowserControlsStateProvider.Observer.",
@@ -202,7 +202,7 @@ public class ContinuousSearchContainerMediatorTest {
 
         // State 3. Top controls are fully visible.
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
-                DEFAULT_CONTAINER_HEIGHT, false, View.VISIBLE);
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
 
         Assert.assertNotNull(
                 "Mediator should be registered as a BrowserControlsStateProvider.Observer.",
@@ -276,12 +276,12 @@ public class ContinuousSearchContainerMediatorTest {
 
         // Top controls are fully visible.
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
-                DEFAULT_CONTAINER_HEIGHT, false, View.VISIBLE);
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
 
         mMediator.updateTabObscured(true);
         Assert.assertTrue("Tab obscurity shouldn't change mMediator.mIsVisible.",
                 mMediator.isVisibleForTesting());
-        Assert.assertFalse("Composited view should only be visible while animating.",
+        Assert.assertTrue("Composited view should be visible.",
                 mModel.get(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE));
         Assert.assertEquals("Android view should be View.INVISIBLE when tab is obscured.",
                 View.INVISIBLE,
@@ -290,7 +290,7 @@ public class ContinuousSearchContainerMediatorTest {
         mMediator.updateTabObscured(false);
         Assert.assertTrue("Tab obscurity shouldn't change mMediator.mIsVisible.",
                 mMediator.isVisibleForTesting());
-        Assert.assertFalse("Composited view should only be visible while animating.",
+        Assert.assertTrue("Composited view should be visible.",
                 mModel.get(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE));
         Assert.assertEquals("Android view should be View.VISIBLE when tab is not obscured",
                 View.VISIBLE,
@@ -338,7 +338,7 @@ public class ContinuousSearchContainerMediatorTest {
 
         // State 3. Top controls are fully visible.
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
-                DEFAULT_CONTAINER_HEIGHT, false, View.VISIBLE);
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
     }
 
     private void triggerShow() {

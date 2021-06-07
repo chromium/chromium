@@ -143,6 +143,7 @@ android_library("junit") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/widget/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",

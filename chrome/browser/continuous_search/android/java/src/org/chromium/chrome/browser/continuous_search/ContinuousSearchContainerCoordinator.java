@@ -42,7 +42,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
 
     private final ContinuousSearchContainerMediator mContainerMediator;
     private final ContinuousSearchListCoordinator mListCoordinator;
-    private final ContinuousSearchSceneLayer mSceneLayer;
+    private ContinuousSearchSceneLayer mSceneLayer;
     private int mResourceId;
     private final LayoutManager mLayoutManager;
     private ViewResourceAdapter mResourceAdapter;
@@ -63,8 +63,6 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mViewStub = containerViewStub;
         mLayoutManager = layoutManager;
         mResourceManager = resourceManager;
-        mSceneLayer = new ContinuousSearchSceneLayer(mResourceManager);
-        mLayoutManager.addSceneOverlay(mSceneLayer);
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
                 layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
@@ -81,6 +79,9 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         if (mLayoutInitialized) return;
 
         mRootView = (ContinuousSearchViewResourceFrameLayout) mViewStub.inflate();
+        mSceneLayer = new ContinuousSearchSceneLayer(
+                mResourceManager, mRootView, mRootView.getShadowHeight());
+        mLayoutManager.addSceneOverlay(mSceneLayer);
         mResourceId = mRootView.getId();
         mSceneLayer.setResourceId(mResourceId);
         mListCoordinator.initializeLayout(mRootView.findViewById(R.id.container_view));

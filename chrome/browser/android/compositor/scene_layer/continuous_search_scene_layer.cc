@@ -33,7 +33,9 @@ void ContinuousSearchSceneLayer::UpdateContinuousSearchLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jresource_manager,
     jint view_resource_id,
-    jint y_offset) {
+    jint y_offset,
+    jboolean shadow_visible,
+    jint shadow_height) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* resource = resource_manager->GetResource(
@@ -45,7 +47,14 @@ void ContinuousSearchSceneLayer::UpdateContinuousSearchLayer(
 
   view_layer_->SetUIResourceId(resource->ui_resource()->id());
 
-  view_container_->SetBounds(resource->size());
+  int container_height = resource->size().height();
+
+  if (!shadow_visible) {
+    container_height -= shadow_height;
+  }
+
+  view_container_->SetBounds(
+      gfx::Size(resource->size().width(), container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset));
 
   // The view's layer should be the same size as the texture.

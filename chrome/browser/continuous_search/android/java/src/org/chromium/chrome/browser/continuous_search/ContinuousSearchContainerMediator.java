@@ -139,25 +139,24 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
                 + mDefaultTopContainerHeightSupplier.get();
         mModel.set(ContinuousSearchContainerProperties.VERTICAL_OFFSET, yOffset);
 
-        // Only show the composited view when the UI is partly visible (mid transition) and native
-        // can run animations.
-        mModel.set(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE,
-                !mIsTabObscured
-                        && (!uiFullyVisible && isUiVisible
-                                && mCanAnimateNativeBrowserControls.get()));
+        // Show the composited view when the UI is at least partly visible and native
+        // can run animations. This change will happen on the next composited frame.
+        final boolean showCompositedView =
+                !mIsTabObscured && isUiVisible && mCanAnimateNativeBrowserControls.get();
+        mModel.set(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE, showCompositedView);
 
         // If we're running the animations in native, the Android view should only be visible when
         // the container is fully shown. Otherwise, the Android view will be visible if it's within
-        // screen boundaries.
-        mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
-                mIsTabObscured
-                        ? View.INVISIBLE
-                        : !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
-                                ? View.GONE
-                                : ((isUiVisible && !mCanAnimateNativeBrowserControls.get())
-                                                        || uiFullyVisible
-                                                ? View.VISIBLE
-                                                : View.GONE));
+        // screen boundaries. This change will happen immediately.
+        final int androidViewState = mIsTabObscured
+                ? View.INVISIBLE
+                : !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
+                        ? View.GONE
+                        : ((isUiVisible && !mCanAnimateNativeBrowserControls.get())
+                                                || uiFullyVisible
+                                        ? View.VISIBLE
+                                        : View.GONE);
+        mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY, androidViewState);
 
         final boolean doneHiding = !isUiVisible && !mIsVisible;
         if (doneHiding) {

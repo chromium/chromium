@@ -30,7 +30,9 @@ class ContinuousSearchSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jresource_manager,
       jint view_resource_id,
-      jint y_offset);
+      jint y_offset,
+      jboolean shadow_visible,
+      jint shadow_height);
 
   void SetContentTree(
       JNIEnv* env,
