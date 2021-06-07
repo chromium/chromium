@@ -4,9 +4,13 @@
 
 #include "chromeos/services/ime/ime_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/services/ime/decoder/system_engine.h"
+#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,10 +28,24 @@ namespace ime {
 namespace {
 
 const char kInvalidImeSpec[] = "ime_spec_never_support";
+constexpr char kArabicImeSpec[] = "m17n:ar";
 const std::vector<uint8_t> extra{0x66, 0x77, 0x88};
 
 void ConnectCallback(bool* success, bool result) {
   *success = result;
+}
+
+ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
+  ImeDecoder::EntryPoints entry_points;
+  entry_points.init_once = [](ImeCrosPlatform* platform) {};
+  entry_points.supports = [](const char* ime_spec) {
+    return strcmp(kInvalidImeSpec, ime_spec) != 0;
+  };
+  entry_points.activate_ime = [](const char* ime_spec,
+                                 ImeClientDelegate* delegate) { return true; };
+  entry_points.process = [](const uint8_t* data, size_t size) {};
+  entry_points.close = []() {};
+  return entry_points;
 }
 
 void TestProcessKeypressForRulebasedCallback(
@@ -49,6 +67,12 @@ class ImeServiceTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kImeMojoDecoder,
+                              features::kSystemLatinPhysicalTyping},
+        /*disabled_features=*/{});
+
+    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints());
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
   }
@@ -58,6 +82,7 @@ class ImeServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   ImeService service_;
 
   DISALLOW_COPY_AND_ASSIGN(ImeServiceTest);
@@ -67,7 +92,7 @@ class ImeServiceTest : public testing::Test {
 
 // Tests that the service is instantiated and it will return false when
 // activating an IME engine with an invalid IME spec.
-TEST_F(ImeServiceTest, ConnectInvalidImeEngine) {
+TEST_F(ImeServiceTest, ConnectInvalidImeEngineDoesNotConnectRemote) {
   bool success = true;
   MockInputChannel test_channel;
   mojo::Remote<mojom::InputChannel> remote_engine;
@@ -77,7 +102,97 @@ TEST_F(ImeServiceTest, ConnectInvalidImeEngine) {
       test_channel.CreatePendingRemote(), extra,
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
+
   EXPECT_FALSE(success);
+  EXPECT_FALSE(remote_engine.is_connected());
+}
+
+TEST_F(ImeServiceTest, ConnectToValidEngineConnectsRemote) {
+  bool success = true;
+  MockInputChannel test_channel;
+  mojo::Remote<mojom::InputChannel> remote_engine;
+
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
+      test_channel.CreatePendingRemote(), {},
+      base::BindOnce(&ConnectCallback, &success));
+  remote_manager_.FlushForTesting();
+
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(remote_engine.is_connected());
+}
+
+TEST_F(ImeServiceTest,
+       ConnectWithEmptyExtraCanOverrideExistingConnectionWithEmptyExtra) {
+  bool success1, success2 = true;
+  MockInputChannel test_channel1, test_channel2;
+  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
+
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
+      test_channel1.CreatePendingRemote(), /*extra=*/{},
+      base::BindOnce(&ConnectCallback, &success1));
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
+      test_channel2.CreatePendingRemote(), /*extra=*/{},
+      base::BindOnce(&ConnectCallback, &success2));
+  remote_manager_.FlushForTesting();
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
+  EXPECT_FALSE(remote_engine1.is_connected());
+  EXPECT_TRUE(remote_engine2.is_connected());
+}
+
+TEST_F(ImeServiceTest,
+       ConnectWithEmptyExtraCannotOverrideExistingConnectionWithExtra) {
+  bool success1, success2 = true;
+  MockInputChannel test_channel1, test_channel2;
+  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
+
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
+      test_channel1.CreatePendingRemote(), /*extra=*/{0},
+      base::BindOnce(&ConnectCallback, &success1));
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
+      test_channel2.CreatePendingRemote(), /*extra=*/{},
+      base::BindOnce(&ConnectCallback, &success2));
+  remote_manager_.FlushForTesting();
+
+  // The second connection should have failed.
+  EXPECT_TRUE(success1);
+  EXPECT_FALSE(success2);
+  EXPECT_TRUE(remote_engine1.is_connected());
+  EXPECT_FALSE(remote_engine2.is_connected());
+}
+
+TEST_F(ImeServiceTest, ConnectWithExtraCanOverrideExistingConnection) {
+  bool success1, success2, success3 = true;
+  MockInputChannel test_channel1, test_channel2, test_channel3;
+  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2,
+      remote_engine3;
+
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
+      test_channel1.CreatePendingRemote(), /*extra=*/{},
+      base::BindOnce(&ConnectCallback, &success1));
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
+      test_channel2.CreatePendingRemote(), /*extra=*/{0},
+      base::BindOnce(&ConnectCallback, &success2));
+  remote_manager_->ConnectToImeEngine(
+      kArabicImeSpec, remote_engine3.BindNewPipeAndPassReceiver(),
+      test_channel3.CreatePendingRemote(), /*extra=*/{0},
+      base::BindOnce(&ConnectCallback, &success3));
+  remote_manager_.FlushForTesting();
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
+  EXPECT_TRUE(success3);
+  EXPECT_FALSE(remote_engine1.is_connected());
+  EXPECT_FALSE(remote_engine2.is_connected());
+  EXPECT_TRUE(remote_engine3.is_connected());
 }
 
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {

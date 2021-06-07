@@ -33,7 +33,8 @@ class SystemEngine : public mojom::InputChannel {
   bool BindRequest(const std::string& ime_spec,
                    mojo::PendingReceiver<mojom::InputChannel> receiver,
                    mojo::PendingRemote<mojom::InputChannel> remote,
-                   const std::vector<uint8_t>& extra);
+                   const std::vector<uint8_t>& extra,
+                   base::OnceCallback<void()> disconnect_callback);
 
   // mojom::InputChannel:
   void ProcessMessage(const std::vector<uint8_t>& message,
@@ -88,9 +89,6 @@ class SystemEngine : public mojom::InputChannel {
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
   mojo::Receiver<mojom::InputChannel> decoder_channel_receiver_;
-
-  // Whether `decoder_channel_receiver_` is connected.
-  bool is_decoder_receiver_connected_ = false;
 
   // Sequence ID for protobuf messages sent from the engine.
   uint64_t current_seq_id_ = 0;

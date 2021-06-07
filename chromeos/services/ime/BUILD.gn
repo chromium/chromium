@@ -87,6 +87,7 @@ source_set("services_unittests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/ime:decoder",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/services/ime/public/proto:messages_proto",
     "//mojo/public/cpp/bindings",
