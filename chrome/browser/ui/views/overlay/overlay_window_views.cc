@@ -291,14 +291,13 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
 
   UpdateMaxSize(work_area);
 
-  gfx::Size window_size = window_bounds_.size();
+  const gfx::Rect bounds = native_widget() ? GetBounds() : gfx::Rect();
+
+  gfx::Size window_size = bounds.size();
   if (!has_been_shown_) {
     window_size = gfx::Size(work_area.width() / 5, work_area.height() / 5);
-    window_size.set_width(std::min(
-        max_size_.width(), std::max(min_size_.width(), window_size.width())));
-    window_size.set_height(
-        std::min(max_size_.height(),
-                 std::max(min_size_.height(), window_size.height())));
+    window_size.SetToMin(max_size_);
+    window_size.SetToMax(min_size_);
   }
 
   // Determine the window size by fitting |natural_size_| within
@@ -306,8 +305,7 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
   if (!window_size.IsEmpty() && !natural_size_.IsEmpty()) {
     float aspect_ratio = (float)natural_size_.width() / natural_size_.height();
 
-    WindowQuadrant quadrant =
-        GetCurrentWindowQuadrant(GetBounds(), controller_);
+    WindowQuadrant quadrant = GetCurrentWindowQuadrant(bounds, controller_);
     gfx::ResizeEdge resize_edge;
     switch (quadrant) {
       case OverlayWindowViews::WindowQuadrant::kBottomRight:
@@ -325,18 +323,16 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
     }
 
     // Update the window size to adhere to the aspect ratio.
-    gfx::Size min_size = min_size_;
-    gfx::Size max_size = max_size_;
-    gfx::Rect window_rect(GetBounds().origin(), window_size);
-    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size, max_size,
+    gfx::Rect window_rect(bounds.origin(), window_size);
+    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size_, max_size_,
                                &window_rect);
-    window_size.SetSize(window_rect.width(), window_rect.height());
+    window_size = window_rect.size();
 
     UpdateLayerBoundsWithLetterboxing(window_size);
   }
 
   // Use the previous window origin location, if exists.
-  gfx::Point origin = window_bounds_.origin();
+  gfx::Point origin = bounds.origin();
 
   int window_diff_width = work_area.right() - window_size.width();
   int window_diff_height = work_area.bottom() - window_size.height();
@@ -355,8 +351,7 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
     origin = default_origin;
   }
 
-  window_bounds_ = gfx::Rect(origin, window_size);
-  return window_bounds_;
+  return gfx::Rect(origin, window_size);
 }
 
 void OverlayWindowViews::SetUpViews() {
@@ -594,7 +589,7 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
     gfx::Size window_size) {
   // This is the case when the window is initially created or the video surface
   // id has not been embedded.
-  if (window_bounds_.size().IsEmpty() || natural_size_.IsEmpty())
+  if (!native_widget() || GetBounds().IsEmpty() || natural_size_.IsEmpty())
     return;
 
   gfx::Rect letterbox_region = media::ComputeLetterboxRegion(
@@ -1006,11 +1001,6 @@ void OverlayWindowViews::OnNativeWidgetMove() {
   // when the user interacts with the window again.
   UpdateControlsVisibility(false);
 
-  // Update the existing |window_bounds_| when the window moves. This allows
-  // the window to reappear with the same origin point when a new video is
-  // shown.
-  window_bounds_ = GetBounds();
-
   // Update the maximum size of the widget in case we have moved to another
   // window.
   UpdateMaxSize(GetWorkAreaForWindow());
@@ -1259,8 +1249,8 @@ void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   // native_widget() is required for OnSizeConstraintsChanged.
   OnSizeConstraintsChanged();
 
-  if (window_bounds_.width() <= max_size_.width() &&
-      window_bounds_.height() <= max_size_.height()) {
+  if (GetBounds().width() <= max_size_.width() &&
+      GetBounds().height() <= max_size_.height()) {
     return;
   }
 

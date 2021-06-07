@@ -213,9 +213,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   gfx::Size min_size_;
   gfx::Size max_size_;
 
-  // Current bounds of the Picture-in-Picture window.
-  gfx::Rect window_bounds_;
-
   // Bounds of |video_view_|.
   gfx::Rect video_bounds_;
 
