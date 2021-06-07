@@ -24,6 +24,8 @@ class AccuracyTipUI {
   AccuracyTipUI& operator=(const AccuracyTipUI&) = delete;
 
   // Represents the different user interactions with a AccuracyTip dialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Interaction {
     kNoAction = 0,
     // Closed because user clicked outside the UI.

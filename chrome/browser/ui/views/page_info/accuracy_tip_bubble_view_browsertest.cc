@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/accuracy_tips/accuracy_service.h"
+#include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -25,6 +26,8 @@
 #include "ui/views/test/widget_test_api.h"
 
 namespace {
+using accuracy_tips::AccuracyTipStatus;
+using accuracy_tips::AccuracyTipUI;
 
 bool IsUIShowing() {
   return PageInfoBubbleViewBase::BUBBLE_ACCURACY_TIP ==
@@ -56,16 +59,30 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
         ->SetSampleUrlForTesting(GetUrl("badurl.com"));
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
   ui_test_utils::NavigateToURL(browser(), GetUrl("example.com"));
   EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                                         AccuracyTipStatus::kNone, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnRegularUrl) {
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_TRUE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                                         AccuracyTipStatus::kMisinformation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
   ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
   EXPECT_TRUE(IsUIShowing());
 
@@ -74,6 +91,10 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnRegularUrl) {
   view->CancelDialog();
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipUI::Interaction::kIgnorePressed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
@@ -86,6 +107,10 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
   ui_test_utils::NavigateToURL(browser(), GetUrl("example.com"));
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipUI::Interaction::kNoAction, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
@@ -101,4 +126,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
             new_tab_observer.GetWebContents()->GetURL());
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipUI::Interaction::kLearnMorePressed, 1);
 }

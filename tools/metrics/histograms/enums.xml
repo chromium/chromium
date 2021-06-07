@@ -1119,6 +1119,19 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="With signed in, no match"/>
 </enum>
 
+<enum name="AccuracyTipInteraction">
+  <int value="0" label="kNoAction"/>
+  <int value="1" label="kLostFocus"/>
+  <int value="2" label="kClosed"/>
+  <int value="3" label="kIgnorePressed"/>
+  <int value="4" label="kLearnMorePressed"/>
+</enum>
+
+<enum name="AccuracyTipStatus">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kMisinformation"/>
+</enum>
+
 <enum name="ActionAfterDoubleTap">
   <int value="0" label="Navigated Back"/>
   <int value="1" label="Stopped Navigation"/>

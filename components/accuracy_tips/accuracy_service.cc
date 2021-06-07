@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
@@ -31,14 +33,19 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
 
 void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   // TODO(crbug.com/1210891): Implement rate limiting.
-  ui_->ShowAccuracyTip(web_contents, AccuracyTipStatus::kMisinformation,
-                       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
-                                      weak_factory_.GetWeakPtr()));
+  ui_->ShowAccuracyTip(
+      web_contents, AccuracyTipStatus::kMisinformation,
+      base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void AccuracyService::OnAccuracyTipClosed(
+    base::TimeTicks time_opened,
     AccuracyTipUI::Interaction interaction) {
-  // TODO(crbug.com/1210891): Log histograms.
+  base::UmaHistogramEnumeration("Privacy.AccuracyTip.AccuracyTipInteraction",
+                                interaction);
+  base::UmaHistogramMediumTimes("Privacy.AccuracyTip.AccuracyTipTimeOpen",
+                                base::TimeTicks::Now() - time_opened);
 }
 
 void AccuracyService::SetSampleUrlForTesting(const GURL& url) {

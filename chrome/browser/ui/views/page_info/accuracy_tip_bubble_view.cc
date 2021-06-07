@@ -114,6 +114,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void AccuracyTipBubbleView::OpenHelpCenter() {
+  action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
   // TODO(crbug.com/1210891): Add link to the right info page.
   web_contents()->OpenURL(content::OpenURLParams(
       GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),

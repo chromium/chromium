@@ -8,11 +8,15 @@
 namespace accuracy_tips {
 
 // Represents the different results of the accuracy check.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AccuracyTipStatus {
   // No accuracy information for the site.
   kNone = 0,
   // Site classified as being misleading.
   kMisinformation = 1,
+
+  kMaxValue = kMisinformation,
 };
 
 }  // namespace accuracy_tips
