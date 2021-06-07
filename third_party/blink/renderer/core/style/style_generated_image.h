@@ -47,6 +47,8 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   CSSValue* ComputedCSSValue(const ComputedStyle&,
                              bool allow_visited_style) const override;
 
+  bool IsAccessAllowed(String&) const override { return true; }
+
   FloatSize ImageSize(const Document&,
                       float multiplier,
                       const FloatSize& default_object_size,

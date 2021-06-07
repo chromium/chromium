@@ -54,6 +54,7 @@ class StylePendingImage final : public StyleImage {
   CSSValue* ComputedCSSValue(const ComputedStyle& style,
                              bool allow_visited_style) const override;
 
+  bool IsAccessAllowed(String&) const override { return true; }
   FloatSize ImageSize(const Document&,
                       float,
                       const FloatSize&,

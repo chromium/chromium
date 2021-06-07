@@ -72,6 +72,11 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // Any underlying resources this <image> references failed to load.
   virtual bool ErrorOccurred() const { return false; }
 
+  // Is the <image> considered same-origin? Can only be called if IsLoaded()
+  // returns true. |failing_url| is set to the (potentially formatted) URL of
+  // the first non-same-origin <image>.
+  virtual bool IsAccessAllowed(String& failing_url) const = 0;
+
   // Determine the concrete object size of this <image>, scaled by multiplier,
   // using the specified default object size. Return value as a FloatSize
   // because we want integer sizes to remain integers when zoomed and then

@@ -148,21 +148,14 @@ void ShapeOutsideInfo::SetPercentageResolutionInlineSize(
 
 static bool CheckShapeImageOrigin(Document& document,
                                   const StyleImage& style_image) {
-  if (style_image.IsGeneratedImage())
+  String failing_url;
+  if (style_image.IsAccessAllowed(failing_url))
     return true;
-
-  DCHECK(style_image.CachedImage());
-  ImageResourceContent& image_content = *(style_image.CachedImage());
-  if (image_content.IsAccessAllowed())
-    return true;
-
-  const KURL& url = image_content.Url();
-  String url_string = url.IsNull() ? "''" : url.ElidedString();
+  String url_string = failing_url.IsNull() ? "''" : failing_url;
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError,
       "Unsafe attempt to load URL " + url_string + "."));
-
   return false;
 }
 
