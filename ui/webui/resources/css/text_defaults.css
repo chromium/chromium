@@ -15,11 +15,6 @@
  * to an HTML string.
  * Otherwise its placeholders won't be expanded. */
 
-html {
-  /* TODO(dbeam): remove this soon. Prefer dir= in HTML. */
-  direction: $i18n{textDirection};
-}
-
 body {
   font-family: $i18nRaw{fontFamily};
   font-size: $i18n{fontSize};
