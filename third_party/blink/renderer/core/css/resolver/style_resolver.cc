@@ -570,7 +570,7 @@ void StyleResolver::MatchUARules(const Element& element,
       CSSDefaultStyleSheets::Instance();
   if (!print_media_type_) {
     if (LIKELY(element.IsHTMLElement() || element.IsVTTElement())) {
-      MatchRuleSet(collector, default_style_sheets.DefaultStyle());
+      MatchRuleSet(collector, default_style_sheets.DefaultHtmlStyle());
       if (UNLIKELY(IsInMediaUAShadow(element))) {
         MatchRuleSet(collector,
                      default_style_sheets.DefaultMediaControlsStyle());
@@ -586,7 +586,7 @@ void StyleResolver::MatchUARules(const Element& element,
 
   // In quirks mode, we match rules from the quirks user agent sheet.
   if (GetDocument().InQuirksMode())
-    MatchRuleSet(collector, default_style_sheets.DefaultQuirksStyle());
+    MatchRuleSet(collector, default_style_sheets.DefaultHtmlQuirksStyle());
 
   // If document uses view source styles (in view source mode or in xml viewer
   // mode), then we match rules from the view source style sheet.

@@ -55,10 +55,10 @@ class CSSDefaultStyleSheets final
   void EnsureDefaultStyleSheetForFullscreen();
   bool EnsureDefaultStyleSheetForForcedColors();
 
-  RuleSet* DefaultStyle() { return default_style_.Get(); }
+  RuleSet* DefaultHtmlStyle() { return default_html_style_.Get(); }
   RuleSet* DefaultMathMLStyle() { return default_mathml_style_.Get(); }
   RuleSet* DefaultSVGStyle() { return default_svg_style_.Get(); }
-  RuleSet* DefaultQuirksStyle() { return default_quirks_style_.Get(); }
+  RuleSet* DefaultHtmlQuirksStyle() { return default_html_quirks_style_.Get(); }
   RuleSet* DefaultPrintStyle() { return default_print_style_.Get(); }
   RuleSet* DefaultViewSourceStyle();
   RuleSet* DefaultForcedColorStyle() {
@@ -116,10 +116,19 @@ class CSSDefaultStyleSheets final
  private:
   void InitializeDefaultStyles();
 
-  Member<RuleSet> default_style_;
+  enum class NamespaceType {
+    kHTML,
+    kMathML,
+    kSVG,
+    kMediaControls,  // Not exactly a namespace
+  };
+  void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
+                                    NamespaceType type);
+
+  Member<RuleSet> default_html_style_;
   Member<RuleSet> default_mathml_style_;
   Member<RuleSet> default_svg_style_;
-  Member<RuleSet> default_quirks_style_;
+  Member<RuleSet> default_html_quirks_style_;
   Member<RuleSet> default_print_style_;
   Member<RuleSet> default_view_source_style_;
   Member<RuleSet> default_forced_color_style_;
