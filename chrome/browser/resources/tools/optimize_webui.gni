@@ -30,6 +30,8 @@ template("optimize_webui") {
       rebase_path(target_gen_dir, root_build_dir),
       "--depfile",
       rebase_path(depfile, root_build_dir),
+      "--target_name",
+      target_name,
     ]
 
     args += [ "--js_out_files" ] + invoker.js_out_files

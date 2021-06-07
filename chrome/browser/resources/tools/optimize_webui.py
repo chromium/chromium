@@ -45,9 +45,11 @@ for excluded_file in [
      _BASE_EXCLUDES.append("//" + excluded_file)
 
 
-def _request_list_path(out_path, host_url):
-  host = host_url[host_url.find('://') + 3:-1]
-  return os.path.join(out_path, host + '_requestlist.txt')
+def _request_list_path(out_path, target_name):
+  # Using |target_name| as a prefix which is guaranteed to be unique within the
+  # same folder, to avoid problems when multiple optimize_webui() targets in the
+  # same BUILD.gn file exist.
+  return os.path.join(out_path, target_name + '_requestlist.txt')
 
 def _get_dep_path(dep, host_url, in_path):
   if dep.startswith(host_url):
@@ -190,7 +192,7 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
 def _optimize(in_folder, args):
   in_path = os.path.normpath(os.path.join(_CWD, in_folder)).replace('\\', '/')
   out_path = os.path.join(_CWD, args.out_folder).replace('\\', '/')
-  manifest_out_path = _request_list_path(out_path, args.host_url)
+  manifest_out_path = _request_list_path(out_path, args.target_name)
   tmp_out_dir = tempfile.mkdtemp(dir=out_path).replace('\\', '/')
 
   excludes = _BASE_EXCLUDES + [
@@ -228,6 +230,7 @@ def _optimize(in_folder, args):
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--depfile', required=True)
+  parser.add_argument('--target_name', required=True)
   parser.add_argument('--exclude', nargs='*')
   parser.add_argument('--external_paths', nargs='*')
   parser.add_argument('--host', required=True)

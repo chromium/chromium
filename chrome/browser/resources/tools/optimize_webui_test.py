@@ -53,6 +53,7 @@ class OptimizeWebUiTest(unittest.TestCase):
     # TODO(dbeam): make it possible to _run_optimize twice? Is that useful?
     args = input_args + [
       '--depfile', os.path.join(self._out_folder, 'depfile.d'),
+      '--target_name', 'dummy_target_name',
       '--input', self._tmp_src_dir,
       '--out_folder', self._out_folder,
     ]
