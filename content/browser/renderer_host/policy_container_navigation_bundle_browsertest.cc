@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/policy_container_navigation_bundle.h"
 
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -315,6 +316,38 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   tab->GetController().Reload(ReloadType::ORIGINAL_REQUEST_URL, false);
   observer.Wait();  // No DCHECK expected.
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
+}
+
+// Verifies that the history policies are preserved on
+// ResetForCrossDocumentRestart.
+IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
+                       ResetForCrossDocumentRestartHistoryPolicies) {
+  RenderFrameHostImpl* root = root_frame_host();
+
+  // First navigate to a local scheme with non-default policies. To do that, we
+  // first navigate to a document with a public address space, then have that
+  // document navigate itself to `about:blank`. The final blank document
+  // inherits its policies from the first document, and stores them in its frame
+  // navigation entry for restoring later.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
+
+  PolicyContainerNavigationBundle bundle(
+      nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
+
+  std::unique_ptr<PolicyContainerPolicies> history_policies =
+      bundle.HistoryPolicies()->Clone();
+
+  bundle.ComputePolicies(GURL("http://foo.test"));
+
+  EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
+
+  bundle.ResetForCrossDocumentRestart();
+  EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+
+  bundle.ComputePolicies(AboutBlankUrl());
+
+  EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
 
 }  // namespace

@@ -152,6 +152,12 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // previously.
   scoped_refptr<PolicyContainerHost> TakePolicyContainerHost() &&;
 
+  // Called by same-document navigation requests that need to be restarted as
+  // cross-document navigations. This happens when a same-document commit fails
+  // due to another navigation committing in the meantime. This resets the
+  // PolicyContainerNavigationBundle to the state when it was first created.
+  void ResetForCrossDocumentRestart();
+
  private:
   // Whether either of |ComputePolicies()| or |ComputePoliciesForError()| has
   // been called yet.
@@ -194,7 +200,7 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   //
   // See the comment on |SetIsOriginPotentiallyTrustworthy()| regarding this
   // member's |is_web_secure_context| field.
-  const std::unique_ptr<PolicyContainerPolicies> delivered_policies_;
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies_;
 
   // Nullptr until |ComputePolicies()| or |ComputePoliciesForError()| is
   // called, then moved from by |TakePolicyContainerHost()|.

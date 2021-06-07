@@ -286,4 +286,9 @@ PolicyContainerNavigationBundle::TakePolicyContainerHost() && {
   return std::move(host_);
 }
 
+void PolicyContainerNavigationBundle::ResetForCrossDocumentRestart() {
+  host_ = nullptr;
+  delivered_policies_ = std::make_unique<PolicyContainerPolicies>();
+}
+
 }  // namespace content
