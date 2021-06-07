@@ -52907,7 +52907,7 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="The kTranslate feature is disabled"/>
   <int value="1" label="The network is offline"/>
   <int value="2" label="API keys for translate are unavailable"/>
-  <int value="3" label="Translate not supported on MHTML pages"/>
+  <int value="3" label="Translate not supported for this page MIME type"/>
   <int value="4" label="URL is of a type not considered translatable"/>
   <int value="5" label="Could not identify the target language"/>
   <int value="6" label="Translate is not allowed by policy"/>

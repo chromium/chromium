@@ -47,6 +47,7 @@
 #include "components/translate/core/common/translate_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/mime_util.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -257,12 +258,14 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
     can_translate = false;
   }
 
-  // MHTML pages currently cannot be translated (crbug.com/217945).
-  if (translate_driver_->GetContentsMimeType() == "multipart/related") {
+  // not supported MIME type pages currently cannot be translated.
+  // See bug: 217945, 1208340.
+  if (!IsMimeTypeSupported(translate_driver_->GetContentsMimeType())) {
     if (!menuLogging)
       return false;
     TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::kMHTMLPage);
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kMIMETypeUnsupported);
     can_translate = false;
   }
 
@@ -332,6 +335,15 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
                           can_translate);
 
   return can_translate;
+}
+
+bool TranslateManager::IsMimeTypeSupported(const std::string& mime_type) {
+  if (net::MatchesMimeType("image/*", mime_type))
+    return false;
+  if (mime_type == "multipart/related")
+    return false;
+
+  return true;
 }
 
 void TranslateManager::InitiateManualTranslation(bool auto_translate,
@@ -904,9 +916,9 @@ void TranslateManager::FilterIsTranslatePossible(
         TriggerDecision::kDisabledMissingAPIKey);
   }
 
-  // MHTML pages currently cannot be translated.
-  // See bug: 217945.
-  if (translate_driver_->GetContentsMimeType() == "multipart/related") {
+  // not supported MIME type pages currently cannot be translated.
+  // See bug: 217945, 1208340.
+  if (!IsMimeTypeSupported(translate_driver_->GetContentsMimeType())) {
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_MIME_TYPE_IS_NOT_SUPPORTED);

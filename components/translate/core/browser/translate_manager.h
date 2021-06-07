@@ -142,6 +142,8 @@ class TranslateManager {
   // translate menu item.
   bool CanManuallyTranslate(bool menuLogging = false);
 
+  bool IsMimeTypeSupported(const std::string& mime_type);
+
   // Shows the after translate or error infobar depending on the details.
   void PageTranslated(const std::string& source_lang,
                       const std::string& target_lang,

@@ -94,7 +94,7 @@ enum class MenuTranslationUnavailableReason {
   kTranslateDisabled,
   kNetworkOffline,
   kApiKeysMissing,
-  kMHTMLPage,
+  kMIMETypeUnsupported,
   kURLNotTranslatable,
   kTargetLangUnknown,
   kNotAllowedByPolicy,

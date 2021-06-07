@@ -56,6 +56,8 @@ class MockTranslateDriver : public TranslateDriver {
 
   void SetLastCommittedURL(const GURL& url);
 
+  void SetPageMimeType(const std::string& mime_type);
+
  private:
   bool is_incognito_;
   bool on_is_page_translated_changed_called_;
@@ -63,6 +65,7 @@ class MockTranslateDriver : public TranslateDriver {
   bool translate_page_is_called_;
   LanguageState language_state_;
   GURL last_committed_url_;
+  std::string page_mime_type_ = "text/html";
 };
 
 }  // namespace testing

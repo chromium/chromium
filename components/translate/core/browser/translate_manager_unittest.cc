@@ -1113,6 +1113,22 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
           metrics::INITIATION_STATUS_SHOW_UI_PREDEFINED_TARGET_LANGUAGE, 1)));
 }
 
+TEST_F(TranslateManagerTest, CanManuallyTranslate_ImagePage) {
+  TranslateManager::SetIgnoreMissingKeyForTesting(true);
+  translate_manager_ = std::make_unique<translate::TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  network_notifier_.SimulateOnline();
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
+      .WillByDefault(Return(true));
+
+  translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
+  driver_.SetPageMimeType("image/png");
+
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+}
+
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage_HonourUserSettings) {
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   translate_manager_ = std::make_unique<translate::TranslateManager>(

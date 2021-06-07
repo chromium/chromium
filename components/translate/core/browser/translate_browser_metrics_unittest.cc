@@ -176,7 +176,7 @@ class MetricsRecorder {
   void CheckMenuTranslationUnavailableReason(int expected_kTranslate_disabled,
                                              int expected_network_offline,
                                              int expected_api_keys_missing,
-                                             int expected_mhtml_page,
+                                             int expected_unsupported_mimetype_page,
                                              int expected_url_not_translatable,
                                              int expected_target_lang_unknown,
                                              int expected_not_allowed_by_policy,
@@ -195,10 +195,10 @@ class MetricsRecorder {
               GetCountWithoutSnapshot(static_cast<int>(
                   translate::TranslateBrowserMetrics::
                       MenuTranslationUnavailableReason::kApiKeysMissing)));
-    EXPECT_EQ(expected_mhtml_page,
+    EXPECT_EQ(expected_unsupported_mimetype_page,
               GetCountWithoutSnapshot(static_cast<int>(
                   translate::TranslateBrowserMetrics::
-                      MenuTranslationUnavailableReason::kMHTMLPage)));
+                      MenuTranslationUnavailableReason::kMIMETypeUnsupported)));
     EXPECT_EQ(expected_url_not_translatable,
               GetCountWithoutSnapshot(static_cast<int>(
                   translate::TranslateBrowserMetrics::
@@ -334,7 +334,7 @@ TEST(TranslateBrowserMetricsTest, ReportMenuTranslationUnavailableReason) {
   recorder.CheckMenuTranslationUnavailableReason(1, 1, 1, 0, 0, 0, 0, 0);
   translate::TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
       translate::TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-          kMHTMLPage);
+          kMIMETypeUnsupported);
   recorder.CheckMenuTranslationUnavailableReason(1, 1, 1, 1, 0, 0, 0, 0);
   translate::TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
       translate::TranslateBrowserMetrics::MenuTranslationUnavailableReason::
