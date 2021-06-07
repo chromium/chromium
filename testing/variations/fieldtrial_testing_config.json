@@ -2052,29 +2052,6 @@
             ]
         }
     ],
-    "CodeCacheDeduplicationStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_16K",
-                    "params": {
-                        "size": "16384"
-                    },
-                    "enable_features": [
-                        "CodeCacheDeduplicationStudy"
-                    ]
-                }
-            ]
-        }
-    ],
     "ColorProviderRedirection": [
         {
             "platforms": [
