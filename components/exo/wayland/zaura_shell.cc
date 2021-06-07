@@ -364,6 +364,9 @@ void AuraSurface::OnWindowOcclusionChanged(Surface* surface) {
 }
 
 void AuraSurface::OnFrameLockingChanged(Surface* surface, bool lock) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_LOCK_FRAME_NORMAL_SINCE_VERSION)
+    return;
   if (lock)
     zaura_surface_send_lock_frame_normal(resource_);
   else
