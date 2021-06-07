@@ -17,8 +17,11 @@ struct CodecTraceNames {
     encode = codec_name + "::Encode";
     decode = codec_name + "::Decode";
     flush = codec_name + "::Flush";
+    handle_error = codec_name + "::HandleError";
     output = codec_name + "::Ouput";
     reset = codec_name + "::Reset";
+    reconfigure = codec_name + "::Reconfigure";
+    requests_counter = codec_name + " requests";
     shutdown = codec_name + "::Shutdown";
   }
 
@@ -32,8 +35,11 @@ struct CodecTraceNames {
   std::string encode;
   std::string decode;
   std::string flush;
+  std::string handle_error;
   std::string output;
   std::string reset;
+  std::string reconfigure;
+  std::string requests_counter;
   std::string shutdown;
 };
 

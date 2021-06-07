@@ -6,12 +6,15 @@
 
 #include <string>
 
+#include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -36,13 +39,28 @@
 
 namespace blink {
 
+namespace {
+constexpr const char kCategory[] = "media";
+
+base::AtomicSequenceNumber g_sequence_num_for_counters;
+}  // namespace
+
+// static
+template <typename Traits>
+const CodecTraceNames* EncoderBase<Traits>::GetTraceNames() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecTraceNames, trace_names,
+                                  (Traits::GetName()));
+  return &trace_names;
+}
+
 template <typename Traits>
 EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
                                  const InitType* init,
                                  ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       state_(V8CodecState::Enum::kUnconfigured),
-      script_state_(script_state) {
+      script_state_(script_state),
+      trace_counter_id_(g_sequence_num_for_counters.GetNext()) {
   // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
   if (IsMainThread()) {
     logger_ = std::make_unique<CodecLogger>(
@@ -181,6 +199,8 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
+  TRACE_EVENT0(kCategory, GetTraceNames()->reset.c_str());
+
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
   ResetInternal();
   media_encoder_.reset();
@@ -198,6 +218,7 @@ void EncoderBase<Traits>::ResetInternal() {
     if (pending_req->input)
       pending_req->input.Release()->close();
   }
+  requested_encodes_ = 0;
   stall_request_processing_ = false;
 }
 
@@ -205,6 +226,8 @@ template <typename Traits>
 void EncoderBase<Traits>::HandleError(DOMException* ex) {
   if (state_.AsEnum() == V8CodecState::Enum::kClosed)
     return;
+
+  TRACE_EVENT0(kCategory, GetTraceNames()->handle_error.c_str());
 
   // Save a temp before we clear the callback.
   V8WebCodecsErrorCallback* error_callback = error_callback_.Get();
@@ -237,6 +260,8 @@ void EncoderBase<Traits>::EnqueueRequest(Request* request) {
 template <typename Traits>
 void EncoderBase<Traits>::ProcessRequests() {
   while (!requests_.empty() && !stall_request_processing_) {
+    TraceQueueSizes();
+
     Request* request = requests_.TakeFirst();
     DCHECK(request);
     switch (request->type) {
@@ -256,6 +281,8 @@ void EncoderBase<Traits>::ProcessRequests() {
         NOTREACHED();
     }
   }
+
+  TraceQueueSizes();
 }
 
 template <typename Traits>
@@ -272,12 +299,14 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
 
     if (!self) {
       req->resolver.Release()->Reject();
+      req->EndTracing(/*aborted=*/true);
       return;
     }
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (self->reset_count_ != req->reset_count) {
       req->resolver.Release()->Reject();
+      req->EndTracing(/*aborted=*/true);
       return;
     }
     if (status.is_ok()) {
@@ -287,9 +316,13 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
           self->logger_->MakeException("Flushing error.", status));
       req->resolver.Release()->Reject();
     }
+    req->EndTracing();
+
     self->stall_request_processing_ = false;
     self->ProcessRequests();
   };
+
+  request->StartTracing();
 
   stall_request_processing_ = true;
   media_encoder_->Flush(ConvertToBaseOnceCallback(
@@ -310,6 +343,13 @@ bool EncoderBase<Traits>::HasPendingActivity() const {
 }
 
 template <typename Traits>
+void EncoderBase<Traits>::TraceQueueSizes() const {
+  TRACE_COUNTER_ID2(kCategory, GetTraceNames()->requests_counter.c_str(),
+                    trace_counter_id_, "encodes", requested_encodes_, "other",
+                    requests_.size() - requested_encodes_);
+}
+
+template <typename Traits>
 void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(active_config_);
   visitor->Trace(script_state_);
@@ -325,6 +365,54 @@ void EncoderBase<Traits>::Request::Trace(Visitor* visitor) const {
   visitor->Trace(input);
   visitor->Trace(encodeOpts);
   visitor->Trace(resolver);
+}
+
+template <typename Traits>
+const char* EncoderBase<Traits>::Request::TraceNameFromType() {
+  using RequestType = typename EncoderBase<Traits>::Request::Type;
+
+  const CodecTraceNames* trace_names = EncoderBase<Traits>::GetTraceNames();
+
+  switch (type) {
+    case RequestType::kConfigure:
+      return trace_names->configure.c_str();
+    case RequestType::kEncode:
+      return trace_names->encode.c_str();
+    case RequestType::kFlush:
+      return trace_names->flush.c_str();
+    case RequestType::kReconfigure:
+      return trace_names->reconfigure.c_str();
+  }
+  return "InvalidCodecTraceName";
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::Request::StartTracingVideoEncode(bool is_keyframe) {
+#if DCHECK_IS_ON()
+  DCHECK(!is_tracing);
+  is_tracing = true;
+#endif
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kCategory, TraceNameFromType(), this,
+                                    "key_frame", is_keyframe);
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::Request::StartTracing() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_tracing);
+  is_tracing = true;
+#endif
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, TraceNameFromType(), this);
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::Request::EndTracing(bool aborted) {
+#if DCHECK_IS_ON()
+  DCHECK(is_tracing);
+  is_tracing = false;
+#endif
+  TRACE_EVENT_NESTABLE_ASYNC_END1(kCategory, TraceNameFromType(), this,
+                                  "aborted", aborted);
 }
 
 template class EncoderBase<VideoEncoderTraits>;

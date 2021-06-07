@@ -12,6 +12,8 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -75,6 +77,8 @@ struct CrossThreadCopier<media::Status>
 namespace blink {
 
 namespace {
+
+constexpr const char kCategory[] = "media";
 
 // Use this function in cases when we can't immediately delete |ptr| because
 // there might be its methods on the call stack.
@@ -443,6 +447,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
         media::Status(media::StatusCode::kEncoderInitializationError,
                       "Unable to create encoder (most likely unsupported "
                       "codec/acceleration requirement combination)")));
+    request->EndTracing();
     return;
   }
 
@@ -454,8 +459,10 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::VideoCodec codec, media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(self->active_config_);
 
@@ -466,6 +473,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
                                 media::kVideoCodecMax + 1);
     }
+    req->EndTracing();
 
     self->stall_request_processing_ = false;
     self->ProcessRequests();
@@ -496,15 +504,23 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0);
 
+  bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
+                  request->encodeOpts->keyFrameNonNull();
+
+  request->StartTracingVideoEncode(keyframe);
+
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
     }
+    req->EndTracing();
     self->ProcessRequests();
   };
 
@@ -548,8 +564,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame = media::WrapAsI420VideoFrame(std::move(frame));
   }
 
-  bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
-                  request->encodeOpts->keyFrameNonNull();
   --requested_encodes_;
   media_encoder_->Encode(frame, keyframe,
                          ConvertToBaseOnceCallback(CrossThreadBindOnce(
@@ -565,6 +579,8 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(active_config_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  request->StartTracing();
 
   stall_request_processing_ = true;
 
@@ -585,12 +601,18 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   DCHECK(media_encoder_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  request->StartTracing();
+
   auto reconf_done_callback = [](VideoEncoder* self, Request* req,
                                  media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(self->active_config_);
+
+    req->EndTracing();
 
     if (status.is_ok()) {
       self->stall_request_processing_ = false;
@@ -607,13 +629,16 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   auto flush_done_callback = [](VideoEncoder* self, Request* req,
                                 decltype(reconf_done_callback) reconf_callback,
                                 media::Status status) {
-    if (!self || self->reset_count_ != req->reset_count)
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(self->logger_->MakeException(
           "Encoder initialization error.", status));
       self->stall_request_processing_ = false;
+      req->EndTracing();
       return;
     }
 
@@ -648,8 +673,9 @@ void VideoEncoder::CallOutputCallback(
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
-      reset_count != reset_count_)
+      reset_count != reset_count_) {
     return;
+  }
 
   auto deleter = [](void* data, size_t length, void*) {
     delete[] static_cast<uint8_t*>(data);
@@ -696,8 +722,13 @@ void VideoEncoder::CallOutputCallback(
     metadata->setDecoderConfig(decoder_config);
   }
 
+  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
+                     chunk->timestamp());
+
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
+
+  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
 }
 
 static void isConfigSupportedWithSoftwareOnly(

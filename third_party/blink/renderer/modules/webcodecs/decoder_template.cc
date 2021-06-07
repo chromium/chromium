@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/atomic_sequence_num.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -52,6 +53,8 @@ namespace {
 
 constexpr const char kCategory[] = "media";
 
+base::AtomicSequenceNumber g_sequence_num_for_counters;
+
 void GetGpuFactoriesOnMainThread(
     media::GpuVideoAcceleratorFactories** gpu_factories_out,
     base::WaitableEvent* waitable_event) {
@@ -76,7 +79,8 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
                                          ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
-      state_(V8CodecState::Enum::kUnconfigured) {
+      state_(V8CodecState::Enum::kUnconfigured),
+      trace_counter_id_(g_sequence_num_for_counters.GetNext()) {
   DVLOG(1) << __func__;
   DCHECK(init->hasOutput());
   DCHECK(init->hasError());
@@ -692,8 +696,8 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
 template <typename Traits>
 void DecoderTemplate<Traits>::TraceQueueSizes() const {
-  TRACE_COUNTER_ID2(kCategory, "pending requests", this, "decodes",
-                    num_pending_decodes_, "other",
+  TRACE_COUNTER_ID2(kCategory, GetTraceNames()->requests_counter.c_str(),
+                    trace_counter_id_, "decodes", num_pending_decodes_, "other",
                     requests_.size() - num_pending_decodes_);
 }
 

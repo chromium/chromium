@@ -9,6 +9,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
@@ -27,6 +29,8 @@
 namespace blink {
 
 namespace {
+
+constexpr const char kCategory[] = "media";
 
 AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
     const AudioEncoderConfig* config,
@@ -166,6 +170,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_EQ(active_config_->codec, media::kCodecOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  request->StartTracing();
+
   auto software_encoder = std::make_unique<media::AudioOpusEncoder>();
   media_encoder_ = std::make_unique<media::OffloadingAudioEncoder>(
       std::move(software_encoder));
@@ -176,10 +182,12 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       // the time the callback is executed.
       WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
-  auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
-                          media::AudioCodec codec, media::Status status) {
-    if (!self || self->reset_count_ != reset_count)
+  auto done_callback = [](AudioEncoder* self, media::AudioCodec codec,
+                          Request* req, media::Status status) {
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
@@ -188,6 +196,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.AudioEncoder.Codec", codec,
                                 media::kAudioCodecMax + 1);
     }
+
+    req->EndTracing();
     self->stall_request_processing_ = false;
     self->ProcessRequests();
   };
@@ -197,8 +207,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   media_encoder_->Initialize(
       active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          done_callback, WrapCrossThreadWeakPersistent(this), reset_count_,
-          active_config_->codec)));
+          done_callback, WrapCrossThreadWeakPersistent(this),
+          active_config_->codec, WrapCrossThreadPersistent(request))));
 }
 
 void AudioEncoder::ProcessEncode(Request* request) {
@@ -208,6 +218,8 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0);
 
+  request->StartTracing();
+
   auto* audio_data = request->input.Release();
 
   auto data = audio_data->data();
@@ -215,15 +227,19 @@ void AudioEncoder::ProcessEncode(Request* request) {
   // The data shouldn't be closed at this point.
   DCHECK(data);
 
-  auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
+  auto done_callback = [](AudioEncoder* self, Request* req,
                           media::Status status) {
-    if (!self || self->reset_count_ != reset_count)
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
       return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
     }
+
+    req->EndTracing();
     self->ProcessRequests();
   };
 
@@ -235,6 +251,9 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
     HandleError(logger_->MakeException(
         "Input audio buffer is incompatible with codec parameters", error));
+
+    request->EndTracing();
+
     audio_data->close();
     return;
   }
@@ -244,10 +263,12 @@ void AudioEncoder::ProcessEncode(Request* request) {
   auto audio_bus = media::AudioBuffer::WrapOrCopyToAudioBus(data);
 
   base::TimeTicks timestamp = base::TimeTicks() + data->timestamp();
-  media_encoder_->Encode(
-      std::move(audio_bus), timestamp,
-      ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          done_callback, WrapCrossThreadWeakPersistent(this), reset_count_)));
+
+  --requested_encodes_;
+  media_encoder_->Encode(std::move(audio_bus), timestamp,
+                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                             done_callback, WrapCrossThreadWeakPersistent(this),
+                             WrapCrossThreadPersistent(request))));
 
   audio_data->close();
 }
@@ -313,8 +334,13 @@ void AudioEncoder::CallOutputCallback(
     metadata->setDecoderConfig(decoder_config);
   }
 
+  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
+                     chunk->timestamp());
+
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
+
+  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
 }
 
 // static
