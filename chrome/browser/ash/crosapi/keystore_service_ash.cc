@@ -136,11 +136,17 @@ bool UnpackSigningScheme(
 
 }  // namespace
 
-KeystoreServiceAsh::KeystoreServiceAsh(content::BrowserContext* context)
-    : platform_keys_service_(
+KeystoreServiceAsh::KeystoreServiceAsh(content::BrowserContext* fixed_context)
+    : fixed_platform_keys_service_(
           chromeos::platform_keys::PlatformKeysServiceFactory::
-              GetForBrowserContext(context)) {
-  CHECK(platform_keys_service_);
+              GetForBrowserContext(fixed_context)) {
+  CHECK(fixed_platform_keys_service_);
+}
+
+KeystoreServiceAsh::KeystoreServiceAsh(
+    chromeos::platform_keys::PlatformKeysService* platform_keys_service)
+    : fixed_platform_keys_service_(platform_keys_service) {
+  CHECK(fixed_platform_keys_service_);
 }
 
 KeystoreServiceAsh::KeystoreServiceAsh() = default;
@@ -152,8 +158,8 @@ void KeystoreServiceAsh::BindReceiver(
 }
 
 PlatformKeysService* KeystoreServiceAsh::GetPlatformKeys() {
-  if (platform_keys_service_) {
-    return platform_keys_service_;
+  if (fixed_platform_keys_service_) {
+    return fixed_platform_keys_service_;
   }
 
   PlatformKeysService* service =

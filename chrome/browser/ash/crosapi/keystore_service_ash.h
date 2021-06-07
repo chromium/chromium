@@ -42,10 +42,13 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   using KeystoreType = mojom::KeystoreType;
   using SigningScheme = mojom::KeystoreSigningScheme;
 
-  explicit KeystoreServiceAsh(content::BrowserContext* context);
+  explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
   // whenever used. The profile should be specified explicitly when possible.
   KeystoreServiceAsh();
+  // For testing only.
+  explicit KeystoreServiceAsh(
+      chromeos::platform_keys::PlatformKeysService* platform_keys_service);
   KeystoreServiceAsh(const KeystoreServiceAsh&) = delete;
   KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
   ~KeystoreServiceAsh() override;
@@ -91,6 +94,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
             SignCallback callback) override;
 
  private:
+  // Returns a correct instance of PlatformKeysService to use. If a specific
+  // browser context was passed into constructor, the corresponding
+  // PlatformKeysService instance will be used for all operations.
+  // Otherwise the class will use an instance for the primary profile.
   chromeos::platform_keys::PlatformKeysService* GetPlatformKeys();
 
   // |challenge| is used as a opaque identifier to match against the
@@ -126,7 +133,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                       chromeos::platform_keys::Status status);
 
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
-  chromeos::platform_keys::PlatformKeysService* platform_keys_service_ =
+  // Stores a pointer to a specific PlatformKeysService if it was specified in
+  // constructor.
+  chromeos::platform_keys::PlatformKeysService* fixed_platform_keys_service_ =
       nullptr;
 
   // Container to keep outstanding challenges alive.

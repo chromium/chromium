@@ -90,5 +90,25 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
   return absl::nullopt;
 }
 
+mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
+    unsigned int modulus_length) {
+  mojom::KeystoreSigningAlgorithmPtr algorithm =
+      mojom::KeystoreSigningAlgorithm::New();
+  mojom::KeystorePKCS115ParamsPtr params = mojom::KeystorePKCS115Params::New();
+  params->modulus_length = modulus_length;
+  algorithm->set_pkcs115(std::move(params));
+  return algorithm;
+}
+
+mojom::KeystoreSigningAlgorithmPtr MakeEcKeystoreSigningAlgorithm(
+    const std::string& named_curve) {
+  mojom::KeystoreSigningAlgorithmPtr algorithm =
+      mojom::KeystoreSigningAlgorithm::New();
+  mojom::KeystoreECDSAParamsPtr params = mojom::KeystoreECDSAParams::New();
+  params->named_curve = named_curve;
+  algorithm->set_ecdsa(std::move(params));
+  return algorithm;
+}
+
 }  // namespace keystore_service_util
 }  // namespace crosapi

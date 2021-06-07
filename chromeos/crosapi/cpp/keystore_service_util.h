@@ -29,13 +29,25 @@ extern const char kWebCryptoNamedCurveP256[];
 // absl::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
 absl::optional<base::DictionaryValue> DictionaryFromSigningAlgorithm(
-    const crosapi::mojom::KeystoreSigningAlgorithmPtr& algorithm);
+    const mojom::KeystoreSigningAlgorithmPtr& algorithm);
 
 // Converts a WebCrypto dictionary into a crosapi signing algorithm. Returns
 // absl::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
+absl::optional<mojom::KeystoreSigningAlgorithmPtr>
 SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary);
+
+// Creates the KeystorePKCS115Params variant of the KeystoreSigningAlgorithm
+// union and populates the modulus_length field with |modulus_length|.
+COMPONENT_EXPORT(CROSAPI)
+mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
+    unsigned int modulus_length);
+
+// Creates the KeystoreECDSAParams variant of the KeystoreSigningAlgorithm
+// union and populates the named_curve field with |modulus_length|.
+COMPONENT_EXPORT(CROSAPI)
+mojom::KeystoreSigningAlgorithmPtr MakeEcKeystoreSigningAlgorithm(
+    const std::string& named_curve);
 
 }  // namespace keystore_service_util
 }  // namespace crosapi

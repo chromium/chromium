@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -50,6 +51,8 @@
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
+using crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
+using crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreECDSAParams;
@@ -328,14 +331,9 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
  private:
   // Generates the RSA key.
   void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
-    KeystoreSigningAlgorithmPtr algorithm = KeystoreSigningAlgorithm::New();
-    KeystorePKCS115ParamsPtr params = KeystorePKCS115Params::New();
-    params->modulus_length = modulus_length_;
-    algorithm->set_pkcs115(std::move(params));
-
-    service_->keystore_service_->GenerateKey(KeystoreTypeFromTokenId(token_id_),
-                                             std::move(algorithm),
-                                             std::move(callback));
+    service_->keystore_service_->GenerateKey(
+        KeystoreTypeFromTokenId(token_id_),
+        MakeRsaKeystoreSigningAlgorithm(modulus_length_), std::move(callback));
   }
 
   const unsigned int modulus_length_;
@@ -359,14 +357,9 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
  private:
   // Generates the EC key.
   void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
-    KeystoreSigningAlgorithmPtr algorithm = KeystoreSigningAlgorithm::New();
-    KeystoreECDSAParamsPtr params = KeystoreECDSAParams::New();
-    params->named_curve = named_curve_;
-    algorithm->set_ecdsa(std::move(params));
-
-    service_->keystore_service_->GenerateKey(KeystoreTypeFromTokenId(token_id_),
-                                             std::move(algorithm),
-                                             std::move(callback));
+    service_->keystore_service_->GenerateKey(
+        KeystoreTypeFromTokenId(token_id_),
+        MakeEcKeystoreSigningAlgorithm(named_curve_), std::move(callback));
   }
 
   const std::string named_curve_;
