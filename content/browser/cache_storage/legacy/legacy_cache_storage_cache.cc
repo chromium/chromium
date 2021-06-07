@@ -441,6 +441,11 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
     padding = storage::ComputeRandomResponsePadding();
   }
 
+  bool request_include_credentials =
+      metadata.response().has_request_include_credentials()
+          ? metadata.response().request_include_credentials()
+          : true;
+
   // Note that |has_range_requested| can be safely set to false since it only
   // affects HTTP 206 (Partial) responses, which are blocked from cache storage.
   // See https://fetch.spec.whatwg.org/#main-fetch for usage of
@@ -462,7 +467,8 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
-      /*has_range_requested=*/false, /*auth_challenge_info=*/absl::nullopt);
+      /*has_range_requested=*/false, /*auth_challenge_info=*/absl::nullopt,
+      request_include_credentials);
 }
 
 int64_t CalculateSideDataPadding(
@@ -1929,6 +1935,8 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
         storage_key_, response_metadata, put_context->side_data_blob_size);
   }
   response_metadata->set_side_data_padding(side_data_padding);
+  response_metadata->set_request_include_credentials(
+      put_context->response->request_include_credentials);
 
   // Get a temporary copy of the entry pointer before passing it in base::Bind.
   disk_cache::Entry* temp_entry_ptr = put_context->cache_entry.get();

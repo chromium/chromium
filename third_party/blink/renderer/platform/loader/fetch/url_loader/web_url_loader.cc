@@ -893,6 +893,7 @@ void WebURLLoader::PopulateURLResponse(
   }
 
   response->SetAuthChallengeInfo(head.auth_challenge_info);
+  response->SetRequestIncludeCredentials(head.request_include_credentials);
 
   const net::HttpResponseHeaders* headers = head.headers.get();
   if (!headers)

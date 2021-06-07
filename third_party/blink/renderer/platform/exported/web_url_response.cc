@@ -550,6 +550,15 @@ WebURLResponse::AuthChallengeInfo() const {
   return resource_response_->AuthChallengeInfo();
 }
 
+void WebURLResponse::SetRequestIncludeCredentials(
+    bool request_include_credentials) {
+  resource_response_->SetRequestIncludeCredentials(request_include_credentials);
+}
+
+bool WebURLResponse::RequestIncludeCredentials() const {
+  return resource_response_->RequestIncludeCredentials();
+}
+
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
 
 }  // namespace blink

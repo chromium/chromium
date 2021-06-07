@@ -174,6 +174,11 @@ String FetchResponseData::InternalMIMEType() const {
   return mime_type_;
 }
 
+bool FetchResponseData::RequestIncludeCredentials() const {
+  return internal_response_ ? internal_response_->RequestIncludeCredentials()
+                            : request_include_credentials_;
+}
+
 void FetchResponseData::SetURLList(const Vector<KURL>& url_list) {
   url_list_ = url_list;
 }
@@ -208,6 +213,7 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
+  new_response->request_include_credentials_ = request_include_credentials_;
   if (auth_challenge_info_) {
     new_response->auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info_);
@@ -286,6 +292,7 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->alpn_negotiated_protocol = alpn_negotiated_protocol_;
   response->was_fetched_via_spdy = was_fetched_via_spdy_;
   response->has_range_requested = has_range_requested_;
+  response->request_include_credentials = request_include_credentials_;
   for (const auto& header : HeaderList()->List())
     response->headers.insert(header.first, header.second);
   response->parsed_headers = ParseHeaders(
@@ -367,6 +374,7 @@ void FetchResponseData::InitFromResourceResponse(
   }
 
   SetAuthChallengeInfo(response.AuthChallengeInfo());
+  SetRequestIncludeCredentials(response.RequestIncludeCredentials());
 }
 
 FetchResponseData::FetchResponseData(Type type,
@@ -391,6 +399,12 @@ void FetchResponseData::SetAuthChallengeInfo(
     auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info);
   }
+}
+
+void FetchResponseData::SetRequestIncludeCredentials(
+    bool request_include_credentials) {
+  DCHECK(!internal_response_);
+  request_include_credentials_ = request_include_credentials;
 }
 
 void FetchResponseData::ReplaceBodyStreamBuffer(BodyStreamBuffer* buffer) {

@@ -235,4 +235,9 @@ struct URLResponseHead {
   // covered by the wildcard in the preflight response.
   // TODO(crbug.com/1176753): Remove this once the investigation is done.
   bool has_authorization_covered_by_wildcard_on_preflight = false;
+
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials = true;
 };

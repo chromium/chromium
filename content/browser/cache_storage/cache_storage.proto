@@ -58,6 +58,7 @@ message CacheResponse {
   optional string request_method = 14;
   optional int64 padding = 15;
   optional int64 side_data_padding = 16;
+  optional bool request_include_credentials = 17;
 }
 
 message CacheMetadata {

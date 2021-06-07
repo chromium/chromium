@@ -104,4 +104,9 @@ struct FetchAPIResponse {
   // Information related to an authentication challenge from the response, if
   // there was one.
   network.mojom.AuthChallengeInfo? auth_challenge_info;
+
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials = true;
 };

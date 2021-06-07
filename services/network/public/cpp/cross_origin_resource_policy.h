@@ -60,6 +60,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       mojom::RequestMode request_mode,
       absl::optional<url::Origin> request_initiator_origin_lock,
       mojom::RequestDestination request_destination,
+      bool request_include_credentials,
       const CrossOriginEmbedderPolicy& embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* reporter) WARN_UNUSED_RESULT;
 

@@ -351,6 +351,12 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT const absl::optional<net::AuthChallengeInfo>&
   AuthChallengeInfo() const;
 
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  BLINK_PLATFORM_EXPORT void SetRequestIncludeCredentials(bool);
+  BLINK_PLATFORM_EXPORT bool RequestIncludeCredentials() const;
+
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

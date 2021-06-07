@@ -520,6 +520,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     auth_challenge_info_ = value;
   }
 
+  bool RequestIncludeCredentials() const {
+    return request_include_credentials_;
+  }
+  void SetRequestIncludeCredentials(bool request_include_credentials) {
+    request_include_credentials_ = request_include_credentials;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -710,6 +717,11 @@ class PLATFORM_EXPORT ResourceResponse final {
   KURL web_bundle_url_;
 
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
+
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials_ = true;
 };
 
 }  // namespace blink

@@ -653,7 +653,8 @@ class CacheStorageManagerTest : public testing::Test {
         net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
-        /*auth_challenge_info=*/absl::nullopt);
+        /*auth_challenge_info=*/absl::nullopt,
+        /*request_include_credentials=*/true);
 
     blink::mojom::BatchOperationPtr operation =
         blink::mojom::BatchOperation::New();

@@ -140,6 +140,7 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
     absl::optional<url::Origin> request_initiator_origin_lock,
+    bool request_include_credentials,
     mojom::CrossOriginEmbedderPolicyValue embedder_policy) {
   // Browser-initiated requests are not subject to Cross-Origin-Resource-Policy.
   if (!request_initiator.has_value()) {
@@ -153,11 +154,21 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     return absl::nullopt;
   }
 
-  bool require_corp =
-      embedder_policy == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
-      (embedder_policy ==
-           mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
-       request_mode == mojom::RequestMode::kNavigate);
+  bool require_corp;
+  switch (embedder_policy) {
+    case mojom::CrossOriginEmbedderPolicyValue::kNone:
+      require_corp = false;
+      break;
+
+    case mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+      require_corp = request_mode == mojom::RequestMode::kNavigate ||
+                     request_include_credentials;
+      break;
+
+    case mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      require_corp = true;
+      break;
+  }
 
   // COEP https://mikewest.github.io/corpp/#corp-check
   bool upgrade_to_same_origin = false;
@@ -222,6 +233,7 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
     mojom::RequestMode request_mode,
     absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
+    bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
   constexpr auto kBlockedDueToCoep = mojom::BlockedByResponseReason::
@@ -231,7 +243,8 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
       reporter) {
     const auto result = IsBlockedInternal(
         policy, request_url, request_initiator, request_mode,
-        request_initiator_origin_lock, embedder_policy.report_only_value);
+        request_initiator_origin_lock, request_include_credentials,
+        embedder_policy.report_only_value);
     UMA_HISTOGRAM_ENUMERATION(
         "NetworkService.CrossOriginResourcePolicy.ReportOnlyResult",
         ToCorpResult(result));
@@ -249,7 +262,8 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
 
   const auto result =
       IsBlockedInternal(policy, request_url, request_initiator, request_mode,
-                        request_initiator_origin_lock, embedder_policy.value);
+                        request_initiator_origin_lock,
+                        request_include_credentials, embedder_policy.value);
   UMA_HISTOGRAM_ENUMERATION("NetworkService.CrossOriginResourcePolicy.Result",
                             ToCorpResult(result));
   if (reporter &&
@@ -296,8 +310,8 @@ CrossOriginResourcePolicy::IsBlocked(
 
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
-      request_initiator_origin_lock, request_destination, embedder_policy,
-      reporter);
+      request_initiator_origin_lock, request_destination,
+      response.request_include_credentials, embedder_policy, reporter);
 }
 
 // static
@@ -310,6 +324,7 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
     mojom::RequestMode request_mode,
     absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
+    bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
@@ -321,8 +336,8 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
 
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
-      request_initiator_origin_lock, request_destination, embedder_policy,
-      reporter);
+      request_initiator_origin_lock, request_destination,
+      request_include_credentials, embedder_policy, reporter);
 }
 
 // static
@@ -342,7 +357,8 @@ CrossOriginResourcePolicy::IsNavigationBlocked(
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator,
       mojom::RequestMode::kNavigate, request_initiator_origin_lock,
-      request_destination, embedder_policy, reporter);
+      request_destination, response.request_include_credentials,
+      embedder_policy, reporter);
 }
 
 // static

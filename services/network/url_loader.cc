@@ -159,6 +159,7 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->has_range_requested = request->extra_request_headers().HasHeader(
       net::HttpRequestHeaders::kRange);
   response->dns_aliases = request->response_info().dns_aliases;
+  response->request_include_credentials = request->allow_credentials();
 }
 
 // A subclass of net::UploadBytesElementReader which owns
@@ -1141,7 +1142,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   DCHECK(!deferred_redirect_url_);
   deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
-  SetRequestCredentials(redirect_info.new_url);
 
   // Send the redirect response to the client, allowing them to inspect it and
   // optionally follow the redirect.
@@ -1190,6 +1190,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     DeleteSelf();
     return;
   }
+
+  SetRequestCredentials(redirect_info.new_url);
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
