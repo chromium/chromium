@@ -31,7 +31,6 @@
 #endif
 
 @interface ConsistencyPromoSigninCoordinator () <
-    BottomSheetPresentationControllerPresentationDelegate,
     ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
@@ -290,13 +289,6 @@
   DCHECK(self.authenticationService->IsAuthenticated());
 }
 
-#pragma mark - BottomSheetPresentationControllerPresentationDelegate
-
-- (void)bottomSheetPresentationControllerDismissViewController:
-    (BottomSheetPresentationController*)controller {
-  [self dismissNavigationViewController];
-}
-
 #pragma mark - ConsistencyAccountChooserCoordinatorDelegate
 
 - (void)consistencyAccountChooserCoordinatorChromeIdentitySelected:
@@ -451,12 +443,9 @@
                                 (UIViewController*)presentingViewController
                                 sourceViewController:(UIViewController*)source {
   DCHECK_EQ(self.navigationController, presentedViewController);
-  BottomSheetPresentationController* controller =
-      [[BottomSheetPresentationController alloc]
-          initWithBottomSheetNavigationController:self.navigationController
-                         presentingViewController:presentingViewController];
-  controller.presentationDelegate = self;
-  return controller;
+  return [[BottomSheetPresentationController alloc]
+      initWithBottomSheetNavigationController:self.navigationController
+                     presentingViewController:presentingViewController];
 }
 
 @end

@@ -73,16 +73,6 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   [self.containerView
       addSubview:self.navigationController.backgroundDimmerView];
 
-  // Add close button view.
-  UIButton* closeButton =
-      [AccessibilityCloseMenuButton buttonWithType:UIButtonTypeCustom];
-  [closeButton addTarget:self
-                  action:@selector(closeButtonAction:)
-        forControlEvents:UIControlEventTouchUpInside];
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.containerView addSubview:closeButton];
-  AddSameConstraints(self.containerView, closeButton);
-
   // Add presented view controller.
   [self.containerView addSubview:self.presentedViewController.view];
   CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
@@ -133,14 +123,6 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
   self.presentedViewController.view.frame = presentedFrame;
   [self.navigationController didUpdateControllerViewFrame];
-}
-
-#pragma mark - Private
-
-// Closes the bottom sheet.
-- (void)closeButtonAction:(id)sender {
-  [self.presentationDelegate
-      bottomSheetPresentationControllerDismissViewController:self];
 }
 
 @end
