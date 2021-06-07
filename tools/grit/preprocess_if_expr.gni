@@ -8,9 +8,11 @@ template("preprocess_if_expr") {
   action(target_name) {
     script = "//tools/grit/preprocess_if_expr.py"
 
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                           ])
 
     inputs = []
     outputs = []

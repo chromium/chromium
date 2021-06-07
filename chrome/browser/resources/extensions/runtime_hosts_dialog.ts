@@ -105,7 +105,6 @@ class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
   private site_: string;
   private inputInvalid_: boolean;
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 

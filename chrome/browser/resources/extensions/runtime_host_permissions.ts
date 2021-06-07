@@ -39,7 +39,6 @@ interface ExtensionsRuntimeHostPermissionsElement {
   };
 }
 
-/** @polymer */
 class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   static get is() {
     return 'extensions-runtime-host-permissions';

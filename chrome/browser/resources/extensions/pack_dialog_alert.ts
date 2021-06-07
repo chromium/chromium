@@ -47,7 +47,6 @@ class ExtensionsPackDialogAlertElement extends PolymerElement {
     return this.$.dialog.getNative().returnValue;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -75,7 +74,6 @@ class ExtensionsPackDialogAlertElement extends PolymerElement {
     }
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();

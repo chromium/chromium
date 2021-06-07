@@ -23,7 +23,6 @@ class ExtensionsDropOverlayElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {boolean} */
       dragEnabled: {
         type: Boolean,
         observer: 'dragEnabledChanged_',

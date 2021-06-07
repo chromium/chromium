@@ -14,28 +14,24 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {StreamArgItem, StreamItem} from './activity_log_stream_item.js';
 
 
-/** @interface */
-export class ActivityLogEventDelegate {
-  /** @return {!ChromeEvent} */
-  getOnExtensionActivity() {}
+export interface ActivityLogEventDelegate {
+  getOnExtensionActivity(): any;
 }
 
 /**
  * Process activity for the stream. In the case of content scripts, we split
  * the activity for every script invoked.
- * @param {!chrome.activityLogPrivate.ExtensionActivity}
- *     activity
- * @return {!Array<!StreamItem>}
  */
-function processActivityForStream(activity) {
+function processActivityForStream(
+    activity: chrome.activityLogPrivate.ExtensionActivity): Array<StreamItem> {
   const activityType = activity.activityType;
-  const timestamp = activity.time;
+  const timestamp = activity.time!;
   const isContentScript = activityType ===
       chrome.activityLogPrivate.ExtensionActivityType.CONTENT_SCRIPT;
 
-  const args = isContentScript ? JSON.stringify([]) : activity.args;
+  const args = isContentScript ? JSON.stringify([]) : activity.args!;
 
-  let streamItemNames = [activity.apiCall];
+  let streamItemNames = [activity.apiCall!];
 
   // TODO(kelvinjiang): Reuse logic from activity_log_history and refactor
   // some of the processing code into a separate file in a follow up CL.
@@ -49,7 +45,7 @@ function processActivityForStream(activity) {
 
   return streamItemNames.map(name => ({
                                args,
-                               argUrl: activity.argUrl,
+                               argUrl: activity.argUrl!,
                                activityType,
                                name,
                                pageUrl: activity.pageUrl,
@@ -59,7 +55,6 @@ function processActivityForStream(activity) {
                              }));
 }
 
-/** @polymer */
 class ActivityLogStreamElement extends PolymerElement {
   static get is() {
     return 'activity-log-stream';
@@ -71,32 +66,25 @@ class ActivityLogStreamElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {string} */
       extensionId: String,
-
-      /** @type {!ActivityLogEventDelegate} */
       delegate: Object,
 
-      /** @private */
       isStreamOn_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!Array<!StreamItem>} */
       activityStream_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private {!Array<!StreamItem>} */
       filteredActivityStream_: {
         type: Array,
         computed:
             'computeFilteredActivityStream_(activityStream_.*, lastSearch_)',
       },
 
-      /** @private */
       lastSearch_: {
         type: String,
         value: '',
@@ -104,17 +92,24 @@ class ActivityLogStreamElement extends PolymerElement {
     };
   }
 
+  extensionId: string;
+  delegate: ActivityLogEventDelegate;
+  private isStreamOn_: boolean;
+  private activityStream_: Array<StreamItem>;
+  private filteredActivityStream_: Array<StreamItem>;
+  private lastSearch_: string;
+  private listenerInstance_:
+      (type: chrome.activityLogPrivate.ExtensionActivity) => void;
+
   constructor() {
     super();
 
     /**
      * Instance of |extensionActivityListener_| bound to |this|.
-     * @private {!Function}
      */
     this.listenerInstance_ = () => {};
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -124,9 +119,8 @@ class ActivityLogStreamElement extends PolymerElement {
     this.startStream();
   }
 
-  /** @private */
-  onResizeStream_(e) {
-    this.shadowRoot.querySelector('iron-list').notifyResize();
+  private onResizeStream_() {
+    this.shadowRoot!.querySelector('iron-list')!.notifyResize();
   }
 
   clearStream() {
@@ -152,8 +146,7 @@ class ActivityLogStreamElement extends PolymerElement {
     this.isStreamOn_ = false;
   }
 
-  /** @private */
-  onToggleButtonClick_() {
+  private onToggleButtonClick_() {
     if (this.isStreamOn_) {
       this.pauseStream();
     } else {
@@ -161,35 +154,20 @@ class ActivityLogStreamElement extends PolymerElement {
     }
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isStreamEmpty_() {
+  private isStreamEmpty_(): boolean {
     return this.activityStream_.length === 0;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isFilteredStreamEmpty_() {
+  private isFilteredStreamEmpty_(): boolean {
     return this.filteredActivityStream_.length === 0;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowEmptySearchMessage_() {
+  private shouldShowEmptySearchMessage_(): boolean {
     return !this.isStreamEmpty_() && this.isFilteredStreamEmpty_();
   }
 
-  /**
-   * @private
-   * @param {!chrome.activityLogPrivate.ExtensionActivity} activity
-   */
-  extensionActivityListener_(activity) {
+  private extensionActivityListener_(
+      activity: chrome.activityLogPrivate.ExtensionActivity) {
     if (activity.extensionId !== this.extensionId) {
       return;
     }
@@ -199,14 +177,10 @@ class ActivityLogStreamElement extends PolymerElement {
         ...processActivityForStream(activity));
 
     // Used to update the scrollbar.
-    this.shadowRoot.querySelector('iron-list').notifyResize();
+    this.shadowRoot!.querySelector('iron-list')!.notifyResize();
   }
 
-  /**
-   * @private
-   * @param {!CustomEvent<string>} e
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     // Remove all whitespaces from the search term, as API call names and
     // URLs should not contain any whitespace. As of now, only single term
     // search queries are allowed.
@@ -218,11 +192,7 @@ class ActivityLogStreamElement extends PolymerElement {
     this.lastSearch_ = searchTerm;
   }
 
-  /**
-   * @private
-   * @return {!Array<!StreamItem>}
-   */
-  computeFilteredActivityStream_() {
+  private computeFilteredActivityStream_(): Array<StreamItem> {
     if (!this.lastSearch_) {
       return this.activityStream_.slice();
     }
@@ -236,9 +206,16 @@ class ActivityLogStreamElement extends PolymerElement {
 
     return this.activityStream_.filter(act => {
       return propNames.some(prop => {
-        return act[prop] && act[prop].toLowerCase().includes(this.lastSearch_);
+        const value = (act as {[index: string]: any})[prop];
+        return value && value.toLowerCase().includes(this.lastSearch_);
       });
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-stream': ActivityLogStreamElement;
   }
 }
 

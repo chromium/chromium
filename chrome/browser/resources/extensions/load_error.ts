@@ -72,8 +72,7 @@ class ExtensionsLoadErrorElement extends PolymerElement {
               this.close();
             },
             loadError => {
-              this.loadError =
-                  /** @type {chrome.developerPrivate.LoadError} */ (loadError);
+              this.loadError = loadError;
               this.retrying_ = false;
             });
   }
@@ -84,7 +83,6 @@ class ExtensionsLoadErrorElement extends PolymerElement {
     // CodeSection expects a RequestFileSourceResponse, rather than an
     // ErrorFileSource. Massage into place.
     // TODO(devlin): Make RequestFileSourceResponse use ErrorFileSource.
-    /** @type {!chrome.developerPrivate.RequestFileSourceResponse} */
     const codeSectionProperties = {
       beforeHighlight: source ? source.beforeHighlight : '',
       highlight: source ? source.highlight : '',

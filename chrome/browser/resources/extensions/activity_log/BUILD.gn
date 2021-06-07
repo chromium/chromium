@@ -6,10 +6,10 @@ import("//tools/polymer/html_to_js.gni")
 
 html_to_js("web_components") {
   js_files = [
-    "activity_log.js",
-    "activity_log_history.js",
-    "activity_log_history_item.js",
-    "activity_log_stream.js",
-    "activity_log_stream_item.js",
+    "activity_log.ts",
+    "activity_log_history.ts",
+    "activity_log_history_item.ts",
+    "activity_log_stream.ts",
+    "activity_log_stream_item.ts",
   ]
 }

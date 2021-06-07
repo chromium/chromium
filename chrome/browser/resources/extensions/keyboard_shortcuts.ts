@@ -56,7 +56,6 @@ class ExtensionsKeyboardShortcutsElement extends
   delegate: KeyboardShortcutDelegate;
   items: Array<chrome.developerPrivate.ExtensionInfo>;
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnter_);

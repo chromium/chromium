@@ -20,56 +20,29 @@ import {ActivityGroup} from './activity_log_history_item.js';
  * LOADING because we call the activity log API whenever a user navigates to
  * the page. LOADED is the state where the API call has returned a successful
  * result.
- * @enum {string}
  */
-export const ActivityLogPageState = {
-  LOADING: 'loading',
-  LOADED: 'loaded'
-};
+export enum ActivityLogPageState {
+  LOADING = 'loading',
+  LOADED = 'loaded',
+}
 
-/** @interface */
-export class ActivityLogDelegate {
-  /**
-   * @param {string} extensionId
-   * @return {!Promise<!chrome.activityLogPrivate.ActivityResultSet>}
-   */
-  getExtensionActivityLog(extensionId) {}
-
-  /**
-   * @param {string} extensionId
-   * @param {string} searchTerm
-   * @return {!Promise<!chrome.activityLogPrivate.ActivityResultSet>}
-   */
-  getFilteredExtensionActivityLog(extensionId, searchTerm) {}
-
-  /**
-   * @param {!Array<string>} activityIds
-   * @return {!Promise<void>}
-   */
-  deleteActivitiesById(activityIds) {}
-
-  /**
-   * @param {string} extensionId
-   * @return {!Promise<void>}
-   */
-  deleteActivitiesFromExtension(extensionId) {}
-
-  /**
-   * @param {string} rawActivityData
-   * @param {string} fileName
-   */
-  downloadActivities(rawActivityData, fileName) {}
+export interface ActivityLogDelegate {
+  getExtensionActivityLog(extensionId: string):
+      Promise<chrome.activityLogPrivate.ActivityResultSet>;
+  getFilteredExtensionActivityLog(extensionId: string, searchTerm: string):
+      Promise<chrome.activityLogPrivate.ActivityResultSet>;
+  deleteActivitiesById(activityIds: string[]): Promise<void>;
+  deleteActivitiesFromExtension(extensionId: string): Promise<void>;
+  downloadActivities(rawActivityData: string, fileName: string): void;
 }
 
 /**
  * Content scripts activities do not have an API call, so we use the names of
  * the scripts executed (specified as a stringified JSON array in the args
  * field) as the keys for an activity group instead.
- * @private
- * @param {!chrome.activityLogPrivate.ExtensionActivity} activity
- * @return {!Array<string>}
  */
-function getActivityGroupKeysForContentScript_(activity) {
+function getActivityGroupKeysForContentScript_(
+    activity: chrome.activityLogPrivate.ExtensionActivity): string[] {
   assert(
       activity.activityType ===
       chrome.activityLogPrivate.ExtensionActivityType.CONTENT_SCRIPT);
@@ -80,7 +53,7 @@ function getActivityGroupKeysForContentScript_(activity) {
 
   const parsedArgs = JSON.parse(activity.args);
   assert(Array.isArray(parsedArgs), 'Invalid API data.');
-  return /** @type {!Array<string>} */ (parsedArgs);
+  return parsedArgs;
 }
 
 /**
@@ -88,11 +61,9 @@ function getActivityGroupKeysForContentScript_(activity) {
  * web request does in more detail than just the api_call. This information
  * is in activity.other.webRequest and we use this to generate more activity
  * group keys if possible.
- * @private
- * @param {!chrome.activityLogPrivate.ExtensionActivity} activity
- * @return {!Array<string>}
  */
-function getActivityGroupKeysForWebRequest_(activity) {
+function getActivityGroupKeysForWebRequest_(
+    activity: chrome.activityLogPrivate.ExtensionActivity): Array<string> {
   assert(
       activity.activityType ===
       chrome.activityLogPrivate.ExtensionActivityType.WEB_REQUEST);
@@ -101,17 +72,17 @@ function getActivityGroupKeysForWebRequest_(activity) {
   const other = activity.other;
 
   if (!other || !other.webRequest) {
-    return [apiCall];
+    return [apiCall!];
   }
 
-  const webRequest = /** @type {!Object} */ (JSON.parse(other.webRequest));
+  const webRequest = JSON.parse(other.webRequest);
   assert(typeof webRequest === 'object', 'Invalid API data');
 
   // If there is extra information in the other.webRequest object,
   // construct a group for each consisting of the API call and each object key
   // in other.webRequest. Otherwise we default to just the API call.
   return Object.keys(webRequest).length === 0 ?
-      [apiCall] :
+      [apiCall!] :
       Object.keys(webRequest).map(field => `${apiCall} (${field})`);
 }
 
@@ -120,11 +91,10 @@ function getActivityGroupKeysForWebRequest_(activity) {
  * this would be the activity's API call though content script and web
  * requests have different keys. We currently assume that every API call
  * matches to one activity type.
- * @param {!Array<!chrome.activityLogPrivate.ExtensionActivity>}
- *     activityData
- * @return {!Map<string, !ActivityGroup>}
  */
-function groupActivities(activityData) {
+function groupActivities(
+    activityData: Array<chrome.activityLogPrivate.ExtensionActivity>):
+    Map<string, ActivityGroup> {
   const groupedActivities = new Map();
 
   for (const activity of activityData) {
@@ -175,10 +145,9 @@ function groupActivities(activityData) {
 /**
  * Sort activities by the total count for each activity group key. Resolve
  * ties by the alphabetical order of the key.
- * @param {!Map<string, !ActivityGroup>} groupedActivities
- * @return {!Array<!ActivityGroup>}
  */
-function sortActivitiesByCallCount(groupedActivities) {
+function sortActivitiesByCallCount(
+    groupedActivities: Map<string, ActivityGroup>): Array<ActivityGroup> {
   return Array.from(groupedActivities.values()).sort((a, b) => {
     if (a.count !== b.count) {
       return b.count - a.count;
@@ -193,8 +162,12 @@ function sortActivitiesByCallCount(groupedActivities) {
   });
 }
 
+declare global {
+  interface HTMLElementEventMap {
+    'delete-activity-log-item': CustomEvent<Array<string>>;
+  }
+}
 
-/** @polymer */
 class ActivityLogHistoryElement extends PolymerElement {
   static get is() {
     return 'activity-log-history';
@@ -206,36 +179,38 @@ class ActivityLogHistoryElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
       extensionId: String,
-
-      /** @type {!ActivityLogDelegate} */
       delegate: Object,
 
       /**
        * An array representing the activity log. Stores activities grouped by
        * API call or content script name sorted in descending order of the call
        * count.
-       * @private {!Array<!ActivityGroup>}
        */
       activityData_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private {ActivityLogPageState} */
       pageState_: {
         type: String,
         value: ActivityLogPageState.LOADING,
       },
 
-      /** @private */
       lastSearch_: {
         type: String,
         value: '',
       },
     };
   }
+
+  extensionId: string;
+  delegate: ActivityLogDelegate;
+  private activityData_: Array<ActivityGroup>;
+  private pageState_: ActivityLogPageState;
+  private lastSearch_: string;
+  private dataFetchedResolver_: PromiseResolver<void>|null;
+  private rawActivities_: string;
 
   constructor() {
     super();
@@ -244,7 +219,6 @@ class ActivityLogHistoryElement extends PolymerElement {
      * A promise resolver for any external files waiting for the
      * GetExtensionActivity API call to finish.
      * Currently only used for extension_settings_browsertest.cc
-     * @private {PromiseResolver}
      */
     this.dataFetchedResolver_ = null;
 
@@ -252,78 +226,54 @@ class ActivityLogHistoryElement extends PolymerElement {
      * The stringified API response from the activityLogPrivate API with
      * individual activities sorted in ascending order by timestamp; used for
      * exporting the activity log.
-     * @private {string}
      */
     this.rawActivities_ = '';
   }
 
-  /** @override */
   ready() {
     super.ready();
-    this.addEventListener(
-        'delete-activity-log-item',
-        e => this.deleteItem_(/** @type {!CustomEvent<!Array<string>>} */ (e)));
+    this.addEventListener('delete-activity-log-item', e => this.deleteItem_(e));
   }
 
   /**
    * Expose only the promise of dataFetchedResolver_.
-   * @return {!Promise<void>}
    */
-  whenDataFetched() {
-    return this.dataFetchedResolver_.promise;
+  whenDataFetched(): Promise<void> {
+    return this.dataFetchedResolver_!.promise;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.dataFetchedResolver_ = new PromiseResolver();
     this.refreshActivities_();
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowEmptyActivityLogMessage_() {
+  private shouldShowEmptyActivityLogMessage_(): boolean {
     return this.pageState_ === ActivityLogPageState.LOADED &&
         this.activityData_.length === 0;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowLoadingMessage_() {
+  private shouldShowLoadingMessage_(): boolean {
     return this.pageState_ === ActivityLogPageState.LOADING;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowActivities_() {
+  private shouldShowActivities_(): boolean {
     return this.pageState_ === ActivityLogPageState.LOADED &&
         this.activityData_.length > 0;
   }
 
-  /** @private */
-  onClearActivitiesClick_() {
+  private onClearActivitiesClick_() {
     this.delegate.deleteActivitiesFromExtension(this.extensionId).then(() => {
       this.processActivities_([]);
     });
   }
 
-  /** @private */
-  onMoreActionsClick_() {
-    this.shadowRoot.querySelector('cr-action-menu')
-        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')));
+  private onMoreActionsClick_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        assert(this.shadowRoot!.querySelector('cr-icon-button')!));
   }
 
-  /**
-   * @private
-   * @param {boolean} expanded
-   */
-  expandItems_(expanded) {
+  private expandItems_(expanded: boolean) {
     // Do not use .filter here as we need the original index of the item
     // in |activityData_|.
     this.activityData_.forEach((item, index) => {
@@ -331,30 +281,23 @@ class ActivityLogHistoryElement extends PolymerElement {
         this.set(`activityData_.${index}.expanded`, expanded);
       }
     });
-    this.shadowRoot.querySelector('cr-action-menu').close();
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  /** @private */
-  onExpandAllClick_() {
+  private onExpandAllClick_() {
     this.expandItems_(true);
   }
 
-  /** @private */
-  onCollapseAllClick_() {
+  private onCollapseAllClick_() {
     this.expandItems_(false);
   }
 
-  /** @private */
-  onExportClick_() {
+  private onExportClick_() {
     const fileName = `exported_activity_log_${this.extensionId}.json`;
     this.delegate.downloadActivities(this.rawActivities_, fileName);
   }
 
-  /**
-   * @private
-   * @param {!CustomEvent<!Array<string>>} e
-   */
-  deleteItem_(e) {
+  private deleteItem_(e: CustomEvent<Array<string>>) {
     const activityIds = e.detail;
     this.delegate.deleteActivitiesById(activityIds).then(() => {
       // It is possible for multiple activities displayed to have the same
@@ -365,31 +308,23 @@ class ActivityLogHistoryElement extends PolymerElement {
     });
   }
 
-  /**
-   * @private
-   * @param {!Array<!chrome.activityLogPrivate.ExtensionActivity>}
-   *     activityData
-   */
-  processActivities_(activityData) {
+  private processActivities_(
+      activityData: Array<chrome.activityLogPrivate.ExtensionActivity>) {
     this.pageState_ = ActivityLogPageState.LOADED;
 
     // Sort |activityData| in ascending order based on the activity's
     // timestamp; Used for |this.encodedRawActivities|.
-    activityData.sort((a, b) => a.time - b.time);
+    activityData.sort((a, b) => a.time! - b.time!);
     this.rawActivities_ = JSON.stringify(activityData);
 
     this.activityData_ =
         sortActivitiesByCallCount(groupActivities(activityData));
-    if (!this.dataFetchedResolver_.isFulfilled) {
-      this.dataFetchedResolver_.resolve();
+    if (!this.dataFetchedResolver_!.isFulfilled) {
+      this.dataFetchedResolver_!.resolve();
     }
   }
 
-  /**
-   * @private
-   * @return {!Promise<void>}
-   */
-  refreshActivities_() {
+  private refreshActivities_(): Promise<void> {
     if (this.lastSearch_ === '') {
       return this.getActivityLog_();
     }
@@ -397,11 +332,7 @@ class ActivityLogHistoryElement extends PolymerElement {
     return this.getFilteredActivityLog_(this.lastSearch_);
   }
 
-  /**
-   * @private
-   * @return {!Promise<void>}
-   */
-  getActivityLog_() {
+  private getActivityLog_(): Promise<void> {
     this.pageState_ = ActivityLogPageState.LOADING;
     return this.delegate.getExtensionActivityLog(this.extensionId)
         .then(result => {
@@ -409,12 +340,7 @@ class ActivityLogHistoryElement extends PolymerElement {
         });
   }
 
-  /**
-   * @private
-   * @param {string} searchTerm
-   * @return {!Promise<void>}
-   */
-  getFilteredActivityLog_(searchTerm) {
+  private getFilteredActivityLog_(searchTerm: string): Promise<void> {
     this.pageState_ = ActivityLogPageState.LOADING;
     return this.delegate
         .getFilteredExtensionActivityLog(this.extensionId, searchTerm)
@@ -423,11 +349,7 @@ class ActivityLogHistoryElement extends PolymerElement {
         });
   }
 
-  /**
-   * @private
-   * @param {!CustomEvent<string>} e
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     // Remove all whitespaces from the search term, as API call names and
     // urls should not contain any whitespace. As of now, only single term
     // search queries are allowed.

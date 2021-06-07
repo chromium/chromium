@@ -42,7 +42,6 @@ interface ExtensionsOptionsDialogElement {
   };
 }
 
-/** @polymer */
 class ExtensionsOptionsDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-options-dialog';
@@ -110,7 +109,7 @@ class ExtensionsOptionsDialogElement extends PolymerElement {
       // Add a 'resize' such that the dialog is resized when window size
       // changes.
       this.eventTracker_.add(window, 'resize', boundUpdateDialogSize);
-      this.$.body.appendChild(/** @type {Node} */ (this.extensionOptions_));
+      this.$.body.appendChild(this.extensionOptions_);
     });
   }
 

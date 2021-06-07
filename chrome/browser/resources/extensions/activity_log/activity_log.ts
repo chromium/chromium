@@ -16,7 +16,7 @@ import '../shared_vars.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,34 +29,34 @@ import {ActivityLogDelegate} from './activity_log_history.js';
  * fetched from the activity log database with some fields such as args
  * omitted. STREAM displays extension activities in a more verbose format in
  * real time. NONE is used when user is away from the page.
- * @enum {number}
  */
-const ActivityLogSubpage = {
-  NONE: -1,
-  HISTORY: 0,
-  STREAM: 1
-};
+const enum ActivityLogSubpage {
+  NONE = -1,
+  HISTORY = 0,
+  STREAM = 1,
+}
+
 
 /**
  * A struct used as a placeholder for chrome.developerPrivate.ExtensionInfo
  * for this component if the extensionId from the URL does not correspond to
  * installed extension.
- * @typedef {{
- *   id: string,
- *   isPlaceholder: boolean,
- * }}
  */
-export let ActivityLogExtensionPlaceholder;
+export type ActivityLogExtensionPlaceholder = {
+  id: string,
+  isPlaceholder: boolean,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+interface ExtensionsActivityLogElement {
+  $: {
+    closeButton: HTMLElement,
+  };
+}
+
 const ExtensionsActivityLogElementBase =
-    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
   static get is() {
     return 'extensions-activity-log';
@@ -70,22 +70,17 @@ class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
     return {
       /**
        * The underlying ExtensionInfo for the details being displayed.
-       * @type {!chrome.developerPrivate.ExtensionInfo|
-       *        !ActivityLogExtensionPlaceholder}
        */
       extensionInfo: Object,
 
-      /** @type {!ActivityLogDelegate} */
       delegate: Object,
 
-      /** @private {!ActivityLogSubpage} */
       selectedSubpage_: {
         type: Number,
         value: ActivityLogSubpage.NONE,
         observer: 'onSelectedSubpageChanged_',
       },
 
-      /** @private {Array<string>} */
       tabNames_: {
         type: Array,
         value: () => ([
@@ -96,7 +91,12 @@ class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
     };
   }
 
-  /** @override */
+  extensionInfo: chrome.developerPrivate.ExtensionInfo|
+      ActivityLogExtensionPlaceholder;
+  delegate: ActivityLogDelegate;
+  selectedSubpage_: ActivityLogSubpage;
+  private tabNames_: string[];
+
   ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
@@ -106,62 +106,45 @@ class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
   /**
    * Focuses the back button when page is loaded and set the activie view to
    * be HISTORY when we navigate to the page.
-   * @private
    */
-  onViewEnterStart_() {
+  private onViewEnterStart_() {
     this.selectedSubpage_ = ActivityLogSubpage.HISTORY;
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
   }
 
   /**
    * Set |selectedSubpage_| to NONE to remove the active view from the DOM.
-   * @private
    */
-  onViewExitFinish_() {
+  private onViewExitFinish_() {
     this.selectedSubpage_ = ActivityLogSubpage.NONE;
     // clear the stream if the user is exiting the activity log page.
     const activityLogStream =
-        this.shadowRoot.querySelector('activity-log-stream');
+        this.shadowRoot!.querySelector('activity-log-stream');
     if (activityLogStream) {
       activityLogStream.clearStream();
     }
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getActivityLogHeading_() {
-    const headingName = this.extensionInfo.isPlaceholder ?
+  private getActivityLogHeading_(): string {
+    const headingName =
+        (this.extensionInfo as ActivityLogExtensionPlaceholder).isPlaceholder ?
         this.i18n('missingOrUninstalledExtension') :
-        this.extensionInfo.name;
+        (this.extensionInfo as chrome.developerPrivate.ExtensionInfo).name;
     return this.i18n('activityLogPageHeading', headingName);
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isHistoryTabSelected_() {
+  private isHistoryTabSelected_(): boolean {
     return this.selectedSubpage_ === ActivityLogSubpage.HISTORY;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isStreamTabSelected_() {
+  private isStreamTabSelected_(): boolean {
     return this.selectedSubpage_ === ActivityLogSubpage.STREAM;
   }
 
-  /**
-   * @private
-   * @param {!ActivityLogSubpage} newTab
-   * @param {!ActivityLogSubpage} oldTab
-   */
-  onSelectedSubpageChanged_(newTab, oldTab) {
+  private onSelectedSubpageChanged_(
+      newTab: ActivityLogSubpage, oldTab: ActivityLogSubpage) {
     const activityLogStream =
-        this.shadowRoot.querySelector('activity-log-stream');
+        this.shadowRoot!.querySelector('activity-log-stream');
     if (activityLogStream) {
       if (newTab === ActivityLogSubpage.STREAM) {
         // Start the stream if the user is switching to the real-time tab.
@@ -177,9 +160,8 @@ class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
     }
   }
 
-  /** @private */
-  onCloseButtonTap_() {
-    if (this.extensionInfo.isPlaceholder) {
+  private onCloseButtonTap_() {
+    if ((this.extensionInfo as ActivityLogExtensionPlaceholder).isPlaceholder) {
       navigation.navigateTo({page: Page.LIST});
     } else {
       navigation.navigateTo(
