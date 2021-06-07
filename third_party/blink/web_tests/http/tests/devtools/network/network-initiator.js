@@ -68,6 +68,7 @@
     dumpInitiator('module1.js');
     dumpInitiator('module2.js');
     dumpInitiator('example.ttf');
+    dumpInitiator('example2.ttf');
     TestRunner.completeTest();
   }
 })();
