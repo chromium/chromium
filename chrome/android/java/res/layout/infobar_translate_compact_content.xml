@@ -22,6 +22,7 @@
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorHeight="3dp"
         app:tabSelectedTextColor="@color/tab_layout_selected_tab_color"
+        app:tabIndicatorColor="@color/tab_layout_selected_tab_color"
         app:tabGravity="fill"
         app:tabMode="scrollable" />
 

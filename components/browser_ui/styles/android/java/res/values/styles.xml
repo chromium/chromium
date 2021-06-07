@@ -71,6 +71,7 @@
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimary">@color/default_bg_color_blue</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>

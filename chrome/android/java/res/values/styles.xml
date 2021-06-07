@@ -323,6 +323,7 @@
         <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
+        <item name="tabTextAppearance">@style/TextAppearance.TextMediumThick</item>
         <item name="tabTextColor">@color/default_text_color_secondary</item>
         <item name="tabSelectedTextColor">@color/tab_layout_selected_tab_color</item>
         <item name="android:background">@color/default_bg_color</item>

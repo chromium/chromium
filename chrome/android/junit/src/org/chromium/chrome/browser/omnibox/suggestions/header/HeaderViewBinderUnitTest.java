@@ -51,7 +51,9 @@ public class HeaderViewBinderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Light);
+        // First set the app theme, then apply the feed theme overlay.
+        mActivity.setTheme(R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.ThemeOverlay_Feed_Light);
 
         mHeaderView = mock(HeaderView.class,
                 Mockito.withSettings().useConstructor(mActivity).defaultAnswer(

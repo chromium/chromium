@@ -34,7 +34,9 @@ public class MaterialSpinnerViewTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.setupActivity(Activity.class);
-        activity.setTheme(R.style.Light);
+        // First set the app theme, then apply the feed theme overlay.
+        activity.setTheme(R.style.Theme_BrowserUI);
+        activity.setTheme(R.style.ThemeOverlay_Feed_Light);
 
         // Attach the spinner inside a layout, so we can hide either the spinner
         // or the parent view (ie. the layout) in the tests. Note that we

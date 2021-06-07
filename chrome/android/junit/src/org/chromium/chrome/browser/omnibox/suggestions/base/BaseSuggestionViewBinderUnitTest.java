@@ -67,7 +67,9 @@ public class BaseSuggestionViewBinderUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Light);
+        // First set the app theme, then apply the feed theme overlay.
+        mActivity.setTheme(R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.ThemeOverlay_Feed_Light);
         mResources = mActivity.getResources();
 
         when(mContentView.getContext()).thenReturn(mActivity);

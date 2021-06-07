@@ -50,13 +50,15 @@ public class OmniboxResourceProviderTest {
     @Test
     public void resolveAttributeToDrawable() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Light);
+        // First set the app theme, then apply the feed theme overlay.
+        activity.setTheme(R.style.Theme_BrowserUI);
+        activity.setTheme(R.style.ThemeOverlay_Feed_Light);
 
         Drawable drawableLight = OmniboxResourceProvider.resolveAttributeToDrawable(
                 activity, OmniboxTheme.LIGHT_THEME, R.attr.selectableItemBackground);
         Assert.assertNotNull(drawableLight);
 
-        activity.setTheme(R.style.Dark);
+        activity.setTheme(R.style.ThemeOverlay_Feed_Dark);
         Drawable drawableDark = OmniboxResourceProvider.resolveAttributeToDrawable(
                 activity, OmniboxTheme.DARK_THEME, R.attr.selectableItemBackground);
         Assert.assertNotNull(drawableDark);

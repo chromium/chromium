@@ -429,8 +429,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     private RecyclerView setUpView() {
         mContentManager = new NtpListContentManager();
-        Context context = new ContextThemeWrapper(
-                mActivity, (mShowDarkBackground ? R.style.Dark : R.style.Light));
+        Context context = new ContextThemeWrapper(mActivity,
+                (mShowDarkBackground ? R.style.ThemeOverlay_Feed_Dark
+                                     : R.style.ThemeOverlay_Feed_Light));
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
             mSurfaceScope = processScope.obtainSurfaceScope(new FeedSurfaceScopeDependencyProvider(
