@@ -91,7 +91,7 @@ void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
     } else {
       next_state = views::InkDropState::DEACTIVATED;
     }
-    ink_drop()->GetInkDrop()->AnimateToState(next_state);
+    views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(next_state);
   }
 }
 

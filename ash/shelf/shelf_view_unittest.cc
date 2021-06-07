@@ -82,6 +82,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
@@ -2390,9 +2391,9 @@ class ShelfViewInkDropTest : public ShelfViewTest {
 
     auto home_button_ink_drop = std::make_unique<InkDropSpy>(
         views::InkDrop::CreateInkDropWithoutAutoHighlight(
-            home_button_->ink_drop()));
+            views::InkDrop::Get(home_button_)));
     home_button_ink_drop_ = home_button_ink_drop.get();
-    views::test::InkDropHostTestApi(home_button_->ink_drop())
+    views::test::InkDropHostTestApi(views::InkDrop::Get(home_button_))
         .SetInkDrop(std::move(home_button_ink_drop), false);
   }
 
@@ -2400,14 +2401,14 @@ class ShelfViewInkDropTest : public ShelfViewTest {
     browser_button_ = test_api_->GetButton(0);
 
     auto ink_drop_impl = std::make_unique<views::InkDropImpl>(
-        browser_button_->ink_drop(), browser_button_->size(),
+        views::InkDrop::Get(browser_button_), browser_button_->size(),
         views::InkDropImpl::AutoHighlightMode::NONE);
     browser_button_ink_drop_impl_ = ink_drop_impl.get();
 
     auto browser_button_ink_drop =
         std::make_unique<InkDropSpy>(std::move(ink_drop_impl));
     browser_button_ink_drop_ = browser_button_ink_drop.get();
-    views::test::InkDropHostTestApi(browser_button_->ink_drop())
+    views::test::InkDropHostTestApi(views::InkDrop::Get(browser_button_))
         .SetInkDrop(std::move(browser_button_ink_drop));
   }
 

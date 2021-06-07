@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
+
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -32,6 +33,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -125,7 +127,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
     WebAppFrameToolbarView* container =
         frame_view->web_app_frame_toolbar_for_testing();
     views::test::InkDropHostTestApi ink_drop_api(
-        container->GetAppMenuButton()->ink_drop());
+        views::InkDrop::Get(container->GetAppMenuButton()));
     EXPECT_TRUE(container->GetContentSettingContainerForTesting()->layer());
     EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
               ink_drop_api.ink_drop_mode());

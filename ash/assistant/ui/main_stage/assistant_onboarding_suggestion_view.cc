@@ -81,8 +81,12 @@ AssistantOnboardingSuggestionView::AssistantOnboardingSuggestionView(
   InitLayout(suggestion);
 }
 
-AssistantOnboardingSuggestionView::~AssistantOnboardingSuggestionView() =
-    default;
+AssistantOnboardingSuggestionView::~AssistantOnboardingSuggestionView() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 int AssistantOnboardingSuggestionView::GetHeightForWidth(int width) const {
   return kPreferredHeightDip;
@@ -128,11 +132,11 @@ void AssistantOnboardingSuggestionView::InitLayout(
   focus_ring()->SetColor(gfx::kGoogleBlue300);
 
   // Ink Drop.
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  ink_drop()->SetBaseColor(GetForegroundColor(index_));
-  ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
-  ink_drop()->SetHighlightOpacity(kInkDropHighlightOpacity);
+  views::InkDrop::Get(this)->SetBaseColor(GetForegroundColor(index_));
+  views::InkDrop::Get(this)->SetVisibleOpacity(kInkDropVisibleOpacity);
+  views::InkDrop::Get(this)->SetHighlightOpacity(kInkDropHighlightOpacity);
 
   // Installing this highlight path generator will set the desired shape for
   // both ink drop effects as well as our focus ring.

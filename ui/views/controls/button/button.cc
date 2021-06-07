@@ -19,6 +19,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -84,7 +85,7 @@ bool Button::DefaultButtonControllerDelegate::ShouldEnterHoveredState() {
 }
 
 InkDrop* Button::DefaultButtonControllerDelegate::GetInkDrop() {
-  return button()->ink_drop()->GetInkDrop();
+  return InkDrop::Get(button())->GetInkDrop();
 }
 
 int Button::DefaultButtonControllerDelegate::GetDragOperations(
@@ -320,9 +321,10 @@ void Button::SetHotTracked(bool is_hot_tracked) {
   if (state_ != STATE_DISABLED) {
     SetState(is_hot_tracked ? STATE_HOVERED : STATE_NORMAL);
     if (show_ink_drop_when_hot_tracked_) {
-      ink_drop()->AnimateToState(is_hot_tracked ? views::InkDropState::ACTIVATED
-                                                : views::InkDropState::HIDDEN,
-                                 nullptr);
+      InkDrop::Get(this)->AnimateToState(is_hot_tracked
+                                             ? views::InkDropState::ACTIVATED
+                                             : views::InkDropState::HIDDEN,
+                                         nullptr);
     }
   }
 
@@ -339,9 +341,10 @@ void Button::SetFocusPainter(std::unique_ptr<Painter> focus_painter) {
 }
 
 void Button::SetHighlighted(bool bubble_visible) {
-  ink_drop()->AnimateToState(bubble_visible ? views::InkDropState::ACTIVATED
-                                            : views::InkDropState::DEACTIVATED,
-                             nullptr);
+  InkDrop::Get(this)->AnimateToState(bubble_visible
+                                         ? views::InkDropState::ACTIVATED
+                                         : views::InkDropState::DEACTIVATED,
+                                     nullptr);
 }
 
 base::CallbackListSubscription Button::AddStateChangedCallback(
@@ -409,16 +412,17 @@ bool Button::OnMouseDragged(const ui::MouseEvent& event) {
     if (HitTestPoint(event.location())) {
       SetState(should_enter_pushed ? STATE_PRESSED : STATE_HOVERED);
       if (should_show_pending &&
-          ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
+          InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
               views::InkDropState::HIDDEN) {
-        ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING, &event);
+        InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_PENDING,
+                                           &event);
       }
     } else {
       SetState(STATE_NORMAL);
       if (should_show_pending &&
-          ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
+          InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
               views::InkDropState::ACTION_PENDING) {
-        ink_drop()->AnimateToState(views::InkDropState::HIDDEN, &event);
+        InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN, &event);
       }
     }
   }
@@ -435,8 +439,9 @@ void Button::OnMouseCaptureLost() {
   // applies everywhere so gather any feedback and update.
   if (state_ != STATE_DISABLED)
     SetState(STATE_NORMAL);
-  ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr /* event */);
-  ink_drop()->GetInkDrop()->SetHovered(false);
+  InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                     nullptr /* event */);
+  InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
   View::OnMouseCaptureLost();
 }
 
@@ -491,8 +496,9 @@ void Button::ShowContextMenu(const gfx::Point& p,
   if (state_ != STATE_DISABLED)
     SetState(STATE_NORMAL);
   if (hide_ink_drop_when_showing_context_menu_) {
-    ink_drop()->GetInkDrop()->SetHovered(false);
-    ink_drop()->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
+    InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
+    InkDrop::Get(this)->AnimateToState(InkDropState::HIDDEN,
+                                       nullptr /* event */);
   }
   View::ShowContextMenu(p, source_type);
 }
@@ -502,7 +508,7 @@ void Button::OnDragDone() {
   // (since disabled buttons may still be able to be dragged).
   if (state_ != STATE_DISABLED)
     SetState(STATE_NORMAL);
-  ink_drop()->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
+  InkDrop::Get(this)->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
 }
 
 void Button::OnPaint(gfx::Canvas* canvas) {
@@ -561,10 +567,10 @@ void Button::OnBlur() {
   View::OnBlur();
   if (IsHotTracked() || state_ == STATE_PRESSED) {
     SetState(STATE_NORMAL);
-    if (ink_drop()->GetInkDrop()->GetTargetInkDropState() !=
+    if (InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() !=
         views::InkDropState::HIDDEN)
-      ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
-                                 nullptr /* event */);
+      InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                         nullptr /* event */);
     // TODO(bruthig) : Fix Buttons to work well when multiple input
     // methods are interacting with a button. e.g. By animating to HIDDEN here
     // it is possible for a Mouse Release to trigger an action however there
@@ -580,23 +586,25 @@ void Button::AnimationProgressed(const gfx::Animation* animation) {
 
 Button::Button(PressedCallback callback)
     : AnimationDelegateViews(this), callback_(std::move(callback)) {
+  InkDrop::Install(this, std::make_unique<InkDropHost>(this));
+
   SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
   SetProperty(kIsButtonProperty, true);
   hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
   SetInstallFocusRingOnFocus(true);
   button_controller_ = std::make_unique<ButtonController>(
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
-  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+  InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](Button* button) {
         std::unique_ptr<InkDrop> ink_drop =
-            views::InkDrop::CreateInkDropForFloodFillRipple(button->ink_drop());
+            InkDrop::CreateInkDropForFloodFillRipple(InkDrop::Get(button));
         ink_drop->SetShowHighlightOnFocus(!button->focus_ring());
         return ink_drop;
       },
       base::Unretained(this)));
   // TODO(pbos): Investigate not setting a default color so that we can DCHECK
   // if one hasn't been set.
-  ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
+  InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
 }
 
 void Button::RequestFocusFromEvent() {
@@ -606,8 +614,8 @@ void Button::RequestFocusFromEvent() {
 
 void Button::NotifyClick(const ui::Event& event) {
   if (has_ink_drop_action_on_click_) {
-    ink_drop()->AnimateToState(InkDropState::ACTION_TRIGGERED,
-                               ui::LocatedEvent::FromIfValid(&event));
+    InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
+                                       ui::LocatedEvent::FromIfValid(&event));
   }
 
   // If we have an associated help context ID, notify that system that we have
@@ -624,12 +632,12 @@ void Button::NotifyClick(const ui::Event& event) {
 
 void Button::OnClickCanceled(const ui::Event& event) {
   if (ShouldUpdateInkDropOnClickCanceled()) {
-    if (ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
+    if (InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
             views::InkDropState::ACTION_PENDING ||
-        ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
+        InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
             views::InkDropState::ALTERNATE_ACTION_PENDING) {
-      ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
-                                 ui::LocatedEvent::FromIfValid(&event));
+      InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                         ui::LocatedEvent::FromIfValid(&event));
     }
   }
 }
@@ -683,10 +691,10 @@ void Button::OnEnabledChanged() {
   if (GetEnabled()) {
     bool should_enter_hover_state = ShouldEnterHoveredState();
     SetState(should_enter_hover_state ? STATE_HOVERED : STATE_NORMAL);
-    ink_drop()->GetInkDrop()->SetHovered(should_enter_hover_state);
+    InkDrop::Get(this)->GetInkDrop()->SetHovered(should_enter_hover_state);
   } else {
     SetState(STATE_DISABLED);
-    ink_drop()->GetInkDrop()->SetHovered(false);
+    InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
   }
 }
 

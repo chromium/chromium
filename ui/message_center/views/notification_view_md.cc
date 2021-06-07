@@ -42,6 +42,7 @@
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -358,9 +359,11 @@ NotificationInputContainerMD::NotificationInputContainerMD(
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  ink_drop_.SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  ink_drop_.SetVisibleOpacity(1);
-  ink_drop_.SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetVisibleOpacity(1);
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) {
         return host->GetNativeTheme()->GetSystemColor(
             ui::NativeTheme::kColorId_NotificationInkDropBase);
@@ -383,13 +386,19 @@ NotificationInputContainerMD::NotificationInputContainerMD(
   views::InstallRectHighlightPathGenerator(this);
 }
 
-NotificationInputContainerMD::~NotificationInputContainerMD() = default;
+NotificationInputContainerMD::~NotificationInputContainerMD() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 void NotificationInputContainerMD::AnimateBackground(const ui::Event& event) {
   std::unique_ptr<ui::Event> located_event =
       ConvertToBoundedLocatedEvent(event, this);
-  ink_drop_.AnimateToState(views::InkDropState::ACTION_PENDING,
-                           ui::LocatedEvent::FromIfValid(located_event.get()));
+  views::InkDrop::Get(this)->AnimateToState(
+      views::InkDropState::ACTION_PENDING,
+      ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationInputContainerMD::AddLayerBeneathView(ui::Layer* layer) {
@@ -569,23 +578,24 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  ink_drop_.SetVisibleOpacity(1.0f);
-  ink_drop_.SetCreateInkDropCallback(base::BindRepeating(
+  views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
+  views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
+  views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](NotificationViewMD* host) -> std::unique_ptr<views::InkDrop> {
-        return std::make_unique<NotificationInkDropImpl>(host->ink_drop(),
-                                                         host->size());
+        return std::make_unique<NotificationInkDropImpl>(
+            views::InkDrop::Get(host), host->size());
       },
       this));
-  ink_drop_.SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](NotificationViewMD* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->GetPreferredSize(),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
-            host->ink_drop()->GetBaseColor(),
-            host->ink_drop()->GetVisibleOpacity());
+            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+            views::InkDrop::Get(host)->GetBaseColor(),
+            views::InkDrop::Get(host)->GetVisibleOpacity());
       },
       this));
-  ink_drop_.SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](NotificationViewMD* host) {
         return host->GetNativeTheme()->GetSystemColor(
             ui::NativeTheme::kColorId_NotificationBackgroundActive);
@@ -673,11 +683,16 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
 }
 
 NotificationViewMD::~NotificationViewMD() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+
   RemovePreTargetHandler(click_activator_.get());
 }
 
 void NotificationViewMD::AddLayerBeneathView(ui::Layer* layer) {
-  ink_drop_.GetInkDrop()->AddObserver(this);
+  views::InkDrop::Get(this)->GetInkDrop()->AddObserver(this);
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();
     child->layer()->SetFillsBoundsOpaquely(false);
@@ -689,7 +704,7 @@ void NotificationViewMD::RemoveLayerBeneathView(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerBeneathView(layer);
   for (auto* child : GetChildrenForLayerAdjustment())
     child->DestroyLayer();
-  ink_drop_.GetInkDrop()->RemoveObserver(this);
+  views::InkDrop::Get(this)->GetInkDrop()->RemoveObserver(this);
 }
 
 void NotificationViewMD::Layout() {
@@ -1479,16 +1494,19 @@ void NotificationViewMD::Activate() {
 }
 
 void NotificationViewMD::AddBackgroundAnimation(const ui::Event& event) {
-  ink_drop_.SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   std::unique_ptr<ui::Event> located_event =
       ConvertToBoundedLocatedEvent(event, this);
-  ink_drop_.AnimateToState(views::InkDropState::ACTION_PENDING,
-                           ui::LocatedEvent::FromIfValid(located_event.get()));
+  views::InkDrop::Get(this)->AnimateToState(
+      views::InkDropState::ACTION_PENDING,
+      ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationViewMD::RemoveBackgroundAnimation() {
-  ink_drop_.SetMode(views::InkDropHost::InkDropMode::OFF);
-  ink_drop_.AnimateToState(views::InkDropState::HIDDEN, nullptr);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                            nullptr);
 }
 
 std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()

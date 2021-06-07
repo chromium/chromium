@@ -29,6 +29,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
@@ -85,7 +86,7 @@ void CastDialogNoSinksView::SetHelpIconView() {
   icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   icon->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
-  icon->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(icon)->SetMode(views::InkDropHost::InkDropMode::OFF);
   icon_ = icon;
 
   label_->SetText(

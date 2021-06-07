@@ -17,6 +17,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -96,11 +97,11 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
                            2;
   SetBorder(CreateBorderWithVerticalSpacing(vert_spacing));
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop(),
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) { return GetInkDropColor(host); }, this));
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |

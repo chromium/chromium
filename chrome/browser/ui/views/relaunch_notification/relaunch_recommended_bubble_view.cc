@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -120,8 +121,7 @@ void RelaunchRecommendedBubbleView::Init() {
 void RelaunchRecommendedBubbleView::VisibilityChanged(
     views::View* starting_from,
     bool is_visible) {
-  views::Button::AsButton(GetAnchorView())
-      ->ink_drop()
+  views::InkDrop::Get(GetAnchorView())
       ->AnimateToState(is_visible ? views::InkDropState::ACTIVATED
                                   : views::InkDropState::DEACTIVATED,
                        nullptr);

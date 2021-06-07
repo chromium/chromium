@@ -182,9 +182,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);
 
-  InkDropHost* ink_drop() { return ink_drop_.get(); }
-  const InkDropHost* ink_drop() const { return ink_drop_.get(); }
-
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -336,9 +333,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // When true, the ink drop ripple will be shown when setting state to hot
   // tracked with SetHotTracked().
   bool show_ink_drop_when_hot_tracked_ = false;
-
-  // The InkDrop for this Button.
-  std::unique_ptr<InkDropHost> ink_drop_{std::make_unique<InkDropHost>(this)};
 
   // The focus ring for this Button.
   FocusRing* focus_ring_ = nullptr;

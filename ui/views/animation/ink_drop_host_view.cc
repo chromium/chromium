@@ -71,11 +71,7 @@ InkDropHost::InkDropHost(View* view)
       ink_drop_event_handler_delegate_(this),
       ink_drop_event_handler_(view, &ink_drop_event_handler_delegate_) {}
 
-InkDropHost::~InkDropHost() {
-  // TODO(bruthig): Improve InkDropImpl to be safer about calling back to
-  // potentially destroyed InkDropHosts and remove |destroying_|.
-  destroying_ = true;
-}
+InkDropHost::~InkDropHost() = default;
 
 std::unique_ptr<InkDrop> InkDropHost::CreateInkDrop() {
   if (create_ink_drop_callback_)
@@ -161,7 +157,7 @@ void InkDropHost::SetBaseColorCallback(
 
 void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
   ink_drop_mode_ = ink_drop_mode;
-  ink_drop_ = nullptr;
+  ink_drop_.reset();
 }
 
 void InkDropHost::SetVisibleOpacity(float visible_opacity) {
@@ -240,14 +236,6 @@ void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
 }
 
 void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
-  // No need to do anything when called during shutdown.
-  // TODO(pbos): Reinvestigate this now that this is not part of virtual
-  // overrides. This looks like it may accidentally leave a layer attached to
-  // the View? Likely not an issue until InkDropHost start getting removed
-  // without destroying the associated View.
-  if (destroying_)
-    return;
-
   host_view_->RemoveLayerBeneathView(ink_drop_layer);
 
   // Remove clipping.

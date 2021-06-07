@@ -500,7 +500,12 @@ WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
-WebUITabCounterButton::~WebUITabCounterButton() = default;
+WebUITabCounterButton::~WebUITabCounterButton() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 void WebUITabCounterButton::UpdateTooltip(int num_tabs) {
   SetTooltipText(base::i18n::MessageFormatter::FormatWithNumberedArgs(

@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 
 namespace ash {
@@ -304,7 +305,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   DCHECK(mini_view_);
 
   SetFocusPainter(nullptr);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   SetPaintToLayer(ui::LAYER_TEXTURED);

@@ -165,19 +165,19 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   if (base::FeatureList::IsEnabled(views::kInstallableInkDropFeature)) {
     installable_ink_drop_ = std::make_unique<views::InstallableInkDrop>(this);
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
-    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
         [](Button* host) -> std::unique_ptr<views::InkDrop> {
           // Ensure this doesn't get called when InstallableInkDrops are
           // enabled.
           DCHECK(
               !base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
           return views::InkDrop::CreateInkDropForFloodFillRipple(
-              host->ink_drop());
+              views::InkDrop::Get(host));
         },
         this));
   }
 
-  ink_drop()->SetCreateMaskCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateMaskCallback(base::BindRepeating(
       [](ToolbarButton* host) -> std::unique_ptr<views::InkDropMask> {
         if (host->has_in_product_help_promo_) {
           // This gets the latest ink drop insets. |SetTrailingMargin()| is
@@ -196,7 +196,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
                                                         GetHighlightPath(host));
       },
       this));
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](ToolbarButton* host) {
         // Ensure this doesn't get called when InstallableInkDrops are enabled.
         DCHECK(
@@ -592,7 +592,7 @@ void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
   //
   // TODO(collinbaker): Consider adding explicit way to recreate mask instead
   // of relying on HostSizeChanged() to do so.
-  ink_drop()->GetInkDrop()->HostSizeChanged(size());
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 
   views::InkDropState next_state;
   if (has_in_product_help_promo_ || GetVisible()) {
@@ -608,7 +608,7 @@ void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
     // else should keep this ACTIVATED or in some other state. Consider adding
     // code to track the correct state and restore to that.
   }
-  ink_drop()->GetInkDrop()->AnimateToState(next_state);
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(next_state);
 
   UpdateIcon();
   SchedulePaint();
@@ -688,8 +688,8 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
 
   menu_showing_ = true;
 
-  ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
-                             nullptr /* event */);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
+                                            nullptr /* event */);
 
   // Exit if the model is null. Although ToolbarButton::ShouldShowMenu()
   // performs the same check, its overrides may not.
@@ -711,14 +711,14 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
 }
 
 void ToolbarButton::OnMenuClosed() {
-  ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED,
-                             nullptr /* event */);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                            nullptr /* event */);
 
   menu_showing_ = false;
 
   // Set the state back to normal after the drop down menu is closed.
   if (GetState() != STATE_DISABLED) {
-    ink_drop()->GetInkDrop()->SetHovered(IsMouseHovered());
+    views::InkDrop::Get(this)->GetInkDrop()->SetHovered(IsMouseHovered());
     SetState(STATE_NORMAL);
   }
 

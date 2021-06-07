@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/style/typography.h"
 
@@ -32,9 +33,9 @@ ExtensionsMenuButton::ExtensionsMenuButton(
       allow_pinning_(allow_pinning) {
   controller_->SetDelegate(this);
   // TODO(pbos): This currently inherits HoverButton, is this not a no-op?
-  // Also see call in OnThemeChanged() to ink_drop()->SetBaseColor which
-  // tries to do the same thing.
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  // Also see call in OnThemeChanged() to
+  // views::InkDrop::Get(this)->SetBaseColor which tries to do the same thing.
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) { return HoverButton::GetInkDropColor(host); },
       this));
 }
@@ -52,7 +53,7 @@ void ExtensionsMenuButton::AddedToWidget() {
 
 void ExtensionsMenuButton::OnThemeChanged() {
   HoverButton::OnThemeChanged();
-  ink_drop()->SetBaseColor(HoverButton::GetInkDropColor(this));
+  views::InkDrop::Get(this)->SetBaseColor(HoverButton::GetInkDropColor(this));
 }
 
 // ToolbarActionViewDelegateViews:

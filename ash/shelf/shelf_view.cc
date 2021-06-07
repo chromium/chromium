@@ -799,7 +799,7 @@ void ShelfView::ShowContextMenuForViewImpl(views::View* source,
   const ShelfItem* item = ShelfItemForView(source);
   if (!item_awaiting_response_.IsNull()) {
     if (item && item->id != item_awaiting_response_) {
-      static_cast<views::Button*>(source)->ink_drop()->AnimateToState(
+      views::InkDrop::Get(source)->AnimateToState(
           views::InkDropState::DEACTIVATED, nullptr);
     }
     return;
@@ -2317,10 +2317,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
   if ((source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
        source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) &&
       item) {
-    static_cast<ShelfAppButton*>(source)
-        ->ink_drop()
-        ->GetInkDrop()
-        ->AnimateToState(views::InkDropState::ACTIVATED);
+    views::InkDrop::Get(source)->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTIVATED);
   }
 
   // Only selected shelf items with context menu opened can be dragged.

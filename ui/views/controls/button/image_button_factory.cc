@@ -12,6 +12,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/layout_provider.h"
@@ -69,7 +70,7 @@ std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
 }
 
 void ConfigureVectorImageButton(ImageButton* button) {
-  button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  InkDrop::Get(button)->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
   button->SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
@@ -113,7 +114,7 @@ void SetImageFromVectorIconWithColor(ImageButton* button,
 
   button->SetImage(Button::STATE_NORMAL, normal_image);
   button->SetImage(Button::STATE_DISABLED, disabled_image);
-  button->ink_drop()->SetBaseColor(icon_color);
+  InkDrop::Get(button)->SetBaseColor(icon_color);
 }
 
 void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,

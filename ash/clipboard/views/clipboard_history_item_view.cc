@@ -46,7 +46,7 @@ void ClipboardHistoryItemView::ContentsView::OnHostPseudoFocusUpdated() {
 
   const bool focused =
       (container_->pseudo_focus_ == PseudoFocus::kDeleteButton);
-  delete_button_->ink_drop()->GetInkDrop()->SetFocused(focused);
+  views::InkDrop::Get(delete_button_)->GetInkDrop()->SetFocused(focused);
   if (focused) {
     delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
                                              /*send_native_event*/ true);

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
@@ -79,16 +80,17 @@ class TestInkDropHighlight : public InkDropHighlight {
 
 TestInkDropHost::TestInkDropHost(
     InkDropImpl::AutoHighlightMode auto_highlight_mode) {
-  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+  InkDrop::Install(this, std::make_unique<InkDropHost>(this));
+  InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](TestInkDropHost* host,
          InkDropImpl::AutoHighlightMode auto_highlight_mode)
           -> std::unique_ptr<views::InkDrop> {
         return std::make_unique<views::InkDropImpl>(
-            host->ink_drop(), host->size(), auto_highlight_mode);
+            InkDrop::Get(host), host->size(), auto_highlight_mode);
       },
       this, auto_highlight_mode));
 
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropHighlight> {
         auto highlight = std::make_unique<TestInkDropHighlight>(
             host->size(), 0, gfx::PointF(), SK_ColorBLACK);
@@ -99,7 +101,7 @@ TestInkDropHost::TestInkDropHost(
         return highlight;
       },
       this));
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropRipple> {
         auto ripple = std::make_unique<TestInkDropRipple>(
             host->size(), 0, host->size(), 0, gfx::Point(), SK_ColorBLACK,
@@ -121,6 +123,11 @@ void TestInkDropHost::RemoveLayerBeneathView(ui::Layer* layer) {
   ++num_ink_drop_layers_removed_;
 }
 
-TestInkDropHost::~TestInkDropHost() = default;
+TestInkDropHost::~TestInkDropHost() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 }  // namespace views

@@ -37,6 +37,7 @@
 #include "ui/events/event.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/view_model.h"
 #include "ui/views/widget/widget.h"
@@ -428,9 +429,9 @@ void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
   // state.
   expand_arrow_view_->SetFocusBehavior(
       expand_arrow_enabled ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
-  expand_arrow_view_->ink_drop()->SetMode(
-      expand_arrow_enabled ? views::InkDropHost::InkDropMode::ON
-                           : views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(expand_arrow_view_)
+      ->SetMode(expand_arrow_enabled ? views::InkDropHost::InkDropMode::ON
+                                     : views::InkDropHost::InkDropMode::OFF);
 
   // Allow ChromeVox to focus the expand arrow only when peeking launcher.
   expand_arrow_view_->GetViewAccessibility().OverrideIsIgnored(

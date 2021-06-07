@@ -22,6 +22,7 @@ namespace views {
 
 class InkDropHost;
 class InkDropObserver;
+class View;
 
 // Base class that manages the lifetime and state of an ink drop ripple as
 // well as visual hover state feedback.
@@ -30,6 +31,20 @@ class VIEWS_EXPORT InkDrop {
   InkDrop(const InkDrop&) = delete;
   InkDrop& operator=(const InkDrop&) = delete;
   virtual ~InkDrop();
+
+  // TODO(pbos): Make sure what's installed here implements InkDrop so that can
+  // be used as type instead of InkDropHost.
+  static void Install(View* host, std::unique_ptr<InkDropHost> ink_drop);
+
+  // Removes the InkDrop from `host`.
+  static void Remove(View* host);
+
+  // TODO(pbos): Make sure what's installed here implements InkDrop so that can
+  // be used as type instead of InkDropHost.
+  static const InkDropHost* Get(const View* host);
+  static InkDropHost* Get(View* host) {
+    return const_cast<InkDropHost*>(Get(const_cast<const View*>(host)));
+  }
 
   // Create an InkDrop appropriate for the "square" InkDropRipple effect. This
   // InkDrop hides when the ripple effect is active instead of layering
@@ -88,8 +103,9 @@ class VIEWS_EXPORT InkDrop {
 
   // Immediately snaps the InkDropState to ACTIVATED and HIDDEN specifically.
   // These are more specific implementations of the non-existent
-  // SnapToState(InkDropState) function are the only ones available because they
-  // were the only InkDropState that clients needed to skip animations for.
+  // SnapToState(InkDropState) function are the only ones available because
+  // they were the only InkDropState that clients needed to skip animations
+  // for.
   virtual void SnapToActivated() = 0;
   virtual void SnapToHidden() = 0;
 

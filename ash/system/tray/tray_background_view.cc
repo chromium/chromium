@@ -48,6 +48,7 @@
 #include "ui/gfx/transform.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -216,11 +217,13 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   SetNotifyEnterExitOnChild(true);
 
   auto ripple_attributes = AshColorProvider::Get()->GetRippleAttributes();
-  ink_drop()->SetBaseColor(ripple_attributes.base_color);
-  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(this)->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       [](TrayBackgroundView* host) {
         gfx::Rect bounds = host->GetBackgroundBounds();
         // Currently, we don't handle view resize. To compensate for that,
@@ -241,13 +244,13 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
         return highlight;
       },
       this));
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](TrayBackgroundView* host) -> std::unique_ptr<views::InkDropRipple> {
         const AshColorProvider::RippleAttributes ripple_attributes =
             AshColorProvider::Get()->GetRippleAttributes();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetBackgroundInsets(),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
       },
       this));
@@ -636,9 +639,10 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
   if (is_active_ == is_active)
     return;
   is_active_ = is_active;
-  ink_drop()->AnimateToState(is_active_ ? views::InkDropState::ACTIVATED
-                                        : views::InkDropState::DEACTIVATED,
-                             nullptr);
+  views::InkDrop::Get(this)->AnimateToState(
+      is_active_ ? views::InkDropState::ACTIVATED
+                 : views::InkDropState::DEACTIVATED,
+      nullptr);
 }
 
 views::View* TrayBackgroundView::GetBubbleAnchor() const {

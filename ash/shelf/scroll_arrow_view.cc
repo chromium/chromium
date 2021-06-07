@@ -13,6 +13,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 
 namespace ash {
 
@@ -24,15 +25,16 @@ ScrollArrowView::ScrollArrowView(ArrowType arrow_type,
       arrow_type_(arrow_type),
       is_horizontal_alignment_(is_horizontal_alignment) {
   SetHasInkDropActionOnClick(true);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
 }
 
 ScrollArrowView::~ScrollArrowView() = default;
 
 void ScrollArrowView::NotifyClick(const ui::Event& event) {
   Button::NotifyClick(event);
-  shelf_button_delegate()->ButtonPressed(/*sender=*/this, event,
-                                         ink_drop()->GetInkDrop());
+  shelf_button_delegate()->ButtonPressed(
+      /*sender=*/this, event, views::InkDrop::Get(this)->GetInkDrop());
 }
 
 void ScrollArrowView::PaintButtonContents(gfx::Canvas* canvas) {

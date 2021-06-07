@@ -25,6 +25,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -55,9 +56,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    ink_drop()->SetHighlightOpacity(
+    views::InkDrop::Get(this)->SetHighlightOpacity(
         GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
-    ink_drop()->SetBaseColorCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
           return color_utils::GetColorWithMaxContrast(
               host->omnibox_bg_color_.value());

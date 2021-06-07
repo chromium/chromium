@@ -57,7 +57,12 @@ LabelButton::LabelButton(PressedCallback callback,
   SetTextInternal(text);
 }
 
-LabelButton::~LabelButton() = default;
+LabelButton::~LabelButton() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);

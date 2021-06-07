@@ -25,6 +25,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -63,11 +64,11 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
   SetInstallFocusRingOnFocus(true);
   focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
-  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
+  views::InkDrop::UseInkDropWithoutAutoHighlight(views::InkDrop::Get(this),
                                                  /*highlight_on_hover=*/false);
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
         const int ripple_radius = host->width() / 2;
@@ -79,7 +80,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(bg_color),
             color_provider->GetRippleAttributesInkDropOpacity(bg_color));
       },

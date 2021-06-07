@@ -14,6 +14,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/controls/button/button.h"
@@ -117,7 +118,7 @@ class MenuButtonTest : public ViewsTestBase {
 
     auto ink_drop = std::make_unique<test::TestInkDrop>();
     ink_drop_ = ink_drop.get();
-    test::InkDropHostTestApi(button_->ink_drop())
+    test::InkDropHostTestApi(InkDrop::Get(button_))
         .SetInkDrop(std::move(ink_drop));
 
     widget_->Show();
@@ -297,7 +298,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 
   EXPECT_TRUE(button()->clicked());
   gfx::Point inkdrop_center_point =
-      button()->ink_drop()->GetInkDropCenterBasedOnLastEvent();
+      InkDrop::Get(button())->GetInkDropCenterBasedOnLastEvent();
   View::ConvertPointToScreen(button(), &inkdrop_center_point);
   EXPECT_EQ(click_point, inkdrop_center_point);
 }
@@ -314,7 +315,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClickWithPressedLock) {
 
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
   EXPECT_EQ(click_point,
-            button()->ink_drop()->GetInkDropCenterBasedOnLastEvent());
+            InkDrop::Get(button())->GetInkDropCenterBasedOnLastEvent());
 }
 
 // Test that the MenuButton stays pressed while there are any PressedLocks.

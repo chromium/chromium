@@ -505,13 +505,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Verify that the first menu item's delete button shows. In addition, the
   // delete button's inkdrop highlight should fade in or be visible.
-  const ash::ClipboardHistoryDeleteButton* delete_button =
-      static_cast<const ash::ClipboardHistoryDeleteButton*>(
-          first_history_item_view->GetViewByID(
-              ash::ClipboardHistoryUtil::kDeleteButtonViewID));
+  const views::View* const delete_button = first_history_item_view->GetViewByID(
+      ash::ClipboardHistoryUtil::kDeleteButtonViewID);
   ASSERT_TRUE(delete_button->GetVisible());
-  EXPECT_TRUE(const_cast<ash::ClipboardHistoryDeleteButton*>(delete_button)
-                  ->ink_drop()
+  EXPECT_TRUE(views::InkDrop::Get(const_cast<views::View*>(delete_button))
                   ->GetInkDrop()
                   ->IsHighlightFadingInOrVisible());
 

@@ -28,17 +28,20 @@ FindBarIcon::FindBarIcon(
 FindBarIcon::~FindBarIcon() {}
 
 void FindBarIcon::SetActive(bool activate, bool should_animate) {
-  if (activate == (ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
-                   views::InkDropState::ACTIVATED))
+  if (activate ==
+      (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
+       views::InkDropState::ACTIVATED))
     return;
   if (activate) {
     if (should_animate) {
-      ink_drop()->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+      views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
+                                                nullptr);
     } else {
-      ink_drop()->GetInkDrop()->SnapToActivated();
+      views::InkDrop::Get(this)->GetInkDrop()->SnapToActivated();
     }
   } else {
-    ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr);
+    views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                              nullptr);
   }
 }
 

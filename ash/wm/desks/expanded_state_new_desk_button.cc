@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -82,7 +83,7 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
     if (!enabled)
       background_color_ = AshColorProvider::GetDisabledColor(background_color_);
 
-    ink_drop()->SetVisibleOpacity(
+    views::InkDrop::Get(this)->SetVisibleOpacity(
         color_provider->GetRippleAttributes(background_color_).inkdrop_opacity);
     SchedulePaint();
   }

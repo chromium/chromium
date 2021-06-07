@@ -137,8 +137,9 @@ void SharingIconView::UpdateOpacity() {
 void SharingIconView::UpdateInkDrop(bool activate) {
   auto target_state =
       activate ? views::InkDropState::ACTIVATED : views::InkDropState::HIDDEN;
-  if (ink_drop()->GetInkDrop()->GetTargetInkDropState() != target_state)
-    ink_drop()->AnimateToState(target_state, /*event=*/nullptr);
+  if (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() !=
+      target_state)
+    views::InkDrop::Get(this)->AnimateToState(target_state, /*event=*/nullptr);
 }
 
 bool SharingIconView::IsTriggerableEvent(const ui::Event& event) {

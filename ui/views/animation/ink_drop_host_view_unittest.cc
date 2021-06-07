@@ -22,6 +22,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
@@ -35,14 +36,15 @@ using InkDropMode = InkDropHostTestApi::InkDropMode;
 class TestViewWithInkDrop : public View {
  public:
   TestViewWithInkDrop() {
-    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+    InkDrop::Install(this, std::make_unique<InkDropHost>(this));
+    InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
         [](TestViewWithInkDrop* host) -> std::unique_ptr<InkDrop> {
           auto ink_drop = std::make_unique<TestInkDrop>();
           host->last_created_inkdrop_ = ink_drop.get();
           return ink_drop;
         },
         this));
-    ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
+    InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
   }
 
   TestViewWithInkDrop(const TestViewWithInkDrop&) = delete;
@@ -53,11 +55,7 @@ class TestViewWithInkDrop : public View {
 
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
 
-  InkDropHost* ink_drop() { return &ink_drop_; }
-
  private:
-  InkDropHost ink_drop_{this};
-
   TestInkDrop* last_created_inkdrop_ = nullptr;
 };
 
@@ -82,7 +80,7 @@ class InkDropHostViewTest : public testing::Test {
 };
 
 InkDropHostViewTest::InkDropHostViewTest()
-    : test_api_(host_view_.ink_drop()),
+    : test_api_(InkDrop::Get(&host_view_)),
       animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {}
 
@@ -93,8 +91,8 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
   test_api_.SetInkDropMode(ink_drop_mode);
   host_view_.SetEnabled(true);
 
-  // Call ink_drop()->GetInkDrop() to make sure the test CreateInkDrop() is
-  // created.
+  // Call InkDrop::Get(this)->GetInkDrop() to make sure the test
+  // CreateInkDrop() is created.
   test_api_.GetInkDrop();
   if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF)
     EXPECT_FALSE(host_view_.last_created_inkdrop()->is_hovered());
@@ -119,7 +117,7 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
   test_api_.AnimateToState(InkDropState::ACTION_PENDING, nullptr);
   EXPECT_EQ(gfx::Point(10, 10),
-            host_view_.ink_drop()->GetInkDropCenterBasedOnLastEvent());
+            InkDrop::Get(&host_view_)->GetInkDropCenterBasedOnLastEvent());
 }
 
 // Verifies the return value of GetInkDropCenterBasedOnLastEvent() for a located
@@ -133,7 +131,7 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
 
   test_api_.AnimateToState(InkDropState::ACTION_PENDING, &located_event);
   EXPECT_EQ(gfx::Point(5, 6),
-            host_view_.ink_drop()->GetInkDropCenterBasedOnLastEvent());
+            InkDrop::Get(&host_view_)->GetInkDropCenterBasedOnLastEvent());
 }
 
 TEST_F(InkDropHostViewTest, HasInkDrop) {
@@ -275,9 +273,10 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
 TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
   bool callback_called = false;
   auto subscription =
-      host_view_.ink_drop()->AddHighlightedChangedCallback(base::BindRepeating(
-          [](bool* called) { *called = true; }, &callback_called));
-  host_view_.ink_drop()->OnInkDropHighlightedChanged();
+      InkDrop::Get(&host_view_)
+          ->AddHighlightedChangedCallback(base::BindRepeating(
+              [](bool* called) { *called = true; }, &callback_called));
+  InkDrop::Get(&host_view_)->OnInkDropHighlightedChanged();
   EXPECT_TRUE(callback_called);
 }
 
@@ -285,25 +284,22 @@ TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
 class BasicTestViewWithInkDrop : public View {
  public:
   BasicTestViewWithInkDrop() {
+    InkDrop::Install(this, std::make_unique<InkDropHost>(this));
     // Call SetBaseColor to avoid hitting a NOTREACHED() for fetching an
     // undefined color.
-    ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
+    InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
   }
   BasicTestViewWithInkDrop(const BasicTestViewWithInkDrop&) = delete;
   BasicTestViewWithInkDrop& operator=(const BasicTestViewWithInkDrop&) = delete;
   ~BasicTestViewWithInkDrop() override = default;
-
-  InkDropHost* ink_drop() { return &ink_drop_; }
-
- private:
-  InkDropHost ink_drop_{this};
 };
 
 // Tests the existence of layer clipping or layer masking when certain path
 // generators are applied on an InkDropHostView.
 class InkDropHostViewClippingTest : public testing::Test {
  public:
-  InkDropHostViewClippingTest() : host_view_test_api_(host_view_.ink_drop()) {
+  InkDropHostViewClippingTest()
+      : host_view_test_api_(InkDrop::Get(&host_view_)) {
     // Set up an InkDropHostView. Clipping is based on the size of the view, so
     // make sure the size is non empty.
     host_view_test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::ON);
@@ -311,7 +307,8 @@ class InkDropHostViewClippingTest : public testing::Test {
 
     // The root layer of the ink drop is created the first time GetInkDrop is
     // called and then kept alive until the host view is destroyed.
-    ink_drop_ = static_cast<InkDropImpl*>(host_view_.ink_drop()->GetInkDrop());
+    ink_drop_ =
+        static_cast<InkDropImpl*>(InkDrop::Get(&host_view_)->GetInkDrop());
     ink_drop_test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop_);
   }
   InkDropHostViewClippingTest(const InkDropHostViewClippingTest&) = delete;

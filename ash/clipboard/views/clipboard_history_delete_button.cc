@@ -34,7 +34,7 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   SetPreferredSize(gfx::Size(ClipboardHistoryViews::kDeleteButtonSizeDip,
                              ClipboardHistoryViews::kDeleteButtonSizeDip));
   SetVisible(false);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
@@ -49,11 +49,17 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   // The ink drop ripple should be circular.
   views::InstallFixedSizeCircleHighlightPathGenerator(
       this, ClipboardHistoryViews::kDeleteButtonSizeDip / 2);
-  views::InkDrop::UseInkDropForFloodFillRipple(
-      ink_drop(), /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/false,
+                                               /*highlight_on_focus=*/true);
 }
 
-ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() = default;
+ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() {
+  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+  // access the non-override versions in ~View.
+  views::InkDrop::Remove(this);
+}
 
 const char* ClipboardHistoryDeleteButton::GetClassName() const {
   return "DeleteButton";
@@ -82,9 +88,11 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
 
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  ink_drop()->SetBaseColor(ripple_attributes.base_color);
-  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  ink_drop()->SetHighlightOpacity(ripple_attributes.highlight_opacity);
+  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(this)->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
+  views::InkDrop::Get(this)->SetHighlightOpacity(
+      ripple_attributes.highlight_opacity);
 }
 
 void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {

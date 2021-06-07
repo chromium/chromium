@@ -19,6 +19,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -142,9 +143,10 @@ void ToolbarIconContainerView::ObserveButton(views::Button* button) {
   // We don't care about the main button being highlighted.
   if (button != main_button_) {
     subscriptions_.push_back(
-        button->ink_drop()->AddHighlightedChangedCallback(base::BindRepeating(
-            &ToolbarIconContainerView::OnButtonHighlightedChanged,
-            base::Unretained(this), base::Unretained(button))));
+        views::InkDrop::Get(button)->AddHighlightedChangedCallback(
+            base::BindRepeating(
+                &ToolbarIconContainerView::OnButtonHighlightedChanged,
+                base::Unretained(this), base::Unretained(button))));
   }
   subscriptions_.push_back(button->AddStateChangedCallback(base::BindRepeating(
       &ToolbarIconContainerView::UpdateHighlight, base::Unretained(this))));
@@ -275,7 +277,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(
     views::Button* button) {
-  if (button->ink_drop()->GetHighlighted())
+  if (views::InkDrop::Get(button)->GetHighlighted())
     highlighted_buttons_.insert(button);
   else
     highlighted_buttons_.erase(button);

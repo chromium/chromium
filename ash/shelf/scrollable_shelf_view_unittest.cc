@@ -60,10 +60,10 @@ class PageFlipWaiter : public ScrollableShelfView::TestObserver {
 class InkDropAnimationWaiter : public views::InkDropObserver {
  public:
   explicit InkDropAnimationWaiter(views::Button* button) : button_(button) {
-    button->ink_drop()->GetInkDrop()->AddObserver(this);
+    views::InkDrop::Get(button)->GetInkDrop()->AddObserver(this);
   }
   ~InkDropAnimationWaiter() override {
-    button_->ink_drop()->GetInkDrop()->RemoveObserver(this);
+    views::InkDrop::Get(button_)->GetInkDrop()->RemoveObserver(this);
   }
 
   void Wait() {
@@ -645,7 +645,7 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
       scrollable_shelf_view_->left_arrow()->GetBoundsInScreen();
 
   // Activate a shelf icon's ink drop. Verify that no crash happens.
-  auto* ink_drop = test_api_->GetButton(0)->ink_drop()->GetInkDrop();
+  auto* ink_drop = views::InkDrop::Get(test_api_->GetButton(0))->GetInkDrop();
   ink_drop->SnapToActivated();
   EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 
@@ -710,7 +710,7 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyActivateIconRippleOnVerySmallDisplay) {
   UpdateDisplay("60x601");
 
   // Activate a shelf icon's ink drop. Verify that no crash happens.
-  auto* ink_drop = test_api_->GetButton(0)->ink_drop()->GetInkDrop();
+  auto* ink_drop = views::InkDrop::Get(test_api_->GetButton(0))->GetInkDrop();
   ink_drop->SnapToActivated();
   EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 }
@@ -782,7 +782,7 @@ TEST_P(ScrollableShelfViewRTLTest,
     waiter.Wait();
   }
   ASSERT_EQ(views::InkDropState::ACTIVATED,
-            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
+            views::InkDrop::Get(icon)->GetInkDrop()->GetTargetInkDropState());
 
   // Verify that in clamshell when the ripple ring is activated, the rounded
   // corners should not be applied.
@@ -800,7 +800,7 @@ TEST_P(ScrollableShelfViewRTLTest,
     waiter.Wait();
   }
   EXPECT_EQ(views::InkDropState::HIDDEN,
-            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
+            views::InkDrop::Get(icon)->GetInkDrop()->GetTargetInkDropState());
 
   // Verify that the rounded corners should not be applied when the ripple ring
   // is hidden.
@@ -837,7 +837,7 @@ TEST_F(ScrollableShelfViewTest,
     waiter.Wait();
   }
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
+            views::InkDrop::Get(icon)->GetInkDrop()->GetTargetInkDropState());
 
   // Emulate to remove a shelf icon from context menu.
   shelf_model->RemoveItemAt(index);

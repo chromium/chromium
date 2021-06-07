@@ -26,6 +26,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
@@ -230,13 +231,14 @@ void TrayPopupUtils::ConfigureTrayPopupButton(
     bool highlight_on_hover,
     bool highlight_on_focus) {
   button->SetInstallFocusRingOnFocus(true);
-  button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDropHost* const ink_drop = views::InkDrop::Get(button);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
-  button->ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+  ink_drop->SetCreateInkDropCallback(base::BindRepeating(
       &CreateInkDrop, button, highlight_on_hover, highlight_on_focus));
-  button->ink_drop()->SetCreateRippleCallback(
+  ink_drop->SetCreateRippleCallback(
       base::BindRepeating(&CreateInkDropRipple, ink_drop_style, button));
-  button->ink_drop()->SetCreateHighlightCallback(
+  ink_drop->SetCreateHighlightCallback(
       base::BindRepeating(&CreateInkDropHighlight, button));
 }
 
@@ -275,7 +277,7 @@ std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
     bool highlight_on_hover,
     bool highlight_on_focus) {
   return views::InkDrop::CreateInkDropForFloodFillRipple(
-      host->ink_drop(), highlight_on_hover, highlight_on_focus);
+      views::InkDrop::Get(host), highlight_on_hover, highlight_on_focus);
 }
 
 std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
@@ -285,7 +287,7 @@ std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
       AshColorProvider::Get()->GetRippleAttributes();
   return std::make_unique<views::FloodFillInkDropRipple>(
       host->size(), GetInkDropInsets(ink_drop_style),
-      host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+      views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
       ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
 }
 

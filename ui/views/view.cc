@@ -239,6 +239,11 @@ View::~View() {
       if (!child->owned_by_client_)
         delete child;
     }
+
+    // Clear `children_` to prevent UAFs from observers and properties that may
+    // end up looking at children(), directly or indirectly, before ~View() goes
+    // out of scope.
+    children_.clear();
   }
 
   for (ViewObserver& observer : observers_)

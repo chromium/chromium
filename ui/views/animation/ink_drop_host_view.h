@@ -261,8 +261,6 @@ class VIEWS_EXPORT InkDropHost {
   int ink_drop_small_corner_radius_ = 2;
   int ink_drop_large_corner_radius_ = 4;
 
-  bool destroying_ = false;
-
   std::unique_ptr<views::InkDropMask> ink_drop_mask_;
 
   base::RepeatingCallback<std::unique_ptr<InkDrop>()> create_ink_drop_callback_;

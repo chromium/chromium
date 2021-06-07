@@ -34,6 +34,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -155,8 +156,9 @@ void CastDialogSinkButton::OnMouseReleased(const ui::MouseEvent& event) {
 void CastDialogSinkButton::OnEnabledChanged() {
   // Prevent a DCHECK failure seen at https://crbug.com/912687 by not having an
   // InkDrop if the button is disabled.
-  ink_drop()->SetMode(GetEnabled() ? views::InkDropHost::InkDropMode::ON
-                                   : views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(this)->SetMode(
+      GetEnabled() ? views::InkDropHost::InkDropMode::ON
+                   : views::InkDropHost::InkDropMode::OFF);
   // If the button has a state other than AVAILABLE (e.g. CONNECTED), there is
   // no need to change the status or the icon.
   if (sink_.state != UIMediaSinkState::AVAILABLE)

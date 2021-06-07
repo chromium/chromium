@@ -24,6 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace media_router {
@@ -93,11 +94,13 @@ void CastToolbarButton::HideIcon() {
 }
 
 void CastToolbarButton::ActivateIcon() {
-  ink_drop()->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
+                                            nullptr);
 }
 
 void CastToolbarButton::DeactivateIcon() {
-  ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                            nullptr);
 }
 
 void CastToolbarButton::OnIssue(const media_router::Issue& issue) {

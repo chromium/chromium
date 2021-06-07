@@ -57,7 +57,7 @@ InkDropTest::InkDropTest() : ink_drop_(nullptr) {
       break;
     case INK_DROP_IMPL:
       ink_drop_ = std::make_unique<InkDropImpl>(
-          test_ink_drop_host_.ink_drop(), gfx::Size(),
+          InkDrop::Get(&test_ink_drop_host_), gfx::Size(),
           InkDropImpl::AutoHighlightMode::NONE);
       // The Timer's used by the InkDropImpl class require a
       // base::ThreadTaskRunnerHandle instance.

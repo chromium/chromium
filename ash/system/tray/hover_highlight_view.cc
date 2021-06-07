@@ -5,6 +5,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 
 #include <string>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -28,7 +30,7 @@ namespace ash {
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS), listener_(listener) {
   SetNotifyEnterExitOnChild(true);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 }
 
 HoverHighlightView::~HoverHighlightView() = default;

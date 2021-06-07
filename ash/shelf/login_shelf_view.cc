@@ -57,6 +57,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/button/button.h"
@@ -217,14 +218,15 @@ class LoginShelfButton : public views::LabelButton {
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
         color_provider->GetRippleAttributes();
-    ink_drop()->SetBaseColor(ripple_attributes.base_color);
-    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+    views::InkDrop::Get(this)->SetVisibleOpacity(
+        ripple_attributes.inkdrop_opacity);
     views::InkDrop::UseInkDropWithoutAutoHighlight(
-        ink_drop(), /*highlight_on_hover=*/false);
+        views::InkDrop::Get(this), /*highlight_on_hover=*/false);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -314,15 +316,16 @@ class KioskAppsButton : public views::MenuButton,
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     views::InkDrop::UseInkDropWithoutAutoHighlight(
-        ink_drop(), /*highlight_on_hover=*/false);
+        views::InkDrop::Get(this), /*highlight_on_hover=*/false);
 
     const AshColorProvider::RippleAttributes ripple_attributes =
         AshColorProvider::Get()->GetRippleAttributes();
-    ink_drop()->SetBaseColor(ripple_attributes.base_color);
-    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+    views::InkDrop::Get(this)->SetVisibleOpacity(
+        ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.

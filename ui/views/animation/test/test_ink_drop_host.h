@@ -42,15 +42,11 @@ class TestInkDropHost : public View {
     disable_timers_for_test_ = disable_timers_for_test;
   }
 
-  InkDropHost* ink_drop() { return &ink_drop_; }
-
   // View:
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
 
  private:
-  InkDropHost ink_drop_{this};
-
   int num_ink_drop_layers_added_ = 0;
   int num_ink_drop_layers_removed_ = 0;
 

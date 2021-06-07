@@ -26,6 +26,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
@@ -52,15 +53,15 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
             base::Unretained(controller),
             page)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
-    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
         [](Button* host) {
           return TrayPopupUtils::CreateInkDrop(host,
                                                /*highlight_on_hover=*/true);
         },
         this));
-    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](PageIndicatorButton* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
               gfx::SizeF(host->size()), host->ripple_base_color_);
@@ -68,7 +69,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
           return highlight;
         },
         this));
-    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](PageIndicatorButton* host) -> std::unique_ptr<views::InkDropRipple> {
           gfx::Point center = host->GetLocalBounds().CenterPoint();
           gfx::Rect bounds(center.x() - kInkDropRadius,
@@ -76,7 +77,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
                            2 * kInkDropRadius);
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+              views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
               host->ripple_base_color_, host->inkdrop_opacity_);
         },
         this));
@@ -135,7 +136,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
   // views::Button:
   void NotifyClick(const ui::Event& event) override {
     Button::NotifyClick(event);
-    ink_drop()->GetInkDrop()->AnimateToState(
+    views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTION_TRIGGERED);
   }
 

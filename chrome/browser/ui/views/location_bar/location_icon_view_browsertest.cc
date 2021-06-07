@@ -9,6 +9,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 
 // TODO (spqchan): Refine tests. See crbug.com/770873.
@@ -46,14 +47,14 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewBrowserTest, InkDropMode) {
   model->SetInputInProgress(true);
   icon_view()->Update(/*suppress_animations=*/true);
 
-  EXPECT_EQ(
-      views::InkDropHost::InkDropMode::OFF,
-      views::test::InkDropHostTestApi(icon_view()->ink_drop()).ink_drop_mode());
+  EXPECT_EQ(views::InkDropHost::InkDropMode::OFF,
+            views::test::InkDropHostTestApi(views::InkDrop::Get(icon_view()))
+                .ink_drop_mode());
 
   model->SetInputInProgress(false);
   icon_view()->Update(/*suppress_animations=*/true);
 
-  EXPECT_EQ(
-      views::InkDropHost::InkDropMode::ON,
-      views::test::InkDropHostTestApi(icon_view()->ink_drop()).ink_drop_mode());
+  EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
+            views::test::InkDropHostTestApi(views::InkDrop::Get(icon_view()))
+                .ink_drop_mode());
 }

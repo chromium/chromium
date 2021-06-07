@@ -112,7 +112,7 @@ bool MenuButtonController::OnMousePressed(const ui::MouseEvent& event) {
 
   // If this is an unintentional trigger do not display the inkdrop.
   if (!is_intentional_menu_trigger_)
-    button()->ink_drop()->AnimateToState(InkDropState::HIDDEN, &event);
+    InkDrop::Get(button())->AnimateToState(InkDropState::HIDDEN, &event);
   return true;
 }
 
@@ -123,7 +123,7 @@ void MenuButtonController::OnMouseReleased(const ui::MouseEvent& event) {
     Activate(&event);
   } else {
     if (button()->GetHideInkDropWhenShowingContextMenu())
-      button()->ink_drop()->AnimateToState(InkDropState::HIDDEN, &event);
+      InkDrop::Get(button())->AnimateToState(InkDropState::HIDDEN, &event);
     ButtonController::OnMouseReleased(event);
   }
 }
@@ -265,7 +265,7 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     increment_pressed_lock_called_ = nullptr;
 
     if (!increment_pressed_lock_called && pressed_lock_count_ == 0) {
-      button()->ink_drop()->AnimateToState(
+      InkDrop::Get(button())->AnimateToState(
           InkDropState::ACTION_TRIGGERED, ui::LocatedEvent::FromIfValid(event));
     }
 
@@ -275,8 +275,8 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     return false;
   }
 
-  button()->ink_drop()->AnimateToState(InkDropState::HIDDEN,
-                                       ui::LocatedEvent::FromIfValid(event));
+  InkDrop::Get(button())->AnimateToState(InkDropState::HIDDEN,
+                                         ui::LocatedEvent::FromIfValid(event));
   return true;
 }
 
@@ -319,7 +319,7 @@ void MenuButtonController::IncrementPressedLocked(
     if (snap_ink_drop_to_activated)
       delegate()->GetInkDrop()->SnapToActivated();
     else
-      button()->ink_drop()->AnimateToState(InkDropState::ACTIVATED, event);
+      InkDrop::Get(button())->AnimateToState(InkDropState::ACTIVATED, event);
   }
   button()->SetState(Button::STATE_PRESSED);
   delegate()->GetInkDrop()->SetHovered(false);
@@ -347,8 +347,8 @@ void MenuButtonController::DecrementPressedLocked() {
     // The widget may be null during shutdown. If so, it doesn't make sense to
     // try to add an ink drop effect.
     if (button()->GetWidget() && button()->GetState() != Button::STATE_PRESSED)
-      button()->ink_drop()->AnimateToState(InkDropState::DEACTIVATED,
-                                           nullptr /* event */);
+      InkDrop::Get(button())->AnimateToState(InkDropState::DEACTIVATED,
+                                             nullptr /* event */);
   }
 }
 

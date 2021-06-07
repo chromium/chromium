@@ -25,6 +25,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -87,8 +88,9 @@ class FilesAppChip : public views::Button {
     // Ink drop.
     const AshColorProvider::RippleAttributes ripple_attributes =
         ash_color_provider->GetRippleAttributes();
-    ink_drop()->SetBaseColor(ripple_attributes.base_color);
-    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+    views::InkDrop::Get(this)->SetVisibleOpacity(
+        ripple_attributes.inkdrop_opacity);
   }
 
   void Init() {
@@ -97,7 +99,7 @@ class FilesAppChip : public views::Button {
     SetID(kHoldingSpaceFilesAppChipId);
 
     // Ink drop.
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kFilesAppChipHeight / 2);
 

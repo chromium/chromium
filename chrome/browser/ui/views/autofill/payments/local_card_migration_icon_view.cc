@@ -18,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 
 namespace autofill {
 
@@ -122,7 +123,9 @@ void LocalCardMigrationIconView::UpdateImpl() {
     // Fade out inkdrop but only if icon was actually highlighted. Calling
     // SetHighlighted() can result in a spurious fade-out animation and visual
     // glitches.
-    if (this->ink_drop()->GetHighlighted())
+    // TODO(pbos): Fix this and remove check. Calling SetHighlighted(false) with
+    // !GetHighighted() should be a no-op.
+    if (views::InkDrop::Get(this)->GetHighlighted())
       SetHighlighted(false);
     // Handle corner cases where users navigate away or close the tab.
     UnpauseAnimation();

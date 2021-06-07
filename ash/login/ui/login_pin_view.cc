@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -105,8 +106,11 @@ class BasePinButton : public views::View {
     // focus painter to paint.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+
+    views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
+    views::InkDrop::Get(this)->SetMode(
+        views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](BasePinButton* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
               gfx::SizeF(host->size()),
@@ -115,7 +119,7 @@ class BasePinButton : public views::View {
           return highlight;
         },
         this));
-    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](BasePinButton* host) -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = host->GetLocalBounds().CenterPoint();
           const gfx::Rect bounds(center.x() - kInkDropCornerRadiusDp,
@@ -125,7 +129,7 @@ class BasePinButton : public views::View {
 
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+              views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
               host->palette_.pin_ink_drop_ripple_color,
               /*visible_opacity=*/1.f);
         },
@@ -141,8 +145,6 @@ class BasePinButton : public views::View {
   virtual void UpdatePalette(const LoginPalette& palette) {
     palette_ = palette;
   }
-
-  views::InkDropHost* ink_drop() { return &ink_drop_; }
 
   // views::View:
   void OnFocus() override {
@@ -178,8 +180,9 @@ class BasePinButton : public views::View {
     if (event)
       event->SetHandled();
 
-    ink_drop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
-                               ui::LocatedEvent::FromIfValid(event));
+    views::InkDrop::Get(this)->AnimateToState(
+        views::InkDropState::ACTION_TRIGGERED,
+        ui::LocatedEvent::FromIfValid(event));
     SchedulePaint();
 
     // |on_press_| may delete us.
@@ -193,8 +196,6 @@ class BasePinButton : public views::View {
   LoginPalette palette_;
 
  private:
-  views::InkDropHost ink_drop_{this};
-
   const std::u16string accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(BasePinButton);
@@ -281,7 +282,8 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
 
   void OnEnabledChanged() {
     if (!GetEnabled()) {
-      ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
+      views::InkDrop::Get(this)->AnimateToState(
+          views::InkDropState::DEACTIVATED, nullptr);
       CancelRepeat();
     }
     UpdateImage();
@@ -328,8 +330,8 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       if (event)
         event->SetHandled();
 
-      ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
-                                 ui::LocatedEvent::FromIfValid(event));
+      views::InkDrop::Get(this)->AnimateToState(
+          views::InkDropState::ACTIVATED, ui::LocatedEvent::FromIfValid(event));
       SchedulePaint();
 
       return;
@@ -365,7 +367,8 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     if (!did_submit && on_press_)
       on_press_.Run();
 
-    ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
+    views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                              nullptr);
     SchedulePaint();
   }
 

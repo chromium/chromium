@@ -399,10 +399,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
                        ExtensionsMenuButtonHighlight) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
-  EXPECT_EQ(BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar()
-                ->GetExtensionsButton()
-                ->ink_drop()
+  EXPECT_EQ(views::InkDrop::Get(BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->toolbar()
+                                    ->GetExtensionsButton())
                 ->GetInkDrop()
                 ->GetTargetInkDropState(),
             views::InkDropState::ACTIVATED);

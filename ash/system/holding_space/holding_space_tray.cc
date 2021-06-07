@@ -785,14 +785,15 @@ void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
   const views::InkDropState target_ink_drop_state =
       is_drop_target ? views::InkDropState::ACTION_PENDING
                      : views::InkDropState::HIDDEN;
-  if (ink_drop()->GetInkDrop()->GetTargetInkDropState() ==
+  if (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
       target_ink_drop_state)
     return;
 
   // Do *not* pass in an event as the origin for the ink drop. Since the user is
   // not directly over this view, it would look strange to give the ink drop an
   // out-of-bounds origin.
-  ink_drop()->AnimateToState(target_ink_drop_state, /*event=*/nullptr);
+  views::InkDrop::Get(this)->AnimateToState(target_ink_drop_state,
+                                            /*event=*/nullptr);
 }
 
 void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {

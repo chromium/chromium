@@ -59,10 +59,10 @@ ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(
       delegate_(delegate) {
   SetLabel(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL));
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  ink_drop()->GetInkDrop()->SetShowHighlightOnHover(true);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(true);
 
   SetBorder(views::CreateRoundedRectBorder(
       1, kExpandButtonStripSize.height() / 2, gfx::Insets(),

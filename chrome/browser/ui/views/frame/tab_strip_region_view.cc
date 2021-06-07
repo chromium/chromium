@@ -23,7 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/color_utils.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -58,7 +58,8 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
   scroll_button->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   scroll_button->SetHasInkDropActionOnClick(true);
-  scroll_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(scroll_button.get())
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
   scroll_button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   scroll_button->SetPreferredSize(gfx::Size(28, 28));
   views::HighlightPathGenerator::Install(

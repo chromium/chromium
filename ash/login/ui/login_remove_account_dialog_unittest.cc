@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_manager/user_type.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -123,7 +124,8 @@ TEST_F(LoginRemoveAccountDialogTest, LoginButtonRipple) {
   container->AddChildView(bubble_opener);
   SetWidget(CreateWidgetWithContent(container));
 
-  views::test::InkDropHostTestApi ink_drop_api(bubble_opener->ink_drop());
+  views::test::InkDropHostTestApi ink_drop_api(
+      views::InkDrop::Get(bubble_opener));
   EXPECT_EQ(ink_drop_api.ink_drop_mode(), views::InkDropHost::InkDropMode::ON);
   EXPECT_TRUE(ink_drop_api.HasInkDrop());
 

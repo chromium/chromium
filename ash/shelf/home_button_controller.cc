@@ -77,7 +77,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       }
 
       if (CanActivate(button_->GetDisplayId())) {
-        button_->ink_drop()->AnimateToState(
+        views::InkDrop::Get(button_)->AnimateToState(
             views::InkDropState::ACTION_TRIGGERED, event);
       }
 
@@ -92,8 +92,8 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       }
 
       if (CanActivate(button_->GetDisplayId())) {
-        button_->ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING,
-                                            event);
+        views::InkDrop::Get(button_)->AnimateToState(
+            views::InkDropState::ACTION_PENDING, event);
       }
 
       return false;
@@ -117,7 +117,8 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
         return false;
 
       // This event happens after the user long presses and lifts the finger.
-      button_->ink_drop()->AnimateToState(views::InkDropState::HIDDEN, event);
+      views::InkDrop::Get(button_)->AnimateToState(views::InkDropState::HIDDEN,
+                                                   event);
 
       // We already handled the long press; consume the long tap to avoid
       // bringing up the context menu again.
@@ -151,8 +152,8 @@ void HomeButtonController::OnAppListVisibilityWillChange(bool shown,
 }
 
 void HomeButtonController::OnTabletModeStarted() {
-  button_->ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED,
-                                      nullptr);
+  views::InkDrop::Get(button_)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                               nullptr);
 }
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
@@ -180,8 +181,8 @@ void HomeButtonController::OnAppListShown() {
   // Do not show a highlight in tablet mode, since the home screen view is
   // always open in the background.
   if (!Shell::Get()->IsInTabletMode()) {
-    button_->ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
-                                        nullptr);
+    views::InkDrop::Get(button_)->AnimateToState(views::InkDropState::ACTIVATED,
+                                                 nullptr);
   }
   is_showing_app_list_ = true;
 }
@@ -190,11 +191,11 @@ void HomeButtonController::OnAppListDismissed() {
   // If ink drop is not hidden already, snap it to active state, so animation to
   // DEACTIVATED state starts immediately (the animation would otherwise wait
   // for the current animation to finish).
-  views::InkDrop* const ink_drop = button_->ink_drop()->GetInkDrop();
+  views::InkDrop* const ink_drop = views::InkDrop::Get(button_)->GetInkDrop();
   if (ink_drop->GetTargetInkDropState() != views::InkDropState::HIDDEN)
     ink_drop->SnapToActivated();
-  button_->ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED,
-                                      nullptr);
+  views::InkDrop::Get(button_)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                               nullptr);
 
   is_showing_app_list_ = false;
 }

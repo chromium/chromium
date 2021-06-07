@@ -35,6 +35,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -156,12 +157,13 @@ class MediaActionButton : public views::ImageButton {
             view,
             this)),
         icon_size_(icon_size) {
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](Button* host) {
           return std::make_unique<views::InkDropHighlight>(
-              gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
+              gfx::SizeF(host->size()),
+              views::InkDrop::Get(host)->GetBaseColor());
         },
         this));
 

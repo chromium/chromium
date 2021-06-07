@@ -11,6 +11,7 @@
 #include "ash/style/default_color_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 
 namespace ash {
@@ -24,14 +25,16 @@ ShelfButton::ShelfButton(Shelf* shelf,
   SetHideInkDropWhenShowingContextMenu(false);
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  ink_drop()->SetBaseColor(ripple_attributes.base_color);
-  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(this)->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(
       ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
       gfx::InsetsF()));
-  views::InkDrop::UseInkDropForSquareRipple(ink_drop(),
+  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
                                             /*highlight_on_hover=*/false);
 }
 
@@ -76,8 +79,8 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
 
   Button::NotifyClick(event);
   if (shelf_button_delegate_)
-    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event,
-                                          ink_drop()->GetInkDrop());
+    shelf_button_delegate_->ButtonPressed(
+        /*sender=*/this, event, views::InkDrop::Get(this)->GetInkDrop());
 }
 
 }  // namespace ash

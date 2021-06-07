@@ -34,6 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/test/button_test_api.h"
@@ -125,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
 
 IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
   PageActionIconView* star_icon = GetStarIcon();
-  views::test::InkDropHostTestApi ink_drop_test_api(star_icon->ink_drop());
+  views::test::InkDropHostTestApi ink_drop_test_api(
+      views::InkDrop::Get(star_icon));
 
   if (ink_drop_test_api.HasInkDrop()) {
     GURL url("http://test.com");

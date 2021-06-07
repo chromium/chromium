@@ -12,6 +12,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
@@ -34,11 +35,11 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
   SetInstallFocusRingOnFocus(false);
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
-  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](Button* host) { return TrayPopupUtils::CreateInkDrop(host); }, this));
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](ActionableView* host) {
         return TrayPopupUtils::CreateInkDropRipple(host->ink_drop_style_, host);
       },
@@ -52,10 +53,10 @@ ActionableView::~ActionableView() {
 
 void ActionableView::HandlePerformActionResult(bool action_performed,
                                                const ui::Event& event) {
-  ink_drop()->AnimateToState(action_performed
-                                 ? views::InkDropState::ACTION_TRIGGERED
-                                 : views::InkDropState::HIDDEN,
-                             ui::LocatedEvent::FromIfValid(&event));
+  views::InkDrop::Get(this)->AnimateToState(
+      action_performed ? views::InkDropState::ACTION_TRIGGERED
+                       : views::InkDropState::HIDDEN,
+      ui::LocatedEvent::FromIfValid(&event));
 }
 
 const char* ActionableView::GetClassName() const {

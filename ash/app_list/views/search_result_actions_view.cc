@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -77,8 +78,8 @@ SearchResultImageButton::SearchResultImageButton(
   // Avoid drawing default dashed focus and draw customized focus in
   // OnPaintBackground();
   SetFocusPainter(nullptr);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       [](SearchResultImageButton* host) {
         const AppListColorProvider* const color_provider =
             AppListColorProvider::Get();
@@ -91,7 +92,7 @@ SearchResultImageButton::SearchResultImageButton(
         return highlight;
       },
       this));
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](SearchResultImageButton* host)
           -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
@@ -103,7 +104,7 @@ SearchResultImageButton::SearchResultImageButton(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(bg_color),
             color_provider->GetRippleAttributesInkDropOpacity(bg_color));
       },

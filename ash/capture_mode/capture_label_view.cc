@@ -25,6 +25,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -162,12 +163,14 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_button_->SetNotifyEnterExitOnChild(true);
 
-  label_button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(label_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
   const auto ripple_attributes =
       color_provider->GetRippleAttributes(background_color);
-  label_button_->ink_drop()->SetVisibleOpacity(
-      ripple_attributes.inkdrop_opacity);
-  label_button_->ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(label_button_)
+      ->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  views::InkDrop::Get(label_button_)
+      ->SetBaseColor(ripple_attributes.base_color);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));

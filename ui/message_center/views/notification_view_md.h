@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -143,7 +144,6 @@ class NotificationInputContainerMD : public views::View,
 
   NotificationInputDelegate* const delegate_;
 
-  views::InkDropHost ink_drop_{this};
   views::InkDropContainerView* const ink_drop_container_;
 
   views::Textfield* const textfield_;
@@ -179,8 +179,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   void AddBackgroundAnimation(const ui::Event& event);
   void RemoveBackgroundAnimation();
-
-  views::InkDropHost* ink_drop() { return &ink_drop_; }
 
   // MessageView:
   void AddLayerBeneathView(ui::Layer* layer) override;
@@ -286,7 +284,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   // destroyed when the ink drop is visible.
   std::vector<views::View*> GetChildrenForLayerAdjustment() const;
 
-  views::InkDropHost ink_drop_{this};
   views::InkDropContainerView* const ink_drop_container_;
 
   // View containing close and settings buttons

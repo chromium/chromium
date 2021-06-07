@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/installable_ink_drop_config.h"
@@ -83,9 +84,10 @@ void ConfigureInkDropForToolbar(views::Button* host) {
   host->SetHasInkDropActionOnClick(true);
   views::HighlightPathGenerator::Install(
       host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
-  host->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  host->ink_drop()->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
-  host->ink_drop()->SetHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
-  host->ink_drop()->SetBaseColorCallback(
+  views::InkDrop::Get(host)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(host)->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
+  views::InkDrop::Get(host)->SetHighlightOpacity(
+      kToolbarInkDropHighlightVisibleOpacity);
+  views::InkDrop::Get(host)->SetBaseColorCallback(
       base::BindRepeating(&GetToolbarInkDropBaseColor, host));
 }

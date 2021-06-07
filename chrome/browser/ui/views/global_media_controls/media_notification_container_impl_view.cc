@@ -31,6 +31,7 @@
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -397,7 +398,7 @@ void MediaNotificationContainerImplView::OnColorsChanged(SkColor foreground,
     UpdateDismissButtonIcon();
     if (stop_cast_button_) {
       stop_cast_button_->SetEnabledTextColors(foreground_color_);
-      stop_cast_button_->ink_drop()->SetBaseColor(foreground_color_);
+      views::InkDrop::Get(stop_cast_button_)->SetBaseColor(foreground_color_);
     }
   }
 
@@ -519,9 +520,10 @@ void MediaNotificationContainerImplView::AddStopCastButton(
   views::InstallRoundRectHighlightPathGenerator(
       stop_cast_button_, gfx::Insets(), kStopCastButtonStripSize.height() / 2);
 
-  stop_cast_button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(stop_cast_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
   stop_cast_button_->SetHasInkDropActionOnClick(true);
-  stop_cast_button_->ink_drop()->SetBaseColor(foreground_color_);
+  views::InkDrop::Get(stop_cast_button_)->SetBaseColor(foreground_color_);
   stop_cast_button_->SetEnabledTextColors(foreground_color_);
   stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   stop_cast_button_->SetBorder(views::CreatePaddedBorder(

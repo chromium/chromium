@@ -21,6 +21,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -56,13 +57,14 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 
   // Do not show highlight on hover and focus. Since the button will be painted
   // with a background, see |highlight_on_hover_| for more details.
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop(),
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/false);
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       [](DeskButtonBase* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
+            gfx::SizeF(host->size()),
+            views::InkDrop::Get(host)->GetBaseColor());
         highlight->set_visible_opacity(
             AshColorProvider::Get()
                 ->GetRippleAttributes(host->background_color_)
@@ -70,7 +72,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
         return highlight;
       },
       this));
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](DeskButtonBase* host) {
         return AshColorProvider::Get()
             ->GetRippleAttributes(host->background_color_)
@@ -78,7 +80,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
       },
       this));
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);

@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "url/gurl.h"
@@ -72,13 +73,13 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
 WebAppHoverButton::~WebAppHoverButton() = default;
 
 void WebAppHoverButton::MarkAsUnselected(const ui::Event* event) {
-  ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
-                             ui::LocatedEvent::FromIfValid(event));
+  views::InkDrop::Get(this)->AnimateToState(
+      views::InkDropState::HIDDEN, ui::LocatedEvent::FromIfValid(event));
 }
 
 void WebAppHoverButton::MarkAsSelected(const ui::Event* event) {
-  ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
-                             ui::LocatedEvent::FromIfValid(event));
+  views::InkDrop::Get(this)->AnimateToState(
+      views::InkDropState::ACTIVATED, ui::LocatedEvent::FromIfValid(event));
 }
 
 void WebAppHoverButton::OnIconsRead(

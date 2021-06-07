@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -23,10 +24,10 @@ class TestToggleButton : public ToggleButton {
   explicit TestToggleButton(int* counter) : counter_(counter) {}
 
   ~TestToggleButton() override {
-    // Calling ink_drop()->SetMode() in this subclass allows this class's
-    // implementation of RemoveLayerBeneathView() to be called. The same
-    // call is made in ~ToggleButton() so this is testing the general technique.
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+    // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
+    // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
+    // access the non-override versions in ~View.
+    views::InkDrop::Remove(this);
   }
 
   void AddLayerBeneathView(ui::Layer* layer) override {

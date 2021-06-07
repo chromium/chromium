@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -28,18 +29,19 @@ CloseDeskButton::CloseDeskButton(PressedCallback callback)
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
-  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this));
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
       [](CloseDeskButton* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
+            gfx::SizeF(host->size()),
+            views::InkDrop::Get(host)->GetBaseColor());
         highlight->set_visible_opacity(host->highlight_opacity_);
         return highlight;
       },
       this));
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](CloseDeskButton* host) { return host->inkdrop_base_color_; }, this));
 
   SetFocusPainter(nullptr);
@@ -65,7 +67,8 @@ void CloseDeskButton::OnThemeChanged() {
       color_provider->GetRippleAttributes(background()->get_color());
   highlight_opacity_ = ripple_attributes.highlight_opacity;
   inkdrop_base_color_ = ripple_attributes.base_color;
-  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  views::InkDrop::Get(this)->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
 }
 
 bool CloseDeskButton::DoesIntersectRect(const views::View* target,

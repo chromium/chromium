@@ -27,6 +27,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/button/image_button.h"
@@ -89,8 +90,9 @@ class OverviewCloseButton : public views::ImageButton {
  public:
   explicit OverviewCloseButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-    views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
+    views::InkDrop::Get(this)->SetMode(
+        views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this));
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
@@ -119,8 +121,9 @@ class OverviewCloseButton : public views::ImageButton {
              gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color));
 
     const auto ripple_attributes = color_provider->GetRippleAttributes(color);
-    ink_drop()->SetBaseColor(ripple_attributes.base_color);
-    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+    views::InkDrop::Get(this)->SetVisibleOpacity(
+        ripple_attributes.inkdrop_opacity);
   }
 };
 

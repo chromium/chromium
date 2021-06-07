@@ -26,6 +26,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/buildflags.h"
@@ -794,7 +795,7 @@ class InkDropLabelButtonTest : public ViewsTestBase {
         Button::PressedCallback(), std::u16string()));
 
     test_ink_drop_ = new test::TestInkDrop();
-    test::InkDropHostTestApi(button_->ink_drop())
+    test::InkDropHostTestApi(InkDrop::Get(button_))
         .SetInkDrop(base::WrapUnique(test_ink_drop_));
   }
 

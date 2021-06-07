@@ -40,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -238,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
       toolbar_button_provider->GetAppMenuButton();
 
   const SkColor original_ink_drop_color =
-      app_menu_button->ink_drop()->GetBaseColor();
+      views::InkDrop::Get(app_menu_button)->GetBaseColor();
 
   {
     content::ThemeChangeWaiter theme_change_waiter(web_contents);
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
                                 "setAttribute('content', '#246')"));
     theme_change_waiter.Wait();
 
-    EXPECT_NE(app_menu_button->ink_drop()->GetBaseColor(),
+    EXPECT_NE(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
               original_ink_drop_color);
   }
 
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
         web_contents, "document.getElementById('theme-color').remove()"));
     theme_change_waiter.Wait();
 
-    EXPECT_EQ(app_menu_button->ink_drop()->GetBaseColor(),
+    EXPECT_EQ(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
               original_ink_drop_color);
   }
 #endif

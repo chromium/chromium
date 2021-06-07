@@ -30,6 +30,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -773,10 +774,10 @@ void CaptionBubble::SetTextColor() {
   views::SetImageFromVectorIcon(collapse_button_, vector_icons::kCaretUpIcon,
                                 kButtonDip, text_color);
 
-  back_to_tab_button_->ink_drop()->SetBaseColor(text_color);
-  close_button_->ink_drop()->SetBaseColor(text_color);
-  expand_button_->ink_drop()->SetBaseColor(text_color);
-  collapse_button_->ink_drop()->SetBaseColor(text_color);
+  views::InkDrop::Get(back_to_tab_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(close_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(expand_button_)->SetBaseColor(text_color);
+  views::InkDrop::Get(collapse_button_)->SetBaseColor(text_color);
 }
 
 void CaptionBubble::SetBackgroundColor() {

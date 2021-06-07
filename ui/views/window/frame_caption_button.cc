@@ -17,6 +17,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
@@ -76,18 +77,18 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   swap_images_animation_->Reset(1);
 
   SetHasInkDropActionOnClick(true);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
+  InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  InkDrop::Get(this)->SetVisibleOpacity(kInkDropVisibleOpacity);
   UpdateInkDropBaseColor();
-  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
-                                                 /*highlight_on_hover=*/false);
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  InkDrop::UseInkDropWithoutAutoHighlight(InkDrop::Get(this),
+                                          /*highlight_on_hover=*/false);
+  InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](FrameCaptionButton* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetInkdropInsets(host->size()),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
-            host->ink_drop()->GetBaseColor(),
-            host->ink_drop()->GetVisibleOpacity());
+            InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+            InkDrop::Get(host)->GetBaseColor(),
+            InkDrop::Get(host)->GetVisibleOpacity());
       },
       this));
 
@@ -279,7 +280,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     // the window is moving as a result of the animation from normal to
     // maximized state or vice versa. https://crbug.com/840901.
     cc::PaintFlags flags;
-    flags.setColor(ink_drop()->GetBaseColor());
+    flags.setColor(InkDrop::Get(this)->GetBaseColor());
     flags.setAlpha(highlight_alpha);
     DrawHighlight(canvas, flags);
   }
@@ -349,7 +350,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
   const SkColor button_color = GetButtonColor(background_color_);
-  ink_drop()->SetBaseColor(
+  InkDrop::Get(this)->SetBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 

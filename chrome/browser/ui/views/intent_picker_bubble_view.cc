@@ -105,30 +105,30 @@ class IntentPickerLabelButton : public views::LabelButton {
                     base::UTF8ToUTF16(base::StringPiece(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetMinSize(gfx::Size(kMaxIntentPickerLabelButtonWidth, kRowHeight));
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     if (!icon_model.IsEmpty()) {
       SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
     }
     SetBorder(views::CreateEmptyBorder(8, 16, 8, 0));
-    ink_drop()->SetBaseColor(SK_ColorGRAY);
-    ink_drop()->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
+    views::InkDrop::Get(this)->SetBaseColor(SK_ColorGRAY);
+    views::InkDrop::Get(this)->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
   IntentPickerLabelButton(const IntentPickerLabelButton&) = delete;
   IntentPickerLabelButton& operator=(const IntentPickerLabelButton&) = delete;
   ~IntentPickerLabelButton() override = default;
 
   void MarkAsUnselected(const ui::Event* event) {
-    ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
-                               ui::LocatedEvent::FromIfValid(event));
+    views::InkDrop::Get(this)->AnimateToState(
+        views::InkDropState::HIDDEN, ui::LocatedEvent::FromIfValid(event));
   }
 
   void MarkAsSelected(const ui::Event* event) {
-    ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
-                               ui::LocatedEvent::FromIfValid(event));
+    views::InkDrop::Get(this)->AnimateToState(
+        views::InkDropState::ACTIVATED, ui::LocatedEvent::FromIfValid(event));
   }
 
   views::InkDropState GetTargetInkDropState() {
-    return ink_drop()->GetInkDrop()->GetTargetInkDropState();
+    return views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState();
   }
 };
 

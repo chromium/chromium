@@ -77,10 +77,10 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
                    subtitle(), icon_, foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop()->SetBaseColor(foreground_color);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   // Bypass color-callback setup in HoverButton.
-  ink_drop()->SetBaseColorCallback({});
+  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetHasInkDropActionOnClick(true);
   SetPreferredSize(kDeviceEntryViewSize);
 }
@@ -91,12 +91,12 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
   }
   is_highlighted_ = highlighted;
   if (highlighted) {
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetHasInkDropActionOnClick(false);
-    SetBackground(views::CreateSolidBackground(
-        SkColorSetA(ink_drop()->GetBaseColor(), kEntryHighlightOpacity)));
+    SetBackground(views::CreateSolidBackground(SkColorSetA(
+        views::InkDrop::Get(this)->GetBaseColor(), kEntryHighlightOpacity)));
   } else {
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     SetBackground(nullptr);
   }
@@ -109,7 +109,7 @@ bool AudioDeviceEntryView::GetHighlighted() const {
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                            SkColor background_color) {
-  ink_drop()->SetBaseColor(foreground_color);
+  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
 
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
                    subtitle(), icon_, foreground_color, background_color);
@@ -136,17 +136,17 @@ CastDeviceEntryView::CastDeviceEntryView(
   ChangeCastEntryColor(sink, foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop()->SetBaseColor(foreground_color);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
   // Bypass color-callback setup in HoverButton.
-  ink_drop()->SetBaseColorCallback({});
+  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetPreferredSize(kDeviceEntryViewSize);
 }
 
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                           SkColor background_color) {
-  ink_drop()->SetBaseColor(foreground_color);
+  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   ChangeCastEntryColor(sink(), foreground_color, background_color);
 }
 

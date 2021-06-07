@@ -14,6 +14,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -51,7 +52,8 @@ std::unique_ptr<views::Button> CreateCloseButton(
       close_button.get(), vector_icons::kCloseRoundedIcon,
       GetContentLayerColor(ContentLayerType::kIconColorPrimary));
   close_button->SetSize(kCloseButtonSize);
-  close_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+  views::InkDrop::Get(close_button.get())
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
   close_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));

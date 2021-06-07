@@ -34,22 +34,24 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
 // static
 void CaptureModeButton::ConfigureButton(views::ImageButton* button,
                                         views::FocusRing* focus_ring) {
-  button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(button)->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
-  button->ink_drop()->SetVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
-  views::InkDrop::UseInkDropForFloodFillRipple(button->ink_drop(),
+  views::InkDrop::Get(button)->SetVisibleOpacity(
+      capture_mode::kInkDropVisibleOpacity);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(button),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/false);
-  button->ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
+  views::InkDrop::Get(button)->SetCreateHighlightCallback(base::BindRepeating(
       [](views::Button* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
+            gfx::SizeF(host->size()),
+            views::InkDrop::Get(host)->GetBaseColor());
         highlight->set_visible_opacity(
             capture_mode::kInkDropHighlightVisibleOpacity);
         return highlight;
       },
       button));
-  button->ink_drop()->SetBaseColor(capture_mode::kInkDropBaseColor);
+  views::InkDrop::Get(button)->SetBaseColor(capture_mode::kInkDropBaseColor);
 
   button->SetImageHorizontalAlignment(ALIGN_CENTER);
   button->SetImageVerticalAlignment(ALIGN_MIDDLE);

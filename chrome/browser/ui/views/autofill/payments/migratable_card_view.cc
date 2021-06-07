@@ -19,6 +19,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
@@ -121,7 +122,8 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // TODO(crbug/867194): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
-        checkbox_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+        views::InkDrop::Get(checkbox_)->SetMode(
+            views::InkDropHost::InkDropMode::OFF);
         checkbox_->SetAssociatedLabel(card_description.get());
       }
       break;

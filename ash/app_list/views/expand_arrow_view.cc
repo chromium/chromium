@@ -24,6 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -141,18 +142,18 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
   // TODO(pbos): Replace ::OnPaint focus painting with FocusRing +
   // HighlightPathGenerator usage.
   SetInstallFocusRingOnFocus(false);
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ExpandArrowHighlightPathGenerator>());
-  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
+  views::InkDrop::UseInkDropWithoutAutoHighlight(views::InkDrop::Get(this),
                                                  /*highlight_on_hover=*/false);
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
+  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         const AppListColorProvider* color_provider =
             AppListColorProvider::Get();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(GetCircleBounds()),
-            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(),
             color_provider->GetRippleAttributesInkDropOpacity());
       },
@@ -367,7 +368,7 @@ void ExpandArrowView::OnButtonPressed() {
   button_pressed_ = true;
   ResetHintingAnimation();
   TransitToFullscreenAllAppsState();
-  ink_drop()->GetInkDrop()->AnimateToState(
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::ACTION_TRIGGERED);
 }
 
