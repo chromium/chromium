@@ -2784,7 +2784,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-focal',
         ],
       },
       'fuchsia-fyi-x64-dbg': {
