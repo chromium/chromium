@@ -2438,7 +2438,7 @@
 <translation id="3619115746895587757">कापाचिनो</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{एउटा एप}other{# वटा एप}}</translation>
 <translation id="362333465072914957">CA ले प्रमाणपत्र जारी गर्ने प्रतीक्षा गर्दै</translation>
-<translation id="3624567683873126087">यन्त्र अनलक गरी Google खातामा साइन इन गर्नुहोस्।</translation>
+<translation id="3624567683873126087">डिभाइस अनलक गरी Google खातामा साइन इन गर्नुहोस्।</translation>
 <translation id="3625481642044239431">अमान्य फाइल चयन गरियो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3626296069957678981">यो Chromebook चार्ज गर्न यससँग मिल्दो Dell ब्याट्री प्रयोग गर्नुहोस्।</translation>
 <translation id="3627320433825461852">1 मिनेट भन्दा कम समय बाँकी</translation>
@@ -3151,7 +3151,7 @@
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4408599188496843485">म&amp;द्दत</translation>
 <translation id="4409697491990005945">सीमान्तहरू</translation>
-<translation id="4410545552906060960">आफ्नो यन्त्र अनलक गर्न पासवर्डको सट्टा सङ्ख्या (PIN) प्रयोग गर्नुहोस्। पछि आफ्नो PIN सेट गर्न सेटिङहरूमा जानुहोस्</translation>
+<translation id="4410545552906060960">आफ्नो डिभाइस अनलक गर्न पासवर्डको सट्टा सङ्ख्या (PIN) प्रयोग गर्नुहोस्। पछि आफ्नो PIN सेट गर्न सेटिङहरूमा जानुहोस्</translation>
 <translation id="4411578466613447185">कोड हस्ताक्षरकर्ता</translation>
 <translation id="4412698727486357573">मद्दत केन्द्र</translation>
 <translation id="4413088271097062326">तपाईं कुन एप चलाउन चाहनुहुन्छ?</translation>
@@ -4042,7 +4042,7 @@
 <translation id="5414566801737831689">तपाईंले भ्रमण गर्नुहुने वेबसाइटहरूको प्रतिमा पढ्नुहोस्</translation>
 <translation id="5417312524372586921">ब्राउजरका विषयवस्तुहरू</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420274697768050645">थप सुरक्षाका निम्ति यन्त्र अनलक गर्न पासवर्ड प्रविष्टि गर्नु पर्ने हुन्छ</translation>
+<translation id="5420274697768050645">थप सुरक्षाका निम्ति डिभाइस अनलक गर्न पासवर्ड प्रविष्टि गर्नु पर्ने हुन्छ</translation>
 <translation id="5420438158931847627">पाठ तथा छविहरूको तिखोपना निर्धारण गर्छ</translation>
 <translation id="5422221874247253874">पहुँचको बिन्दु</translation>
 <translation id="5422781158178868512">माफ गर्नुहोस्, तपाइँको बाह्य भण्डारण चिनिन सकिएन।</translation>
@@ -5483,7 +5483,7 @@
 <translation id="7002055706763150362">Chromebook का लागि स्मार्ट लक सेटअप गर्न Google ले यो तपाईं नै हो भनेर सुनिश्चित गर्नुपर्छ— सुरु गर्न तपाईंको पासवर्ड टाइप गर्नुहोस्।</translation>
 <translation id="7003339318920871147">वेब डाटाबेसहरू</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} वटा फाइल}other{{COUNT} वटा फाइल}}</translation>
-<translation id="7003723821785740825">आफ्नो यन्त्र अनलक गर्ने अझ द्रुत तरिका सेटअप गर्नुहोस्</translation>
+<translation id="7003723821785740825">आफ्नो डिभाइस अनलक गर्ने अझ द्रुत तरिका सेटअप गर्नुहोस्</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">साइटले MIDI प्रयोग गर्न सक्छ</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
@@ -6787,7 +6787,7 @@
 <translation id="8422787418163030046">ट्रे छैन</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8425492902634685834">कार्यपट्टीमा पिन गर्नुहोस्</translation>
-<translation id="8425768983279799676">तपाईं आफ्नो यन्त्र अनलक गर्न आफ्नो PIN प्रयोग गर्न सक्नुहुन्छ।</translation>
+<translation id="8425768983279799676">तपाईं आफ्नो डिभाइस अनलक गर्न आफ्नो PIN प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="8426713856918551002">सक्षम पार्दै</translation>
 <translation id="8427292751741042100">कुनै पनि होस्टमा इम्बेड गरिएको</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
