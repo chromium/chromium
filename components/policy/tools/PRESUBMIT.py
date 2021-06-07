@@ -5,6 +5,9 @@
 import os
 
 
+USE_PYTHON3 = True
+
+
 def RunOtherPresubmit(function_name, input_api, output_api):
   # Apply the PRESUBMIT for components/policy/resources to run the syntax check
   component_resources_path = os.path.join('components', 'policy', 'resources')

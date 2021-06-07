@@ -9,6 +9,8 @@ import sys
 from xml.dom import minidom
 from xml.parsers import expat
 
+USE_PYTHON3 = True
+
 def _GetPolicyTemplates(template_path):
   # Read list of policies in the template. eval() is used instead of a JSON
   # parser because policy_templates.json is not quite JSON, and uses some
@@ -58,7 +60,7 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api):
       try:
         version_path = input_api.os_path.join(root, 'chrome', 'VERSION')
         with open(version_path, "rb") as f:
-          current_version = int(f.readline().split("=")[1])
+          current_version = int(f.readline().split(b"=")[1])
           print ('Checking policies against current version: ' +
             current_version)
       except:
@@ -235,7 +237,7 @@ def _CommonChecks(input_api, output_api):
   syntax_check_path = input_api.os_path.join(
       root, 'components', 'policy', 'tools',
       'syntax_check_policy_template_json.py')
-  affected_files = input_api.AffectedFiles()
+  affected_files = input_api.change.AffectedFiles()
 
   results.extend(_CheckMissingPlaceholders(input_api, output_api,
       template_path))

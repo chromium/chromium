@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-'''python %prog [options]
+'''python3 %(prog)s [options]
 
 Pass at least:
 --chrome-version-file <path to src/chrome/VERSION> or --all-chrome-versions
@@ -10,8 +10,6 @@ Pass at least:
   be one of (win, mac, linux, chromeos, ios)>
 --policy_templates <path to the policy_templates.json input file>.'''
 
-
-from __future__ import with_statement
 
 from argparse import ArgumentParser
 from collections import namedtuple

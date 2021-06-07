@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -15,7 +15,7 @@ generate_extension_admx.py --name <name> --id <id> --schema <schema_file>
 
 Example:
   Download the managed bookmarks extension from
-    http://developer.chrome.com/extensions/examples/extensions/managed_bookmarks.zip
+    https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/mv2-archive/extensions/managed_bookmarks
   to obtain the schema.json file.
 
   generate_extension_admx.py --name 'Managed Bookmarks'
@@ -31,7 +31,6 @@ import sys
 
 from argparse import ArgumentParser
 from xml.dom import minidom
-
 
 class AdmxGenerator(object):
   '''Generates ADMX and ADML templates'''
@@ -233,7 +232,7 @@ class AdmxGenerator(object):
     elif ('$ref' in policy_schema):
       # Instantiate referenced schema.
       referenced_schema = self._schema_map[policy_schema['$ref']]
-      for key, value in referenced_schema.iteritems():
+      for key, value in referenced_schema.items():
         if not key in policy_schema:
           policy_schema[key] = value
 

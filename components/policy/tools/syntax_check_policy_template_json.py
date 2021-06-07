@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -248,7 +248,7 @@ class PolicyTemplateChecker(object):
 
   def _Warning(self, message):
     self.warning_count += 1
-    print message
+    print(message)
 
   def _Error(self,
              message,
@@ -259,9 +259,9 @@ class PolicyTemplateChecker(object):
     error = ''
     if identifier is not None and parent_element is not None:
       error += 'In %s %s: ' % (parent_element, identifier)
-    print error + 'Error: ' + message
+    print(error + 'Error: ' + message)
     if offending_snippet is not None:
-      print '  Offending:', json.dumps(offending_snippet, indent=2)
+      print('  Offending:', json.dumps(offending_snippet, indent=2))
 
   def _CheckContains(self,
                      container,
@@ -434,15 +434,14 @@ class PolicyTemplateChecker(object):
       return any(self._AppearsToContainEmbeddedJson(v) for v in example_value)
     elif isinstance(example_value, dict):
       return any(
-          self._AppearsToContainEmbeddedJson(v)
-          for v in example_value.itervalues())
+          self._AppearsToContainEmbeddedJson(v) for v in example_value.values())
 
   # Checks that there are no duplicate proto paths in device_policy_proto_map.
   def _CheckDevicePolicyProtoMappingUniqueness(self, device_policy_proto_map,
                                                legacy_device_policy_proto_map):
     # Check that device_policy_proto_map does not have duplicate values.
     proto_paths = set()
-    for proto_path in device_policy_proto_map.itervalues():
+    for proto_path in device_policy_proto_map.values():
       if proto_path in proto_paths:
         self._Error(
             "Duplicate proto path '%s' in device_policy_proto_map. Did you set "
@@ -755,7 +754,7 @@ class PolicyTemplateChecker(object):
 
     # Each policy's description should be within the limit.
     desc = self._CheckContains(policy, 'desc', str)
-    if len(desc.decode("UTF-8")) > POLICY_DESCRIPTION_LENGTH_SOFT_LIMIT:
+    if len(desc) > POLICY_DESCRIPTION_LENGTH_SOFT_LIMIT:
       self._Error(
           'Length of description is more than %d characters, which might '
           'exceed the limit of 4096 characters in one of its '
@@ -1630,7 +1629,7 @@ class PolicyTemplateChecker(object):
 
   def _LineError(self, message, line_number):
     self.error_count += 1
-    print 'In line %d: Error: %s' % (line_number, message)
+    print('In line %d: Error: %s' % (line_number, message))
 
   def _LineWarning(self, message, line_number):
     self._Warning('In line %d: Warning: Automatically fixing formatting: %s' %
@@ -1911,7 +1910,7 @@ class PolicyTemplateChecker(object):
               (self.num_policies, self.num_policies_in_groups, self.num_groups,
                (1.0 * self.num_policies_in_groups / self.num_groups)))
       else:
-        print self.num_policies, 'policies, 0 policy groups.'
+        print(self.num_policies, 'policies, 0 policy groups.')
     if self.error_count > 0:
       return 1
     return 0
