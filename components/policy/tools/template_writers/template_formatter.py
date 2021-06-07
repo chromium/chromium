@@ -203,7 +203,7 @@ def main():
   _LANG_PLACEHOLDER = "${lang}"
   assert _LANG_PLACEHOLDER in args.translations
 
-  languages = filter(bool, args.languages.split(','))
+  languages = list(filter(bool, args.languages.split(',')))
   assert _DEFAULT_LANGUAGE in languages
 
   config = _GetWriterConfiguration(args.grit_defines)

@@ -176,8 +176,9 @@ class ADMXWriter(xml_formatted_writer.XMLFormattedWriter,
       display_name: Display name of the category.
       parent_category_name: Name of the parent category. Defaults to None.
     '''
-    existing = filter(lambda e: e.getAttribute('name') == name,
-                      parent.getElementsByTagName('category'))
+    existing = list(
+        filter(lambda e: e.getAttribute('name') == name,
+               parent.getElementsByTagName('category')))
     if existing:
       assert len(existing) == 1
       assert existing[0].getAttribute('name') == name

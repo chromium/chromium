@@ -22,7 +22,15 @@ def _EscapeResource(resource):
   '''
   if resource == None or type(resource) in (int, bool):
     return str(resource)
-  return xml_escape.escape(resource, {"'": "\\'", '"': '\\"', '\\': '\\\\'})
+  return xml_escape.escape(
+      resource,
+      {
+          # Written order is matter to prevent "'" becomes "\\\\'" instead of
+          # "\\'".
+          "\\": "\\\\",
+          "'": "\\'",
+          '"': '\\"',
+      })
 
 
 class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
