@@ -78,8 +78,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
-
-  base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content
