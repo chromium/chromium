@@ -529,13 +529,68 @@ TEST_F(ConversionStorageTest, GetConversionsToReportMultipleTimes_SameResult) {
   EXPECT_TRUE(ReportsEqual(first_call_reports, second_call_reports));
 }
 
-TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin) {
+TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_impressions_per_origin(2);
-  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
-  EXPECT_TRUE(
-      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(7).Build());
+
+  std::vector<StorableImpression> stored_impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(2u, stored_impressions.size());
+  EXPECT_EQ(3u, stored_impressions[0].impression_data());
+  EXPECT_EQ(5u, stored_impressions[1].impression_data());
+}
+
+TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
+  delegate()->set_max_impressions_per_origin(2);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetImpressionOrigin(url::Origin::Create(
+                                     GURL("https://foo.a.example")))
+                                 .SetData(3)
+                                 .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetImpressionOrigin(url::Origin::Create(
+                                     GURL("https://foo.a.example")))
+                                 .SetData(5)
+                                 .Build());
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetImpressionOrigin(url::Origin::Create(
+                                     GURL("https://bar.a.example")))
+                                 .SetData(7)
+                                 .Build());
+
+  std::vector<StorableImpression> stored_impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(3u, stored_impressions.size());
+  EXPECT_EQ(3u, stored_impressions[0].impression_data());
+  EXPECT_EQ(5u, stored_impressions[1].impression_data());
+  EXPECT_EQ(7u, stored_impressions[2].impression_data());
+
+  // This impression shouldn't be stored, because its origin has already hit the
+  // limit of 2.
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetImpressionOrigin(url::Origin::Create(
+                                     GURL("https://foo.a.example")))
+                                 .SetData(9)
+                                 .Build());
+  // This impression should be stored, because its origin hasn't hit the limit
+  // of 2.
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now())
+                                 .SetImpressionOrigin(url::Origin::Create(
+                                     GURL("https://bar.a.example")))
+                                 .SetData(11)
+                                 .Build());
+
+  stored_impressions = storage()->GetActiveImpressions();
+  EXPECT_EQ(4u, stored_impressions.size());
+  EXPECT_EQ(3u, stored_impressions[0].impression_data());
+  EXPECT_EQ(5u, stored_impressions[1].impression_data());
+  EXPECT_EQ(7u, stored_impressions[2].impression_data());
+  EXPECT_EQ(11u, stored_impressions[3].impression_data());
 }
 
 TEST_F(ConversionStorageTest, MaxConversionsPerOrigin) {
