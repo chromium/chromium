@@ -548,6 +548,10 @@ struct AudioInfo {
   uint64 output_volume;
   // Active output device's name.
   string output_device_name;
+  // Active input device's gain in [0, 100].
+  uint32 input_gain;
+  // Active input device's name.
+  string input_device_name;
   // Numbers of underruns.
   uint32 underruns;
   // Numbers of severe underruns.
