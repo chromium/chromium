@@ -85,17 +85,6 @@ TestNavigationObserver::TestNavigationObserver(
                              ignore_uncommitted_navigations) {}
 
 TestNavigationObserver::TestNavigationObserver(
-    const GURL& target_url,
-    MessageLoopRunner::QuitMode quit_mode,
-    bool ignore_uncommitted_navigations)
-    : TestNavigationObserver(nullptr,
-                             1 /* num_of_navigations */,
-                             target_url,
-                             absl::nullopt /* target_error */,
-                             quit_mode,
-                             ignore_uncommitted_navigations) {}
-
-TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
     net::Error target_error,
     MessageLoopRunner::QuitMode quit_mode,
@@ -104,6 +93,17 @@ TestNavigationObserver::TestNavigationObserver(
                              1 /* num_of_navigations */,
                              absl::nullopt,
                              target_error,
+                             quit_mode,
+                             ignore_uncommitted_navigations) {}
+
+TestNavigationObserver::TestNavigationObserver(
+    const GURL& target_url,
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
+    : TestNavigationObserver(nullptr,
+                             1 /* num_of_navigations */,
+                             target_url,
+                             absl::nullopt /* target_error */,
                              quit_mode,
                              ignore_uncommitted_navigations) {}
 

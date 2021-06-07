@@ -66,7 +66,7 @@ struct SystemAppLaunchParams {
 //     a crash report
 //
 // In tests, remember to call FlushSystemWebAppLaunchesForTesting on the same
-// |profile|, or use TestNavigationObserver to wait the navigation.
+// |profile|, or use content::TestNavigationObserver to wait the navigation.
 void LaunchSystemWebAppAsync(
     Profile* profile,
     const SystemAppType type,
