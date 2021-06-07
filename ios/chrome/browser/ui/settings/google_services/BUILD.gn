@@ -172,7 +172,10 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "manage_sync_settings_mediator_unittest.mm" ]
+  sources = [
+    "accounts_table_view_controller_unittest.mm",
+    "manage_sync_settings_mediator_unittest.mm",
+  ]
   deps = [
     ":google_services",
     "//base/test:test_support",
@@ -191,6 +194,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
