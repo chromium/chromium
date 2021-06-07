@@ -13,13 +13,15 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/task_traits.h"
 
 namespace base {
 namespace internal {
 class JobTaskSource;
 class PooledTaskRunnerDelegate;
 }
+
+class TaskTraits;
+enum class TaskPriority : uint8_t;
 
 // Delegate that's passed to Job's worker task, providing an entry point to
 // communicate with the scheduler. To prevent deadlocks, JobDelegate methods
