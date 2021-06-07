@@ -50,8 +50,10 @@ Running test: testAddRuleToStyleSheetBeginning
 Dumping matched rules: 
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 *#test* {    regular
+    box-sizing: border-box;
     box-sizing: border-box;
 }
 *#test* {    regular
@@ -59,9 +61,14 @@ Dumping matched rules:
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -96,15 +103,21 @@ Running test: testAddRuleToStyleSheetEnding
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -112,6 +125,7 @@ Dumping matched rules:
     }
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 Dumping inherited rules: 
 
@@ -142,18 +156,25 @@ Running test: testAddRuleToStyleSheetCenter
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -190,18 +211,25 @@ Running test: testAddRuleToRuleEnding
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -240,18 +268,25 @@ Running test: testAddRuleWithFormatting
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -286,19 +321,26 @@ Running test: testAddRuleToMediaRuleBeginning
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
         content: 'EDITED';
+        content: "EDITED";
     }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -333,20 +375,27 @@ Running test: testAddRuleToMediaRuleCenter
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
     *#test* {    regular
         content: 'EDITED';
+        content: "EDITED";
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -380,15 +429,21 @@ Running test: testAddRuleToMediaRuleEnd
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -397,6 +452,7 @@ Dumping matched rules:
 @media (min-width: 1px)
     *#test* {    regular
         content: 'EDITED';
+        content: "EDITED";
     }
 Dumping inherited rules: 
 

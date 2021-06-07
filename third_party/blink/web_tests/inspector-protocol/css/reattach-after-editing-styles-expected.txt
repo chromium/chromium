@@ -4,6 +4,7 @@ This test checks that styles edited through inspector are correctly shown upon r
 Dumping matched rules: 
 *#test* {    regular
     background-color: blue;
+    background-color: blue;
 }
 Dumping inherited rules: 
 
@@ -22,9 +23,11 @@ CSS.addRule(...) to new stylesheet
 Dumping matched rules: 
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 #inspected, *#test* {    inspector
     height: 1;
+    height: 1px;
 }
 Dumping inherited rules: 
 
@@ -36,9 +39,11 @@ Reattaching devtools
 Dumping matched rules: 
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 #inspected, *#test* {    inspector
     height: 1;
+    height: 1px;
 }
 Dumping inherited rules: 
 

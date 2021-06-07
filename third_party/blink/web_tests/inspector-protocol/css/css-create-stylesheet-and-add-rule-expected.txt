@@ -3,6 +3,7 @@ Style sheet added: regular (stylesheet.css)
 Dumping matched rules: 
 *#inspected* {    regular
     color: red;
+    color: red;
 }
 Dumping inherited rules: 
 Adding a rule to the existing stylesheet.
@@ -15,6 +16,7 @@ Dumping matched rules:
 }
 *#inspected* {    regular
     color: red;
+    color: red;
 }
 Dumping inherited rules: 
 Creating inspector stylesheet.
@@ -26,6 +28,7 @@ Dumping matched rules:
 *#inspected* {    regular
 }
 *#inspected* {    regular
+    color: red;
     color: red;
 }
 *#inspected* {    inspector

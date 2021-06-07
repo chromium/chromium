@@ -109,6 +109,6 @@
       return;
     var allProperties = style.allProperties();
     for (var i = 0; i < allProperties.length; ++i)
-      TestRunner.addResult(allProperties[i].text);
+      TestRunner.addResult(allProperties[i].propertyText);
   }
 })();

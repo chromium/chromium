@@ -3,27 +3,34 @@ Dumping CSS keyframed animations:
 @keyframes animName {
     0% {
         width: 100px;
+        width: 100px;
     }
     10% {
         width: 150px;
+        width: 150px;
     }
     100% {
+        width: 200px;
         width: 200px;
     }
 }
 @keyframes mediaAnim {
     0% {
         opacity: 0;
+        opacity: 0;
     }
     100% {
+        opacity: 1;
         opacity: 1;
     }
 }
 @keyframes styleSheetAnim {
     0% {
         color: red;
+        color: red;
     }
     100% {
+        color: blue;
         color: blue;
     }
 }

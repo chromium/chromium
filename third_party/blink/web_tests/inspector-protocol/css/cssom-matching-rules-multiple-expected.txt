@@ -4,136 +4,178 @@ Running test: testModifyRule
 Original rule:
 *#test* {    regular
     color: red;
+    color: red;
 }
 *#test* {    regular
+    color: green;
     color: green;
 }
 *#test* {    regular
     color: blue;
+    color: blue;
 }
 *#test* {    regular
+    width: 10%;
     width: 10%;
 }
 *#test* {    regular
     width: 20%;
+    width: 20%;
 }
 *#test* {    regular
+    width: 30%;
     width: 30%;
 }
 *#test* {    regular
     width: 40%;
+    width: 40%;
 }
 *#test* {    regular
     width: 50%;
+    width: 50%;
 }
 *#test* {    regular
+    width: 60%;
     width: 60%;
 }
 Mutating 3rd:
 ---------------
 *#test* {    regular
     color: red;
+    color: red;
 }
 *#test* {    regular
+    color: green;
     color: green;
 }
 *#test* {    regular
     color: blue;
+    color: blue;
 }
 *#test* {    regular
+    color: red;
     color: red;
 }
 *#test* {    regular
     width: 20%;
+    width: 20%;
 }
 *#test* {    regular
+    width: 30%;
     width: 30%;
 }
 *#test* {    regular
     width: 40%;
+    width: 40%;
 }
 *#test* {    regular
     width: 50%;
+    width: 50%;
 }
 *#test* {    regular
+    width: 60%;
     width: 60%;
 }
 Mutating 4th:
 --------------
 *#test* {    regular
     color: red;
-}
-*#test* {    regular
-    color: green;
-}
-*#test* {    regular
-    color: blue;
-}
-*#test* {    regular
     color: red;
 }
 *#test* {    regular
     color: green;
+    color: green;
 }
 *#test* {    regular
+    color: blue;
+    color: blue;
+}
+*#test* {    regular
+    color: red;
+    color: red;
+}
+*#test* {    regular
+    color: green;
+    color: green;
+}
+*#test* {    regular
+    width: 30%;
     width: 30%;
 }
 *#test* {    regular
     width: 40%;
+    width: 40%;
 }
 *#test* {    regular
     width: 50%;
+    width: 50%;
 }
 *#test* {    regular
+    width: 60%;
     width: 60%;
 }
 Mutating 5th:
 --------------
 *#test* {    regular
     color: red;
-}
-*#test* {    regular
-    color: green;
-}
-*#test* {    regular
-    color: blue;
-}
-*#test* {    regular
     color: red;
 }
 *#test* {    regular
     color: green;
+    color: green;
 }
 *#test* {    regular
+    color: blue;
+    color: blue;
+}
+*#test* {    regular
+    color: red;
+    color: red;
+}
+*#test* {    regular
+    color: green;
+    color: green;
+}
+*#test* {    regular
+    color: blue;
     color: blue;
 }
 *#test* {    regular
     width: 40%;
+    width: 40%;
 }
 *#test* {    regular
     width: 50%;
+    width: 50%;
 }
 *#test* {    regular
+    width: 60%;
     width: 60%;
 }
 Delete first 3:
 ---------------
 *#test* {    regular
     color: red;
+    color: red;
 }
 *#test* {    regular
+    color: green;
     color: green;
 }
 *#test* {    regular
     color: blue;
+    color: blue;
 }
 *#test* {    regular
+    width: 40%;
     width: 40%;
 }
 *#test* {    regular
     width: 50%;
+    width: 50%;
 }
 *#test* {    regular
+    width: 60%;
     width: 60%;
 }
 

@@ -50,15 +50,21 @@ Running test: testBasicSetStyle
 Dumping matched rules: 
 *#test* {    regular
     content: 'EDITED';
+    content: "EDITED";
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -97,19 +103,26 @@ Dumping matched rules:
     color: green;
     padding: 0 4px;
     cursor: pointer;
+    color: green;
     padding-top: 0px;
     padding-right: 4px;
     padding-bottom: 0px;
     padding-left: 4px;
+    cursor: pointer;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -146,19 +159,26 @@ Dumping matched rules:
     color: green;
     padding: 0 6px;
     cursor: pointer;
+    color: green;
     padding-top: 0px;
     padding-right: 6px;
     padding-bottom: 0px;
     padding-left: 6px;
+    cursor: pointer;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -195,19 +215,26 @@ Dumping matched rules:
     color: green;
     padding: 0 8px;
     cursor: pointer;
+    color: green;
     padding-top: 0px;
     padding-right: 8px;
     padding-bottom: 0px;
     padding-left: 8px;
+    cursor: pointer;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -220,15 +247,21 @@ Expected protocol error: Failed applying edit #0: SyntaxError Style text is not 
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -241,15 +274,21 @@ Expected protocol error: Failed applying edit #0: SyntaxError Style text is not 
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -262,15 +301,21 @@ Expected protocol error: Failed applying edit #0: SyntaxError Style text is not 
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -307,16 +352,23 @@ Running test: testSetStyleInMedia
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
         content: 'EDITED';
+        color: red;
+        content: "EDITED";
         color: red;
     }
 @media (min-width: 1px)
@@ -349,10 +401,15 @@ Running test: testDeleteStyleBody
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
+    color: blue;
+    display: flex;
+    line-height: 1;
+    font-family: Arial;
     color: blue;
     display: flex;
 }
@@ -369,15 +426,21 @@ Expected protocol error: Specified range is out of bounds
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)
@@ -390,15 +453,21 @@ Expected protocol error: Failed applying edit #0: SyntaxError Style text is not 
 Dumping matched rules: 
 *#test* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#test* {    regular
     line-height: 1;
     font-family: "Arial";
     color: blue;
     display: flex;
+    line-height: 1;
+    font-family: Arial;
+    color: blue;
+    display: flex;
 }
 @media (min-width: 1px)
     *#test* {    regular
+        font-size: 200%;
         font-size: 200%;
     }
 @media (min-width: 1px)

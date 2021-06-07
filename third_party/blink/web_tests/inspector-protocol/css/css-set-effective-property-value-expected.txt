@@ -4,9 +4,13 @@ Dumping inline style:
     padding-top: 55px;
     margin-top: 33px !important;
     --x: foo;
+    padding-top: 55px;
+    --x: foo;
+    margin-top: 33px !important;
 }
 Dumping matched rules: 
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -15,10 +19,14 @@ Dumping matched rules:
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -30,8 +38,12 @@ Running test: testBasicPropertyChange
     padding-top: 55px;
     margin-top: 33px !important;
     --x: foo;
+    padding-top: 55px;
+    --x: foo;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -40,10 +52,14 @@ Running test: testBasicPropertyChange
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 101px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 101px;
         margin-top: 15px !important;
@@ -54,8 +70,12 @@ Running test: testChangePropertyInShortHand
     padding-top: 55px;
     margin-top: 33px !important;
     --x: foo;
+    padding-top: 55px;
+    --x: foo;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -64,10 +84,14 @@ Running test: testChangePropertyInShortHand
     padding-right: 20px;
     padding-bottom: 101px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -78,8 +102,12 @@ Running test: testChangeImportantProperty
     padding-top: 55px;
     margin-top: 33px !important;
     --x: foo;
+    padding-top: 55px;
+    --x: foo;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 101px !important;
     margin-left: 101px !important;
 }
 *#inspected* {    regular
@@ -88,10 +116,14 @@ Running test: testChangeImportantProperty
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -102,8 +134,12 @@ Running test: testChangeInlineProperty
     padding-top: 101px;
     margin-top: 33px !important;
     --x: foo;
+    padding-top: 101px;
+    --x: foo;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -112,10 +148,14 @@ Running test: testChangeInlineProperty
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -126,8 +166,12 @@ Running test: testChangeInlineImportantProperty
     padding-top: 55px;
     margin-top: 101px !important;
     --x: foo;
+    padding-top: 55px;
+    --x: foo;
+    margin-top: 101px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -136,10 +180,14 @@ Running test: testChangeInlineImportantProperty
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -151,8 +199,13 @@ Running test: testChangeMissingProperty
     margin-top: 33px !important;
     --x: foo;
     margin-bottom: 101px;
+    padding-top: 55px;
+    --x: foo;
+    margin-bottom: 101px;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -161,10 +214,14 @@ Running test: testChangeMissingProperty
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
@@ -174,11 +231,14 @@ Running test: testAppendWithSeparator
 Dumping inline style: 
 {
     padding-left: 10px;
+    padding-left: 10px;
 }
 Dumping matched rules: 
 Dumping inherited rules: 
 Resulting styles
 {
+    padding-left: 10px;
+    padding-right: 101px;
     padding-left: 10px;
     padding-right: 101px;
 }
@@ -188,8 +248,12 @@ Running test: testChangeCustomProperty
     padding-top: 55px;
     margin-top: 33px !important;
     --x: bar;
+    padding-top: 55px;
+    --x:  bar;
+    margin-top: 33px !important;
 }
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -198,10 +262,14 @@ Running test: testChangeCustomProperty
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
         padding-left: 5px;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;

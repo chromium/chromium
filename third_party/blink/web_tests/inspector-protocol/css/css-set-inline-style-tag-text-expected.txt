@@ -10,6 +10,7 @@ The test verifies functionality of protocol method CSS.setStyleTexts and DOM.und
 Dumping matched rules: 
 *#test* {    regular
     color: blue;
+    color: blue;
 }
 Dumping inherited rules: 
 ==== Style sheet text after clearing the stylesheet and DOM.Undo ====

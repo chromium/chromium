@@ -19,9 +19,12 @@ Dumping inline style:
 {
     padding-top: 55px;
     margin-top: 33px !important;
+    padding-top: 55px;
+    margin-top: 33px !important;
 }
 Dumping matched rules: 
 *#inspected* {    regular
+    margin-left: 10px !important;
     margin-left: 10px !important;
 }
 *#inspected* {    regular
@@ -30,6 +33,7 @@ Dumping matched rules:
     padding-right: 20px;
     padding-bottom: 30px;
     padding-left: 40px;
+    padding-top: 50px;
 }
 @media (min-width: 1px)
     *#inspected* {    regular
@@ -37,10 +41,16 @@ Dumping matched rules:
         margin-left: 20px;
         padding-left: 10px;
         margin-top: 15px !important;
+        margin-left: 20px;
+        padding-left: 10px;
+        margin-top: 15px !important;
     }
 Dumping inherited rules: 
     padding-top: 20px;
+    padding-top: 20px;
 *#parent-div* {    regular
+    width: 100px;
+    contain: size layout style;
     width: 100px;
     contain: size layout style;
 }

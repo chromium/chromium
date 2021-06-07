@@ -9,6 +9,7 @@ Dumping #inner node styles in shadow root:
 Dumping matched rules: 
 *.red* {    regular
     color: red;
+    color: red;
 }
 Dumping inherited rules: 
 

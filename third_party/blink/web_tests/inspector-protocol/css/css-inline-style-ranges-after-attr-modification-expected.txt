@@ -30,6 +30,10 @@ Verify inline style reports proper ranges after attr modification
             text : color: blue;
             value : blue
         }
+        [1] : {
+            name : color
+            value : blue
+        }
     ]
     cssText : color: blue;
     range : {

@@ -11,6 +11,7 @@ Selectors matching the (#inspected) node: [#inspected]
 Running: testAddProperty
 === Added rule modified ===
 width: 100%;
+width: 100%;
 === Selector changed ===
 body {
     width: 100%;
@@ -19,5 +20,6 @@ Selectors matching the (#inspected) node: []
 
 Running: testModifyInlineStyle
 === Inline style modified ===
+font-size: 14px;
 font-size: 14px;
 

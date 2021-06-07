@@ -5,11 +5,14 @@ Running test: testModifyRule
 Original rule:
 *#modifyRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#modifyRule* {    regular
     height: 100%;
+    height: 100%;
 }
 *#modifyRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
@@ -17,11 +20,15 @@ Modified rule 1:
 *#modifyRule* {    regular
     box-sizing: border-box;
     color: red;
+    box-sizing: border-box;
+    color: red;
 }
 *#modifyRule* {    regular
     height: 100%;
+    height: 100%;
 }
 *#modifyRule* {    regular
+    width: 100%;
     width: 100%;
 }
 ---------------
@@ -29,11 +36,16 @@ Modified rule 3:
 *#modifyRule* {    regular
     box-sizing: border-box;
     color: red;
+    box-sizing: border-box;
+    color: red;
 }
 *#modifyRule* {    regular
     height: 100%;
+    height: 100%;
 }
 *#modifyRule* {    regular
+    width: 100%;
+    color: blue;
     width: 100%;
     color: blue;
 }
@@ -42,12 +54,18 @@ Modified rule 2:
 *#modifyRule* {    regular
     box-sizing: border-box;
     color: red;
+    box-sizing: border-box;
+    color: red;
 }
 *#modifyRule* {    regular
     height: 100%;
     color: green;
+    height: 100%;
+    color: green;
 }
 *#modifyRule* {    regular
+    width: 100%;
+    color: blue;
     width: 100%;
     color: blue;
 }
@@ -56,11 +74,16 @@ Restored rule 2:
 *#modifyRule* {    regular
     box-sizing: border-box;
     color: red;
+    box-sizing: border-box;
+    color: red;
 }
 *#modifyRule* {    regular
     height: 100%;
+    height: 100%;
 }
 *#modifyRule* {    regular
+    width: 100%;
+    color: blue;
     width: 100%;
     color: blue;
 }
@@ -68,11 +91,14 @@ Restored rule 2:
 Restored rule 1,3:
 *#modifyRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#modifyRule* {    regular
     height: 100%;
+    height: 100%;
 }
 *#modifyRule* {    regular
+    width: 100%;
     width: 100%;
 }
 
@@ -80,27 +106,34 @@ Running test: testInsertFirstRule
 Original rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
 After inserted rule:
 *#insertRule* {    regular
     color: red;
+    color: red;
 }
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
 Restored rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 
@@ -108,27 +141,34 @@ Running test: testInsertMiddleRule
 Original rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
 After inserted rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
     color: red;
+    color: red;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
 Restored rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 
@@ -136,27 +176,34 @@ Running test: testInsertLastRule
 Original rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 --------------
 After inserted rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
     width: 100%;
+    width: 100%;
 }
 *#insertRule* {    regular
+    color: red;
     color: red;
 }
 --------------
 Restored rule:
 *#insertRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#insertRule* {    regular
+    width: 100%;
     width: 100%;
 }
 
@@ -164,13 +211,16 @@ Running test: testRemoveRule
 Original rule:
 *#removeRule* {    regular
     box-sizing: border-box;
+    box-sizing: border-box;
 }
 *#removeRule* {    regular
+    width: 100%;
     width: 100%;
 }
 -------------------
 After remove rule 1:
 *#removeRule* {    regular
+    width: 100%;
     width: 100%;
 }
 -------------------
