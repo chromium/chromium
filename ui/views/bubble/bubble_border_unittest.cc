@@ -376,4 +376,481 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
   }
 }
 
+TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
+  views::BubbleBorder border(BubbleBorder::TOP_LEFT,
+                             BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+  const gfx::Insets kInsets = border.GetInsets();
+  border.set_visible_arrow(true);
+
+  constexpr gfx::Size kContentSize(200, 150);
+
+  // Anchor position.
+  constexpr gfx::Point kAnchorOrigin(100, 100);
+
+  // Anchor smaller than contents.
+  constexpr gfx::Rect kAnchor1(kAnchorOrigin, gfx::Size(40, 50));
+
+  // Anchor larger than contents.
+  constexpr gfx::Rect kAnchor2(kAnchorOrigin, gfx::Size(400, 300));
+
+  // Anchor extremely small.
+  constexpr gfx::Rect kAnchor3(kAnchorOrigin, gfx::Size(10, 12));
+
+  // TODO(dfried): in all of these tests, the border is factored into the height
+  // of the bubble an extra time, because of the fact that the arrow doesn't
+  // properly overlap the border in the calculation (though it does visually).
+  // Please fix at some point.
+
+  // TOP_LEFT:
+
+  border.set_arrow(BubbleBorder::TOP_LEFT);
+  gfx::Rect bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(kAnchor2.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_GT(kAnchor3.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  // TOP_CENTER:
+
+  border.set_arrow(BubbleBorder::TOP_CENTER);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(kAnchor1.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(kAnchor2.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(kAnchor3.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  // TOP_RIGHT:
+
+  border.set_arrow(BubbleBorder::TOP_RIGHT);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(
+      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_EQ(
+      kAnchor2.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.bottom() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+  EXPECT_LT(
+      kAnchor3.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  // BOTTOM_LEFT:
+
+  border.set_arrow(BubbleBorder::BOTTOM_LEFT);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(kAnchor2.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_GT(kAnchor3.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+
+  // BOTTOM_CENTER:
+
+  border.set_arrow(BubbleBorder::BOTTOM_CENTER);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(kAnchor1.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(kAnchor2.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(kAnchor3.bottom_center().x() - bounds.width() / 2, bounds.x());
+
+  // BOTTOM_RIGHT:
+
+  border.set_arrow(BubbleBorder::BOTTOM_RIGHT);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(
+      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor2.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_EQ(
+      kAnchor2.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.height() + kInsets.top() +
+                BubbleBorder::kVisibleArrowLength +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.height());
+  EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
+  EXPECT_EQ(kAnchor3.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
+  EXPECT_LT(
+      kAnchor3.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
+      bounds.right());
+
+  // LEFT_TOP:
+
+  border.set_arrow(BubbleBorder::LEFT_TOP);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_EQ(kAnchor1.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_EQ(kAnchor2.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_GT(kAnchor3.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  // LEFT_CENTER:
+
+  // Because the shadow counts as part of the bounds, the shadow offset (which
+  // is applied vertically) will affect the vertical positioning of a bubble
+  // which is placed next to the anchor by a similar amount.
+  border.set_arrow(BubbleBorder::LEFT_CENTER);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_NEAR(kAnchor1.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_NEAR(kAnchor2.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_NEAR(kAnchor3.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  // LEFT_BOTTOM:
+
+  border.set_arrow(BubbleBorder::LEFT_BOTTOM);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_EQ(
+      kAnchor1.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_EQ(
+      kAnchor2.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.right() + BubbleBorder::kVisibleArrowGap +
+                BubbleBorder::kBorderThicknessDip,
+            bounds.x());
+  EXPECT_LT(
+      kAnchor3.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+
+  // RIGHT_TOP:
+
+  border.set_arrow(BubbleBorder::RIGHT_TOP);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_EQ(kAnchor1.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_EQ(kAnchor2.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_GT(kAnchor3.y() - kInsets.top() + BubbleBorder::kBorderThicknessDip,
+            bounds.y());
+
+  // // RIGHT_CENTER:
+
+  // Because the shadow counts as part of the bounds, the shadow offset (which
+  // is applied vertically) will affect the vertical positioning of a bubble
+  // which is placed next to the anchor by a similar amount.
+  border.set_arrow(BubbleBorder::RIGHT_CENTER);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_NEAR(kAnchor1.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_NEAR(kAnchor2.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_NEAR(kAnchor3.right_center().y() - bounds.height() / 2, bounds.y(),
+              BubbleBorder::kShadowVerticalOffset);
+
+  // RIGHT_BOTTOM:
+
+  border.set_arrow(BubbleBorder::RIGHT_BOTTOM);
+  bounds = border.GetBounds(kAnchor1, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor1.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_EQ(
+      kAnchor1.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+
+  bounds = border.GetBounds(kAnchor2, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor2.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_EQ(
+      kAnchor2.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+
+  // Too small of an anchor view will shift the bubble to make sure the arrow
+  // is not too close to the edge of the bubble.
+  bounds = border.GetBounds(kAnchor3, kContentSize);
+  EXPECT_EQ(kContentSize.width() + kInsets.right() +
+                BubbleBorder::kVisibleArrowLength,
+            bounds.width());
+  EXPECT_EQ(kContentSize.height() + kInsets.height(), bounds.height());
+  EXPECT_EQ(kAnchor3.x() - BubbleBorder::kVisibleArrowGap -
+                BubbleBorder::kBorderThicknessDip,
+            bounds.right());
+  EXPECT_LT(
+      kAnchor3.bottom() + kInsets.bottom() - BubbleBorder::kBorderThicknessDip,
+      bounds.bottom());
+}
+
 }  // namespace views

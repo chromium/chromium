@@ -86,6 +86,21 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static constexpr int kShadowBlur = 6;
   static constexpr int kShadowVerticalOffset = 2;
 
+  // Space between the anchor view and a visible arrow if one is present.
+  static constexpr int kVisibleArrowGap = 6;
+
+  // Length of the visible arrow (distance from the bubble to the tip of the
+  // arrow) if one is present.
+  static constexpr int kVisibleArrowLength = 8;
+
+  // Radius (half-width) of the visible arrow, when one is present.
+  static constexpr int kVisibleArrowRadius = 6;
+
+  // Distances between the edge of the bubble widget and the edge of the visible
+  // arrow if one is present.
+  static constexpr int kVisibleArrowHorizontalBuffer = 16;
+  static constexpr int kVisibleArrowVerticalBuffer = 12;
+
   BubbleBorder(Arrow arrow, Shadow shadow, SkColor color);
   ~BubbleBorder() override;
 
@@ -156,6 +171,9 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   void set_arrow(Arrow arrow) { arrow_ = arrow; }
   Arrow arrow() const { return arrow_; }
 
+  void set_visible_arrow(bool visible_arrow) { visible_arrow_ = visible_arrow; }
+  bool visible_arrow() const { return visible_arrow_; }
+
   // Get the shadow type.
   Shadow shadow() const { return shadow_; }
 
@@ -207,6 +225,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetSizeForContentsSizeTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetBoundsOriginTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, ShadowTypes);
+  FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, VisibleArrowSizesAreConsistent);
 
   // Returns the shadows based on |shadow_elevation| to use for painting the
   // border and shadow, and for getting insets. This is only used for MD
@@ -245,11 +264,19 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // border.
   void PaintNoShadowLegacy(const View& view, gfx::Canvas* canvas);
 
+  // Paint a visible arrow pointing to the anchor region.
+  void PaintVisibleArrow(const View& view, gfx::Canvas* canvas);
+
   Arrow arrow_;
   int arrow_offset_;
   // Corner radius for the bubble border. If supplied the border will use
   // material design.
   int corner_radius_ = 0;
+
+  // Whether a visible arrow should be present.
+  bool visible_arrow_ = false;
+  // Cached arrow bounding box, calculated when bounds are calculated.
+  mutable gfx::Rect visible_arrow_rect_;
 
   Shadow shadow_;
   // Elevation for the MD shadow.
