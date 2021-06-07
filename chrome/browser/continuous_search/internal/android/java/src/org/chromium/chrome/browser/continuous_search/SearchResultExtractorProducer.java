@@ -74,6 +74,8 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupLabel.length; i++) {
+            if (isAdGroup[i]) continue;
+
             List<PageItem> results = new ArrayList<PageItem>();
             Set<GURL> groupUrls = new HashSet<>();
             for (int j = 0; j < groupSize[i]; j++) {

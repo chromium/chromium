@@ -91,11 +91,13 @@ public class SearchResultExtractorProducerTest {
         GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
         GURL url3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_2);
         GURL url4 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_3);
+        GURL url5 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
         mSearchResultProducer.onResultsAvailable(mTestUrl, TEST_QUERY, TEST_RESULT_TYPE,
-                new String[] {"Foo", "Bar"}, new boolean[] {false, true}, new int[] {1, 3},
-                new String[] {"Foo.com 1", "Bar.com 1", "Bar.com 2", "Bar.com 3"},
-                new GURL[] {url1, url2, url3, url4});
+                new String[] {"Foo", "Bar", "Baz"}, new boolean[] {false, false, true},
+                new int[] {1, 3, 1},
+                new String[] {"Foo.com 1", "Bar.com 1", "Bar.com 2", "Bar.com 3", "Baz.com 1"},
+                new GURL[] {url1, url2, url3, url4, url5});
 
         if (cancelled) {
             verify(mListenerMock, never()).onResult(any());
@@ -110,7 +112,7 @@ public class SearchResultExtractorProducerTest {
         results2.add(new PageItem(url2, "Bar.com 1"));
         results2.add(new PageItem(url3, "Bar.com 2"));
         results2.add(new PageItem(url4, "Bar.com 3"));
-        groups.add(new PageGroup("Bar", true, results2));
+        groups.add(new PageGroup("Bar", false, results2));
 
         verify(mListenerMock, times(1))
                 .onResult(new ContinuousNavigationMetadata(
