@@ -126,11 +126,6 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
   }
 
   ++num_cached_new_items_;
-  if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-    ProcessNewItem(new_paint_artifact_->GetDisplayItemList().AppendByMoving(
-        current_paint_artifact_->GetDisplayItemList()[cached_item]));
-  }
-
   next_item_to_match_ = cached_item + 1;
   // Items before |next_item_to_match_| have been copied so we don't need to
   // index them.
@@ -147,6 +142,9 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
     // painting is the same as the cached one.
     return false;
   }
+
+  ProcessNewItem(new_paint_artifact_->GetDisplayItemList().AppendByMoving(
+      current_paint_artifact_->GetDisplayItemList()[cached_item]));
 
   return true;
 }
@@ -168,6 +166,7 @@ bool PaintController::UseCachedSubsequenceIfPossible(
     // this one. The ancestor subsequence is supposed to have already "copied",
     // so we should let the client continue to actually paint the descendant
     // subsequences without "copying".
+    ++num_cached_new_subsequences_;
     return false;
   }
 
@@ -564,6 +563,7 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
         markers.client,
         markers.start_chunk_index + new_start_chunk_index - start_chunk_index,
         markers.end_chunk_index + new_start_chunk_index - start_chunk_index});
+    ++num_cached_new_subsequences_;
   }
 
   EndSubsequence(client, new_subsequence_index, new_start_chunk_index);

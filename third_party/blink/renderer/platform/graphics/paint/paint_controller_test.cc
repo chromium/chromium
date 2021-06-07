@@ -1291,6 +1291,9 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
       DrawRect(context, content2b, kForegroundType, IntRect(100, 200, 50, 200));
     }
   }
+
+  EXPECT_EQ(0u, NumCachedNewItems());
+  EXPECT_EQ(0u, NumCachedNewSubsequences());
   CommitAndFinishCycle();
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
@@ -1324,6 +1327,8 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
   EXPECT_TRUE(
       SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container2));
 
+  EXPECT_EQ(7u, NumCachedNewItems());
+  EXPECT_EQ(6u, NumCachedNewSubsequences());
   CommitAndFinishCycle();
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
@@ -1358,6 +1363,8 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
   EXPECT_TRUE(
       SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container1));
 
+  EXPECT_EQ(7u, NumCachedNewItems());
+  EXPECT_EQ(6u, NumCachedNewSubsequences());
   CommitAndFinishCycle();
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
