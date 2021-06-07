@@ -12,6 +12,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+constexpr CGFloat kMarginBetweenContents = 12;
+}  // namespace
+
 @implementation SyncScreenViewController
 
 @dynamic delegate;
@@ -29,11 +33,44 @@
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
 
-  // Add sync screen-specific content and its constraints.
+  // Add sync screen-specific content
+  UILabel* contentText = [self createContentText];
+  [self.specificContentView addSubview:contentText];
+
+  UIButton* advanceSyncSettingsButton = [self createAdvanceSyncSettingsButton];
+  [self.specificContentView addSubview:advanceSyncSettingsButton];
+
+  // Sync screen-specific constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [contentText.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
+    [contentText.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [contentText.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
+    [advanceSyncSettingsButton.topAnchor
+        constraintEqualToAnchor:contentText.bottomAnchor
+                       constant:kMarginBetweenContents],
+    [advanceSyncSettingsButton.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [advanceSyncSettingsButton.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
+    [advanceSyncSettingsButton.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
+  ]];
+
+  [super viewDidLoad];
+}
+
+#pragma mark - Private
+
+// Creates and configures the text of sync screen
+- (UILabel*)createContentText {
   UILabel* label = [[UILabel alloc] init];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.numberOfLines = 0;
-  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.textColor = [UIColor colorNamed:kGrey600Color];
 
   label.textAlignment = NSTextAlignmentCenter;
   label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -45,22 +82,31 @@
   } else {
     label.text = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT);
   }
+  return label;
+}
 
-  [self.specificContentView addSubview:label];
+// Creates and configures the sync settings button
+- (UIButton*)createAdvanceSyncSettingsButton {
+  UIButton* button = [[UIButton alloc] init];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.titleLabel.adjustsFontSizeToFitWidth = YES;
+  [button.titleLabel
+      setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
+  [button setTitle:l10n_util::GetNSString(
+                       IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)
+          forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorNamed:kBlueColor]
+               forState:UIControlStateNormal];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [label.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.specificContentView
-                                                 .topAnchor],
-    [label.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [label.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [label.bottomAnchor
-        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
-  ]];
+  [button addTarget:self
+                action:@selector(showAdvanceSyncSettings)
+      forControlEvents:UIControlEventTouchUpInside];
+  return button;
+}
 
-  [super viewDidLoad];
+// Called when the sync settings button is tapped
+- (void)showAdvanceSyncSettings {
+  [self.delegate showSyncSettings];
 }
 
 @end

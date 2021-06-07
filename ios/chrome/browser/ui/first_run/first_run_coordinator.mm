@@ -10,6 +10,8 @@
 #include "base/notreached.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
@@ -98,6 +100,14 @@
   self.childCoordinator = nil;
   self.screensSkipped = YES;
   [self.delegate willFinishPresentingScreens];
+}
+
+- (void)skipAllAndShowSyncSettings {
+  [self skipAll];
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [handler
+      showAdvancedSigninSettingsFromViewController:self.baseViewController];
 }
 
 #pragma mark - Helper

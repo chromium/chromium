@@ -14,6 +14,9 @@
 // Called when user want to skip all screens after.
 - (void)skipAll;
 
+// Called when the user click on the button to choose sync settings
+- (void)skipAllAndShowSyncSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_DELEGATE_H_

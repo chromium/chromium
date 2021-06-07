@@ -364,7 +364,7 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _subtitleLabel.numberOfLines = 0;
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
     _subtitleLabel.text = self.subtitleText;
     _subtitleLabel.textAlignment = NSTextAlignmentCenter;
     _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;

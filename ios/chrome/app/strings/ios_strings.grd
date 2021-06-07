@@ -876,6 +876,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_MINOR_MODE" desc="Content string on the sync screen presented to the user on First Run for minor and family link users [iOS only]">
         Google may use your history to personalize Search and other Google services
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS" desc="Label of the button which open advance sync settings screen [iOS only]">
+        Choose What to Sync
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION" desc="The primary action string on the sync screen presented to the user on First Run [iOS only]">
         Turn on Sync
       </message>
@@ -886,7 +889,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Sync your passwords, history, and more on all your devices
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE" desc="Title on the sync screen presented to the user on First Run [iOS only]">
-          Keep Your Devices in Sync
+        Keep Your Devices in Sync
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON" desc="The label on the continue button of the welcome screen presented to the user on First Run [iOS only]">
         Accept and Continue

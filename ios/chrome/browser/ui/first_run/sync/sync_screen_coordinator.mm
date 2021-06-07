@@ -107,7 +107,7 @@
 }
 
 - (void)showSyncSettings {
-  // TODO(crbug.com/1189840): show sync settings.
+  [self.delegate skipAllAndShowSyncSettings];
 }
 
 #pragma mark - Private
