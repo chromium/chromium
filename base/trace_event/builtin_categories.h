@@ -151,6 +151,7 @@
   X("stadia_rtc")                                                        \
   X("startup")                                                           \
   X("sync")                                                              \
+  X("system_apps")                                                       \
   X("test_gpu")                                                          \
   X("thread_pool")                                                       \
   X("toplevel")                                                          \

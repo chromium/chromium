@@ -100,6 +100,9 @@ enum class SystemAppType {
   // 5. Use web_app::LaunchSystemWebAppAsync to launch your SWA (with the type
   //    added above). This provides extra safety in edge cases (e.g. when in
   //    incognito or guest sessions).
+  //
+  // 6. Update kMaxValue.
+  kMaxValue = OS_FEEDBACK
 };
 
 }  // namespace web_app

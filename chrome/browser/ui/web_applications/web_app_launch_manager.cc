@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -58,6 +59,10 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace web_app {
 
 namespace {
@@ -90,6 +95,33 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   if (capturing_system_app_type &&
       (!browser || !web_app::IsBrowserForSystemWebApp(
                        browser, capturing_system_app_type.value()))) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* user_manager = user_manager::UserManager::Get();
+    bool is_kiosk = user_manager && user_manager->IsLoggedInAsAnyKioskApp();
+    AppBrowserController* app_controller = browser->app_controller();
+    WebAppProvider* web_app_provider = WebAppProvider::Get(browser->profile());
+    TRACE_EVENT_INSTANT(
+        "system_apps", "BadNavigate", [&](perfetto::EventContext ctx) {
+          auto* bad_navigate =
+              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                  ->set_chrome_web_app_bad_navigate();
+          bad_navigate->set_is_kiosk(is_kiosk);
+          bad_navigate->set_has_hosted_app_controller(!!app_controller);
+          bad_navigate->set_app_name(browser->app_name());
+          if (app_controller && app_controller->system_app_type()) {
+            bad_navigate->set_system_app_type(
+                static_cast<uint32_t>(*app_controller->system_app_type()));
+          }
+          bad_navigate->set_web_app_provider_registry_ready(
+              web_app_provider->on_registry_ready().is_signaled());
+          bad_navigate->set_system_web_app_manager_synchronized(
+              web_app_provider->system_web_app_manager()
+                  .on_apps_synchronized()
+                  .is_signaled());
+        });
+    UMA_HISTOGRAM_ENUMERATION("WebApp.SystemApps.BadNavigate.Type",
+                              capturing_system_app_type.value());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return nullptr;
   }
 

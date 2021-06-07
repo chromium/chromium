@@ -135,6 +135,15 @@ message ChromeHashedPerformanceMark {
   optional string mark = 4;
 }
 
+message ChromeWebAppBadNavigate {
+  optional bool is_kiosk = 1;
+  optional bool has_hosted_app_controller = 2;
+  optional string app_name = 3;
+  optional uint32 system_app_type = 4;
+  optional bool web_app_provider_registry_ready = 5;
+  optional bool system_web_app_manager_synchronized = 6;
+}
+
 // These IDs are generated at compile time and differ for each chrome version.
 // IDs are stable on for a given chrome version but are changing when resources
 // are added or removed to chrome.
@@ -144,7 +153,7 @@ message ResourceBundle {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1017
+  // Next ID: 1018
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -176,5 +185,7 @@ message ChromeTrackEvent {
     // reserved 1012 to 1015.
 
     optional ResourceBundle resource_bundle = 1016;
+
+    optional ChromeWebAppBadNavigate chrome_web_app_bad_navigate = 1017;
   }
 }
