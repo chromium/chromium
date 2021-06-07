@@ -83,7 +83,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // Transient windows are set up after window init, so remove them here.
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
-      arc::GetWindowTaskId(window).has_value() ||
+      arc::GetWindowTaskOrSessionId(window).has_value() ||
       crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return;
@@ -203,7 +203,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // Transient windows are set up after window init, so remove them here.
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
-      arc::GetWindowTaskId(window).has_value() ||
+      arc::GetWindowTaskOrSessionId(window).has_value() ||
       crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return std::string();

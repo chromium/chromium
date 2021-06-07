@@ -85,9 +85,11 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
 
 void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
     aura::Window* window) {
-  auto task_id = arc::GetWindowTaskId(window);
-  if (!task_id.has_value() || *task_id == arc::kSystemWindowTaskId)
+  auto task_or_session_id = arc::GetWindowTaskOrSessionId(window);
+  if (!task_or_session_id.has_value() ||
+      *task_or_session_id == arc::kSystemWindowTaskId) {
     return;
+  }
 
   // Attach window to multi-user manager now to let it manage visibility state
   // of the ARC window correctly.
@@ -301,18 +303,18 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
 
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     aura::Window* window) {
-  auto task_id = arc::GetWindowTaskId(window);
-  if (!task_id.has_value())
+  auto task_or_session_id = arc::GetWindowTaskOrSessionId(window);
+  if (!task_or_session_id.has_value())
     return;
 
   // System windows are also arc apps.
   window->SetProperty(aura::client::kAppType,
                       static_cast<int>(ash::AppType::ARC_APP));
 
-  if (*task_id == arc::kSystemWindowTaskId)
+  if (*task_or_session_id == arc::kSystemWindowTaskId)
     return;
 
-  auto it = task_id_to_arc_app_window_info_.find(*task_id);
+  auto it = task_id_to_arc_app_window_info_.find(*task_or_session_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;
 
@@ -329,7 +331,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   DCHECK(widget);
   info->set_window(window);
   const ash::ShelfID shelf_id = info->shelf_id();
-  AttachControllerToTask(*task_id);
+  AttachControllerToTask(*task_or_session_id);
   app_service_controller_->AddWindowToShelf(window, shelf_id);
   AppWindowBase* app_window = app_service_controller_->GetAppWindow(window);
   if (app_window)
