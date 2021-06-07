@@ -762,6 +762,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextLabel) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyHiddenWithHiddenChild) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-labelledby-hidden-with-hidden-child.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameTextLabelledbyParagraphs) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-labelledby-paragraphs.html"));
 }
