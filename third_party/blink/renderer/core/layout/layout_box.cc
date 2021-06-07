@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
@@ -3282,8 +3283,8 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
 
 void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  // |layout_results_| is particulary critical when |SideEffectsDisabled|.
-  DCHECK(!result->GetConstraintSpaceForCaching().SideEffectsDisabled());
+  // |layout_results_| is particularly critical when side effects are disabled.
+  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
 
@@ -3319,8 +3320,8 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
       NGFragmentItems::ClearAssociatedFragments(this);
     }
   }
-  // |layout_results_| is particulary critical when |SideEffectsDisabled|.
-  DCHECK(!result->GetConstraintSpaceForCaching().SideEffectsDisabled());
+  // |layout_results_| is particularly critical when side effects are disabled.
+  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
   CheckDidAddFragment(*this, fragment);
 

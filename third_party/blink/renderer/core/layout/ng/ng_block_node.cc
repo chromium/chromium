@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_column_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fieldset_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
@@ -686,7 +687,7 @@ void NGBlockNode::FinishLayout(
     scoped_refptr<const NGLayoutResult> layout_result) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
-  if (constraint_space.SideEffectsDisabled())
+  if (NGDisableSideEffectsScope::IsDisabled())
     return;
 
   // If we abort layout and don't clear the cached layout-result, we can end
@@ -802,18 +803,15 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
                                /* depends_on_block_constraints */ false);
     }
 
-    scoped_refptr<const NGLayoutResult> layout_result;
-    if (GetLayoutBox()->NeedsLayout() ||
-        constraint_space.SideEffectsDisabled()) {
-      layout_result = Layout(constraint_space);
-    } else {
-      // If we're computing MinMax after layout, we need to set
-      // |SideEffectsDisabled| so that |Layout| does not update the
-      // |LayoutObject| tree and other global states.
-      NGConstraintSpace side_effects_disabled =
-          constraint_space.CloneWithSideEffectsDisabled();
-      layout_result = Layout(side_effects_disabled);
-    }
+    // If we're computing MinMax after layout, we need to disable side effects
+    // so that |Layout| does not update the |LayoutObject| tree and other global
+    // states.
+    absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+    if (!GetLayoutBox()->NeedsLayout())
+      disable_side_effects.emplace();
+
+    scoped_refptr<const NGLayoutResult> layout_result =
+        Layout(constraint_space);
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
@@ -1712,9 +1710,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     CopyBaselinesFromLegacyLayout(constraint_space, &builder);
     layout_result = builder.ToBoxFragment();
 
-    // When |SideEffectsDisabled|, it's not possible to disable side effects
+    // When side effects are disabled, it's not possible to disable side effects
     // completely for legacy, but at least keep the fragment tree unaffected.
-    if (!constraint_space.SideEffectsDisabled()) {
+    if (!NGDisableSideEffectsScope::IsDisabled()) {
       box_->SetCachedLayoutResult(layout_result);
 
       // If |SetCachedLayoutResult| did not update cached |LayoutResult|,
@@ -1728,7 +1726,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
         }
       }
     }
-  } else if (layout_result && !constraint_space.SideEffectsDisabled()) {
+  } else if (layout_result && !NGDisableSideEffectsScope::IsDisabled()) {
     // OOF-positioned nodes have a two-tier cache, and their layout results
     // must always contain the correct percentage resolution size.
     // See |NGBlockNode::CachedLayoutResultForOutOfFlowPositioned|.

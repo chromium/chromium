@@ -488,6 +488,8 @@ blink_core_sources_layout = [
   "ng/ng_constraint_space_builder.h",
   "ng/ng_container_fragment_builder.cc",
   "ng/ng_container_fragment_builder.h",
+  "ng/ng_disable_side_effects_scope.cc",
+  "ng/ng_disable_side_effects_scope.h",
   "ng/ng_early_break.h",
   "ng/ng_fieldset_layout_algorithm.cc",
   "ng/ng_fieldset_layout_algorithm.h",
