@@ -8,6 +8,8 @@ import android.util.Pair;
 
 import androidx.test.filters.LargeTest;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +38,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Test suite for the bookmarks sync data type.
@@ -477,7 +478,7 @@ public class BookmarksTest {
                         entity.getFolder() ? null : specifics.getUrl(), parentId));
             }
             return bookmarks;
-        } catch (ExecutionException ex) {
+        } catch (InvalidProtocolBufferException ex) {
             Assert.fail(ex.toString());
             return null;
         }

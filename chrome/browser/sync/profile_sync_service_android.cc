@@ -95,22 +95,20 @@ void ProfileSyncServiceAndroid::OnStateChanged(syncer::SyncService* sync) {
   Java_ProfileSyncService_syncStateChanged(env, java_sync_service_.get(env));
 }
 
-// Pure SyncServiceImpl calls.
-
 jboolean ProfileSyncServiceAndroid::IsSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->GetUserSettings()->IsSyncRequested();
-}
-
-jboolean ProfileSyncServiceAndroid::CanSyncFeatureStart(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->CanSyncFeatureStart();
 }
 
 void ProfileSyncServiceAndroid::SetSyncRequested(JNIEnv* env,
                                                  jboolean requested) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   native_sync_service_->GetUserSettings()->SetSyncRequested(requested);
+}
+
+jboolean ProfileSyncServiceAndroid::CanSyncFeatureStart(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return native_sync_service_->CanSyncFeatureStart();
 }
 
 jboolean ProfileSyncServiceAndroid::IsSyncAllowedByPlatform(JNIEnv* env) {
@@ -194,13 +192,6 @@ ScopedJavaLocalRef<jintArray> ProfileSyncServiceAndroid::GetChosenDataTypes(
     model_types.Put(syncer::UserSelectableTypeToCanonicalModelType(type));
   }
   return ModelTypeSetToJavaIntArray(env, model_types);
-}
-
-ScopedJavaLocalRef<jintArray> ProfileSyncServiceAndroid::GetPreferredDataTypes(
-    JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ModelTypeSetToJavaIntArray(
-      env, native_sync_service_->GetPreferredDataTypes());
 }
 
 void ProfileSyncServiceAndroid::SetChosenDataTypes(
@@ -382,7 +373,12 @@ jboolean ProfileSyncServiceAndroid::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
   return syncer::ShouldOfferTrustedVaultOptIn(native_sync_service_);
 }
 
-// Functionality only available for testing purposes.
+void ProfileSyncServiceAndroid::TriggerRefresh(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Only allowed to trigger refresh/schedule nudges for protocol types, things
+  // like PROXY_TABS are not allowed.
+  native_sync_service_->TriggerRefresh(syncer::ProtocolTypes());
+}
 
 jlong ProfileSyncServiceAndroid::GetSyncServiceImplForTest(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -395,21 +391,6 @@ jlong ProfileSyncServiceAndroid::GetLastSyncedTimeForTest(JNIEnv* env) {
       native_sync_service_->GetLastSyncedTimeForDebugging();
   return static_cast<jlong>(
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
-}
-
-void ProfileSyncServiceAndroid::OverrideNetworkForTest(
-    const syncer::CreateHttpPostProviderFactory&
-        create_http_post_provider_factory_cb) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->OverrideNetworkForTest(
-      create_http_post_provider_factory_cb);
-}
-
-void ProfileSyncServiceAndroid::TriggerRefresh(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Only allowed to trigger refresh/schedule nudges for protocol types, things
-  // like PROXY_TABS are not allowed.
-  native_sync_service_->TriggerRefresh(syncer::ProtocolTypes());
 }
 
 static jlong JNI_ProfileSyncService_Init(

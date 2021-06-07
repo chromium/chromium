@@ -213,23 +213,6 @@ public class ProfileSyncService {
     }
 
     /**
-     * DEPRECATED: Use getChosenDataTypes() instead.
-     *
-     * Gets the set of data types that are "preferred" in sync. Those are the
-     * chosen ones (see getChosenDataTypes), plus any that are implied by them.
-     *
-     * NOTE: This returns "all types" by default, even if the user has never
-     *       enabled Sync, or if only Sync-the-transport is running.
-     *
-     * @return Set of preferred data types.
-     */
-    public Set<Integer> getPreferredDataTypes() {
-        int[] modelTypeArray =
-                ProfileSyncServiceJni.get().getPreferredDataTypes(mNativeProfileSyncServiceAndroid);
-        return modelTypeArrayToSet(modelTypeArray);
-    }
-
-    /**
      * Gets the set of data types that are currently syncing.
      *
      * This is affected by whether sync is on.
@@ -555,7 +538,7 @@ public class ProfileSyncService {
     }
 
     @VisibleForTesting
-    public long getNativeProfileSyncServiceForTest() {
+    public long getNativeSyncServiceImplForTest() {
         return ProfileSyncServiceJni.get().getSyncServiceImplForTest(
                 mNativeProfileSyncServiceAndroid);
     }
@@ -633,55 +616,55 @@ public class ProfileSyncService {
     interface Natives {
         long init(ProfileSyncService caller);
 
+        // Please keep all methods below in the same order as profile_sync_service_android.h.
+        boolean isSyncRequested(long nativeProfileSyncServiceAndroid);
         void setSyncRequested(long nativeProfileSyncServiceAndroid, boolean requested);
+        boolean canSyncFeatureStart(long nativeProfileSyncServiceAndroid);
         boolean isSyncAllowedByPlatform(long nativeProfileSyncServiceAndroid);
         void setSyncAllowedByPlatform(long nativeProfileSyncServiceAndroid, boolean allowed);
-        int getAuthError(long nativeProfileSyncServiceAndroid);
-        boolean requiresClientUpgrade(long nativeProfileSyncServiceAndroid);
-        void setDecoupledFromAndroidMasterSync(long nativeProfileSyncServiceAndroid);
-        boolean getDecoupledFromAndroidMasterSync(long nativeProfileSyncServiceAndroid);
-        @Nullable
-        CoreAccountInfo getAuthenticatedAccountInfo(long nativeProfileSyncServiceAndroid);
-        boolean isAuthenticatedAccountPrimary(long nativeProfileSyncServiceAndroid);
+        boolean isSyncFeatureActive(long nativeProfileSyncServiceAndroid);
+        boolean isSyncDisabledByEnterprisePolicy(long nativeProfileSyncServiceAndroid);
         boolean isEngineInitialized(long nativeProfileSyncServiceAndroid);
+        boolean isTransportStateActive(long nativeProfileSyncServiceAndroid);
+        void setSetupInProgress(long nativeProfileSyncServiceAndroid, boolean inProgress);
+        boolean isFirstSetupComplete(long nativeProfileSyncServiceAndroid);
+        void setFirstSetupComplete(
+                long nativeProfileSyncServiceAndroid, int syncFirstSetupCompleteSource);
+        int[] getActiveDataTypes(long nativeProfileSyncServiceAndroid);
+        int[] getChosenDataTypes(long nativeProfileSyncServiceAndroid);
+        void setChosenDataTypes(
+                long nativeProfileSyncServiceAndroid, boolean syncEverything, int[] modelTypeArray);
         boolean isCustomPassphraseAllowed(long nativeProfileSyncServiceAndroid);
         boolean isEncryptEverythingEnabled(long nativeProfileSyncServiceAndroid);
-        boolean isTransportStateActive(long nativeProfileSyncServiceAndroid);
         boolean isPassphraseRequiredForPreferredDataTypes(long nativeProfileSyncServiceAndroid);
         boolean isTrustedVaultKeyRequired(long nativeProfileSyncServiceAndroid);
         boolean isTrustedVaultKeyRequiredForPreferredDataTypes(
                 long nativeProfileSyncServiceAndroid);
         boolean isTrustedVaultRecoverabilityDegraded(long nativeProfileSyncServiceAndroid);
         boolean isUsingExplicitPassphrase(long nativeProfileSyncServiceAndroid);
-        boolean setDecryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
-        void setEncryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
         int getPassphraseType(long nativeProfileSyncServiceAndroid);
+        void setEncryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
+        boolean setDecryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
         long getExplicitPassphraseTime(long nativeProfileSyncServiceAndroid);
-        int[] getActiveDataTypes(long nativeProfileSyncServiceAndroid);
-        int[] getChosenDataTypes(long nativeProfileSyncServiceAndroid);
-        int[] getPreferredDataTypes(long nativeProfileSyncServiceAndroid);
-        void setChosenDataTypes(
-                long nativeProfileSyncServiceAndroid, boolean syncEverything, int[] modelTypeArray);
-        void triggerRefresh(long nativeProfileSyncServiceAndroid);
-        void setSetupInProgress(long nativeProfileSyncServiceAndroid, boolean inProgress);
-        void setFirstSetupComplete(
-                long nativeProfileSyncServiceAndroid, int syncFirstSetupCompleteSource);
-        boolean isFirstSetupComplete(long nativeProfileSyncServiceAndroid);
-        boolean isSyncRequested(long nativeProfileSyncServiceAndroid);
-        boolean canSyncFeatureStart(long nativeProfileSyncServiceAndroid);
-        boolean isSyncFeatureActive(long nativeProfileSyncServiceAndroid);
-        boolean isSyncDisabledByEnterprisePolicy(long nativeProfileSyncServiceAndroid);
-        boolean hasKeepEverythingSynced(long nativeProfileSyncServiceAndroid);
+        void getAllNodes(long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
+        int getAuthError(long nativeProfileSyncServiceAndroid);
         boolean hasUnrecoverableError(long nativeProfileSyncServiceAndroid);
+        boolean requiresClientUpgrade(long nativeProfileSyncServiceAndroid);
+        void setDecoupledFromAndroidMasterSync(long nativeProfileSyncServiceAndroid);
+        boolean getDecoupledFromAndroidMasterSync(long nativeProfileSyncServiceAndroid);
+        @Nullable
+        CoreAccountInfo getAuthenticatedAccountInfo(long nativeProfileSyncServiceAndroid);
+        boolean isAuthenticatedAccountPrimary(long nativeProfileSyncServiceAndroid);
         boolean isPassphrasePromptMutedForCurrentProductVersion(
                 long nativeProfileSyncServiceAndroid);
         void markPassphrasePromptMutedForCurrentProductVersion(
                 long nativeProfileSyncServiceAndroid);
-        long getSyncServiceImplForTest(long nativeProfileSyncServiceAndroid);
-        long getLastSyncedTimeForTest(long nativeProfileSyncServiceAndroid);
-        void getAllNodes(long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
+        boolean hasKeepEverythingSynced(long nativeProfileSyncServiceAndroid);
         void recordKeyRetrievalTrigger(
                 long nativeProfileSyncServiceAndroid, int keyRetrievalTrigger);
         boolean shouldOfferTrustedVaultOptIn(long nativeProfileSyncServiceAndroid);
+        void triggerRefresh(long nativeProfileSyncServiceAndroid);
+        long getSyncServiceImplForTest(long nativeProfileSyncServiceAndroid);
+        long getLastSyncedTimeForTest(long nativeProfileSyncServiceAndroid);
     }
 }

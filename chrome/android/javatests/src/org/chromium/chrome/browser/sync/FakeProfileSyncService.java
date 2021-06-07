@@ -10,9 +10,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Fake some ProfileSyncService methods for testing.
  *
@@ -26,7 +23,6 @@ public class FakeProfileSyncService extends ProfileSyncService {
     private boolean mTrustedVaultRecoverabilityDegraded;
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
-    private Set<Integer> mChosenTypes = new HashSet<>();
     private boolean mCanSyncFeatureStart;
     @GoogleServiceAuthError.State
     private int mAuthError;
@@ -66,16 +62,6 @@ public class FakeProfileSyncService extends ProfileSyncService {
     @Override
     public boolean isUsingExplicitPassphrase() {
         return true;
-    }
-
-    @Override
-    public void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        mChosenTypes = enabledTypes;
-    }
-
-    @Override
-    public Set<Integer> getPreferredDataTypes() {
-        return mChosenTypes;
     }
 
     @Override

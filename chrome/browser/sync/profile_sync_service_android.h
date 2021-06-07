@@ -36,7 +36,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Pure SyncServiceImpl calls.
+  // Please keep all methods below in the same order as ProfileSyncService.java.
   jboolean IsSyncRequested(JNIEnv* env);
   void SetSyncRequested(JNIEnv* env,
                         jboolean requested);
@@ -55,8 +55,6 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
                              jint source);
   base::android::ScopedJavaLocalRef<jintArray> GetActiveDataTypes(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jintArray> GetChosenDataTypes(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jintArray> GetPreferredDataTypes(
-      JNIEnv* env);
   void SetChosenDataTypes(
       JNIEnv* env,
       jboolean sync_everything,
@@ -81,39 +79,24 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
                    const base::android::JavaParamRef<jobject>& callback);
   jint GetAuthError(JNIEnv* env);
   jboolean HasUnrecoverableError(JNIEnv* env);
-  jboolean IsUrlKeyedDataCollectionEnabled(
-      JNIEnv* env,
-      jboolean personalized);
   jboolean RequiresClientUpgrade(JNIEnv* env);
   void SetDecoupledFromAndroidMasterSync(JNIEnv* env);
   jboolean GetDecoupledFromAndroidMasterSync(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAuthenticatedAccountInfo(
       JNIEnv* env);
   jboolean IsAuthenticatedAccountPrimary(JNIEnv* env);
-
-  // Pure SyncPrefs calls.
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   void MarkPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   jboolean HasKeepEverythingSynced(JNIEnv* env);
-
   void RecordKeyRetrievalTrigger(
       JNIEnv* env,
       jint trigger);
-
   jboolean ShouldOfferTrustedVaultOptIn(JNIEnv* env);
-
-  // Functionality only available for testing purposes.
-
+  void TriggerRefresh(JNIEnv* env);
   jlong GetSyncServiceImplForTest(JNIEnv* env);
-
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
   jlong GetLastSyncedTimeForTest(JNIEnv* env);
-
-  void OverrideNetworkForTest(const syncer::CreateHttpPostProviderFactory&
-                                  create_http_post_provider_factory_cb);
-
-  void TriggerRefresh(JNIEnv* env);
 
  private:
   // A reference to the sync service for this profile.

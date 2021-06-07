@@ -139,7 +139,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileSyncService.setSyncRequested(false);
-            FakeServerHelper.deleteFakeServer();
+            mFakeServerHelper = null;
+            FakeServerHelper.destroyInstance();
         });
         ProfileSyncService.resetForTests();
     }
@@ -340,8 +341,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     mProfileSyncService = ProfileSyncService.get();
 
                     mContext = InstrumentationRegistry.getTargetContext();
-                    FakeServerHelper.useFakeServer(mContext);
-                    mFakeServerHelper = FakeServerHelper.get();
+                    mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
                 });
 
                 startMainActivityForSyncTest();

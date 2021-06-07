@@ -2199,6 +2199,7 @@ android_library("browser_java_test_support") {
     "$google_play_services_package:google_play_services_gcm_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/offline_items_collection/core:core_java",
@@ -2211,6 +2212,8 @@ android_library("browser_java_test_support") {
     "//url:gurl_android_test_helper_java",
     "//url:gurl_java",
   ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 static_library("browser_test_support") {
