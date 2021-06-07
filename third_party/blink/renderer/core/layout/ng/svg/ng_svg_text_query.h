@@ -20,6 +20,7 @@ class NGSvgTextQuery {
   explicit NGSvgTextQuery(LayoutObject& query_root) : query_root_(query_root) {}
 
   unsigned NumberOfCharacters() const;
+  float SubStringLength(unsigned start_index, unsigned length) const;
 
  private:
   LayoutObject& query_root_;

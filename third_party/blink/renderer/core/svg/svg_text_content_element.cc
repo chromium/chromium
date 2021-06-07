@@ -115,8 +115,10 @@ float SVGTextContentElement::getComputedTextLength() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
   auto* layout_object = GetLayoutObject();
-  if (IsNGTextOrInline(layout_object))
-    return 1.0f;  // TODO(1179585): Implement this.
+  if (IsNGTextOrInline(layout_object)) {
+    NGSvgTextQuery query(*layout_object);
+    return query.SubStringLength(0, query.NumberOfCharacters());
+  }
   return SVGTextQuery(layout_object).TextLength();
 }
 
@@ -141,7 +143,7 @@ float SVGTextContentElement::getSubStringLength(
 
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object))
-    return 0.0f;  // TODO(1179585): Implement this.
+    return NGSvgTextQuery(*layout_object).SubStringLength(charnum, nchars);
   return SVGTextQuery(layout_object).SubStringLength(charnum, nchars);
 }
 

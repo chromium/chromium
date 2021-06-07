@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 
 namespace blink {
 
@@ -31,37 +32,75 @@ unsigned CodePointLength(StringView string) {
   return count;
 }
 
+std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
+FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
+  Vector<const NGFragmentItem*> item_list;
+  const NGFragmentItems* items = nullptr;
+  if (query_root.IsNGSVGText()) {
+    DCHECK_LE(To<LayoutBox>(query_root).PhysicalFragmentCount(), 1u);
+    for (const auto& fragment : To<LayoutBox>(query_root).PhysicalFragments()) {
+      if (!fragment.Items())
+        continue;
+      items = fragment.Items();
+      for (const auto& item : fragment.Items()->Items()) {
+        if (item.Type() == NGFragmentItem::kSvgText)
+          item_list.push_back(&item);
+      }
+    }
+  } else {
+    DCHECK(query_root.IsInLayoutNGInlineFormattingContext());
+    NGInlineCursor cursor;
+    cursor.MoveToIncludingCulledInline(query_root);
+    items = &cursor.Items();
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      const NGFragmentItem& item = *cursor.CurrentItem();
+      if (item.Type() == NGFragmentItem::kSvgText)
+        item_list.push_back(&item);
+    }
+  }
+  // Sort |item_list| in the logical order.
+  std::sort(item_list.begin(), item_list.end(),
+            [](const NGFragmentItem* a, const NGFragmentItem* b) {
+              return a->StartOffset() < b->StartOffset();
+            });
+  return std::tie(item_list, items);
+}
+
 }  // namespace
 
 unsigned NGSvgTextQuery::NumberOfCharacters() const {
-  if (query_root_.IsNGSVGText()) {
-    unsigned addressable_character_count = 0;
-    DCHECK_LE(To<LayoutBox>(query_root_).PhysicalFragmentCount(), 1u);
-    for (const auto& fragment :
-         To<LayoutBox>(query_root_).PhysicalFragments()) {
-      if (!fragment.Items())
-        continue;
-      for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSvgText)
-          continue;
-        addressable_character_count +=
-            CodePointLength(item.Text(*fragment.Items()));
-      }
-    }
-    return addressable_character_count;
-  }
+  Vector<const NGFragmentItem*> item_list;
+  const NGFragmentItems* items;
+  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root_);
 
-  DCHECK(query_root_.IsInLayoutNGInlineFormattingContext());
   unsigned addressable_character_count = 0;
-  NGInlineCursor cursor;
-  for (cursor.MoveToIncludingCulledInline(query_root_); cursor;
-       cursor.MoveToNextForSameLayoutObject()) {
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() != NGFragmentItem::kSvgText)
-      continue;
-    addressable_character_count += CodePointLength(cursor.CurrentText());
-  }
+  for (const auto* item : item_list)
+    addressable_character_count += CodePointLength(item->Text(*items));
   return addressable_character_count;
+}
+
+float NGSvgTextQuery::SubStringLength(unsigned start_index,
+                                      unsigned length) const {
+  Vector<const NGFragmentItem*> item_list;
+  const NGFragmentItems* items;
+  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root_);
+
+  float total_length = 0.0f;
+  unsigned character_index = 0;
+  for (const auto* item : item_list) {
+    if (character_index >= start_index) {
+      if (start_index + length <= character_index)
+        break;
+      float inline_size = item->IsHorizontal()
+                              ? item->SvgFragmentData()->rect.Width()
+                              : item->SvgFragmentData()->rect.Height();
+      total_length +=
+          inline_size /
+          To<LayoutSVGInlineText>(item->GetLayoutObject())->ScalingFactor();
+    }
+    character_index += CodePointLength(item->Text(*items));
+  }
+  return total_length;
 }
 
 }  // namespace blink
