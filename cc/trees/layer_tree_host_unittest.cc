@@ -2686,7 +2686,7 @@ SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDeviceScaleFactorChange);
 
 // Tests that when the LayerTreeHost has received an updated Viewport Rect and
 // viz::LocalSurfaceId that the Impl Frame does not begin until the new tree has
-// been activated.
+// been either activated or pushed as the new pending tree.
 class LayerTreeHostTestViewportRectChangeBlockedMainThread
     : public LayerTreeHostTest {
  public:
@@ -2709,7 +2709,7 @@ class LayerTreeHostTestViewportRectChangeBlockedMainThread
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void AllowCommits() { scoped_defer_main_frame_update_.reset(); }
+  void StopDeferringCommits() { scoped_defer_main_frame_update_.reset(); }
 
   void ChangeViewportRect() {
     gfx::Rect rect = layer_tree_host()->device_viewport_rect();
@@ -2753,6 +2753,42 @@ class LayerTreeHostTestViewportRectChangeBlockedMainThread
                   host_impl->active_tree()->local_surface_id_from_parent());
         EXPECT_EQ(target_local_surface_id_,
                   host_impl->target_local_surface_id());
+        // On slower configurations more than one frame at the original
+        // |source_frame_number| can be triggered between when we begin allowing
+        // commits again, and before the commit occurs.
+        //
+        // If so do not attempt to re-unblock. Once we have stopped the blocking
+        // the first time, all subsequent Commit/Activate/BeginMainFramme will
+        // be allowed to continue as normal.
+        //
+        // When this occurs there will be a new pending tree. We also expect
+        // there to be damage now, to unblock impl frame production ahead of the
+        // upcoming activation. CC is already build around Activations that can
+        // arrive mid-frame. It does this by delaying non-immediate mode
+        // painting until either Activation arrives, or an internal deadline is
+        // hit.
+        //
+        // The normal flow is:
+        //   Main hasn't committed yet, due to explicitly being blocked.
+        //   BeginImplFrame - we don't have damage
+        //   Main is unblocked by StopDeferringCommits
+        //   Main commits
+        //   Main activates
+        //   BeginImplFrame has new active_tree and starts
+        //
+        // The slower flow is:
+        //   Main hasn't committed yet, due to explicitly being blocked.
+        //   BeginImplFrame - we don't want have damage
+        //   Main is unblocked by StopDeferringCommits
+        //   Main commits
+        //   BeginImplFrame has new pending_tree and starts
+        //   Main activates
+        //   Impl receives activation
+        //   Painting.
+        if (host_impl->pending_tree()) {
+          EXPECT_TRUE(has_damage);
+          return;
+        }
         // When the |active_tree| in the LayerTreeHostImpl is behind the new
         // |target_local_surface_id| that the LayerTreeHost is processing,
         // there should be no damage.
@@ -2764,7 +2800,7 @@ class LayerTreeHostTestViewportRectChangeBlockedMainThread
             FROM_HERE,
             base::BindOnce(
                 &LayerTreeHostTestViewportRectChangeBlockedMainThread::
-                    AllowCommits,
+                    StopDeferringCommits,
                 base::Unretained(this)));
         break;
       case 1:
