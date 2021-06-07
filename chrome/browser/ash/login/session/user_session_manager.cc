@@ -593,6 +593,11 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
   base::CommandLine command_line(browser_command_line.GetProgram());
   GetOffTheRecordCommandLine(start_url, browser_command_line, &command_line);
 
+  // Trigger loading the shill profile before restarting.
+  // For regular user sessions, MGS or kiosk sessions, this is done by
+  // VoteForSavingLoginPassword.
+  LoadShillProfile(user_manager::GuestAccountId());
+
   // This makes sure that Chrome restarts with no per-session flags. The guest
   // profile will always have empty set of per-session flags. If this is not
   // done and device owner has some per-session flags, when Chrome is relaunched
