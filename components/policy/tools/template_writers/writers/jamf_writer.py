@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -186,7 +186,8 @@ class JamfWriter(template_writer.TemplateWriter):
       return
     if 'id' in obj:
       ids_in_ancestry.add(obj['id'])
-    for key, value in obj.items():
+    # Make a copy of items since we are going to change |obj|.
+    for key, value in list(obj.items()):
       if type(value) is not dict:
         continue
       if '$ref' in value:

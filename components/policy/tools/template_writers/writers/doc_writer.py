@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -127,7 +127,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     dd = self._AddPolicyAttribute(parent, 'schema', None,
                                   ['.monospace', '.pre-wrap'])
-    schema_json = json.dumps(schema, indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    schema_json = json.dumps(schema,
+                             indent=2,
+                             sort_keys=True,
+                             separators=(", ", ": "))
     self.AddText(dd, schema_json)
 
   def _AddFeatures(self, parent, policy):
@@ -141,8 +145,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     features = []
     # The sorting is to make the order well-defined for testing.
-    keys = list(policy['features'].keys())
-    keys.sort()
+    keys = sorted(policy['features'].keys())
     for key in keys:
       key_name = self._FEATURE_MAP[key]
       if policy['features'][key]:
@@ -325,7 +328,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     self.AddElement(parent, 'dt', {}, os_header)
     element = self._AddStyledElement(parent, 'dd', ['.monospace', '.pre-wrap'])
     key_name = self._GetRegistryKeyName(policy, is_win)
-    example = json.dumps(policy['example_value'], indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    example = json.dumps(policy['example_value'],
+                         indent=2,
+                         sort_keys=True,
+                         separators=(", ", ": "))
     self.AddText(element, '%s\\%s = %s' % (key_name, policy['name'], example))
 
   def _AddDictionaryExampleAndroidLinux(self, parent, policy):
@@ -339,7 +346,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     self.AddElement(parent, 'dt', {}, 'Android/Linux:')
     element = self._AddStyledElement(parent, 'dd', ['.monospace', '.pre-wrap'])
-    example = json.dumps(policy['example_value'], indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    example = json.dumps(policy['example_value'],
+                         indent=2,
+                         sort_keys=True,
+                         separators=(", ", ": "))
     self.AddText(element, '%s: %s' % (policy['name'], example))
 
   def _AddDictionaryExample(self, parent, policy):

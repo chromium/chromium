@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -292,9 +292,9 @@ class TemplateWriter(object):
     '''
     for policy in policy_list:
       if policy['type'] == 'group':
-        child_policies = self._GetPoliciesForWriter(policy)
-        child_recommended_policies = filter(self.CanBeRecommended,
-                                            child_policies)
+        child_policies = list(self._GetPoliciesForWriter(policy))
+        child_recommended_policies = list(
+            filter(self.CanBeRecommended, child_policies))
         if child_policies:
           # Only write nonempty groups.
           self.BeginPolicyGroup(policy)
