@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 
 namespace chromeos {

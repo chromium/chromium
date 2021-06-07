@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_PUBLIC_FAVICON_FETCHER_DELEGATE_H_
 #define WEBLAYER_PUBLIC_FAVICON_FETCHER_DELEGATE_H_
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace gfx {
 class Image;

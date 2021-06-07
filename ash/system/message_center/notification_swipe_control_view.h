@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"

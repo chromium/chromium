@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 
 namespace chromeos {

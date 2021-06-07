@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"

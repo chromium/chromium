@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
 class ReadingListModel;

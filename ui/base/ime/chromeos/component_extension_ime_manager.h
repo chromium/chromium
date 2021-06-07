@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 

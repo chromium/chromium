@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "ui/gfx/geometry/rect.h"
 

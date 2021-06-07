@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_observer.h"

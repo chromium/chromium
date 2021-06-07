@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/usb/usb_host_ui_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"

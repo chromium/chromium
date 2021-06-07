@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_CFM_CHROME_SERVICES_H_
 #define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_CFM_CHROME_SERVICES_H_
 
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
 namespace chromeos {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"
 
 namespace chromeos {

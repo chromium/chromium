@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_
 
+#include "base/observer_list.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #include "ios/chrome/browser/main/browser_list_observer.h"
 #import "ios/chrome/browser/main/browser_observer.h"

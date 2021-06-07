@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"

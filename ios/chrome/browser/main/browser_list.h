@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserListObserver;

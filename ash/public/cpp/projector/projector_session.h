@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_SESSION_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
 namespace ash {

@@ -11,7 +11,6 @@
 #include "ash/screenshot_delegate.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

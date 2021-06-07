@@ -12,6 +12,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "components/sync/base/encryptor.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"

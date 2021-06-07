@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_BEFORE_UNLOAD_TRACKER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_BEFORE_UNLOAD_TRACKER_H_
 
-#include "base/observer_list.h"
 #include "content/public/browser/web_contents.h"
 
 namespace tab_strip_ui {

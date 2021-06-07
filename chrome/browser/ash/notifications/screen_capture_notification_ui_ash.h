@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_UI_ASH_H_
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 namespace ash {

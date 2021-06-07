@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"

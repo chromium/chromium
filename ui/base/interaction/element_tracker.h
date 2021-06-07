@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/base/interaction/element_identifier.h"
 

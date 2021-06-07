@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/update_engine_client.h"
 
 namespace chromeos {

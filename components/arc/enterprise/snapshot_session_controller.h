@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/session_manager/core/session_manager_observer.h"

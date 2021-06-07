@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 #include "chromeos/components/tether/host_scanner_operation.h"

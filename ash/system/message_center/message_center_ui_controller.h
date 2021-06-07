@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notifier_id.h"

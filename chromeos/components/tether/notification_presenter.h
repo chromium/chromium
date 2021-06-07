@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state.h"
 

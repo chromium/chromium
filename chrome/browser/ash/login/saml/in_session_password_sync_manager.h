@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"

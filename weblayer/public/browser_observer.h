@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_PUBLIC_BROWSER_OBSERVER_H_
 #define WEBLAYER_PUBLIC_BROWSER_OBSERVER_H_
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace weblayer {
 

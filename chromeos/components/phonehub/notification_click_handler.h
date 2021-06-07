@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_CLICK_HANDLER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_CLICK_HANDLER_H_
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace chromeos {
 namespace phonehub {

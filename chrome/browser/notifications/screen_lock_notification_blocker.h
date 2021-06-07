@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCREEN_LOCK_NOTIFICATION_BLOCKER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCREEN_LOCK_NOTIFICATION_BLOCKER_H_
 
-#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/notification_blocker.h"
 

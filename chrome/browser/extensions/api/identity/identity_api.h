@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"

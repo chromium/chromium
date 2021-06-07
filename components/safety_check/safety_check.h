@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFETY_CHECK_SAFETY_CHECK_H_
 #define COMPONENTS_SAFETY_CHECK_SAFETY_CHECK_H_
 
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/prefs/pref_service.h"
 

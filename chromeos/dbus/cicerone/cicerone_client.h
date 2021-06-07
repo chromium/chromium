@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/observer_list.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"

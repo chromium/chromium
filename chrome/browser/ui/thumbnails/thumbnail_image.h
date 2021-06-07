@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

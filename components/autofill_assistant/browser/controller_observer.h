@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/metrics.h"

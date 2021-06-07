@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/services/cups_proxy/public/mojom/proxy.mojom.h"
 

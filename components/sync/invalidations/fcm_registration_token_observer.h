@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_FCM_REGISTRATION_TOKEN_OBSERVER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_FCM_REGISTRATION_TOKEN_OBSERVER_H_
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace syncer {
 

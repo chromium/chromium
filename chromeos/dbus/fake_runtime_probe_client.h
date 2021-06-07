@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "chromeos/dbus/runtime_probe_client.h"
 
 namespace chromeos {
