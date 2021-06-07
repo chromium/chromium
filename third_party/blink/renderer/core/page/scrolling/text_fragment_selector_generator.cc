@@ -332,9 +332,18 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
       corrected_end != end_container ||
       corrected_end_offset !=
           ephemeral_range.EndPosition().ComputeOffsetInContainerNode()) {
-    range_ = MakeGarbageCollected<RangeInFlatTree>(
-        PositionInFlatTree(corrected_start, corrected_start_offset),
-        PositionInFlatTree(corrected_end, corrected_end_offset));
+    PositionInFlatTree start(corrected_start, corrected_start_offset);
+    PositionInFlatTree end(corrected_end, corrected_end_offset);
+
+    // TODO(bokan): This can sometimes occur from a selection. Avoid crashing
+    // from this case but this can come from a seemingly correct range so we
+    // should investigate the source of the bug.  https://crbug.com/1216357
+    if (start >= end) {
+      range_ = nullptr;
+      return;
+    }
+
+    range_ = MakeGarbageCollected<RangeInFlatTree>(start, end);
   }
 }
 
@@ -344,8 +353,19 @@ void TextFragmentSelectorGenerator::StartGeneration() {
   range_->StartPosition().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
 
-  // Shouldn't continue if selection is empty.
+  // TODO(bokan): This can sometimes occur from a selection. Avoid crashing from
+  // this case but this can come from a seemingly correct range so we should
+  // investigate the source of the bug.
+  // https://crbug.com/1216357
   EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
+  if (ephemeral_range.StartPosition() >= ephemeral_range.EndPosition()) {
+    state_ = kFailure;
+    error_ = LinkGenerationError::kEmptySelection;
+    ResolveSelectorState();
+    return;
+  }
+
+  // Shouldn't continue if selection is empty.
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
     state_ = kFailure;
@@ -355,6 +375,18 @@ void TextFragmentSelectorGenerator::StartGeneration() {
   }
 
   AdjustSelection();
+
+  // TODO(bokan): This can sometimes occur from a selection. Avoid crashing from
+  // this case but this can come from a seemingly correct range so we should
+  // investigate the source of the bug.
+  // https://crbug.com/1216357
+  if (!range_) {
+    state_ = kFailure;
+    error_ = LinkGenerationError::kEmptySelection;
+    ResolveSelectorState();
+    return;
+  }
+
   UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.SelectionLength",
                             PlainText(range_->ToEphemeralRange()).length());
   state_ = kNeedsNewCandidate;

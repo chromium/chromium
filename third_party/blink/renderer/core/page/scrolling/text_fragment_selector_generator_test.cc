@@ -1736,4 +1736,20 @@ TEST_F(TextFragmentSelectorGeneratorTest,
       GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
 }
 
+TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    Foo
+    <div id="first">Hello World</div>
+    Bar
+  )HTML");
+
+  Node* node = GetDocument().getElementById("first");
+  const auto& start = Position(node, PositionAnchorType::kBeforeAnchor);
+  const auto& end = Position(node, PositionAnchorType::kAfterAnchor);
+  VerifySelectorFails(start, end, LinkGenerationError::kEmptySelection);
+}
+
 }  // namespace blink
