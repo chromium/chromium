@@ -580,6 +580,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
     size_t index,
     const std::u16string& title,
     const BookmarkNode::MetaInfoMap* meta_info,
+    absl::optional<base::Time> creation_time,
     absl::optional<base::GUID> guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
@@ -589,10 +590,14 @@ const BookmarkNode* BookmarkModel::AddFolder(
   DCHECK(IsValidIndex(parent, index, true));
   DCHECK(!guid || guid->is_valid());
 
+  const base::Time provided_creation_time_or_now =
+      creation_time.value_or(Time::Now());
+
   auto new_node = std::make_unique<BookmarkNode>(
-      generate_next_node_id(), guid ? *guid : base::GUID::GenerateRandomV4(),
+      generate_next_node_id(), guid.value_or(base::GUID::GenerateRandomV4()),
       GURL());
-  new_node->set_date_folder_modified(Time::Now());
+  new_node->set_date_added(provided_creation_time_or_now);
+  new_node->set_date_folder_modified(provided_creation_time_or_now);
   // Folders shouldn't have line breaks in their titles.
   new_node->SetTitle(title);
   if (meta_info)
@@ -618,18 +623,18 @@ const BookmarkNode* BookmarkModel::AddURL(
   DCHECK(IsValidIndex(parent, index, true));
   DCHECK(!guid || guid->is_valid());
 
-  if (!creation_time)
-    creation_time = Time::Now();
+  const base::Time provided_creation_time_or_now =
+      creation_time.value_or(Time::Now());
 
   // Syncing may result in dates newer than the last modified date.
-  if (*creation_time > parent->date_folder_modified())
-    SetDateFolderModified(parent, *creation_time);
+  if (provided_creation_time_or_now > parent->date_folder_modified())
+    SetDateFolderModified(parent, provided_creation_time_or_now);
 
   auto new_node = std::make_unique<BookmarkNode>(
-      generate_next_node_id(), guid ? *guid : base::GUID::GenerateRandomV4(),
+      generate_next_node_id(), guid.value_or(base::GUID::GenerateRandomV4()),
       url);
   new_node->SetTitle(title);
-  new_node->set_date_added(*creation_time);
+  new_node->set_date_added(provided_creation_time_or_now);
   if (meta_info)
     new_node->SetMetaInfoMap(*meta_info);
 

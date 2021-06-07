@@ -958,10 +958,10 @@ TEST(BookmarkModelMergerTest, ShouldMergeFolderByGUIDAndNotSemantics) {
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder1 = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle1),
-      /*meta_info=*/nullptr, kGuid1);
+      /*meta_info=*/nullptr, /*creation_time=*/base::Time::Now(), kGuid1);
   const bookmarks::BookmarkNode* folder2 = bookmark_model->AddFolder(
       /*parent=*/folder1, /*index=*/0, base::UTF8ToUTF16(kTitle2),
-      /*meta_info=*/nullptr, kGuid2);
+      /*meta_info=*/nullptr, /*creation_time=*/base::Time::Now(), kGuid2);
   ASSERT_TRUE(folder1);
   ASSERT_TRUE(folder2);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder1));
@@ -1083,7 +1083,8 @@ TEST(
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
+      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr,
+      /*creation_time=*/base::Time::Now(), kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, u"Bookmark Title",
       GURL("http://foo.com/"));
@@ -1165,7 +1166,8 @@ TEST(BookmarkModelMergerTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
+      base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr,
+      /*creation_time=*/base::Time::Now(), kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, u"Bookmark Title",
       GURL("http://foo.com/"));
@@ -1339,10 +1341,10 @@ TEST(BookmarkModelMergerTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Folder Title",
-      /*meta_info=*/nullptr, kGuid1);
+      /*meta_info=*/nullptr, /*creation_time=*/base::Time::Now(), kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, u"Foo's title", GURL("http://foo.com"),
-      /*meta_info=*/nullptr, base::Time::Now(), kGuid2);
+      /*meta_info=*/nullptr, /*creation_time=*/base::Time::Now(), kGuid2);
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));

@@ -1885,7 +1885,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       bookmark_model()->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = bookmark_model()->AddFolder(
       bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kFolderTitle),
-      /*meta_info=*/nullptr, kGuid);
+      /*meta_info=*/nullptr, /*creation_time=*/base::Time::Now(), kGuid);
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model());
   sync_pb::BookmarkMetadata* node_metadata =

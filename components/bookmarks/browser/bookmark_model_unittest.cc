@@ -631,6 +631,19 @@ TEST_F(BookmarkModelTest, AddFolder) {
   observer_details_.ExpectEquals(root, nullptr, 0, size_t{-1});
 }
 
+TEST_F(BookmarkModelTest, AddFolderWithCreationTime) {
+  const BookmarkNode* root = model_->bookmark_bar_node();
+  const std::u16string title(u"foo");
+  BookmarkNode::MetaInfoMap meta_info;
+  const base::Time creation_time(base::Time::Now() -
+                                 base::TimeDelta::FromDays(1));
+
+  const BookmarkNode* new_node =
+      model_->AddFolder(root, /*index=*/0, title, &meta_info, creation_time);
+
+  EXPECT_EQ(creation_time, new_node->date_added());
+}
+
 TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
@@ -638,7 +651,8 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   const base::GUID guid = base::GUID::GenerateRandomV4();
 
   const BookmarkNode* new_node =
-      model_->AddFolder(root, /*index=*/0, title, &meta_info, guid);
+      model_->AddFolder(root, /*index=*/0, title, &meta_info,
+                        /*creation_time=*/Time::Now(), guid);
 
   EXPECT_EQ(guid, new_node->guid());
 }

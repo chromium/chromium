@@ -294,21 +294,20 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
 
+  const int64_t creation_time_us = specifics.creation_time_us();
+  const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+      // Use FromDeltaSinceWindowsEpoch because creation_time_us has
+      // always used the Windows epoch.
+      base::TimeDelta::FromMicroseconds(creation_time_us));
+
   if (is_folder) {
-    // TODO(crbug.com/1214840): Folders should propagate the creation time into
-    // BookmarkModel, just like non-folders.
     return model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
-                            &metainfo, guid);
+                            &metainfo, creation_time, guid);
   }
 
-  const int64_t create_time_us = specifics.creation_time_us();
-  base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
-      // Use FromDeltaSinceWindowsEpoch because create_time_us has
-      // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(create_time_us));
   const bookmarks::BookmarkNode* node =
       model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
-                    GURL(specifics.url()), &metainfo, create_time, guid);
+                    GURL(specifics.url()), &metainfo, creation_time, guid);
   SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
 
   return node;
@@ -350,9 +349,9 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
 
   const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
-    new_node =
-        model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
-                         node->GetTitle(), node->GetMetaInfoMap(), guid);
+    new_node = model->AddFolder(
+        node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
+        node->GetMetaInfoMap(), node->date_added(), guid);
   } else {
     new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
                              node->GetTitle(), node->url(),
