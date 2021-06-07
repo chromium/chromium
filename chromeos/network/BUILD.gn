@@ -70,6 +70,8 @@ component("network") {
     "firewall_hole.h",
     "geolocation_handler.cc",
     "geolocation_handler.h",
+    "hermes_metrics_util.cc",
+    "hermes_metrics_util.h",
     "managed_network_configuration_handler.cc",
     "managed_network_configuration_handler.h",
     "managed_network_configuration_handler_impl.cc",

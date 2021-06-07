@@ -14,6 +14,7 @@
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
@@ -21,7 +22,6 @@
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/euicc.h"
-#include "chromeos/services/cellular_setup/metrics_util.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/device_event_log/device_event_log.h"
@@ -388,7 +388,7 @@ void ESimProfile::PerformSetProfileNickname(
 void ESimProfile::OnPendingProfileInstallResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
-  metrics::LogInstallPendingProfileResult(status);
+  hermes_metrics::LogInstallPendingProfileResult(status);
 
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing pending profile status="

@@ -13,13 +13,13 @@
 #include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
-#include "chromeos/services/cellular_setup/metrics_util.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/qr_code_generator/qr_code_generator.h"
@@ -260,7 +260,7 @@ void Euicc::OnProfileInstallResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status,
     const dbus::ObjectPath* profile_path) {
-  metrics::LogInstallViaQrCodeResult(status);
+  hermes_metrics::LogInstallViaQrCodeResult(status);
 
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status="
