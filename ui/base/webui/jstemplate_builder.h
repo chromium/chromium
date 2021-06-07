@@ -19,7 +19,7 @@
 #include "base/strings/string_piece.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace webui {
@@ -29,19 +29,19 @@ namespace webui {
 // full page with support for i18n Templates.
 COMPONENT_EXPORT(UI_BASE)
 std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
-                                const base::DictionaryValue* json);
+                                const base::Value* json);
 
 // A helper function that generates a string of HTML to be loaded.  The
 // string includes the HTML and the javascript code necessary to generate the
 // full page with support for both i18n Templates and JsTemplates.
 COMPONENT_EXPORT(UI_BASE)
 std::string GetTemplatesHtml(const base::StringPiece& html_template,
-                             const base::DictionaryValue* json,
+                             const base::Value* json,
                              const base::StringPiece& template_id);
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.
 COMPONENT_EXPORT(UI_BASE)
-void AppendJsonJS(const base::DictionaryValue* json,
+void AppendJsonJS(const base::Value* json,
                   std::string* output,
                   bool from_js_module);
 

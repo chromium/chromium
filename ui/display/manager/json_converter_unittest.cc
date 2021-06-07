@@ -28,7 +28,7 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
   layout.placement_list[1].position = DisplayPlacement::LEFT;
   layout.placement_list[1].offset = 30;
 
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   DisplayLayoutToJson(layout, &value);
 
   const char data[] =

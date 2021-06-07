@@ -23,7 +23,7 @@ namespace {
 
 // Appends a script tag with a variable name |templateData| that has the JSON
 // assigned to it.
-void AppendJsonHtml(const base::DictionaryValue* json, std::string* output) {
+void AppendJsonHtml(const base::Value* json, std::string* output) {
   std::string javascript_string;
   AppendJsonJS(json, &javascript_string, /*from_js_module=*/false);
 
@@ -72,7 +72,7 @@ void AppendJsTemplateSourceHtml(std::string* output) {
 
 // Appends the code that processes the JsTemplate with the JSON. You should
 // call AppendJsTemplateSourceHtml and AppendLoadTimeData before calling this.
-void AppendJsTemplateProcessHtml(const base::DictionaryValue* json,
+void AppendJsTemplateProcessHtml(const base::Value* json,
                                  const base::StringPiece& template_id,
                                  std::string* output) {
   std::string jstext;
@@ -94,7 +94,7 @@ void AppendJsTemplateProcessHtml(const base::DictionaryValue* json,
 }  // namespace
 
 std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
-                                const base::DictionaryValue* json) {
+                                const base::Value* json) {
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(*json, &replacements);
   std::string output =
@@ -107,7 +107,7 @@ std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
 }
 
 std::string GetTemplatesHtml(const base::StringPiece& html_template,
-                             const base::DictionaryValue* json,
+                             const base::Value* json,
                              const base::StringPiece& template_id) {
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(*json, &replacements);
@@ -120,7 +120,7 @@ std::string GetTemplatesHtml(const base::StringPiece& html_template,
   return output;
 }
 
-void AppendJsonJS(const base::DictionaryValue* json,
+void AppendJsonJS(const base::Value* json,
                   std::string* output,
                   bool from_js_module) {
   // Convert the template data to a json string.

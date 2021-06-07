@@ -213,13 +213,12 @@ bool ReplaceTemplateExpressionsInternal(
 namespace ui {
 
 void TemplateReplacementsFromDictionaryValue(
-    const base::DictionaryValue& dictionary,
+    const base::Value& dictionary,
     TemplateReplacements* replacements) {
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    std::string str_value;
-    if (it.value().GetAsString(&str_value))
-      (*replacements)[it.key()] = str_value;
+  for (const auto& pair : dictionary.DictItems()) {
+    const std::string* value = pair.second.GetIfString();
+    if (value)
+      (*replacements)[pair.first] = pair.second.GetString();
   }
 }
 

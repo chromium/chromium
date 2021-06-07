@@ -67,7 +67,7 @@ void ParsePathAndScale(const GURL& url, std::string* path, float* scale_factor);
 // application locale (i.e. g_browser_process->GetApplicationLocale()).
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::DictionaryValue* localized_strings);
+                             base::Value* localized_strings);
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
                              ui::TemplateReplacements* replacements);
