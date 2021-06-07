@@ -34,28 +34,78 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
   // Save |app_launch_info| to |session_id_to_app_launch_info_|, and wait for
   // the ARC task to be created.
   int32_t session_id = app_launch_info->arc_session_id.value();
+
+  // If the ghost window has been created for `session_id`, add
+  // `app_launch_info` to the restore data.
+  if (base::Contains(ghost_window_session_id_to_app_id_, session_id)) {
+    app_launch_info->window_id = session_id;
+    FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
+        profile_path_, std::move(app_launch_info));
+    return;
+  }
+
   session_id_to_app_launch_info_[session_id] =
       std::make_pair(std::move(app_launch_info), base::TimeTicks::Now());
 
   MaybeStartCheckTimer();
 }
 
-void ArcSaveHandler::ModifyWindowInfo(int task_id,
-                                      const WindowInfo& window_info) {
-  auto it = task_id_to_app_id_.find(task_id);
-  if (it == task_id_to_app_id_.end())
-    return;
+void ArcSaveHandler::ModifyWindowInfo(const WindowInfo& window_info) {
+  aura::Window* window = window_info.window;
 
-  FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
-      profile_path_, it->second, task_id, window_info);
+  int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
+  auto task_it = task_id_to_app_id_.find(task_id);
+  if (task_it != task_id_to_app_id_.end()) {
+    FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
+        profile_path_, task_it->second, task_id, window_info);
+    return;
+  }
+
+  // For the ghost window, modify the window info with `session_id` as the
+  // window id.
+  int32_t session_id =
+      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+  auto it = ghost_window_session_id_to_app_id_.find(session_id);
+  if (it != ghost_window_session_id_to_app_id_.end()) {
+    FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
+        profile_path_, it->second, session_id, window_info);
+  }
 }
 
 void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
   int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
   if (!base::Contains(task_id_to_app_id_, task_id)) {
-    // If the task hasn't been created, add |window| to
-    // |arc_window_candidates_| to wait the task to be created.
-    arc_window_candidates_.insert(window);
+    // Check `session_id` to see whether this is a ghost window.
+    int32_t session_id =
+        window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+    if (session_id < kArcSessionIdOffsetForRestoredLaunching) {
+      // If the task hasn't been created, and this is not a ghost window, add
+      // `window` to `arc_window_candidates_` to wait for the task to be
+      // created.
+      arc_window_candidates_.insert(window);
+      return;
+    }
+
+    // Save `session_id` for the ghost window, to wait for the task created to
+    // replace the window id with the task id in the restore data.
+    const std::string* app_id = window->GetProperty(::full_restore::kAppIdKey);
+    DCHECK(app_id);
+    ghost_window_session_id_to_app_id_[session_id] = *app_id;
+
+    auto it = session_id_to_app_launch_info_.find(session_id);
+    if (it == session_id_to_app_launch_info_.end())
+      return;
+
+    // If there is `app_launch_info`, add it to the restore data using
+    // `session_id` as `window_id`.
+    auto app_launch_info = std::move(it->second.first);
+    session_id_to_app_launch_info_.erase(it);
+    if (session_id_to_app_launch_info_.empty())
+      check_timer_.Stop();
+
+    app_launch_info->window_id = session_id;
+    FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
+        profile_path_, std::move(app_launch_info));
     return;
   }
 
@@ -70,19 +120,40 @@ void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
   int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
 
   auto task_it = task_id_to_app_id_.find(task_id);
-  if (task_it == task_id_to_app_id_.end())
+  if (task_it != task_id_to_app_id_.end()) {
+    FullRestoreSaveHandler::GetInstance()->RemoveWindowInfo(
+        profile_path_, task_it->second, task_id);
     return;
+  }
 
-  FullRestoreSaveHandler::GetInstance()->RemoveWindowInfo(
-      profile_path_, task_it->second, task_id);
+  // If the ghost window has been created for `session_id`, remove
+  // `app_launch_info` from the restore data with `session_id` as the window id.
+  int32_t session_id =
+      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+  auto it = ghost_window_session_id_to_app_id_.find(session_id);
+  if (it != ghost_window_session_id_to_app_id_.end()) {
+    FullRestoreSaveHandler::GetInstance()->RemoveWindowInfo(
+        profile_path_, it->second, session_id);
+    ghost_window_session_id_to_app_id_.erase(it);
+  }
 }
 
 void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
                                    int32_t task_id,
                                    int32_t session_id) {
   auto it = session_id_to_app_launch_info_.find(session_id);
-  if (it == session_id_to_app_launch_info_.end())
+  if (it == session_id_to_app_launch_info_.end()) {
+    auto session_it = ghost_window_session_id_to_app_id_.find(session_id);
+    if (session_it == ghost_window_session_id_to_app_id_.end())
+      return;
+
+    // For the ghost window, modify the window id from `session_id` to
+    // `task_id`.
+    FullRestoreSaveHandler::GetInstance()->ModifyWindowId(
+        profile_path_, session_it->second, session_id, task_id);
+    ghost_window_session_id_to_app_id_.erase(session_it);
     return;
+  }
 
   task_id_to_app_id_[task_id] = app_id;
 

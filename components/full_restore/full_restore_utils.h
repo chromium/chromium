@@ -49,6 +49,11 @@ extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kRestoreWindowIdKey;
 
+// A property key to indicate the session id for the ARC ghost window from
+// RestoreData.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<int32_t>* const kGhostWindowSessionIdKey;
+
 // A property key to store the app id.
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<std::string*>* const kAppIdKey;

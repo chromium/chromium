@@ -41,8 +41,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // for the ARC task to be created.
   void SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info);
 
-  // Saves |window_info| for |task_id|.
-  void ModifyWindowInfo(int task_id, const WindowInfo& window_info);
+  // Saves |window_info|.
+  void ModifyWindowInfo(const WindowInfo& window_info);
 
   // Invoked when |window| is initialized.
   void OnWindowInitialized(aura::Window* window);
@@ -88,6 +88,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // The map from the task id to the app id. The task id is saved in the window
   // property. This map is used to find the app id when save the window info.
   std::map<int32_t, std::string> task_id_to_app_id_;
+
+  // The map from the session id to the app id for ghost windows, so that we can
+  // save the restore data, once the ghost window is created.
+  std::map<int32_t, std::string> ghost_window_session_id_to_app_id_;
 
   // ARC app tasks could be created after the window initialized.
   // |arc_window_candidates_| is used to record those initialized ARC app

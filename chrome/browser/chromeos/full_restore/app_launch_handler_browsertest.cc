@@ -224,8 +224,10 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
   return apps;
 }
 
-// Creates an exo app window and sets its shell application id.
-views::Widget* CreateExoWindow(const std::string& window_app_id) {
+// Creates an exo app window, and sets `window_app_id` for its shell application
+// id, `app_id` for the window property `::full_restore::kAppIdKey`.
+views::Widget* CreateExoWindow(const std::string& window_app_id,
+                               const std::string& app_id) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
   params.context = ash::Shell::GetPrimaryRootWindow();
@@ -235,6 +237,10 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   resolver_params.for_creation = true;
   ExoAppTypeResolver().PopulateProperties(resolver_params,
                                           params.init_properties_container);
+
+  if (!app_id.empty())
+    params.init_properties_container.SetProperty(::full_restore::kAppIdKey,
+                                                 app_id);
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
@@ -249,6 +255,12 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   widget->Show();
   widget->Activate();
   return widget;
+}
+
+// Calls the above function to create an exo app window, and sets
+// `window_app_id` for its shell application id, with an empty app id.
+views::Widget* CreateExoWindow(const std::string& window_app_id) {
+  return CreateExoWindow(window_app_id, std::string());
 }
 
 // Gets the browser whose restore window id is same as `window_id`.
@@ -898,7 +910,8 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
   void Restore() {
     test_full_restore_info_observer_.Reset();
 
-    app_launch_handler()->SetShouldRestore();
+    app_launch_handler_ = std::make_unique<AppLaunchHandler>(profile());
+    app_launch_handler_->SetShouldRestore();
     content::RunAllTasksUntilIdle();
   }
 
@@ -1085,6 +1098,178 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
   widget->CloseNow();
 
   ASSERT_FALSE(GetWindowInfo(kTaskId1));
+
+  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
+      test_full_restore_info_observer());
+  StopInstance();
+
+  RemoveInactiveDesks();
+}
+
+// Test restoration when the ARC ghost window is created before OnTaskCreated is
+// called.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+                       RestoreArcGhostWindow) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id1);
+
+  // Create the window for app1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  VerifyWindowProperty(window, kTaskId1, /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Simulate creating the task.
+  CreateTask(app_id, kTaskId1, session_id1);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/0);
+
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
+  widget->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  int32_t session_id2 =
+      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->SetArcSessionIdForWindowId(session_id2, kTaskId1);
+
+  // Create the window with the ghost window session to simulate the ghost
+  // window restoration for the app.
+  widget = CreateExoWindow(
+      base::StringPrintf("org.chromium.arc.session.%d", session_id2), app_id);
+  window = widget->GetNativeWindow();
+
+  SaveAppLaunchInfo(app_id, session_id2);
+
+  // The ghost window should not be hidden.
+  VerifyWindowProperty(window, /*window_id*/ 0,
+                       /*restore_window_id*/ kTaskId1,
+                       /*hidden=*/false);
+
+  // Simulate creating the task for the restored window.
+  int32_t kTaskId2 = 200;
+  window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
+  CreateTask(app_id, kTaskId2, session_id2);
+
+  VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
+  VerifyWindowInfo(window, kActivationIndex);
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId2);
+  widget->CloseNow();
+
+  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
+      test_full_restore_info_observer());
+  StopInstance();
+
+  RemoveInactiveDesks();
+}
+
+// Test the ARC ghost window is saved if the task is not created.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id1);
+
+  // Create the window for app1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  VerifyWindowProperty(window, kTaskId1, /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Simulate creating the task.
+  CreateTask(app_id, kTaskId1, session_id1);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/0);
+
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Simulate the system reboot.
+  Restore();
+  widget->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  int32_t session_id2 =
+      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->SetArcSessionIdForWindowId(session_id2, kTaskId1);
+
+  // Create the window with the ghost window session to simulate the ghost
+  // window restoration for the app.
+  widget = CreateExoWindow(
+      base::StringPrintf("org.chromium.arc.session.%d", session_id2), app_id);
+  window = widget->GetNativeWindow();
+
+  SaveAppLaunchInfo(app_id, session_id2);
+  SaveWindowInfo(window);
+
+  // The ghost window should not be hidden.
+  VerifyWindowProperty(window, /*window_id*/ 0,
+                       /*restore_window_id*/ kTaskId1,
+                       /*hidden=*/false);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Simulate the system reboot before the task id is created.
+  Restore();
+  widget->CloseNow();
+
+  int32_t session_id3 =
+      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->SetArcSessionIdForWindowId(session_id3, session_id2);
+
+  // Create the window with the ghost window session to simulate the ghost
+  // window restoration for the app.
+  widget = CreateExoWindow(
+      base::StringPrintf("org.chromium.arc.session.%d", session_id3), app_id);
+  window = widget->GetNativeWindow();
+
+  SaveAppLaunchInfo(app_id, session_id3);
+  SaveWindowInfo(window);
+
+  // Simulate creating the task for the restored window.
+  int32_t kTaskId2 = 200;
+  CreateTask(app_id, kTaskId2, session_id3);
+  window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
+
+  VerifyWindowProperty(window, kTaskId2, session_id2, /*hidden=*/false);
+  VerifyWindowInfo(window, kActivationIndex);
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId2);
+  widget->CloseNow();
 
   ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
       test_full_restore_info_observer());

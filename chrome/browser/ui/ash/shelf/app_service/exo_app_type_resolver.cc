@@ -63,6 +63,9 @@ void ExoAppTypeResolver::PopulateProperties(
   if (task_id.has_value()) {
     restore_window_id = full_restore::GetArcRestoreWindowIdForTaskId(*task_id);
   } else {
+    DCHECK(session_id.has_value());
+    out_properties_container.SetProperty(full_restore::kGhostWindowSessionIdKey,
+                                         *session_id);
     restore_window_id =
         full_restore::GetArcRestoreWindowIdForSessionId(*session_id);
   }

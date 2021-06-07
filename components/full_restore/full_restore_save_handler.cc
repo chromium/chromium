@@ -175,15 +175,15 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
   if (!window_info.window)
     return;
 
-  int32_t window_id =
-      window_info.window->GetProperty(::full_restore::kWindowIdKey);
-
   if (window_info.window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
     if (arc_save_handler_)
-      arc_save_handler_->ModifyWindowInfo(window_id, window_info);
+      arc_save_handler_->ModifyWindowInfo(window_info);
     return;
   }
+
+  int32_t window_id =
+      window_info.window->GetProperty(::full_restore::kWindowIdKey);
 
   if (!SessionID::IsValidValue(window_id))
     return;

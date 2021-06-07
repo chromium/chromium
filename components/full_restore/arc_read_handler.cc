@@ -23,10 +23,16 @@ void ArcReadHandler::AddRestoreData(const std::string& app_id,
 }
 
 void ArcReadHandler::AddArcWindowCandidate(aura::Window* window) {
-  // If the ARC task is not created yet, add |window| to
-  // |arc_window_candidates_| to wait for the task to be created.
   if (!base::Contains(task_id_to_window_id_,
                       window->GetProperty(::full_restore::kWindowIdKey))) {
+    // Check `session_id` to see whether this is a ghost window.
+    int32_t session_id =
+        window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+    if (session_id >= kArcSessionIdOffsetForRestoredLaunching)
+      return;
+
+    // If the task hasn't been created, and this is not a ghost window, add
+    // `window` to `arc_window_candidates_` to wait for the task to be created.
     arc_window_candidates_.insert(window);
   }
 }
