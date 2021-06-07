@@ -42,9 +42,9 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
-    private static final int REVISION = 2;
+    private static final int REVISION = 3;
     private static final String REVISION_DESCRIPTION =
-            "Added RadioButtonWithDescriptionAndAuxButton to the test.";
+            "Use Google standard colors as the background.";
 
     @Rule
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()

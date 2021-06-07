@@ -35,7 +35,7 @@
             android:id="@+id/test_radio_icon_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_color_non_empty"
+            android:background="@color/modern_grey_100"
             app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
             app:primaryText="@string/test_string"
             app:descriptionText="@string/test_string" />
