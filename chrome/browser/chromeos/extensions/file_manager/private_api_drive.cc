@@ -59,6 +59,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/drive/auth_service.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -858,7 +859,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
   const CoreAccountId& account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   std::vector<std::string> scopes;
-  scopes.emplace_back("https://www.googleapis.com/auth/drive.readonly");
+  scopes.emplace_back(GaiaConstants::kDriveReadOnlyOAuth2Scope);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       browser_context()

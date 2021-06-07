@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -61,9 +62,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
-
-// The scope required for an access token in order to query ItemSuggest.
-constexpr char kDriveScope[] = "https://www.googleapis.com/auth/drive.readonly";
 
 bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
@@ -250,11 +248,10 @@ void ItemSuggestCache::UpdateCache() {
     return;
   }
 
-  signin::ScopeSet scopes({kDriveScope});
-
   // Fetch an OAuth2 access token.
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "launcher_item_suggest", identity_manager, scopes,
+      "launcher_item_suggest", identity_manager,
+      signin::ScopeSet({GaiaConstants::kDriveReadOnlyOAuth2Scope}),
       base::BindOnce(&ItemSuggestCache::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

@@ -119,6 +119,8 @@ const char kCryptAuthOAuth2Scope[] =
 
 // OAuth2 scope for access to Drive.
 const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
+
+// The scope required for an access token in order to query ItemSuggest.
 const char kDriveReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/drive.readonly";
 

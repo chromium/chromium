@@ -20,11 +20,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 
 namespace {
-// The scope required for an access token in order to query ItemSuggest.
-constexpr char kDriveScope[] = "https://www.googleapis.com/auth/drive.readonly";
 #if OS_LINUX
 constexpr char kPlatform[] = "LINUX";
 #elif OS_WIN
@@ -181,7 +180,8 @@ void DriveService::GetDriveFiles(GetFilesCallback callback) {
   }
 
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "ntp_drive_module", identity_manager_, signin::ScopeSet({kDriveScope}),
+      "ntp_drive_module", identity_manager_,
+      signin::ScopeSet({GaiaConstants::kDriveReadOnlyOAuth2Scope}),
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
