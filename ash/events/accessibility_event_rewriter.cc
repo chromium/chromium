@@ -10,6 +10,7 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
+#include "base/system/sys_info.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -29,8 +30,9 @@ ui::InputDeviceType GetInputDeviceType(
     return ui::INPUT_DEVICE_USB;
   if (switch_access_device_type == kSwitchAccessBluetoothDevice)
     return ui::INPUT_DEVICE_BLUETOOTH;
-
-  NOTREACHED();
+  // On Chrome OS emulated on Linux, the keyboard is always "UNKNOWN".
+  if (base::SysInfo::IsRunningOnChromeOS())
+    NOTREACHED();
   return ui::INPUT_DEVICE_UNKNOWN;
 }
 }  // namespace
