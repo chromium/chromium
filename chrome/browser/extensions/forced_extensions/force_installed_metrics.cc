@@ -295,7 +295,9 @@ void ReportDetailedFailureReasons(
     base::UmaHistogramEnumeration(
         "Extensions.ForceInstalledFailureCrxInstallError", detail);
   }
-  if (installation.unpacker_failure_reason) {
+  if (failure_reason ==
+      FailureReason::CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE) {
+    DCHECK(installation.unpacker_failure_reason);
     base::UmaHistogramEnumeration(
         "Extensions.ForceInstalledFailureSandboxUnpackFailureReason2",
         installation.unpacker_failure_reason.value(),
