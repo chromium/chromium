@@ -186,7 +186,6 @@
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
@@ -1177,14 +1176,6 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
       wake_lock_provider.InitWithNewPipeAndPassReceiver());
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeMLServiceForTest)) {
-    auto* fake_service_connection =
-        new chromeos::machine_learning::FakeServiceConnectionImpl();
-    chromeos::machine_learning::ServiceConnection::
-        UseFakeServiceConnectionForTesting(fake_service_connection);
-  }
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 

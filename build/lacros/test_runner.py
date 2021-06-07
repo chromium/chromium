@@ -305,7 +305,6 @@ def _RunTestWithAshChrome(args, forward_args):
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
-        '--use-fake-ml-service-for-test',
     ]
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
