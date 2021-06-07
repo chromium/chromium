@@ -2208,28 +2208,30 @@ void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
                                trackers);
 }
 
-bool WebFrameWidgetImpl::WillHandleGestureEvent(const WebGestureEvent& event) {
+void WebFrameWidgetImpl::WillHandleGestureEvent(const WebGestureEvent& event,
+                                                bool* suppress) {
   possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kTouch;
   possible_drag_event_info_.location =
       gfx::ToFlooredPoint(event.PositionInScreen());
 
-  bool move_cursor = false;
+  bool handle_as_cursor_control = false;
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin: {
       if (event.data.scroll_begin.cursor_control) {
         swipe_to_move_cursor_activated_ = true;
-        move_cursor = true;
+        handle_as_cursor_control = true;
       }
       break;
     }
     case WebInputEvent::Type::kGestureScrollUpdate: {
       if (swipe_to_move_cursor_activated_)
-        move_cursor = true;
+        handle_as_cursor_control = true;
       break;
     }
     case WebInputEvent::Type::kGestureScrollEnd: {
       if (swipe_to_move_cursor_activated_) {
         swipe_to_move_cursor_activated_ = false;
+        handle_as_cursor_control = true;
       }
       break;
     }
@@ -2238,16 +2240,15 @@ bool WebFrameWidgetImpl::WillHandleGestureEvent(const WebGestureEvent& event) {
   }
   // TODO(crbug.com/1140106): Place cursor for scroll begin other than just move
   // cursor.
-  if (move_cursor) {
+  if (handle_as_cursor_control) {
     WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
     if (focused_frame) {
       gfx::Point base(event.PositionInWidget().x(),
                       event.PositionInWidget().y());
       focused_frame->MoveCaretSelection(base);
     }
-    return true;
+    *suppress = true;
   }
-  return false;
 }
 
 void WebFrameWidgetImpl::WillHandleMouseEvent(const WebMouseEvent& event) {

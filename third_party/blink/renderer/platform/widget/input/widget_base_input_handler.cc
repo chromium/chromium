@@ -415,8 +415,9 @@ void WidgetBaseInputHandler::HandleInputEvent(
   if (WebInputEvent::IsGestureEventType(input_event.GetType())) {
     const WebGestureEvent& gesture_event =
         static_cast<const WebGestureEvent&>(input_event);
-    prevent_default = prevent_default ||
-                      widget_->client()->WillHandleGestureEvent(gesture_event);
+    bool suppress = false;
+    widget_->client()->WillHandleGestureEvent(gesture_event, &suppress);
+    prevent_default = prevent_default || suppress;
   }
 
   WebInputEventResult processed = prevent_default

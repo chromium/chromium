@@ -29,7 +29,8 @@ class StubWidgetBaseClient : public WidgetBaseClient {
     return WebInputEventResult::kNotHandled;
   }
   bool SupportsBufferedTouchEvents() override { return false; }
-  bool WillHandleGestureEvent(const WebGestureEvent&) override { return false; }
+  void WillHandleGestureEvent(const WebGestureEvent&, bool* suppress) override {
+  }
   void WillHandleMouseEvent(const WebMouseEvent&) override {}
   void ObserveGestureEventAndResult(const WebGestureEvent&,
                                     const gfx::Vector2dF&,

@@ -127,7 +127,8 @@ class WidgetBaseClient {
   virtual bool SupportsBufferedTouchEvents() = 0;
 
   virtual void DidHandleKeyEvent() {}
-  virtual bool WillHandleGestureEvent(const WebGestureEvent& event) = 0;
+  virtual void WillHandleGestureEvent(const WebGestureEvent& event,
+                                      bool* suppress) = 0;
   virtual void WillHandleMouseEvent(const WebMouseEvent& event) = 0;
   virtual void ObserveGestureEventAndResult(
       const WebGestureEvent& gesture_event,

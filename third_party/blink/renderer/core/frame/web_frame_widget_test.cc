@@ -242,7 +242,8 @@ class MockWebFrameWidgetImpl : public SimWebFrameWidget {
                     const cc::OverscrollBehavior& overscroll_behavior,
                     bool event_processed));
 
-  MOCK_METHOD1(WillHandleGestureEvent, bool(const WebGestureEvent& event));
+  MOCK_METHOD2(WillHandleGestureEvent,
+               void(const WebGestureEvent& event, bool* suppress));
 
   // mojom::blink::WidgetHost overrides:
   using SimWebFrameWidget::SetCursor;
@@ -284,7 +285,8 @@ class WebFrameWidgetImplSimTest : public SimTest {
         WebCoalescedInputEvent(event.Clone(), {}, {}, ui::LatencyInfo()),
         std::move(callback));
   }
-  bool OverscrollGestureEvent(const blink::WebGestureEvent& event) {
+  void WillHandleGestureEvent(const blink::WebGestureEvent& event,
+                              bool* suppress) {
     if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
       MockMainFrameWidget()->DidOverscroll(
           gfx::Vector2dF(event.data.scroll_update.delta_x,
@@ -294,9 +296,8 @@ class WebFrameWidgetImplSimTest : public SimTest {
           event.PositionInWidget(),
           gfx::Vector2dF(event.data.scroll_update.velocity_x,
                          event.data.scroll_update.velocity_y));
-      return true;
+      *suppress = true;
     }
-    return false;
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -335,9 +336,9 @@ TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
 }
 
 TEST_F(WebFrameWidgetImplSimTest, EventOverscroll) {
-  ON_CALL(*MockMainFrameWidget(), WillHandleGestureEvent(_))
+  ON_CALL(*MockMainFrameWidget(), WillHandleGestureEvent(_, _))
       .WillByDefault(testing::Invoke(
-          this, &WebFrameWidgetImplSimTest::OverscrollGestureEvent));
+          this, &WebFrameWidgetImplSimTest::WillHandleGestureEvent));
   EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
       .WillRepeatedly(::testing::Return(WebInputEventResult::kNotHandled));
 

@@ -634,7 +634,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       base::TimeTicks first_scroll_timestamp) override;
   void DidCompletePageScaleAnimation() override;
   void FocusChangeComplete() override;
-  bool WillHandleGestureEvent(const WebGestureEvent& event) override;
+  void WillHandleGestureEvent(const WebGestureEvent& event,
+                              bool* suppress) override;
   void WillHandleMouseEvent(const WebMouseEvent& event) override;
   void ObserveGestureEventAndResult(
       const WebGestureEvent& gesture_event,
