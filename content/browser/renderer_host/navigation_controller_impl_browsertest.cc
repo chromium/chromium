@@ -9824,6 +9824,7 @@ class AllowDialogInterceptor
   }
 
   void RunModalAlertDialog(const std::u16string& alert_message,
+                           bool disable_third_party_subframe_suppresion,
                            RunModalAlertDialogCallback callback) override {
     alert_callback_ = std::move(callback);
     alert_message_ = alert_message;
@@ -9831,7 +9832,7 @@ class AllowDialogInterceptor
 
   void ResumeProcessingModalAlertDialogHandling() {
     has_called_callback_ = true;
-    render_frame_host_->RunModalAlertDialog(alert_message_,
+    render_frame_host_->RunModalAlertDialog(alert_message_, false,
                                             std::move(alert_callback_));
   }
 

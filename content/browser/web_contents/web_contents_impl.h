@@ -603,6 +603,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            const std::u16string& message,
                            const std::u16string& default_prompt,
                            JavaScriptDialogType dialog_type,
+                           bool disable_third_party_subframe_suppresion,
                            JavaScriptDialogCallback response_callback) override;
   void RunBeforeUnloadConfirm(
       RenderFrameHostImpl* render_frame_host,

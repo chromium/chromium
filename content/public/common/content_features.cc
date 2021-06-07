@@ -765,7 +765,7 @@ const base::Feature kSubresourceWebBundles{"SubresourceWebBundles",
 // is not same origin with the main frame.
 const base::Feature kSuppressDifferentOriginSubframeJSDialogs{
     "SuppressDifferentOriginSubframeJSDialogs",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Dispatch touch events to "SyntheticGestureController" for events from
 // Devtool Protocol Input.dispatchTouchEvent to simulate touch events close to

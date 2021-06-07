@@ -1831,11 +1831,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ResourceTimingInfoPtr timing) override;
   void DidFinishDocumentLoad() override;
   void RunModalAlertDialog(const std::u16string& alert_message,
+                           bool disable_third_party_subframe_suppresion,
                            RunModalAlertDialogCallback callback) override;
   void RunModalConfirmDialog(const std::u16string& alert_message,
+                             bool disable_third_party_subframe_suppresion,
                              RunModalConfirmDialogCallback callback) override;
   void RunModalPromptDialog(const std::u16string& alert_message,
                             const std::u16string& default_value,
+                            bool disable_third_party_subframe_suppresion,
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
@@ -2832,6 +2835,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RunJavaScriptDialog(const std::u16string& message,
                            const std::u16string& default_prompt,
                            JavaScriptDialogType dialog_type,
+                           bool disable_third_party_subframe_suppresion,
                            JavaScriptDialogCallback callback);
 
   // Callback function used to handle the dialog being closed. It will reset

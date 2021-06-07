@@ -385,13 +385,15 @@ interface LocalFrameHost {
 
   // A request to run a JavaScript dialog displaying |alert_message|.
   [Sync]
-  RunModalAlertDialog(mojo_base.mojom.String16 alert_message) => ();
+  RunModalAlertDialog(mojo_base.mojom.String16 alert_message,
+                      bool disable_third_party_subframe_suppresion) => ();
 
   // A request to run a JavaScript dialog displaying |alert_message|.
   // |success| will be true if the user clicked 'OK', false if the
   // dialog was canceled.
   [Sync]
-  RunModalConfirmDialog(mojo_base.mojom.String16 alert_message) =>
+  RunModalConfirmDialog(mojo_base.mojom.String16 alert_message,
+                        bool disable_third_party_subframe_suppresion) =>
                         (bool success);
 
   // A request to run a confirm JavaScript dialog displaying
@@ -401,7 +403,8 @@ interface LocalFrameHost {
   // the editable text area.
   [Sync]
   RunModalPromptDialog(mojo_base.mojom.String16 alert_message,
-                       mojo_base.mojom.String16 default_value) =>
+                       mojo_base.mojom.String16 default_value,
+                       bool disable_third_party_subframe_suppresion) =>
                        (bool success, mojo_base.mojom.String16 result);
 
   // A request to run a confirmation JavaScript dialog. |is_reload|

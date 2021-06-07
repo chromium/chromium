@@ -4010,6 +4010,7 @@ void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
 
 void RenderFrameHostImpl::RunModalAlertDialog(
     const std::u16string& alert_message,
+    bool disable_third_party_subframe_suppresion,
     RunModalAlertDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalAlertDialogCallback response_callback, bool success,
@@ -4021,11 +4022,13 @@ void RenderFrameHostImpl::RunModalAlertDialog(
       std::move(response_callback));
   RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_ALERT,
+                      disable_third_party_subframe_suppresion,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalConfirmDialog(
     const std::u16string& alert_message,
+    bool disable_third_party_subframe_suppresion,
     RunModalConfirmDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalConfirmDialogCallback response_callback, bool success,
@@ -4037,22 +4040,25 @@ void RenderFrameHostImpl::RunModalConfirmDialog(
       std::move(response_callback));
   RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_CONFIRM,
+                      disable_third_party_subframe_suppresion,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalPromptDialog(
     const std::u16string& alert_message,
     const std::u16string& default_value,
+    bool disable_third_party_subframe_suppresion,
     RunModalPromptDialogCallback response_callback) {
-  RunJavaScriptDialog(alert_message, default_value,
-                      JAVASCRIPT_DIALOG_TYPE_PROMPT,
-                      std::move(response_callback));
+  RunJavaScriptDialog(
+      alert_message, default_value, JAVASCRIPT_DIALOG_TYPE_PROMPT,
+      disable_third_party_subframe_suppresion, std::move(response_callback));
 }
 
 void RenderFrameHostImpl::RunJavaScriptDialog(
     const std::u16string& message,
     const std::u16string& default_prompt,
     JavaScriptDialogType dialog_type,
+    bool disable_third_party_subframe_suppresion,
     JavaScriptDialogCallback ipc_response_callback) {
   // Don't show the dialog if it's triggered on a non-active RenderFrameHost.
   // This happens when the RenderFrameHost is pending deletion or in the
@@ -4068,6 +4074,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
 
   delegate_->RunJavaScriptDialog(
       this, message, default_prompt, dialog_type,
+      disable_third_party_subframe_suppresion,
       base::BindOnce(&RenderFrameHostImpl::JavaScriptDialogClosed,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(ipc_response_callback)));

@@ -3035,8 +3035,9 @@ class AlertDialogMockLocalFrameHost : public LocalFrameHostInterceptor {
       blink::AssociatedInterfaceProvider* provider)
       : LocalFrameHostInterceptor(provider) {}
 
-  MOCK_METHOD2(RunModalAlertDialog,
+  MOCK_METHOD3(RunModalAlertDialog,
                void(const std::u16string& alert_message,
+                    bool disable_third_party_subframe_suppresion,
                     RunModalAlertDialogCallback callback));
 };
 }  // namespace
@@ -3060,8 +3061,8 @@ TEST_F(RenderViewImplModalDialogTest, ModalDialogs) {
   LoadHTML("<body></body>");
   std::u16string alert_message = u"Please don't crash";
   EXPECT_CALL(*alert_mock_frame_host(),
-              RunModalAlertDialog(alert_message, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>());
+              RunModalAlertDialog(alert_message, false, testing::_))
+      .WillOnce(base::test::RunOnceCallback<2>());
   frame()->GetWebFrame()->Alert(WebString::FromUTF16(alert_message));
 }
 
