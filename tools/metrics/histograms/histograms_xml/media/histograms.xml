@@ -3574,7 +3574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderFirstFrameLatencyMs" units="ms"
-    expires_after="2021-06-02">
+    expires_after="2021-07-02">
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
