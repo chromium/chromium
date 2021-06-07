@@ -193,7 +193,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
     // instead of holding it here.
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
     // The ids of extensions that have in-progress update checks.
-    std::set<ExtensionId> in_progress_ids_;
+    std::set<ExtensionId> in_progress_ids;
   };
 
   // Ensure that we have a valid ExtensionDownloader instance referenced by

@@ -307,7 +307,7 @@ void ExtensionUpdater::AddToDownloader(
         update_check_params->update_info[extension_id] = ExtensionUpdateData();
       } else if (AddExtensionToDownloader(extension, request_id,
                                           fetch_priority)) {
-        request.in_progress_ids_.insert(extension_id);
+        request.in_progress_ids.insert(extension_id);
       }
     }
   }
@@ -427,7 +427,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                      is_high_priority_extension_pending
                          ? ManifestFetchData::FOREGROUND
                          : params.fetch_priority)) {
-        request.in_progress_ids_.insert(pending_id);
+        request.in_progress_ids.insert(pending_id);
         InstallStageTracker::Get(profile_)->ReportInstallationStage(
             pending_id, InstallStageTracker::Stage::DOWNLOADING);
       } else {
@@ -458,7 +458,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
           update_check_params.update_info[id] = ExtensionUpdateData();
         } else if (AddExtensionToDownloader(*extension, request_id,
                                             params.fetch_priority)) {
-          request.in_progress_ids_.insert(extension->id());
+          request.in_progress_ids.insert(extension->id());
         }
       }
     }
@@ -469,7 +469,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // send out a notification. So check before we call StartAllPending if any
   // extensions are going to be updated, and use that to figure out if
   // NotifyIfFinished should be called.
-  bool empty_downloader = request.in_progress_ids_.empty();
+  bool empty_downloader = request.in_progress_ids.empty();
   bool awaiting_update_service = !update_check_params.update_info.empty();
 
   request.awaiting_update_service = awaiting_update_service;
@@ -555,7 +555,7 @@ void ExtensionUpdater::OnExtensionDownloadFailed(
   for (const int request_id : request_ids) {
     InProgressCheck& request = requests_in_progress_[request_id];
     install_immediately |= request.install_immediately;
-    request.in_progress_ids_.erase(id);
+    request.in_progress_ids.erase(id);
     NotifyIfFinished(request_id);
   }
 
@@ -588,7 +588,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
 
   FetchedCRXFile fetched(file, file_ownership_passed, request_ids,
                          std::move(callback));
-  // InstallCRXFile() removes extensions from |in_progress_ids_| after starting
+  // InstallCRXFile() removes extensions from |in_progress_ids| after starting
   // the crx installer.
   InstallCRXFile(std::move(fetched));
 }
@@ -726,7 +726,7 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
   } else {
     for (const int request_id : crx_file.request_ids) {
       InProgressCheck& request = requests_in_progress_[request_id];
-      request.in_progress_ids_.erase(crx_file.info.extension_id);
+      request.in_progress_ids.erase(crx_file.info.extension_id);
     }
     request_ids.insert(crx_file.request_ids.begin(),
                        crx_file.request_ids.end());
@@ -761,7 +761,7 @@ void ExtensionUpdater::Observe(int type,
   } else {
     for (const int request_id : crx_file.request_ids) {
       InProgressCheck& request = requests_in_progress_[request_id];
-      request.in_progress_ids_.erase(crx_file.info.extension_id);
+      request.in_progress_ids.erase(crx_file.info.extension_id);
       NotifyIfFinished(request_id);
     }
     if (!crx_file.callback.is_null()) {
@@ -790,7 +790,7 @@ void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
 void ExtensionUpdater::NotifyIfFinished(int request_id) {
   DCHECK(base::Contains(requests_in_progress_, request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
-  if (!request.in_progress_ids_.empty() || request.awaiting_update_service)
+  if (!request.in_progress_ids.empty() || request.awaiting_update_service)
     return;  // This request is not done yet.
   VLOG(2) << "Finished update check " << request_id;
   if (!request.callback.is_null())
