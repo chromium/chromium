@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -497,7 +498,7 @@ public class AutofillAssistantPersonalDataManagerTest {
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -508,19 +509,19 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
                                         SelectorProto.newBuilder().addFilters(
                                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                                         "#profile_name"))))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Address")))
@@ -533,13 +534,17 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withText("Continue")).check(matches(isEnabled()));
         // Select John Doe.
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(withText(containsString("John Doe")), isDisplayed());
+        waitUntilViewMatchesCondition(
+                withText(containsString("John Doe")), isDisplayingAtLeast(90));
         onView(withText(containsString("John Doe"))).perform(click());
         waitUntilViewMatchesCondition(
                 withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
         // Edit John Doe to Jane Doe (does not collapse the list after editing).
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(withText(containsString("John Doe")), isDisplayed());
+        waitUntilViewMatchesCondition(
+                allOf(withContentDescription("Edit contact info"),
+                        isNextAfterSibling(hasDescendant(withText(containsString("John Doe"))))),
+                isDisplayingAtLeast(90));
         onView(allOf(withContentDescription("Edit contact info"),
                        isNextAfterSibling(hasDescendant(withText(containsString("John Doe"))))))
                 .perform(click());
