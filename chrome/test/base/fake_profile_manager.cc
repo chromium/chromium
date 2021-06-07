@@ -23,7 +23,11 @@ std::unique_ptr<Profile> FakeProfileManager::CreateProfileHelper(
     const base::FilePath& path) {
   if (!base::PathExists(path) && !base::CreateDirectory(path))
     return nullptr;
-  return BuildTestingProfile(path, nullptr);
+  auto profile = BuildTestingProfile(path, nullptr);
+  // Add the profile to |profiles_info_|. We need to do this manually, because
+  // TestingProfile does not call OnProfileCreationStarted().
+  OnProfileCreationStarted(profile.get(), Profile::CREATE_MODE_SYNCHRONOUS);
+  return profile;
 }
 
 std::unique_ptr<Profile> FakeProfileManager::CreateProfileAsyncHelper(

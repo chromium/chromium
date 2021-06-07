@@ -155,8 +155,9 @@ class SimpleURLLoaderHelper {
 
 class MockProfileDelegate : public Profile::Delegate {
  public:
-  MOCK_METHOD1(OnPrefsLoaded, void(Profile*));
-  MOCK_METHOD3(OnProfileCreated, void(Profile*, bool, bool));
+  MOCK_METHOD2(OnProfileCreationStarted, void(Profile*, Profile::CreateMode));
+  MOCK_METHOD4(OnProfileCreationFinished,
+               void(Profile*, Profile::CreateMode, bool, bool));
 };
 
 class ProfileDestructionWatcher : public ProfileObserver {
@@ -356,7 +357,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNewProfileSynchronous) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true));
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_SYNCHRONOUS, true, true));
 
   {
     std::unique_ptr<Profile> profile(CreateProfile(
@@ -381,7 +384,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileSynchronous) {
   CreatePrefsFileInDirectory(temp_dir.GetPath());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, false));
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_SYNCHRONOUS, true, false));
 
   {
     std::unique_ptr<Profile> profile(CreateProfile(
@@ -408,7 +413,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 
   MockProfileDelegate delegate;
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true))
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
@@ -436,7 +443,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 
   MockProfileDelegate delegate;
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, false))
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_ASYNCHRONOUS, true, false))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
@@ -460,7 +469,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DISABLED_ProfileReadmeCreated) {
 
   MockProfileDelegate delegate;
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true))
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
@@ -485,7 +496,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ExitType) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true));
+  EXPECT_CALL(delegate, OnProfileCreationFinished(
+                            testing::NotNull(),
+                            Profile::CREATE_MODE_SYNCHRONOUS, true, true));
   {
     std::unique_ptr<Profile> profile(CreateProfile(
         temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));

@@ -188,35 +188,6 @@ invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
   return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
 }
 
-// Helper class to ensure a profile is registered before the manager is
-// notified of creation.
-class SyncProfileDelegate : public Profile::Delegate {
- public:
-  explicit SyncProfileDelegate(
-      base::OnceCallback<void(Profile*)> on_profile_created_callback)
-      : on_profile_created_callback_(std::move(on_profile_created_callback)) {}
-  ~SyncProfileDelegate() override = default;
-
-  void OnProfileCreated(Profile* profile,
-                        bool success,
-                        bool is_new_profile) override {
-    g_browser_process->profile_manager()->RegisterTestingProfile(
-        base::WrapUnique(profile), true);
-
-    // Perform any custom work needed before the profile is initialized.
-    if (!on_profile_created_callback_.is_null())
-      std::move(on_profile_created_callback_).Run(profile);
-
-    g_browser_process->profile_manager()->OnProfileCreated(profile, success,
-                                                           is_new_profile);
-  }
-
- private:
-  base::OnceCallback<void(Profile*)> on_profile_created_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncProfileDelegate);
-};
-
 instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
     Profile* profile,
     std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
@@ -467,12 +438,9 @@ bool SyncTest::CreateProfile(int index) {
     InitializeProfile(index, profile);
 #else
     // Without need of real GAIA authentication, we create new test profiles.
-    // For test profiles, a custom delegate needs to be used to do the
-    // initialization work before the profile is registered.
-    profile_delegates_[index] =
-        std::make_unique<SyncProfileDelegate>(base::BindOnce(
-            &SyncTest::InitializeProfile, base::Unretained(this), index));
-    Profile* profile = MakeTestProfile(profile_path, index);
+    Profile* profile =
+        g_browser_process->profile_manager()->GetProfile(profile_path);
+    InitializeProfile(index, profile);
 #endif
 
     SetupMockGaiaResponsesForProfile(profile);
@@ -511,13 +479,6 @@ Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
   profile_manager->CreateProfileAsync(profile_path, create_callback);
   run_loop.Run();
   return profile_manager->GetProfileByPath(profile_path);
-}
-
-Profile* SyncTest::MakeTestProfile(base::FilePath profile_path, int index) {
-  std::unique_ptr<Profile> profile =
-      Profile::CreateProfile(profile_path, profile_delegates_[index].get(),
-                             Profile::CREATE_MODE_SYNCHRONOUS);
-  return profile.release();
 }
 
 Profile* SyncTest::GetProfile(int index) {
@@ -634,7 +595,6 @@ bool SyncTest::SetupClients() {
 
   // Create the required number of sync profiles, browsers and clients.
   profiles_.resize(num_clients_);
-  profile_delegates_.resize(num_clients_ + 1);  // + 1 for the verifier.
   clients_.resize(num_clients_);
   fake_server_invalidation_observers_.resize(num_clients_);
 
@@ -682,10 +642,8 @@ bool SyncTest::SetupClients() {
   if (UseVerifier()) {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    profile_delegates_[num_clients_] =
-        std::make_unique<SyncProfileDelegate>(base::DoNothing());
-    verifier_ = MakeTestProfile(
-        user_data_dir.Append(FILE_PATH_LITERAL("Verifier")), num_clients_);
+    verifier_ = g_browser_process->profile_manager()->GetProfile(
+        user_data_dir.Append(FILE_PATH_LITERAL("Verifier")));
     WaitForDataModels(verifier());
   }
 
@@ -939,7 +897,6 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
 
 void SyncTest::ClearProfiles() {
   profiles_.clear();
-  profile_delegates_.clear();
   scoped_temp_dirs_.clear();
 #if !defined(OS_ANDROID)
   browsers_.clear();

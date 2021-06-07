@@ -68,11 +68,11 @@ void SetWasRun(bool* was_run) {
 // profile creation callbacks, and to provide a way to override profile creation
 // result.
 // An instance can be passed to TestingProfile as delegate - when the testing
-// profile creation is done, i.e. when the delegate's |OnProfileCreated| is
-// called this will remember the result. The creation result will be forwarded
-// to the actual (wrapped) delegate when |WaitForCreationAndOverrideResponse| is
-// called. This method will additionally wait until the profile creation
-// finishes.
+// profile creation is done, i.e. when the delegate's
+// |OnProfileCreationFinished| is called this will remember the result. The
+// creation result will be forwarded to the actual (wrapped) delegate when
+// |WaitForCreationAndOverrideResponse| is called. This method will additionally
+// wait until the profile creation finishes.
 class PendingProfileCreation : public Profile::Delegate {
  public:
   PendingProfileCreation() {}
@@ -131,15 +131,20 @@ class PendingProfileCreation : public Profile::Delegate {
     Profile* profile = profile_;
     profile_ = nullptr;
 
-    delegate->OnProfileCreated(profile, success, is_new_profile_);
+    delegate->OnProfileCreationFinished(
+        profile, Profile::CREATE_MODE_ASYNCHRONOUS, success, is_new_profile_);
     return true;
   }
 
+  void OnProfileCreationStarted(Profile* profile,
+                                Profile::CreateMode create_mode) override {}
+
   // Called when the profile is created - it caches the result, and quits the
   // run loop potentially set in |WaitForCreationAndOverrideResponse|.
-  void OnProfileCreated(Profile* profile,
-                        bool success,
-                        bool is_new_profile) override {
+  void OnProfileCreationFinished(Profile* profile,
+                                 Profile::CreateMode create_mode,
+                                 bool success,
+                                 bool is_new_profile) override {
     ASSERT_FALSE(profile_);
 
     profile_ = profile;

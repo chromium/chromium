@@ -566,6 +566,9 @@ ProfileImpl::ProfileImpl(
   }
 #endif
 
+  if (delegate_)
+    delegate_->OnProfileCreationStarted(this, create_mode);
+
   if (async_prefs) {
     // Wait for the notification that prefs has been loaded
     // (successfully or not).  Note that we can use base::Unretained
@@ -673,7 +676,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   key_->SetPrefs(prefs_.get());
 }
 
-void ProfileImpl::DoFinalInit() {
+void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   TRACE_EVENT0("browser", "ProfileImpl::DoFinalInit");
 
   PrefService* prefs = GetPrefs();
@@ -797,14 +800,16 @@ void ProfileImpl::DoFinalInit() {
                               std::make_unique<PrefsInternalsSource>(this));
 
   if (delegate_) {
-    TRACE_EVENT0("browser", "ProfileImpl::DoFileInit:DelegateOnProfileCreated");
+    TRACE_EVENT0("browser",
+                 "ProfileImpl::DoFinalInit:DelegateOnProfileCreationFinished");
     // Fails if the browser is shutting down. This is done to avoid
     // launching new UI, finalising profile creation, etc. which
     // would trigger a crash down the line. See ...
     const bool shutting_down = g_browser_process->IsShuttingDown();
-    delegate_->OnProfileCreated(this, !shutting_down, IsNewProfile());
+    delegate_->OnProfileCreationFinished(this, create_mode, !shutting_down,
+                                         IsNewProfile());
     // The current Profile may be immediately deleted as part of
-    // the call to OnProfileCreated(...) if the initialisation is
+    // the call to OnProfileCreationFinished(...) if the initialisation is
     // reported as a failure, thus no code should be executed past
     // that point.
     if (shutting_down)
@@ -1060,7 +1065,7 @@ ExtensionSpecialStoragePolicy* ProfileImpl::GetExtensionSpecialStoragePolicy() {
 #endif
 }
 
-void ProfileImpl::OnLocaleReady() {
+void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   TRACE_EVENT0("browser", "ProfileImpl::OnLocaleReady");
 
   // Migrate obsolete prefs.
@@ -1097,14 +1102,14 @@ void ProfileImpl::OnLocaleReady() {
       this);
 
   ChromeVersionService::OnProfileLoaded(prefs_.get(), IsNewProfile());
-  DoFinalInit();
+  DoFinalInit(create_mode);
 }
 
 void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
   TRACE_EVENT0("browser", "ProfileImpl::OnPrefsLoaded");
   if (!success) {
     if (delegate_)
-      delegate_->OnProfileCreated(this, false, false);
+      delegate_->OnProfileCreationFinished(this, create_mode, false, false);
     return;
   }
 
@@ -1113,7 +1118,7 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
   // the line. See crbug.com/625646
   if (g_browser_process->IsShuttingDown()) {
     if (delegate_)
-      delegate_->OnProfileCreated(this, false, false);
+      delegate_->OnProfileCreationFinished(this, create_mode, false, false);
     return;
   }
 
@@ -1121,14 +1126,14 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
   if (create_mode == CREATE_MODE_SYNCHRONOUS) {
     // Synchronous create mode implies that either it is restart after crash,
     // or we are in tests. In both cases the first loaded locale is correct.
-    OnLocaleReady();
+    OnLocaleReady(create_mode);
   } else {
     ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
-        this,
-        base::BindOnce(&ProfileImpl::OnLocaleReady, base::Unretained(this)));
+        this, base::BindOnce(&ProfileImpl::OnLocaleReady,
+                             base::Unretained(this), create_mode));
   }
 #else
-  OnLocaleReady();
+  OnLocaleReady(create_mode);
 #endif
 }
 

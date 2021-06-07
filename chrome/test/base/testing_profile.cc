@@ -500,7 +500,8 @@ void TestingProfile::FinishInit() {
     profile_manager->InitProfileUserPrefs(this);
 
   if (delegate_) {
-    delegate_->OnProfileCreated(this, true, false);
+    delegate_->OnProfileCreationFinished(this, CREATE_MODE_ASYNCHRONOUS, true,
+                                         false);
   } else {
     // It is the role of the delegate to ensure that the signout allowed is
     // properly updated after the profile is create is initialized.

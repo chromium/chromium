@@ -186,10 +186,15 @@ class Profile : public content::BrowserContext {
    public:
     virtual ~Delegate();
 
+    // Called when creation of the profile is started.
+    virtual void OnProfileCreationStarted(Profile* profile,
+                                          CreateMode create_mode) = 0;
+
     // Called when creation of the profile is finished.
-    virtual void OnProfileCreated(Profile* profile,
-                                  bool success,
-                                  bool is_new_profile) = 0;
+    virtual void OnProfileCreationFinished(Profile* profile,
+                                           CreateMode create_mode,
+                                           bool success,
+                                           bool is_new_profile) = 0;
   };
 
   // Key used to bind profile to the widget with which it is associated.

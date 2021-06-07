@@ -402,10 +402,6 @@ class SyncTest : public PlatformBrowserTest {
   void OnBrowserRemoved(Browser* browser);
 #endif
 
-  // Helper to Profile::CreateProfile that handles path creation. It creates
-  // a profile then registers it as a testing profile.
-  Profile* MakeTestProfile(base::FilePath profile_path, int index);
-
   // Helper to block the current thread while the data models sync depends on
   // finish loading.
   void WaitForDataModels(Profile* profile);
@@ -480,11 +476,6 @@ class SyncTest : public PlatformBrowserTest {
   // data contained within its own subdirectory under the chrome user data
   // directory. Profiles are owned by the ProfileManager.
   std::vector<Profile*> profiles_;
-
-  // Collection of profile delegates. Only used for test profiles, which
-  // require a custom profile delegate to ensure initialization happens at the
-  // right time.
-  std::vector<std::unique_ptr<Profile::Delegate>> profile_delegates_;
 
   // List of temporary directories that need to be deleted when the test is
   // completed, used for two-client tests with external server.
