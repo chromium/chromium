@@ -554,10 +554,15 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
       break;
   }
   auto window_state = WindowVisibilityState::kShowAndActivateWindow;
-  if (show_state == ui::SHOW_STATE_INACTIVE)
+  if (show_state == ui::SHOW_STATE_INACTIVE) {
     window_state = WindowVisibilityState::kShowInactive;
-  else if (show_state == ui::SHOW_STATE_MINIMIZED)
+  } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
     window_state = WindowVisibilityState::kHideWindow;
+  } else if (show_state == ui::SHOW_STATE_DEFAULT) {
+    window_state = delegate_->CanActivate()
+                       ? window_state
+                       : WindowVisibilityState::kShowInactive;
+  }
   GetNSWindowMojo()->SetVisibilityState(window_state);
 
   // Ignore the SetInitialFocus() result. BridgedContentView should get
