@@ -7,7 +7,6 @@ include_rules = [
   "+android_webview/proto",
   "+android_webview/test/android_webview_unittests_jni",
   "+cc",
-  "+components/android_autofill/android",
   "+components/android_autofill/browser",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",

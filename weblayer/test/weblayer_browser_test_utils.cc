@@ -15,8 +15,11 @@
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
-#include "weblayer/test/stub_autofill_provider.h"
 #include "weblayer/test/test_navigation_observer.h"
+
+#if defined(OS_ANDROID)
+#include "weblayer/test/stub_autofill_provider.h"
+#endif  // defined(OS_ANDROID)
 
 namespace weblayer {
 
@@ -89,6 +92,7 @@ const std::u16string& GetTitle(Shell* shell) {
   return tab_impl->web_contents()->GetTitle();
 }
 
+#if defined(OS_ANDROID)
 void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
@@ -97,6 +101,7 @@ void InitializeAutofillWithEventForwarding(
   new StubAutofillProvider(tab_impl->web_contents(), on_received_form_data);
   tab_impl->InitializeAutofillForTests();
 }
+#endif  // defined(OS_ANDROID)
 
 void ActivateSubresourceFilterInWebContentsForURL(
     content::WebContents* web_contents,

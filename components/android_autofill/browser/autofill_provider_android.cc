@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/android/autofill_provider_android.h"
+#include "components/android_autofill/browser/autofill_provider_android.h"
 
 #include <memory>
 
@@ -10,9 +10,9 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "components/android_autofill/android/form_data_android.h"
-#include "components/android_autofill/android/jni_headers/AutofillProvider_jni.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
+#include "components/android_autofill/browser/form_data_android.h"
+#include "components/android_autofill/browser/jni_headers/AutofillProvider_jni.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_
-#define COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +32,9 @@ class AutofillProviderAndroid : public AutofillProvider {
       content::WebContents* web_contents);
 
   ~AutofillProviderAndroid() override;
+
+  AutofillProviderAndroid(const AutofillProviderAndroid&) = delete;
+  AutofillProviderAndroid& operator=(const AutofillProviderAndroid&) = delete;
 
   // Attach this detached object to |jcaller|.
   void AttachToJavaAutofillProvider(
@@ -135,9 +138,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   bool check_submission_;
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProviderAndroid);
 };
 }  // namespace autofill
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_

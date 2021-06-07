@@ -15,8 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/layers/layer.h"
-#include "components/android_autofill/browser/android_autofill_manager.h"
-#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/blocked_content/popup_blocker.h"
@@ -103,7 +101,9 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/trace_event/trace_event.h"
-#include "components/android_autofill/android/autofill_provider_android.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
+#include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/browser_ui/sms/android/sms_infobar.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
@@ -1358,7 +1358,6 @@ void TabImpl::SetBrowserControlsConstraint(
       base::android::AttachCurrentThread(), java_impl_,
       static_cast<int>(reason), static_cast<int>(constraint));
 }
-#endif
 
 void TabImpl::InitializeAutofillForTests() {
   InitializeAutofillDriver();
@@ -1375,7 +1374,6 @@ void TabImpl::InitializeAutofillDriver() {
   autofill::AutofillManager::AutofillDownloadManagerState
       enable_autofill_download_manager =
           autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
-#if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(
           autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
       (!autofill::AutofillProvider::
@@ -1383,13 +1381,14 @@ void TabImpl::InitializeAutofillDriver() {
     enable_autofill_download_manager =
         autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
   }
-#endif  // OS_ANDROID
 
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
       i18n::GetApplicationLocale(), enable_autofill_download_manager,
       base::BindRepeating(&autofill::AndroidAutofillManager::Create));
 }
+
+#endif  // defined(OS_ANDROID)
 
 find_in_page::FindTabHelper* TabImpl::GetFindTabHelper() {
   return find_in_page::FindTabHelper::FromWebContents(web_contents_.get());

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_
-#define COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -25,6 +25,9 @@ class FormDataAndroid {
       base::RepeatingCallback<gfx::RectF(const gfx::RectF&)>;
 
   FormDataAndroid(const FormData& form, const TransformCallback& callback);
+  FormDataAndroid(const FormDataAndroid&) = delete;
+  FormDataAndroid& operator=(const FormDataAndroid&) = delete;
+
   virtual ~FormDataAndroid();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer(
@@ -65,10 +68,8 @@ class FormDataAndroid {
   JavaObjectWeakGlobalRef java_ref_;
   // keep track of index when popping up fields to Java.
   size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormDataAndroid);
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_H_
