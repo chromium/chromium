@@ -737,8 +737,6 @@ class BASE_EXPORT DictionaryValue : public Value {
 
   // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
-  // DEPRECATED, use `Value::FindBoolKey(key)` instead.
-  bool GetBooleanWithoutPathExpansion(StringPiece key, bool* out_value) const;
   // DEPRECATED, use `Value::FindDoubleKey(key)` instead.
   bool GetDoubleWithoutPathExpansion(StringPiece key, double* out_value) const;
   // DEPRECATED, use `Value::FindStringKey(key)` instead.
