@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -478,9 +477,7 @@ Error BuildValue(Cursor<CharType>* cursor,
       bool ok;
       double value = CharactersToDouble(token_start.pos,
                                         cursor->pos - token_start.pos, &ok);
-      if (Decimal::FromDouble(value).IsInfinity())
-        ok = false;
-      if (!ok) {
+      if (!ok || std::isinf(value)) {
         *cursor = token_start;
         return Error::kSyntaxError;
       }
