@@ -20,6 +20,12 @@ CrosSpeechRecognitionServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 CrosSpeechRecognitionServiceFactory*
+CrosSpeechRecognitionServiceFactory::GetInstanceForTest() {
+  return GetInstance();
+}
+
+// static
+CrosSpeechRecognitionServiceFactory*
 CrosSpeechRecognitionServiceFactory::GetInstance() {
   static base::NoDestructor<CrosSpeechRecognitionServiceFactory> instance;
   return instance.get();

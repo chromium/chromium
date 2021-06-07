@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/projector/projector_client.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
@@ -23,6 +24,9 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public speech::SodaInstaller::Observer {
  public:
+  // Used by unittests and browsertests to set projector controller.
+  explicit ProjectorClientImpl(ash::ProjectorController* controller);
+
   ProjectorClientImpl();
   ProjectorClientImpl(const ProjectorClientImpl&) = delete;
   ProjectorClientImpl& operator=(const ProjectorClientImpl&) = delete;
@@ -58,6 +62,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   }
 
  private:
+  ash::ProjectorController* const controller_;
+
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   base::ScopedObservation<speech::SodaInstaller,

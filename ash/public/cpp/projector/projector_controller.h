@@ -17,6 +17,19 @@ class ProjectorClient;
 // Interface to control projector in ash.
 class ASH_PUBLIC_EXPORT ProjectorController {
  public:
+  class ScopedInstanceResetterForTest {
+   public:
+    ScopedInstanceResetterForTest();
+    ScopedInstanceResetterForTest(const ScopedInstanceResetterForTest&) =
+        delete;
+    ScopedInstanceResetterForTest& operator=(
+        const ScopedInstanceResetterForTest&) = delete;
+    ~ScopedInstanceResetterForTest();
+
+   private:
+    ProjectorController* const controller_;
+  };
+
   ProjectorController();
   ProjectorController(const ProjectorController&) = delete;
   ProjectorController& operator=(const ProjectorController&) = delete;
@@ -37,12 +50,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   // Called when there is an error in transcription.
   virtual void OnTranscriptionError() = 0;
-
-  // Sets projector toolbar visibility.
-  virtual void SetProjectorToolsVisible(bool is_visible) = 0;
-
-  // Returns true if Projector is eligible to start a new session.
-  virtual bool IsEligible() const = 0;
 };
 
 }  // namespace ash

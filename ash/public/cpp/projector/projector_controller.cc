@@ -27,4 +27,15 @@ ProjectorController* ProjectorController::Get() {
   return g_instance;
 }
 
+ProjectorController::ScopedInstanceResetterForTest::
+    ScopedInstanceResetterForTest()
+    : controller_(g_instance) {
+  g_instance = nullptr;
+}
+
+ProjectorController::ScopedInstanceResetterForTest::
+    ~ScopedInstanceResetterForTest() {
+  g_instance = controller_;
+}
+
 }  // namespace ash

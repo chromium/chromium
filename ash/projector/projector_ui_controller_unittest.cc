@@ -47,9 +47,7 @@ class ProjectorUiControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ =
-        static_cast<ProjectorControllerImpl*>(ProjectorController::Get())
-            ->ui_controller();
+    controller_ = Shell::Get()->projector_controller()->ui_controller();
   }
 
  protected:
@@ -234,9 +232,11 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
   base::HistogramTester histogram_tester;
 
   MockProjectorClient mock_client;
-  ProjectorController::Get()->SetClient(&mock_client);
-  ProjectorController::Get()->OnSpeechRecognitionAvailable(/*available=*/true);
-  ProjectorController::Get()->SetProjectorToolsVisible(/*is_visible=*/true);
+  Shell::Get()->projector_controller()->SetClient(&mock_client);
+  Shell::Get()->projector_controller()->OnSpeechRecognitionAvailable(
+      /*available=*/true);
+  Shell::Get()->projector_controller()->SetProjectorToolsVisible(
+      /*is_visible=*/true);
   histogram_tester.ExpectUniqueSample(
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarOpened, /*count=*/1);
@@ -338,7 +338,8 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       /*sample=*/ProjectorToolbar::kToolbarLocationBottomLeft,
       /*count=*/1);
 
-  ProjectorController::Get()->SetProjectorToolsVisible(/*is_visible=*/false);
+  Shell::Get()->projector_controller()->SetProjectorToolsVisible(
+      /*is_visible=*/false);
   histogram_tester.ExpectBucketCount(
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarClosed,

@@ -84,7 +84,7 @@ class DictationTest : public InProcessBrowserTest,
       // Fake that SODA is installed so Dictation uses OnDeviceSpeechRecognizer.
       static_cast<speech::SodaInstallerImplChromeOS*>(
           speech::SodaInstaller::GetInstance())
-          ->soda_installed_for_test_ = true;
+          ->set_soda_installed_for_test(true);
     }
     InProcessBrowserTest::SetUp();
   }
@@ -114,7 +114,7 @@ class DictationTest : public InProcessBrowserTest,
     ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
     if (GetParam().second == kOnDeviceRecognition) {
       // Replaces normal CrosSpeechRecognitionService with a fake one.
-      CrosSpeechRecognitionServiceFactory::GetInstance()
+      CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
           ->SetTestingFactoryAndUse(
               browser()->profile(),
               base::BindRepeating(

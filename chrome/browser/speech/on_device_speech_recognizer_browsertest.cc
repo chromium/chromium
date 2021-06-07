@@ -100,17 +100,18 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Replaces normal CrosSpeechRecognitionService with a fake one.
-    CrosSpeechRecognitionServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        browser()->profile(),
-        base::BindRepeating(
-            &OnDeviceSpeechRecognizerTest::CreateTestSpeechRecognitionService,
-            base::Unretained(this)));
+    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+        ->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&OnDeviceSpeechRecognizerTest::
+                                    CreateTestSpeechRecognitionService,
+                                base::Unretained(this)));
     mock_speech_delegate_ =
         std::make_unique<testing::StrictMock<MockSpeechRecognizerDelegate>>();
     // Fake that SODA is installed.
     static_cast<speech::SodaInstallerImplChromeOS*>(
         speech::SodaInstaller::GetInstance())
-        ->soda_installed_for_test_ = true;
+        ->set_soda_installed_for_test(true);
   }
 
   void TearDownOnMainThread() override {

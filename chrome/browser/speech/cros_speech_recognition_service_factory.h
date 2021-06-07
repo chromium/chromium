@@ -9,10 +9,6 @@
 
 class Profile;
 
-namespace ash {
-class DictationTest;
-}
-
 namespace base {
 template <class T>
 class NoDestructor;
@@ -28,11 +24,10 @@ class CrosSpeechRecognitionServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
   static speech::SpeechRecognitionService* GetForProfile(Profile* profile);
+  static CrosSpeechRecognitionServiceFactory* GetInstanceForTest();
 
  private:
   friend class base::NoDestructor<CrosSpeechRecognitionServiceFactory>;
-  friend class OnDeviceSpeechRecognizerTest;
-  friend class ::ash::DictationTest;
   static CrosSpeechRecognitionServiceFactory* GetInstance();
 
   CrosSpeechRecognitionServiceFactory();

@@ -10,11 +10,6 @@
 #include "components/soda/soda_installer.h"
 
 class PrefService;
-class OnDeviceSpeechRecognizerTest;
-
-namespace ash {
-class DictationTest;
-}  // namespace ash
 
 namespace speech {
 
@@ -43,10 +38,11 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   bool IsLanguageInstalled(
       const std::string& locale_or_language) const override;
 
- private:
-  friend class ::ash::DictationTest;
-  friend class ::OnDeviceSpeechRecognizerTest;
+  void set_soda_installed_for_test(bool installed) {
+    soda_installed_for_test_ = installed;
+  }
 
+ private:
   // SodaInstaller:
   void InstallSoda(PrefService* global_prefs) override;
   // Here "uninstall" is used in the DLC sense of the term: Uninstallation will
