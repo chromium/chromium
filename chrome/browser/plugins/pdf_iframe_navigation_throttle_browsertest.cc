@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
   // frame, we expect the navigation to be deferred during WillStartRequest
   // until the prerender is activated.
   {
-    pdf_navigation.WaitForDidStartNavigation();
+    pdf_navigation.WaitForFirstYieldAfterDidStartNavigation();
     EXPECT_FALSE(pdf_navigation.GetNavigationHandle()->HasCommitted());
     EXPECT_TRUE(pdf_navigation.GetNavigationHandle()->IsDeferredForTesting());
   }
