@@ -45,9 +45,9 @@ const CGFloat kLabelSize = 14;
   [super setHighlighted:highlighted];
   if (highlighted) {
     self.tabCountLabel.textColor =
-        self.configuration.buttonsTintColorHighlighted;
+        self.toolbarConfiguration.buttonsTintColorHighlighted;
   } else {
-    self.tabCountLabel.textColor = self.configuration.buttonsTintColor;
+    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
   }
 }
 
@@ -69,7 +69,7 @@ const CGFloat kLabelSize = 14;
     _tabCountLabel.minimumScaleFactor = 0.1;
     _tabCountLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     _tabCountLabel.textAlignment = NSTextAlignmentCenter;
-    _tabCountLabel.textColor = self.configuration.buttonsTintColor;
+    _tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
   }
   return _tabCountLabel;
 }

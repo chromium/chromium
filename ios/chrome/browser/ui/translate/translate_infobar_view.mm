@@ -359,7 +359,7 @@ const CGFloat kIconTrailingMargin = 12;
   const CGFloat kButtonPadding = (kButtonSize - kIconSize) / 2;
   button.contentEdgeInsets = UIEdgeInsetsMake(kButtonPadding, kButtonPadding,
                                               kButtonPadding, kButtonPadding);
-  button.configuration = self.toolbarConfiguration;
+  button.toolbarConfiguration = self.toolbarConfiguration;
   return button;
 }
 

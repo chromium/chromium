@@ -91,13 +91,13 @@ const CGFloat kStrokeEndAtApogee = 1;
   UIColor* newTint = nil;
   switch (self.state) {
     case UIControlStateNormal:
-      newTint = self.configuration.buttonsTintColor;
+      newTint = self.toolbarConfiguration.buttonsTintColor;
       break;
     case UIControlStateHighlighted:
-      newTint = self.configuration.buttonsTintColorHighlighted;
+      newTint = self.toolbarConfiguration.buttonsTintColorHighlighted;
       break;
     default:
-      newTint = self.configuration.buttonsTintColor;
+      newTint = self.toolbarConfiguration.buttonsTintColor;
       break;
       }
   self.tintColor = newTint;

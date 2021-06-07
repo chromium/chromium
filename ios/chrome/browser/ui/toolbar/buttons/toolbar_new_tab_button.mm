@@ -42,7 +42,8 @@ const CGFloat kSpotlightHeight = 36.0f;
   spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
   spotlightView.userInteractionEnabled = NO;
   spotlightView.layer.cornerRadius = kSpotlightHeight / 2;
-  spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
+  spotlightView.backgroundColor =
+      self.toolbarConfiguration.buttonsSpotlightColor;
   // Make sure that the spotlightView is below the image to avoid changing the
   // color of the image.
   [self insertSubview:spotlightView belowSubview:self.imageView];
