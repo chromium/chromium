@@ -88,7 +88,6 @@
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
-#import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -261,9 +260,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @property(nonatomic, strong)
     NSDictionary<NSString*, NSString*>* specificProductData;
 
-@property(nonatomic, weak)
-    WelcomeToChromeViewController* welcomeToChromeController;
-
 @end
 
 @implementation SceneController
@@ -354,8 +350,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (BOOL)isSettingsViewPresented {
   return self.settingsNavigationController ||
-         self.signinCoordinator.isSettingsViewPresented ||
-         self.welcomeToChromeController;
+         self.signinCoordinator.isSettingsViewPresented;
 }
 
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
@@ -2538,7 +2533,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)closeSettingsAnimated:(BOOL)animated
                    completion:(ProceduralBlock)completion {
   if (self.settingsNavigationController) {
-    DCHECK(!self.welcomeToChromeController);
     ProceduralBlock dismissSettings = ^() {
       [self.settingsNavigationController cleanUpSettings];
       UIViewController* presentingViewController =
@@ -2559,12 +2553,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     } else if (dismissSettings) {
       dismissSettings();
     }
-  } else if (self.welcomeToChromeController) {
-    DCHECK(!self.signinCoordinator);
-    // If kSSOAccountCreationInChromeTab is set, the FRE has to be interrupted,
-    // to open the account creation URL.
-    [self.welcomeToChromeController
-        interruptSigninCoordinatorWithCompletion:completion];
   } else if (self.signinCoordinator) {
     // |self.signinCoordinator| can also present settings, like
     // the advanced sign-in settings navigation controller. If the settings has
