@@ -385,11 +385,6 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
 }
 
 void NavigationSimulatorImpl::RegisterTestThrottle(NavigationRequest* request) {
-  // Page activating navigations don't run throttles so we don't need to
-  // register it in that case.
-  if (request_->IsPageActivation())
-    return;
-
   request->RegisterThrottleForTesting(
       std::make_unique<NavigationThrottleCallbackRunner>(
           request,
@@ -557,7 +552,7 @@ void NavigationSimulatorImpl::ReadyToCommit() {
   auto complete_closure =
       base::BindOnce(&NavigationSimulatorImpl::WillProcessResponseComplete,
                      weak_factory_.GetWeakPtr());
-  if (NeedsPreCommitChecks()) {
+  if (NeedsThrottleChecks()) {
     MaybeWaitForThrottleChecksComplete(std::move(complete_closure));
     MaybeWaitForReadyToCommitCheckComplete();
     if (state_ == READY_TO_COMMIT) {
@@ -570,7 +565,6 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     }
     return;
   }
-
   std::move(complete_closure).Run();
   ReadyToCommitComplete();
 }
@@ -1242,7 +1236,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
 
 void NavigationSimulatorImpl::MaybeWaitForThrottleChecksComplete(
     base::OnceClosure complete_closure) {
-  // If last_throttle_check_result_ is set, then the navigation phase completed
+  // If last_throttle_check_result_ is set, then throttle checks completed
   // synchronously.
   if (last_throttle_check_result_) {
     std::move(complete_closure).Run();
@@ -1275,11 +1269,6 @@ void NavigationSimulatorImpl::Wait() {
 
 bool NavigationSimulatorImpl::OnThrottleChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
-  if (request_->IsPageActivation()) {
-    // Throttles don't run in page activations so we shouldn't ever get back
-    // anything other than PROCEED.
-    CHECK_EQ(result.action(), NavigationThrottle::PROCEED);
-  }
   CHECK(!last_throttle_check_result_);
   last_throttle_check_result_ = result;
   if (wait_closure_)
@@ -1493,19 +1482,7 @@ bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
     return false;
   }
 
-  // Back/forward cache restores and prerendering page activations do not run
-  // NavigationThrottles since they were already run when the page was first
-  // loaded.
-  DCHECK(request_);
-  if (request_->IsPageActivation())
-    return false;
-
   return IsURLHandledByNetworkStack(navigation_url_);
-}
-
-bool NavigationSimulatorImpl::NeedsPreCommitChecks() const {
-  DCHECK(request_);
-  return NeedsThrottleChecks() || request_->IsPageActivation();
 }
 
 }  // namespace content

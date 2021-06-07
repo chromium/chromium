@@ -71,7 +71,6 @@
 #include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/echo.test-mojom.h"
@@ -3842,6 +3841,80 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {
       {}, {}, FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       NavigationCancelledAtWillStartRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Cancel all navigation attempts.
+  content::TestNavigationThrottleInserter throttle_inserter(
+      shell()->web_contents(),
+      base::BindLambdaForTesting(
+          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetResponse(TestNavigationThrottle::WILL_START_REQUEST,
+                                  TestNavigationThrottle::SYNCHRONOUS,
+                                  NavigationThrottle::CANCEL_AND_IGNORE);
+            return throttle;
+          }));
+
+  // 3) Go back to A, which will be cancelled by the NavigationThrottle.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // We should still be showing page B.
+  EXPECT_EQ(rfh_b, current_frame_host());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       NavigationCancelledAtWillProcessResponse) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Cancel all navigation attempts.
+  content::TestNavigationThrottleInserter throttle_inserter(
+      shell()->web_contents(),
+      base::BindLambdaForTesting(
+          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                                  TestNavigationThrottle::SYNCHRONOUS,
+                                  NavigationThrottle::CANCEL_AND_IGNORE);
+            return throttle;
+          }));
+
+  // 3) Go back to A, which will be cancelled by the NavigationThrottle.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // We should still be showing page B.
+  EXPECT_EQ(rfh_b, current_frame_host());
+}
+
 // Test the race condition where a document is evicted from the BackForwardCache
 // while it is in the middle of being restored and before URL loader starts a
 // response.
@@ -3930,7 +4003,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   TestNavigationManager navigation_manager(shell()->web_contents(), url_a);
   web_contents()->GetController().GoBack();
 
-  EXPECT_TRUE(navigation_manager.WaitForResponse());
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
 
   // Flush the cache, which contains the document being navigated to.
   web_contents()->GetController().GetBackForwardCache().Flush();
@@ -4502,6 +4575,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page using TestNavigationManager so that we split
   // the navigation into stages.
+  // web_contents()->GetController().GoBack();
   TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(navigation_manager_back.WaitForResponse());
@@ -4510,9 +4584,6 @@ IN_PROC_BROWSER_TEST_F(
   // asynchronously for renderers to reply that they've unfrozen. Finish the
   // image response in that time.
   navigation_manager_back.ResumeNavigation();
-  ASSERT_TRUE(
-      NavigationRequest::From(navigation_manager_back.GetNavigationHandle())
-          ->IsCommitDeferringConditionDeferredForTesting());
   ASSERT_FALSE(navigation_manager_back.GetNavigationHandle()->HasCommitted());
 
   image_response.Send(net::HTTP_OK, "image/png");
@@ -11405,7 +11476,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Start navigating back.
   TestNavigationManager nav_manager(shell->web_contents(), url_a);
   shell->web_contents()->GetController().GoBack();
-  nav_manager.WaitForFirstYieldAfterDidStartNavigation();
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
 
   testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
   EXPECT_CALL(observer, DidFinishNavigation(_))
@@ -11757,48 +11828,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
   // 4) Go forward.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  ExpectRestored(FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NoThrottlesOnCacheRestore) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  bool did_register_throttles = false;
-
-  // This will track for each navigation whether we attempted to register
-  // NavigationThrottles.
-  content::ShellContentBrowserClient::Get()
-      ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&did_register_throttles](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
-            did_register_throttles = true;
-            return std::vector<std::unique_ptr<content::NavigationThrottle>>();
-          }));
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
-  ASSERT_FALSE(delete_observer_rfh_a.deleted());
-  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(did_register_throttles);
-  did_register_throttles = false;
-
-  // 3) Go back to A which is in the BackForward cache and will be restored via
-  // an IsPageActivation navigation. Ensure that we did not register
-  // NavigationThrottles for this navigation since we already ran their checks
-  // when we navigated to A in step 1.
-  web_contents()->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_FALSE(did_register_throttles);
 
   ExpectRestored(FROM_HERE);
 }
