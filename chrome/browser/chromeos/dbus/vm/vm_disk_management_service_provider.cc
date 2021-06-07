@@ -167,7 +167,7 @@ void VmDiskManagementServiceProvider::ReleaseSpace(
   borealis::BorealisService::GetForProfile(
       ProfileManager::GetPrimaryUserProfile())
       ->DiskManagerDispatcher()
-      .RequestSpace(
+      .ReleaseSpace(
           request.origin().vm_name(), request.origin().container_name(),
           request.space_to_release(),
           base::BindOnce(&VmDiskManagementServiceProvider::OnReleaseSpace,
