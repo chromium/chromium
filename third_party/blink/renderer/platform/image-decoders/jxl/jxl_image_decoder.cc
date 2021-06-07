@@ -48,6 +48,81 @@ JXLImageDecoder::JXLImageDecoder(
   info_.have_animation = false;
 }
 
+bool JXLImageDecoder::ReadBytes(size_t remaining,
+                                size_t* offset,
+                                WTF::Vector<uint8_t>* segment,
+                                FastSharedBufferReader* reader,
+                                const uint8_t** jxl_data,
+                                size_t* jxl_size) {
+  *offset -= remaining;
+  if (*offset + remaining >= reader->size()) {
+    segment->clear();
+    if (IsAllDataReceived()) {
+      DVLOG(1) << "need more input but all data received";
+      SetFailed();
+      return false;
+    }
+    // Return because we need more input from the reader, to continue
+    // decoding in the next call.
+    return false;
+  }
+  const char* buffer = nullptr;
+  size_t read = reader->GetSomeData(buffer, *offset);
+
+  if (read > remaining) {
+    // Sufficient data present in the segment from the
+    // FastSharedBufferReader, no need to copy to segment_.
+    *jxl_data = reinterpret_cast<const uint8_t*>(buffer);
+    *jxl_size = read;
+    *offset += read;
+    segment->clear();
+  } else {
+    if (segment->size() == remaining) {
+      // Keep reading from the end of the segment_ we already are
+      // appending to. The above read is ignored, and start reading after the
+      // end of the data we already have.
+      *offset += remaining;
+      read = 0;
+    } else {
+      // segment_->size() could be greater than or smaller than remaining.
+      // Typically, it'll be smaller than. If it is greater than, then we could
+      // do something similar as in the segment->size() == remaining case but
+      // remove the non-remaining bytes from the beginning of the segment_
+      // vector. This would avoid re-reading, however the case where
+      // segment->size() > remaining is rare since normally if the JXL decoder
+      // returns a positive value for remaining, it will be consistent, making
+      // the sizes match exactly, so this more complex case is not implemented.
+      // Clear the segment, the bytes from the GetSomeData above will be
+      // appended and then we continue reading from the position after the
+      // above GetSomeData read.
+      segment->clear();
+    }
+
+    for (;;) {
+      if (read) {
+        *offset += read;
+        segment->Append(buffer, read);
+      }
+      if (segment->size() > remaining) {
+        *jxl_data = segment->data();
+        *jxl_size = segment->size();
+        // Have enough data, break and continue JXL decoding, rather than
+        // copy more input than needed into segment_.
+        break;
+      }
+      read = reader->GetSomeData(buffer, *offset);
+      if (read == 0) {
+        // We tested above that *offset + remaining >= reader.size() so
+        // should be able to read all data.
+        DVLOG(1) << "couldn't read all available data";
+        SetFailed();
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
   if (Failed())
     return;
@@ -104,28 +179,22 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
         return;
       }
       case JXL_DEC_NEED_MORE_INPUT: {
+        // The decoder returns how many bytes it has not yet processed, and
+        // must be included in the next JxlDecoderSetInput call.
         const size_t remaining = JxlDecoderReleaseInput(dec_.get());
-        offset_ -= remaining;
-        if (offset_ >= reader.size()) {
-          if (IsAllDataReceived()) {
-            DVLOG(1) << "need more input but all data received";
-            SetFailed();
-            return;
-          }
-          // Return because we need more input from the reader, to continue
-          // decoding in the next call.
+        const uint8_t* jxl_data = nullptr;
+        size_t jxl_size = 0;
+        if (!ReadBytes(remaining, &offset_, &segment_, &reader, &jxl_data,
+                       &jxl_size)) {
           return;
         }
-        const char* buffer = nullptr;
-        size_t read = reader.GetSomeData(buffer, offset_);
+
         if (JXL_DEC_SUCCESS !=
-            JxlDecoderSetInput(
-                dec_.get(), reinterpret_cast<const uint8_t*>(buffer), read)) {
+            JxlDecoderSetInput(dec_.get(), jxl_data, jxl_size)) {
           DVLOG(1) << "JxlDecoderSetInput failed";
           SetFailed();
           return;
         }
-        offset_ += read;
         break;
       }
       case JXL_DEC_BASIC_INFO: {
@@ -357,6 +426,7 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
       case JXL_DEC_SUCCESS: {
         dec_ = nullptr;
         finished_ = true;
+        segment_.clear();
         return;
       }
       default: {
@@ -454,26 +524,25 @@ size_t JXLImageDecoder::DecodeFrameCount() {
         return frame_buffer_cache_.size();
       }
       case JXL_DEC_NEED_MORE_INPUT: {
-        frame_count_offset_ -= JxlDecoderReleaseInput(frame_count_dec_.get());
-        if (frame_count_offset_ >= reader.size()) {
-          if (IsAllDataReceived()) {
-            DVLOG(1) << "need more input but all data received";
-            SetFailed();
+        // The decoder returns how many bytes it has not yet processed, and
+        // must be included in the next JxlDecoderSetInput call.
+        const size_t remaining = JxlDecoderReleaseInput(frame_count_dec_.get());
+        const uint8_t* jxl_data = nullptr;
+        size_t jxl_size = 0;
+        if (!ReadBytes(remaining, &frame_count_offset_, &frame_count_segment_,
+                       &reader, &jxl_data, &jxl_size)) {
+          if (Failed()) {
             return frame_buffer_cache_.size();
           }
           return frame_durations_.size();
         }
-        const char* buffer = nullptr;
-        size_t read = reader.GetSomeData(buffer, frame_count_offset_);
+
         if (JXL_DEC_SUCCESS !=
-            JxlDecoderSetInput(frame_count_dec_.get(),
-                               reinterpret_cast<const uint8_t*>(buffer),
-                               read)) {
+            JxlDecoderSetInput(frame_count_dec_.get(), jxl_data, jxl_size)) {
           DVLOG(1) << "JxlDecoderSetInput failed";
           SetFailed();
           return frame_buffer_cache_.size();
         }
-        frame_count_offset_ += read;
         break;
       }
       case JXL_DEC_FRAME: {
@@ -497,6 +566,7 @@ size_t JXLImageDecoder::DecodeFrameCount() {
         // anymore: we can free the memory.
         frame_count_dec_ = nullptr;
         DCHECK(has_full_frame_count_);
+        frame_count_segment_.clear();
         return frame_durations_.size();
       }
       default: {

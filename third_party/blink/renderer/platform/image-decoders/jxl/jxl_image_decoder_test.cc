@@ -180,6 +180,64 @@ void TestPixel(const char* jxl_file,
   }
 }
 
+// SegmentReader implementation for testing, which always returns segments
+// of size 1. This allows to test whether the decoder handles streaming
+// correctly in the most fine-grained case.
+class PerByteSegmentReader : public SegmentReader {
+ public:
+  PerByteSegmentReader(SharedBuffer& buffer) : buffer_(buffer) {}
+  size_t size() const override { return buffer_.size(); }
+  size_t GetSomeData(const char*& data, size_t position) const override {
+    if (position >= buffer_.size()) {
+      return 0;
+    }
+    data = buffer_.Data() + position;
+    return 1;
+  }
+  sk_sp<SkData> GetAsSkData() const override { return nullptr; }
+
+ private:
+  SharedBuffer& buffer_;
+};
+
+// Tests whether the decoder successfully parses the file without errors or
+// infinite loop in the worst case of the reader returning 1-byte segments.
+void TestSegmented(const char* jxl_file, IntSize expected_size) {
+  auto decoder = std::make_unique<JXLImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), ImageDecoder::kNoDecodedImageByteLimit);
+  scoped_refptr<SharedBuffer> data = ReadFile(jxl_file);
+  EXPECT_FALSE(data->IsEmpty());
+
+  scoped_refptr<SegmentReader> reader =
+      base::AdoptRef(new PerByteSegmentReader(*data.get()));
+  decoder->SetData(reader, true);
+
+  ImageFrame* frame;
+  for (;;) {
+    frame = decoder->DecodeFrameBufferAtIndex(0);
+    if (decoder->Failed())
+      break;
+    if (frame)
+      break;
+  }
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_LE(1u, decoder->FrameCount());
+  EXPECT_TRUE(!!frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(expected_size, decoder->Size());
+}
+
+TEST(JXLTests, SegmentedTest) {
+  TestSegmented("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10));
+  TestSegmented("/images/resources/jxl/3x3_srgb_lossy.jxl", IntSize(3, 3));
+  TestSegmented("/images/resources/jxl/pq_gradient_icc_lossy.jxl",
+                IntSize(16, 16));
+  TestSegmented("/images/resources/jxl/animated.jxl", IntSize(16, 16));
+}
+
 TEST(JXLTests, SizeTest) {
   TestSize("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10));
 }
