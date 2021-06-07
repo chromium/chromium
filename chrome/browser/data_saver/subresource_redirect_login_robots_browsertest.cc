@@ -281,9 +281,6 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
       SubresourceRedirectResult::kIneligibleRobotsDisallowed, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SubresourceRedirect.CompressionAttempt.ResponseCode",
-      net::HTTP_TEMPORARY_REDIRECT, 1);
   histogram_tester_.ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
   histogram_tester_.ExpectTotalCount(
