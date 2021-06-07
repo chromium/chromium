@@ -220,12 +220,19 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
                                             y_->CssValue());
   } else if (IsOutermostSVGSVGElement() &&
              (property == width_ || property == height_)) {
+    // SVG allows negative numbers for these attributes but CSS doesn't allow
+    // negative <length> values for the corresponding CSS properties. So remove
+    // negative values here.
     if (property == width_) {
-      AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
-                                              width_->CssValue());
+      if (const CSSValue* width = width_->NonNegativeCssValue()) {
+        AddPropertyToPresentationAttributeStyle(
+            style, property->CssPropertyId(), *width);
+      }
     } else if (property == height_) {
-      AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
-                                              height_->CssValue());
+      if (const CSSValue* height = height_->NonNegativeCssValue()) {
+        AddPropertyToPresentationAttributeStyle(
+            style, property->CssPropertyId(), *height);
+      }
     }
   } else {
     SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,

@@ -905,7 +905,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
             /* intrinsic_size */ kIndefiniteSize,
             /* available_block_size_adjustment */ LayoutUnit(),
             &main_percentage_resolution_size);
-        DCHECK_NE(*replaced_block, kIndefiniteSize);
+        DCHECK_GE(*replaced_block, LayoutUnit());
         replaced_block =
             block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
       }
@@ -1004,7 +1004,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
         replaced_inline = ResolveMainInlineLength(
             space, style, border_padding, MinMaxSizesFunc,
             inline_length_to_resolve, available_inline_size_adjustment);
-        DCHECK_NE(*replaced_inline, kIndefiniteSize);
+        DCHECK_GE(*replaced_inline, LayoutUnit());
         replaced_inline =
             inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
       }
