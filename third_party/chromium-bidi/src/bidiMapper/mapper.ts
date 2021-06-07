@@ -22,18 +22,45 @@ import { ServerBinding } from './utils/iServer';
 import { log } from './utils/log';
 const logSystem = log('system');
 
+declare global {
+  interface Window extends GlobalObj {}
+
+  interface GlobalObj {
+    //`window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
+    // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
+    cdp: {
+      send: (string) => void;
+      onmessage: (string) => void;
+    };
+
+    // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
+    sendBidiResponse: (string) => void;
+
+    // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
+    onBidiMessage: (string) => void;
+
+    // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
+    setSelfTargetId: (string) => void;
+  }
+}
+
+const globalObj = window as GlobalObj;
+
+// Initiate `setSelfTargetId` as soon as possible to prevent race condition.
+const _waitSelfTargetIdPromise = _waitSelfTargetId();
+
 (async () => {
   window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
   window.document.title = 'BiDi Mapper';
 
-  const cdpServer = createCdpServer();
-  const bidiServer = createBidiServer();
+  const cdpServer = _createCdpServer();
+  const bidiServer = _createBidiServer();
 
   // Needed to filter out info related to BiDi target.
-  const selfTargetId = await waitSelfTargetId();
+  const selfTargetId = await _waitSelfTargetIdPromise;
 
   // Needed to get events about new targets.
-  await prepareCdp(cdpServer);
+  await _prepareCdp(cdpServer);
 
   CommandProcessor.run(cdpServer, bidiServer, selfTargetId);
 
@@ -42,46 +69,41 @@ const logSystem = log('system');
   bidiServer.sendMessage('launched');
 })();
 
-function createCdpServer() {
-  //`window.cdp` is exposed by `Target.exposeDevToolsProtocol`:
-  // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
+function _createCdpServer() {
   const cdpBinding = new ServerBinding(
     (message) => {
-      window.cdp.send(message);
+      globalObj.cdp.send(message);
     },
     (handler) => {
-      window.cdp.onmessage = handler;
+      globalObj.cdp.onmessage = handler;
     }
   );
   return new CdpServer(cdpBinding);
 }
 
-function createBidiServer() {
+function _createBidiServer() {
   const bidiBinding = new ServerBinding(
     (message) => {
-      // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
-      window.sendBidiResponse(message);
+      globalObj.sendBidiResponse(message);
     },
     (handler) => {
-      // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
-      window.onBidiMessage = handler;
+      globalObj.onBidiMessage = handler;
     }
   );
   return new BidiServer(bidiBinding);
 }
 
 // Needed to filter out info related to BiDi target.
-async function waitSelfTargetId() {
+async function _waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
-    // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
-    window.setSelfTargetId = function (targetId) {
+    globalObj.setSelfTargetId = function (targetId) {
       logSystem('current target ID: ' + targetId);
       resolve(targetId);
     };
   });
 }
 
-async function prepareCdp(cdpServer) {
+async function _prepareCdp(cdpServer) {
   // Needed to get events about new targets.
   await cdpServer.sendMessage({
     method: 'Target.setDiscoverTargets',

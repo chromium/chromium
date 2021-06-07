@@ -20,7 +20,7 @@ import typescript from '@rollup/plugin-typescript';
 
 export default async function read(): Promise<string> {
   const bundle = await rollup({
-    input: 'src/bidiMapper/mapper.js',
+    input: 'src/bidiMapper/mapper.ts',
     plugins: [
       typescript({
         tsconfig: 'src/bidiMapper/tsconfig.json',
