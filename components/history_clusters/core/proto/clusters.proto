@@ -41,6 +41,8 @@ message Visit {
   int64 page_transition = 8;
   // Whether the page load originated from Google Search.
   bool is_from_google_search = 9;
+  // The visit ID that referred this visit, if not a new navigation.
+  int64 referring_visit_id = 10;
 }
 
 message Cluster {

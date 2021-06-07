@@ -101,13 +101,16 @@ class HistoryClustersServiceTest : public testing::Test {
                 const std::u16string title,
                 history::VisitID visit_id,
                 base::Time visit_time,
-                int page_end_reason) {
+                int page_end_reason,
+                absl::optional<history::VisitID> referring_visit_id) {
     history::AnnotatedVisit visit;
     visit.url_row.set_id(url_id);
     visit.url_row.set_url(url);
     visit.url_row.set_title(title);
     visit.visit_row.visit_id = visit_id;
     visit.visit_row.visit_time = visit_time;
+    if (referring_visit_id)
+      visit.visit_row.referring_visit = *referring_visit_id;
     visit.context_annotations.page_end_reason = page_end_reason;
     AddVisit(visit);
   }
@@ -160,6 +163,7 @@ class HistoryClustersServiceTest : public testing::Test {
     visit->set_origin("https://github.com/");
     visit->set_page_end_reason(5);
     visit->set_url("https://github.com/");
+    visit->set_referring_visit_id(2);
 
     std::string encoded;
     base::Base64Encode(request.SerializeAsString(), &encoded);
@@ -221,8 +225,10 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
   std::string experiment_name = "someExperiment";
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
 
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
+  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3,
+           absl::nullopt);
+  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5,
+           2);
 
   struct TestData {
     std::string query;
@@ -522,8 +528,9 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithHistoryDb) {
 
   // Must not be too old otherwise the history layer will ignore the visit.
   const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
-  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3);
-  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5);
+  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3,
+           absl::nullopt);
+  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5, 2);
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
@@ -592,8 +599,9 @@ TEST_F(HistoryClustersServiceTest,
 
   // Must not be too old otherwise the history layer will ignore the visit.
   const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
-  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3);
-  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5);
+  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3,
+           absl::nullopt);
+  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5, 2);
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryMemories(
@@ -752,8 +760,10 @@ TEST_F(HistoryClustersServiceTest,
 TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EnableMemoriesWithEndpoint();
 
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
+  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3,
+           absl::nullopt);
+  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5,
+           2);
 
   // Verify that initially, the test keyword doesn't match anything, but this
   // query should have kicked off a cache population request.
