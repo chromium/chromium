@@ -60,7 +60,7 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
-  gfx::ImageSkia GetFaviconForTabIconView() override;
+  ui::ImageModel GetFaviconForTabIconView() override;
 
   bool IsMaximized() const;
   bool IsWebUITabStrip() const;

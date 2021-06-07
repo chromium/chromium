@@ -44,6 +44,7 @@
 #include "net/base/escape.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -530,14 +531,16 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
 
 void AppBrowserController::OnTabRemoved(content::WebContents* contents) {}
 
-gfx::ImageSkia AppBrowserController::GetFallbackAppIcon() const {
+ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
   gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-      return apps::CreateStandardIconImage(page_icon);
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      return ui::ImageModel::FromImageSkia(
+          apps::CreateStandardIconImage(page_icon));
+    }
 #endif
-    return page_icon;
+    return ui::ImageModel::FromImageSkia(page_icon);
   }
 
   // The icon may be loading still. Return a transparent icon rather
@@ -545,7 +548,8 @@ gfx::ImageSkia AppBrowserController::GetFallbackAppIcon() const {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(gfx::kFaviconSize, gfx::kFaviconSize);
   bitmap.eraseColor(SK_ColorTRANSPARENT);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
 void AppBrowserController::UpdateDraggableRegion(const SkRegion& region) {

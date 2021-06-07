@@ -83,7 +83,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
-  gfx::ImageSkia GetFaviconForTabIconView() override;
+  ui::ImageModel GetFaviconForTabIconView() override;
 
   // OpaqueBrowserFrameViewLayoutDelegate:
   bool ShouldShowWindowIcon() const override;

@@ -36,8 +36,8 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
 
   // web_app::AppBrowserController:
   bool HasMinimalUiButtons() const override;
-  gfx::ImageSkia GetWindowAppIcon() const override;
-  gfx::ImageSkia GetWindowIcon() const override;
+  ui::ImageModel GetWindowAppIcon() const override;
+  ui::ImageModel GetWindowIcon() const override;
   absl::optional<SkColor> GetThemeColor() const override;
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;

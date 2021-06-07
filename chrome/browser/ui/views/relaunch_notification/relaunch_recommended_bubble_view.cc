@@ -24,6 +24,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -83,12 +84,11 @@ bool RelaunchRecommendedBubbleView::ShouldShowCloseButton() const {
   return true;
 }
 
-gfx::ImageSkia RelaunchRecommendedBubbleView::GetWindowIcon() {
-  return gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon,
-                           ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-                           gfx::kChromeIconGrey));
+ui::ImageModel RelaunchRecommendedBubbleView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, gfx::kChromeIconGrey,
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 void RelaunchRecommendedBubbleView::Init() {

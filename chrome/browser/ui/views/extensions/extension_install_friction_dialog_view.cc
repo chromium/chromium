@@ -211,11 +211,10 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 }
 
 // override
-gfx::ImageSkia ExtensionInstallFrictionDialogView::GetWindowIcon() {
-  return gfx::CreateVectorIcon(
-      vector_icons::kGppMaybeIcon, kWarningIconSize,
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityMedium));
+ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kGppMaybeIcon,
+      ui::NativeTheme::kColorId_AlertSeverityMedium, kWarningIconSize);
 }
 
 void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {

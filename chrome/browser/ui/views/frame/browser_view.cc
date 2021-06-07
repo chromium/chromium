@@ -187,6 +187,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
@@ -2502,15 +2503,15 @@ bool BrowserView::ShouldShowWindowTitle() const {
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 
-gfx::ImageSkia BrowserView::GetWindowAppIcon() {
+ui::ImageModel BrowserView::GetWindowAppIcon() {
   web_app::AppBrowserController* app_controller = browser()->app_controller();
   return app_controller ? app_controller->GetWindowAppIcon() : GetWindowIcon();
 }
 
-gfx::ImageSkia BrowserView::GetWindowIcon() {
+ui::ImageModel BrowserView::GetWindowIcon() {
   // Use the default icon for devtools.
   if (browser_->is_type_devtools())
-    return gfx::ImageSkia();
+    return ui::ImageModel();
 
   // Hosted apps always show their app icon.
   web_app::AppBrowserController* app_controller = browser()->app_controller();
@@ -2519,20 +2520,20 @@ gfx::ImageSkia BrowserView::GetWindowIcon() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  if (browser_->is_type_normal()) {
-    return rb.GetImageNamed(IDR_CHROME_APP_ICON_192).AsImageSkia();
-  }
+  if (browser_->is_type_normal())
+    return ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CHROME_APP_ICON_192));
   auto* window = GetNativeWindow();
   int override_window_icon_resource_id =
       window ? window->GetProperty(kOverrideWindowIconResourceIdKey) : -1;
   if (override_window_icon_resource_id >= 0)
-    return rb.GetImageNamed(override_window_icon_resource_id).AsImageSkia();
+    return ui::ImageModel::FromImage(
+        rb.GetImageNamed(override_window_icon_resource_id));
 #endif
 
   if (browser_->deprecated_is_app() || browser_->is_type_popup())
-    return browser_->GetCurrentPageIcon().AsImageSkia();
+    return ui::ImageModel::FromImage(browser_->GetCurrentPageIcon());
 
-  return gfx::ImageSkia();
+  return ui::ImageModel();
 }
 
 bool BrowserView::ExecuteWindowsCommand(int command_id) {

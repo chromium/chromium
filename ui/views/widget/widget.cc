@@ -22,6 +22,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/l10n/l10n_font_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -35,6 +36,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
@@ -935,8 +937,11 @@ void Widget::UpdateWindowTitle() {
 void Widget::UpdateWindowIcon() {
   if (non_client_view_)
     non_client_view_->UpdateWindowIcon();
-  native_widget_->SetWindowIcons(widget_delegate_->GetWindowIcon(),
-                                 widget_delegate_->GetWindowAppIcon());
+  native_widget_->SetWindowIcons(
+      GetImageSkiaFromImageModel(widget_delegate_->GetWindowIcon(),
+                                 GetNativeTheme()),
+      GetImageSkiaFromImageModel(widget_delegate_->GetWindowAppIcon(),
+                                 GetNativeTheme()));
 }
 
 FocusTraversable* Widget::GetFocusTraversable() {

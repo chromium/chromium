@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -259,15 +260,14 @@ bool PasswordReuseModalWarningDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-gfx::ImageSkia PasswordReuseModalWarningDialog::GetWindowIcon() {
+ui::ImageModel PasswordReuseModalWarningDialog::GetWindowIcon() {
   return password_type_.account_type() ==
                  ReusedPasswordAccountType::SAVED_PASSWORD
-             ? gfx::ImageSkia()
-             : gfx::CreateVectorIcon(
-                   kSecurityIcon,
+             ? ui::ImageModel()
+             : ui::ImageModel::FromVectorIcon(
+                   kSecurityIcon, gfx::kChromeIconGrey,
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
-                       DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-                   gfx::kChromeIconGrey);
+                       DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 void PasswordReuseModalWarningDialog::OnGaiaPasswordChanged() {

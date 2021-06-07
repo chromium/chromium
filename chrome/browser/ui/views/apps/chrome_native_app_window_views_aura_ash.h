@@ -83,7 +83,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   ui::ModalType GetModalType() const override;
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;

@@ -19,7 +19,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
@@ -53,8 +53,8 @@ class WebAppBrowserController : public AppBrowserController,
 
   // AppBrowserController:
   bool HasMinimalUiButtons() const override;
-  gfx::ImageSkia GetWindowAppIcon() const override;
-  gfx::ImageSkia GetWindowIcon() const override;
+  ui::ImageModel GetWindowAppIcon() const override;
+  ui::ImageModel GetWindowIcon() const override;
   absl::optional<SkColor> GetThemeColor() const override;
   absl::optional<SkColor> GetBackgroundColor() const override;
   std::u16string GetTitle() const override;
@@ -104,7 +104,7 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   WebAppProvider& provider_;
-  mutable absl::optional<gfx::ImageSkia> app_icon_;
+  mutable absl::optional<ui::ImageModel> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The result of digital asset link verification of the web app.

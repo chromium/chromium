@@ -62,7 +62,7 @@ class PasswordSaveUpdateWithAccountStoreView
   // PasswordBubbleViewBase:
   views::View* GetInitiallyFocusedView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // View:
   void AddedToWidget() override;

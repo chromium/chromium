@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/image_model_utils.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -135,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     controller->SetReadIconCallbackForTesting(base::BindLambdaForTesting(
         [controller, &image_skia, &run_loop, this]() {
           EXPECT_TRUE(app_service_test().AreIconImageEqual(
-              image_skia, controller->GetWindowAppIcon()));
+              image_skia, views::GetImageSkiaFromImageModel(
+                              controller->GetWindowAppIcon(), nullptr)));
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -145,7 +147,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
   controller->SetReadIconCallbackForTesting(
       base::BindLambdaForTesting([controller, &run_loop]() {
-        const SkBitmap* bitmap = controller->GetWindowAppIcon().bitmap();
+        const SkBitmap* bitmap = views::GetImageSkiaFromImageModel(
+                                     controller->GetWindowAppIcon(), nullptr)
+                                     .bitmap();
         EXPECT_EQ(SK_ColorBLUE, bitmap->getColor(0, 0));
         EXPECT_EQ(32, bitmap->width());
         EXPECT_EQ(32, bitmap->height());

@@ -29,6 +29,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -150,8 +151,8 @@ void WebAppUninstallDialogDelegateView::OnDialogCanceled() {
     std::exchange(dialog_, nullptr)->UninstallCancelled();
 }
 
-gfx::ImageSkia WebAppUninstallDialogDelegateView::GetWindowIcon() {
-  return image_;
+ui::ImageModel WebAppUninstallDialogDelegateView::GetWindowIcon() {
+  return ui::ImageModel::FromImageSkia(image_);
 }
 
 void WebAppUninstallDialogDelegateView::Uninstall() {

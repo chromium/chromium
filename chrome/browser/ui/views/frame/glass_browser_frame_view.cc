@@ -44,6 +44,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/win/hwnd_util.h"
 #include "ui/views/window/client_view.h"
 
@@ -382,7 +383,7 @@ bool GlassBrowserFrameView::ShouldTabIconViewAnimate() const {
   return current_tab && current_tab->IsLoading();
 }
 
-gfx::ImageSkia GlassBrowserFrameView::GetFaviconForTabIconView() {
+ui::ImageModel GlassBrowserFrameView::GetFaviconForTabIconView() {
   DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
   return frame()->widget_delegate()->GetWindowIcon();
 }
@@ -797,7 +798,9 @@ void GlassBrowserFrameView::StopThrobber() {
     HICON small_icon = nullptr;
     HICON big_icon = nullptr;
 
-    gfx::ImageSkia icon = browser_view()->GetWindowIcon();
+    gfx::ImageSkia icon = views::GetImageSkiaFromImageModel(
+        browser_view()->GetWindowIcon(), GetNativeTheme());
+
     if (!icon.isNull()) {
       // Keep previous icons alive as long as they are referenced by the HWND.
       previous_small_icon = std::move(small_window_icon_);

@@ -35,6 +35,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
@@ -378,11 +379,11 @@ bool OpaqueBrowserFrameView::ShouldTabIconViewAnimate() const {
   return current_tab ? current_tab->IsLoading() : false;
 }
 
-gfx::ImageSkia OpaqueBrowserFrameView::GetFaviconForTabIconView() {
+ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
   views::WidgetDelegate* delegate = frame()->widget_delegate();
   if (!delegate) {
     LOG(WARNING) << "delegate is null, returning safe default.";
-    return gfx::ImageSkia();
+    return ui::ImageModel();
   }
   return delegate->GetWindowIcon();
 }

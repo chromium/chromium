@@ -36,6 +36,7 @@
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -68,7 +69,7 @@ bool HostedAppBrowserController::HasMinimalUiButtons() const {
   return false;
 }
 
-gfx::ImageSkia HostedAppBrowserController::GetWindowAppIcon() const {
+ui::ImageModel HostedAppBrowserController::GetWindowAppIcon() const {
   // TODO(calamity): Use the app name to retrieve the app icon without using the
   // extensions tab helper to make icon load more immediate.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -76,7 +77,7 @@ gfx::ImageSkia HostedAppBrowserController::GetWindowAppIcon() const {
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           browser()->profile())) {
     if (!app_icon_.isNull())
-      return app_icon_;
+      return ui::ImageModel::FromImageSkia(app_icon_);
 
     const Extension* extension = GetExtension();
     if (extension &&
@@ -104,14 +105,15 @@ gfx::ImageSkia HostedAppBrowserController::GetWindowAppIcon() const {
   if (!icon_bitmap)
     return GetFallbackAppIcon();
 
-  return gfx::ImageSkia::CreateFrom1xBitmap(*icon_bitmap);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(*icon_bitmap));
 }
 
-gfx::ImageSkia HostedAppBrowserController::GetWindowIcon() const {
+ui::ImageModel HostedAppBrowserController::GetWindowIcon() const {
   if (IsWebApp(browser()))
     return GetWindowAppIcon();
 
-  return browser()->GetCurrentPageIcon().AsImageSkia();
+  return ui::ImageModel::FromImage(browser()->GetCurrentPageIcon());
 }
 
 absl::optional<SkColor> HostedAppBrowserController::GetThemeColor() const {

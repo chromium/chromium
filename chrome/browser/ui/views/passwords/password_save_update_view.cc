@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -351,8 +352,8 @@ bool PasswordSaveUpdateView::IsDialogButtonEnabled(
          !controller_.pending_password().password_value.empty();
 }
 
-gfx::ImageSkia PasswordSaveUpdateView::GetWindowIcon() {
-  return gfx::ImageSkia();
+ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
+  return ui::ImageModel();
 }
 
 void PasswordSaveUpdateView::AddedToWidget() {

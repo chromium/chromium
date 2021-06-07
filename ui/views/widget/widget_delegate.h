@@ -22,6 +22,10 @@ class ImageSkia;
 class Rect;
 }  // namespace gfx
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace views {
 class BubbleDialogDelegate;
 class ClientView;
@@ -194,10 +198,10 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // Returns the app icon for the window. On Windows, this is the ICON_BIG used
   // in Alt-Tab list and Win7's taskbar.
-  virtual gfx::ImageSkia GetWindowAppIcon();
+  virtual ui::ImageModel GetWindowAppIcon();
 
   // Returns the icon to be displayed in the window.
-  virtual gfx::ImageSkia GetWindowIcon();
+  virtual ui::ImageModel GetWindowIcon();
 
   // Returns true if a window icon should be shown.
   bool ShouldShowWindowIcon() const;

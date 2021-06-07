@@ -125,7 +125,7 @@ void WebAppBrowserController::SetReadIconCallbackForTesting(
   callback_for_testing_ = std::move(callback);
 }
 
-gfx::ImageSkia WebAppBrowserController::GetWindowAppIcon() const {
+ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   if (app_icon_)
     return *app_icon_;
   app_icon_ = GetFallbackAppIcon();
@@ -150,7 +150,7 @@ gfx::ImageSkia WebAppBrowserController::GetWindowAppIcon() const {
   return *app_icon_;
 }
 
-gfx::ImageSkia WebAppBrowserController::GetWindowIcon() const {
+ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
   return GetWindowAppIcon();
 }
 
@@ -270,7 +270,7 @@ void WebAppBrowserController::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
   if (icon_value->icon_type != apps::mojom::IconType::kStandard)
     return;
 
-  app_icon_ = icon_value->uncompressed;
+  app_icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);
 
   if (icon_value->is_placeholder_icon)
     LoadAppIcon(false /* allow_placeholder_icon */);
@@ -287,7 +287,8 @@ void WebAppBrowserController::OnReadIcon(const SkBitmap& bitmap) {
     return;
   }
 
-  app_icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  app_icon_ =
+      ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
   if (auto* contents = web_contents())
     contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
   if (callback_for_testing_)

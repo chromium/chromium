@@ -88,6 +88,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/views/image_model_utils.h"
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -481,7 +482,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
       app_service_test().LoadAppIconBlocking(
           apps::mojom::AppType::kExtension, app_id_,
           extension_misc::EXTENSION_ICON_SMALL),
-      app_browser_->app_controller()->GetWindowAppIcon()));
+      views::GetImageSkiaFromImageModel(
+          app_browser_->app_controller()->GetWindowAppIcon(), nullptr)));
 }
 #endif
 

@@ -22,10 +22,6 @@ namespace blink {
 struct Manifest;
 }
 
-namespace gfx {
-class ImageSkia;
-}
-
 // Class to encapsulate logic to control the browser UI for manifest based web
 // apps or focus mode.
 class ManifestWebAppBrowserController : public web_app::AppBrowserController {
@@ -36,8 +32,8 @@ class ManifestWebAppBrowserController : public web_app::AppBrowserController {
   // web_app::AppBrowserController:
   bool HasMinimalUiButtons() const override;
   bool ShouldShowCustomTabBar() const override;
-  gfx::ImageSkia GetWindowAppIcon() const override;
-  gfx::ImageSkia GetWindowIcon() const override;
+  ui::ImageModel GetWindowAppIcon() const override;
+  ui::ImageModel GetWindowIcon() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;

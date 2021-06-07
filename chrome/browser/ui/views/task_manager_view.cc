@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -179,13 +180,13 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
   return false;
 }
 
-gfx::ImageSkia TaskManagerView::GetWindowIcon() {
+ui::ImageModel TaskManagerView::GetWindowIcon() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
   // where lower in the stack.
-  return apps::CreateStandardIconImage(
+  return ui::ImageModel::FromImageSkia(apps::CreateStandardIconImage(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_ASH_SHELF_ICON_TASK_MANAGER));
+          IDR_ASH_SHELF_ICON_TASK_MANAGER)));
 #else
   return views::DialogDelegateView::GetWindowIcon();
 #endif

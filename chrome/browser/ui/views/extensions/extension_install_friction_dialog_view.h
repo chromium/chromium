@@ -37,7 +37,7 @@ class ExtensionInstallFrictionDialogView
   ExtensionInstallFrictionDialogView& operator=(
       const ExtensionInstallFrictionDialogView&) = delete;
 
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // Returns the parent web contents for the dialog. Returns nullptr if the web
   // contents have been destroyed.

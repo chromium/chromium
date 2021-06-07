@@ -19,6 +19,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -62,12 +63,11 @@ std::u16string RelaunchRequiredDialogView::GetWindowTitle() const {
   return relaunch_required_timer_.GetWindowTitle();
 }
 
-gfx::ImageSkia RelaunchRequiredDialogView::GetWindowIcon() {
-  return gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon,
-                           ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-                           gfx::kChromeIconGrey));
+ui::ImageModel RelaunchRequiredDialogView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, gfx::kChromeIconGrey,
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 // |relaunch_required_timer_| automatically starts for the next time the title

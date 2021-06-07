@@ -56,7 +56,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
 
  private:
   // views::DialogDelegateView:
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // Uninstalls the web app.
   void Uninstall();

@@ -11,10 +11,6 @@
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
-namespace gfx {
-class ImageSkia;
-}
-
 class ExtensionKeybindingRegistryViews;
 
 class ChromeNativeAppWindowViews
@@ -48,8 +44,8 @@ class ChromeNativeAppWindowViews
   ui::ZOrderLevel GetZOrderLevel() const override;
 
   // WidgetDelegate implementation.
-  gfx::ImageSkia GetWindowAppIcon() override;
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowAppIcon() override;
+  ui::ImageModel GetWindowIcon() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;

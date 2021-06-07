@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -122,8 +124,10 @@ TEST_F(WidgetDelegateTest, AppIconCanDifferFromWindowIcon) {
   delegate->SetIcon(window_icon);
   gfx::ImageSkia app_icon = gfx::test::CreateImageSkia(48, 48);
   delegate->SetAppIcon(app_icon);
-  EXPECT_TRUE(delegate->GetWindowIcon().BackedBySameObjectAs(window_icon));
-  EXPECT_TRUE(delegate->GetWindowAppIcon().BackedBySameObjectAs(app_icon));
+  EXPECT_TRUE(GetImageSkiaFromImageModel(delegate->GetWindowIcon(), nullptr)
+                  .BackedBySameObjectAs(window_icon));
+  EXPECT_TRUE(GetImageSkiaFromImageModel(delegate->GetWindowAppIcon(), nullptr)
+                  .BackedBySameObjectAs(app_icon));
 }
 
 TEST_F(WidgetDelegateTest, AppIconFallsBackToWindowIcon) {
@@ -132,7 +136,8 @@ TEST_F(WidgetDelegateTest, AppIconFallsBackToWindowIcon) {
   gfx::ImageSkia window_icon = gfx::test::CreateImageSkia(16, 16);
   delegate->SetIcon(window_icon);
   // Don't set an independent app icon.
-  EXPECT_TRUE(delegate->GetWindowAppIcon().BackedBySameObjectAs(window_icon));
+  EXPECT_TRUE(GetImageSkiaFromImageModel(delegate->GetWindowAppIcon(), nullptr)
+                  .BackedBySameObjectAs(window_icon));
 }
 
 }  // namespace

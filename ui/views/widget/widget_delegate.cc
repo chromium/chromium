@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
@@ -143,17 +144,17 @@ bool WidgetDelegate::ShouldShowCloseButton() const {
   return params_.show_close_button;
 }
 
-gfx::ImageSkia WidgetDelegate::GetWindowAppIcon() {
+ui::ImageModel WidgetDelegate::GetWindowAppIcon() {
   // Prefer app icon if available.
   if (!params_.app_icon.isNull())
-    return params_.app_icon;
+    return ui::ImageModel::FromImageSkia(params_.app_icon);
   // Fall back to the window icon.
   return GetWindowIcon();
 }
 
 // Returns the icon to be displayed in the window.
-gfx::ImageSkia WidgetDelegate::GetWindowIcon() {
-  return params_.icon;
+ui::ImageModel WidgetDelegate::GetWindowIcon() {
+  return ui::ImageModel::FromImageSkia(params_.icon);
 }
 
 bool WidgetDelegate::ShouldShowWindowIcon() const {

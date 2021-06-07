@@ -33,6 +33,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/paint_info.h"
@@ -289,9 +290,12 @@ void BubbleFrameView::ResetWindowControls() {
 }
 
 void BubbleFrameView::UpdateWindowIcon() {
+  DCHECK(GetWidget());
   gfx::ImageSkia image;
-  if (GetWidget()->widget_delegate()->ShouldShowWindowIcon())
-    image = GetWidget()->widget_delegate()->GetWindowIcon();
+  if (GetWidget()->widget_delegate()->ShouldShowWindowIcon()) {
+    image = GetImageSkiaFromImageModel(
+        GetWidget()->widget_delegate()->GetWindowIcon(), GetNativeTheme());
+  }
   title_icon_->SetImage(&image);
 }
 

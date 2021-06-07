@@ -24,6 +24,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/image_model_utils.h"
 
 #if defined(OS_WIN)
 #include "chrome/browser/win/app_icon.h"
@@ -139,7 +140,8 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
       return;
     }
 
-    gfx::ImageSkia favicon = model_->GetFaviconForTabIconView();
+    gfx::ImageSkia favicon = views::GetImageSkiaFromImageModel(
+        model_->GetFaviconForTabIconView(), GetNativeTheme());
     if (!favicon.isNull()) {
       PaintFavicon(canvas, favicon);
       return;

@@ -13,6 +13,7 @@
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -53,21 +54,22 @@ bool ManifestWebAppBrowserController::ShouldShowCustomTabBar() const {
   return false;
 }
 
-gfx::ImageSkia ManifestWebAppBrowserController::GetWindowAppIcon() const {
-  gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
-  if (!page_icon.isNull())
-    return page_icon;
+ui::ImageModel ManifestWebAppBrowserController::GetWindowAppIcon() const {
+  gfx::Image page_icon = browser()->GetCurrentPageIcon();
+  if (!page_icon.IsEmpty())
+    return ui::ImageModel::FromImage(page_icon);
 
   // The extension icon may be loading still. Return a transparent icon rather
   // than using a placeholder to avoid flickering.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(gfx::kFaviconSize, gfx::kFaviconSize);
   bitmap.eraseColor(SK_ColorTRANSPARENT);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
-gfx::ImageSkia ManifestWebAppBrowserController::GetWindowIcon() const {
-  return browser()->GetCurrentPageIcon().AsImageSkia();
+ui::ImageModel ManifestWebAppBrowserController::GetWindowIcon() const {
+  return ui::ImageModel::FromImage(browser()->GetCurrentPageIcon());
 }
 
 std::u16string ManifestWebAppBrowserController::GetAppShortName() const {

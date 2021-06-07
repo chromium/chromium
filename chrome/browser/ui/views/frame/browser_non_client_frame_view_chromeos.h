@@ -96,7 +96,7 @@ class BrowserNonClientFrameViewChromeOS
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
-  gfx::ImageSkia GetFaviconForTabIconView() override;
+  ui::ImageModel GetFaviconForTabIconView() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

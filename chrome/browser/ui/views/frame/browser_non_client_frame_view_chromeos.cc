@@ -44,6 +44,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
@@ -522,9 +523,9 @@ bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
   return current_tab && current_tab->IsLoading();
 }
 
-gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
+ui::ImageModel BrowserNonClientFrameViewChromeOS::GetFaviconForTabIconView() {
   views::WidgetDelegate* delegate = frame()->widget_delegate();
-  return delegate ? delegate->GetWindowIcon() : gfx::ImageSkia();
+  return delegate ? delegate->GetWindowIcon() : ui::ImageModel();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnWindowDestroying(
