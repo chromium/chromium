@@ -56468,6 +56468,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Timeout waiting for connectable"/>
 </enum>
 
+<enum name="NetworkCellularPSimActivationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already activated (activation not needed)"/>
+  <int value="2" label="Failed"/>
+</enum>
+
 <enum name="NetworkCellularPSimActivationState">
   <int value="0" label="Activated"/>
   <int value="1" label="Activating"/>
