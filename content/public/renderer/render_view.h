@@ -39,9 +39,6 @@ class CONTENT_EXPORT RenderView {
   // Returns the RenderView containing the given WebView.
   static RenderView* FromWebView(blink::WebView* webview);
 
-  // Returns the number of live RenderView instances in this process.
-  static size_t GetRenderViewCount();
-
   // Visit all RenderViews with a live WebView (i.e., RenderViews that have
   // been closed but not yet destroyed are excluded).
   static void ForEach(RenderViewVisitor* visitor);

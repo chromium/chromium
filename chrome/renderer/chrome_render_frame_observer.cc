@@ -250,8 +250,7 @@ void ChromeRenderFrameObserver::DidCommitProvisionalLoad(
     return;
 
   static crash_reporter::CrashKeyString<8> view_count_key("view-count");
-  view_count_key.Set(
-      base::NumberToString(content::RenderView::GetRenderViewCount()));
+  view_count_key.Set(base::NumberToString(blink::WebView::GetWebViewCount()));
 
 #if !defined(OS_ANDROID)
   if (render_frame()->GetEnabledBindings() &

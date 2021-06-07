@@ -494,6 +494,10 @@ WebViewImpl* WebViewImpl::Create(
   return web_view.get();
 }
 
+size_t WebView::GetWebViewCount() {
+  return WebViewImpl::AllInstances().size();
+}
+
 void WebView::UpdateVisitedLinkState(uint64_t link_hash) {
   Page::VisitedStateChanged(link_hash);
 }

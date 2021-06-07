@@ -194,11 +194,6 @@ RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
   return it == views->end() ? NULL : it->second;
 }
 
-/* static */
-size_t RenderView::GetRenderViewCount() {
-  return g_view_map.Get().size();
-}
-
 /*static*/
 void RenderView::ForEach(RenderViewVisitor* visitor) {
   DCHECK(RenderThread::IsMainThread());

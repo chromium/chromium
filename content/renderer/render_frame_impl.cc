@@ -4670,7 +4670,7 @@ void RenderFrameImpl::UpdateStateForCommit(
     RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
     if (render_thread_impl) {  // Can be NULL in tests.
       render_thread_impl->histogram_customizer()->RenderViewNavigatedToHost(
-          GetLoadingUrl().host(), RenderView::GetRenderViewCount());
+          GetLoadingUrl().host(), blink::WebView::GetWebViewCount());
     }
   }
 

@@ -462,7 +462,10 @@ class WebView {
   virtual int32_t HistoryBackListCount() const = 0;
   virtual int32_t HistoryForwardListCount() const = 0;
 
-  // Portals --------------------------------------------------------------
+  // Misc -------------------------------------------------------------
+
+  // Returns the number of live WebView instances in this process.
+  BLINK_EXPORT static size_t GetWebViewCount();
 
  protected:
   ~WebView() = default;
