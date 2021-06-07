@@ -315,7 +315,6 @@ test("components_unittests") {
       "//components/safe_browsing/core/browser:token_fetcher_unit_tests",
       "//components/safe_browsing/core/common:unit_tests",
       "//components/safe_browsing/core/realtime:unit_tests",
-      "//components/safe_browsing/core/triggers:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
       "//components/security_state/content:unit_tests",

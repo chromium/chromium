@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_THROTTLER_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_THROTTLER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_THROTTLER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_THROTTLER_H_
 
 #include <memory>
 #include <unordered_map>
@@ -117,4 +117,4 @@ class TriggerThrottler {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_THROTTLER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_THROTTLER_H_

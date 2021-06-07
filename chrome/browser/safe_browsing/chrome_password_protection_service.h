@@ -23,7 +23,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
-#include "components/safe_browsing/core/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/triggers/trigger_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"

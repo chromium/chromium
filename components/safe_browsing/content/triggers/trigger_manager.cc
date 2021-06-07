@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/triggers/trigger_manager.h"
 
 #include "base/bind.h"
 #include "base/containers/contains.h"

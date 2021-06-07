@@ -6,7 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 
 #include "base/macros.h"
-#include "components/safe_browsing/core/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/triggers/trigger_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

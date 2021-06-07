@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_
 
 #include <unordered_map>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "components/safe_browsing/content/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
-#include "components/safe_browsing/core/triggers/trigger_throttler.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
@@ -218,4 +218,4 @@ class TriggerManagerWebContentsHelper
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_TRIGGERS_TRIGGER_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_

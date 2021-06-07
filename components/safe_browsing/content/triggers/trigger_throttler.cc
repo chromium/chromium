@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/triggers/trigger_throttler.h"
+#include "components/safe_browsing/content/triggers/trigger_throttler.h"
 
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
