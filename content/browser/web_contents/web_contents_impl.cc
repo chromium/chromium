@@ -6107,13 +6107,19 @@ void WebContentsImpl::OpenColorChooser(
   color_chooser_ = std::make_unique<ColorChooser>(std::move(chooser_receiver),
                                                   std::move(client));
 
-  content::ColorChooser* new_color_chooser =
+  auto new_color_chooser = base::WrapUnique(
       delegate_ ? delegate_->OpenColorChooser(this, color, suggestions)
-                : nullptr;
-  color_chooser_->SetChooser(base::WrapUnique(new_color_chooser));
-
-  if (!new_color_chooser)
+                : nullptr);
+  if (color_chooser_ && new_color_chooser) {
+    color_chooser_->SetChooser(std::move(new_color_chooser));
+  } else if (new_color_chooser) {
+    // OpenColorChooser synchronously called back to DidEndColorChooser.
+    DCHECK(!color_chooser_);
+    new_color_chooser->End();
+  } else if (color_chooser_) {
+    DCHECK(!new_color_chooser);
     color_chooser_.reset();
+  }
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
