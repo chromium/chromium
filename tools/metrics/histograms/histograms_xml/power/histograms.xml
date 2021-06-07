@@ -631,9 +631,9 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ForegroundRadio.SignalLevel.{NetworkType}"
-    enum="RadioSignalLevel" expires_after="2021-07-03">
+    enum="RadioSignalLevel" expires_after="2022-07-03">
   <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
+  <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
     Periodically samples the radio (cellular/wifi) signal strength level while
@@ -650,9 +650,9 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2021-11-07">
+    enum="RadioSignalLevel" expires_after="2022-07-03">
   <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
+  <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
     Counts the number of radio wakeups while Chrome is the foreground app, the
@@ -668,9 +668,9 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ForegroundRadio.{Direction}KiB.{NetworkType}.30Seconds"
-    enum="RadioSignalLevel" expires_after="2021-07-03">
+    enum="RadioSignalLevel" expires_after="2022-07-03">
   <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
+  <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
     Periodically samples the number of kibibytes received over network while
