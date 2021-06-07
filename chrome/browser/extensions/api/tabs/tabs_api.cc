@@ -1057,12 +1057,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       continue;
     }
 
-    // Bug fix for crbug.com/1197888. Disable query during any tab drag to
-    // ensure that the result matches the eventual state of the tab strip.
-    TabStripModel* tab_strip =
-        ExtensionTabUtil::GetEditableTabStripModel(browser);
-    if (!tab_strip)
-      return RespondNow(Error(tabs_constants::kTabStripNotEditableQueryError));
+    TabStripModel* tab_strip = browser->tab_strip_model();
+    DCHECK(tab_strip);
     for (int i = 0; i < tab_strip->count(); ++i) {
       WebContents* web_contents = tab_strip->GetWebContentsAt(i);
 
@@ -1248,9 +1244,6 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
                   NULL, &tab_strip, &contents, &tab_index, &error)) {
     return RespondNow(Error(std::move(error)));
   }
-
-  if (!ExtensionTabUtil::IsTabStripEditable())
-    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
 
   return RespondNow(ArgumentList(tabs::Get::Results::Create(
       *CreateTabObjectHelper(contents, extension(), source_context_type(),
