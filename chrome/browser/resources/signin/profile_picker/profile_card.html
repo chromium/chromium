@@ -36,17 +36,12 @@
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
     height: var(--domain-icon-size);
+    inset-inline-end: -6px;
     justify-content: center;
     position: absolute;
-    right: -6px;
     top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
       - var(--domain-icon-border-size));
     width: var(--domain-icon-size);
-  }
-
-  :host-context([dir='rtl']) #iconContainer {
-    left: -6px;
-    right: initial;
   }
 
   iron-icon {

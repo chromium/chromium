@@ -32,6 +32,31 @@
     bottom: 0;
   }
 
+  #iconContainer {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --domain-icon-size: 24px;
+    --domain-icon-border-size: 2px;
+    align-items: center;
+    background-color: white;
+    border:
+      var(--domain-icon-border-size) solid var(--profile-card-hover-color);
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    display: flex;
+    height: var(--domain-icon-size);
+    inset-inline-end: -6px;
+    justify-content: center;
+    position: absolute;
+    top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
+      - var(--domain-icon-border-size));
+    width: var(--domain-icon-size);
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+  }
+
   #titleContainer {
     text-align: center;
   }
@@ -48,12 +73,25 @@
     margin-inline-start: 8px;
     min-width: 111px;
   }
+
+  @media (prefers-color-scheme: dark) {
+    #iconContainer {
+      background-color: var(--md-background-color);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
+  }
 </style>
 
 <div id="outerContainer">
   <div id="profileCardContainer">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState_.avatarIcon]]">
+      <div id="iconContainer" hidden="[[!profileState_.isManaged]]">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
     </div>
     <div id="profileName" class="profile-card-info prominent-text">
       [[profileState_.localProfileName]]

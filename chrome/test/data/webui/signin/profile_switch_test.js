@@ -47,6 +47,18 @@ suite('ProfileSwitchTest', function() {
         'url');
     assertEquals(profileSwitchElement.$$('#profileName').innerText, 'Work');
     assertEquals(profileSwitchElement.$$('#gaiaName').innerText, 'Alice');
+    assertTrue(profileSwitchElement.$$('#iconContainer').hidden);
+  });
+
+  test('getSwitchProfile_managed', async function() {
+    const profileState = /** @type {!ProfileState} */ (
+        Object.assign({}, browserProxy.profileSample));
+    profileState.isManaged = true;
+
+    getSwitchProfilePromiseResolver.resolve(profileState);
+    await browserProxy.whenCalled('getSwitchProfile');
+
+    assertFalse(profileSwitchElement.$$('#iconContainer').hidden);
   });
 
   test('confirmSwitch', async function() {
