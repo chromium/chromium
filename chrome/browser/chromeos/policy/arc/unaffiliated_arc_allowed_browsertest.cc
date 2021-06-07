@@ -20,7 +20,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"
-#include "components/arc/arc_util.h"
+#include "components/arc/test/arc_util_test_support.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

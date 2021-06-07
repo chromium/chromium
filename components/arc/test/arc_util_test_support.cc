@@ -4,6 +4,8 @@
 
 #include "components/arc/test/arc_util_test_support.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -11,6 +13,24 @@
 #include "base/threading/thread_restrictions.h"
 
 namespace arc {
+
+namespace {
+
+constexpr char kAvailabilityOfficiallySupported[] = "officially-supported";
+constexpr char kAlwaysStartWithNoPlayStore[] =
+    "always-start-with-no-play-store";
+
+}  // namespace
+
+void SetArcAlwaysStartWithoutPlayStoreForTesting() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kArcStartMode, kAlwaysStartWithNoPlayStore);
+}
+
+void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(chromeos::switches::kArcAvailability,
+                                  kAvailabilityOfficiallySupported);
+}
 
 bool GetSystemMemoryInfoForTesting(const std::string& file_name,
                                    base::SystemMemoryInfoKB* mem_info) {

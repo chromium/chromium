@@ -20,7 +20,6 @@ class Window;
 }  // namespace aura
 
 namespace base {
-class CommandLine;
 struct SystemMemoryInfoKB;
 }  // namespace base
 
@@ -122,10 +121,6 @@ bool ShouldArcAlwaysStartWithNoPlayStore();
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();
 
-// Enables to always start ARC without Play Store for testing, by appending the
-// command line flag.
-void SetArcAlwaysStartWithoutPlayStoreForTesting();
-
 // Returns true if ARC is installed and running ARC kiosk apps on the current
 // device is officially supported.
 // It doesn't follow that ARC is available for user sessions and
@@ -136,13 +131,6 @@ void SetArcAlwaysStartWithoutPlayStoreForTesting();
 // Also not that this function may return true when ARC is not running in
 // Kiosk mode, it checks only ARC Kiosk availability.
 bool IsArcKioskAvailable();
-
-// For testing ARC in browser tests, this function should be called in
-// SetUpCommandLine(), and its argument should be passed to this function.
-// Also, in unittests, this can be called in SetUp() with
-// base::CommandLine::ForCurrentProcess().
-// |command_line| must not be nullptr.
-void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line);
 
 // Returns true if ARC should run under Kiosk mode for the current profile.
 // As it can return true only when user is already initialized, it implies

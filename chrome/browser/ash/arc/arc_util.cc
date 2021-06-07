@@ -462,7 +462,7 @@ bool IsArcTermsOfServiceNegotiationNeeded(const Profile* profile) {
       !ShouldShowOptInForTesting()) {
     VLOG(1) << "Skip ARC Terms of Service negotiation for managed user. "
             << "Don't record B&R and GLS if admin leave it as user to decide "
-            << "and user sikps the opt-in dialog.";
+            << "and user skips the opt-in dialog.";
     return false;
   }
 

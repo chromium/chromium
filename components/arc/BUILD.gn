@@ -406,6 +406,7 @@ static_library("arc_test_support") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//components/arc/enterprise",
     "//components/keyed_service/content",

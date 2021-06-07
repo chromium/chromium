@@ -250,11 +250,6 @@ bool ShouldShowOptInForTesting() {
       chromeos::switches::kArcForceShowOptInUi);
 }
 
-void SetArcAlwaysStartWithoutPlayStoreForTesting() {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      chromeos::switches::kArcStartMode, kAlwaysStartWithNoPlayStore);
-}
-
 bool IsArcKioskAvailable() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -272,11 +267,6 @@ bool IsArcKioskAvailable() {
 
   // If not special kiosk device case, use general ARC check.
   return IsArcAvailable();
-}
-
-void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line) {
-  command_line->AppendSwitchASCII(chromeos::switches::kArcAvailability,
-                                  kAvailabilityOfficiallySupported);
 }
 
 bool IsArcKioskMode() {

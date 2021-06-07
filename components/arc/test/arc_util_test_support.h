@@ -8,15 +8,22 @@
 #include <string>
 
 namespace base {
+class CommandLine;
 struct SystemMemoryInfoKB;
 }  // namespace base
 
 namespace arc {
 
-// TODO: Refactor following test functions from arc_util.h/.cc as well.
-// - ShouldShowOptInForTesting
-// - SetArcAlwaysStartWithoutPlayStoreForTesting
-// - SetArcAvailableCommandLineForTesting
+// Enables to always start ARC without Play Store for testing, by appending the
+// command line flag.
+void SetArcAlwaysStartWithoutPlayStoreForTesting();
+
+// For testing ARC in browser tests, this function should be called in
+// SetUpCommandLine(), and its argument should be passed to this function.
+// Also, in unittests, this can be called in SetUp() with
+// base::CommandLine::ForCurrentProcess().
+// |command_line| must not be nullptr.
+void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line);
 
 // Gets a system memory profile based on file name.
 bool GetSystemMemoryInfoForTesting(const std::string& file_name,
