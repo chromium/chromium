@@ -811,7 +811,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
             public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
-                updateForLayout(layoutType, showToolbar, false);
+                updateForLayout(layoutType, showToolbar);
             }
 
             @Override
@@ -833,11 +833,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     mToolbar.onTabSwitcherTransitionFinished();
                     updateButtonStatus();
                 }
-            }
-
-            @Override
-            public void onFinishedShowing(@LayoutType int layoutType) {
-                maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
             }
         };
 
@@ -888,10 +883,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Handle a layout change event.
      * @param layoutType The layout being switched to.
      * @param showToolbar Whether the toolbar should be shown.
-     * @param shouldFocusOmnibox Whether we should attempt to focus the omnibox.
      */
-    private void updateForLayout(
-            @LayoutType int layoutType, boolean showToolbar, boolean shouldFocusOmnibox) {
+    private void updateForLayout(@LayoutType int layoutType, boolean showToolbar) {
         if (layoutType == LayoutType.TAB_SWITCHER) {
             mLocationBarModel.setIsShowingTabSwitcher(true);
             mToolbar.setTabSwitcherMode(true, showToolbar, false);
@@ -903,7 +896,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
         mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
 
-        if (shouldFocusOmnibox) maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
+        maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
     }
 
     /**
@@ -1783,7 +1776,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             //                dependencies are ready. This logic was introduced to move asynchronous
             //                observer events from the infra (LayoutManager) into the feature using
             //                it.
-            mControlContainer.post(() -> updateForLayout(LayoutType.TAB_SWITCHER, true, true));
+            mControlContainer.post(() -> updateForLayout(LayoutType.TAB_SWITCHER, true));
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);
