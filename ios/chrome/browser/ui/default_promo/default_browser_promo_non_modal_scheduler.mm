@@ -389,7 +389,10 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   LogNonModalPromoAction(NonModalPromoAction::kAppear, self.promoTypeForMetrics,
                          UserInteractionWithNonModalPromoCount());
   self.promoShownTime = base::TimeTicks::Now();
-  [self startDismissPromoTimer];
+
+  if (!UIAccessibilityIsVoiceOverRunning()) {
+    [self startDismissPromoTimer];
+  }
 }
 
 - (void)startDismissPromoTimer {
