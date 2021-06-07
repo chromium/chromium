@@ -692,18 +692,18 @@
   },
   {
     "name": "contextual-search-force-caption",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 93
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "contextual-search-literal-search-tap",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 92
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "contextual-search-longpress-resolve",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 92
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "contextual-search-ml-tap-suppression",
@@ -722,8 +722,8 @@
   },
   {
     "name": "contextual-search-translations",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 92
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "contextual-search-twv-impl",
