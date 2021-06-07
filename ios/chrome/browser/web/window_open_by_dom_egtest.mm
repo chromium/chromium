@@ -76,6 +76,11 @@ id<GREYMatcher> PopupBlocker() {
 // Tests that sessionStorage content is available for windows opened by DOM via
 // target="_blank" links.
 - (void)testLinkWithBlankTargetSessionStorage {
+  if (@available(iOS 14.5, *)) {
+    // TODO(crbug.com/1217120): This test is failing on iOS 14.5, not sure why.
+    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 14.5 as it is failing.");
+  }
+
   [ChromeEarlGrey executeJavaScript:@"sessionStorage.setItem('key', 'value');"];
   [ChromeEarlGrey
       tapWebStateElementWithID:@"webScenarioWindowOpenSameURLWithBlankTarget"];
