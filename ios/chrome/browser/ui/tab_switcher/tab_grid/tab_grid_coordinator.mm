@@ -801,6 +801,52 @@
   [self.actionSheetCoordinator start];
 }
 
+- (void)
+    showCloseItemsConfirmationActionSheetWithTabGridMediator:
+        (TabGridMediator*)tabGridMediator
+                                                       items:
+                                                           (NSArray<NSString*>*)
+                                                               items
+                                                      anchor:(UIBarButtonItem*)
+                                                                 buttonAnchor {
+  if (tabGridMediator == self.regularTabsMediator) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridSelectionCloseRegularTabsConfirmationPresented"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridSelectionCloseIncognitoTabsConfirmationPresented"));
+  }
+
+  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                   barButtonItem:buttonAnchor];
+
+  self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
+
+  [self.actionSheetCoordinator
+      addItemWithTitle:base::SysUTF16ToNSString(
+                           l10n_util::GetPluralStringFUTF16(
+                               IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
+                               items.count))
+                action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileTabGridSelectionCloseTabsConfirmed"));
+                  [tabGridMediator closeItemsWithIDs:items];
+                }
+                 style:UIAlertActionStyleDestructive];
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileTabGridSelectionCloseTabsCanceled"));
+                }
+                 style:UIAlertActionStyleCancel];
+  [self.actionSheetCoordinator start];
+}
+
 #pragma mark - TabGridViewControllerDelegate
 
 - (TabGridPage)activePageForTabGridViewController:

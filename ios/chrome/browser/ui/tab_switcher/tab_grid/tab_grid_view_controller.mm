@@ -1233,6 +1233,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [bottomToolbar setNewTabButtonTarget:self
                                 action:@selector(newTabButtonTapped:)];
+  [bottomToolbar setCloseTabsButtonTarget:self
+                                   action:@selector(closeSelectedTabs:)];
 
   NamedGuide* guide =
       [[NamedGuide alloc] initWithName:kTabGridBottomToolbarGuide];
@@ -1673,6 +1675,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         [gridViewController.selectedItemIDsForEditing count];
     self.topToolbar.selectedTabsCount = selectedItemsCount;
     self.bottomToolbar.selectedTabsCount = selectedItemsCount;
+
+    [self.bottomToolbar setCloseAllButtonEnabled:selectedItemsCount > 0];
     return;
   }
 
@@ -1914,6 +1918,29 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       break;
     case TabGridPageRemoteTabs:
       // No-op.
+      break;
+  }
+}
+
+- (void)closeSelectedTabs:(id)sender {
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSArray<NSString*>* items = gridViewController.selectedItemIDsForEditing;
+
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      [self.incognitoTabsDelegate
+          showCloseItemsConfirmationActionSheetWithItems:items
+                                                  anchor:sender];
+      break;
+    case TabGridPageRegularTabs:
+      [self.regularTabsDelegate
+          showCloseItemsConfirmationActionSheetWithItems:items
+                                                  anchor:sender];
+      break;
+    case TabGridPageRemoteTabs:
+      NOTREACHED()
+          << "It is invalid to call close selected tabs on remote tabs.";
       break;
   }
 }

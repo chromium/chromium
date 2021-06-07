@@ -168,6 +168,17 @@
   _largeNewTabButton.alpha = 1.0;
 }
 
+#pragma mark Close Tabs
+
+- (void)setCloseTabsButtonTarget:(id)target action:(SEL)action {
+  _closeTabsButton.target = target;
+  _closeTabsButton.action = action;
+}
+
+- (void)setCloseTabsButtonEnabled:(BOOL)enabled {
+  _closeTabsButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 - (void)setupViews {

@@ -27,6 +27,9 @@
 // Tells the receiver to close the item with identifier |itemID|. If there is
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(NSString*)itemID;
+// Tells the receiver to close the items with the identifiers in |itemIDs|.
+// ItemIDs which are not associated with any item are ignored.
+- (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs;
 // Tells the receiver to close all items.
 - (void)closeAllItems;
 // Tells the receiver to save all items for an undo operation, then close all
@@ -42,6 +45,12 @@
 // confirmation when 'Close All' button is tapped.
 - (void)showCloseAllConfirmationActionSheetWithAnchor:
     (UIBarButtonItem*)buttonAnchor;
+// Shows an action sheet, anchored to the UIBarButtonItem, that asks for
+// confirmation when 'Close Items' button is tapped.
+- (void)
+    showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
+                                            anchor:
+                                                (UIBarButtonItem*)buttonAnchor;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_COMMANDS_H_

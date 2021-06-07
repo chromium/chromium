@@ -15864,6 +15864,62 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridSelectionCloseAllIncognitoTabsConfirmed">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the incognito iOS tab grid used the Close All control with all
+    available tab items selected and the action sheet that asks for confirmation
+    has been Confirmed.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectionCloseAllRegularTabsConfirmed">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the regular iOS tab grid used the Close All control with all
+    available tab items selected and the action sheet that asks for confirmation
+    has been Confirmed.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectionCloseIncognitoTabsConfirmationPresented">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS incognito tab grid used the Close Tabs control and the
+    action sheet that asks for confirmation has been displayed.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectionCloseRegularTabsConfirmationPresented">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS regular tab grid used the Close Tabs control and the action
+    sheet that asks for confirmation has been displayed.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectionCloseTabsCanceled">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and the action sheet
+    that asks for confirmation has been Canceled.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectionCloseTabsConfirmed">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and the action sheet
+    that asks for confirmation has been Confirmed.
+  </description>
+</action>
+
 <action name="MobileTabGridSelectionDone">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>

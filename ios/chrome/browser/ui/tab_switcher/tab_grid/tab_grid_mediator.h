@@ -33,6 +33,15 @@ class TabRestoreService;
                                                        anchor:(UIBarButtonItem*)
                                                                   buttonAnchor;
 
+- (void)
+    showCloseItemsConfirmationActionSheetWithTabGridMediator:
+        (TabGridMediator*)tabGridMediator
+                                                       items:
+                                                           (NSArray<NSString*>*)
+                                                               items
+                                                      anchor:(UIBarButtonItem*)
+                                                                 buttonAnchor;
+
 @end
 
 // Mediates between model layer and tab grid UI layer.

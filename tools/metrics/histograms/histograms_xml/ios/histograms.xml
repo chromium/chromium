@@ -1142,6 +1142,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
+    expires_after="M95">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The number of Tab Grid items closed with a single Close Tab(s) operation
+    from the tab grid selection mode.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="M99">
   <owner>marq@chromium.org</owner>

@@ -347,6 +347,31 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
+- (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs {
+  __block bool allTabsClosed = true;
+
+  self.webStateList->PerformBatchOperation(
+      base::BindOnce(^(WebStateList* list) {
+        for (NSString* itemID in itemIDs) {
+          int index = GetIndexOfTabWithId(list, itemID);
+          if (index != WebStateList::kInvalidIndex)
+            list->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+        }
+
+        allTabsClosed = list->empty();
+      }));
+
+  if (allTabsClosed) {
+    if (!self.browserState->IsOffTheRecord()) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridSelectionCloseAllRegularTabsConfirmed"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridSelectionCloseAllIncognitoTabsConfirmed"));
+    }
+  }
+}
+
 - (void)closeAllItems {
   if (!self.browserState->IsOffTheRecord()) {
     base::RecordAction(
@@ -404,6 +429,16 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                                                numberOfTabs:self.webStateList
                                                                 ->count()
                                                      anchor:buttonAnchor];
+}
+
+- (void)
+    showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
+                                            anchor:
+                                                (UIBarButtonItem*)buttonAnchor {
+  [self.delegate
+      showCloseItemsConfirmationActionSheetWithTabGridMediator:self
+                                                         items:items
+                                                        anchor:buttonAnchor];
 }
 
 #pragma mark GridCommands helpers

@@ -53,6 +53,11 @@
 // use undo or closeAll text on the close all button based on |useUndo| value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
 
+// Sets target/action for tapping event on close tabs button.
+- (void)setCloseTabsButtonTarget:(id)target action:(SEL)action;
+// Set |enabled| on the close tabs button.
+- (void)setCloseTabsButtonEnabled:(BOOL)enabled;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;
