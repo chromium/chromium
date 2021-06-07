@@ -15,7 +15,7 @@
 
         <!-- RadioButtonWithDescription - With icon and primary, without description. -->
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-              android:id="@+id/test_radio_icon_1"
+              android:id="@+id/icon_primary_only"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
@@ -23,7 +23,7 @@
 
         <!-- RadioButtonWithDescription - With icon, primary and description. -->
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/test_radio_icon_2"
+            android:id="@+id/icon_primary_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
@@ -32,7 +32,7 @@
 
         <!-- RadioButtonWithDescription - With background override. -->
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/test_radio_icon_3"
+            android:id="@+id/icon_bg_override"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/modern_grey_100"

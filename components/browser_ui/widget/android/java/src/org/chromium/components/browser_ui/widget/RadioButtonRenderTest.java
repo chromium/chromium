@@ -87,19 +87,17 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
             mLayout = content.findViewById(R.id.test_radio_button_layout);
             mLayout.setBackgroundColor(mFakeBgColor);
 
-            mRadioButtonWithDescription1 = content.findViewById(R.id.test_radio_description_1);
-            mRadioButtonWithDescription2 = content.findViewById(R.id.test_radio_description_2);
-            mRadioButtonWithDescription3 = content.findViewById(R.id.test_radio_description_3);
-            mRadioButtonWithEditText1 = content.findViewById(R.id.test_radio_edit_text_1);
-            mRadioButtonWithEditText2 = content.findViewById(R.id.test_radio_edit_text_2);
-            mRadioButtonWithEditText3 = content.findViewById(R.id.test_radio_edit_text_3);
-            mRadioButtonWithEditText4 = content.findViewById(R.id.test_radio_edit_text_4);
-            mRadioButtonWithDescriptonAndAuxButton1 =
-                    content.findViewById(R.id.test_radio_description_and_aux_button_1);
+            mRadioButtonWithDescription1 = content.findViewById(R.id.base_primary_only);
+            mRadioButtonWithDescription2 = content.findViewById(R.id.base_primary_description);
+            mRadioButtonWithDescription3 = content.findViewById(R.id.base_primary_bg_override);
+            mRadioButtonWithEditText1 = content.findViewById(R.id.edittext_primary_description);
+            mRadioButtonWithEditText2 = content.findViewById(R.id.edittext_primary_only);
+            mRadioButtonWithEditText3 = content.findViewById(R.id.edittext_hint_description);
+            mRadioButtonWithEditText4 = content.findViewById(R.id.edittext_hint_only);
+            mRadioButtonWithDescriptonAndAuxButton1 = content.findViewById(R.id.aux_primary_only);
             mRadioButtonWithDescriptonAndAuxButton2 =
-                    content.findViewById(R.id.test_radio_description_and_aux_button_2);
-            mRadioButtonWithDescriptonAndAuxButton3 =
-                    content.findViewById(R.id.test_radio_description_and_aux_button_3);
+                    content.findViewById(R.id.aux_primary_description);
+            mRadioButtonWithDescriptonAndAuxButton3 = content.findViewById(R.id.aux_bg_override);
         });
 
         Assert.assertNotNull(mLayout);
@@ -119,18 +117,15 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
     @SmallTest
     @Feature({"RenderTest", "RadioButton"})
     public void testRadioButtonWithDescriptionLayout() throws Exception {
-        mRenderTestRule.render(mRadioButtonWithDescription1, "test_radio_description_1");
-        mRenderTestRule.render(mRadioButtonWithDescription2, "test_radio_description_2");
-        mRenderTestRule.render(mRadioButtonWithDescription3, "test_radio_description_3");
-        mRenderTestRule.render(mRadioButtonWithEditText1, "test_radio_edit_text_1");
-        mRenderTestRule.render(mRadioButtonWithEditText2, "test_radio_edit_text_2");
-        mRenderTestRule.render(mRadioButtonWithEditText3, "test_radio_edit_text_3");
-        mRenderTestRule.render(mRadioButtonWithEditText4, "test_radio_edit_text_4");
-        mRenderTestRule.render(
-                mRadioButtonWithDescriptonAndAuxButton1, "test_radio_description_and_aux_button_1");
-        mRenderTestRule.render(
-                mRadioButtonWithDescriptonAndAuxButton2, "test_radio_description_and_aux_button_2");
-        mRenderTestRule.render(
-                mRadioButtonWithDescriptonAndAuxButton3, "test_radio_description_and_aux_button_3");
+        mRenderTestRule.render(mRadioButtonWithDescription1, "base_primary_only");
+        mRenderTestRule.render(mRadioButtonWithDescription2, "base_primary_description");
+        mRenderTestRule.render(mRadioButtonWithDescription3, "base_primary_bg_override");
+        mRenderTestRule.render(mRadioButtonWithEditText1, "edittext_primary_description");
+        mRenderTestRule.render(mRadioButtonWithEditText2, "edittext_primary_only");
+        mRenderTestRule.render(mRadioButtonWithEditText3, "edittext_hint_description");
+        mRenderTestRule.render(mRadioButtonWithEditText4, "edittext_hint_only");
+        mRenderTestRule.render(mRadioButtonWithDescriptonAndAuxButton1, "aux_primary_only");
+        mRenderTestRule.render(mRadioButtonWithDescriptonAndAuxButton2, "aux_primary_description");
+        mRenderTestRule.render(mRadioButtonWithDescriptonAndAuxButton3, "aux_bg_override");
     }
 }
