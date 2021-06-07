@@ -29,14 +29,15 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_install_finalizer.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -88,7 +89,8 @@ bool IsPlaceholderApp(Profile* profile, const GURL& url) {
 
 class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
  public:
-  explicit TestExternallyManagedAppInstallFinalizer(TestAppRegistrar* registrar)
+  explicit TestExternallyManagedAppInstallFinalizer(
+      WebAppRegistrarMutable* registrar)
       : registrar_(registrar) {}
   TestExternallyManagedAppInstallFinalizer(
       const TestExternallyManagedAppInstallFinalizer&) = delete;
@@ -99,6 +101,29 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
   // Returns what would be the AppId if an app is installed with |url|.
   AppId GetAppIdForUrl(const GURL& url) {
     return TestInstallFinalizer::GetAppIdForUrl(url);
+  }
+
+  std::unique_ptr<WebApp> CreateWebApp(const AppId& app_id,
+                                       const GURL& start_url) {
+    auto web_app = std::make_unique<WebApp>(app_id);
+    web_app->SetStartUrl(start_url);
+    web_app->SetName("App Name");
+    web_app->AddSource(Source::kPolicy);
+    web_app->SetDisplayMode(DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(DisplayMode::kStandalone);
+    return web_app;
+  }
+
+  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+    web_app::AppId app_id = web_app->app_id();
+    registrar_->registry().emplace(std::move(app_id), std::move(web_app));
+  }
+
+  void UnregisterApp(const AppId& app_id) {
+    auto it = registrar_->registry().find(app_id);
+    DCHECK(it != registrar_->registry().end());
+
+    registrar_->registry().erase(it);
   }
 
   void SetNextFinalizeInstallResult(const GURL& url, InstallResultCode code) {
@@ -154,8 +179,8 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
         FROM_HERE,
         base::BindLambdaForTesting(
             [&, app_id, url, code, callback = std::move(callback)]() mutable {
-              registrar_->AddExternalApp(
-                  app_id, {url, ExternalInstallSource::kExternalPolicy});
+              auto web_app = CreateWebApp(app_id, url);
+              RegisterApp(std::move(web_app));
               std::move(callback).Run(app_id, code);
             }));
   }
@@ -175,7 +200,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
       const AppId& app_id,
       webapps::WebappUninstallSource external_install_source,
       UninstallWebAppCallback callback) override {
-    registrar_->RemoveExternalApp(app_id);
+    UnregisterApp(app_id);
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*uninstalled=*/true));
@@ -199,7 +224,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
         base::BindLambdaForTesting(
             [&, app_id, uninstalled, callback = std::move(callback)]() mutable {
               if (uninstalled)
-                registrar_->RemoveExternalApp(app_id);
+                UnregisterApp(app_id);
               std::move(callback).Run(uninstalled);
             }));
   }
@@ -232,7 +257,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
   }
 
  private:
-  TestAppRegistrar* registrar_ = nullptr;
+  WebAppRegistrarMutable* registrar_ = nullptr;
 
   std::vector<WebApplicationInfo> web_app_info_list_;
   std::vector<FinalizeOptions> finalize_options_list_;
@@ -268,7 +293,7 @@ class ExternallyManagedAppInstallTaskTest
 
     auto* provider = TestWebAppProvider::Get(profile());
 
-    auto registrar = std::make_unique<TestAppRegistrar>();
+    auto registrar = std::make_unique<WebAppRegistrarMutable>(profile());
     registrar_ = registrar.get();
 
     auto install_finalizer =
@@ -304,7 +329,7 @@ class ExternallyManagedAppInstallTaskTest
   TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
   TestWebAppUiManager* ui_manager() { return ui_manager_; }
-  TestAppRegistrar* registrar() { return registrar_; }
+  WebAppRegistrar* registrar() { return registrar_; }
   TestExternallyManagedAppInstallFinalizer* finalizer() {
     return install_finalizer_;
   }
@@ -358,7 +383,7 @@ class ExternallyManagedAppInstallTaskTest
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
   WebAppInstallManager* install_manager_ = nullptr;
-  TestAppRegistrar* registrar_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
   TestDataRetriever* data_retriever_ = nullptr;
   TestExternallyManagedAppInstallFinalizer* install_finalizer_ = nullptr;
   TestWebAppUiManager* ui_manager_ = nullptr;
