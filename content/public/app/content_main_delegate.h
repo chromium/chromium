@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
+namespace variations {
+class VariationsIdsProvider;
+}
+
 namespace content {
 
 class ContentBrowserClient;
@@ -75,6 +79,11 @@ class CONTENT_EXPORT ContentMainDelegate {
   // Embedders that need to control when and/or how FeatureList should be
   // created should override and return false.
   virtual bool ShouldCreateFeatureList();
+
+  // Creates and returns the VariationsIdsProvider. If null is returned,
+  // a VariationsIdsProvider is created with a mode of `kUseSignedInState`.
+  // VariationsIdsProvider is a singleton.
+  virtual variations::VariationsIdsProvider* CreateVariationsIdsProvider();
 
   // Allows the embedder to perform initialization once field trials/FeatureList
   // initialization has completed if ShouldCreateFeatureList() returns true.

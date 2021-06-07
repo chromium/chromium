@@ -28,6 +28,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_handle.h"
@@ -147,6 +148,8 @@ class SafeBrowsingTriggeredPopupBlockerTest
   }
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   SafeBrowsingTriggeredPopupBlocker* popup_blocker_ = nullptr;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;

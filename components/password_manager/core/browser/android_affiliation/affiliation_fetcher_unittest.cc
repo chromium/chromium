@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -107,6 +108,8 @@ class AffiliationFetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

@@ -37,7 +37,7 @@ include_rules = [
   "+components/language/ios",
   "+components/unified_consent",
   "+components/url_formatter",
-  "+components/variations/net",
+  "+components/variations",
   "+components/version_info",
   "+components/webdata_services",
   "+components/web_resource",

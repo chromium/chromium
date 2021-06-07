@@ -19,6 +19,7 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/common/content_client.h"
@@ -117,6 +118,8 @@ class PrefetchManagerTest : public testing::Test {
   // IO_MAINLOOP is needed for the EmbeddedTestServer.
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<FakePrefetchManagerDelegate> fake_delegate_;
   std::unique_ptr<PrefetchManager> prefetch_manager_;

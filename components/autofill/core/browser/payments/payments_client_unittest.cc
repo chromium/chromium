@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -335,6 +336,8 @@ class PaymentsClientTest : public testing::Test {
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
   base::test::TaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestPersonalDataManager test_personal_data_;
@@ -686,16 +689,12 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesUnknownUploadCardSourceInRequest) {
 
 TEST_F(PaymentsClientTest, GetUploadDetailsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
-  // headers. Also, the variations header provider may have been registered to
-  // observe some other field trial list, so reset it.
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
+  // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
   StartGettingUploadDetails();
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
-
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludeBillableServiceNumber) {
@@ -779,32 +778,24 @@ TEST_F(PaymentsClientTest, GetUploadAccountFromSyncTest) {
 
 TEST_F(PaymentsClientTest, UploadCardVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
-  // headers. Also, the variations header provider may have been registered to
-  // observe some other field trial list, so reset it.
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
+  // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
-
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
 }
 
 TEST_F(PaymentsClientTest, UnmaskCardVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
-  // headers. Also, the variations header provider may have been registered to
-  // observe some other field trial list, so reset it.
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
+  // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
-
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessWithoutServerId) {
@@ -1030,17 +1021,13 @@ TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {
 
 TEST_F(PaymentsClientTest, MigrateCardsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
-  // headers. Also, the variations header provider may have been registered to
-  // observe some other field trial list, so reset it.
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
+  // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
   StartMigrating(/*has_cardholder_name=*/true);
   IssueOAuthToken();
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
-
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
 }
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesUniqueId) {

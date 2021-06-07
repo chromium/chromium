@@ -31,6 +31,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -265,6 +266,8 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
  private:
   test::RemoteSuggestionsTestUtils utils_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<RemoteSuggestionsFetcherImpl> fetcher_;
   std::unique_ptr<UserClassifier> user_classifier_;
   MockSnippetsAvailableCallback mock_callback_;

@@ -24,6 +24,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -297,6 +298,8 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TemplateURLService> template_url_service_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -126,6 +127,9 @@ class SubresourceRedirectOriginRobotsRulesTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::HistogramTester histogram_tester_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<OriginRobotsRules> origin_robots_rules_;
   std::unique_ptr<RobotsRulesFetcherState> rules_fetcher_state_;

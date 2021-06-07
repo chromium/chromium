@@ -23,6 +23,7 @@
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
@@ -305,6 +306,8 @@ class FieldTrialCreatorTest : public ::testing::Test {
   TestingPrefServiceSimple prefs_;
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // The global feature list, which is ignored by tests in this suite.
   std::unique_ptr<base::FeatureList> global_feature_list_;
 
@@ -318,7 +321,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed) {
   // seed state.
   const base::Time now = base::Time::Now();
   const base::Time recent_time = now - base::TimeDelta::FromMinutes(17);
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   EXPECT_CALL(
@@ -352,7 +355,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_NoLastFetchTime) {
   // With a valid seed on first run, the safe seed manager should be informed of
   // the active seed state. The last fetch time in this case is expected to be
   // inferred to be recent.
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   const base::Time start_time = base::Time::Now();
@@ -387,7 +390,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 
   // With an expired seed, there should be no field trials created, and hence no
   // active state should be passed to the safe seed manager.
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _)).Times(0);
@@ -419,7 +422,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed) {
   // With a valid safe seed, the safe seed manager should *not* be informed of
   // the active seed state. This is an optimization to avoid saving a safe seed
   // when already running in safe mode.
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _)).Times(0);
 
@@ -454,7 +457,7 @@ TEST_F(FieldTrialCreatorTest,
   // active seed state.
   const base::Time now = base::Time::Now();
   const base::Time recent_time = now - base::TimeDelta::FromMinutes(17);
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
   EXPECT_CALL(
       safe_seed_manager,
@@ -500,7 +503,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
 
   TestVariationsServiceClient variations_service_client;
   TestPlatformFieldTrials platform_field_trials;
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
@@ -536,7 +539,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
 
 // Tests that the hardware class is set on Android.
 TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
-  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 

@@ -11,6 +11,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -28,6 +29,8 @@ class DataReductionProxyDataTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 TEST_F(DataReductionProxyDataTest, BasicSettersAndGetters) {

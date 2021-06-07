@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,6 +74,10 @@ class ScoredHistoryMatchTest : public testing::Test {
       const WordStarts term_word_starts,
       const GURL& url,
       const std::u16string& title);
+
+ private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 history::URLRow ScoredHistoryMatchTest::MakeURLRow(const char* url,

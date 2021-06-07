@@ -161,6 +161,8 @@ if (is_android) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "scoped_variations_ids_provider.cc",
+    "scoped_variations_ids_provider.h",
     "variations_params_manager.cc",
     "variations_params_manager.h",
     "variations_test_utils.cc",

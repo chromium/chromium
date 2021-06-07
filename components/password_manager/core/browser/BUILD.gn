@@ -740,6 +740,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/url_formatter",
+    "//components/variations:test_support",
     "//google_apis:google_apis",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",

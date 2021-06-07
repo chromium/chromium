@@ -1,6 +1,7 @@
 include_rules = [
   "+base",
   "+components/url_formatter",
+  "+components/variations",
   "+ios/testing",
   "+ios/web_view/public",
   "+mojo/core/embedder",

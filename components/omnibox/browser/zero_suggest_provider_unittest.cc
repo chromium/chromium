@@ -28,6 +28,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,12 +98,6 @@ class ZeroSuggestProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-
-  std::unique_ptr<FakeAutocompleteProviderClient> client_;
-  scoped_refptr<ZeroSuggestProvider> provider_;
-
   network::TestURLLoaderFactory* test_loader_factory() {
     return client_->test_url_loader_factory();
   }
@@ -126,6 +121,13 @@ class ZeroSuggestProviderTest : public testing::Test,
     input.set_focus_type(OmniboxFocusType::ON_FOCUS);
     return input;
   }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  std::unique_ptr<FakeAutocompleteProviderClient> client_;
+  scoped_refptr<ZeroSuggestProvider> provider_;
 };
 
 void ZeroSuggestProviderTest::SetUp() {

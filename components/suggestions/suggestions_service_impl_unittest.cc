@@ -21,6 +21,7 @@
 #include "components/suggestions/suggestions_store.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -195,6 +196,8 @@ class SuggestionsServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService test_sync_service_;
   network::TestURLLoaderFactory url_loader_factory_;

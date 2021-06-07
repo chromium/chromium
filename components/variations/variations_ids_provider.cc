@@ -8,19 +8,31 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_features.h"
 
 namespace variations {
+namespace {
 
 // Range of low entropy source values (8000) as variation ids for the
 // X-Client-Data header. This range is reserved in cl/333331461 (internal CL).
 const int kLowEntropySourceVariationIdRangeMin = 3320978;
 const int kLowEntropySourceVariationIdRangeMax = 3328977;
+
+VariationsIdsProvider* g_instance = nullptr;
+
+base::Lock& GetInstanceLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+}  // namespace
 
 bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
   if (is_signed_in != other.is_signed_in)
@@ -42,9 +54,18 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 // function variations::CreateSimpleURLLoaderWithVariationsHeader().
 
 // static
+VariationsIdsProvider* VariationsIdsProvider::Create(Mode mode) {
+  base::AutoLock lock(GetInstanceLock());
+  DCHECK(!g_instance);
+  g_instance = new VariationsIdsProvider(mode);
+  return g_instance;
+}
+
+// static
 VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
-  static base::NoDestructor<VariationsIdsProvider> instance;
-  return instance.get();
+  base::AutoLock lock(GetInstanceLock());
+  DCHECK(g_instance);
+  return g_instance;
 }
 
 variations::mojom::VariationsHeadersPtr
@@ -52,6 +73,9 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
   // Lazily initialize the header, if not already done, before attempting to
   // transmit it.
   InitVariationIDsCacheIfNeeded();
+
+  if (mode_ == Mode::kIgnoreSignedInState)
+    is_signed_in = true;
 
   std::string first_party_header_copy;
   std::string any_context_header_copy;
@@ -186,11 +210,25 @@ void VariationsIdsProvider::ResetForTesting() {
   variations_headers_map_.clear();
 }
 
-VariationsIdsProvider::VariationsIdsProvider()
-    : variation_ids_cache_initialized_(false) {}
+VariationsIdsProvider::VariationsIdsProvider(Mode mode)
+    : mode_(mode), variation_ids_cache_initialized_(false) {}
 
 VariationsIdsProvider::~VariationsIdsProvider() {
   base::FieldTrialList::RemoveObserver(this);
+}
+
+// static
+void VariationsIdsProvider::CreateInstanceForTesting(Mode mode) {
+  base::AutoLock lock(GetInstanceLock());
+  delete g_instance;
+  g_instance = new VariationsIdsProvider(mode);
+}
+
+// static
+void VariationsIdsProvider::DestroyInstanceForTesting() {
+  base::AutoLock lock(GetInstanceLock());
+  delete g_instance;
+  g_instance = nullptr;
 }
 
 void VariationsIdsProvider::OnFieldTrialGroupFinalized(

@@ -237,6 +237,7 @@ source_set("unit_tests") {
     "//components/sync/base:test_support",
     "//components/sync/driver:test_support",
     "//components/sync/invalidations:test_support",
+    "//components/variations:test_support",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info:version_string",

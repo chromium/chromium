@@ -41,6 +41,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -607,6 +608,13 @@ void BrowserTestBase::SetUp() {
 
     delegate->PreBrowserMain();
     BrowserTaskExecutor::Create();
+
+    auto* provider = delegate->CreateVariationsIdsProvider();
+    if (!provider) {
+      variations::VariationsIdsProvider::Create(
+          variations::VariationsIdsProvider::Mode::kUseSignedInState);
+    }
+
     delegate->PostEarlyInitialization(/*is_running_tests=*/true);
 
     StartBrowserThreadPool();

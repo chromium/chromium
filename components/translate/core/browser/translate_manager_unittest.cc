@@ -32,6 +32,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
@@ -209,6 +210,9 @@ class TranslateManagerTest : public ::testing::Test {
   // Required to instantiate a net::test::MockNetworkChangeNotifier, because it
   // uses ObserverListThreadSafe.
   base::test::TaskEnvironment task_environment_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   ProfilePrefRegistration registration_;

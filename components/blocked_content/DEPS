@@ -11,6 +11,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/ukm",
   "+components/user_prefs",
+  "+components/variations",
   "+content/public/browser",
   "+content/public/test",
   "+services/metrics/public",

@@ -50,6 +50,7 @@
 #include "components/translate/core/browser/translate_script.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_details.h"
@@ -447,6 +448,9 @@ class TranslateManagerRenderViewHostTest
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // The infobars that have been removed.
   // WARNING: the pointers point to deleted objects, use only for comparison.

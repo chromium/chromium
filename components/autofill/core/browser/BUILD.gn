@@ -436,6 +436,7 @@ static_library("browser") {
     "//components/sync",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/variations",
     "//components/variations/net",
     "//components/variations/service:service",
     "//components/version_info",

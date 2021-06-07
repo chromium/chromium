@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -113,6 +114,9 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
  private:
   // variations::AppendVariationHeaders requires browser threads.
   content::BrowserTaskEnvironment task_environment_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // Supports JSON decoding in the loader implementation.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

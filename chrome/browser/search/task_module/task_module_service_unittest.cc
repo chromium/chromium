@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/search/task_module/task_module_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -41,6 +42,8 @@ class TaskModuleServiceTest : public testing::Test {
  protected:
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestingProfile profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

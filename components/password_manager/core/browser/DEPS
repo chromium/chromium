@@ -16,6 +16,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/ukm",
   "+components/url_formatter",
+  "+components/variations",
   "+components/webdata/common",
   "+components/variations/net",
   "+crypto",
@@ -33,24 +34,6 @@ include_rules = [
 specific_include_rules = {
   "hsts_query_unittest\.cc": [
     "+services/network",
-  ],
-  "new_password_form_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_autofill_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_form_manager_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_form_metrics_recorder_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_manager_metrics_recorder_unittest\.cc": [
-    "+components/ukm",
-  ],
-  "password_manager_unittest\.cc": [
-    "+components/ukm",
   ],
   "http_credentials_cleaner_unittest\.cc": [
     "+services/network",

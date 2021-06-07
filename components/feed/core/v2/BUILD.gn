@@ -212,6 +212,7 @@ source_set("core_unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/variations:test_support",
     "//components/version_info:channel",
     "//net:test_support",
     "//services/network:test_support",

@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/android_affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/android_affiliation/fake_affiliation_api.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -366,6 +367,8 @@ class AffiliationBackendTest : public testing::Test {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   scoped_refptr<base::TestSimpleTaskRunner> consumer_task_runner_ =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   base::FilePath db_path_;
   std::unique_ptr<AffiliationBackend> backend_;

@@ -23,6 +23,7 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -94,6 +95,8 @@ class DefaultSearchManagerTest : public testing::Test {
   }
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DefaultSearchManagerTest);

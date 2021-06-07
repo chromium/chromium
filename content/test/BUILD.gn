@@ -425,6 +425,7 @@ static_library("test_support") {
     "//build:chromeos_buildflags",
     "//cc:test_support",
     "//components/services/storage",
+    "//components/variations",
     "//components/viz/client",
     "//components/viz/host",
     "//content/app:for_content_tests",

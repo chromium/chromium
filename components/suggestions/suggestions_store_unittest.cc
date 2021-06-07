@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_preferences::TestingPrefServiceSyncable;
@@ -92,6 +93,8 @@ class SuggestionsStoreTest : public testing::Test {
   }
 
  protected:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<SuggestionsStore> suggestions_store_;
   base::SimpleTestClock test_clock_;

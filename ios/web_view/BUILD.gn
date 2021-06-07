@@ -297,6 +297,7 @@ source_set("web_view_sources") {
     "//components/translate/ios/browser",
     "//components/unified_consent",
     "//components/url_formatter",
+    "//components/variations",
     "//components/variations/net",
     "//components/version_info",
     "//components/version_info:version_string",

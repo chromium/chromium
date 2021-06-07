@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/http/http_util.h"
@@ -96,6 +97,8 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
@@ -104,9 +107,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
 
 TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
   // Register a trial and variation id, so that there is data in variations
-  // headers. Also, the variations header provider may have been registered to
-  // observe some other field trial list, so reset it.
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
+  // headers.
   CreateFieldTrialWithId("Test", "Group1", 123);
 
   FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
@@ -120,8 +121,6 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
 
   QueueReport(&uploader, "test");
   base::RunLoop().RunUntilIdle();
-
-  variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
 }
 
 // Test that the bearer token is present if there is an email address present in

@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -245,6 +246,14 @@ bool ContentMainDelegateImpl::ShouldCreateFeatureList() {
   // TODO(weblayer-dev): Support feature lists on desktop.
   return true;
 #endif
+}
+
+variations::VariationsIdsProvider*
+ContentMainDelegateImpl::CreateVariationsIdsProvider() {
+  // As the embedder supplies the set of ids, the signed-in state does not make
+  // sense and is ignored.
+  return variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState);
 }
 
 void ContentMainDelegateImpl::PreSandboxStartup() {

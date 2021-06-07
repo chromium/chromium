@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//components/metrics:test_support",
     "//components/prefs:test_support",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/variations/proto",
     "//components/web_resource:test_support",
     "//net",

@@ -34,6 +34,7 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -654,6 +655,10 @@ class PredictionManagerTest : public PredictionManagerTestBase {
     feature_list_.InitAndEnableFeature(
         features::kRemoteOptimizationGuideFetching);
   }
+
+ private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {

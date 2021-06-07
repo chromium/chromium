@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
     "//components/webdata/common",
     "//net:net",
     "//services/network:test_support",

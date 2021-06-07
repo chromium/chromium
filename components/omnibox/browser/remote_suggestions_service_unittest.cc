@@ -13,6 +13,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,6 +43,8 @@ class RemoteSuggestionsServiceTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 

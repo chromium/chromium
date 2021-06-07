@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_backend.h"
 #include "components/password_manager/core/browser/android_affiliation/fake_affiliation_api.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -100,6 +101,8 @@ class AndroidAffiliationServiceTest : public testing::Test {
     background_task_runner_->RunUntilIdle();
   }
 
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<base::TestMockTimeTaskRunner> background_task_runner_ =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   network::TestURLLoaderFactory test_url_loader_factory_;

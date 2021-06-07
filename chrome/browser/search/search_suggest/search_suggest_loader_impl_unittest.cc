@@ -12,6 +12,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/search/search_suggest/search_suggest_data.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -98,6 +99,9 @@ class SearchSuggestLoaderImplTest : public testing::Test {
  private:
   // variations::AppendVariationHeaders requires browser threads.
   content::BrowserTaskEnvironment task_environment_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // Supports JSON parsing in the loader impl.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

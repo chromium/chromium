@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -104,6 +105,8 @@ class PredictionModelFetcherTest : public testing::Test {
 
   bool models_fetched_ = false;
   base::test::TaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<PredictionModelFetcher> prediction_model_fetcher_;
 

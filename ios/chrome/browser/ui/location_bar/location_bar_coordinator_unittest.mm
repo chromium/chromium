@@ -10,6 +10,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -121,8 +122,6 @@ class LocationBarCoordinatorTest : public PlatformTest {
     // Started coordinator has to be stopped before WebStateList destruction.
     [coordinator_ stop];
 
-    VariationsIdsProvider::GetInstance()->ResetForTesting();
-
     PlatformTest::TearDown();
   }
 
@@ -132,6 +131,8 @@ class LocationBarCoordinatorTest : public PlatformTest {
   base::ScopedTempDir state_dir_;
 
   web::WebTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -58,6 +59,8 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
       web::WebTaskEnvironment::IO_MAINLOOP};
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests that the signed in accounts view shouldn't be presented when the

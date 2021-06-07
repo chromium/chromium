@@ -27,6 +27,7 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   // ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
   bool ShouldCreateFeatureList() override;
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PreSandboxStartup() override;
   void PostEarlyInitialization(bool is_running_tests) override;
   int RunProcess(

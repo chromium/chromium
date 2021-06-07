@@ -46,6 +46,11 @@ bool ContentMainDelegate::ShouldCreateFeatureList() {
   return true;
 }
 
+variations::VariationsIdsProvider*
+ContentMainDelegate::CreateVariationsIdsProvider() {
+  return nullptr;
+}
+
 ContentClient* ContentMainDelegate::CreateContentClient() {
   return new ContentClient();
 }

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/common/translate_switches.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -34,7 +35,6 @@ class TranslateScriptTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
     script_ = std::make_unique<TranslateScript>();
     auto* translate_download_manager = TranslateDownloadManager::GetInstance();
     translate_download_manager->set_application_locale("en");
@@ -68,6 +68,9 @@ class TranslateScriptTest : public testing::Test {
 
   // Sets up the task scheduling/task-runner environment for each test.
   base::test::TaskEnvironment task_environment_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // The translate script.
   std::unique_ptr<TranslateScript> script_;

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -130,6 +131,8 @@ class FaviconCacheTest : public testing::Test {
         .Times(calls);
   }
 
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   favicon_base::FaviconImageCallback favicon_service_a_site_response_;
   favicon_base::FaviconImageCallback favicon_service_b_site_response_;
   favicon_base::FaviconRawBitmapCallback

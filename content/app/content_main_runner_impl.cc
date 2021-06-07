@@ -49,6 +49,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
@@ -997,6 +998,12 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     // and binds the MessageLoopForUI on the main thread (but it's only labeled
     // as BrowserThread::UI in BrowserMainLoop::CreateMainMessageLoop).
     BrowserTaskExecutor::Create();
+
+    auto* provider = delegate_->CreateVariationsIdsProvider();
+    if (!provider) {
+      variations::VariationsIdsProvider::Create(
+          variations::VariationsIdsProvider::Mode::kUseSignedInState);
+    }
 
     delegate_->PostEarlyInitialization(main_params.ui_task != nullptr);
 

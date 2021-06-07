@@ -117,6 +117,8 @@ source_set("unit_tests") {
     "//components/sync/driver:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/variations",
+    "//components/variations:test_support",
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

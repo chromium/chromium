@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
     "//net:test_support",
     "//services/network:test_support",
     "//testing/gmock",

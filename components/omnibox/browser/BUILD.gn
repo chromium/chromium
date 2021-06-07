@@ -579,6 +579,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/url_formatter",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/variations/net:net",
     "//services/network:test_support",
     "//sql",

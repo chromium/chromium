@@ -340,6 +340,10 @@ void IOSChromeMainParts::SetupFieldTrials() {
   base::SetRecordActionTaskRunner(
       base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
 
+  // FeatureList requires VariationsIdsProvider to be created.
+  variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kUseSignedInState);
+
   // Initialize FieldTrialList to support FieldTrials that use one-time
   // randomization.
   DCHECK(!field_trial_list_);
