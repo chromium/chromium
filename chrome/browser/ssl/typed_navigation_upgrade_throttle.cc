@@ -56,7 +56,7 @@ bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
   bool is_using_https_as_default_scheme =
       static_cast<ChromeNavigationUIData*>(ui_data)
           ->is_using_https_as_default_scheme();
-  return is_using_https_as_default_scheme && handle->IsInMainFrame() &&
+  return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
          !handle->IsSameDocument() &&
          handle->GetURL().SchemeIs(url::kHttpsScheme) &&
          !handle->GetWebContents()->IsPortal();
