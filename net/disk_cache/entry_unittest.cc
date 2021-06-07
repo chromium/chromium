@@ -5743,10 +5743,6 @@ TEST_F(DiskCacheSimplePrefetchTest, NoFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_NONE, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 0);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, NoFullSmallSpeculative) {
@@ -5759,10 +5755,6 @@ TEST_F(DiskCacheSimplePrefetchTest, NoFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 1);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, NoFullLargeSpeculative) {
@@ -5777,10 +5769,6 @@ TEST_F(DiskCacheSimplePrefetchTest, NoFullLargeSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 0);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, SmallFullNoSpeculative) {
@@ -5793,10 +5781,6 @@ TEST_F(DiskCacheSimplePrefetchTest, SmallFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_NONE, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 0);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, LargeFullNoSpeculative) {
@@ -5809,10 +5793,6 @@ TEST_F(DiskCacheSimplePrefetchTest, LargeFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 0);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, SmallFullSmallSpeculative) {
@@ -5825,10 +5805,6 @@ TEST_F(DiskCacheSimplePrefetchTest, SmallFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 1);
 }
 
 TEST_F(DiskCacheSimplePrefetchTest, LargeFullSmallSpeculative) {
@@ -5842,10 +5818,6 @@ TEST_F(DiskCacheSimplePrefetchTest, LargeFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.Http.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.Http.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "SimpleCache.Http.EntryTrailerPrefetchDelta", 0);
 }
 
 class DiskCacheSimpleAppCachePrefetchTest : public DiskCacheSimplePrefetchTest {
@@ -5864,10 +5836,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, NoFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "SimpleCache.App.EntryTrailerPrefetchDelta", 0, 1);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, NoFullSmallSpeculative) {
@@ -5880,10 +5848,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, NoFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "SimpleCache.App.EntryTrailerPrefetchDelta", 0, 1);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, NoFullLargeSpeculative) {
@@ -5899,10 +5863,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, NoFullLargeSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "SimpleCache.App.EntryTrailerPrefetchDelta", 0, 1);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, SmallFullNoSpeculative) {
@@ -5915,10 +5875,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, SmallFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "SimpleCache.App.EntryTrailerPrefetchDelta", 0, 1);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullNoSpeculative) {
@@ -5932,10 +5888,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullNoSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchDelta",
-                                    0);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, SmallFullSmallSpeculative) {
@@ -5948,10 +5900,6 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, SmallFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_TRAILER, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchDelta",
-                                    1);
 }
 
 TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullSmallSpeculative) {
@@ -5965,8 +5913,4 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullSmallSpeculative) {
 
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchSize",
-                                    0);
-  histogram_tester.ExpectTotalCount("SimpleCache.App.EntryTrailerPrefetchDelta",
-                                    0);
 }

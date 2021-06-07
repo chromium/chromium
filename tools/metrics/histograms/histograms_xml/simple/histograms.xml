@@ -41,7 +41,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.ConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="SimpleCache.ConsistencyResultAfterIndexFilesDeleted"
-    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -88,7 +88,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="SimpleCache.DidDeleteIndexFilesAfterFailedConsistency" enum="Boolean"
-    expires_after="2021-06-08">
+    expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -163,6 +163,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.EntryTrailerPrefetchDelta"
     units="bytes" expires_after="2021-06-08">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -175,6 +178,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.EntryTrailerPrefetchSize"
     units="bytes" expires_after="2021-06-08">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -351,7 +357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"
-    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -372,7 +378,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.RetryConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2021-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -457,7 +463,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.SyncOpenPrefetchMode"
-    enum="SimpleCachePrefetchMode" expires_after="2021-06-10">
+    enum="SimpleCachePrefetchMode" expires_after="2022-06-10">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
