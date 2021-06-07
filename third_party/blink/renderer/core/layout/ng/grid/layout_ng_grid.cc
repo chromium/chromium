@@ -69,11 +69,8 @@ LayoutUnit LayoutNGGrid::GridGap(GridTrackSizingDirection direction) const {
 LayoutUnit LayoutNGGrid::GridItemOffset(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
-  const auto* grid_data = GetGridData();
-  const auto& geometry = (direction == kForRows) ? grid_data->row_geometry
-                                                 : grid_data->column_geometry;
-  DCHECK(geometry.sets.size());
-  return geometry.sets[0].offset;
+  // Distribution offset is baked into the gutter_size in GridNG.
+  return LayoutUnit();
 }
 
 Vector<LayoutUnit> LayoutNGGrid::TrackSizesForComputedStyle(
@@ -127,7 +124,7 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
   LayoutUnit current_offset = geometry.sets[0].offset;
 
   expanded_positions.ReserveInitialCapacity(
-      std::min<wtf_size_t>(geometry.total_track_count + 1, kGridMaxTracks));
+      std::min<wtf_size_t>(geometry.total_track_count + 1, kGridMaxTracks + 1));
   expanded_positions.emplace_back(current_offset);
 
   bool is_last_range_collapsed = true;
@@ -143,9 +140,11 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
             (range.IsCollapsed() ? LayoutUnit() : geometry.gutter_size);
         expanded_positions.emplace_back(current_offset);
 
-        // Respect total track count limit.
-        DCHECK(expanded_positions.size() <= kGridMaxTracks);
-        if (expanded_positions.size() == kGridMaxTracks)
+        // Respect total track count limit, don't forget to account for the
+        // initial offset.
+        DCHECK_LE(expanded_positions.size(),
+                  static_cast<unsigned int>(kGridMaxTracks + 1));
+        if (expanded_positions.size() == kGridMaxTracks + 1)
           return;
       }
     }
