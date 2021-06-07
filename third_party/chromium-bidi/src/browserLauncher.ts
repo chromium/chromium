@@ -25,8 +25,26 @@ import os from 'os';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 
-export default async function launch() {
-  const tempDir = await getTempDir();
+class BrowserProcess {
+  private _cdpUrl: string;
+  private _closeBrowser: () => void;
+
+  constructor(cdpUrl: string, closeBrowser: () => void) {
+    this._cdpUrl = cdpUrl;
+    this._closeBrowser = closeBrowser;
+  }
+
+  get cdpUrl(): string {
+    return this._cdpUrl;
+  }
+
+  get closeBrowser(): () => void {
+    return this._closeBrowser;
+  }
+}
+
+export default async function launch(): Promise<BrowserProcess> {
+  const tempDir = await _getTempDir();
   const browserExecutablePath = process.env.BROWSER_PATH;
   const headless = process.env.HEADLESS !== 'false';
 
@@ -63,23 +81,20 @@ export default async function launch() {
   if (headless) processFlags.push('--headless');
 
   const proc = childProcess.spawn(browserExecutablePath, processFlags);
-  return {
-    cdpUrl: await waitForWSEndpoint(proc),
-    closeBrowser: () => {
-      proc.kill();
-    },
-  };
+  return new BrowserProcess(await _waitForWSEndpoint(proc), () => {
+    proc.kill();
+  });
 }
 
-async function getTempDir() {
+async function _getTempDir(): Promise<string> {
   const profilePath = path.join(os.tmpdir(), 'bidi_mapper_profiles_');
   return await mkdtempAsync(profilePath);
 }
 
-function waitForWSEndpoint(browserProcess) {
+async function _waitForWSEndpoint(browserProcess): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
-    addEventListener(rl, 'line', onLine);
+    _addEventListener(rl, 'line', onLine);
 
     function onLine(line) {
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
@@ -89,7 +104,7 @@ function waitForWSEndpoint(browserProcess) {
   });
 }
 
-function addEventListener(emitter, eventName, handler) {
+function _addEventListener(emitter, eventName, handler) {
   emitter.on(eventName, handler);
   return { emitter, eventName, handler };
 }

@@ -66,7 +66,9 @@ The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To 
 ## Debugging
 
 If you use VS Code, you can create folder `.vscode`, and put 2 files in it:
+
 1. `.vscode/launch.json`. Remember to provide the proper `BROWSER_PATH`.
+
 ```
 {
   // Use IntelliSense to learn about possible attributes.
@@ -94,6 +96,7 @@ If you use VS Code, you can create folder `.vscode`, and put 2 files in it:
 ```
 
 2. `.vscode/settings.json`
+
 ```
 {
   "python.testing.pytestArgs": ["tests"],

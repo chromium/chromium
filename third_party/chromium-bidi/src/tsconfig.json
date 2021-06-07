@@ -12,5 +12,5 @@
     "declarationMap": true,
     "resolveJsonModule": true
   },
-  "files": ["server.js"]
+  "files": ["server.ts"]
 }
