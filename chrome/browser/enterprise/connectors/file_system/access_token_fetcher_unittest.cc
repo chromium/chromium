@@ -61,6 +61,7 @@ class AccessTokenFetcherTest : public testing::Test {
         url_loader_factory_.GetSafeWeakWrapper(),  // dummy; not for unit tests.
         "box", GURL(kTokenEndpoint), "refresh token",
         "",  // use existing refresh token to get access token.
+        /*consumer_name=*/"file_system_access_token_fetcher_unittest",
         base::BindOnce(&AccessTokenFetcherTest::OnResponse,
                        factory_.GetWeakPtr()));
   }

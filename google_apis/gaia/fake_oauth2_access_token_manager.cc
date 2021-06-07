@@ -178,6 +178,7 @@ void FakeOAuth2AccessTokenManager::FetchOAuth2Token(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& client_id,
     const std::string& client_secret,
+    const std::string& consumer_name,
     const FakeOAuth2AccessTokenManager::ScopeSet& scopes) {
   PendingRequest pending_request;
   pending_request.account_id = account_id;

@@ -36,6 +36,7 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
       const GURL& token_endpoint,
       const std::string& refresh_token,
       const std::string& auth_code,
+      const std::string& consumer_name,
       TokenCallback callback);
   ~AccessTokenFetcher() override;
 
@@ -48,10 +49,12 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
   // OAuth2AccessTokenConsumer interface.
   void OnGetTokenSuccess(const TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  private:
   GURL token_endpoint_;
   net::NetworkTrafficAnnotationTag annotation_;
+  const std::string consumer_name_;
   TokenCallback callback_;
 };
 

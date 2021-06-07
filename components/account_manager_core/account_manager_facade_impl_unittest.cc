@@ -107,6 +107,10 @@ class MockOAuthConsumer : public OAuth2AccessTokenConsumer {
               OnGetTokenFailure,
               (const GoogleServiceAuthError& error),
               (override));
+
+  std::string GetConsumerName() const override {
+    return "account_manager_facade_impl_unittest";
+  }
 };
 
 class FakeAccountManager : public crosapi::mojom::AccountManager {

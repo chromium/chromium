@@ -24,6 +24,9 @@ namespace enterprise_connectors {
 
 namespace {
 
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "file_system_rename_handler";
+
 PrefService* PrefsFromBrowserContext(content::BrowserContext* context) {
   return Profile::FromBrowserContext(context)->GetPrefs();
 }
@@ -135,7 +138,8 @@ void FileSystemRenameHandler::FetchAccessToken(
     const std::string& refresh_token) {
   token_fetcher_ = std::make_unique<AccessTokenFetcher>(
       GetURLLoaderFactory(context), settings_.service_provider,
-      settings_.token_endpoint, refresh_token, std::string(),
+      settings_.token_endpoint, refresh_token, /*auth_code=*/std::string(),
+      kOAuthConsumerName,
       base::BindOnce(&FileSystemRenameHandler::OnAccessTokenFetched,
                      weak_factory_.GetWeakPtr()));
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,

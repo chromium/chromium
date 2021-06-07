@@ -87,6 +87,7 @@ class FakeOAuth2AccessTokenManager : public OAuth2AccessTokenManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& client_id,
       const std::string& client_secret,
+      const std::string& consumer_name,
       const OAuth2AccessTokenManager::ScopeSet& scopes) override;
 
   void InvalidateAccessTokenImpl(

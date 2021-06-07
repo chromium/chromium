@@ -81,6 +81,7 @@ class FakeOAuth2AccessTokenManagerWithCaching
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& client_id,
       const std::string& client_secret,
+      const std::string& consumer_name,
       const OAuth2AccessTokenManager::ScopeSet& scopes) override;
   void InvalidateAccessTokenImpl(
       const CoreAccountId& account_id,
@@ -114,6 +115,7 @@ void FakeOAuth2AccessTokenManagerWithCaching::FetchOAuth2Token(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& client_id,
     const std::string& client_secret,
+    const std::string& consumer_name,
     const OAuth2AccessTokenManager::ScopeSet& scopes) {
   GoogleServiceAuthError response_error =
       GoogleServiceAuthError::AuthErrorNone();

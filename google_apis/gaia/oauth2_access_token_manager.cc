@@ -148,6 +148,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
       const std::string& client_id,
       const std::string& client_secret,
       const ScopeSet& scopes,
+      const std::string& consumer_name,
       base::WeakPtr<RequestImpl> waiting_request);
   ~Fetcher() override;
 
@@ -175,6 +176,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   void OnGetTokenSuccess(
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  private:
   Fetcher(OAuth2AccessTokenManager* oauth2_access_token_manager,
@@ -183,6 +185,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
           const std::string& client_id,
           const std::string& client_secret,
           const ScopeSet& scopes,
+          const std::string& consumer_name,
           base::WeakPtr<RequestImpl> waiting_request);
   void Start();
   void InformWaitingRequests();
@@ -203,6 +206,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const CoreAccountId account_id_;
   const ScopeSet scopes_;
+  const std::string consumer_name_;
   std::vector<base::WeakPtr<RequestImpl>> waiting_requests_;
 
   int retry_number_;
@@ -234,10 +238,12 @@ OAuth2AccessTokenManager::Fetcher::CreateAndStart(
     const std::string& client_id,
     const std::string& client_secret,
     const ScopeSet& scopes,
+    const std::string& consumer_name,
     base::WeakPtr<RequestImpl> waiting_request) {
-  std::unique_ptr<OAuth2AccessTokenManager::Fetcher> fetcher = base::WrapUnique(
-      new Fetcher(oauth2_access_token_manager, account_id, url_loader_factory,
-                  client_id, client_secret, scopes, waiting_request));
+  std::unique_ptr<OAuth2AccessTokenManager::Fetcher> fetcher =
+      base::WrapUnique(new Fetcher(oauth2_access_token_manager, account_id,
+                                   url_loader_factory, client_id, client_secret,
+                                   scopes, consumer_name, waiting_request));
 
   fetcher->Start();
   return fetcher;
@@ -250,11 +256,13 @@ OAuth2AccessTokenManager::Fetcher::Fetcher(
     const std::string& client_id,
     const std::string& client_secret,
     const ScopeSet& scopes,
+    const std::string& consumer_name,
     base::WeakPtr<RequestImpl> waiting_request)
     : oauth2_access_token_manager_(oauth2_access_token_manager),
       url_loader_factory_(url_loader_factory),
       account_id_(account_id),
       scopes_(scopes),
+      consumer_name_(consumer_name),
       retry_number_(0),
       error_(GoogleServiceAuthError::SERVICE_UNAVAILABLE),
       client_id_(client_id),
@@ -313,6 +321,10 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
 
   error_ = error;
   InformWaitingRequestsAndDelete();
+}
+
+std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {
+  return consumer_name_;
 }
 
 // Returns an exponential backoff in milliseconds including randomness less than
@@ -478,6 +490,7 @@ void OAuth2AccessTokenManager::FetchOAuth2Token(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& client_id,
     const std::string& client_secret,
+    const std::string& consumer_name,
     const ScopeSet& scopes) {
   // If there is already a pending fetcher for |scopes| and |account_id|,
   // simply register this |request| for those results rather than starting
@@ -490,9 +503,9 @@ void OAuth2AccessTokenManager::FetchOAuth2Token(
     return;
   }
 
-  pending_fetchers_[request_parameters] =
-      Fetcher::CreateAndStart(this, account_id, url_loader_factory, client_id,
-                              client_secret, scopes, request->AsWeakPtr());
+  pending_fetchers_[request_parameters] = Fetcher::CreateAndStart(
+      this, account_id, url_loader_factory, client_id, client_secret, scopes,
+      consumer_name, request->AsWeakPtr());
 }
 
 void OAuth2AccessTokenManager::RegisterTokenResponse(
@@ -660,7 +673,7 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
     // The token isn't in the cache and the delegate isn't fetching it: fetch it
     // ourselves!
     FetchOAuth2Token(request.get(), account_id, url_loader_factory, client_id,
-                     client_secret, scopes);
+                     client_secret, consumer->id(), scopes);
   }
   return std::move(request);
 }

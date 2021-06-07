@@ -60,6 +60,10 @@ class AccessTokenConsumer : public OAuth2AccessTokenConsumer {
     ++num_access_token_fetch_failure_;
   }
 
+  std::string GetConsumerName() const override {
+    return "profile_oauth2_token_service_delegate_chromeos_unittest";
+  }
+
   int num_access_token_fetch_success_ = 0;
   int num_access_token_fetch_failure_ = 0;
 

@@ -21,8 +21,10 @@
 
 CredentialProviderSigninInfoFetcher::CredentialProviderSigninInfoFetcher(
     const std::string& refresh_token,
+    const std::string& consumer_name,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : scoped_access_token_fetcher_(
+    : consumer_name_(consumer_name),
+      scoped_access_token_fetcher_(
           GaiaAccessTokenFetcher::
               CreateExchangeRefreshTokenForAccessTokenInstance(
                   this,
@@ -110,6 +112,10 @@ void CredentialProviderSigninInfoFetcher::OnGetTokenSuccess(
 void CredentialProviderSigninInfoFetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   WriteResultsIfFinished(true);
+}
+
+std::string CredentialProviderSigninInfoFetcher::GetConsumerName() const {
+  return consumer_name_;
 }
 
 void CredentialProviderSigninInfoFetcher::RequestUserInfoFromAccessToken(

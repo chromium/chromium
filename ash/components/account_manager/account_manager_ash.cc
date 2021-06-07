@@ -143,7 +143,8 @@ void AccountManagerAsh::CreateAccessTokenFetcher(
 
   mojo::PendingRemote<mojom::AccessTokenFetcher> pending_remote;
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
-      account_manager_, std::move(mojo_account_key), /*done_closure=*/
+      account_manager_, std::move(mojo_account_key), oauth_consumer_name,
+      /*done_closure=*/
       base::BindOnce(&AccountManagerAsh::DeletePendingAccessTokenFetchRequest,
                      weak_ptr_factory_.GetWeakPtr()),
       /*receiver=*/pending_remote.InitWithNewPipeAndPassReceiver());

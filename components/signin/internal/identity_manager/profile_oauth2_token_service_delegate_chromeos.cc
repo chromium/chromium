@@ -22,9 +22,6 @@ namespace signin {
 
 namespace {
 
-constexpr char kOAuthConsumerName[] =
-    "ProfileOAuth2TokenServiceDelegateChromeOS";
-
 // Values used from |MutableProfileOAuth2TokenServiceDelegate|.
 const net::BackoffEntry::Policy kBackoffPolicy = {
     0 /* int num_errors_to_ignore */,
@@ -193,13 +190,11 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
         consumer, backoff_error_);
   }
 
-  // TODO(https://crbug.com/1192668): use the consumer name that was passed to
-  // `IdentityManager::CreateAccessTokenFetcher`.
   return account_manager_facade_->CreateAccessTokenFetcher(
       account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
           account_manager::AccountType::kGaia} /* account_key */,
-      kOAuthConsumerName, consumer);
+      consumer->GetConsumerName(), consumer);
 }
 
 // Note: This method should use the same logic for filtering accounts as

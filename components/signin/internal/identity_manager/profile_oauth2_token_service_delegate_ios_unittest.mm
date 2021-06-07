@@ -66,6 +66,10 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     last_access_token_error_ = error;
   }
 
+  std::string GetConsumerName() const override {
+    return "profile_oauth2_token_service_delegate_ios_unittest";
+  }
+
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override {
     ++token_available_count_;

@@ -88,6 +88,9 @@ const char kUMAInitialFetchOAuth2NetworkError[] =
 const char kUMAReregistrationResult[] =
     "Enterprise.UserPolicyChromeOS.ReregistrationResult";
 
+// The oauth token consumer name.
+const char kOAuthConsumerName[] = "user_cloud_policy_manager_chromeos";
+
 // This enum is used in UMA, items should not be reordered/deleted. New values
 // should also be added to enums.xml.
 enum class RegistrationResult {
@@ -612,7 +615,8 @@ void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
       ash::UserSessionManager::GetInstance()->user_context().GetRefreshToken());
 
   if (!refresh_token.empty()) {
-    token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance();
+    token_fetcher_ =
+        PolicyOAuth2TokenFetcher::CreateInstance(kOAuthConsumerName);
     token_fetcher_->StartWithRefreshToken(
         refresh_token, system_url_loader_factory,
         base::BindOnce(

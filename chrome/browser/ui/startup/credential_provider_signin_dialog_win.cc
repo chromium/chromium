@@ -33,6 +33,9 @@
 
 namespace {
 
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "credential_provider_signin_dialog";
+
 #if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
 bool g_enable_gcpw_signin_during_tests = false;
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
@@ -125,7 +128,7 @@ void HandleSigninCompleteForGcpwLogin(
     // Create the fetcher and pass it to the callback so that it can be
     // deleted once it is finished.
     auto fetcher = std::make_unique<CredentialProviderSigninInfoFetcher>(
-        refresh_token, url_loader_factory);
+        refresh_token, kOAuthConsumerName, url_loader_factory);
     auto* const fetcher_ptr = fetcher.get();
     fetcher_ptr->SetCompletionCallbackAndStart(
         access_token, additional_mdm_oauth_scopes,

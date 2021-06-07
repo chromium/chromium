@@ -41,6 +41,9 @@ namespace {
 // TODO(https://crbug.com/1164001): remove when migrated to ash::
 using ::chromeos::InstallAttributes;
 
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "enterprise_enrollment";
+
 // A helper class that takes care of asynchronously revoking a given token.
 class TokenRevoker : public GaiaAuthConsumer {
  public:
@@ -105,7 +108,8 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
     const std::string& auth_code) {
   DCHECK(oauth_status_ == OAUTH_NOT_STARTED);
   oauth_status_ = OAUTH_STARTED_WITH_AUTH_CODE;
-  oauth_fetcher_ = policy::PolicyOAuth2TokenFetcher::CreateInstance();
+  oauth_fetcher_ =
+      policy::PolicyOAuth2TokenFetcher::CreateInstance(kOAuthConsumerName);
   oauth_fetcher_->StartWithAuthCode(
       auth_code,
       g_browser_process->system_network_context_manager()

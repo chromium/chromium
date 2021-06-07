@@ -27,7 +27,8 @@ namespace policy {
 class PolicyOAuth2TokenFetcher {
  public:
   // Allocates a PolicyOAuth2TokenFetcher instance.
-  static std::unique_ptr<PolicyOAuth2TokenFetcher> CreateInstance();
+  static std::unique_ptr<PolicyOAuth2TokenFetcher> CreateInstance(
+      const std::string& consumer_name);
 
   // Makes CreateInstance() return a fake token fetcher that does not make
   // network calls so tests can avoid a dependency on GAIA.

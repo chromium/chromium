@@ -29,6 +29,9 @@
 
 namespace {
 
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "file_system_signin_dialog";
+
 // The OAuth2 configuration of the Box App used for the file system integration
 // uses https://google.com/generate_204 as the redirect URI.
 //    This URI is used because:
@@ -183,7 +186,8 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
   // No refresh_token, so need to get both tokens with authorization code.
   token_fetcher_ = std::make_unique<AccessTokenFetcher>(
       url_loader, settings_.service_provider, settings_.token_endpoint,
-      std::string(), auth_code, std::move(callback));
+      /*refresh_token=*/std::string(), auth_code, kOAuthConsumerName,
+      std::move(callback));
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,
                         settings_.scopes);
 }

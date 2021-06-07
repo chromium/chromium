@@ -18,6 +18,9 @@ namespace policy {
 
 namespace {
 
+// The oauth token consumer name.
+const char kOAuthConsumerName[] = "policy_wildcard_login_checker";
+
 // Presence of this key in the userinfo response indicates whether the user is
 // on a hosted domain.
 const char kHostedDomainKey[] = "hd";
@@ -36,7 +39,7 @@ void WildcardLoginChecker::StartWithRefreshToken(
 
   callback_ = std::move(callback);
 
-  token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance();
+  token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance(kOAuthConsumerName);
   token_fetcher_->StartWithRefreshToken(
       refresh_token,
       g_browser_process->system_network_context_manager()

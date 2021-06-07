@@ -21,9 +21,11 @@ namespace crosapi {
 AccessTokenFetcher::AccessTokenFetcher(
     ash::AccountManager* account_manager,
     mojom::AccountKeyPtr mojo_account_key,
+    const std::string& consumer_name,
     base::OnceCallback<void(AccessTokenFetcher*)> done_callback,
     mojo::PendingReceiver<mojom::AccessTokenFetcher> receiver)
-    : done_callback_(std::move(done_callback)),
+    : consumer_name_(consumer_name),
+      done_callback_(std::move(done_callback)),
       receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(base::BindOnce(
       &AccessTokenFetcher::OnMojoPipeError, base::Unretained(this)));
@@ -75,6 +77,10 @@ void AccessTokenFetcher::OnGetTokenFailure(
       account_manager::ToMojoGoogleServiceAuthError(error));
   std::move(callback_).Run(std::move(result));
   Finish();
+}
+
+std::string AccessTokenFetcher::GetConsumerName() const {
+  return consumer_name_;
 }
 
 void AccessTokenFetcher::OnMojoPipeError() {

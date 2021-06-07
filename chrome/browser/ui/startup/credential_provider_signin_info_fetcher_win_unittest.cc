@@ -134,8 +134,10 @@ void CredentialProviderFetcherTest::RunFetcher(
       base::BindOnce(&CredentialProviderFetcherTest::OnFetchComplete,
                      base::Unretained(this), run_loop.QuitClosure());
 
-  CredentialProviderSigninInfoFetcher fetcher(kRefreshTokenValue,
-                                              shared_factory());
+  CredentialProviderSigninInfoFetcher fetcher(
+      kRefreshTokenValue,
+      /*consumer_name=*/"credential_provider_signin_info_fetcher_win_unittest",
+      shared_factory());
   fetcher.SetCompletionCallbackAndStart(
       kAccessTokenValue, additional_oauth_scopes, std::move(fetcher_callback));
   run_loop.Run();

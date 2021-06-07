@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccessTokenFetcher
   AccessTokenFetcher(
       ash::AccountManager* account_manager,
       mojom::AccountKeyPtr mojo_account_key,
+      const std::string& consumer_name,
       base::OnceCallback<void(AccessTokenFetcher*)> done_callback,
       mojo::PendingReceiver<mojom::AccessTokenFetcher> receiver);
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
@@ -47,6 +48,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccessTokenFetcher
   // OAuth2AccessTokenConsumer overrides.
   void OnGetTokenSuccess(const TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  private:
   // Mojo pipe disconnection handler.
@@ -56,6 +58,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccessTokenFetcher
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
   base::OnceCallback<void(mojom::AccessTokenResultPtr)> callback_;
+  const std::string consumer_name_;
   // Called after `this` object's work is done and it can be safely deleted.
   base::OnceCallback<void(AccessTokenFetcher*)> done_callback_;
   mojo::Receiver<mojom::AccessTokenFetcher> receiver_;

@@ -78,6 +78,10 @@ class OAuth2AccessTokenConsumer {
   // Failure callback.
   virtual void OnGetTokenFailure(const GoogleServiceAuthError& error);
 
+  // Returns the OAuth token consumer name, should be used for logging only.
+  virtual std::string GetConsumerName() const = 0;
+
+ private:
   DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenConsumer);
 };
 

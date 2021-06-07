@@ -179,6 +179,10 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     access_token_failure_ = error;
   }
 
+  std::string GetConsumerName() const override {
+    return "mutable_profile_oauth2_token_service_delegate_unittest";
+  }
+
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override {
     ++token_available_count_;

@@ -81,6 +81,7 @@ AccessTokenFetcher::AccessTokenFetcher(
     const GURL& token_endpoint,
     const std::string& refresh_token,
     const std::string& auth_code,
+    const std::string& consumer_name,
     TokenCallback callback)
     : OAuth2AccessTokenFetcherImpl(this,
                                    url_loader_factory,
@@ -88,6 +89,7 @@ AccessTokenFetcher::AccessTokenFetcher(
                                    auth_code),
       token_endpoint_(token_endpoint),
       annotation_(GetAnnotation(service_provder)),
+      consumer_name_(consumer_name),
       callback_(std::move(callback)) {}
 
 AccessTokenFetcher::~AccessTokenFetcher() = default;
@@ -113,6 +115,10 @@ void AccessTokenFetcher::OnGetTokenFailure(
   // TODO(https://crbug.com/1159179): pop a dialog about authentication failure?
   DLOG(ERROR) << "[AccessTokenFetcher] Failed: " << error.error_message();
   std::move(callback_).Run(error, std::string(), std::string());
+}
+
+std::string AccessTokenFetcher::GetConsumerName() const {
+  return consumer_name_;
 }
 
 void RegisterFileSystemPrefsForServiceProvider(

@@ -313,7 +313,7 @@ void DeviceOAuth2TokenService::FlushPendingRequests(
           scoped_request->request.get(),
           scoped_request->request->GetAccountId(), GetURLLoaderFactory(),
           scoped_request->client_id, scoped_request->client_secret,
-          scoped_request->scopes);
+          scoped_request->request->GetConsumerId(), scoped_request->scopes);
     } else {
       FailRequest(scoped_request->request.get(), error);
     }

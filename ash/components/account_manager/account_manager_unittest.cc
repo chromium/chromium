@@ -326,6 +326,10 @@ class MockAccessTokenConsumer : public OAuth2AccessTokenConsumer {
               OnGetTokenFailure,
               (const GoogleServiceAuthError& error),
               (override));
+
+  std::string GetConsumerName() const override {
+    return "account_manager_unittest";
+  }
 };
 
 TEST(AccountManagerKeyTest, TestValidity) {

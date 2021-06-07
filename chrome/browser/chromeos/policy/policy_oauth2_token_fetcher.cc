@@ -41,7 +41,7 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
                                      public GaiaAuthConsumer,
                                      public OAuth2AccessTokenConsumer {
  public:
-  PolicyOAuth2TokenFetcherImpl();
+  explicit PolicyOAuth2TokenFetcherImpl(const std::string& consumer_name);
   ~PolicyOAuth2TokenFetcherImpl() override;
 
  private:
@@ -75,6 +75,7 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   void OnGetTokenSuccess(
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override { return consumer_name_; }
 
   // Starts fetching OAuth2 refresh token.
   void StartFetchingRefreshToken();
@@ -116,12 +117,16 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   // The callback to invoke when done.
   TokenCallback callback_;
 
+  const std::string consumer_name_;
+
   base::WeakPtrFactory<PolicyOAuth2TokenFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyOAuth2TokenFetcherImpl);
 };
 
-PolicyOAuth2TokenFetcherImpl::PolicyOAuth2TokenFetcherImpl() {}
+PolicyOAuth2TokenFetcherImpl::PolicyOAuth2TokenFetcherImpl(
+    const std::string& consumer_name)
+    : consumer_name_(consumer_name) {}
 
 PolicyOAuth2TokenFetcherImpl::~PolicyOAuth2TokenFetcherImpl() {}
 
@@ -294,10 +299,10 @@ void PolicyOAuth2TokenFetcher::UseFakeTokensForTesting() {
 
 // static
 std::unique_ptr<PolicyOAuth2TokenFetcher>
-PolicyOAuth2TokenFetcher::CreateInstance() {
+PolicyOAuth2TokenFetcher::CreateInstance(const std::string& consumer_name) {
   if (use_fake_tokens_for_testing_)
     return std::make_unique<PolicyOAuth2TokenFetcherFake>();
-  return std::make_unique<PolicyOAuth2TokenFetcherImpl>();
+  return std::make_unique<PolicyOAuth2TokenFetcherImpl>(consumer_name);
 }
 
 PolicyOAuth2TokenFetcher::PolicyOAuth2TokenFetcher() {}
