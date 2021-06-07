@@ -20,9 +20,9 @@ download_from_github = None
 def do_delayed_imports():
     # This relies on an already loaded module having set the sys.path correctly :(
     global manifest, manifest_update, download_from_github
-    from manifest import manifest
+    from manifest import manifest  # type: ignore
     from manifest import update as manifest_update
-    from manifest.download import download_from_github
+    from manifest.download import download_from_github  # type: ignore
 
 
 class TestGroupsFile(object):

@@ -28,7 +28,6 @@ from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
-from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
@@ -480,7 +479,7 @@ class RoutesBuilder(object):
         self.mountpoint_routes[file_url] = [("GET", file_url, handlers.FileHandler(base_path=base_path, url_base=url_base))]
 
 
-def get_route_builder(aliases, config=None):
+def get_route_builder(logger, aliases, config):
     builder = RoutesBuilder()
     for alias in aliases:
         url = alias["url-path"]
@@ -500,21 +499,26 @@ class ServerProc(object):
         self.proc = None
         self.daemon = None
         self.mp_context = mp_context
-        self.stop = mp_context.Event()
+        self.stop_flag = mp_context.Event()
         self.scheme = scheme
 
-    def start(self, init_func, host, port, paths, routes, bind_address, config, **kwargs):
+    def start(self, init_func, host, port, paths, routes, bind_address, config, log_handlers, **kwargs):
         self.proc = self.mp_context.Process(target=self.create_daemon,
                                             args=(init_func, host, port, paths, routes, bind_address,
-                                                  config),
+                                                  config, log_handlers),
                                             name='%s on port %s' % (self.scheme, port),
                                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_address,
-                      config, **kwargs):
-        ensure_logger(config)
+                      config, log_handlers, **kwargs):
+        # Ensure that when we start this in a new process we have the global lock
+        # in the logging module unlocked
+        importlib.reload(logging)
+
+        logger = get_logger(config.log_level, log_handlers)
+
         if sys.platform == "darwin":
             # on Darwin, NOFILE starts with a very low limit (256), so bump it up a little
             # by way of comparison, Debian starts with a limit of 1024, Windows 512
@@ -529,7 +533,7 @@ class ServerProc(object):
             if soft < new_soft:
                 resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft, hard))
         try:
-            self.daemon = init_func(host, port, paths, routes, bind_address, config, **kwargs)
+            self.daemon = init_func(logger, host, port, paths, routes, bind_address, config, **kwargs)
         except socket.error:
             logger.critical("Socket error on port %s" % port, file=sys.stderr)
             raise
@@ -539,29 +543,26 @@ class ServerProc(object):
 
         if self.daemon:
             try:
-                self.daemon.start(block=False)
+                self.daemon.start()
                 try:
-                    self.stop.wait()
+                    self.stop_flag.wait()
                 except KeyboardInterrupt:
                     pass
+                finally:
+                    self.daemon.stop()
             except Exception:
-                print(traceback.format_exc(), file=sys.stderr)
+                logger.critical(traceback.format_exc())
                 raise
 
-    def wait(self):
-        self.stop.set()
-        self.proc.join()
-
-    def kill(self):
-        self.stop.set()
-        self.proc.terminate()
-        self.proc.join()
+    def stop(self, timeout=None):
+        self.stop_flag.set()
+        self.proc.join(timeout)
 
     def is_alive(self):
         return self.proc.is_alive()
 
 
-def check_subdomains(config, routes, mp_context):
+def check_subdomains(logger, config, routes, mp_context, log_handlers):
     paths = config.paths
     bind_address = config.bind_address
 
@@ -571,7 +572,7 @@ def check_subdomains(config, routes, mp_context):
 
     wrapper = ServerProc(mp_context)
     wrapper.start(start_http_server, host, port, paths, routes,
-                  bind_address, config)
+                  bind_address, config, log_handlers)
 
     url = "http://{}:{}/".format(host, port)
     connected = False
@@ -598,7 +599,7 @@ def check_subdomains(config, routes, mp_context):
             logger.critical("Failed probing domain {}. {}".format(domain, EDIT_HOSTS_HELP))
             sys.exit(1)
 
-    wrapper.wait()
+    wrapper.stop()
 
 
 def make_hosts_file(config, host):
@@ -621,8 +622,8 @@ def make_hosts_file(config, host):
     return "".join(rv)
 
 
-def start_servers(host, ports, paths, routes, bind_address, config,
-                  mp_context, **kwargs):
+def start_servers(logger, host, ports, paths, routes, bind_address, config,
+                  mp_context, log_handlers, **kwargs):
     servers = defaultdict(list)
     for scheme, ports in ports.items():
         assert len(ports) == {"http": 2, "https": 2}.get(scheme, 1)
@@ -645,22 +646,18 @@ def start_servers(host, ports, paths, routes, bind_address, config,
 
             server_proc = ServerProc(mp_context, scheme=scheme)
             server_proc.start(init_func, host, port, paths, routes, bind_address,
-                              config, **kwargs)
+                              config, log_handlers, **kwargs)
             servers[scheme].append((port, server_proc))
 
     return servers
 
 
-def startup_failed(log=True):
-    # Log=False is a workaround for https://github.com/web-platform-tests/wpt/issues/22719
-    if log:
-        logger.critical(EDIT_HOSTS_HELP)
-    else:
-        print("CRITICAL %s" % EDIT_HOSTS_HELP, file=sys.stderr)
+def startup_failed(logger):
+    logger.critical(EDIT_HOSTS_HELP)
     sys.exit(1)
 
 
-def start_http_server(host, port, paths, routes, bind_address, config, **kwargs):
+def start_http_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -674,10 +671,10 @@ def start_http_server(host, port, paths, routes, bind_address, config, **kwargs)
                                      certificate=None,
                                      latency=kwargs.get("latency"))
     except Exception:
-        startup_failed()
+        startup_failed(logger)
 
 
-def start_https_server(host, port, paths, routes, bind_address, config, **kwargs):
+def start_https_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -692,10 +689,10 @@ def start_https_server(host, port, paths, routes, bind_address, config, **kwargs
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"))
     except Exception:
-        startup_failed()
+        startup_failed(logger)
 
 
-def start_http2_server(host, port, paths, routes, bind_address, config, **kwargs):
+def start_http2_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return wptserve.WebTestHttpd(host=host,
                                      port=port,
@@ -713,11 +710,12 @@ def start_http2_server(host, port, paths, routes, bind_address, config, **kwargs
                                      latency=kwargs.get("latency"),
                                      http2=True)
     except Exception:
-        startup_failed()
+        startup_failed(logger)
 
 
 class WebSocketDaemon(object):
     def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config):
+        logger = logging.getLogger()
         self.host = host
         cmd_args = ["-p", port,
                     "-d", doc_root,
@@ -738,22 +736,19 @@ class WebSocketDaemon(object):
         if not ports:
             # TODO: Fix the logging configuration in WebSockets processes
             # see https://github.com/web-platform-tests/wpt/issues/22719
-            print("Failed to start websocket server on port %s, "
-                  "is something already using that port?" % port, file=sys.stderr)
+            logger.critical("Failed to start websocket server on port %s, "
+                            "is something already using that port?" % port, file=sys.stderr)
             raise OSError()
         assert all(item == ports[0] for item in ports)
         self.port = ports[0]
         self.started = False
         self.server_thread = None
 
-    def start(self, block=False):
+    def start(self):
         self.started = True
-        if block:
-            self.server.serve_forever()
-        else:
-            self.server_thread = threading.Thread(target=self.server.serve_forever)
-            self.server_thread.setDaemon(True)  # don't hang on exit
-            self.server_thread.start()
+        self.server_thread = threading.Thread(target=self.server.serve_forever)
+        self.server_thread.setDaemon(True)  # don't hang on exit
+        self.server_thread.start()
 
     def stop(self):
         """
@@ -773,22 +768,7 @@ class WebSocketDaemon(object):
         self.server = None
 
 
-def release_mozlog_lock():
-    try:
-        from mozlog.structuredlog import StructuredLogger
-        try:
-            StructuredLogger._lock.release()
-        except threading.ThreadError:
-            pass
-    except ImportError:
-        pass
-
-
-def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
-    # Ensure that when we start this in a new process we have the global lock
-    # in the logging module unlocked
-    importlib.reload(logging)
-    release_mozlog_lock()
+def start_ws_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return WebSocketDaemon(host,
                                str(port),
@@ -797,14 +777,10 @@ def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
                                bind_address,
                                ssl_config=None)
     except Exception:
-        startup_failed(log=False)
+        startup_failed(logger)
 
 
-def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
-    # Ensure that when we start this in a new process we have the global lock
-    # in the logging module unlocked
-    importlib.reload(logging)
-    release_mozlog_lock()
+def start_wss_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return WebSocketDaemon(host,
                                str(port),
@@ -813,7 +789,7 @@ def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
                                bind_address,
                                config.ssl_config)
     except Exception:
-        startup_failed(log=False)
+        startup_failed(logger)
 
 
 class QuicTransportDaemon(object):
@@ -834,46 +810,39 @@ class QuicTransportDaemon(object):
         self.command = args
         self.proc = None
 
-    def start(self, block=False):
-        if block:
-            subprocess.call(self.command)
-        else:
-            def handle_signal(*_):
-                if self.proc:
-                    try:
-                        self.proc.terminate()
-                    except OSError:
-                        # It's fine if the child already exits.
-                        pass
-                    self.proc.wait()
-                sys.exit(0)
+    def start(self):
+        def handle_signal(*_):
+            if self.proc:
+                try:
+                    self.proc.terminate()
+                except OSError:
+                    # It's fine if the child already exits.
+                    pass
+                self.proc.wait()
+            sys.exit(0)
 
-            signal.signal(signal.SIGTERM, handle_signal)
-            signal.signal(signal.SIGINT, handle_signal)
+        signal.signal(signal.SIGTERM, handle_signal)
+        signal.signal(signal.SIGINT, handle_signal)
 
-            self.proc = subprocess.Popen(self.command)
-            # Give the server a second to start and then check.
-            time.sleep(1)
-            if self.proc.poll():
-                sys.exit(1)
+        self.proc = subprocess.Popen(self.command)
+        # Give the server a second to start and then check.
+        time.sleep(1)
+        if self.proc.poll():
+            sys.exit(1)
 
 
-def start_quic_transport_server(host, port, paths, routes, bind_address, config, **kwargs):
-    # Ensure that when we start this in a new process we have the global lock
-    # in the logging module unlocked
-    importlib.reload(logging)
-    release_mozlog_lock()
+def start_quic_transport_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
         return QuicTransportDaemon(host,
-                          port,
-                          private_key=config.ssl_config["key_path"],
-                          certificate=config.ssl_config["cert_path"],
-                          log_level=config.log_level)
+                                   port,
+                                   private_key=config.ssl_config["key_path"],
+                                   certificate=config.ssl_config["cert_path"],
+                                   log_level=config.log_level)
     except Exception:
-        startup_failed(log=False)
+        startup_failed(logger)
 
 
-def start(config, routes, mp_context, **kwargs):
+def start(logger, config, routes, mp_context, log_handlers, **kwargs):
     host = config["server_host"]
     ports = config.ports
     paths = config.paths
@@ -881,19 +850,21 @@ def start(config, routes, mp_context, **kwargs):
 
     logger.debug("Using ports: %r" % ports)
 
-    servers = start_servers(host, ports, paths, routes, bind_address, config, mp_context, **kwargs)
+    servers = start_servers(logger, host, ports, paths, routes, bind_address, config, mp_context,
+                            log_handlers, **kwargs)
 
     return servers
 
 
-def iter_procs(servers):
+def iter_servers(servers):
     for servers in servers.values():
         for port, server in servers:
-            yield server.proc
+            yield server
 
 
 def _make_subdomains_product(s, depth=2):
     return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
+
 
 def _make_origin_policy_subdomains(limit):
     return {u"op%d" % x for x in range(1,limit+1)}
@@ -963,12 +934,13 @@ class ConfigBuilder(config.ConfigBuilder):
 
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, logger, *args, **kwargs):
         if "subdomains" not in kwargs:
             kwargs["subdomains"] = _subdomains
         if "not_subdomains" not in kwargs:
             kwargs["not_subdomains"] = _not_subdomains
         super(ConfigBuilder, self).__init__(
+            logger,
             *args,
             **kwargs
         )
@@ -987,19 +959,14 @@ class ConfigBuilder(config.ConfigBuilder):
         else:
             return os.path.join(data["doc_root"], "websockets", "handlers")
 
-    def ws_doc_root(self, v):
-        self._ws_doc_root = v
-
-    ws_doc_root = property(None, ws_doc_root)
-
     def _get_paths(self, data):
         rv = super(ConfigBuilder, self)._get_paths(data)
         rv["ws_doc_root"] = data["ws_doc_root"]
         return rv
 
 
-def build_config(override_path=None, config_cls=ConfigBuilder, **kwargs):
-    rv = config_cls()
+def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs):
+    rv = config_cls(logger)
 
     enable_http2 = kwargs.get("h2")
     if enable_http2 is None:
@@ -1069,16 +1036,37 @@ class MpContext(object):
     def __getattr__(self, name):
         return getattr(multiprocessing, name)
 
-def ensure_logger(config):
-    global logger
-    try:
-        logger
-    except NameError:
-        logger = config.logger
-        set_logger(logger)
 
-def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs):
-    received_signal = threading.Event()
+def get_logger(log_level, log_handlers):
+    """Get a logger configured to log at level log_level
+
+    If the logger has existing handlers the log_handlers argument is ignored.
+    Otherwise the handlers in log_handlers are added to the logger. If there are
+    no log_handlers passed and no configured handlers, a stream handler is added
+    to the logger.
+
+    Typically this is called once per process to set up logging in that process.
+
+    :param log_level: - A string representing a log level e.g. "info"
+    :param log_handlers: - Optional list of Handler objects.
+    """
+    logger = logging.getLogger()
+    logger.setLevel(getattr(logging, log_level.upper()))
+    if not logger.hasHandlers():
+        if log_handlers is not None:
+            for handler in log_handlers:
+                logger.addHandler(handler)
+        else:
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter("[%(asctime)s %(processName)s] %(levelname)s - %(message)s")
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+    return logger
+
+
+def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handlers=None,
+        **kwargs):
+    logger = get_logger("INFO", log_handlers)
 
     if mp_context is None:
         if hasattr(multiprocessing, "get_context"):
@@ -1086,16 +1074,12 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs)
         else:
             mp_context = MpContext()
 
-    with build_config(os.path.join(repo_root, "config.json"),
+    with build_config(logger,
+                      os.path.join(repo_root, "config.json"),
                       config_cls=config_cls,
                       **kwargs) as config:
-        ensure_logger(config)
-        # Configure the root logger to cover third-party libraries.
-        logging.getLogger().setLevel(config.log_level)
-
-        def handle_signal(signum, frame):
-            logger.debug("Received signal %s. Shutting down.", signum)
-            received_signal.set()
+        # This sets the right log level
+        logger = get_logger(config.log_level, log_handlers)
 
         bind_address = config["bind_address"]
 
@@ -1110,10 +1094,10 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs)
 
         if route_builder is None:
             route_builder = get_route_builder
-        routes = route_builder(config.aliases, config).get_routes()
+        routes = route_builder(logger, config.aliases, config).get_routes()
 
         if config["check_subdomains"]:
-            check_subdomains(config, routes, mp_context)
+            check_subdomains(logger, config, routes, mp_context, log_handlers)
 
         stash_address = None
         if bind_address:
@@ -1121,25 +1105,34 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs)
             logger.debug("Going to use port %d for stash" % stash_address[1])
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, routes, mp_context, **kwargs)
-            signal.signal(signal.SIGTERM, handle_signal)
-            signal.signal(signal.SIGINT, handle_signal)
+            servers = start(logger, config, routes, mp_context, log_handlers, **kwargs)
 
-            while (all(subproc.is_alive() for subproc in iter_procs(servers)) and
-                   not received_signal.is_set() and not kwargs["exit_after_start"]):
-                for subproc in iter_procs(servers):
-                    subproc.join(1)
+            if not kwargs["exit_after_start"]:
+                try:
+                    # Periodically check if all the servers are alive
+                    server_process_exited = False
+                    while not server_process_exited:
+                        for server in iter_servers(servers):
+                            server.proc.join(1)
+                            if not server.proc.is_alive():
+                                server_process_exited = True
+                                break
+                except KeyboardInterrupt:
+                    pass
 
             failed_subproc = 0
-            for subproc in iter_procs(servers):
+            for server in iter_servers(servers):
+                subproc = server.proc
                 if subproc.is_alive():
-                    logger.info('Status of subprocess "%s": running' % subproc.name)
+                    logger.info('Status of subprocess "%s": running', subproc.name)
+                    server.stop(timeout=1)
+
+                if server.proc.exitcode == 0:
+                    logger.info('Status of subprocess "%s": exited correctly', subproc.name)
                 else:
-                    if subproc.exitcode == 0:
-                        logger.info('Status of subprocess "%s": exited correctly' % subproc.name)
-                    else:
-                        logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d' % (subproc.name, subproc.exitcode))
-                        failed_subproc += 1
+                    logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',
+                                   subproc.name, subproc.exitcode)
+                    failed_subproc += 1
             return failed_subproc
 
 

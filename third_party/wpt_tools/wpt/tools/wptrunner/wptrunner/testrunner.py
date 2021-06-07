@@ -24,30 +24,12 @@ def release_mozlog_lock():
         pass
 
 
-class MessageLogger(object):
-    def __init__(self, message_func):
-        self.send_message = message_func
+class LogMessageHandler:
+    def __init__(self, send_message):
+        self.send_message = send_message
 
-    def _log_data(self, action, **kwargs):
-        self.send_message("log", action, kwargs)
-
-    def process_output(self, process, data, command):
-        self._log_data("process_output", process=process, data=data, command=command)
-
-
-def _log_func(level_name):
-    def log(self, message):
-        self._log_data(level_name.lower(), message=message)
-    log.__doc__ = """Log a message with level %s
-
-:param message: The string message to log
-""" % level_name
-    log.__name__ = str(level_name).lower()
-    return log
-
-# Create all the methods on StructuredLog for debug levels
-for level_name in structuredlog.log_levels:
-    setattr(MessageLogger, level_name.lower(), _log_func(level_name))
+    def __call__(self, data):
+        self.send_message("log", data)
 
 
 class TestRunner(object):
@@ -158,7 +140,9 @@ def start_runner(runner_command_queue, runner_result_queue,
     # in the logging module unlocked
     release_mozlog_lock()
 
-    logger = MessageLogger(send_message)
+    proc_name = mpcontext.get_context().current_process().name
+    logger = structuredlog.StructuredLogger(proc_name)
+    logger.add_handler(LogMessageHandler(send_message))
 
     with capture.CaptureIO(logger, capture_stdio):
         try:
@@ -270,7 +254,7 @@ class BrowserManager(object):
 
 class _RunnerManagerState(object):
     before_init = namedtuple("before_init", [])
-    initializing = namedtuple("initializing_browser",
+    initializing = namedtuple("initializing",
                               ["test", "test_group", "group_metadata", "failure_count"])
     running = namedtuple("running", ["test", "test_group", "group_metadata"])
     restarting = namedtuple("restarting", ["test", "test_group", "group_metadata"])
@@ -503,6 +487,7 @@ class TestRunnerManager(threading.Thread):
                                                    self.state.failure_count + 1)
         else:
             self.executor_kwargs["group_metadata"] = self.state.group_metadata
+            self.executor_kwargs["browser_settings"] = self.browser.browser_settings
             self.start_test_runner()
 
     def start_test_runner(self):
@@ -743,8 +728,8 @@ class TestRunnerManager(threading.Thread):
         self.stop_runner()
         return RunnerManagerState.initializing(self.state.test, self.state.test_group, self.state.group_metadata, 0)
 
-    def log(self, action, kwargs):
-        getattr(self.logger, action)(**kwargs)
+    def log(self, data):
+        self.logger.log_raw(data)
 
     def error(self, message):
         self.logger.error(message)

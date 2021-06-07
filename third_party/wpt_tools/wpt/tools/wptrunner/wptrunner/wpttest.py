@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from collections import defaultdict
+from typing import Any, ClassVar, Dict, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -82,7 +83,7 @@ def get_run_info(metadata_root, product, **kwargs):
     return RunInfo(metadata_root, product, **kwargs)
 
 
-class RunInfo(dict):
+class RunInfo(Dict[str, Any]):
     def __init__(self, metadata_root, product, debug,
                  browser_version=None,
                  browser_channel=None,
@@ -149,9 +150,9 @@ def server_protocol(manifest_item):
 
 class Test(object):
 
-    result_cls = None
-    subtest_result_cls = None
-    test_type = None
+    result_cls = None  # type: ClassVar[Type[Result]]
+    subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
+    test_type = None  # type: ClassVar[str]
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds

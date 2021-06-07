@@ -16,7 +16,7 @@ def replace_lone_surrogate(data):
     return LONE_SURROGATE_RE.subn(surrogate_replacement, data)[0]
 
 
-class WptreportFormatter(BaseFormatter):
+class WptreportFormatter(BaseFormatter):  # type: ignore
     """Formatter that produces results in the format that wptreport expects."""
 
     def __init__(self):

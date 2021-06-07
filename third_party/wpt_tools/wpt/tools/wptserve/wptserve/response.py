@@ -243,7 +243,13 @@ class Response(object):
                         ("Content-Length", len(data))]
         self.content = data
         if code == 500:
-            self.logger.error(message)
+            if isinstance(message, str) and message:
+                first_line = message.splitlines()[0]
+            else:
+                first_line = "<no message given>"
+            self.logger.error("Exception loading %s: %s" % (self.request.url,
+                                                            first_line))
+            self.logger.info(message)
 
 
 class MultipartContent(object):

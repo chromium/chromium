@@ -1,6 +1,7 @@
 import traceback
 
 from abc import ABCMeta, abstractmethod
+from typing import ClassVar, List, Type
 
 
 class Protocol(object):
@@ -16,7 +17,7 @@ class Protocol(object):
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []
+    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -82,7 +83,7 @@ class ProtocolPart(object):
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None
+    name = None  # type: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent

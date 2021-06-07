@@ -18,7 +18,6 @@ from . import wpttest
 from mozlog import capture, handlers
 from .font import FontInstaller
 from .testrunner import ManagerGroup
-from .browsers.base import NullBrowser
 
 here = os.path.dirname(__file__)
 
@@ -99,7 +98,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    run_info_extras = products.Product(kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
@@ -113,7 +112,7 @@ def list_disabled(test_paths, product, **kwargs):
 
     rv = []
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    run_info_extras = products.Product(kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
@@ -127,7 +126,7 @@ def list_disabled(test_paths, product, **kwargs):
 def list_tests(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    run_info_extras = products.Product(kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
@@ -167,7 +166,7 @@ def run_tests(config, test_paths, product, **kwargs):
         recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
-        product = products.load_product(config, product, load_cls=True)
+        product = products.Product(config, product)
 
         env_extras = product.get_env_extras(**kwargs)
 
@@ -276,15 +275,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
 
-                    # WebDriver tests may create and destroy multiple browser
-                    # processes as part of their expected behavior. These
-                    # processes are managed by a WebDriver server binary. This
-                    # obviates the need for wptrunner to provide a browser, so
-                    # the NullBrowser is used in place of the "target" browser
-                    if test_type == "wdspec":
-                        browser_cls = NullBrowser
-                    else:
-                        browser_cls = product.browser_cls
+                    browser_cls = product.get_browser_cls(test_type)
 
                     browser_kwargs = product.get_browser_kwargs(logger,
                                                                 test_type,
@@ -296,8 +287,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     executor_cls = product.executor_classes.get(test_type)
                     executor_kwargs = product.get_executor_kwargs(logger,
                                                                   test_type,
-                                                                  test_environment.config,
-                                                                  test_environment.cache_manager,
+                                                                  test_environment,
                                                                   run_info,
                                                                   **kwargs)
 

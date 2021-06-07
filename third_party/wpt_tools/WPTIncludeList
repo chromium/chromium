@@ -144,7 +144,7 @@
 ./tools/third_party/pywebsocket3/mod_pywebsocket/dispatch.py
 ./tools/third_party/pywebsocket3/mod_pywebsocket/extensions.py
 ./tools/third_party/pywebsocket3/mod_pywebsocket/fast_masking.i
-./tools/third_party/pywebsocket3/mod_pywebsocket/handshake/_base.py
+./tools/third_party/pywebsocket3/mod_pywebsocket/handshake/base.py
 ./tools/third_party/pywebsocket3/mod_pywebsocket/handshake/hybi.py
 ./tools/third_party/pywebsocket3/mod_pywebsocket/handshake/__init__.py
 ./tools/third_party/pywebsocket3/mod_pywebsocket/http_header_util.py

@@ -4,11 +4,12 @@ import argparse
 import logging
 import os
 import sys
+from typing import Any
 
 _dir = os.path.dirname(__file__)
 
 
-def get_parser():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='QUIC server')
     parser.add_argument(
         '-c',
@@ -52,7 +53,8 @@ def get_parser():
     return parser
 
 
-def run(venv, **kwargs):
+def run(venv: Any, **kwargs: Any) -> None:
+    # The venv argument is passed with `wpt serve-quic-transport` but is unused.
     assert sys.version_info.major == 3, 'QUIC server only runs in Python 3'
     logging.basicConfig(
         format='%(asctime)s %(levelname)s %(name)s %(message)s',
@@ -61,15 +63,15 @@ def run(venv, **kwargs):
 
     # Delay import after version check to make the error easier to understand.
     from .quic_transport_server import start
-    start(kwargs)
+    start(**kwargs)
 
 
-def main():
+def main() -> None:
     # This is only used when executing the script directly. Users are
     # responsible for managing venv themselves. `wpt serve-quic-transport` does
     # NOT use this code path.
     kwargs = vars(get_parser().parse_args())
-    return run(None, **kwargs)
+    run(None, **kwargs)
 
 
 if __name__ == '__main__':
