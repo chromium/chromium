@@ -340,6 +340,8 @@ static_library("arc_test_support") {
   sources = [
     "test/arc_payment_app_bridge_test_support.cc",
     "test/arc_payment_app_bridge_test_support.h",
+    "test/arc_util_test_support.cc",
+    "test/arc_util_test_support.h",
     "test/fake_accessibility_helper_instance.cc",
     "test/fake_accessibility_helper_instance.h",
     "test/fake_adbd_monitor_instance.cc",

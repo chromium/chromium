@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
@@ -50,6 +51,12 @@ constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 // ArcVmUreadaheadMode param value strings.
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
+
+// Do not run ureadahead in vm for devices with less than 8GB due to memory
+// pressure issues since system will likely drop caches in this case.
+// The value should match platform2/arc/vm/scripts/init/arcvm-ureadahead.conf
+// in Chrome OS.
+constexpr int kReadaheadTotalMinMemoryInKb = 7500000;
 
 void SetArcCpuRestrictionCallback(
     login_manager::ContainerCpuRestrictionState state,
@@ -198,8 +205,16 @@ bool IsArcVmDevConfIgnored() {
       chromeos::switches::kIgnoreArcVmDevConf);
 }
 
-ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
-  ArcVmUreadaheadMode mode = ArcVmUreadaheadMode::READAHEAD;
+ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
+  base::SystemMemoryInfoKB mem_info;
+  DCHECK(callback);
+  if (!callback.Run(&mem_info)) {
+    LOG(ERROR) << "Failed to get system memory info";
+    return ArcVmUreadaheadMode::DISABLED;
+  }
+  ArcVmUreadaheadMode mode = (mem_info.total > kReadaheadTotalMinMemoryInKb)
+                                 ? ArcVmUreadaheadMode::READAHEAD
+                                 : ArcVmUreadaheadMode::DISABLED;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcVmUreadaheadMode)) {
     const std::string value =
