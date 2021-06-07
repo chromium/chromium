@@ -39,7 +39,7 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
 
   auto* source = MakeGarbageCollected<
       TransferredFrameQueueUnderlyingSource<NativeFrameType>>(
-      script_state, host, host_runner_, max_queue_size_);
+      script_state, host, host_runner_);
 
   PostCrossThreadTask(
       *host_runner_, FROM_HERE,

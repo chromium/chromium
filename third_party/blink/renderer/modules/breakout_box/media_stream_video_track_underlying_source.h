@@ -56,12 +56,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
       std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
       base::TimeTicks estimated_capture_time);
 
-  scoped_refptr<base::SequencedTaskRunner> transferred_runner_;
-  CrossThreadFrameQueueSource transferred_source_;
-
-  // Only accessed on the IO runner.
-  bool was_transferred_ = false;
-
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.
   const Member<ScriptWrappable> media_stream_track_processor_;

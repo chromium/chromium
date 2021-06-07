@@ -15,9 +15,11 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -137,8 +139,9 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   const wtf_size_t buffer_size = 5;
   auto* source = CreateSource(script_state, track, buffer_size);
   EXPECT_EQ(source->MaxQueueSize(), buffer_size);
-  // Create a stream to ensure there is a controller associated to the source.
-  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
   // Add a sink to the track to make it possible to wait until a pushed frame
   // is delivered to sinks, including |source|, which is a sink of the track.
   MockMediaStreamVideoSink mock_sink;
@@ -151,79 +154,32 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
     sink_loop.Run();
   };
 
-  const auto& queue = source->QueueForTesting();
   for (wtf_size_t i = 0; i < buffer_size; ++i) {
-    EXPECT_EQ(queue.size(), i);
     base::TimeDelta timestamp = base::TimeDelta::FromSeconds(i);
     push_frame_sync(timestamp);
-    EXPECT_EQ(queue.back()->timestamp(), timestamp);
-    EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(0));
   }
 
   // Push another frame while the queue is full.
-  EXPECT_EQ(queue.size(), buffer_size);
+  // EXPECT_EQ(queue.size(), buffer_size);
   push_frame_sync(base::TimeDelta::FromSeconds(buffer_size));
 
-  // Since the queue was full, the oldest frame from the queue should have been
-  // dropped.
-  EXPECT_EQ(queue.size(), buffer_size);
-  EXPECT_EQ(queue.back()->timestamp(),
-            base::TimeDelta::FromSeconds(buffer_size));
-  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(1));
+  // Since the queue was full, the oldest frame from the queue (timestamp 0)
+  // should have been dropped.
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+  for (wtf_size_t i = 1; i <= buffer_size; ++i) {
+    VideoFrame* video_frame =
+        ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+    EXPECT_EQ(base::TimeDelta::FromMicroseconds(*video_frame->timestamp()),
+              base::TimeDelta::FromSeconds(i));
+  }
 
-  // Pulling with frames in the queue should move the oldest frame in the queue
-  // to the stream's controller.
-  EXPECT_EQ(source->DesiredSizeForTesting(), 0);
+  // Pulling causes a pending pull since there are no frames available for
+  // reading.
   EXPECT_FALSE(source->IsPendingPullForTesting());
   source->pull(script_state);
-  EXPECT_EQ(source->DesiredSizeForTesting(), -1);
-  EXPECT_FALSE(source->IsPendingPullForTesting());
-  EXPECT_EQ(queue.size(), buffer_size - 1);
-  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(2));
-
-  source->Close();
-  EXPECT_EQ(queue.size(), 0u);
-  track->stopTrack(v8_scope.GetExecutionContext());
-}
-
-TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
-       BypassQueueAfterPullWithEmptyBuffer) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* track = CreateTrack(v8_scope.GetExecutionContext());
-  auto* source = CreateSource(script_state, track);
-
-  // Create a stream to ensure there is a controller associated to the source.
-  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
-
-  MockMediaStreamVideoSink mock_sink;
-  mock_sink.ConnectToTrack(WebMediaStreamTrack(source->Track()));
-  auto push_frame_sync = [&mock_sink, this]() {
-    base::RunLoop sink_loop;
-    EXPECT_CALL(mock_sink, OnVideoFrame(_))
-        .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    PushFrame();
-    sink_loop.Run();
-  };
-
-  // At first, the queue is empty and the desired size is empty as well.
-  EXPECT_TRUE(source->QueueForTesting().empty());
-  EXPECT_EQ(source->DesiredSizeForTesting(), 0);
-  EXPECT_FALSE(source->IsPendingPullForTesting());
-
-  source->pull(script_state);
-  EXPECT_TRUE(source->QueueForTesting().empty());
-  EXPECT_EQ(source->DesiredSizeForTesting(), 0);
   EXPECT_TRUE(source->IsPendingPullForTesting());
-  EXPECT_TRUE(source->HasPendingActivity());
-
-  push_frame_sync();
-  // Since a pull was pending, the frame is put directly in the stream
-  // controller, bypassing the source queue.
-  EXPECT_TRUE(source->QueueForTesting().empty());
-  EXPECT_EQ(source->DesiredSizeForTesting(), -1);
-  EXPECT_FALSE(source->IsPendingPullForTesting());
-  EXPECT_FALSE(source->HasPendingActivity());
 
   source->Close();
   track->stopTrack(v8_scope.GetExecutionContext());

@@ -20,18 +20,13 @@ class TransferredFrameQueueUnderlyingSource
   TransferredFrameQueueUnderlyingSource(
       ScriptState*,
       FrameQueueHost*,
-      scoped_refptr<base::SequencedTaskRunner> host_runner,
-      wtf_size_t queue_size);
+      scoped_refptr<base::SequencedTaskRunner> host_runner);
   ~TransferredFrameQueueUnderlyingSource() override = default;
 
   TransferredFrameQueueUnderlyingSource(
       const TransferredFrameQueueUnderlyingSource&) = delete;
   TransferredFrameQueueUnderlyingSource& operator=(
       const TransferredFrameQueueUnderlyingSource&) = delete;
-
-  // Clears all internal state and closes the UnderlyingSource's Controller.
-  // Must be called on |realm_task_runner_|.
-  void Close();
 
   // FrameQueueUnderlyingSource<NativeFrameType> implementation.
   bool StartFrameDelivery() override;

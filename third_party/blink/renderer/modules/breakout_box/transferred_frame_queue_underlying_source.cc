@@ -16,9 +16,8 @@ TransferredFrameQueueUnderlyingSource<NativeFrameType>::
     TransferredFrameQueueUnderlyingSource(
         ScriptState* script_state,
         FrameQueueHost* host,
-        scoped_refptr<base::SequencedTaskRunner> host_runner,
-        wtf_size_t max_queue_size)
-    : FrameQueueUnderlyingSource<NativeFrameType>(script_state, max_queue_size),
+        scoped_refptr<base::SequencedTaskRunner> host_runner)
+    : FrameQueueUnderlyingSource<NativeFrameType>(script_state, host),
       host_runner_(host_runner),
       host_(host) {}
 
