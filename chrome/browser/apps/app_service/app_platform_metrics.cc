@@ -486,18 +486,19 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   bool is_active = update.State() & apps::InstanceState::kActive;
   auto it = running_start_time_.find(update.Window());
   if (is_active) {
-    // For browser tabs, record the top browser window running duration only,
-    // and skip the child tab windows to avoid duration duplicated calculation.
-    if (update.Window() != update.Window()->GetToplevelWindow() &&
-        update.Window()->GetToplevelWindow()) {
-      return;
-    }
-
     if (it == running_start_time_.end()) {
       AppTypeName app_type_name =
           GetAppTypeName(profile_, app_type, update.AppId(),
                          update.Window()->GetToplevelWindow());
       if (app_type_name == apps::AppTypeName::kUnknown) {
+        return;
+      }
+
+      // For browser tabs, record the top browser window running duration only,
+      // and skip web apps opened in browser tabs to avoid duration duplicated
+      // calculation.
+      if (app_type_name == AppTypeName::kChromeBrowser &&
+          app_id != extension_misc::kChromeAppId) {
         return;
       }
 
