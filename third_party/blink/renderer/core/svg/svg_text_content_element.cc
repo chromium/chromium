@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_query.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_query.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
@@ -39,6 +40,15 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+namespace {
+
+bool IsNGTextOrInline(const LayoutObject* object) {
+  return object && (object->IsNGSVGText() ||
+                    object->IsInLayoutNGInlineFormattingContext());
+}
+
+}  // namespace
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGLengthAdjustType>() {
@@ -95,13 +105,19 @@ void SVGTextContentElement::Trace(Visitor* visitor) const {
 unsigned SVGTextContentElement::getNumberOfChars() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
-  return SVGTextQuery(GetLayoutObject()).NumberOfCharacters();
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object))
+    return NGSvgTextQuery(*layout_object).NumberOfCharacters();
+  return SVGTextQuery(layout_object).NumberOfCharacters();
 }
 
 float SVGTextContentElement::getComputedTextLength() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
-  return SVGTextQuery(GetLayoutObject()).TextLength();
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object))
+    return 1.0f;  // TODO(1179585): Implement this.
+  return SVGTextQuery(layout_object).TextLength();
 }
 
 float SVGTextContentElement::getSubStringLength(
@@ -123,7 +139,10 @@ float SVGTextContentElement::getSubStringLength(
   if (nchars > number_of_chars - charnum)
     nchars = number_of_chars - charnum;
 
-  return SVGTextQuery(GetLayoutObject()).SubStringLength(charnum, nchars);
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object))
+    return 0.0f;  // TODO(1179585): Implement this.
+  return SVGTextQuery(layout_object).SubStringLength(charnum, nchars);
 }
 
 SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
@@ -140,8 +159,13 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
     return nullptr;
   }
 
-  FloatPoint point =
-      SVGTextQuery(GetLayoutObject()).StartPositionOfCharacter(charnum);
+  FloatPoint point;
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object)) {
+    // TODO(1179585): Implement this.
+  } else {
+    point = SVGTextQuery(layout_object).StartPositionOfCharacter(charnum);
+  }
   return SVGPointTearOff::CreateDetached(point);
 }
 
@@ -159,8 +183,13 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
     return nullptr;
   }
 
-  FloatPoint point =
-      SVGTextQuery(GetLayoutObject()).EndPositionOfCharacter(charnum);
+  FloatPoint point;
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object)) {
+    // TODO(1179585): Implement this.
+  } else {
+    point = SVGTextQuery(layout_object).EndPositionOfCharacter(charnum);
+  }
   return SVGPointTearOff::CreateDetached(point);
 }
 
@@ -178,7 +207,13 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
     return nullptr;
   }
 
-  FloatRect rect = SVGTextQuery(GetLayoutObject()).ExtentOfCharacter(charnum);
+  FloatRect rect;
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object)) {
+    // TODO(1179585): Implement this.
+  } else {
+    rect = SVGTextQuery(layout_object).ExtentOfCharacter(charnum);
+  }
   return SVGRectTearOff::CreateDetached(rect);
 }
 
@@ -196,7 +231,10 @@ float SVGTextContentElement::getRotationOfChar(
     return 0.0f;
   }
 
-  return SVGTextQuery(GetLayoutObject()).RotationOfCharacter(charnum);
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object))
+    return 0.0f;  // TODO(1179585): Implement this.
+  return SVGTextQuery(layout_object).RotationOfCharacter(charnum);
 }
 
 int SVGTextContentElement::getCharNumAtPosition(
@@ -204,7 +242,10 @@ int SVGTextContentElement::getCharNumAtPosition(
     ExceptionState& exception_state) {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
-  return SVGTextQuery(GetLayoutObject())
+  auto* layout_object = GetLayoutObject();
+  if (IsNGTextOrInline(layout_object))
+    return 0;  // TODO(1179585): Implement this.
+  return SVGTextQuery(layout_object)
       .CharacterNumberAtPosition(point->Target()->Value());
 }
 
