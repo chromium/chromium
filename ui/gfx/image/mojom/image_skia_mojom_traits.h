@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/check_op.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"

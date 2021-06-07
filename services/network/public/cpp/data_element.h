@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"

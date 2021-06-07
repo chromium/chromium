@@ -5,7 +5,7 @@
 #ifndef BASE_CONTAINERS_LINKED_LIST_H_
 #define BASE_CONTAINERS_LINKED_LIST_H_
 
-#include "base/check_op.h"
+#include "base/base_export.h"
 
 // Simple LinkedList type. (See the Q&A section to understand how this
 // differs from std::list).
