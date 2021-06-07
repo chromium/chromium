@@ -115,10 +115,7 @@ class AX_EXPORT AXNode final {
   // Accessors.
   OwnerTree* tree() const { return tree_; }
   AXNodeID id() const { return data_.id; }
-  AXNode* parent() const { return parent_; }
   const AXNodeData& data() const { return data_; }
-  const std::vector<AXNode*>& children() const { return children_; }
-  size_t index_in_parent() const { return index_in_parent_; }
 
   // Returns ownership of |data_| to the caller; effectively clearing |data_|.
   AXNodeData&& TakeData();
@@ -126,35 +123,79 @@ class AX_EXPORT AXNode final {
   //
   // Methods for walking the tree.
   //
+  // These come in four flavors: Methods that walk all the nodes, methods that
+  // walk only the unignored nodes (effectively re-structuring the tree to
+  // remove all ignored nodes), and another two variants that do the above plus
+  // cross tree boundaries, effectively stiching together all accessibility
+  // trees that are part of the same webpage, PDF or window into a large global
+  // tree.
 
+  const std::vector<AXNode*>& GetAllChildren() const;
   size_t GetChildCount() const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
   size_t GetChildCountCrossingTreeBoundary() const;
   size_t GetUnignoredChildCount() const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
   size_t GetUnignoredChildCountCrossingTreeBoundary() const;
-  AXNode* GetChildAt(size_t index) const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
-  AXNode* GetChildAtCrossingTreeBoundary(size_t index) const;
+  AXNode* GetChildAtIndex(size_t index) const;
+  AXNode* GetChildAtIndexCrossingTreeBoundary(size_t index) const;
   AXNode* GetUnignoredChildAtIndex(size_t index) const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
   AXNode* GetUnignoredChildAtIndexCrossingTreeBoundary(size_t index) const;
   AXNode* GetParent() const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
   AXNode* GetParentCrossingTreeBoundary() const;
   AXNode* GetUnignoredParent() const;
-  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
   AXNode* GetUnignoredParentCrossingTreeBoundary() const;
   size_t GetIndexInParent() const;
   size_t GetUnignoredIndexInParent() const;
+  AXNode* GetFirstChild() const;
+  AXNode* GetFirstChildCrossingTreeBoundary() const;
   AXNode* GetFirstUnignoredChild() const;
+  AXNode* GetFirstUnignoredChildCrossingTreeBoundary() const;
+  AXNode* GetLastChild() const;
+  AXNode* GetLastChildCrossingTreeBoundary() const;
   AXNode* GetLastUnignoredChild() const;
+  AXNode* GetLastUnignoredChildCrossingTreeBoundary() const;
+  AXNode* GetDeepestFirstChild() const;
   AXNode* GetDeepestFirstUnignoredChild() const;
+  AXNode* GetDeepestLastChild() const;
   AXNode* GetDeepestLastUnignoredChild() const;
+  AXNode* GetNextSibling() const;
   AXNode* GetNextUnignoredSibling() const;
+  AXNode* GetPreviousSibling() const;
   AXNode* GetPreviousUnignoredSibling() const;
+
+  // Traverse the tree in depth-first pre-order.
   AXNode* GetNextUnignoredInTreeOrder() const;
   AXNode* GetPreviousUnignoredInTreeOrder() const;
+
+  //
+  // Deprecated methods for walking the tree.
+  //
+
+  const std::vector<AXNode*>& children() const { return children_; }
+  AXNode* parent() const { return parent_; }
+  size_t index_in_parent() const { return index_in_parent_; }
+
+  //
+  // Iterators for walking the tree in depth-first pre-order.
+  //
+
+  using AllChildIterator = ChildIteratorBase<AXNode,
+                                             &AXNode::GetNextSibling,
+                                             &AXNode::GetPreviousSibling,
+                                             &AXNode::GetFirstChild,
+                                             &AXNode::GetLastChild>;
+  AllChildIterator AllChildrenBegin() const;
+  AllChildIterator AllChildrenEnd() const;
+
+  using AllChildCrossingTreeBoundaryIterator =
+      ChildIteratorBase<AXNode,
+                        &AXNode::GetNextSibling,
+                        &AXNode::GetPreviousSibling,
+                        &AXNode::GetFirstChildCrossingTreeBoundary,
+                        &AXNode::GetLastChildCrossingTreeBoundary>;
+  AllChildCrossingTreeBoundaryIterator AllChildrenCrossingTreeBoundaryBegin()
+      const;
+  AllChildCrossingTreeBoundaryIterator AllChildrenCrossingTreeBoundaryEnd()
+      const;
 
   using UnignoredChildIterator =
       ChildIteratorBase<AXNode,
@@ -165,12 +206,16 @@ class AX_EXPORT AXNode final {
   UnignoredChildIterator UnignoredChildrenBegin() const;
   UnignoredChildIterator UnignoredChildrenEnd() const;
 
-  // Walking the tree including both ignored and unignored nodes.
-  // These methods consider only the direct children or siblings of a node.
-  AXNode* GetFirstChild() const;
-  AXNode* GetLastChild() const;
-  AXNode* GetPreviousSibling() const;
-  AXNode* GetNextSibling() const;
+  using UnignoredChildCrossingTreeBoundaryIterator =
+      ChildIteratorBase<AXNode,
+                        &AXNode::GetNextUnignoredSibling,
+                        &AXNode::GetPreviousUnignoredSibling,
+                        &AXNode::GetFirstUnignoredChildCrossingTreeBoundary,
+                        &AXNode::GetLastUnignoredChildCrossingTreeBoundary>;
+  UnignoredChildCrossingTreeBoundaryIterator
+  UnignoredChildrenCrossingTreeBoundaryBegin() const;
+  UnignoredChildCrossingTreeBoundaryIterator
+  UnignoredChildrenCrossingTreeBoundaryEnd() const;
 
   // Returns true if the node has any of the text related roles, including
   // kStaticText, kInlineTextBox and kListMarker (for Legacy Layout). Does not

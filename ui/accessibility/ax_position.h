@@ -2010,7 +2010,7 @@ class AXPosition {
     AXTreeID tree_id = AXTreeIDUnknown();
     AXNodeID child_id = kInvalidAXNodeID;
     const AXNode* child_anchor =
-        GetAnchor()->GetChildAtCrossingTreeBoundary(child_index);
+        GetAnchor()->GetChildAtIndexCrossingTreeBoundary(child_index);
     if (!child_anchor)
       return CreateNullPosition();
     tree_id = child_anchor->tree()->GetAXTreeID();

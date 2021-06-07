@@ -452,7 +452,7 @@ void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
                                     const std::string& value) {
   DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
   DCHECK_NE(attribute, ax::mojom::StringAttribute::kChildTreeId)
-      << "Use AddChildTreeId";
+      << "Use AddChildTreeId.";
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
   string_attributes.push_back(std::make_pair(attribute, value));

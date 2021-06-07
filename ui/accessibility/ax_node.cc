@@ -49,6 +49,11 @@ AXNodeData&& AXNode::TakeData() {
   return std::move(data_);
 }
 
+const std::vector<AXNode*>& AXNode::GetAllChildren() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return children_;
+}
+
 size_t AXNode::GetChildCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return children_.size();
@@ -59,9 +64,8 @@ size_t AXNode::GetChildCountCrossingTreeBoundary() const {
 
   const AXTreeManager* child_tree_manager =
       AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
-  if (child_tree_manager) {
+  if (child_tree_manager)
     return 1u;
-  }
 
   return GetChildCount();
 }
@@ -88,14 +92,14 @@ size_t AXNode::GetUnignoredChildCountCrossingTreeBoundary() const {
   return unignored_child_count_;
 }
 
-AXNode* AXNode::GetChildAt(size_t index) const {
+AXNode* AXNode::GetChildAtIndex(size_t index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (index >= GetChildCount())
     return nullptr;
   return children_[index];
 }
 
-AXNode* AXNode::GetChildAtCrossingTreeBoundary(size_t index) const {
+AXNode* AXNode::GetChildAtIndexCrossingTreeBoundary(size_t index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
   const AXTreeManager* child_tree_manager =
@@ -107,7 +111,7 @@ AXNode* AXNode::GetChildAtCrossingTreeBoundary(size_t index) const {
     return child_tree_manager->GetRootAsAXNode();
   }
 
-  return GetChildAt(index);
+  return GetChildAtIndex(index);
 }
 
 AXNode* AXNode::GetUnignoredChildAtIndex(size_t index) const {
@@ -188,14 +192,74 @@ size_t AXNode::GetUnignoredIndexInParent() const {
   return unignored_index_in_parent_;
 }
 
+AXNode* AXNode::GetFirstChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return GetChildAtIndex(0);
+}
+
+AXNode* AXNode::GetFirstChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return GetChildAtIndexCrossingTreeBoundary(0);
+}
+
 AXNode* AXNode::GetFirstUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return ComputeFirstUnignoredChildRecursive();
 }
 
+AXNode* AXNode::GetFirstUnignoredChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+
+  const AXTreeManager* child_tree_manager =
+      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  if (child_tree_manager)
+    return child_tree_manager->GetRootAsAXNode();
+
+  return ComputeFirstUnignoredChildRecursive();
+}
+
+AXNode* AXNode::GetLastChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  size_t n = GetChildCount();
+  if (n == 0)
+    return nullptr;
+  return GetChildAtIndex(n - 1);
+}
+
+AXNode* AXNode::GetLastChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  size_t n = GetChildCountCrossingTreeBoundary();
+  if (n == 0)
+    return nullptr;
+  return GetChildAtIndexCrossingTreeBoundary(n - 1);
+}
+
 AXNode* AXNode::GetLastUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return ComputeLastUnignoredChildRecursive();
+}
+
+AXNode* AXNode::GetLastUnignoredChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+
+  const AXTreeManager* child_tree_manager =
+      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  if (child_tree_manager)
+    return child_tree_manager->GetRootAsAXNode();
+
+  return ComputeLastUnignoredChildRecursive();
+}
+
+AXNode* AXNode::GetDeepestFirstChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetChildCount())
+    return nullptr;
+
+  AXNode* deepest_child = GetFirstChild();
+  while (deepest_child->GetChildCount())
+    deepest_child = deepest_child->GetFirstChild();
+
+  return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
@@ -204,9 +268,20 @@ AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetFirstUnignoredChild();
-  while (deepest_child->GetUnignoredChildCount()) {
+  while (deepest_child->GetUnignoredChildCount())
     deepest_child = deepest_child->GetFirstUnignoredChild();
-  }
+
+  return deepest_child;
+}
+
+AXNode* AXNode::GetDeepestLastChild() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetChildCount())
+    return nullptr;
+
+  AXNode* deepest_child = GetLastChild();
+  while (deepest_child->GetChildCount())
+    deepest_child = deepest_child->GetLastChild();
 
   return deepest_child;
 }
@@ -217,11 +292,23 @@ AXNode* AXNode::GetDeepestLastUnignoredChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetLastUnignoredChild();
-  while (deepest_child->GetUnignoredChildCount()) {
+  while (deepest_child->GetUnignoredChildCount())
     deepest_child = deepest_child->GetLastUnignoredChild();
-  }
 
   return deepest_child;
+}
+
+AXNode* AXNode::GetNextSibling() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  AXNode* parent = GetParent();
+  if (!parent)
+    return nullptr;
+  DCHECK(parent || !GetIndexInParent())
+      << "Root nodes lack a parent. Their index_in_parent should be 0.";
+  size_t nextIndex = GetIndexInParent() + 1;
+  if (nextIndex >= parent->GetChildCount())
+    return nullptr;
+  return parent->GetChildAtIndex(nextIndex);
 }
 
 // Search for the next sibling of this node, skipping over any ignored nodes
@@ -329,6 +416,16 @@ AXNode* AXNode::GetNextUnignoredSibling() const {
   return nullptr;
 }
 
+AXNode* AXNode::GetPreviousSibling() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(GetParent() || !GetIndexInParent())
+      << "Root nodes lack a parent. Their index_in_parent should be 0.";
+  size_t index = GetIndexInParent();
+  if (index == 0)
+    return nullptr;
+  return GetParent()->GetChildAtIndex(index - 1);
+}
+
 // Search for the previous sibling of this node, skipping over any ignored nodes
 // encountered.
 //
@@ -427,6 +524,29 @@ AXNode* AXNode::GetPreviousUnignoredInTreeOrder() const {
   return sibling;
 }
 
+AXNode::AllChildIterator AXNode::AllChildrenBegin() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return AllChildIterator(this, GetFirstChild());
+}
+
+AXNode::AllChildIterator AXNode::AllChildrenEnd() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return AllChildIterator(this, nullptr);
+}
+
+AXNode::AllChildCrossingTreeBoundaryIterator
+AXNode::AllChildrenCrossingTreeBoundaryBegin() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return AllChildCrossingTreeBoundaryIterator(
+      this, GetFirstChildCrossingTreeBoundary());
+}
+
+AXNode::AllChildCrossingTreeBoundaryIterator
+AXNode::AllChildrenCrossingTreeBoundaryEnd() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return AllChildCrossingTreeBoundaryIterator(this, nullptr);
+}
+
 AXNode::UnignoredChildIterator AXNode::UnignoredChildrenBegin() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return UnignoredChildIterator(this, GetFirstUnignoredChild());
@@ -437,39 +557,17 @@ AXNode::UnignoredChildIterator AXNode::UnignoredChildrenEnd() const {
   return UnignoredChildIterator(this, nullptr);
 }
 
-// The first (direct) child, ignored or unignored.
-AXNode* AXNode::GetFirstChild() const {
-  if (children().empty())
-    return nullptr;
-  return children()[0];
+AXNode::UnignoredChildCrossingTreeBoundaryIterator
+AXNode::UnignoredChildrenCrossingTreeBoundaryBegin() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return UnignoredChildCrossingTreeBoundaryIterator(
+      this, GetFirstUnignoredChildCrossingTreeBoundary());
 }
 
-// The last (direct) child, ignored or unignored.
-AXNode* AXNode::GetLastChild() const {
-  size_t n = children().size();
-  if (n == 0)
-    return nullptr;
-  return children()[n - 1];
-}
-
-// The previous (direct) sibling, ignored or unignored.
-AXNode* AXNode::GetPreviousSibling() const {
-  // Root nodes lack a parent, their index_in_parent should be 0.
-  DCHECK(!parent() ? index_in_parent() == 0 : true);
-  size_t index = index_in_parent();
-  if (index == 0)
-    return nullptr;
-  return parent()->children()[index - 1];
-}
-
-// The next (direct) sibling, ignored or unignored.
-AXNode* AXNode::GetNextSibling() const {
-  if (!parent())
-    return nullptr;
-  size_t nextIndex = index_in_parent() + 1;
-  if (nextIndex >= parent()->children().size())
-    return nullptr;
-  return parent()->children()[nextIndex];
+AXNode::UnignoredChildCrossingTreeBoundaryIterator
+AXNode::UnignoredChildrenCrossingTreeBoundaryEnd() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  return UnignoredChildCrossingTreeBoundaryIterator(this, nullptr);
 }
 
 bool AXNode::IsText() const {
