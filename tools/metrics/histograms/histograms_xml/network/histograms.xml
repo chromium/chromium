@@ -571,6 +571,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Network.DnsProxy.{ProcessType}.Event"
+    enum="DnsProxy.ProcessEvent" expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy tracking critical process events,
+    which are emitted when conditions arise that cause fatal or disruptive
+    conditions to the service. This metric is used to monitor the stability of
+    the service and provide detailed insight into failures.
+  </summary>
+  <token key="ProcessType">
+    <variant name="ARCProxy"/>
+    <variant name="Controller"/>
+    <variant name="DefaultProxy"/>
+    <variant name="SystemProxy"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
     enum="NetworkCellular3GPPRegistrationDelayedDrop"
     expires_after="2021-12-01">
