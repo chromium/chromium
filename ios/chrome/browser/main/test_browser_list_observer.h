@@ -57,10 +57,10 @@ class TestBrowserListObserver : public BrowserListObserver {
   DISALLOW_COPY_AND_ASSIGN(TestBrowserListObserver);
 
   // Backing vars for the corresponding getter methods.
-  Browser* last_added_browser_;
-  Browser* last_removed_browser_;
-  Browser* last_added_incognito_browser_;
-  Browser* last_removed_incognito_browser_;
+  Browser* last_added_browser_ = nullptr;
+  Browser* last_removed_browser_ = nullptr;
+  Browser* last_added_incognito_browser_ = nullptr;
+  Browser* last_removed_incognito_browser_ = nullptr;
   std::set<Browser*> last_browsers_;
   std::set<Browser*> last_incognito_browsers_;
 };
