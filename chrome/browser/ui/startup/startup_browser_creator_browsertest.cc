@@ -108,6 +108,11 @@
 #include "components/policy/core/common/policy_types.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -1923,6 +1928,11 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
 
+  // Check that we added this protocol to web app's approved_launch_protocols
+  // on accept.
+  web_app::AppRegistrar& registrar = provider()->registrar();
+  EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
+
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   Browser* app_browser;
@@ -1966,6 +1976,67 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1, tab_strip->count());
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserWebAppProtocolHandlingTest,
+    WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppProtocolHandlerIntentPickerView");
+  // Register web app as a protocol handler that should handle the launch.
+  blink::Manifest::ProtocolHandler protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = u"web+test";
+  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  // Launch the browser via a command line with a handled protocol URL param.
+  SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+  // The waiter will get the dialog when it shows up and accepts it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
+
+  // Wait for app launch task to complete and launches a new browser.
+  ui_test_utils::WaitForBrowserToOpen();
+
+  // Check that we added this protocol to web app's approved_launch_protocols
+  // on accept.
+  web_app::AppRegistrar& registrar = provider()->registrar();
+  EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
+
+  // Check the first app window is created.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser1;
+  app_browser1 = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser1);
+
+  // Launch the browser via a command line with an handled protocol URL
+  // param, but this time we expect the permission dialog to not show up.
+  SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+  // Wait for app launch task to complete and launches a new browser.
+  ui_test_utils::WaitForBrowserToOpen();
+
+  // Check the second app window is launched directly this time. The dialog
+  // is skipped because we have the approved protocol scheme for the same
+  // app launch.
+  Browser* app_browser2;
+  // There should be 3 browser windows opened at the moment.
+  ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
+  for (auto* b : *BrowserList::GetInstance()) {
+    if (b != browser() && b != app_browser1)
+      app_browser2 = b;
+  }
+  ASSERT_TRUE(app_browser2);
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser2, app_id));
+
+  // Check the app is launched with the correctly translated URL.
+  TabStripModel* tab_strip = app_browser2->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ("https://test.com/testing=web%2Btest%3A%2F%2FparameterString",
+            web_contents->GetVisibleURL());
 }
 
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)

@@ -24,9 +24,14 @@
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -81,6 +86,18 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
          web_app::startup::FinalizeWebAppLaunchCallback callback,
          bool accepted) {
         if (accepted) {
+          web_app::WebAppProviderBase* provider =
+              web_app::WebAppProviderBase::GetProviderBase(profile);
+          {
+            web_app::ScopedRegistryUpdate update(
+                provider->registry_controller().AsWebAppSyncBridge());
+            web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+            std::vector<std::string> protocol_handlers(
+                app_to_update->approved_launch_protocols());
+            protocol_handlers.push_back(protocol_url.scheme());
+            app_to_update->SetApprovedLaunchProtocols(
+                std::move(protocol_handlers));
+          }
           apps::AppServiceProxyFactory::GetForProfile(profile)
               ->BrowserAppLauncher()
               ->LaunchAppWithCallback(app_id, command_line, cur_dir,
@@ -91,10 +108,16 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
       command_line, cur_dir, profile, protocol_url, app_id,
       std::move(finalize_callback));
 
-  // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
-  // running of `launch_callback`.
-  chrome::ShowWebAppProtocolHandlerIntentPicker(protocol_url, profile, app_id,
-                                                std::move(launch_callback));
+  // Check if we have permission to launch the app directly.
+  web_app::AppRegistrar& registrar = provider->registrar();
+  if (registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
+    std::move(launch_callback).Run(true);
+  } else {
+    // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
+    // running of `launch_callback`.
+    chrome::ShowWebAppProtocolHandlerIntentPicker(protocol_url, profile, app_id,
+                                                  std::move(launch_callback));
+  }
 }
 
 }  // namespace

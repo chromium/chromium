@@ -239,6 +239,11 @@ void WebApp::SetProtocolHandlers(
   protocol_handlers_ = std::move(handlers);
 }
 
+void WebApp::SetApprovedLaunchProtocols(
+    std::vector<std::string> approved_launch_protocols) {
+  approved_launch_protocols_ = std::move(approved_launch_protocols);
+}
+
 void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
   url_handlers_ = std::move(url_handlers);
 }
@@ -483,6 +488,11 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
     out << "  " << protocol_handler << std::endl;
   }
 
+  out << "approved_launch_protocols:" << std::endl;
+  for (const std::string& approved_launch_protocols :
+       app.approved_launch_protocols_)
+    out << "  " << approved_launch_protocols << std::endl;
+
   out << "url_handlers:" << std::endl;
   for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
     out << Indent(url_handler) << std::endl;
@@ -553,6 +563,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
+        app.approved_launch_protocols_,
         app.url_handlers_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,

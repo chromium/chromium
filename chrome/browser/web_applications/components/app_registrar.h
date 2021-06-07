@@ -85,6 +85,11 @@ class AppRegistrar {
       const AppId& app_id,
       ExternalInstallSource install_source) const;
 
+  // Returns true if the web app with the |app_id| contains |protocol_scheme|
+  // as one of its approved launch protocols.
+  virtual bool IsApprovedLaunchProtocol(const AppId& app_id,
+                                        std::string protocol_scheme) const = 0;
+
   // Count a number of all apps which are installed by user (non-default).
   // Requires app registry to be in a ready state.
   virtual int CountUserInstalledApps() const = 0;

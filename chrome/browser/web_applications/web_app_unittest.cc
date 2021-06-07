@@ -196,6 +196,7 @@ share_target:
   nullopt
 additional_search_terms:
 protocol_handlers:
+approved_launch_protocols:
 url_handlers:
 note_taking_new_note_url:
 capture_links: kUndefined
@@ -354,6 +355,9 @@ protocol_handlers:
   protocol: web+test244307312 url: https://example.com/244307312
   protocol: web+test244307313 url: https://example.com/244307313
   protocol: web+test244307314 url: https://example.com/244307314
+approved_launch_protocols:
+  web+test_1234_0
+  web+test_1234_1
 url_handlers:
   origin: https://app-9974471690.com
     has_origin_wildcard: true

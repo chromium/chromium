@@ -140,6 +140,10 @@ class WebApp {
     return protocol_handlers_;
   }
 
+  const std::vector<std::string>& approved_launch_protocols() const {
+    return approved_launch_protocols_;
+  }
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   // TODO(crbug.com/1185678): Persist this in the database.
@@ -247,6 +251,8 @@ class WebApp {
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
+  void SetApprovedLaunchProtocols(
+      std::vector<std::string> approved_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
@@ -308,6 +314,7 @@ class WebApp {
   absl::optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  std::vector<std::string> approved_launch_protocols_;
   apps::UrlHandlers url_handlers_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;

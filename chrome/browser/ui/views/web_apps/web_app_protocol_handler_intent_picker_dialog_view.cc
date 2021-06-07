@@ -199,8 +199,6 @@ void ShowWebAppProtocolHandlerIntentPicker(
     Profile* profile,
     const web_app::AppId& app_id,
     WebAppProtocolHandlerAcceptanceCallback close_callback) {
-  // TODO(crbug.com/1105257)::Check if we have permission to
-  // launch the app directly.
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(

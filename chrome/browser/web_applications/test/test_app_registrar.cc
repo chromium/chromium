@@ -82,6 +82,12 @@ bool TestAppRegistrar::HasExternalAppWithInstallSource(
   return it != installed_apps_.end();
 }
 
+bool TestAppRegistrar::IsApprovedLaunchProtocol(
+    const AppId& app_id,
+    std::string protocol_scheme) const {
+  return false;
+}
+
 int TestAppRegistrar::CountUserInstalledApps() const {
   NOTIMPLEMENTED();
   return 0;

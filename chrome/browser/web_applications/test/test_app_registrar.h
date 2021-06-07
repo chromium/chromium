@@ -55,6 +55,8 @@ class TestAppRegistrar : public AppRegistrar {
   bool HasExternalAppWithInstallSource(
       const AppId& app_id,
       ExternalInstallSource install_source) const override;
+  bool IsApprovedLaunchProtocol(const AppId& app_id,
+                                std::string protocol_scheme) const override;
   int CountUserInstalledApps() const override;
   std::string GetAppShortName(const AppId& app_id) const override;
   std::string GetAppDescription(const AppId& app_id) const override;

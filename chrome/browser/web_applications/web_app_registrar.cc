@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -87,6 +88,14 @@ bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->chromeos_data().has_value() &&
          web_app->chromeos_data()->oem_installed;
+}
+
+bool WebAppRegistrar::IsApprovedLaunchProtocol(
+    const AppId& app_id,
+    std::string protocol_scheme) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app &&
+         base::Contains(web_app->approved_launch_protocols(), protocol_scheme);
 }
 
 int WebAppRegistrar::CountUserInstalledApps() const {

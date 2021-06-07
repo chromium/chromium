@@ -214,4 +214,9 @@ message WebAppProto {
 
   // Whether the app should be loaded in a dedicated storage partition.
   optional bool is_storage_isolated = 36;
+
+  // A list of approved launch protocols when launching the app with a protocol
+  // url. This list is checked to see if we can bypass the permission dialog
+  // when launching the web app.
+  repeated string approved_launch_protocols = 37;
 }

@@ -348,6 +348,19 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       CreateRandomDownloadedShortcutsMenuIconsSizes(random));
   app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
+  const int num_approved_launch_protocols = random.next_uint(8);
+  std::vector<std::string> approved_launch_protocols(
+      num_approved_launch_protocols);
+  for (int i = 0; i < num_approved_launch_protocols; ++i) {
+    approved_launch_protocols[i] =
+        "web+test_" + seed_str + "_" + base::NumberToString(i);
+  }
+  app->SetApprovedLaunchProtocols(std::move(approved_launch_protocols));
+
+  app->SetStorageIsolated(random.next_bool());
+
+  // `random` should not be used after the chromeos block if the result
+  // is expected to be deterministic across cros and non-cros builds.
   if (IsChromeOsDataMandatory()) {
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = random.next_bool();
@@ -368,8 +381,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   sync_fallback_data.scope = app->scope();
   sync_fallback_data.icon_infos = app->icon_infos();
   app->SetSyncFallbackData(std::move(sync_fallback_data));
-
-  app->SetStorageIsolated(random.next_bool());
 
   return app;
 }
