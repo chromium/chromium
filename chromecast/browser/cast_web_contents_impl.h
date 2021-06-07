@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_media_blocker.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,8 +75,9 @@ class CastWebContentsImpl : public CastWebContents,
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
-  on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
-  script_injector() override;
+  on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>* script_injector()
+      override;
+  void AddBeforeLoadJavaScript(uint64_t id, base::StringPiece script) override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
       const std::string& data,
@@ -82,6 +85,8 @@ class CastWebContentsImpl : public CastWebContents,
   void ExecuteJavaScript(
       const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) override;
+  void ConnectToBindingsService(
+      mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void SetEnabledForRemoteDebugging(bool enabled) override;
@@ -147,6 +152,8 @@ class CastWebContentsImpl : public CastWebContents,
   void OnClosePageTimeout();
   void RemoveRenderProcessHostObserver();
   std::vector<chromecast::shell::mojom::FeaturePtr> GetRendererFeatures();
+  void OnBindingsReceived(
+      std::vector<chromecast::mojom::ApiBindingPtr> bindings);
 
   content::WebContents* web_contents_;
   base::WeakPtr<Delegate> delegate_;
@@ -183,8 +190,14 @@ class CastWebContentsImpl : public CastWebContents,
   bool notifying_;
   int last_error_;
 
-  on_load_script_injector::OnLoadScriptInjectorHost<std::string>
-      script_injector_;
+  on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
+  mojo::Remote<mojom::ApiBindings> api_bindings_;
+
+  // If |ConnectToBindingsService| is invoked, |bindings_received_| is set
+  // false. Following |LoadUrl| will be stored in |pending_load_url_|, and
+  // will be invoked once bindings are received.
+  bool bindings_received_{false};
+  GURL pending_load_url_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

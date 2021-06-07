@@ -226,6 +226,14 @@ void CastWebContentsImpl::AddRendererFeatures(
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (api_bindings_ && !bindings_received_) {
+    LOG(INFO) << "Will load URL: " << url.possibly_invalid_spec()
+              << " once bindings has been received.";
+    pending_load_url_ = url;
+    return;
+  }
+
   if (!web_contents_) {
     LOG(ERROR) << "Cannot load URL for deleted WebContents";
     return;
@@ -338,9 +346,14 @@ void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
       web_contents_, session_id, is_audio_app);
 }
 
-on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
+on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>*
 CastWebContentsImpl::script_injector() {
   return &script_injector_;
+}
+
+void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
+                                                  base::StringPiece script) {
+  script_injector_.AddScriptForAllOrigins(id, std::string(script));
 }
 
 void CastWebContentsImpl::PostMessageToMainFrame(
@@ -353,8 +366,8 @@ void CastWebContentsImpl::PostMessageToMainFrame(
   data_utf16 = base::UTF8ToUTF16(data);
 
   // If origin is set as wildcard, no origin scoping would be applied.
-  constexpr char kWildcardOrigin[] = "*";
   absl::optional<std::u16string> target_origin_utf16;
+  constexpr char kWildcardOrigin[] = "*";
   if (target_origin != kWildcardOrigin)
     target_origin_utf16 = base::UTF8ToUTF16(target_origin);
 
@@ -373,6 +386,18 @@ void CastWebContentsImpl::ExecuteJavaScript(
 
   web_contents_->GetMainFrame()->ExecuteJavaScript(javascript,
                                                    std::move(callback));
+}
+
+void CastWebContentsImpl::ConnectToBindingsService(
+    mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) {
+  DCHECK(api_bindings_remote);
+
+  bindings_received_ = false;
+
+  api_bindings_.Bind(std::move(api_bindings_remote));
+  // Fetch bindings and inject scripts into |script_injector_|.
+  api_bindings_->GetAll(base::BindOnce(&CastWebContentsImpl::OnBindingsReceived,
+                                       base::Unretained(this)));
 }
 
 void CastWebContentsImpl::AddObserver(CastWebContents::Observer* observer) {
@@ -543,6 +568,31 @@ CastWebContentsImpl::GetRendererFeatures() {
         feature.name, feature.value.Clone()));
   }
   return features;
+}
+
+void CastWebContentsImpl::OnBindingsReceived(
+    std::vector<chromecast::mojom::ApiBindingPtr> bindings) {
+  bindings_received_ = true;
+
+  if (bindings.empty()) {
+    LOG(ERROR) << "ApiBindings remote sent empty bindings. Stopping the page.";
+    Stop(net::ERR_UNEXPECTED);
+  } else {
+    constexpr uint64_t kBindingsIdStart = 0xFF0000;
+
+    // Enumerate and inject all scripts in |bindings|.
+    uint64_t bindings_id = kBindingsIdStart;
+    for (auto& entry : bindings) {
+      AddBeforeLoadJavaScript(bindings_id++, entry->script);
+    }
+  }
+
+  DVLOG(1) << "Bindings has been received. Start loading URL if requested.";
+  if (!pending_load_url_.is_empty()) {
+    auto gurl = std::move(pending_load_url_);
+    pending_load_url_ = GURL();
+    LoadUrl(gurl);
+  }
 }
 
 void CastWebContentsImpl::OnInterfaceRequestFromFrame(

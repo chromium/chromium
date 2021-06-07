@@ -170,6 +170,8 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
     title_change_observer_.Observe(cast_web_contents_.get());
     bindings_manager_ = std::make_unique<bindings::BindingsManagerCast>(
         cast_web_contents_.get());
+    cast_web_contents_->ConnectToBindingsService(
+        bindings_manager_->CreateRemote());
   }
 
   void PostRunTestOnMainThread() override {

@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/base/switches.h",
   "+chromecast/activity",
+  "+chromecast/bindings/public/mojom",
   "+chromecast/common",
   "+chromecast/common/mojom",
   "+chromecast/graphics",

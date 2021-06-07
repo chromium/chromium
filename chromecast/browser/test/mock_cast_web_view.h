@@ -41,9 +41,13 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void, BlockMediaLoading, (bool), (override));
   MOCK_METHOD(void, BlockMediaStarting, (bool), (override));
   MOCK_METHOD(void, EnableBackgroundVideoPlayback, (bool), (override));
-  MOCK_METHOD(on_load_script_injector::OnLoadScriptInjectorHost<std::string>*,
+  MOCK_METHOD(on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>*,
               script_injector,
               (),
+              (override));
+  MOCK_METHOD(void,
+              AddBeforeLoadJavaScript,
+              (uint64_t, base::StringPiece),
               (override));
   MOCK_METHOD(void,
               PostMessageToMainFrame,
@@ -54,6 +58,10 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void,
               ExecuteJavaScript,
               (const std::u16string&, base::OnceCallback<void(base::Value)>),
+              (override));
+  MOCK_METHOD(void,
+              ConnectToBindingsService,
+              (mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
