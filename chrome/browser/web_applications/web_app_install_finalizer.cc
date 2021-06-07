@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -230,6 +231,11 @@ void WebAppInstallFinalizer::FinalizeInstall(
   registry_controller().SetExperimentalTabbedWindowMode(
       app_id, web_app_info.enable_experimental_tabbed_window,
       /*is_user_action=*/false);
+
+  // This step is necessary in case this app shares an origin with another PWA
+  // which already asked for file handling permissions, and the new app asks to
+  // handle more file types.
+  MaybeResetFileHandlingPermission(web_app_info);
 
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
@@ -644,14 +650,6 @@ FileHandlerUpdateAction WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
   if (!os_integration_manager().IsFileHandlingAPIAvailable(app_id))
     return FileHandlerUpdateAction::kNoUpdate;
 
-  // TODO(https://crbug.com/1197013): Consider trying to re-use
-  // HaveFileHandlersChanged() results from the ManifestUpdateTask.
-  if (!HaveFileHandlersChanged(
-          /*old_handlers=*/registrar().GetAppFileHandlers(app_id),
-          /*new_handlers=*/web_app_info.file_handlers)) {
-    return FileHandlerUpdateAction::kNoUpdate;
-  }
-
   const GURL& url = web_app_info.scope;
 
   // Keep in sync with chromeos::kChromeUIMediaAppURL.
@@ -675,33 +673,53 @@ FileHandlerUpdateAction WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
   // It's possible we'll downgrade the permission and then fail to update OS
   // integrations (ex. if the disk or icon downloads fail), but this is ok
   // because these failures should rarely occur.
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  DCHECK(permission_manager);
-  // Note: Using GetPermissionStatus instead of GetPermissionStatusForFrame()
-  // because the relevant frame isn't available here.
-  permissions::PermissionResult status =
-      permission_manager->GetPermissionStatus(
-          ContentSettingsType::FILE_HANDLING, url, url);
+  ContentSetting content_setting =
+      MaybeResetFileHandlingPermission(web_app_info);
 
-  // If file handling permission is "ALLOW" during manifest update, downgrade
-  // to "ASK" via reset, as the user may not want to allow newly added file
-  // handlers, which may include more dangerous extensions.
-  // If the permission is "ASK" or "BLOCK", leave it as is. When permission is
+  // If the permission is "BLOCK", leave it as is. When permission is
   // "BLOCK", the `OnContentSettingChanged()` and
   // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
   // permission change and make sure the OS and db state are in sync with the
   // PermissionManager permission setting. Therefore, manifest update task
   // should not update file handlers due to blocked permission state.
-  if (status.content_setting == CONTENT_SETTING_ALLOW) {
-    permission_manager->ResetPermission(content::PermissionType::FILE_HANDLING,
-                                        url, url);
-  } else if (status.content_setting == CONTENT_SETTING_BLOCK) {
-    DCHECK(registrar().IsAppFileHandlerPermissionBlocked(app_id));
+  if (content_setting == CONTENT_SETTING_BLOCK)
+    return FileHandlerUpdateAction::kNoUpdate;
+
+  // TODO(https://crbug.com/1197013): Consider trying to re-use
+  // HaveFileHandlersChanged() results from the ManifestUpdateTask.
+  if (!HaveFileHandlersChanged(
+          /*old_handlers=*/registrar().GetAppFileHandlers(app_id),
+          /*new_handlers=*/web_app_info.file_handlers)) {
     return FileHandlerUpdateAction::kNoUpdate;
   }
+
   return FileHandlerUpdateAction::kUpdate;
+}
+
+ContentSetting WebAppInstallFinalizer::MaybeResetFileHandlingPermission(
+    const WebApplicationInfo& web_app_info) {
+  permissions::PermissionManager* permission_manager =
+      PermissionManagerFactory::GetForProfile(profile_);
+  DCHECK(permission_manager);
+  const GURL& url = web_app_info.scope;
+  // Note: Since a frame is not available, using GetPermissionStatus() instead
+  // of GetPermissionStatusForFrame().
+  permissions::PermissionResult status =
+      permission_manager->GetPermissionStatus(
+          ContentSettingsType::FILE_HANDLING, url, url);
+
+  // If file handling permission is "ALLOW", downgrade to "ASK" via reset, as
+  // the user may not want to allow newly added file handlers, which may include
+  // more dangerous extensions.
+  if (status.content_setting == CONTENT_SETTING_ALLOW &&
+      !AreFileHandlersAlreadyRegistered(profile_, url,
+                                        web_app_info.file_handlers)) {
+    permission_manager->ResetPermission(content::PermissionType::FILE_HANDLING,
+                                        url, url);
+    return CONTENT_SETTING_ASK;
+  }
+
+  return status.content_setting;
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(

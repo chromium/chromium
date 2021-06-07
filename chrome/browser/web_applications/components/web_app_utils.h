@@ -10,6 +10,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 class GURL;
 class Profile;
@@ -71,6 +72,16 @@ std::string GetProfileCategoryForLogging(Profile* profile);
 
 // Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
 bool IsChromeOs();
+
+// Returns true if `new_handlers` are effectively the same or less broad than
+// the file handlers for PWAs installed under the same origin as `url` in
+// `profile`. In other words, if `new_handlers` would not change the text
+// returned by `GetFileHandlersForAllWebAppsWithOrigin()`, then this will return
+// true, otherwise false.
+bool AreFileHandlersAlreadyRegistered(
+    Profile* profile,
+    const GURL& url,
+    const std::vector<blink::Manifest::FileHandler>& new_handlers);
 
 // Returns all file handlers associated with any apps at the origin of `url`, in
 // the `profile`. This is not limited to a particular app's scope because it's

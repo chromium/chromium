@@ -129,10 +129,6 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     return https_server()->GetURL("app.com", "/ssl/page_with_frame.html");
   }
 
-  GURL GetSecondAppUrl() {
-    return https_server()->GetURL("app.com", "/pwa/app2.html");
-  }
-
   void InstallFileHandlingPWA() {
     GURL url = GetSecureAppURL();
 
@@ -168,9 +164,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
-  void InstallSecondFileHandlingPWASameOrigin() {
-    GURL url = GetSecondAppUrl();
-
+  void InstallAnotherFileHandlingPwa(const GURL& url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url.GetWithoutFilename();
@@ -407,6 +401,95 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   for (unsigned i = 0; i < kNumHandlers; ++i) {
     LaunchWithFiles(app_id, action_url(i), {NewTestFilePath(extension(i))});
   }
+}
+
+// Tests that when two apps are installed and share an origin (but not scope),
+// `GetFileHandlersForAllWebAppsWithOrigin` will report all the file handlers
+// across both apps.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       FileHandlerAggregationForUi) {
+  InstallFileHandlingPWA();
+  EXPECT_EQ(3U,
+            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
+                .size());
+
+  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
+  InstallAnotherFileHandlingPwa(second_app_url);
+  EXPECT_EQ(2U, registrar().GetAppIds().size());
+  EXPECT_EQ(4U,
+            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
+                .size());
+  EXPECT_EQ(
+      4U,
+      GetFileHandlersForAllWebAppsWithOrigin(profile(), second_app_url).size());
+
+  std::u16string display_string_app1 =
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
+                                                        GetSecureAppURL());
+  std::u16string display_string_app2 =
+      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
+                                                        second_app_url);
+  EXPECT_EQ(display_string_app1, display_string_app2);
+#if defined(OS_LINUX)
+  const std::u16string kHtmlDisplayString = u"text/html";
+  const std::u16string kJpegDisplayString = u"image/jpeg";
+#else
+  const std::u16string kHtmlDisplayString = u"HTML";
+  const std::u16string kJpegDisplayString = u"JPEG";
+#endif
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(kHtmlDisplayString));
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(kJpegDisplayString));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       SometimesResetPermission) {
+  // Install the first app and simulate the user granting it the file handling
+  // permission.
+  InstallFileHandlingPWA();
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  const GURL origin = GetSecureAppURL().GetOrigin();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Install a second app, which is on the same origin and asks to handle more
+  // file types. The permission should have been set back to ASK.
+  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
+  InstallAnotherFileHandlingPwa(second_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Set to ALLOW again.
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+
+  // Install a third app, which is on a different origin; this should have no
+  // effect on the permission.
+  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app2.html");
+  InstallAnotherFileHandlingPwa(third_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  GURL third_app_origin = third_app_url.GetOrigin();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(third_app_origin, third_app_origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  // Install a fourth app, which is on the same origin but asks for a subset of
+  // the file types of the first two. This should have no effect on the
+  // permission.
+  GURL fourth_app_url = https_server()->GetURL("app.com", "/pwa2/app2.html");
+  InstallAnotherFileHandlingPwa(fourth_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
 }
 
 class WebAppFileHandlingOriginTrialBrowserTest
@@ -759,43 +842,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
                   .AsWebAppRegistrar()
                   ->GetAppById(app_ids[0])
                   ->file_handler_permission_blocked());
-}
-
-// Tests that when two apps are installed and share an origin (but not scope),
-// `GetFileHandlersForAllWebAppsWithOrigin` will report all the file handlers
-// across both apps.
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
-                       FileHandlerAggregationForUi) {
-  InstallFileHandlingPWA();
-  EXPECT_EQ(3U,
-            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
-                .size());
-
-  InstallSecondFileHandlingPWASameOrigin();
-  EXPECT_EQ(2U, registrar().GetAppIds().size());
-  EXPECT_EQ(4U,
-            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
-                .size());
-  EXPECT_EQ(4U,
-            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecondAppUrl())
-                .size());
-
-  std::u16string display_string_app1 =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
-                                                        GetSecureAppURL());
-  std::u16string display_string_app2 =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
-                                                        GetSecondAppUrl());
-  EXPECT_EQ(display_string_app1, display_string_app2);
-#if defined(OS_LINUX)
-  std::u16string html = u"text/html";
-  std::u16string jpeg = u"image/jpeg";
-#else
-  std::u16string html = u"HTML";
-  std::u16string jpeg = u"JPEG";
-#endif
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(html));
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(jpeg));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
