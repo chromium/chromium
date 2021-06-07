@@ -21,6 +21,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/ime/chromeos/input_method_ukm.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -145,6 +146,16 @@ const char* kAllowedAppsForMultiWordSuggester[] = {
 
 void RecordAssistiveMatch(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Match", type);
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return;
+
+  auto sourceId = input_context->GetClientSourceForMetrics();
+  if (sourceId != ukm::kInvalidSourceId) {
+    ui::RecordUkmAssistiveMatch(sourceId, static_cast<int>(type));
+  }
 }
 
 void RecordAssistiveDisabled(AssistiveType type) {

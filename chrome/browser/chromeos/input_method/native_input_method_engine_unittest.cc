@@ -410,7 +410,8 @@ class NativeInputMethodEngineWithRenderViewHostTest
   machine_learning::FakeServiceConnectionImpl fake_service_connection_;
 };
 
-TEST_F(NativeInputMethodEngineWithRenderViewHostTest, RecordUkmAddsUkmEntry) {
+TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
+       RecordUkmAddsNonCompliantApiUkmEntry) {
   GURL url("https://www.example.com/");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
@@ -459,6 +460,49 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest, RecordUkmAddsUkmEntry) {
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entries[0], "NonCompliantOperation",
       (int)ime::mojom::InputMethodApiOperation::kSetCompositionText);
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
+       RecordUkmAddsAssistiveMatchUkmEntry) {
+  GURL url("https://www.example.com/");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+
+  auto* testing_profile = static_cast<TestingProfile*>(browser_context());
+  testing::NiceMock<ime::MockInputChannel> mock_input_channel;
+  mojo::Remote<ime::mojom::InputChannel> remote;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel, &remote));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", testing_profile);
+
+  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.set_source_id(
+      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+
+  ui::InputMethodChromeOS ime(nullptr);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+
+  ukm::TestAutoSetUkmRecorder test_recorder;
+  test_recorder.EnableRecording(false /* extensions */);
+  ASSERT_EQ(0u, test_recorder.entries_count());
+
+  // Should not record when random text is entered.
+  engine.SetSurroundingText(u"random text ", 12, 12, 0);
+  EXPECT_EQ(0u, test_recorder.entries_count());
+
+  // Should record when match is triggered.
+  engine.SetSurroundingText(u"my email is ", 12, 12, 0);
+  EXPECT_EQ(0u, test_recorder.sources_count());
+  EXPECT_EQ(1u, test_recorder.entries_count());
+  const auto entries =
+      test_recorder.GetEntriesByName("InputMethod.Assistive.Match");
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0], "Type", (int)AssistiveType::kPersonalEmail);
 
   InputMethodManager::Shutdown();
 }

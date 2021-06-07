@@ -18,6 +18,12 @@ namespace ui {
 COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 void RecordUkmNonCompliantApi(ukm::SourceId source, int64_t operation);
 
+// Records an event in UKM, under the InputMethod.Assistive.Match metric.
+// Ignores invalid sources.
+// `type` is a value in the chromeos.AssistiveType enum.
+COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
+void RecordUkmAssistiveMatch(ukm::SourceId source, int64_t type);
+
 }  // namespace ui
 
 #endif  // UI_BASE_IME_CHROMEOS_INPUT_METHOD_UKM_H_

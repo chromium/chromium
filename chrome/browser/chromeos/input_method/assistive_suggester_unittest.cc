@@ -13,6 +13,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/chromeos/ime_bridge.h"
 
 namespace chromeos {
 
@@ -32,6 +33,7 @@ class AssistiveSuggesterTest : public testing::Test {
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
     histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
                                          true, 1);
+    ui::IMEBridge::Initialize();
   }
 
   content::BrowserTaskEnvironment task_environment_;

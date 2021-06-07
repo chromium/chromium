@@ -7400,6 +7400,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InputMethod.Assistive.Match">
+  <owner>jiwan@chromium.org</owner>
+  <summary>
+    Recorded when an assistive action could be triggered according to the
+    surrounding text.
+  </summary>
+  <metric name="Type" enum="IMEAssistiveAction">
+    <summary>
+      The type of the assistive suggestion which is triggered.
+    </summary>
+  </metric>
+</event>
+
 <event name="InputMethod.NonCompliantApi">
   <owner>shend@chromium.org</owner>
   <summary>
