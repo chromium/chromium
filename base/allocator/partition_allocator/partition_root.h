@@ -958,8 +958,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     size_t slot_span_alignment,
     size_t* usable_size,
     bool* is_already_zeroed) {
-  PA_DCHECK(slot_span_alignment &&
-            !(slot_span_alignment & PartitionPageOffsetMask()));
+  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
+            bits::IsPowerOfTwo(slot_span_alignment));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // Check that this slot span is neither full nor freed.
   PA_DCHECK(slot_span);
@@ -1356,8 +1356,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsInternal(
     size_t requested_size,
     size_t slot_span_alignment,
     const char* type_name) {
-  PA_DCHECK(slot_span_alignment &&
-            !(slot_span_alignment & PartitionPageOffsetMask()));
+  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
+            bits::IsPowerOfTwo(slot_span_alignment));
 
   PA_DCHECK(flags < PartitionAllocLastFlag << 1);
   PA_DCHECK((flags & PartitionAllocNoHooks) == 0);  // Internal only.
@@ -1398,8 +1398,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     int flags,
     size_t requested_size,
     size_t slot_span_alignment) {
-  PA_DCHECK(slot_span_alignment &&
-            !(slot_span_alignment & PartitionPageOffsetMask()));
+  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
+            bits::IsPowerOfTwo(slot_span_alignment));
 
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/ref-count management
