@@ -58,6 +58,11 @@ base/timer/
 cc/
 content/browser/scheduler/responsiveness/
 
+# Performance related exclusion based on tab_search:top100:2020 profiler data
+base/observer_list.h
+base/containers/linked_list.h
+base/containers/circular_deque.h
+
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
 # because they are sensitive to performance regressions (to a much higher
