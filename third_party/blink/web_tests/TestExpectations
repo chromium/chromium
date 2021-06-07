@@ -6890,3 +6890,6 @@ crbug.com/1216139 virtual/bfcache/http/tests/devtools/bfcache/bfcache-elements-u
 skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug2479-3.html [ Pass Failure ]
 skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug7342.html [ Pass Failure ]
 skbug.com/10419 [ Fuchsia ] tables/mozilla/bugs/bug59354.html [ Pass Failure ]
+
+# Sheriff 2021-06-07
+crbug.com/1217342 [ Linux ] http/tests/devtools/sources/debugger-async/async-callstack-set-interval.js [ Pass Failure ]
