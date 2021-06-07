@@ -17,8 +17,10 @@ def Resize(browser,
            step_interval=0.01):
   window_id = browser.GetWindowForTarget(tab_id)['result']['windowId']
   for _ in range(repeat):
-    ratios = range(steps + 1) + range(steps, -1, -1) if yoyo else range(steps +
-                                                                        1)
+    if yoyo:
+      ratios = list(range(steps + 1)) + list(range(steps, -1, -1))
+    else:
+      ratios = range(steps + 1)
     for i in ratios:
       ratio = 1.0 * i / steps
       bounds = {}

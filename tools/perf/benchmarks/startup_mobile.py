@@ -211,7 +211,7 @@ class _MobileStartupSharedState(story_module.SharedState):
 
 
 def _DriveMobileStartupWithIntent(state, flush_caches):
-  for _ in xrange(state.number_of_iterations):
+  for _ in range(state.number_of_iterations):
     # TODO(pasko): Find a way to fail the benchmark when WPR is set up
     # incorrectly and error pages get loaded.
     state.LaunchBrowser('http://bbc.co.uk', flush_caches)
@@ -244,7 +244,7 @@ class _MobileStartupWithCctIntentStory(story_module.Story):
         _MobileStartupSharedState, name='cct:coldish:bbc')
 
   def Run(self, state):
-    for _ in xrange(state.number_of_iterations):
+    for _ in range(state.number_of_iterations):
       state.LaunchCCT('http://bbc.co.uk')
       with state.FindBrowser() as browser:
         action_runner = browser.foreground_tab.action_runner
@@ -257,7 +257,7 @@ class _MapsPwaStartupStory(story_module.Story):
         _MobileStartupSharedState, name='maps_pwa:with_http_cache')
 
   def Run(self, state):
-    for _ in xrange(state.number_of_iterations):
+    for _ in range(state.number_of_iterations):
       # TODO(pasko): Flush HTTP cache for 'maps_pwa:no_http_cache'.
       state.LaunchMapsPwa()
       with state.FindBrowser() as browser:

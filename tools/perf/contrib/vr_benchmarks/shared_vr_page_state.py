@@ -111,7 +111,7 @@ class AndroidSharedVrPageState(_SharedVrPageState):
     # forwarding necessary for the local server to work. Since port forwarding
     # often refuses to work for a short period after rebooting, try several
     # times.
-    for _ in xrange(5):
+    for _ in range(5):
       try:
         self.platform.network_controller.Open(self.wpr_mode)
         break

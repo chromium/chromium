@@ -109,7 +109,7 @@ class _ArticleBrowsingStory(_BrowsingStory):
     # Scroll main page if needed before we start browsing articles.
     if self.SCROLL_BEFORE_BROWSE:
       self._ScrollMainPage(action_runner)
-    for i in xrange(self.ITEMS_TO_VISIT):
+    for i in range(self.ITEMS_TO_VISIT):
       self._NavigateToItem(action_runner, i)
       self._AfterNavigate(action_runner)
       self._ReadNextArticle(action_runner)
@@ -245,7 +245,7 @@ class FacebookMobileStory2019(_ArticleBrowsingStory):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
     # Facebook loads content dynamically. So keep trying to scroll till we find
     # the elements. Retry 5 times waiting a bit each time.
-    for _ in xrange(5):
+    for _ in range(5):
       action_runner.RepeatableBrowserDrivenScroll(
           repeat_count=self.MAIN_PAGE_SCROLL_REPEAT)
       result = action_runner.EvaluateJavaScript(
@@ -361,7 +361,7 @@ class RedditMobileStory2019(_ArticleBrowsingStory):
 
     # Add one to the items to visit since we are going to skip the ad and we
     # want to still visit the same amount of articles.
-    for i in xrange(self.ITEMS_TO_VISIT + 1):
+    for i in range(self.ITEMS_TO_VISIT + 1):
       # Skip the ad disguised as an article.
       if i == 1:
         continue
@@ -585,7 +585,7 @@ class _MediaBrowsingStory(_BrowsingStory):
 
   def _DidLoadDocument(self, action_runner):
     index = self.ITEM_SELECTOR_INDEX
-    for _ in xrange(self.ITEMS_TO_VISIT):
+    for _ in range(self.ITEMS_TO_VISIT):
       self._NavigateToItem(action_runner, index)
       self._ViewMediaItem(action_runner, index)
       if self.INCREMENT_INDEX_AFTER_EACH_ITEM:
@@ -621,7 +621,7 @@ class ImgurMobileStory2019(_MediaBrowsingStory):
     # button click it to enable further scroll. This button would only be added
     # after we scrolled a bit. So can't wait for this button at the start.
     accepted_continue = False
-    for _ in xrange(15):
+    for _ in range(15):
       result = action_runner.EvaluateJavaScript(
           'document.querySelectorAll(".Button-tertiary").length')
       if result and not accepted_continue:

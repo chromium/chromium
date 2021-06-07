@@ -24,7 +24,7 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
       action_runner.tab.browser.tabs.New()
     if self._take_memory_measurement:
       action_runner.MeasureMemory()
-    for _ in xrange(STEPS):
+    for _ in range(STEPS):
       action_runner.Wait(SAMPLING_INTERVAL_IN_SECONDS)
       if self._take_memory_measurement:
         action_runner.MeasureMemory()

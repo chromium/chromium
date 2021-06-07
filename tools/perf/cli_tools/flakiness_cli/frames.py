@@ -52,7 +52,7 @@ def _RunLengthDecode(count_value_pairs):
     Each value of the expanded sequence, one at a time.
   """
   for count, value in count_value_pairs:
-    for _ in xrange(count):
+    for _ in range(count):
       yield value
 
 

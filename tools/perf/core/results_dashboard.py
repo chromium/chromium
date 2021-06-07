@@ -91,7 +91,7 @@ def SendResults(data, data_label, url, send_as_histograms=False,
   # instance. So sleep before retrying again. (
   # For more details, see crbug.com/867379.
   wait_before_next_retry_in_seconds = 15
-  for i in xrange(1, num_retries + 1):
+  for i in range(1, num_retries + 1):
     try:
       logging.info(
           'Sending %s result of %s to dashboard (attempt %i out of %i).' %

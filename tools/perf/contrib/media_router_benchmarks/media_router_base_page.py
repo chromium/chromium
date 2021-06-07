@@ -95,7 +95,7 @@ class MediaRouterBasePage(page.Page):
                              error_message, timeout=5, retry=1):
     """Executes async javascript function and waits until it finishes."""
     exception = None
-    for _ in xrange(retry):
+    for _ in range(retry):
       try:
         action_runner.ExecuteJavaScript(script)
         self._WaitForResult(

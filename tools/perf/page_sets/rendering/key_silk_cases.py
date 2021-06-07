@@ -380,7 +380,7 @@ class Page18(KeySilkPage):
   URL = 'file://../key_silk_cases/inbox_app.html?toggle_drawer'
 
   def PerformPageInteractions(self, action_runner):
-    for _ in xrange(6):
+    for _ in range(6):
       self.ToggleDrawer(action_runner)
 
   def ToggleDrawer(self, action_runner):
@@ -606,7 +606,7 @@ class SVGIconRaster(KeySilkPage):
     action_runner.Wait(1)
 
   def PerformPageInteractions(self, action_runner):
-    for i in xrange(9):
+    for i in range(9):
       button_func = ('document.getElementById("demo").$.'
                      'buttons.children[%d]') % i
       with action_runner.CreateInteraction('Action_TapAction', repeatable=True):

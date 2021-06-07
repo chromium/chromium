@@ -37,7 +37,7 @@ class ToughPinchZoomMobilePage(rendering_story.RenderingStory):
 
   def RunPageInteractions(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
-    for _ in xrange(0, 3):
+    for _ in range(3):
       current_scale_factor = 7.0
       self.RunPinchGesture(action_runner, scale_factor=current_scale_factor)
       while current_scale_factor > 1.0:
