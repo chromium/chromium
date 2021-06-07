@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -72,6 +73,7 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, const IntSize& size)
     }
   }
 
+  CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
   UpdateMemoryUsage();
 }
 

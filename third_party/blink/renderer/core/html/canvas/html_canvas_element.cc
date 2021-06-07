@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -134,6 +135,9 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       externally_allocated_memory_(0) {
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
   GetDocument().IncrementNumberOfCanvases();
+  auto* execution_context = GetExecutionContext();
+  CanvasResourceTracker::For(execution_context->GetIsolate())
+      ->Add(this, execution_context);
 }
 
 HTMLCanvasElement::~HTMLCanvasElement() {

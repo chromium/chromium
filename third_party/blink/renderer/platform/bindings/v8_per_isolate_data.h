@@ -193,6 +193,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   void SetProfilerGroup(V8PerIsolateData::GarbageCollectedData*);
   V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
 
+  void SetCanvasResourceTracker(V8PerIsolateData::GarbageCollectedData*);
+  V8PerIsolateData::GarbageCollectedData* CanvasResourceTracker();
+
   ActiveScriptWrappableManager* GetActiveScriptWrappableManager() const {
     return active_script_wrappable_manager_;
   }
@@ -264,6 +267,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   Vector<base::OnceClosure> end_of_scope_tasks_;
   std::unique_ptr<Data> thread_debugger_;
   Persistent<GarbageCollectedData> profiler_group_;
+  Persistent<GarbageCollectedData> canvas_resource_tracker_;
 
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 

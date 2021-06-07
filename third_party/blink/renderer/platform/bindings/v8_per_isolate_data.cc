@@ -360,4 +360,14 @@ V8PerIsolateData::GarbageCollectedData* V8PerIsolateData::ProfilerGroup() {
   return profiler_group_;
 }
 
+void V8PerIsolateData::SetCanvasResourceTracker(
+    V8PerIsolateData::GarbageCollectedData* canvas_resource_tracker) {
+  canvas_resource_tracker_ = canvas_resource_tracker;
+}
+
+V8PerIsolateData::GarbageCollectedData*
+V8PerIsolateData::CanvasResourceTracker() {
+  return canvas_resource_tracker_;
+}
+
 }  // namespace blink
