@@ -648,7 +648,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
 
 // Checks that the surface that backs the window receives new scale of the
 // output that it is in.
-TEST_P(WaylandScreenTest, SetBufferScale) {
+TEST_P(WaylandScreenTest, SetWindowScale) {
   // Place the window onto the output.
   wl_surface_send_enter(surface_->resource(), output_->resource());
 
@@ -656,13 +656,12 @@ TEST_P(WaylandScreenTest, SetBufferScale) {
   // the new scale and update scale of their buffers.  The default UI scale
   // equals the output scale.
   const int32_t kTripleScale = 3;
-  EXPECT_CALL(*surface_, SetBufferScale(kTripleScale));
   output_->SetScale(kTripleScale);
   output_->Flush();
 
   Sync();
 
-  EXPECT_EQ(window_->buffer_scale(), kTripleScale);
+  EXPECT_EQ(window_->window_scale(), kTripleScale);
   EXPECT_EQ(window_->ui_scale_, kTripleScale);
 
   // Now simulate the --force-device-scale-factor=1.5
@@ -678,13 +677,12 @@ TEST_P(WaylandScreenTest, SetBufferScale) {
   const int32_t kDoubleScale = 2;
   // Question ourselves before questioning others!
   EXPECT_NE(kForcedUIScale, kDoubleScale);
-  EXPECT_CALL(*surface_, SetBufferScale(kDoubleScale));
   output_->SetScale(kDoubleScale);
   output_->Flush();
 
   Sync();
 
-  EXPECT_EQ(window_->buffer_scale(), kDoubleScale);
+  EXPECT_EQ(window_->window_scale(), kDoubleScale);
   EXPECT_EQ(window_->ui_scale_, kForcedUIScale);
 
   display::Display::ResetForceDeviceScaleFactorForTesting();

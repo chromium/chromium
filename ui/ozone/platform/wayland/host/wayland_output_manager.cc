@@ -102,7 +102,7 @@ void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
   }
   auto* wayland_window_manager = connection_->wayland_window_manager();
   for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
-    window->UpdateBufferScale(true);
+    window->UpdateWindowScale(true);
 }
 
 WaylandOutputManager::OutputList::const_iterator

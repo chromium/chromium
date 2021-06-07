@@ -26,7 +26,7 @@ void WaylandAuxiliaryWindow::Show(bool inactive) {
     return;
 
   CreateSubsurface();
-  UpdateBufferScale(false);
+  UpdateWindowScale(false);
   WaylandWindow::Show(inactive);
 }
 
@@ -76,8 +76,8 @@ void WaylandAuxiliaryWindow::CreateSubsurface() {
 
   DCHECK(parent_window());
 
-  // We need to make sure that buffer scale matches the parent window.
-  UpdateBufferScale(true);
+  // We need to make sure that window scale matches the parent window.
+  UpdateWindowScale(true);
 
   subsurface_ =
       root_surface()->CreateSubsurface(parent_window()->root_surface());

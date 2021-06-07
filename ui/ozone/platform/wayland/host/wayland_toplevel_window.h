@@ -64,7 +64,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
  private:
   // WaylandWindow overrides:
-  void UpdateBufferScale(bool update_bounds) override;
+  void UpdateWindowScale(bool update_bounds) override;
   void HandleToplevelConfigure(int32_t width,
                                int32_t height,
                                bool is_maximized,

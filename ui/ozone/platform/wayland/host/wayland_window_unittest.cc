@@ -1615,11 +1615,11 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   }
 }
 
-TEST_P(WaylandWindowTest, ToplevelWindowUpdateBufferScale) {
+TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
   VerifyAndClearExpectations();
 
-  // Buffer scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->buffer_scale());
+  // Surface scale must be 1 when no output has been entered by the window.
+  EXPECT_EQ(1, window_->window_scale());
 
   // Creating an output with scale 1.
   wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
@@ -1641,7 +1641,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateBufferScale) {
   Sync();
 
   // The window's scale and bounds must remain unchanged.
-  EXPECT_EQ(1, window_->buffer_scale());
+  EXPECT_EQ(1, window_->window_scale());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), window_->GetBounds());
 
   // Simulating drag process from |output1| to |output2|.
@@ -1650,11 +1650,11 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateBufferScale) {
   Sync();
 
   // The window must change its scale and bounds to keep DIP bounds the same.
-  EXPECT_EQ(2, window_->buffer_scale());
+  EXPECT_EQ(2, window_->window_scale());
   EXPECT_EQ(gfx::Rect(0, 0, 1600, 1200), window_->GetBounds());
 }
 
-TEST_P(WaylandWindowTest, WaylandPopupBufferScale) {
+TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
   VerifyAndClearExpectations();
 
   // Creating an output with scale 1.
@@ -1689,8 +1689,8 @@ TEST_P(WaylandWindowTest, WaylandPopupBufferScale) {
 
     // the wayland_popup window should inherit its buffer scale from the focused
     // window.
-    EXPECT_EQ(1, window_->buffer_scale());
-    EXPECT_EQ(window_->buffer_scale(), wayland_popup->buffer_scale());
+    EXPECT_EQ(1, window_->window_scale());
+    EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
     EXPECT_EQ(wayland_popup_bounds, wayland_popup->GetBounds());
     wayland_popup->Hide();
 
@@ -1699,16 +1699,16 @@ TEST_P(WaylandWindowTest, WaylandPopupBufferScale) {
     wl_surface_send_leave(surface->resource(), output1->resource());
     Sync();
 
-    EXPECT_EQ(2, window_->buffer_scale());
+    EXPECT_EQ(2, window_->window_scale());
     wayland_popup->Show(false);
 
     Sync();
 
     // |wayland_popup|'s scale and bounds must change whenever its parents
     // scale is changed.
-    EXPECT_EQ(window_->buffer_scale(), wayland_popup->buffer_scale());
+    EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
     EXPECT_EQ(gfx::ScaleToRoundedRect(wayland_popup_bounds,
-                                      wayland_popup->buffer_scale()),
+                                      wayland_popup->window_scale()),
               wayland_popup->GetBounds());
 
     wayland_popup->Hide();
@@ -1801,7 +1801,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   VerifyAndClearExpectations();
 
   // Buffer scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->buffer_scale());
+  EXPECT_EQ(1, window_->window_scale());
 
   // Creating an output with scale 1.
   wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
@@ -1904,7 +1904,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   VerifyAndClearExpectations();
 
   // Buffer scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->buffer_scale());
+  EXPECT_EQ(1, window_->window_scale());
 
   MockPlatformWindowDelegate menu_window_delegate;
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -2882,9 +2882,9 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
   auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
       wayland_subsurface->wayland_surface()->GetSurfaceId());
   EXPECT_TRUE(mock_surface_subsurface);
-  wayland_subsurface->ConfigureAndShowSurface(gfx::OVERLAY_TRANSFORM_NONE,
-                                              gfx::RectF(), subsurface_bounds,
-                                              true, nullptr, nullptr);
+  wayland_subsurface->ConfigureAndShowSurface(
+      gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(), subsurface_bounds,
+      1 /*buffer_scale*/, true, nullptr, nullptr);
   connection_->ScheduleFlush();
 
   Sync();

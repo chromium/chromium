@@ -754,7 +754,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       ASSERT_TRUE(surface);
       wl_surface_send_enter(surface->resource(), output->resource());
       self->Sync();
-      EXPECT_EQ(output->GetScale(), window->buffer_scale());
+      EXPECT_EQ(output->GetScale(), window->window_scale());
 
       self->SendDndMotion({20, 20});
       self->Sync();

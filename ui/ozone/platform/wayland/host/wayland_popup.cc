@@ -35,10 +35,10 @@ bool WaylandPopup::CreateShellPopup() {
   if (!pending_initial_bounds_px_.IsEmpty()) {
     SetBounds(pending_initial_bounds_px_);
     pending_initial_bounds_px_ = gfx::Rect();
-  } else if (buffer_scale() != parent_window()->buffer_scale()) {
+  } else if (window_scale() != parent_window()->window_scale()) {
     // If scale changed while this was hidden (when WaylandPopup hides, parent
     // window's child is reset), update buffer scale accordingly.
-    UpdateBufferScale(true);
+    UpdateWindowScale(true);
   }
 
   const auto bounds_dip =
@@ -138,7 +138,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     // parent top level window instead.
     if (new_bounds_dip.y() < 0) {
       // Move parent bounds along y-axis.
-      parent_bounds.set_y(-(new_bounds_dip.y() * buffer_scale()));
+      parent_bounds.set_y(-(new_bounds_dip.y() * window_scale()));
       new_bounds_dip.set_y(0);
     } else {
       // If the menu window is located at correct origin from the browser point
@@ -153,9 +153,9 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     // a display.
     new_bounds_dip = gfx::ScaleToRoundedRect(
         wl::TranslateBoundsToTopLevelCoordinates(
-            gfx::ScaleToRoundedRect(new_bounds_dip, buffer_scale()),
+            gfx::ScaleToRoundedRect(new_bounds_dip, window_scale()),
             parent_window()->GetBounds()),
-        1.0 / buffer_scale());
+        1.0 / window_scale());
     DCHECK(new_bounds_dip.y() >= 0);
   }
 
@@ -175,7 +175,7 @@ void WaylandPopup::OnCloseRequest() {
 
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   DCHECK(parent_window());
-  root_surface()->SetBufferScale(parent_window()->buffer_scale());
+  SetWindowScale(parent_window()->window_scale());
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
 
@@ -196,14 +196,14 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
     // The bounds are initially given in the scale of the primary display, so we
     // have to upscale or downscale the rect to the scale of the target display,
     // if that scale is different.
-    if (primary_display_scale_factor < buffer_scale()) {
-      scale = static_cast<float>(buffer_scale()) /
+    if (primary_display_scale_factor < window_scale()) {
+      scale = static_cast<float>(window_scale()) /
               static_cast<float>(primary_display_scale_factor);
       transform.Scale(scale, scale);
       transform.TransformRect(&float_rect);
-    } else if (primary_display_scale_factor > buffer_scale()) {
+    } else if (primary_display_scale_factor > window_scale()) {
       scale = static_cast<float>(primary_display_scale_factor) /
-              static_cast<float>(buffer_scale());
+              static_cast<float>(window_scale());
       transform.Scale(scale, scale);
       transform.TransformRectReverse(&float_rect);
     }

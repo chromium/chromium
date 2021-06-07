@@ -127,7 +127,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   if (icon_bitmap_) {
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
-      icon_surface_->SetBufferScale(origin_window_->buffer_scale());
+      // Corresponds to actual scale factor of the origin surface.
+      icon_surface_->SetSurfaceBufferScale(origin_window_->window_scale());
     } else {
       LOG(ERROR) << "Failed to create wl_surface";
       icon_surface_.reset();

@@ -116,8 +116,18 @@ void WaylandSurface::UpdateBufferDamageRegion(
   // Apply buffer_transform (wl_surface.set_buffer_transform).
   gfx::Size bounds = wl::ApplyWaylandTransform(
       buffer_size, wl::ToWaylandTransform(buffer_transform_));
-  // Apply buffer_scale (wl_surface.set_buffer_scale).
-  bounds = gfx::ScaleToCeiledSize(bounds, 1.f / buffer_scale_);
+
+  // When crop_rect is set, wp_viewport will crop and scale the surface
+  // accordingly. Thus, there is no need to downscale bounds as Wayland
+  // compositor understands that.
+  // TODO(msisov): it'd be better to decide to set source, destination or buffer
+  // scale at commit time and avoid these kind of conditions.
+  if (crop_rect_.IsEmpty()) {
+    bounds = gfx::ScaleToCeiledSize(bounds, 1.f / buffer_scale_);
+  } else {
+    // Unset buffer scale if wp_viewport is set.
+    SetSurfaceBufferScale(1);
+  }
   // Apply crop (wp_viewport.set_source).
   gfx::Rect viewport_src = gfx::Rect(bounds);
   if (!crop_rect_.IsEmpty()) {
@@ -206,24 +216,9 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
   wl_surface_set_buffer_transform(surface_.get(), wl_transform);
 }
 
-void WaylandSurface::SetBufferScale(int32_t new_scale) {
-  DCHECK_GT(new_scale, 0);
-
-  if (new_scale == buffer_scale_)
-    return;
-
-  buffer_scale_ = new_scale;
-  wl_surface_set_buffer_scale(surface_.get(), buffer_scale_);
-
-  if (!display_size_px_.IsEmpty()) {
-    gfx::Size viewport_dst =
-        gfx::ScaleToCeiledSize(display_size_px_, 1.f / buffer_scale_);
-    if (viewport()) {
-      wp_viewport_set_destination(viewport(), viewport_dst.width(),
-                                  viewport_dst.height());
-    }
-  }
-
+void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
+  wl_surface_set_buffer_scale(surface_.get(), scale);
+  buffer_scale_ = scale;
   connection_->ScheduleFlush();
 }
 
@@ -275,8 +270,8 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
   } else {
-    gfx::Rect region_dip =
-        gfx::ScaleToEnclosingRect(region_px, 1.f / buffer_scale_);
+    gfx::Rect region_dip = gfx::ScaleToEnclosingRect(
+        region_px, 1.f / root_window_->window_scale());
     wl_region_add(region.get(), region_dip.x(), region_dip.y(),
                   region_dip.width(), region_dip.height());
   }
@@ -305,6 +300,7 @@ void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
 void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
   if (dest_size_px == display_size_px_)
     return;
+
   if (dest_size_px.IsEmpty()) {
     display_size_px_ = gfx::Size();
     if (viewport()) {

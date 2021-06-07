@@ -94,7 +94,7 @@ void WaylandWindow::OnWindowLostCapture() {
   delegate_->OnLostCapture();
 }
 
-void WaylandWindow::UpdateBufferScale(bool update_bounds) {
+void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   DCHECK(connection_->wayland_output_manager());
 
   auto preferred_outputs_id = GetPreferredEnteredOutputId();
@@ -120,12 +120,8 @@ void WaylandWindow::UpdateBufferScale(bool update_bounds) {
   int32_t new_scale = output->scale_factor();
   ui_scale_ = output->GetUIScaleFactor();
 
-  int32_t old_scale = buffer_scale();
-  root_surface_->SetBufferScale(new_scale);
-  if (primary_subsurface_)
-    primary_subsurface_->wayland_surface()->SetBufferScale(new_scale);
-  for (auto& subsurface : wayland_subsurfaces_)
-    subsurface->wayland_surface()->SetBufferScale(new_scale);
+  int32_t old_scale = window_scale();
+  window_scale_ = new_scale;
 
   // We need to keep DIP size of the window the same whenever the scale changes.
   if (update_bounds)
@@ -133,11 +129,16 @@ void WaylandWindow::UpdateBufferScale(bool update_bounds) {
 
   // Propagate update to the child windows
   if (child_window_)
-    child_window_->UpdateBufferScale(update_bounds);
+    child_window_->UpdateWindowScale(update_bounds);
 }
 
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
+}
+
+void WaylandWindow::SetWindowScale(int32_t new_scale) {
+  DCHECK_GE(new_scale, 0);
+  window_scale_ = new_scale;
 }
 
 uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
@@ -265,7 +266,7 @@ gfx::Rect WaylandWindow::GetBounds() const {
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
-  return gfx::ScaleToRoundedRect(bounds_px_, 1.0 / buffer_scale());
+  return gfx::ScaleToRoundedRect(bounds_px_, 1.0 / window_scale());
 }
 
 void WaylandWindow::SetTitle(const std::u16string& title) {}
@@ -392,7 +393,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
     // physical pixels.
     UpdateCursorPositionFromEvent(Event::Clone(*event));
     event->AsLocatedEvent()->set_location_f(gfx::ScalePoint(
-        event->AsLocatedEvent()->location_f(), buffer_scale(), buffer_scale()));
+        event->AsLocatedEvent()->location_f(), window_scale(), window_scale()));
 
     // We must reroute the events to the event grabber iff these windows belong
     // to the same root parent window. For example, there are 2 top level
@@ -468,7 +469,7 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point,
     return;
 
   auto location_px = gfx::ScalePoint(TranslateLocationToRootWindow(point),
-                                     buffer_scale(), buffer_scale());
+                                     window_scale(), window_scale());
 
   // Wayland sends locations in DIP so they need to be translated to
   // physical pixels.
@@ -483,7 +484,7 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
     return 0;
 
   auto location_px = gfx::ScalePoint(TranslateLocationToRootWindow(point),
-                                     buffer_scale(), buffer_scale());
+                                     window_scale(), window_scale());
 
   // Wayland sends locations in DIP so they need to be translated to
   // physical pixels.
@@ -516,7 +517,7 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
 }
 
 void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
-  SetBounds(gfx::ScaleToRoundedRect(bounds_dip, buffer_scale()));
+  SetBounds(gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
 }
 
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
@@ -572,7 +573,7 @@ void WaylandWindow::OnEnteredOutputIdAdded() {
   if (AsWaylandPopup())
     return;
 
-  UpdateBufferScale(true);
+  UpdateWindowScale(true);
 }
 
 void WaylandWindow::OnEnteredOutputIdRemoved() {
@@ -582,7 +583,7 @@ void WaylandWindow::OnEnteredOutputIdRemoved() {
   if (AsWaylandPopup())
     return;
 
-  UpdateBufferScale(true);
+  UpdateWindowScale(true);
 }
 
 void WaylandWindow::UpdateCursorPositionFromEvent(
@@ -755,8 +756,8 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
-            nullptr, reference_above);
+            (*overlay_iter)->bounds_rect, (*overlay_iter)->surface_scale_factor,
+            (*overlay_iter)->enable_blend, nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
             /*wait_for_frame_callback=*/true,
@@ -786,8 +787,8 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, (*overlay_iter)->enable_blend,
-            reference_below, nullptr);
+            (*overlay_iter)->bounds_rect, (*overlay_iter)->surface_scale_factor,
+            (*overlay_iter)->enable_blend, reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
             /*wait_for_frame_callback=*/true,
@@ -803,6 +804,8 @@ bool WaylandWindow::CommitOverlays(
 
   if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
+
+  root_surface_->SetSurfaceBufferScale((*split)->surface_scale_factor);
   UpdateVisualSize((*split)->bounds_rect.size());
 
   if (!wayland_overlay_delegation_enabled_) {
@@ -831,7 +834,8 @@ bool WaylandWindow::CommitOverlays(
         (*split)->transform, (*split)->crop_rect,
         (*split)->crop_rect == gfx::RectF(1.f, 1.f) ? gfx::Rect()
                                                     : (*split)->bounds_rect,
-        (*split)->enable_blend, nullptr, nullptr);
+        (*split)->surface_scale_factor, (*split)->enable_blend, nullptr,
+        nullptr);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
         (*split)->damage_region,

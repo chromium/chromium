@@ -25,7 +25,6 @@ class WaylandSubsurface {
   ~WaylandSubsurface();
 
   wl_surface* surface() const { return wayland_surface_.surface(); }
-  int32_t buffer_scale() const { return wayland_surface_.buffer_scale(); }
   WaylandSurface* wayland_surface() { return &wayland_surface_; }
   gfx::Rect bounds_px() { return bounds_px_; }
   bool IsOpaque() const { return !enable_blend_; }
@@ -43,6 +42,7 @@ class WaylandSubsurface {
   //   |reference_below| & |reference_above|: this subsurface is taken from the
   //     subsurface stack and inserted back to be immediately below/above the
   //     reference subsurface.
+  //   |buffer_scale|: the scale factor of the next attached buffer.
   //
   // The coordinate transformations from buffer pixel coordinates up to the
   // surface-local coordinates happen in the following order:
@@ -52,6 +52,7 @@ class WaylandSubsurface {
   void ConfigureAndShowSurface(gfx::OverlayTransform transform,
                                const gfx::RectF& src_rect,
                                const gfx::Rect& bounds_rect,
+                               int32_t buffer_scale,
                                bool enable_blend,
                                const WaylandSurface* reference_below,
                                const WaylandSurface* reference_above);

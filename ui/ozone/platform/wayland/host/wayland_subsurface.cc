@@ -82,7 +82,7 @@ void WaylandSubsurface::SetBounds(const gfx::Rect& bounds) {
     // Translate location from screen to surface coordinates.
     auto bounds_px =
         AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                               parent_->ui_scale(), parent_->buffer_scale());
+                               parent_->ui_scale(), parent_->window_scale());
     wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
   }
 }
@@ -99,7 +99,7 @@ void WaylandSubsurface::CreateSubsurface() {
   // relative to parent window.
   auto bounds_px =
       AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                             parent_->ui_scale(), parent_->buffer_scale());
+                             parent_->ui_scale(), parent_->window_scale());
 
   DCHECK(subsurface_);
   wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
@@ -120,11 +120,12 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     gfx::OverlayTransform transform,
     const gfx::RectF& src_rect,
     const gfx::Rect& bounds_rect,
+    int32_t buffer_scale,
     bool enable_blend,
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
   wayland_surface()->SetBufferTransform(transform);
-  wayland_surface()->SetBufferScale(parent_->buffer_scale());
+  wayland_surface()->SetSurfaceBufferScale(buffer_scale);
 
   auto old_bounds = bounds_px_;
   SetBounds(bounds_rect);

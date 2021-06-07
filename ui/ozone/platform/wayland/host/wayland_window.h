@@ -53,12 +53,12 @@ class WaylandWindow : public PlatformWindow,
 
   void OnWindowLostCapture();
 
-  // Updates the surface buffer scale of the window.  Top level windows take
+  // Updates the surface scale of the window.  Top level windows take
   // scale from the output attached to either their current display or the
   // primary one if their widget is not yet created, children inherit scale from
   // their parent.  The method recalculates window bounds appropriately if asked
   // to do so (this is not needed upon window initialization).
-  virtual void UpdateBufferScale(bool update_bounds);
+  virtual void UpdateWindowScale(bool update_bounds);
 
   WaylandSurface* root_surface() const { return root_surface_.get(); }
   WaylandSubsurface* primary_subsurface() const {
@@ -103,7 +103,11 @@ class WaylandWindow : public PlatformWindow,
   void set_child_window(WaylandWindow* window) { child_window_ = window; }
   WaylandWindow* child_window() const { return child_window_; }
 
-  int32_t buffer_scale() const { return root_surface_->buffer_scale(); }
+  // Sets the window_scale for this window with respect to a display this window
+  // is located at. This determines how events can be translated and how size of
+  // the surface is treated (px to DIP conversion and vice versa.)
+  void SetWindowScale(int32_t new_scale);
+  int32_t window_scale() const { return window_scale_; }
   float ui_scale() const { return ui_scale_; }
 
   // A preferred output is the one with the largest scale. This is needed to
@@ -244,7 +248,7 @@ class WaylandWindow : public PlatformWindow,
   virtual void UpdateWindowMask();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetBufferScale);
+  FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
 
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
@@ -322,6 +326,8 @@ class WaylandWindow : public PlatformWindow,
   // replaces the default value that is equal to the natural device scale.
   // We need it to place and size the menus properly.
   float ui_scale_ = 1.0f;
+  // Current scale factor of the output where the window is located at.
+  int32_t window_scale_ = 1;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;

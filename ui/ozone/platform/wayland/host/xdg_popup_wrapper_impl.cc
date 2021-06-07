@@ -201,7 +201,7 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
   gfx::Rect anchor_rect = GetAnchorRect(
       params.menu_type, params.bounds,
       gfx::ScaleToRoundedRect(parent_window->GetBounds(),
-                              1.0 / parent_window->buffer_scale()));
+                              1.0 / parent_window->window_scale()));
 
   xdg_positioner_set_anchor_rect(positioner, anchor_rect.x(), anchor_rect.y(),
                                  anchor_rect.width(), anchor_rect.height());

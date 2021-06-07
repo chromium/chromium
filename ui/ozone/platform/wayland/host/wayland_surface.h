@@ -48,8 +48,6 @@ class WaylandSurface {
     return entered_outputs_;
   }
 
-  int32_t buffer_scale() const { return buffer_scale_; }
-  void set_buffer_scale(int32_t scale) { buffer_scale_ = scale; }
   void set_explicit_release_callback(ExplicitReleaseCallback callback) {
     explicit_release_callback_ = callback;
   }
@@ -88,8 +86,11 @@ class WaylandSurface {
   // the contents of the buffer attached to this surface.
   void SetBufferTransform(gfx::OverlayTransform transform);
 
-  // Sets the buffer scale for this surface.
-  void SetBufferScale(int32_t scale);
+  // Sets the |buffer_scale| (with respect to the scale factor used by the GPU
+  // process) for the next submitted buffer. This helps Wayland compositor to
+  // determine buffer size in dip (GPU operates in pixels. So, when buffers are
+  // created, their requested size is in pixels).
+  void SetSurfaceBufferScale(int32_t scale);
 
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or
@@ -167,8 +168,7 @@ class WaylandSurface {
   // buffer.
   gfx::OverlayTransform buffer_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
-  // Wayland's scale factor for the output that this surface currently belongs
-  // to.
+  // Current scale factor of a next attached buffer used by the GPU process.
   int32_t buffer_scale_ = 1;
 
   // Following fields are used to help determine the damage_region in

@@ -97,7 +97,7 @@ void WaylandToplevelWindow::Show(bool inactive) {
     return;
   }
 
-  UpdateBufferScale(false);
+  UpdateWindowScale(false);
 
   if (auto* drag_controller = connection()->window_drag_controller())
     drag_controller->OnToplevelWindowCreated(this);
@@ -250,10 +250,10 @@ absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
   return window_shape_in_dips_;
 }
 
-void WaylandToplevelWindow::UpdateBufferScale(bool update_bounds) {
-  auto old_scale = buffer_scale();
-  WaylandWindow::UpdateBufferScale(update_bounds);
-  if (old_scale == buffer_scale())
+void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
+  auto old_scale = window_scale();
+  WaylandWindow::UpdateWindowScale(update_bounds);
+  if (old_scale == window_scale())
     return;
 
   // Update min/max size in DIP if buffer scale is updated.
@@ -311,7 +311,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
         gfx::ScaleToRoundedSize(GetRestoredBoundsInPixels().IsEmpty()
                                     ? GetBounds().size()
                                     : GetRestoredBoundsInPixels().size(),
-                                1.0 / buffer_scale()));
+                                1.0 / window_scale()));
   }
 
   // Store the restored bounds of current state differs from the normal state.
@@ -330,7 +330,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   if (pending_bounds_dip_ ==
-          gfx::ScaleToRoundedRect(GetBounds(), 1.f / buffer_scale()) &&
+          gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()) &&
       pending_configures_.empty()) {
     // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
     // is empty, implying that the window is already rendering at
@@ -371,7 +371,7 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
 
   if (!shell_toplevel_)
     return;
-  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / buffer_scale());
+  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / window_scale());
   auto result =
       std::find_if(pending_configures_.begin(), pending_configures_.end(),
                    [&size_dip](auto& configure) {
@@ -553,13 +553,13 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 
   if (min_size_.has_value()) {
     auto min_size_dip =
-        gfx::ScaleToRoundedSize(min_size_.value(), 1.0f / buffer_scale());
+        gfx::ScaleToRoundedSize(min_size_.value(), 1.0f / window_scale());
     shell_toplevel_->SetMinSize(min_size_dip.width(), min_size_dip.height());
   }
 
   if (max_size_.has_value()) {
     auto max_size_dip =
-        gfx::ScaleToRoundedSize(max_size_.value(), 1.0f / buffer_scale());
+        gfx::ScaleToRoundedSize(max_size_.value(), 1.0f / window_scale());
     shell_toplevel_->SetMaxSize(max_size_dip.width(), max_size_dip.height());
   }
 
@@ -645,7 +645,7 @@ void WaylandToplevelWindow::UpdateWindowShape() {
     return;
   }
   SkPath window_mask_in_dips =
-      wl::ConvertPathToDIP(window_mask_in_pixels, buffer_scale());
+      wl::ConvertPathToDIP(window_mask_in_pixels, window_scale());
   window_shape_in_dips_ = wl::CreateRectsFromSkPath(window_mask_in_dips);
 }
 
