@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
@@ -33,6 +34,6 @@ AccuracyServiceFactory::~AccuracyServiceFactory() = default;
 KeyedService* AccuracyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   DCHECK(base::FeatureList::IsEnabled(accuracy_tips::kAccuracyTipsFeature));
-  // TODO(crbug.com/1210891): Implement UI.
-  return new accuracy_tips::AccuracyService(nullptr);
+  auto ui = std::make_unique<ChromeAccuracyTipUI>();
+  return new accuracy_tips::AccuracyService(std::move(ui));
 }

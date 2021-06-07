@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/accuracy_tips/accuracy_web_contents_observer.h"
+
 #include <memory>
 
 #include "base/test/bind.h"

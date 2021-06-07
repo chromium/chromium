@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ACCURACY_TIPS_ACCURACY_TIP_UI_H_
 #define COMPONENTS_ACCURACY_TIPS_ACCURACY_TIP_UI_H_
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 
 namespace content {
@@ -26,11 +26,16 @@ class AccuracyTipUI {
   // Represents the different user interactions with a AccuracyTip dialog.
   enum class Interaction {
     kNoAction = 0,
-    kDismiss = 1,
-    kIgnore = 2,
-    kLearnMore = 3,
+    // Closed because user clicked outside the UI.
+    kLostFocus = 1,
+    // Pressed ESC or close button.
+    kClosed = 2,
+    // Ignore button pressed.
+    kIgnorePressed = 3,
+    // Learn more button pressed.
+    kLearnMorePressed = 4,
 
-    kMaxValue = kLearnMore,
+    kMaxValue = kLearnMorePressed,
   };
 
   // Shows AccuracyTip UI using the specified information if it is not already

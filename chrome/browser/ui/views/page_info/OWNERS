@@ -1,5 +1,6 @@
 file://chrome/browser/ui/page_info/OWNERS
 per-file safety_tip*=jdeblasio@chromium.org
+per-file accuracy_tip*=file://components/accuracy_tips/OWNERS
 
 per-file page_info_main_view.*=olesiamarukhno@google.com
 per-file page_info_new_bubble_view.*=olesiamarukhno@google.com

@@ -5,6 +5,7 @@
 #include "components/accuracy_tips/accuracy_service.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
@@ -30,8 +31,6 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
 
 void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   // TODO(crbug.com/1210891): Implement rate limiting.
-  if (!ui_)
-    return;
   ui_->ShowAccuracyTip(web_contents, AccuracyTipStatus::kMisinformation,
                        base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
                                       weak_factory_.GetWeakPtr()));
@@ -40,6 +39,10 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 void AccuracyService::OnAccuracyTipClosed(
     AccuracyTipUI::Interaction interaction) {
   // TODO(crbug.com/1210891): Log histograms.
+}
+
+void AccuracyService::SetSampleUrlForTesting(const GURL& url) {
+  sample_url_ = url;
 }
 
 }  // namespace accuracy_tips

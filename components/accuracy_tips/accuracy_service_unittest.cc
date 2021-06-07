@@ -30,10 +30,8 @@ class AccuracyServiceTest : public ::testing::Test {
   AccuracyServiceTest() = default;
 
   void SetUp() override {
-    base::FieldTrialParams params;
-    params[kSampleUrl.name] = "https://badurl.com";
-    feature_list.InitAndEnableFeatureWithParameters(kAccuracyTipsFeature,
-                                                    params);
+    feature_list.InitAndEnableFeatureWithParameters(
+        kAccuracyTipsFeature, {{kSampleUrl.name, "https://badurl.com"}});
     auto ui = std::make_unique<testing::StrictMock<MockAccuracyTipUI>>();
     ui_ = ui.get();
     service_ = std::make_unique<AccuracyService>(std::move(ui));

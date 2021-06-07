@@ -64,6 +64,17 @@
     Attackers sometimes mimic sites by making hard-to-see changes to the web address.
   </message>
 
+  <!-- Accuracy Tip strings -->
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_TITLE" desc="Message to display in the page info bubble when the page you are on triggered an accuracy tip.">
+    Is this website accurate?
+  </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON" desc="Text of button to learn more about inaccurate pages. Shown on the accuracy tip page info bubble.">
+    Learn more
+  </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON" desc="Text of button to close the accuracy tip page info bubble.">
+    Ignore
+  </message>
+
   <!-- Viewing file strings -->
   <message name="IDS_PAGE_INFO_FILE_PAGE" desc="Message to display in the page info bubble when the page the user has navigated to is a file:// page">
     You're viewing a local or shared file
