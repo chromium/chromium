@@ -251,7 +251,8 @@ struct BLINK_COMMON_EXPORT Manifest {
 
   // False if parsing failed or the field was not present.
   // TODO(crbug.com/1212263): This field is non-standard and part of a Chrome
-  // experiment.
+  // experiment. See:
+  // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
   bool isolated_storage = false;
 };
 
