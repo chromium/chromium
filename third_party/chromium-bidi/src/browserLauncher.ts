@@ -25,7 +25,7 @@ import os from 'os';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 
-class BrowserProcess {
+export class BrowserProcess {
   private _cdpUrl: string;
   private _closeBrowser: () => void;
 
@@ -43,7 +43,7 @@ class BrowserProcess {
   }
 }
 
-export default async function launch(): Promise<BrowserProcess> {
+export async function launchBrowser(): Promise<BrowserProcess> {
   const tempDir = await _getTempDir();
   const browserExecutablePath = process.env.BROWSER_PATH;
   const headless = process.env.HEADLESS !== 'false';
