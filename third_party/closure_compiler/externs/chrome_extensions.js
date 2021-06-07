@@ -2414,6 +2414,33 @@ chrome.enterprise.reportingPrivate.ContextInfo;
  */
 chrome.enterprise.reportingPrivate.getContextInfo = function(callback) {};
 
+
+/**
+ * Possible states for the Certificate status.
+ * @enum {number}
+ */
+chrome.enterprise.reportingPrivate.CertificateStatus = {
+  OK: 0,
+  POLICY_UNSET: 1,
+};
+
+/**
+ * Type of the object returned by getCertificate.
+ * @typedef {?{
+ *   status: chrome.enterprise.reportingPrivate.CertificateStatus,
+ *   encodedCertificate: (!ArrayBuffer|undefined),
+ * }}
+ */
+chrome.enterprise.reportingPrivate.Certificate;
+
+/**
+ * Returns the certificate object.
+ * @param {!string} url URL for which certificate needs to be fetched.
+ * @param {(function(!chrome.enterprise.reportingPrivate.Certificate): void)}
+ *     callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.getCertificate = function(url, callback) {};
+
 /**
  * @see https://developer.chrome.com/extensions/extension.html
  * @const
@@ -10605,122 +10632,6 @@ chrome.inlineInstallPrivate = {};
  * @return {undefined}
  */
 chrome.inlineInstallPrivate.install = function(id, opt_callback) {};
-
-
-/**
- * @see https://cs.chromium.org/chromium/src/chrome/common/extensions/api/input_method_private.json
- */
-chrome.inputMethodPrivate = {};
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.InputModeType = {
-  NO_KEYBOARD: '',
-  TEXT: '',
-  TEL: '',
-  URL: '',
-  EMAIL: '',
-  NUMERIC: '',
-  DECIMAL: '',
-  SEARCH: '',
-};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.InputContextType = {
-  TEXT: '',
-  SEARCH: '',
-  TEL: '',
-  URL: '',
-  EMAIL: '',
-  NUMBER: '',
-  PASSWORD: '',
-};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.AutoCapitalizeType = {
-  OFF: '',
-  CHARACTERS: '',
-  WORDS: '',
-  SENTENCES: '',
-};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.FocusReason = {
-  MOUSE: '',
-  TOUCH: '',
-  PEN: '',
-  OTHER: '',
-};
-
-
-/** @constructor */
-chrome.inputMethodPrivate.InputContext = function() {};
-
-
-/** @type {number} */
-chrome.inputMethodPrivate.InputContext.prototype.contextID;
-
-/** @type {chrome.inputMethodPrivate.InputModeType} */
-chrome.inputMethodPrivate.InputContext.prototype.mode;
-
-/** @type {chrome.inputMethodPrivate.InputContextType} */
-chrome.inputMethodPrivate.InputContext.prototype.type;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.autoCorrect;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.autoComplete;
-
-
-/** @type {chrome.inputMethodPrivate.AutoCapitalizeType} */
-chrome.inputMethodPrivate.InputContext.prototype.autoCapitalize;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.spellCheck;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.shouldDoLearning;
-
-
-/** @type {chrome.inputMethodPrivate.FocusReason} */
-chrome.inputMethodPrivate.InputContext.prototype.focusReason;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.hasBeenPassword;
-
-
-/**
- * Commits the text currently being composed without moving the selected text
- * range. This is a no-op if the context is incorrect.
- * @param {{
- *  contextID: number
- * }} parameters Parameters for the finishComposingText API call.
- * @param {function(): void=} callback Called when the operation completes.
- */
-chrome.inputMethodPrivate.finishComposingText = function(
-    parameters, callback) {};
-
-
-/**
- * Resets the current engine to its initial state. Fires an OnReset event.
- */
-chrome.inputMethodPrivate.reset = function() {};
 
 
 /**
