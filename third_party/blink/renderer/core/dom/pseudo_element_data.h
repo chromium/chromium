@@ -55,35 +55,34 @@ inline void PseudoElementData::ClearPseudoElements() {
 
 inline void PseudoElementData::SetPseudoElement(PseudoId pseudo_id,
                                                 PseudoElement* element) {
+  PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
     case kPseudoIdBefore:
-      if (generated_before_)
-        generated_before_->Dispose();
+      previous_element = generated_before_;
       generated_before_ = element;
       break;
     case kPseudoIdAfter:
-      if (generated_after_)
-        generated_after_->Dispose();
+      previous_element = generated_after_;
       generated_after_ = element;
       break;
     case kPseudoIdMarker:
-      if (generated_marker_)
-        generated_marker_->Dispose();
+      previous_element = generated_marker_;
       generated_marker_ = element;
       break;
     case kPseudoIdBackdrop:
-      if (backdrop_)
-        backdrop_->Dispose();
+      previous_element = backdrop_;
       backdrop_ = element;
       break;
     case kPseudoIdFirstLetter:
-      if (generated_first_letter_)
-        generated_first_letter_->Dispose();
+      previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
     default:
       NOTREACHED();
   }
+
+  if (previous_element)
+    previous_element->Dispose();
 }
 
 inline PseudoElement* PseudoElementData::GetPseudoElement(
