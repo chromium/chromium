@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -158,6 +159,12 @@ void ClipboardHostImpl::ReadAvailableTypes(
   std::vector<std::u16string> types;
   clipboard_->ReadAvailableTypes(clipboard_buffer, CreateDataEndpoint().get(),
                                  &types);
+  // If files are available, do not include other types such as text/plain
+  // which contain the full path on some platforms (http://crbug.com/1214108).
+  std::u16string filenames_type = base::UTF8ToUTF16(ui::kMimeTypeURIList);
+  if (base::Contains(types, filenames_type)) {
+    types = {filenames_type};
+  }
   std::move(callback).Run(types);
 }
 
