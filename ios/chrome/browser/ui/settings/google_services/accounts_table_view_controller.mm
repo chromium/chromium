@@ -237,16 +237,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSString* authenticatedEmail = [authenticatedIdentity userEmail];
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ios::ChromeIdentityService* identityService =
-        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-    ChromeIdentity* identity =
-        identityService->GetIdentityWithGaiaID(account.gaia);
-    if (!identity) {
-      // Ignore the case in which the identity is invalid at lookup time. This
-      // may be due to inconsistencies between the identity service and
-      // ProfileOAuth2TokenService.
-      continue;
-    }
+    ChromeIdentity* identity = ios::GetChromeBrowserProvider()
+                                   ->GetChromeIdentityService()
+                                   ->GetIdentityWithGaiaID(account.gaia);
     // TODO(crbug.com/1081274): This re-ordering will be redundant once we
     // apply ordering changes to the account reconciler.
     TableViewItem* item = [self accountItem:identity];
