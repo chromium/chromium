@@ -420,7 +420,6 @@ void NGTablePainter::PaintBoxDecorationBackground(
 void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                            const PhysicalOffset& paint_offset,
                                            const IntRect& visual_rect) {
-  DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
   const NGTableBorders* collapsed_borders = fragment_.TableCollapsedBorders();
   if (!collapsed_borders)
     return;

@@ -503,7 +503,7 @@ void NGBoxFragmentPainter::PaintObject(
   const PaintPhase paint_phase = paint_info.phase;
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   const ComputedStyle& style = fragment.Style();
-  bool is_visible = IsVisibleToPaint(fragment, style);
+  const bool is_visible = IsVisibleToPaint(fragment, style);
   if (ShouldPaintSelfBlockBackground(paint_phase)) {
     if (is_visible) {
       PaintBoxDecorationBackground(paint_info, paint_offset,
@@ -561,13 +561,6 @@ void NGBoxFragmentPainter::PaintObject(
         }
       } else if (!fragment.IsInlineFormattingContext()) {
         PaintBlockChildren(paint_info, paint_offset);
-
-        if (is_visible && paint_info.phase == PaintPhase::kForeground &&
-            box_fragment_.IsTableNG()) {
-          NGTablePainter(box_fragment_)
-              .PaintCollapsedBorders(paint_info, paint_offset,
-                                     VisualRect(paint_offset));
-        }
       }
     }
 
@@ -581,6 +574,15 @@ void NGBoxFragmentPainter::PaintObject(
 
   if (!is_visible)
     return;
+
+  // Collapsed borders paint *after* children have painted their backgrounds.
+  if (box_fragment_.IsTableNG() &&
+      paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly) {
+    NGTablePainter(box_fragment_)
+        .PaintCollapsedBorders(paint_info, paint_offset,
+                               VisualRect(paint_offset));
+  }
+
   if (ShouldPaintSelfOutline(paint_phase)) {
     if (NGOutlineUtils::HasPaintedOutline(style, fragment.GetNode())) {
       NGFragmentPainter(fragment, GetDisplayItemClient())
