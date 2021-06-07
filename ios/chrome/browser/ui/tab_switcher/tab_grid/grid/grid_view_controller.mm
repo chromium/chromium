@@ -646,6 +646,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
+  [self.selectedEditingItemIDs removeAllObjects];
   [self.collectionView reloadData];
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                                     animated:YES
@@ -710,6 +711,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   auto modelUpdates = ^{
     [self.items removeObjectAtIndex:index];
     self.selectedItemID = selectedItemID;
+    [self deselectItemWithIDForEditing:removedItemID];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   };
   auto collectionViewUpdates = ^{
@@ -1038,9 +1040,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self selectItemWithIDForEditing:itemID];
     }
     [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
-  } else {
-    [self.delegate gridViewController:self didSelectItemWithID:itemID];
   }
+
+  [self.delegate gridViewController:self didSelectItemWithID:itemID];
 }
 
 // Animates the empty state into view.
@@ -1109,6 +1111,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     cell.accessibilityIdentifier = [NSString
         stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
   }
+}
+
+#pragma mark - Public Editing Mode Selection
+- (void)selectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self selectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
+- (NSArray<NSString*>*)selectedItemIDsForEditing {
+  return [self.selectedEditingItemIDs allObjects];
 }
 
 #pragma mark - Private Editing Mode Selection

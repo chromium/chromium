@@ -52,6 +52,8 @@ const int kNewTabButtonTrailingSpace = 20;
   if (_mode == mode)
     return;
   _mode = mode;
+  // Reset selected tabs count when mode changes.
+  self.selectedTabsCount = 0;
   [self setItemsForTraitCollection:self.traitCollection];
 }
 
@@ -75,6 +77,11 @@ const int kNewTabButtonTrailingSpace = 20;
 - (void)setSelectTabButtonTarget:(id)target action:(SEL)action {
   _selectTabsButton.target = target;
   _selectTabsButton.action = action;
+}
+
+- (void)setSelectAllButtonTarget:(id)target action:(SEL)action {
+  _selectAllButton.target = target;
+  _selectAllButton.action = action;
 }
 
 - (void)setDoneButtonTarget:(id)target action:(SEL)action {

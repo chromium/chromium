@@ -579,6 +579,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _activePage = activePage;
 }
 
+#pragma mark - TabGridMode
+
+- (void)setTabGridMode:(TabGridMode)mode {
+  _tabGridMode = mode;
+
+  self.bottomToolbar.mode = self.tabGridMode;
+  self.regularTabsViewController.mode = self.tabGridMode;
+  self.incognitoTabsViewController.mode = self.tabGridMode;
+  self.topToolbar.mode = self.tabGridMode;
+}
+
 #pragma mark - LayoutSwitcherProvider
 
 - (id<LayoutSwitcher>)layoutSwitcher {
@@ -1183,6 +1194,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
   [topToolbar setSelectTabButtonTarget:self
                                 action:@selector(selectButtonTapped:)];
+  [topToolbar setSelectAllButtonTarget:self
+                                action:@selector(selectAllButtonTapped:)];
 
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
@@ -1655,6 +1668,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID {
+  if (self.tabGridMode == TabGridModeSelection) {
+    NSUInteger selectedItemsCount =
+        [gridViewController.selectedItemIDsForEditing count];
+    self.topToolbar.selectedTabsCount = selectedItemsCount;
+    self.bottomToolbar.selectedTabsCount = selectedItemsCount;
+    return;
+  }
+
   // Update the model with the tab selection, but don't have the grid view
   // controller display the new selection, since there will be a transition
   // away from it immediately afterwards.
@@ -1724,6 +1745,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
+  if (self.tabGridMode == TabGridModeSelection && count == 0) {
+    // Exit selection mode if there are no more tabs.
+    self.tabGridMode = TabGridModeNormal;
+  }
+
   if (count > 0) {
     // Undo is only available when the tab grid is empty.
     self.undoCloseAllAvailable = NO;
@@ -1770,8 +1796,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // mode.
   if (self.tabGridMode == TabGridModeSelection) {
     self.tabGridMode = TabGridModeNormal;
-    self.bottomToolbar.mode = self.tabGridMode;
-    self.topToolbar.mode = self.tabGridMode;
     // Records action when user exit the selection mode.
     base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
     return;
@@ -1797,11 +1821,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)selectButtonTapped:(id)sender {
   self.tabGridMode = TabGridModeSelection;
-  self.bottomToolbar.mode = self.tabGridMode;
-  self.regularTabsViewController.mode = self.tabGridMode;
-  self.incognitoTabsViewController.mode = self.tabGridMode;
-  self.topToolbar.mode = self.tabGridMode;
   base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
+}
+
+- (void)selectAllButtonTapped:(id)sender {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectionSelectAll"));
+
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  [gridViewController selectAllItemsForEditing];
 }
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is

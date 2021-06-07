@@ -91,6 +91,8 @@
   if (_mode == mode)
     return;
   _mode = mode;
+  // Reset selected tabs count when mode changes.
+  self.selectedTabsCount = 0;
   [self updateLayout];
 }
 
@@ -129,12 +131,6 @@
 
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
   _closeAllOrUndoButton.enabled = enabled;
-}
-
-- (void)setSelectionModeButtonsEnabled:(BOOL)enabled {
-  _addToButton.enabled = enabled;
-  _closeTabsButton.enabled = enabled;
-  _shareButton.enabled = enabled;
 }
 
 - (void)useUndoCloseAll:(BOOL)useUndo {

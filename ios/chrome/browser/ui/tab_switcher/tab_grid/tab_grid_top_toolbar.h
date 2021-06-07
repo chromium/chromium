@@ -40,6 +40,8 @@
 - (void)setNewTabButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on select tabs button.
 - (void)setSelectTabButtonTarget:(id)target action:(SEL)action;
+// Sets target/action for tapping event on select all button.
+- (void)setSelectAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on close all button.
 - (void)setCloseAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on done button.

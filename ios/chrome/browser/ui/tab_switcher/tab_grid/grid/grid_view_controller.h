@@ -103,6 +103,9 @@
 @property(nonatomic, weak) id<GridContextMenuProvider> menuProvider
     API_AVAILABLE(ios(13.0));
 
+// The item IDs of selected items for editing.
+@property(nonatomic, readonly) NSArray<NSString*>* selectedItemIDsForEditing;
+
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;
 
@@ -112,6 +115,10 @@
 
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
+
+// Selects all items in the grid for editing. No-op if |mode| is not
+// TabGridModeSelection.
+- (void)selectAllItemsForEditing;
 
 @end
 
