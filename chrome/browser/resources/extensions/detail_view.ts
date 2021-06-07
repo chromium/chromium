@@ -25,6 +25,7 @@ import './strings.m.js';
 import './toggle_row.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -33,16 +34,29 @@ import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
+import {ExtensionsToggleRowElement} from './toggle_row.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
+export interface ExtensionsDetailViewElement {
+  $: {
+    closeButton: HTMLElement,
+    enableToggle: CrToggleElement,
+    extensionsActivityLogLink: HTMLElement,
+  };
+}
+
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: chrome.developerPrivate.ExtensionView,
+  };
+}
+
 const ExtensionsDetailViewElementBase =
-    mixinBehaviors([CrContainerShadowBehavior], ItemMixin(PolymerElement));
+    mixinBehaviors([CrContainerShadowBehavior], ItemMixin(PolymerElement)) as
+    {new (): PolymerElement};
 
-/** @polymer */
-class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
+export class ExtensionsDetailViewElement extends
+    ExtensionsDetailViewElementBase {
   static get is() {
     return 'extensions-detail-view';
   }
@@ -55,14 +69,11 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
     return {
       /**
        * The underlying ExtensionInfo for the details being displayed.
-       * @type {!chrome.developerPrivate.ExtensionInfo}
        */
       data: Object,
 
-      /** @private */
       size_: String,
 
-      /** @type {!ItemDelegate} */
       delegate: Object,
 
       /** Whether the user has enabled the UI's developer mode. */
@@ -83,7 +94,14 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
     return ['onItemIdChanged_(data.id, delegate)'];
   }
 
-  /** @override */
+  data: chrome.developerPrivate.ExtensionInfo;
+  delegate: ItemDelegate;
+  inDevMode: boolean;
+  incognitoAvailable: boolean;
+  showActivityLog: boolean;
+  fromActivityLog: boolean;
+  private size_: string;
+
   ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
@@ -94,14 +112,13 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
    * dialog closes.
    */
   focusOptionsButton() {
-    this.shadowRoot.querySelector('#extensions-options').focus();
+    this.shadowRoot!.querySelector<HTMLElement>('#extensions-options')!.focus();
   }
 
   /**
    * Focuses the back button when page is loaded.
-   * @private
    */
-  onViewEnterStart_() {
+  private onViewEnterStart_() {
     const elementToFocus = this.fromActivityLog ?
         this.$.extensionsActivityLogLink :
         this.$.closeButton;
@@ -109,8 +126,7 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
     afterNextRender(this, () => focusWithoutInk(elementToFocus));
   }
 
-  /** @private */
-  onItemIdChanged_() {
+  private onItemIdChanged_() {
     // Clear the size, since this view is reused, such that no obsolete size
     // is displayed.:
     this.size_ = '';
@@ -119,273 +135,173 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
     });
   }
 
-  /** @private */
-  onActivityLogTap_() {
+  private onActivityLogTap_() {
     navigation.navigateTo({page: Page.ACTIVITY_LOG, extensionId: this.data.id});
   }
 
-  /**
-   * @param {string} description
-   * @param {string} fallback
-   * @return {string}
-   * @private
-   */
-  getDescription_(description, fallback) {
+  private getDescription_(description: string, fallback: string): string {
     return description || fallback;
   }
 
-  /** @private */
-  onCloseButtonTap_() {
+  private onCloseButtonTap_() {
     navigation.navigateTo({page: Page.LIST});
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isEnabled_() {
+  private isEnabled_(): boolean {
     return isEnabled(this.data.state);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isEnableToggleEnabled_() {
+  private isEnableToggleEnabled_(): boolean {
     return userCanChangeEnablement(this.data);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasDependentExtensions_() {
+  private hasDependentExtensions_(): boolean {
     return this.data.dependentExtensions.length > 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasSevereWarnings_() {
+  private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
         this.data.disableReasons.updateRequired || !!this.data.blacklistText ||
         this.data.runtimeWarnings.length > 0;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeEnabledStyle_() {
+  private computeEnabledStyle_(): string {
     return this.isEnabled_() ? 'enabled-text' : '';
   }
 
-  /**
-   * @param {!chrome.developerPrivate.ExtensionState} state
-   * @param {string} onText
-   * @param {string} offText
-   * @return {string}
-   * @private
-   */
-  computeEnabledText_(state, onText, offText) {
+  private computeEnabledText_(
+      state: chrome.developerPrivate.ExtensionState, onText: string,
+      offText: string): string {
     // TODO(devlin): Get the full spectrum of these strings from bettes.
     return isEnabled(state) ? onText : offText;
   }
 
-  /**
-   * @param {!chrome.developerPrivate.ExtensionView} view
-   * @return {string}
-   * @private
-   */
-  computeInspectLabel_(view) {
+  private computeInspectLabel_(view: chrome.developerPrivate.ExtensionView):
+      string {
     return computeInspectableViewLabel(view);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowOptionsLink_() {
+  private shouldShowOptionsLink_(): boolean {
     return !!this.data.optionsPage;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowOptionsSection_() {
+  private shouldShowOptionsSection_(): boolean {
     return this.data.incognitoAccess.isEnabled ||
         this.data.fileAccess.isEnabled || this.data.errorCollection.isEnabled;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowIncognitoOption_() {
+  private shouldShowIncognitoOption_(): boolean {
     return this.data.incognitoAccess.isEnabled && this.incognitoAvailable;
   }
 
-  /** @private */
-  onEnableToggleChange_() {
+  private onEnableToggleChange_() {
     this.delegate.setItemEnabled(this.data.id, this.$.enableToggle.checked);
     this.$.enableToggle.checked = this.isEnabled_();
   }
 
-  /**
-   * @param {!{model: !{item: !chrome.developerPrivate.ExtensionView}}} e
-   * @private
-   */
-  onInspectTap_(e) {
+  private onInspectTap_(e: RepeaterEvent) {
     this.delegate.inspectItemView(this.data.id, e.model.item);
   }
 
-  /** @private */
-  onExtensionOptionsTap_() {
+  private onExtensionOptionsTap_() {
     this.delegate.showItemOptionsPage(this.data);
   }
 
-  /** @private */
-  onReloadTap_() {
+  private onReloadTap_() {
     this.delegate.reloadItem(this.data.id).catch(loadError => {
       this.dispatchEvent(new CustomEvent(
           'load-error', {bubbles: true, composed: true, detail: loadError}));
     });
   }
 
-  /** @private */
-  onRemoveTap_() {
+  private onRemoveTap_() {
     this.delegate.deleteItem(this.data.id);
   }
 
-  /** @private */
-  onRepairTap_() {
+  private onRepairTap_() {
     this.delegate.repairItem(this.data.id);
   }
 
-  /** @private */
-  onLoadPathTap_() {
+  private onLoadPathTap_() {
     this.delegate.showInFolder(this.data.id);
   }
 
-  /** @private */
-  onAllowIncognitoChange_() {
+  private onAllowIncognitoChange_() {
     this.delegate.setItemAllowedIncognito(
         this.data.id,
-        this.shadowRoot.querySelector('#allow-incognito').checked);
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-incognito')!.checked);
   }
 
-  /** @private */
-  onAllowOnFileUrlsChange_() {
+  private onAllowOnFileUrlsChange_() {
     this.delegate.setItemAllowedOnFileUrls(
         this.data.id,
-        this.shadowRoot.querySelector('#allow-on-file-urls').checked);
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-on-file-urls')!.checked);
   }
 
-  /** @private */
-  onCollectErrorsChange_() {
+  private onCollectErrorsChange_() {
     this.delegate.setItemCollectsErrors(
-        this.data.id, this.shadowRoot.querySelector('#collect-errors').checked);
+        this.data.id,
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#collect-errors')!.checked);
   }
 
-  /** @private */
-  onExtensionWebSiteTap_() {
+  private onExtensionWebSiteTap_() {
     this.delegate.openUrl(this.data.manifestHomePageUrl);
   }
 
-  /** @private */
-  onViewInStoreTap_() {
+  private onViewInStoreTap_() {
     this.delegate.openUrl(this.data.webStoreUrl);
   }
 
-  /**
-   * @param {!chrome.developerPrivate.DependentExtension} item
-   * @return {string}
-   * @private
-   */
-  computeDependentEntry_(item) {
+  private computeDependentEntry_(
+      item: chrome.developerPrivate.DependentExtension): string {
     return loadTimeData.getStringF('itemDependentEntry', item.name, item.id);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeSourceString_() {
+  private computeSourceString_(): string {
     return this.data.locationText ||
         getItemSourceString(getItemSource(this.data));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasPermissions_() {
+  private hasPermissions_(): boolean {
     return this.data.permissions.simplePermissions.length > 0 ||
         this.hasRuntimeHostPermissions_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasRuntimeHostPermissions_() {
+  private hasRuntimeHostPermissions_(): boolean {
     return !!this.data.permissions.runtimeHostPermissions;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showSiteAccessContent_() {
+  private showSiteAccessContent_(): boolean {
     return this.showFreeformRuntimeHostPermissions_() ||
         this.showHostPermissionsToggleList_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showFreeformRuntimeHostPermissions_() {
+  private showFreeformRuntimeHostPermissions_(): boolean {
     return this.hasRuntimeHostPermissions_() &&
-        this.data.permissions.runtimeHostPermissions.hasAllHosts;
+        this.data.permissions.runtimeHostPermissions!.hasAllHosts;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showHostPermissionsToggleList_() {
+  private showHostPermissionsToggleList_(): boolean {
     return this.hasRuntimeHostPermissions_() &&
-        !this.data.permissions.runtimeHostPermissions.hasAllHosts;
+        !this.data.permissions.runtimeHostPermissions!.hasAllHosts;
   }
 
-  /**
-   * Returns true if the reload button should be shown.
-   * @return {boolean}
-   * @private
-   */
-  showReloadButton_() {
+  private showReloadButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.RELOAD;
   }
 
-  /**
-   * Returns true if the repair button should be shown.
-   * @return {boolean}
-   * @private
-   */
-  showRepairButton_() {
+  private showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }
 
-  /**
-   * Returns true if the enable toggle should be shown.
-   * @return {boolean}
-   * @private
-   */
-  showEnableToggle_() {
+  private showEnableToggle_(): boolean {
     const enableControl = getEnableControl(this.data);
     // We still show the toggle even if we also show the repair button in the
     // detail view, because the repair button appears just beneath it.
@@ -393,16 +309,18 @@ class ExtensionsDetailViewElement extends ExtensionsDetailViewElementBase {
         enableControl === EnableControl.REPAIR;
   }
 
-  /**
-   * @return {boolean} Whether the allowlist warning should be shown.
-   * @private
-   */
-  showAllowlistWarning_() {
+  private showAllowlistWarning_(): boolean {
     // Only show the allowlist warning if there is no blocklist warning. It
     // would be redundant since all blocklisted items are necessarily not
     // included in the Safe Browsing allowlist.
     return this.data.showSafeBrowsingAllowlistWarning &&
         !this.data.blacklistText;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-detail-view': ExtensionsDetailViewElement;
   }
 }
 

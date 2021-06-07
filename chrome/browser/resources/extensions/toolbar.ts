@@ -12,42 +12,36 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './pack_dialog.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @interface */
-export class ToolbarDelegate {
+export interface ToolbarDelegate {
   /**
    * Toggles whether or not the profile is in developer mode.
-   * @param {boolean} inDevMode
    */
-  setProfileInDevMode(inDevMode) {}
+  setProfileInDevMode(inDevMode: boolean): void;
 
-  /**
-   * Opens the dialog to load unpacked extensions.
-   * @return {!Promise}
-   */
-  loadUnpacked() {}
+  /** Opens the dialog to load unpacked extensions. */
+  loadUnpacked(): Promise<boolean>;
 
-  /**
-   * Updates all extensions.
-   * @param {!Array<!chrome.developerPrivate.ExtensionInfo>} extensions
-   * @return {!Promise}
-   */
-  updateAllExtensions(extensions) {}
+  /** Updates all extensions. */
+  updateAllExtensions(extensions: chrome.developerPrivate.ExtensionInfo[]):
+      Promise<string>;
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ExtensionsToolbarElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface ExtensionsToolbarElement {
+  $: {
+    devDrawer: HTMLElement,
+    packExtensions: HTMLElement,
+  };
+}
 
-/** @polymer */
+const ExtensionsToolbarElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   static get is() {
     return 'extensions-toolbar';
@@ -59,10 +53,7 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
 
   static get properties() {
     return {
-      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
       extensions: Array,
-
-      /** @type {ToolbarDelegate} */
       delegate: Object,
 
       inDevMode: {
@@ -73,7 +64,6 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
       },
 
       devModeControlledByPolicy: Boolean,
-
       isSupervised: Boolean,
 
       // <if expr="chromeos">
@@ -82,85 +72,71 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
 
       canLoadUnpacked: Boolean,
 
-      /** @private */
       expanded_: Boolean,
-
-      /** @private */
       showPackDialog_: Boolean,
 
       /**
        * Prevents initiating update while update is in progress.
-       * @private
        */
-      isUpdating_: {type: Boolean, value: false}
+      isUpdating_: {type: Boolean, value: false},
     };
   }
 
-  /** @override */
+  extensions: Array<chrome.developerPrivate.ExtensionInfo>;
+  delegate: ToolbarDelegate;
+  inDevMode: boolean;
+  devModeControlledByPolicy: boolean;
+  isSupervised: boolean;
+
+  // <if expr="chromeos">
+  kioskEnabled: boolean;
+  // </if>
+
+  canLoadUnpacked: boolean;
+
+  private expanded_: boolean;
+  private showPackDialog_: boolean;
+  private isUpdating_: boolean;
+
+
   ready() {
     super.ready();
     this.setAttribute('role', 'banner');
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldDisableDevMode_() {
+  private shouldDisableDevMode_(): boolean {
     return this.devModeControlledByPolicy || this.isSupervised;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getTooltipText_() {
+  private getTooltipText_(): string {
     return this.i18n(
         this.isSupervised ? 'controlledSettingChildRestriction' :
                             'controlledSettingPolicy');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getIcon_() {
+  private getIcon_(): string {
     return this.isSupervised ? 'cr20:kite' : 'cr20:domain';
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onDevModeToggleChange_(e) {
+  private onDevModeToggleChange_(e: CustomEvent<boolean>) {
     this.delegate.setProfileInDevMode(e.detail);
     chrome.metricsPrivate.recordUserAction(
         'Options_ToggleDeveloperMode_' + (e.detail ? 'Enabled' : 'Disabled'));
   }
 
-  /**
-   * @param {boolean} current
-   * @param {boolean} previous
-   * @private
-   */
-  onInDevModeChanged_(current, previous) {
+  private onInDevModeChanged_(_current: boolean, previous: boolean) {
     const drawer = this.$.devDrawer;
     if (this.inDevMode) {
       if (drawer.hidden) {
         drawer.hidden = false;
         // Requesting the offsetTop will cause a reflow (to account for
         // hidden).
-        /** @suppress {suspiciousCode} */ drawer.offsetTop;
+        drawer.offsetTop;
       }
     } else {
       if (previous === undefined) {
@@ -168,7 +144,7 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
         return;
       }
 
-      listenOnce(drawer, 'transitionend', e => {
+      listenOnce(drawer, 'transitionend', () => {
         if (!this.inDevMode) {
           drawer.hidden = true;
         }
@@ -177,8 +153,7 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     this.expanded_ = !this.expanded_;
   }
 
-  /** @private */
-  onLoadUnpackedTap_() {
+  private onLoadUnpackedTap_() {
     this.delegate.loadUnpacked()
         .then((success) => {
           if (success) {
@@ -193,27 +168,23 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     chrome.metricsPrivate.recordUserAction('Options_LoadUnpackedExtension');
   }
 
-  /** @private */
-  onPackTap_() {
+  private onPackTap_() {
     chrome.metricsPrivate.recordUserAction('Options_PackExtension');
     this.showPackDialog_ = true;
   }
 
-  /** @private */
-  onPackDialogClose_() {
+  private onPackDialogClose_() {
     this.showPackDialog_ = false;
     this.$.packExtensions.focus();
   }
 
   // <if expr="chromeos">
-  /** @private */
-  onKioskTap_() {
+  private onKioskTap_() {
     this.fire_('kiosk-tap');
   }
   // </if>
 
-  /** @private */
-  onUpdateNowTap_() {
+  private onUpdateNowTap_() {
     // If already updating, do not initiate another update.
     if (this.isUpdating_) {
       return;

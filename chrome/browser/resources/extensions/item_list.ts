@@ -8,22 +8,19 @@ import './item.js';
 import './shared_style.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemDelegate} from './item.js';
+import {ExtensionsItemElement, ItemDelegate} from './item.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
+
 const ExtensionsItemListElementBase =
-    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   static get is() {
     return 'extensions-item-list';
@@ -35,13 +32,8 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
   static get properties() {
     return {
-      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
       apps: Array,
-
-      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
       extensions: Array,
-
-      /** @type {ItemDelegate} */
       delegate: Object,
 
       inDevMode: {
@@ -53,32 +45,27 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: String,
       },
 
-      /** @private */
       computedFilter_: {
         type: String,
         computed: 'computeFilter_(filter)',
         observer: 'announceSearchResults_',
       },
 
-      /** @private */
       maxColumns_: {
         type: Number,
         value: () => loadTimeData.getBoolean('showCheckup') ? 2 : 3,
       },
 
-      /** @private */
       showCheckup_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showCheckup'),
       },
 
-      /** @private */
       shownAppsCount_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       shownExtensionsCount_: {
         type: Number,
         value: 0,
@@ -86,21 +73,26 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     };
   }
 
-  /**
-   * @param {string} id
-   * @return {?Element}
-   */
-  getDetailsButton(id) {
-    const item = this.shadowRoot.querySelector(`#${id}`);
+  apps: Array<chrome.developerPrivate.ExtensionInfo>;
+  extensions: Array<chrome.developerPrivate.ExtensionInfo>;
+  delegate: ItemDelegate;
+  inDevMode: boolean;
+  filter: string;
+  private computedFilter_: string;
+  private maxColumns_: number;
+  private showCheckup_: boolean;
+  private shownAppsCount_: number;
+  private shownExtensionsCount_: number;
+
+  getDetailsButton(id: string): HTMLElement|null {
+    const item =
+        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
     return item && item.getDetailsButton();
   }
 
-  /**
-   * @param {string} id
-   * @return {?Element}
-   */
-  getErrorsButton(id) {
-    const item = this.shadowRoot.querySelector(`#${id}`);
+  getErrorsButton(id: string): HTMLElement|null {
+    const item =
+        this.shadowRoot!.querySelector<ExtensionsItemElement>(`#${id}`);
     return item && item.getErrorsButton();
   }
 
@@ -109,9 +101,8 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * should be shown. A |null| value indicates that everything should be
    * shown.
    * return {?Function}
-   * @private
    */
-  computeFilter_() {
+  private computeFilter_(): Filter|null {
     const formattedFilter = this.filter.trim().toLowerCase();
     if (!formattedFilter) {
       return null;
@@ -121,8 +112,7 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
                s => s.toLowerCase().includes(formattedFilter));
   }
 
-  /** @private */
-  shouldShowEmptyItemsMessage_() {
+  private shouldShowEmptyItemsMessage_() {
     if (!this.apps || !this.extensions) {
       return;
     }
@@ -130,21 +120,18 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     return this.apps.length === 0 && this.extensions.length === 0;
   }
 
-  /** @private */
-  shouldShowEmptySearchMessage_() {
+  private shouldShowEmptySearchMessage_() {
     return !this.shouldShowEmptyItemsMessage_() && this.shownAppsCount_ === 0 &&
         this.shownExtensionsCount_ === 0;
   }
 
-  /** @private */
-  onNoExtensionsTap_(e) {
-    if (e.target.tagName === 'A') {
+  private onNoExtensionsTap_(e: Event) {
+    if ((e.target as HTMLElement).tagName === 'A') {
       chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
     }
   }
 
-  /** @private */
-  announceSearchResults_() {
+  private announceSearchResults_() {
     if (this.computedFilter_) {
       IronA11yAnnouncer.requestAvailability();
       setTimeout(() => {  // Async to allow list to update.
@@ -163,6 +150,12 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         }));
       }, 0);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-item-list': ExtensionsItemListElement;
   }
 }
 

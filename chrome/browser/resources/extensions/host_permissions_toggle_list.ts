@@ -14,8 +14,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ItemDelegate} from './item.js';
 import {UserAction} from './item_util.js';
+import {ExtensionsToggleRowElement} from './toggle_row.js';
 
-/** @polymer */
 class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
   static get is() {
     return 'extensions-host-permissions-toggle-list';
@@ -29,35 +29,33 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
     return {
       /**
        * The underlying permissions data.
-       * @type {chrome.developerPrivate.RuntimeHostPermissions}
        */
       permissions: Object,
 
-      /** @private */
       itemId: String,
 
-      /** @type {!ItemDelegate} */
       delegate: Object,
     };
   }
 
+  permissions: chrome.developerPrivate.RuntimeHostPermissions;
+  private itemId: string;
+  delegate: ItemDelegate;
+
   /**
-   * @return {boolean} Whether the item is allowed to execute on all of its
-   *     requested sites.
-   * @private
+   * @return Whether the item is allowed to execute on all of its requested
+   *     sites.
    */
-  allowedOnAllHosts_() {
+  private allowedOnAllHosts_(): boolean {
     return this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_ALL_SITES;
   }
 
   /**
-   * Returns a lexicographically-sorted list of the hosts associated with this
-   * item.
-   * @return {!Array<!chrome.developerPrivate.SiteControl>}
-   * @private
+   * @return A lexicographically-sorted list of the hosts associated with this
+   *     item.
    */
-  getSortedHosts_() {
+  private getSortedHosts_(): Array<chrome.developerPrivate.SiteControl> {
     return this.permissions.hosts.sort((a, b) => {
       if (a.host < b.host) {
         return -1;
@@ -69,11 +67,7 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
     });
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onAllHostsToggleChanged_(e) {
+  private onAllHostsToggleChanged_(e: CustomEvent<boolean>) {
     // TODO(devlin): In the case of going from all sites to specific sites,
     // we'll withhold all sites (i.e., all specific site toggles will move to
     // unchecked, and the user can check them individually). This is slightly
@@ -94,13 +88,9 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onHostAccessChanged_(e) {
-    const host = e.target.host;
-    const checked = e.target.checked;
+  private onHostAccessChanged_(e: CustomEvent<boolean>) {
+    const host = (e.target as unknown as {host: string}).host;
+    const checked = (e.target as ExtensionsToggleRowElement).checked;
 
     if (checked) {
       this.delegate.addRuntimeHostPermission(this.itemId, host);
@@ -111,8 +101,7 @@ class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onLearnMoreClick_() {
+  private onLearnMoreClick_() {
     this.delegate.recordUserAction(UserAction.LEARN_MORE);
   }
 }

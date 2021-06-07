@@ -23,35 +23,32 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {navigation, Page} from './navigation_helper.js';
 
-/** @typedef {chrome.developerPrivate.ManifestError} */
-let ManifestError;
-/** @typedef {chrome.developerPrivate.RuntimeError} */
-let RuntimeError;
+type ManifestError = chrome.developerPrivate.ManifestError;
+type RuntimeError = chrome.developerPrivate.RuntimeError;
 
-/** @interface */
-export class ErrorPageDelegate {
-  /**
-   * @param {string} extensionId
-   * @param {!Array<number>=} errorIds
-   * @param {chrome.developerPrivate.ErrorType=} type
-   */
-  deleteErrors(extensionId, errorIds, type) {}
+/** Event interface for dom-repeat. */
+interface RepeaterEvent<T> extends CustomEvent {
+  model: {
+    item: T,
+    index: number,
+  };
+}
 
-  /**
-   * @param {chrome.developerPrivate.RequestFileSourceProperties} args
-   * @return {!Promise<!chrome.developerPrivate.RequestFileSourceResponse>}
-   */
-  requestFileSource(args) {}
+export interface ErrorPageDelegate {
+  deleteErrors(
+      extensionId: string, errorIds?: number[],
+      type?: chrome.developerPrivate.ErrorType): void;
+
+  requestFileSource(args: chrome.developerPrivate.RequestFileSourceProperties):
+      Promise<chrome.developerPrivate.RequestFileSourceResponse>;
 }
 
 /**
  * Get the URL relative to the main extension url. If the url is
  * unassociated with the extension, this will be the full url.
- * @param {string} url
- * @param {?(ManifestError|RuntimeError)} error
- * @return {string}
  */
-function getRelativeUrl(url, error) {
+function getRelativeUrl(
+    url: string, error: ManifestError|RuntimeError): string {
   const fullUrl = 'chrome-extension://' + error.extensionId + '/';
   return url.startsWith(fullUrl) ? url.substring(fullUrl.length) : url;
 }
@@ -59,16 +56,12 @@ function getRelativeUrl(url, error) {
 /**
  * Given 3 strings, this function returns the correct one for the type of
  * error that |item| is.
- * @param {!ManifestError|!RuntimeError} item
- * @param {string} log
- * @param {string} warn
- * @param {string} error
- * @return {string}
- * @private
  */
-function getErrorSeverityText_(item, log, warn, error) {
+function getErrorSeverityText_(
+    item: ManifestError|RuntimeError, log: string, warn: string,
+    error: string): string {
   if (item.type === chrome.developerPrivate.ErrorType.RUNTIME) {
-    switch (item.severity) {
+    switch ((item as RuntimeError).severity) {
       case chrome.developerPrivate.ErrorLevel.LOG:
         return log;
       case chrome.developerPrivate.ErrorLevel.WARN:
@@ -82,29 +75,24 @@ function getErrorSeverityText_(item, log, warn, error) {
   return warn;
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
-const ExtensionsErrorPageElementBase =
-    mixinBehaviors([CrContainerShadowBehavior], PolymerElement);
+interface ExtensionsErrorPageElement {
+  $: {
+    closeButton: HTMLElement,
+  };
+}
 
-/** @polymer */
+const ExtensionsErrorPageElementBase =
+    mixinBehaviors([CrContainerShadowBehavior], PolymerElement) as
+    {new (): PolymerElement};
+
 class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {
     return 'extensions-error-page';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!chrome.developerPrivate.ExtensionInfo|undefined} */
       data: Object,
-
-      /** @type {!ErrorPageDelegate|undefined} */
       delegate: Object,
 
       // Whether or not dev mode is enabled.
@@ -114,22 +102,18 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         observer: 'onInDevModeChanged_',
       },
 
-      /** @private {!Array<!(ManifestError|RuntimeError)>} */
       entries_: Array,
 
-      /** @private {?chrome.developerPrivate.RequestFileSourceResponse} */
       code_: Object,
 
       /**
        * Index into |entries_|.
-       * @private
        */
       selectedEntry_: {
         type: Number,
         observer: 'onSelectedErrorChanged_',
       },
 
-      /** @private {?chrome.developerPrivate.StackFrame}*/
       selectedStackFrame_: {
         type: Object,
         value() {
@@ -143,96 +127,78 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     return ['observeDataChanges_(data.*)'];
   }
 
-  /** @override */
+  data: chrome.developerPrivate.ExtensionInfo;
+  delegate: ErrorPageDelegate;
+  inDevMode: boolean;
+  private entries_: Array<ManifestError|RuntimeError>;
+  private code_: chrome.developerPrivate.RequestFileSourceResponse|null;
+  private selectedEntry_: number;
+  private selectedStackFrame_: chrome.developerPrivate.StackFrame|null;
+
   ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     FocusOutlineManager.forDocument(document);
   }
 
-  /** @return {!ManifestError|!RuntimeError} */
-  getSelectedError() {
+  getSelectedError(): ManifestError|RuntimeError {
     return this.entries_[this.selectedEntry_];
   }
 
   /**
    * Focuses the back button when page is loaded.
-   * @private
    */
-  onViewEnterStart_() {
+  private onViewEnterStart_() {
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
     chrome.metricsPrivate.recordUserAction('Options_ViewExtensionErrors');
   }
 
-  /**
-   * @param {!ManifestError|!RuntimeError} error
-   * @param {string} unknown
-   * @return {string}
-   * @private
-   */
-  getContextUrl_(error, unknown) {
-    return error.contextUrl ? getRelativeUrl(error.contextUrl, error) : unknown;
+  private getContextUrl_(error: ManifestError|RuntimeError, unknown: string):
+      string {
+    return (error as RuntimeError).contextUrl ?
+        getRelativeUrl((error as RuntimeError).contextUrl, error) :
+        unknown;
   }
 
   /**
    * Watches for changes to |data| in order to fetch the corresponding
    * file source.
-   * @private
    */
-  observeDataChanges_() {
-    const errors = this.data.manifestErrors.concat(this.data.runtimeErrors);
-    this.entries_ = errors;
+  private observeDataChanges_() {
+    this.entries_ = [...this.data.manifestErrors, ...this.data.runtimeErrors];
     this.selectedEntry_ = -1;  // This also help reset code-section content.
     if (this.entries_.length) {
       this.selectedEntry_ = 0;
     }
   }
 
-  /** @private */
-  onCloseButtonTap_() {
+  private onCloseButtonTap_() {
     navigation.navigateTo({page: Page.LIST});
   }
 
-  /** @private */
-  onClearAllTap_() {
+  private onClearAllTap_() {
     const ids = this.entries_.map(entry => entry.id);
     this.delegate.deleteErrors(this.data.id, ids);
   }
 
-  /**
-   * @param {!ManifestError|!RuntimeError} error
-   * @return {string}
-   * @private
-   */
-  computeErrorIcon_(error) {
+  private computeErrorIcon_(error: ManifestError|RuntimeError): string {
     // Do not i18n these strings, they're CSS classes.
     return getErrorSeverityText_(error, 'info', 'warning', 'error');
   }
 
-  /**
-   * @param {!ManifestError|!RuntimeError} error
-   * @return {string}
-   * @private
-   */
-  computeErrorTypeLabel_(error) {
+  private computeErrorTypeLabel_(error: ManifestError|RuntimeError): string {
     return getErrorSeverityText_(
         error, loadTimeData.getString('logLevel'),
         loadTimeData.getString('warnLevel'),
         loadTimeData.getString('errorLevel'));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onDeleteErrorAction_(e) {
-    this.delegate.deleteErrors(
-        this.data.id, [(/** @type {!{model:Object}} */ (e)).model.item.id]);
+  private onDeleteErrorAction_(e: RepeaterEvent<ManifestError|RuntimeError>) {
+    this.delegate.deleteErrors(this.data.id, [e.model.item.id]);
     e.stopPropagation();
   }
 
-  /** private */
-  onInDevModeChanged_() {
+  private onInDevModeChanged_() {
     if (!this.inDevMode) {
       // Wait until next render cycle in case error page is loading.
       setTimeout(() => {
@@ -243,9 +209,8 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
   /**
    * Fetches the source for the selected error and populates the code section.
-   * @private
    */
-  onSelectedErrorChanged_() {
+  private onSelectedErrorChanged_() {
     this.code_ = null;
 
     if (this.selectedEntry_ < 0) {
@@ -253,35 +218,36 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     }
 
     const error = this.getSelectedError();
-    const args = {
+    const args: chrome.developerPrivate.RequestFileSourceProperties = {
       extensionId: error.extensionId,
       message: error.message,
+      pathSuffix: '',
     };
     switch (error.type) {
       case chrome.developerPrivate.ErrorType.MANIFEST:
-        args.pathSuffix = error.source;
-        args.manifestKey = error.manifestKey;
-        args.manifestSpecific = error.manifestSpecific;
+        const manifestError = error as ManifestError;
+        args.pathSuffix = manifestError.source;
+        args.manifestKey = manifestError.manifestKey;
+        args.manifestSpecific = manifestError.manifestSpecific;
         break;
       case chrome.developerPrivate.ErrorType.RUNTIME:
+        const runtimeError = error as RuntimeError;
         // slice(1) because pathname starts with a /.
-        args.pathSuffix = new URL(error.source).pathname.slice(1);
-        args.lineNumber = error.stackTrace && error.stackTrace[0] ?
-            error.stackTrace[0].lineNumber :
+        args.pathSuffix = new URL(runtimeError.source).pathname.slice(1);
+        args.lineNumber =
+            runtimeError.stackTrace && runtimeError.stackTrace[0] ?
+            runtimeError.stackTrace[0].lineNumber :
             0;
-        this.selectedStackFrame_ = error.stackTrace && error.stackTrace[0] ?
-            error.stackTrace[0] :
+        this.selectedStackFrame_ =
+            runtimeError.stackTrace && runtimeError.stackTrace[0] ?
+            runtimeError.stackTrace[0] :
             null;
         break;
     }
     this.delegate.requestFileSource(args).then(code => this.code_ = code);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsRuntimeError_(item) {
+  private computeIsRuntimeError_(item: ManifestError|RuntimeError): boolean {
     return item.type === chrome.developerPrivate.ErrorType.RUNTIME;
   }
 
@@ -289,11 +255,9 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
    * The description is a human-readable summation of the frame, in the
    * form "<relative_url>:<line_number> (function)", e.g.
    * "myfile.js:25 (myFunction)".
-   * @param {!chrome.developerPrivate.StackFrame} frame
-   * @return {string}
-   * @private
    */
-  getStackTraceLabel_(frame) {
+  private getStackTraceLabel_(frame: chrome.developerPrivate.StackFrame):
+      string {
     let description = getRelativeUrl(frame.url, this.getSelectedError()) + ':' +
         frame.lineNumber;
 
@@ -307,41 +271,26 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     return description;
   }
 
-  /**
-   * @param {chrome.developerPrivate.StackFrame} frame
-   * @return {string}
-   * @private
-   */
-  getStackFrameClass_(frame) {
+  private getStackFrameClass_(frame: chrome.developerPrivate.StackFrame):
+      string {
     return frame === this.selectedStackFrame_ ? 'selected' : '';
   }
 
-  /**
-   * @param {!chrome.developerPrivate.StackFrame} frame
-   * @return {number}
-   * @private
-   */
-  getStackFrameTabIndex_(frame) {
+  private getStackFrameTabIndex_(frame: chrome.developerPrivate.StackFrame):
+      number {
     return frame === this.selectedStackFrame_ ? 0 : -1;
   }
 
   /**
    * This function is used to determine whether or not we want to show a
    * stack frame. We don't want to show code from internal scripts.
-   * @param {string} url
-   * @return {boolean}
-   * @private
    */
-  shouldDisplayFrame_(url) {
+  private shouldDisplayFrame_(url: string): boolean {
     // All our internal scripts are in the 'extensions::' namespace.
     return !/^extensions::/.test(url);
   }
 
-  /**
-   * @param {!chrome.developerPrivate.StackFrame} frame
-   * @private
-   */
-  updateSelected_(frame) {
+  private updateSelected_(frame: chrome.developerPrivate.StackFrame) {
     this.selectedStackFrame_ = assert(frame);
 
     const selectedError = this.getSelectedError();
@@ -355,20 +304,13 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         .then(code => this.code_ = code);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onStackFrameTap_(e) {
-    const frame = /** @type {!{model:Object}} */ (e).model.item;
+  private onStackFrameTap_(
+      e: RepeaterEvent<chrome.developerPrivate.StackFrame>) {
+    const frame = e.model.item;
     this.updateSelected_(frame);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onStackKeydown_(e) {
+  private onStackKeydown_(e: KeyboardEvent) {
     let direction = 0;
 
     if (e.key === 'ArrowDown') {
@@ -381,12 +323,13 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
     e.preventDefault();
 
-    const list = e.target.parentElement.querySelectorAll('li');
+    const list =
+        (e.target as HTMLElement).parentElement!.querySelectorAll('li');
 
     for (let i = 0; i < list.length; ++i) {
       if (list[i].classList.contains('selected')) {
-        const polymerEvent = /** @type {!{model: !Object}} */ (e);
-        const frame = polymerEvent.model.item.stackTrace[i + direction];
+        const repeaterEvent = e as unknown as RepeaterEvent<RuntimeError>;
+        const frame = repeaterEvent.model.item.stackTrace[i + direction];
         if (frame) {
           this.updateSelected_(frame);
           list[i + direction].focus();  // Preserve focus.
@@ -399,45 +342,32 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   /**
    * Computes the class name for the error item depending on whether its
    * the currently selected error.
-   * @param {number} index
-   * @return {string}
-   * @private
    */
-  computeErrorClass_(index) {
+  private computeErrorClass_(index: number): string {
     return index === this.selectedEntry_ ? 'selected' : '';
   }
 
-  /** @private */
-  iconName_(index) {
+  private iconName_(index: number): string {
     return index === this.selectedEntry_ ? 'icon-expand-less' :
                                            'icon-expand-more';
   }
 
   /**
    * Determine if the iron-collapse should be opened (expanded).
-   * @param {number} index
-   * @return {boolean}
-   * @private
    */
-  isOpened_(index) {
+  private isOpened_(index: number): boolean {
     return index === this.selectedEntry_;
   }
 
 
   /**
-   * @param {number} index
-   * @return {string} The aria-expanded value as a string.
-   * @private
+   * @return The aria-expanded value as a string.
    */
-  isAriaExpanded_(index) {
+  private isAriaExpanded_(index: number): string {
     return this.isOpened_(index).toString();
   }
 
-  /**
-   * @param {!{type: string, code: string, model: !{index: number}}} e
-   * @private
-   */
-  onErrorItemAction_(e) {
+  private onErrorItemAction_(e: KeyboardEvent) {
     if (e.type === 'keydown' && !((e.code === 'Space' || e.code === 'Enter'))) {
       return;
     }
@@ -445,8 +375,15 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     // Call preventDefault() to avoid the browser scrolling when the space key
     // is pressed.
     e.preventDefault();
-    this.selectedEntry_ =
-        this.selectedEntry_ === e.model.index ? -1 : e.model.index;
+    const repeaterEvent =
+        e as unknown as RepeaterEvent<ManifestError|RuntimeError>;
+    this.selectedEntry_ = this.selectedEntry_ === repeaterEvent.model.index ?
+        -1 :
+        repeaterEvent.model.index;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

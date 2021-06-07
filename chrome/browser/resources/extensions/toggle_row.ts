@@ -15,7 +15,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * a hidden native <input type="checkbox"> to achieve this.
  */
 
-interface ExtensionsToggleRowElement {
+export interface ExtensionsToggleRowElement {
   $: {
     crToggle: CrToggleElement,
     label: HTMLLabelElement,
@@ -23,7 +23,7 @@ interface ExtensionsToggleRowElement {
   };
 }
 
-class ExtensionsToggleRowElement extends PolymerElement {
+export class ExtensionsToggleRowElement extends PolymerElement {
   static get is() {
     return 'extensions-toggle-row';
   }

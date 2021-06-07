@@ -18,16 +18,14 @@ import {ToolbarDelegate} from './toolbar.js';
 /**
  * @implements {ActivityLogDelegate}
  * @implements {ActivityLogEventDelegate}
- * @implements {ErrorPageDelegate}
- * @implements {ItemDelegate}
- * @implements {LoadErrorDelegate}
- * @implements {ToolbarDelegate}
  */
-export class Service implements KeyboardShortcutDelegate, PackDialogDelegate {
+export class Service implements ErrorPageDelegate, ItemDelegate,
+                                KeyboardShortcutDelegate, LoadErrorDelegate,
+                                PackDialogDelegate, ToolbarDelegate {
   private isDeleting_: boolean = false;
   private eventsToIgnoreOnce_: Set<string> = new Set();
 
-  getProfileConfiguration() {
+  getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo> {
     return new Promise(function(resolve) {
       chrome.developerPrivate.getProfileConfiguration(resolve);
     });
@@ -52,7 +50,7 @@ export class Service implements KeyboardShortcutDelegate, PackDialogDelegate {
     return chrome.developerPrivate.onProfileStateChanged;
   }
 
-  getExtensionsInfo() {
+  getExtensionsInfo(): Promise<Array<chrome.developerPrivate.ExtensionInfo>> {
     return new Promise(function(resolve) {
       chrome.developerPrivate.getExtensionsInfo(
           {includeDisabled: true, includeTerminated: true}, resolve);

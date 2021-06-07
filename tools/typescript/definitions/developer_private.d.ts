@@ -388,7 +388,7 @@ declare global {
           callback?: VoidCallback): void;
       export function getExtensionsInfo(
           options: GetExtensionsInfoOptions,
-          callback: (info: ExtensionInfo) => void): void;
+          callback: (info: ExtensionInfo[]) => void): void;
       export function getExtensionSize(id: string, callback: StringCallback):
           void;
       export function getProfileConfiguration(

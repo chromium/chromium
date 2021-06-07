@@ -7,17 +7,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
-/**
- * @param {number} totalCount
- * @param {number} oppositeCount
- * @return {number}
- */
-function visibleLineCount(totalCount, oppositeCount) {
+function visibleLineCount(totalCount: number, oppositeCount: number): number {
   // We limit the number of lines shown for DOM performance.
   const MAX_VISIBLE_LINES = 1000;
   const max =
@@ -25,16 +20,12 @@ function visibleLineCount(totalCount, oppositeCount) {
   return Math.min(max, totalCount);
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const ExtensionsCodeSectionElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
-class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
+export class ExtensionsCodeSectionElement extends
+    ExtensionsCodeSectionElementBase {
   static get is() {
     return 'extensions-code-section';
   }
@@ -45,10 +36,6 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
 
   static get properties() {
     return {
-      /**
-       * The code this object is displaying.
-       * @type {?chrome.developerPrivate.RequestFileSourceResponse}
-       */
       code: {
         type: Object,
         value: null,
@@ -56,50 +43,52 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
 
       isActive: Boolean,
 
-      /** @private Highlighted code. */
+      /** Highlighted code. */
       highlighted_: String,
 
-      /** @private Code before the highlighted section. */
+      /** Code before the highlighted section. */
       before_: String,
 
-      /** @private Code after the highlighted section. */
+      /** Code after the highlighted section. */
       after_: String,
 
-      /** @private */
       showNoCode_: {
         type: Boolean,
         computed: 'computeShowNoCode_(isActive, highlighted_)',
       },
 
-      /** @private Description for the highlighted section. */
+      /** Description for the highlighted section. */
       highlightDescription_: String,
 
-      /** @private */
       lineNumbers_: String,
-
-      /** @private */
       truncatedBefore_: Number,
-
-      /** @private */
       truncatedAfter_: Number,
 
       /**
        * The string to display if no |code| is set (e.g. because we couldn't
        * load the relevant source file).
-       * @type {string}
        */
       couldNotDisplayCode: String,
     };
   }
 
+  code: chrome.developerPrivate.RequestFileSourceResponse|null;
+  isActive: boolean;
+  couldNotDisplayCode: string;
+  private highlighted_: string;
+  private before_: string;
+  private after_: string;
+  private showNoCode_: boolean;
+  private highlightDescription_: string;
+  private lineNumbers_: string;
+  private truncatedBefore_: number;
+  private truncatedAfter_: number;
+
   static get observers() {
     return ['onCodeChanged_(code.*)'];
   }
 
-  /**
-   * @private
-   */
-  onCodeChanged_() {
+  private onCodeChanged_() {
     if (!this.code ||
         (!this.code.beforeHighlight && !this.code.highlight &&
          !this.code.afterHighlight)) {
@@ -147,25 +136,15 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
     this.scrollToHighlight_(visibleLineCountBefore);
   }
 
-  /**
-   * @param {number} lineCount
-   * @param {string} stringSingular
-   * @param {string} stringPluralTemplate
-   * @return {string}
-   * @private
-   */
-  getLinesNotShownLabel_(lineCount, stringSingular, stringPluralTemplate) {
+  private getLinesNotShownLabel_(
+      lineCount: number, stringSingular: string,
+      stringPluralTemplate: string): string {
     return lineCount === 1 ?
         stringSingular :
         loadTimeData.substituteString(stringPluralTemplate, lineCount);
   }
 
-  /**
-   * @param {number} start
-   * @param {number} end
-   * @private
-   */
-  setLineNumbers_(start, end) {
+  private setLineNumbers_(start: number, end: number) {
     let lineNumbers = '';
     for (let i = start; i <= end; ++i) {
       lineNumbers += i + '\n';
@@ -174,11 +153,7 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
     this.lineNumbers_ = lineNumbers;
   }
 
-  /**
-   * @param {number} linesBeforeHighlight
-   * @private
-   */
-  scrollToHighlight_(linesBeforeHighlight) {
+  private scrollToHighlight_(linesBeforeHighlight: number) {
     const CSS_LINE_HEIGHT = 20;
 
     // Count how many pixels is above the highlighted code.
@@ -190,13 +165,8 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
     this.$['scroll-container'].scrollTo({top: targetTop});
   }
 
-  /**
-   * @param {number} lineStart
-   * @param {number} numLines
-   * @return {string}
-   * @private
-   */
-  getAccessibilityHighlightDescription_(lineStart, numLines) {
+  private getAccessibilityHighlightDescription_(
+      lineStart: number, numLines: number): string {
     if (numLines > 1) {
       return this.i18n(
           'accessibilityErrorMultiLine', lineStart.toString(),
@@ -206,11 +176,7 @@ class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
     }
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  computeShowNoCode_() {
+  private computeShowNoCode_(): boolean {
     return this.isActive && !this.highlighted_;
   }
 }

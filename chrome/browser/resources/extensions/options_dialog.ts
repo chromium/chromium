@@ -133,5 +133,11 @@ class ExtensionsOptionsDialogElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-options-dialog': ExtensionsOptionsDialogElement;
+  }
+}
+
 customElements.define(
     ExtensionsOptionsDialogElement.is, ExtensionsOptionsDialogElement);

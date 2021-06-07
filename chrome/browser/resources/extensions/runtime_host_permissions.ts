@@ -17,11 +17,27 @@ import './runtime_hosts_dialog.js';
 import './shared_style.js';
 import './strings.m.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
+
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: string,
+  };
+}
+
+interface ExtensionsRuntimeHostPermissionsElement {
+  $: {
+    hostActionMenu: CrActionMenuElement,
+    'host-access': CrRadioGroupElement,
+  };
+}
 
 /** @polymer */
 class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
@@ -37,27 +53,21 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     return {
       /**
        * The underlying permissions data.
-       * @type {chrome.developerPrivate.RuntimeHostPermissions}
        */
       permissions: Object,
 
-      /** @private */
       itemId: String,
 
-      /** @type {!ItemDelegate} */
       delegate: Object,
 
       /**
        * Whether the dialog to add a new host permission is shown.
-       * @private
        */
       showHostDialog_: Boolean,
 
       /**
        * The current site of the entry that the host dialog is editing, if the
        * dialog is open for editing.
-       * @type {?string}
-       * @private
        */
       hostDialogModel_: {
         type: String,
@@ -66,8 +76,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
 
       /**
        * The element to return focus to once the host dialog closes.
-       * @type {?HTMLElement}
-       * @private
        */
       hostDialogAnchorElement_: {
         type: Object,
@@ -77,8 +85,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       /**
        * If the action menu is open, the site of the entry it is open for.
        * Otherwise null.
-       * @type {?string}
-       * @private
        */
       actionMenuModel_: {
         type: String,
@@ -88,8 +94,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       /**
        * The element that triggered the action menu, so that the page will
        * return focus once the action menu (or dialog) closes.
-       * @type {?HTMLElement}
-       * @private
        */
       actionMenuAnchorElement_: {
         type: Object,
@@ -99,8 +103,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       /**
        * The old host access setting; used when we don't immediately commit the
        * change to host access so that we can reset it if the user cancels.
-       * @type {?string}
-       * @private
        */
       oldHostAccess_: {
         type: String,
@@ -111,7 +113,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
        * Indicator to track if an onHostAccessChange_ event is coming from the
        * setting being automatically reverted to the previous value, after a
        * change to a new value was canceled.
-       * @private
        */
       revertingHostAccess_: {
         type: Boolean,
@@ -120,7 +121,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
 
       /**
        * Proxying the enum to be used easily by the html template.
-       * @private
        */
       HostAccess_: {
         type: Object,
@@ -129,13 +129,20 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onHostAccessChange_(event) {
-    const group = /** @type {!HTMLElement} */ (this.$['host-access']);
-    const access = group.selected;
+  permissions: chrome.developerPrivate.RuntimeHostPermissions;
+  itemId: string;
+  delegate: ItemDelegate;
+  private showHostDialog_: boolean;
+  private hostDialogModel_: string|null;
+  private hostDialogAnchorElement_: HTMLElement|null;
+  private actionMenuModel_: string|null;
+  private actionMenuAnchorElement_: HTMLElement|null;
+  private oldHostAccess_: string|null;
+  private revertingHostAccess_: boolean;
+
+  private onHostAccessChange_() {
+    const group = this.$['host-access'];
+    const access = group.selected as chrome.developerPrivate.HostAccess;
 
     // Log a user action when the host access selection is changed by the user,
     // but not when reverting from a canceled change to another setting.
@@ -174,21 +181,15 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showSpecificSites_() {
+  private showSpecificSites_(): boolean {
     return this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
   }
 
   /**
-   * Returns the granted host permissions as a sorted set of strings.
-   * @return {!Array<string>}
-   * @private
+   * @return The granted host permissions as a sorted set of strings.
    */
-  getRuntimeHosts_() {
+  private getRuntimeHosts_(): string[] {
     if (!this.permissions.hosts) {
       return [];
     }
@@ -201,41 +202,33 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
         .sort();
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onAddHostClick_(e) {
+  private onAddHostClick_(e: Event) {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.AddHostActivated');
-    const target = /** @type {!HTMLElement} */ (e.target);
-    this.doShowHostDialog_(target, null);
+    this.doShowHostDialog_(e.target as HTMLElement, null);
   }
 
   /**
-   * @param {!HTMLElement} anchorElement The element to return focus to once
-   *     the dialog closes.
-   * @param {?string} currentSite The site entry currently being
-   *     edited, or null if this is to add a new entry.
-   * @private
+   * @param anchorElement The element to return focus to once the dialog closes.
+   * @param currentSite The site entry currently being edited, or null if this
+   *     is to add a new entry.
    */
-  doShowHostDialog_(anchorElement, currentSite) {
+  private doShowHostDialog_(
+      anchorElement: HTMLElement, currentSite: string|null) {
     this.hostDialogAnchorElement_ = anchorElement;
     this.hostDialogModel_ = currentSite;
     this.showHostDialog_ = true;
   }
 
-  /** @private */
-  onHostDialogClose_() {
+  private onHostDialogClose_() {
     this.hostDialogModel_ = null;
     this.showHostDialog_ = false;
-    focusWithoutInk(assert(this.hostDialogAnchorElement_, 'Host Anchor'));
+    focusWithoutInk(assert(this.hostDialogAnchorElement_!, 'Host Anchor'));
     this.hostDialogAnchorElement_ = null;
     this.oldHostAccess_ = null;
   }
 
-  /** @private */
-  onHostDialogCancel_() {
+  private onHostDialogCancel_() {
     // The user canceled the dialog. Set host-access back to the old value,
     // if the dialog was shown when just transitioning to a new state.
     chrome.metricsPrivate.recordUserAction(
@@ -249,33 +242,19 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  dialogShouldUpdateHostAccess_() {
+  private dialogShouldUpdateHostAccess_(): boolean {
     return !!this.oldHostAccess_;
   }
 
-  /**
-   * @param {!{
-   *   model: !{item: string},
-   *   target: !HTMLElement,
-   * }} e
-   * @private
-   */
-  onEditHostClick_(e) {
+  private onEditHostClick_(e: RepeaterEvent) {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuOpened');
     this.actionMenuModel_ = e.model.item;
-    this.actionMenuAnchorElement_ = e.target;
-    const actionMenu =
-        /** @type {CrActionMenuElement} */ (this.$.hostActionMenu);
-    actionMenu.showAt(e.target);
+    this.actionMenuAnchorElement_ = e.target as HTMLElement;
+    this.$.hostActionMenu.showAt(e.target as HTMLElement);
   }
 
-  /** @private */
-  onActionMenuEditClick_() {
+  private onActionMenuEditClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuEditActivated');
     // Cache the site before closing the action menu, since it's cleared.
@@ -285,36 +264,27 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     // to the action menu's trigger (since the dialog will be shown next).
     // Instead, curry the element to the dialog, so once it closes, focus
     // will be returned.
-    const anchorElement = assert(this.actionMenuAnchorElement_, 'Menu Anchor');
+    const anchorElement = assert(this.actionMenuAnchorElement_!, 'Menu Anchor');
     this.actionMenuAnchorElement_ = null;
     this.closeActionMenu_();
     this.doShowHostDialog_(anchorElement, site);
   }
 
-  /** @private */
-  onActionMenuRemoveClick_() {
+  private onActionMenuRemoveClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuRemoveActivated');
     this.delegate.removeRuntimeHostPermission(
-        this.itemId, assert(this.actionMenuModel_, 'Action Menu Model'));
+        this.itemId, assert(this.actionMenuModel_!, 'Action Menu Model'));
     this.closeActionMenu_();
   }
 
-  /** @private */
-  closeActionMenu_() {
+  private closeActionMenu_() {
     const menu = this.$.hostActionMenu;
     assert(menu.open);
     menu.close();
   }
 
-  /** @private */
-  onActionMenuClose_() {
-    this.actionMenuModel_ = null;
-    this.actionMenuAnchorElement_ = null;
-  }
-
-  /** @private */
-  onLearnMoreClick_() {
+  private onLearnMoreClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.LearnMoreActivated');
   }
