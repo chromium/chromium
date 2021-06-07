@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
@@ -40,6 +41,9 @@ FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
 KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (!ash::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  if (chrome::IsRunningInForcedAppMode())
     return nullptr;
 
   // No service for non-regular user profile, or ephemeral user profile, system
