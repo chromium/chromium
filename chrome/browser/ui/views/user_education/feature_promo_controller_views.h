@@ -70,6 +70,9 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Ends a promo started by ShowCriticalPromo() if it's still showing.
   void CloseBubbleForCriticalPromo(const base::Token& critical_promo_id);
 
+  // Returns whether a critical promo is showing for the given `Token`.
+  bool CriticalPromoIsShowing(const base::Token& critical_promo_id) const;
+
   // FeaturePromoController:
   bool MaybeShowPromo(
       const base::Feature& iph_feature,
