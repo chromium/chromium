@@ -33,7 +33,6 @@ constexpr CGFloat kDefaultMargin = 16;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
-constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
 constexpr CGFloat kContentWidthMultiplier = 0.65;
 constexpr CGFloat kContentMaxWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
@@ -189,8 +188,7 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
     [subtitleMarginLayoutGuide.topAnchor
         constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
-        constraintEqualToAnchor:self.view.heightAnchor
-                     multiplier:kSubtitleBottomMarginViewHeight],
+        constraintEqualToConstant:kDefaultMargin],
     [self.specificContentView.topAnchor
         constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor],
     [self.specificContentView.leadingAnchor
