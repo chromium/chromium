@@ -60,7 +60,6 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void StoreKeys(const std::string& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
-  void RemoveAllStoredKeys() override;
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
                        base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
@@ -80,6 +79,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
 
  private:
+  void NotifyTrustedVaultKeysChanged();
   void NotifyRecoverabilityDegradedChanged();
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -96,9 +96,9 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // |backend_task_runner_|.
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 
-  // Observes changes of primary account and populates them into |backend_|.
+  // Observes changes of accounts state and populates them into |backend_|.
   // Holds references to |backend_| and |backend_task_runner_|.
-  std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
+  std::unique_ptr<signin::IdentityManager::Observer> identity_manager_observer_;
 
   base::WeakPtrFactory<StandaloneTrustedVaultClient> weak_ptr_factory_{this};
 };
