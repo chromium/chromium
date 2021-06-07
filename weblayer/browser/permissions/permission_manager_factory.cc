@@ -14,6 +14,7 @@
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/sensor_permission_context.h"
+#include "components/permissions/contexts/wake_lock_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/permission_type.h"
@@ -123,6 +124,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::SENSORS] =
       std::make_unique<permissions::SensorPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
+      std::make_unique<permissions::WakeLockPermissionContext>(
+          browser_context, ContentSettingsType::WAKE_LOCK_SCREEN);
+  permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
+      std::make_unique<permissions::WakeLockPermissionContext>(
+          browser_context, ContentSettingsType::WAKE_LOCK_SYSTEM);
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.

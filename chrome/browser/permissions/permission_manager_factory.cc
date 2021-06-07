@@ -22,7 +22,6 @@
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/wake_lock/wake_lock_permission_context.h"
 #include "chrome/browser/window_placement/window_placement_permission_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -36,6 +35,7 @@
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/sensor_permission_context.h"
+#include "components/permissions/contexts/wake_lock_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -110,10 +110,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
       std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
-      std::make_unique<WakeLockPermissionContext>(
+      std::make_unique<permissions::WakeLockPermissionContext>(
           profile, ContentSettingsType::WAKE_LOCK_SCREEN);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
-      std::make_unique<WakeLockPermissionContext>(
+      std::make_unique<permissions::WakeLockPermissionContext>(
           profile, ContentSettingsType::WAKE_LOCK_SYSTEM);
   auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
 #if !defined(OS_ANDROID)

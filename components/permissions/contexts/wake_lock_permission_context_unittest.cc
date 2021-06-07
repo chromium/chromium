@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/wake_lock/wake_lock_permission_context.h"
+#include "components/permissions/contexts/wake_lock_permission_context.h"
 
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
+namespace permissions {
 
 class WakeLockPermissionContextTests : public testing::Test {
  public:
-  TestingProfile* profile() { return &profile_; }
+  content::TestBrowserContext* browser_context() { return &browser_context_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  content::TestBrowserContext browser_context_;
+  TestPermissionsClient client_;
 };
 
 TEST_F(WakeLockPermissionContextTests, InsecureOriginsAreRejected) {
@@ -29,7 +31,7 @@ TEST_F(WakeLockPermissionContextTests, InsecureOriginsAreRejected) {
       ContentSettingsType::WAKE_LOCK_SYSTEM};
 
   for (const auto& content_settings_type : kWakeLockTypes) {
-    WakeLockPermissionContext permission_context(profile(),
+    WakeLockPermissionContext permission_context(browser_context(),
                                                  content_settings_type);
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               permission_context
@@ -46,7 +48,7 @@ TEST_F(WakeLockPermissionContextTests, InsecureOriginsAreRejected) {
 
 TEST_F(WakeLockPermissionContextTests, TestScreenLockPermissionRequest) {
   WakeLockPermissionContext permission_context(
-      profile(), ContentSettingsType::WAKE_LOCK_SCREEN);
+      browser_context(), ContentSettingsType::WAKE_LOCK_SCREEN);
   GURL url("https://www.example.com");
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             permission_context
@@ -56,7 +58,7 @@ TEST_F(WakeLockPermissionContextTests, TestScreenLockPermissionRequest) {
 
 TEST_F(WakeLockPermissionContextTests, TestSystemLockPermissionRequest) {
   WakeLockPermissionContext permission_context(
-      profile(), ContentSettingsType::WAKE_LOCK_SYSTEM);
+      browser_context(), ContentSettingsType::WAKE_LOCK_SYSTEM);
   GURL url("https://www.example.com");
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context
@@ -64,4 +66,4 @@ TEST_F(WakeLockPermissionContextTests, TestSystemLockPermissionRequest) {
                 .content_setting);
 }
 
-}  // namespace
+}  // namespace permissions

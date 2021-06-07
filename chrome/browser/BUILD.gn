@@ -1821,8 +1821,6 @@ static_library("browser") {
     "vr/ui_suppressed_element.h",
     "vr/vr_tab_helper.cc",
     "vr/vr_tab_helper.h",
-    "wake_lock/wake_lock_permission_context.cc",
-    "wake_lock/wake_lock_permission_context.h",
     "web_data_service_factory.cc",
     "web_data_service_factory.h",
     "webapps/chrome_webapps_client.cc",

@@ -6,7 +6,7 @@ This directory contains an implementation of the [Wake Lock specification], a We
 
 At the time of writing (October 2019), system wake lock requests are always denied, as allowing them depends on a proper permission model for the requests being figured out first.
 
-The code required to implement the Wake Lock API is spread across multiple Chromium subsystems: Blink, `//content`, `//services` and `//chrome`. This document focuses on the Blink part, and the other subsystems are mentioned when necessary but without much detail.
+The code required to implement the Wake Lock API is spread across multiple Chromium subsystems: Blink, `//content`, `//components`, `//services` and `//chrome`. This document focuses on the Blink part, and the other subsystems are mentioned when necessary but without much detail.
 
 ## High level overview
 
@@ -34,7 +34,7 @@ The rest of the implementation is found in the following directories:
 
 * `content/browser/wake_lock` [implements](/content/browser/wake_lock/wake_lock_service_impl.cc) the [`WakeLockService`](../../../public/mojom/wake_lock/wake_lock.mojom) Mojo interface defined in Blink. It is responsible for communicating with Blink and connecting Blink to `services/device/wake_lock`.
 * `services/device/wake_lock` contains the [platform-specific parts of the implementation](../../../../../services/device/wake_lock/power_save_blocker) and implements the Wake Lock [Mojo interfaces].
-* `chrome/browser/wake_lock` contains the Chrome-specific side of permission management for Wake Locks. When the Blink implementation needs to either query or request permission for wake locks, the request bubbles up to this directory, where the decision is made based on the wake lock type (for testing purposes, `content_shell` always grants screen wake locks and denies system wake locks in [`shell_permission_manager.cc`](/content/shell/browser/web_test/web_test_message_filter.cc)).
+* `components/permissions/contexts` contains the permission management for Wake Locks. When the Blink implementation needs to either query or request permission for wake locks, the request bubbles up to this directory, where the decision is made based on the wake lock type (for testing purposes, `content_shell` always grants screen wake locks and denies system wake locks in [`shell_permission_manager.cc`](/content/shell/browser/web_test/web_test_message_filter.cc)).
 
 [Mojo interfaces]: ../../../../../services/device/public/mojom/
 [Wake Lock management]: https://w3c.github.io/screen-wake-lock/#managing-wake-locks
@@ -48,7 +48,8 @@ Larger parts of the Blink implementation are tested as browser and unit tests:
 
 * `*_test.cc` and `wake_lock_test_utils.{cc,h}` are built as part of the `blink_unittests` GN target, and attempt to have coverage over most of the code in this directory.
 * The unit tests in `services/device/wake_lock` test the service side of the API implementation.
-* `chrome/browser/wake_lock` has unit tests for `WakeLockPermissionContext`, and browser tests for end-to-end behavior testing.
+* `chrome/browser/wake_lock` has browser tests for end-to-end behavior testing.
+* `components/permissions/contexts` has unit tests for `WakeLockPermissionContext`.
 * content_shell implements its own permission logic that mimics what is done in `//chrome` in [`shell_permission_manager.cc`](/content/shell/browser/shell_permission_manager.cc).
 
 [web platform tests]: ../../../web_tests/external/wpt/screen-wake-lock/
@@ -67,7 +68,7 @@ const lock = await navigator.wakeLock.request("screen");
 1. `WakeLock::request()` performs all the validation steps described in [the spec](https://w3c.github.io/screen-wake-lock/#the-request-method). If all checks have passed, it creates a `ScriptPromiseResolver` and calls `WakeLock::DoRequest()`.
 1. `WakeLock::DoRequest()` simply forwards its arguments to `WakeLock::ObtainPermission()`. It exists as a separate method just to make writing unit tests easier, as we'd otherwise be unable to use our own `ScriptPromiseResolver`s in tests.
 1. `WakeLock::ObtainPermission()` connects to the [permission service](../../../public/mojom/permissions/permission.mojom) and asynchronously requests permission for a screen wake lock.
-1. In the browser process, the permission request bubbles up through `//content` and reaches `//chrome`'s [`WakeLockPermissionContext`](/chrome/browser/wake_lock/wake_lock_permission_context.cc), where `WakeLockPermissionContext::GetPermissionStatusInternal()` always grants `CONTENT_SETTINGS_TYPE_WAKE_LOCK_SCREEN` permission requests.
+1. In the browser process, the permission request bubbles up through `//content` and reaches [`WakeLockPermissionContext`](/components/permissions/contexts/wake_lock_permission_context.cc), where `WakeLockPermissionContext::GetPermissionStatusInternal()` always grants `CONTENT_SETTINGS_TYPE_WAKE_LOCK_SCREEN` permission requests.
 1. Back in Blink, the permission request callback in this case is `WakeLock::DidReceivePermissionResponse()`. It performs some sanity checks such as verifying if the page visibility changed while waiting for the permission request to be processed. If any of the checks fail, or if the permission request was denied, the `ScriptPromiseResolver` instance created earlier by `WakeLock::request()` is rejected and we stop here. If everything went well, `WakeLockManager::AcquireWakeLock()` is called.
 1. If there are no existing screen wake locks, `WakeLockManager::AcquireWakeLock()` will connect to the `WakeLockService` Mojo interface, invoke its `GetWakeLock()` method to obtain a `device::mojom::blink::WakeLock` and call its `RequestWakeLock()` method.
 1. `WakeLockManager::AcquireWakeLock()` creates a new `WakeLockSentinel` instance, passing `this` as the `WakeLockSentinel`'s `WakeLockManager`. This new `WakeLockSentinel` is added to its set of [active locks].
@@ -136,4 +137,4 @@ In the Chromium implementation, there currently is no "prompt" state, and no per
 
 * Screen wake lock request are always granted without prompting or user activation checks. This is based on the existing precedent of the `<video>` tag's use of `VideoWakeLock`s: they are always requested and granted transparently, so even if the Wake Lock API implementation in Chromium started requiring stricter checks, malicious actors could still embed a `<video>` tag and prevent the screen from turning off without any user interaction.
 
-* System wake lock requests are always denied in `chrome/browser/wake_lock/wake_lock_permission_context.cc`. This means the entirety of the code is present and enabled in Blink, but all calls to `WakeLock.request('system')` currently return a promise that will be rejected with a `NotAllowedError`. Changing that requires figuring out a permission model for system wake lock requests, which, at the moment, is future work.
+* System wake lock requests are always denied in `components/permissions/contexts/wake_lock_permission_context.cc`. This means the entirety of the code is present and enabled in Blink, but all calls to `WakeLock.request('system')` currently return a promise that will be rejected with a `NotAllowedError`. Changing that requires figuring out a permission model for system wake lock requests, which, at the moment, is future work.
