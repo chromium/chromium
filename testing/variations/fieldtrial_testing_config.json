@@ -3264,21 +3264,6 @@
             ]
         }
     ],
-    "EnableCsrssLockdown": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCsrssLockdown"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableDynamicUpdate": [
         {
             "platforms": [
