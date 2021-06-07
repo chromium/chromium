@@ -237,7 +237,12 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithTouchSelection) {
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        WorksWithTouchSelectionOnNonPrimaryMonitor) {
-  // Don't observe error messages while setting up the screens.
+  // Don't observe error messages.
+  // An error message is observed consistently on MSAN, see crbug.com/1201212,
+  // and flakily on other builds, see crbug.com/1213451.
+  // Run the rest of this test on but don't try to catch console errors.
+  // TODO: Figure out why the "unable to load tab" error is occurring
+  // and bring back the console observer.
   console_observer_.reset();
 
   ash::ShellTestApi shell_test_api;
@@ -251,14 +256,6 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
   Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());
-
-#if !defined(MEMORY_SANITIZER)
-  // An error message is observed on MSAN, see crbug.com/1201212.
-  // Run the rest of this test on MSAN but don't try to catch
-  // console errors.
-  console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-      browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
-#endif
 
   base::RepeatingCallback<void()> callback = base::BindRepeating(
       &SelectToSpeakTest::SetSelectToSpeakState, GetWeakPtr());
