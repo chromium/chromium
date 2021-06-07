@@ -54,9 +54,9 @@ class WebRequestProxyingURLLoaderFactory
     InProgressRequest(
         WebRequestProxyingURLLoaderFactory* factory,
         uint64_t request_id,
+        int32_t network_service_request_id,
         int32_t view_routing_id,
         int32_t frame_routing_id,
-        int32_t network_service_request_id,
         uint32_t options,
         ukm::SourceIdObj ukm_source_id,
         const network::ResourceRequest& request,
