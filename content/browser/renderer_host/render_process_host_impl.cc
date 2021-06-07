@@ -2642,7 +2642,9 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
 
   // There should be at most one CodeCacheHostImpl for any given
   // RenderProcessHost.
-  DCHECK(code_cache_host_receivers_.empty());
+  if (!code_cache_host_receivers_.empty()) {
+    mojo::ReportBadMessage("CodeCacheHost is already bound");
+  }
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   auto code_cache_host = std::make_unique<CodeCacheHostImpl>(
