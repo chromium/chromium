@@ -486,6 +486,48 @@ void MakeCredentialRequestHandler::DispatchRequest(
     return;
   }
 
+  if (request->app_id && !request->exclude_list.empty()) {
+    auto request_copy = *request;
+    authenticator->ExcludeAppIdCredentialsBeforeMakeCredential(
+        std::move(request_copy),
+        base::BindOnce(
+            &MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude,
+            weak_factory_.GetWeakPtr(), std::move(request), authenticator));
+  } else {
+    DispatchRequestAfterAppIdExclude(std::move(request), authenticator,
+                                     CtapDeviceResponseCode::kSuccess,
+                                     absl::nullopt);
+  }
+}
+
+void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
+    std::unique_ptr<CtapMakeCredentialRequest> request,
+    FidoAuthenticator* authenticator,
+    CtapDeviceResponseCode status,
+    absl::optional<bool> unused) {
+  if (state_ != State::kWaitingForTouch) {
+    return;
+  }
+
+  switch (status) {
+    case CtapDeviceResponseCode::kSuccess:
+      break;
+
+    case CtapDeviceResponseCode::kCtap2ErrCredentialExcluded:
+      // This authenticator contains an excluded credential. If touched, fail
+      // the request.
+      authenticator->GetTouch(base::BindOnce(
+          &MakeCredentialRequestHandler::HandleExcludedAuthenticator,
+          weak_factory_.GetWeakPtr(), authenticator));
+      return;
+
+    default:
+      std::move(completion_callback_)
+          .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
+               absl::nullopt, authenticator);
+      return;
+  }
+
   const bool skip_pin_touch =
       active_authenticators().size() == 1 && options_.allow_skipping_pin_touch;
 
@@ -779,6 +821,17 @@ void MakeCredentialRequestHandler::HandleResponse(
   response->attestation_should_be_filtered = suppress_attestation_;
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kSuccess, std::move(*response), authenticator);
+}
+
+void MakeCredentialRequestHandler::HandleExcludedAuthenticator(
+    FidoAuthenticator* authenticator) {
+  // User touched an authenticator that contains an AppID-based excluded
+  // credential.
+  state_ = State::kFinished;
+  CancelActiveAuthenticators(authenticator->GetId());
+  std::move(completion_callback_)
+      .Run(MakeCredentialStatus::kUserConsentButCredentialExcluded,
+           absl::nullopt, nullptr);
 }
 
 void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(

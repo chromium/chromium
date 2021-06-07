@@ -796,12 +796,23 @@ VirtualCtap2Device::CheckUserVerification(
     const std::string& rp_id,
     const absl::optional<std::vector<uint8_t>>& pin_auth,
     const absl::optional<PINUVAuthProtocol>& pin_protocol,
-    base::span<const uint8_t> pin_token,
     base::span<const uint8_t> client_data_hash,
     UserVerificationRequirement user_verification,
     bool user_presence_required,
     bool* out_user_verified) {
   const AuthenticatorSupportedOptions& options = authenticator_info.options;
+
+  // crbug.com/1216155#4 asserts that once an authenticator sees a request with
+  // an RP ID that differs from the PUAT, it can assume that the transaction is
+  // complete and discard the PUAT.
+  if (mutable_state()->pin_uv_token_rpid &&
+      rp_id != mutable_state()->pin_uv_token_rpid) {
+    // Invalidate the PIN token.
+    memset(mutable_state()->pin_token, 0xff,
+           sizeof(mutable_state()->pin_token));
+    mutable_state()->pin_uv_token_permissions = 0;
+    mutable_state()->pin_uv_token_rpid.reset();
+  }
 
   // The following quotes are from the CTAP2 spec:
 
@@ -923,33 +934,36 @@ VirtualCtap2Device::CheckUserVerification(
                      options.supports_pin_uv_auth_token)) {
       DCHECK(pin_protocol);
 
-      // "Verify that the pinUvAuthToken has the {mc,ga} permission, if not,
-      // return CTAP2_ERR_PIN_AUTH_INVALID."
-      auto permission = mode == CheckUserVerificationMode::kGetAssertion
-                            ? pin::Permissions::kGetAssertion
-                            : pin::Permissions::kMakeCredential;
-      if (!(mutable_state()->pin_uv_token_permissions &
-            static_cast<uint8_t>(permission))) {
-        return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
-      }
+      if (options.supports_pin_uv_auth_token) {
+        // "Verify that the pinUvAuthToken has the {mc,ga} permission, if not,
+        // return CTAP2_ERR_PIN_AUTH_INVALID."
+        auto permission = mode == CheckUserVerificationMode::kGetAssertion
+                              ? pin::Permissions::kGetAssertion
+                              : pin::Permissions::kMakeCredential;
+        if (!(mutable_state()->pin_uv_token_permissions &
+              static_cast<uint8_t>(permission))) {
+          return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
+        }
 
-      // "If the pinUvAuthToken has a permissions RPID associated and it
-      // does not match the RPID in this request, return
-      // CTAP2_ERR_PIN_AUTH_INVALID."
-      if (mutable_state()->pin_uv_token_rpid &&
-          mutable_state()->pin_uv_token_rpid != rp_id) {
-        return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
-      }
+        // "If the pinUvAuthToken has a permissions RPID associated and it
+        // does not match the RPID in this request, return
+        // CTAP2_ERR_PIN_AUTH_INVALID."
+        if (mutable_state()->pin_uv_token_rpid &&
+            mutable_state()->pin_uv_token_rpid != rp_id) {
+          return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
+        }
 
-      // "If the pinUvAuthToken does not have a permissions RPID associated,
-      // associate the request RPID as permissions RPID."
-      if (!mutable_state()->pin_uv_token_rpid) {
-        mutable_state()->pin_uv_token_rpid = rp_id;
+        // "If the pinUvAuthToken does not have a permissions RPID associated,
+        // associate the request RPID as permissions RPID."
+        if (!mutable_state()->pin_uv_token_rpid) {
+          mutable_state()->pin_uv_token_rpid = rp_id;
+        }
       }
 
       // Verify pinUvAuthParam.
       if (!pin::ProtocolVersion(*pin_protocol)
-               .Verify(pin_token, client_data_hash, *pin_auth)) {
+               .Verify(mutable_state()->pin_token, client_data_hash,
+                       *pin_auth)) {
         return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
       }
 
@@ -995,8 +1009,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
           : CheckUserVerificationMode::kMakeCredential;
   const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       check_uv_mode, *device_info_, request.rp.id, request.pin_auth,
-      request.pin_protocol, mutable_state()->pin_token,
-      request.client_data_hash, request.user_verification,
+      request.pin_protocol, request.client_data_hash, request.user_verification,
       /*user_presence_required=*/true, &user_verified);
   if (uv_error != CtapDeviceResponseCode::kSuccess) {
     return uv_error;
@@ -1274,9 +1287,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   bool user_verified;
   const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       CheckUserVerificationMode::kGetAssertion, *device_info_, request.rp_id,
-      request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
-      request.client_data_hash, request.user_verification,
-      request.user_presence_required, &user_verified);
+      request.pin_auth, request.pin_protocol, request.client_data_hash,
+      request.user_verification, request.user_presence_required,
+      &user_verified);
   if (uv_error != CtapDeviceResponseCode::kSuccess) {
     return uv_error;
   }

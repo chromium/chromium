@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
 
   // FidoAuthenticator:
   void InitializeAuthenticator(base::OnceClosure callback) override;
+  void ExcludeAppIdCredentialsBeforeMakeCredential(
+      CtapMakeCredentialRequest request,
+      base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>)
+      override;
   void MakeCredential(CtapMakeCredentialRequest request,
                       MakeCredentialCallback callback) override;
   void GetAssertion(CtapGetAssertionRequest request,

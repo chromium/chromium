@@ -167,12 +167,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
                             bool skip_pin_touch,
                             bool internal_uv_locked);
 
+  void DispatchRequestAfterAppIdExclude(
+      std::unique_ptr<CtapMakeCredentialRequest> request,
+      FidoAuthenticator* authenticator,
+      CtapDeviceResponseCode status,
+      absl::optional<bool> unused);
   void HandleResponse(
       FidoAuthenticator* authenticator,
       std::unique_ptr<CtapMakeCredentialRequest> request,
       base::ElapsedTimer request_timer,
       CtapDeviceResponseCode response_code,
       absl::optional<AuthenticatorMakeCredentialResponse> response);
+  void HandleExcludedAuthenticator(FidoAuthenticator* authenticator);
   void HandleInapplicableAuthenticator(
       FidoAuthenticator* authenticator,
       std::unique_ptr<CtapMakeCredentialRequest> request);

@@ -77,6 +77,8 @@ component("fido") {
       "aoa/android_accessory_device.h",
       "aoa/android_accessory_discovery.cc",
       "aoa/android_accessory_discovery.h",
+      "appid_exclude_probe_task.cc",
+      "appid_exclude_probe_task.h",
       "attestation_object.cc",
       "attestation_object.h",
       "attestation_statement.cc",

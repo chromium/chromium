@@ -8,8 +8,17 @@
 
 #include "base/callback.h"
 #include "base/notreached.h"
+#include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/fido_constants.h"
 
 namespace device {
+
+void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
+    CtapMakeCredentialRequest request,
+    base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>
+        callback) {
+  std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);
+}
 
 void FidoAuthenticator::GetNextAssertion(
     FidoAuthenticator::GetAssertionCallback callback) {

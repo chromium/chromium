@@ -270,7 +270,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       const std::string& rp_id,
       const absl::optional<std::vector<uint8_t>>& pin_auth,
       const absl::optional<PINUVAuthProtocol>& pin_protocol,
-      base::span<const uint8_t> pin_token,
       base::span<const uint8_t> client_data_hash,
       UserVerificationRequirement user_verification,
       bool user_presence_required,
