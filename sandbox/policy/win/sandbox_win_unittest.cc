@@ -328,7 +328,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   CheckCapabilities(profile.get(), {L"cap1", L"cap2"});
 }
 
-TEST_F(SandboxWinTest, BlocklistAddOneDllCheckInBrowser) {
+// Disabled due to crbug.com/1210614
+TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
   {  // Block loaded module.
     TestTargetPolicy policy;
     BlocklistAddOneDllForTesting(L"kernel32.dll", true, &policy);
