@@ -27,6 +27,9 @@ class BorealisInstaller : public KeyedService {
   };
 
   // Observer class for the Borealis installation related events.
+  //
+  // TODO(b/189720611): It is not possible to have more than one observer, so
+  // refactor this to use callbacks rather than observers.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnProgressUpdated(double fraction_complete) = 0;

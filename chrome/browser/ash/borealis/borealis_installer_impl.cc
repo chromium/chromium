@@ -389,12 +389,15 @@ void BorealisInstallerImpl::Uninstall(
 
 void BorealisInstallerImpl::AddObserver(Observer* observer) {
   DCHECK(observer);
+  DCHECK(observers_.empty());
   observers_.AddObserver(observer);
 }
 
 void BorealisInstallerImpl::RemoveObserver(Observer* observer) {
   DCHECK(observer);
+  DCHECK(observers_.HasObserver(observer));
   observers_.RemoveObserver(observer);
+  DCHECK(observers_.empty());
 }
 
 void BorealisInstallerImpl::SetMainAppTimeoutForTesting(
