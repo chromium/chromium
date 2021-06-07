@@ -338,9 +338,11 @@ public class ChromeTabCreator extends TabCreator {
     public Tab launchUrlFromExternalApp(String url, String referer, String headers, String appId,
             boolean forceNewTab, Intent intent, long intentTimestamp) {
         assert !mIncognito;
+        // Don't re-use tabs for intents from Chrome. Note that this can be spoofed so shouldn't be
+        // relied on for anything security sensitive.
         boolean isLaunchedFromChrome = TextUtils.equals(appId, mActivity.getPackageName());
 
-        if (forceNewTab && !isLaunchedFromChrome) {
+        if (forceNewTab || isLaunchedFromChrome) {
             // We don't associate the tab with that app ID, as it is assumed that if the
             // application wanted to open this tab as a new tab, it probably does not want it
             // reused either.
@@ -370,7 +372,14 @@ public class ChromeTabCreator extends TabCreator {
                 }
             }
             loadUrlParams.setVerbatimHeaders(headers);
-            return createNewTab(loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, intent);
+
+            // Using FROM_LINK ensures the tab is parented to the current tab, which allows
+            // the back button to close these tabs and restore selection to the previous
+            // tab.
+            @TabLaunchType
+            int launchType = isLaunchedFromChrome ? TabLaunchType.FROM_LINK
+                                                  : TabLaunchType.FROM_EXTERNAL_APP;
+            return createNewTab(loadUrlParams, launchType, null, intent);
         }
 
         if (appId == null) {

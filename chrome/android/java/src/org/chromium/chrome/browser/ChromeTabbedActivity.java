@@ -2198,10 +2198,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mOverviewModeController.hideOverview(false);
             getToolbarManager().finishAnimations();
         }
-        if (TextUtils.equals(externalAppId, getPackageName())) {
+        if (IntentHandler.wasIntentSenderChrome(intent)) {
             // If the intent was launched by chrome, open the new tab in the appropriate model.
-            // Using FROM_LINK ensures the tab is parented to the current tab, which allows
-            // the back button to close these tabs and restore selection to the previous tab.
             boolean isIncognito = IntentUtils.safeGetBooleanExtra(
                     intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
             LoadUrlParams loadUrlParams = new LoadUrlParams(url);
@@ -2209,6 +2207,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             loadUrlParams.setVerbatimHeaders(headers);
             loadUrlParams.setIsRendererInitiated(isRendererInitiated);
             loadUrlParams.setInitiatorOrigin(initiatorOrigin);
+            if (referer != null) {
+                loadUrlParams.setReferrer(
+                        new Referrer(referer, IntentHandler.getReferrerPolicyFromIntent(intent)));
+            }
             @TabLaunchType
             Integer launchType = IntentHandler.getTabLaunchType(intent);
             if (launchType == null) {
@@ -2218,6 +2220,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
                     launchType = TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB;
                 } else {
+                    // Using FROM_LINK ensures the tab is parented to the current tab, which allows
+                    // the back button to close these tabs and restore selection to the previous
+                    // tab.
                     launchType = TabLaunchType.FROM_LINK;
                 }
             }
