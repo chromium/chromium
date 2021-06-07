@@ -91,6 +91,8 @@ extern const base::Feature kAutofillExtractAllDatalists;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixFillableFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillIgnoreAutocompleteForImport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerTypeTakesPrecedence;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRefillWithRendererIds;

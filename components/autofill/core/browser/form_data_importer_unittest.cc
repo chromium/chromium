@@ -616,6 +616,60 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles) {
   EXPECT_EQ(0, expected.Compare(*results[0]));
 }
 
+// Tests that even if the the autocomplete prevents filling, it does not prevent
+// import. For now, this is limited to the field with the signature 2281611779.
+TEST_P(FormDataImporterTest, ImportAddressProfilesDespiteAutocomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillIgnoreAutocompleteForImport);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "George", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "checkout[shipping_address][address1]",
+                            "21 Laussat St", "text", &field);
+  field.autocomplete_attribute = "none";
+  form.fields.push_back(field);
+  field.autocomplete_attribute = "";
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  ASSERT_EQ(form_structure.field(3)->GetFieldSignature(),
+            FieldSignature(2281611779));
+  ASSERT_EQ(form_structure.field(3)->Type().GetStorableType(), UNKNOWN_TYPE);
+
+  AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&expected, "George", nullptr, "Washington",
+                       "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
+                       nullptr, "San Francisco", "California", "94102", nullptr,
+                       nullptr);
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(0, expected.Compare(*results[0]));
+
+  ASSERT_EQ(form_structure.field(3)->GetFieldSignature(),
+            FieldSignature(2281611779));
+  ASSERT_EQ(form_structure.field(3)->Type().GetStorableType(), UNKNOWN_TYPE);
+}
+
 TEST_P(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
   FormData form;
   form.url = GURL("https://wwww.foo.com");
