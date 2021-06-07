@@ -491,7 +491,12 @@ public class CableAuthenticatorUI
             }
             Toast.makeText(getActivity(), getResources().getString(id), Toast.LENGTH_SHORT).show();
 
-            getActivity().finish();
+            // Finish the Activity unless we're connected via USB. In that case
+            // we continue to show a message advising the user to disconnect
+            // the cable because the USB connection is in AOA mode.
+            if (mMode != Mode.USB) {
+                getActivity().finish();
+            }
         });
     }
 
