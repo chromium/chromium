@@ -115,6 +115,16 @@ void VirtualCardManualFallbackBubbleViews::Init() {
       controller_->GetVirtualCard()->Expiration4DigitYearAsString()));
   layout->AddView(std::move(expiry_row));
 
+  // Adds a row for the cardholder name.
+  layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
+                              views::GridLayout::kFixedSize,
+                              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                  views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  layout->AddView(
+      CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
+  layout->AddView(CreateRowItemButton(
+      controller_->GetVirtualCard()->GetRawInfo(CREDIT_CARD_NAME_FULL)));
+
   // Adds a row for CVC.
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
                               views::GridLayout::kFixedSize,

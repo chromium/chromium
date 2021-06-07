@@ -53,6 +53,9 @@ class VirtualCardManualFallbackBubbleController {
   // Returns the descriptive label of the expiration date field.
   virtual std::u16string GetExpirationDateFieldLabel() const = 0;
 
+  // Returns the descriptive label of the cardholder name field.
+  virtual std::u16string GetCardholderNameFieldLabel() const = 0;
+
   // Returns the descriptive label of the CVC field.
   virtual std::u16string GetCvcFieldLabel() const = 0;
 

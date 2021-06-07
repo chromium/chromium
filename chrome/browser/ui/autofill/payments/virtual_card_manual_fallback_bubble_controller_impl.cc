@@ -91,6 +91,13 @@ VirtualCardManualFallbackBubbleControllerImpl::GetExpirationDateFieldLabel()
       IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL);
 }
 
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetCardholderNameFieldLabel()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARDHOLDER_NAME_LABEL);
+}
+
 std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetCvcFieldLabel()
     const {
   return l10n_util::GetStringUTF16(

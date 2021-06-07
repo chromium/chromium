@@ -45,6 +45,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   std::u16string GetBubbleTitle() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
+  std::u16string GetCardholderNameFieldLabel() const override;
   std::u16string GetCvcFieldLabel() const override;
   std::u16string GetCvc() const override;
   const CreditCard* GetVirtualCard() const override;
