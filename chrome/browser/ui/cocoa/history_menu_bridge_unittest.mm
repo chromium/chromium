@@ -19,6 +19,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_types.h"
@@ -169,6 +170,10 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     bridge_->CancelFaviconRequest(item);
   }
 
+  bool ShouldMenuItemBeVisible(NSMenuItem* item) {
+    return bridge_->ShouldMenuItemBeVisible(item);
+  }
+
   const std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
   menu_item_map() {
     return bridge_->menu_item_map_;
@@ -177,6 +182,45 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
   CocoaTestHelper cocoa_test_helper_;
   std::unique_ptr<MockBridge> bridge_;
 };
+
+void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
+  // Make sure the items belong to both original and incognito mode are visible.
+  NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
+  for (size_t i = 0; i < base::size(always_visible_items); i++) {
+    // Create a fake item with tag.
+    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
+    item.get().tag = always_visible_items[i];
+    EXPECT_TRUE(test->ShouldMenuItemBeVisible(item));
+  }
+
+  // Check visibilty of items belong to regular mode. They should be visible for
+  // regular mode, not for incognito mode.
+  NSInteger regular_visible_items[] = {
+      HistoryMenuBridge::kRecentlyClosedSeparator,
+      HistoryMenuBridge::kRecentlyClosedTitle,
+      HistoryMenuBridge::kVisitedSeparator,
+      HistoryMenuBridge::kVisitedTitle,
+      HistoryMenuBridge::kShowFullSeparator,
+      IDC_SHOW_HISTORY};
+  for (size_t i = 0; i < base::size(regular_visible_items); i++) {
+    // Create a fake item with tag.
+    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
+    item.get().tag = regular_visible_items[i];
+    EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
+  }
+
+  // Check visibilty of items belong to incognito mode. They should be visible
+  // for incognito mode, not for regular mode.
+  NSInteger incognito_visible_items[] = {
+      HistoryMenuBridge::kIncognitoDisclaimerSeparator,
+      HistoryMenuBridge::kIncognitoDisclaimerLabel};
+  for (size_t i = 0; i < base::size(incognito_visible_items); i++) {
+    // Create a fake item with tag.
+    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
+    item.get().tag = incognito_visible_items[i];
+    EXPECT_EQ(is_incognito, test->ShouldMenuItemBeVisible(item));
+  }
+}
 
 // Edge case test for clearing until the end of a menu.
 TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuUntilEnd) {
@@ -493,6 +537,18 @@ TEST_F(HistoryMenuBridgeTest, GotFaviconData) {
   EXPECT_FALSE(item.icon_requested);
   EXPECT_TRUE(item.icon.get());
   EXPECT_TRUE([item.menu_item image]);
+}
+
+TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForRegularMode) {
+  CheckMenuItemVisibility(this, false);
+}
+
+TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForIncognitoMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kUpdateHistoryEntryPointsInIncognito);
+  bridge_ = std::make_unique<MockBridge>(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  CheckMenuItemVisibility(this, true);
 }
 
 }  // namespace
