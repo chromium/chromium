@@ -64,17 +64,21 @@ static HomogeneousCoordinate MapHomogeneousPoint(
   return result;
 }
 
+namespace {
+
+// This is the tolerance for detecting an eyepoint-aligned edge.
+const float kStationaryPointEpsilon = 0.00001f;
+
+}  // namespace
+
 static void homogenousLimitAtZero(SkScalar a1,
                                   SkScalar w1,
                                   SkScalar a2,
                                   SkScalar w2,
                                   float t,
                                   float* limit) {
-  // This is the tolerance for detecting an eyepoint-aligned edge.
-  static const float kStationaryPointEplison = 0.00001f;
-
-  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEplison) {
-    // We are going to explode towards an infity, but we choose the one that
+  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
+    // We are going to explode towards an infinity, but we choose the one that
     // corresponds to the one on the positive side of w.
     if (((1.0f - t) * a1 + t * a2) > 0) {
       *limit = HomogeneousCoordinate::kInfiniteCoordinate;
@@ -102,6 +106,8 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   // i.e., either the coordinate is not moving, or is trending to one
   // infinity or the other.
 
+  DCHECK_NE(h1.w() > 0, h2.w() > 0);
+
   float t = h1.w() / (h1.w() - h2.w());
   float x;
   float y;
@@ -110,6 +116,23 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   homogenousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
 
   return gfx::PointF(x, y);
+}
+
+static void homogenousLimitNearZero(SkScalar a1,
+                                    SkScalar w1,
+                                    SkScalar a2,
+                                    SkScalar w2,
+                                    float t,
+                                    float* limit) {
+  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
+    // t has been computed so that w is near but not at zero.
+    *limit = ((1.0f - t) * a1 + t * a2) / ((1.0f - t) * w1 + t * w2);
+    DCHECK(t == 0.0f || t == 1.0f ||
+           std::abs(*limit) * 0.998f <
+               HomogeneousCoordinate::kInfiniteCoordinate);
+  } else {
+    *limit = a1 / w1;  // (== a2 / w2) && == (1.0f - t) * a1 / w1 + t * a2 / w2
+  }
 }
 
 static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
@@ -129,14 +152,33 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
   // i.e., either the coordinate is not moving, or is trending to one
   // infinity or the other.
 
-  float t = h1.w() / (h1.w() - h2.w());
+  // When we clamp to HomogeneousCoordinate::kInfiniteCoordinate we want
+  // to keep the result in the correct plane, which we do by computing
+  // a t that will result in the largest (in absolute value) of x, y, or
+  // z being HomogeneousCoordinate::kInfiniteCoordinate
+
+  DCHECK_NE(h1.w() > 0, h2.w() > 0);
+
+  float w_diff = h1.w() - h2.w();
+  float t = h1.w() / w_diff;
+  float max_numerator = std::max({std::abs((1.0f - t) * h1.x() + t * h2.x()),
+                                  std::abs((1.0f - t) * h1.y() + t * h2.y()),
+                                  std::abs((1.0f - t) * h1.z() + t * h2.z())});
+
+  t -= max_numerator / w_diff / HomogeneousCoordinate::kInfiniteCoordinate;
+  if (w_diff > 0) {
+    t = std::max(0.0f, t);
+  } else {
+    t = std::min(1.0f, t);
+  }
+
   float x;
   float y;
   float z;
 
-  homogenousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
-  homogenousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
-  homogenousLimitAtZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
+  homogenousLimitNearZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
+  homogenousLimitNearZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
+  homogenousLimitNearZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
 
   return gfx::Point3F(x, y, z);
 }
@@ -175,14 +217,24 @@ static inline bool IsNearlyTheSame(const gfx::Point3F& lhs,
 
 static inline void AddVertexToClippedQuad3d(const gfx::Point3F& new_vertex,
                                             gfx::Point3F clipped_quad[6],
-                                            int* num_vertices_in_clipped_quad) {
+                                            int* num_vertices_in_clipped_quad,
+                                            bool* need_to_clamp) {
   if (*num_vertices_in_clipped_quad > 0 &&
       IsNearlyTheSame(clipped_quad[*num_vertices_in_clipped_quad - 1],
                       new_vertex))
     return;
 
+  DCHECK_LT(*num_vertices_in_clipped_quad, 6);
   clipped_quad[*num_vertices_in_clipped_quad] = new_vertex;
   (*num_vertices_in_clipped_quad)++;
+  if (new_vertex.x() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.x() > HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.y() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.y() > HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.z() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.z() > HomogeneousCoordinate::kInfiniteCoordinate) {
+    *need_to_clamp = true;
+  }
 }
 
 gfx::Rect MathUtil::MapEnclosingClippedRect(const gfx::Transform& transform,
@@ -331,6 +383,11 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
                                 const gfx::QuadF& src_quad,
                                 gfx::Point3F clipped_quad[6],
                                 int* num_vertices_in_clipped_quad) {
+  // This is different from the 2D version because, when we clamp
+  // coordinates to [-HomogeneousCoordinate::kInfiniteCoordinate,
+  // HomogeneousCoordinate::kInfiniteCoordinate], we need to do the
+  // clamping while keeping the points coplanar.
+
   HomogeneousCoordinate h1 =
       MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p1()));
   HomogeneousCoordinate h2 =
@@ -344,51 +401,192 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
   // clockwise / counter-clockwise orientation is retained.
 
   *num_vertices_in_clipped_quad = 0;
+  bool need_to_clamp = false;
 
   if (!h1.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h1.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h1.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h1.ShouldBeClipped() ^ h2.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h1, h2),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h2.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h2.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h2.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h2.ShouldBeClipped() ^ h3.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h2, h3),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h3.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h3.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h3.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h3.ShouldBeClipped() ^ h4.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h3, h4),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h4.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h4.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h4.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h4.ShouldBeClipped() ^ h1.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h4, h1),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (*num_vertices_in_clipped_quad > 2 &&
       IsNearlyTheSame(clipped_quad[0],
                       clipped_quad[*num_vertices_in_clipped_quad - 1]))
     *num_vertices_in_clipped_quad -= 1;
+
+  if (need_to_clamp) {
+    // Some of the values need to be clamped, but we need to keep them
+    // coplanar while doing so.
+
+    // First, build a normal vector to the plane by averaging the
+    // cross products of adjacent edges.
+    gfx::Vector3dF normal(0.0f, 0.0f, 0.0f);
+    if (*num_vertices_in_clipped_quad > 2) {
+      gfx::Vector3dF prev_vector =
+          clipped_quad[0] - clipped_quad[*num_vertices_in_clipped_quad - 1];
+      for (int i = 1; i < *num_vertices_in_clipped_quad; ++i) {
+        gfx::Vector3dF cur_vector = clipped_quad[i] - clipped_quad[i - 1];
+        normal += CrossProduct(prev_vector, cur_vector);
+        prev_vector = cur_vector;
+      }
+    }
+
+    bool clamp_by_points = false;
+    float length = normal.Length();
+    if (length != 0) {
+      normal.Scale(1.0f / length);
+
+      // Find the vector to the point in the plane closest to (0,0,0).
+      gfx::Vector3dF shortest_from_zero(normal);
+      shortest_from_zero.Scale(
+          DotProduct(normal, clipped_quad[0] - gfx::Point3F(0.0f, 0.0f, 0.0f)));
+
+      // Find the the point in the plane that is at x=0 and y=0
+      float z_at_xy_zero = 0.0f;
+      if (shortest_from_zero.x() == 0.0f && shortest_from_zero.y() == 0.0f) {
+        z_at_xy_zero = shortest_from_zero.z();
+      } else if (shortest_from_zero.z() != 0) {
+        // Compute the vector v pointing from the shortest_from_zero
+        // point to the point with x=0 and y=0.  If both v and normal
+        // are projected into the x/y plane, they should point in
+        // opposite directions.
+        gfx::Vector3dF v = CrossProduct(
+            normal, CrossProduct(gfx::Vector3dF(0.0f, 0.0f, 1.0f), normal));
+        DCHECK(std::abs(normal.x() * v.y() - normal.y() * v.x()) < 0.00001f);
+        // It doesn't matter whether we use x or y, unless one of them
+        // is zero or very close to it.
+        float r = std::abs(v.x()) > std::abs(v.y())
+                      ? shortest_from_zero.x() / v.x()
+                      : shortest_from_zero.y() / v.y();
+        z_at_xy_zero = shortest_from_zero.z() - v.z() * r;
+      } else {
+        // Plane is parallel to the z axis.  This means it's not
+        // visible, so just fall back to clamping by points.
+        clamp_by_points = true;
+      }
+
+      if (!clamp_by_points) {
+        // If z_at_xy_zero is more than 3/4 of kInfiniteCoordinate
+        // distance from zero, move everything in the z axis so
+        // z_at_xy_zero is that distance from zero, so that we don't end
+        // up clamping away the parts that fit within what's likely to
+        // be the visible area.
+        constexpr float max_distance =
+            0.75 * HomogeneousCoordinate::kInfiniteCoordinate;
+        if (std::abs(z_at_xy_zero) > max_distance) {
+          float z_delta;
+          if (z_at_xy_zero > 0) {
+            z_delta = max_distance - z_at_xy_zero;
+          } else {
+            z_delta = -max_distance - z_at_xy_zero;
+          }
+          for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+            clipped_quad[i].set_z(clipped_quad[i].z() + z_delta);
+          }
+          z_at_xy_zero += z_delta;
+        }
+
+        // Move all the points towards (0, 0, z_at_xy_zero) until all
+        // their coordinates are less than kInfiniteCoordinate.
+        for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+          gfx::Point3F& point = clipped_quad[i];
+          float t = 1.0f;
+
+          float x_abs = std::abs(point.x());
+          if (x_abs > HomogeneousCoordinate::kInfiniteCoordinate) {
+            t = std::min(t, HomogeneousCoordinate::kInfiniteCoordinate / x_abs);
+          }
+
+          float y_abs = std::abs(point.y());
+          if (y_abs > HomogeneousCoordinate::kInfiniteCoordinate) {
+            t = std::min(t, HomogeneousCoordinate::kInfiniteCoordinate / y_abs);
+          }
+
+          float z = point.z();
+          if (std::abs(z) > HomogeneousCoordinate::kInfiniteCoordinate) {
+            // From the clamping to max_distance above, we know that
+            // std::abs(z_at_xy_zero) < kInfiniteCoordinate.
+            DCHECK_LE(std::abs(z_at_xy_zero),
+                      HomogeneousCoordinate::kInfiniteCoordinate);
+            float z_offset = z - z_at_xy_zero;
+            float z_space =
+                (z > 0 ? HomogeneousCoordinate::kInfiniteCoordinate
+                       : -HomogeneousCoordinate::kInfiniteCoordinate) -
+                z_at_xy_zero;
+            DCHECK_NE(z_offset, 0.0f);
+            DCHECK_NE(z_space, 0.0f);
+            DCHECK_EQ(z_offset > 0, z_space > 0);
+            t = std::min(t, z_space / z_offset);
+          }
+
+          if (t != 1.0f) {
+            DCHECK(0.0f <= t && t < 1.0f);
+            point.set_x(t * point.x());
+            point.set_y(t * point.y());
+            point.set_z((1.0f - t) * z_at_xy_zero + t * point.z());
+          }
+        }
+      }
+    } else {
+      // Our points were colinear, so there's no plane to maintain.
+      clamp_by_points = true;
+    }
+
+    if (clamp_by_points) {
+      // Just clamp each point separately in each axis, just like we do
+      // for 2D.
+      for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+        gfx::Point3F& point = clipped_quad[i];
+        point.set_x(base::ClampToRange(
+            point.x(), -HomogeneousCoordinate::kInfiniteCoordinate,
+            float{HomogeneousCoordinate::kInfiniteCoordinate}));
+        point.set_y(base::ClampToRange(
+            point.y(), -HomogeneousCoordinate::kInfiniteCoordinate,
+            float{HomogeneousCoordinate::kInfiniteCoordinate}));
+        point.set_z(base::ClampToRange(
+            point.z(), -HomogeneousCoordinate::kInfiniteCoordinate,
+            float{HomogeneousCoordinate::kInfiniteCoordinate}));
+      }
+    }
+  }
 
   DCHECK_LE(*num_vertices_in_clipped_quad, 6);
   return (*num_vertices_in_clipped_quad >= 4);
