@@ -279,6 +279,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSameSiteByDefaultCookies,
      net::features::kSameSiteByDefaultCookies},
     {wf::EnableScrollUnification, features::kScrollUnification},
+    {wf::EnableSecurePaymentConfirmationAPIV2,
+     features::kSecurePaymentConfirmationAPIV2},
     {wf::EnableSecurePaymentConfirmationDebug,
      features::kSecurePaymentConfirmationDebug},
     {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,

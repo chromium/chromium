@@ -1857,6 +1857,9 @@
       status: "experimental",
     },
     {
+      name: "SecurePaymentConfirmationAPIV2",
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
     },
     {
