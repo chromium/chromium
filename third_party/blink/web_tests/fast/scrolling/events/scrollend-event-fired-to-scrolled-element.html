@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="resources/scroll-util.js"></script>
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #scrollableDiv {
@@ -54,14 +53,17 @@ scrolling_div.addEventListener("scrollend", onHorizontalScrollEnd);
 scrolling_div.addEventListener("scrollend", onVerticalScrollEnd);
 
 async function test_scrollend_event_fire(source_device,
-    precise_scroll_deltas) {
+    precise_scrolling_delta) {
   horizontal_scrollend_arrived = false;
   vertical_scrollend_arrived = false;
   scrolling_div.scrollTo(0, 0);
   await waitForCompositorCommit();
 
   // Do a horizontal scroll and wait for scrollend event.
-  await scrollRight(pixelsToScrollX, source_device, precise_scroll_deltas);
+  await smoothScroll(
+    pixelsToScrollX, x, y, source_device, "right", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return horizontal_scrollend_arrived; },
       'Scroller did not receive scrollend event after horizontal scroll.');
   await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollLeft });
@@ -69,7 +71,10 @@ async function test_scrollend_event_fire(source_device,
               scrolling_div.clientWidth);
 
   // Do a vertical scroll and wait for scrollend event.
-  await scrollDown(pixelsToScrollY, source_device, precise_scroll_deltas);
+  await smoothScroll(
+    pixelsToScrollY, x, y, source_device, "down", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return vertical_scrollend_arrived; },
       'Scroller did not receive scrollend event after vertical scroll.');
   await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollTop });

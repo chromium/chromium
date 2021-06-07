@@ -5588,22 +5588,13 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 
 # fast/scrolling/events
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
-
-crbug.com/1209724 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-document.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-element-with-overscroll-behavior.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-window.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-document.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-element-with-overscroll-behavior.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Timeout ]
-crbug.com/1209724 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-window.html [ Timeout ]
 
 ### END PERCENT BASED SCROLLING TEST FAILURES
 

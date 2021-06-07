@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="resources/scroll-util.js"></script>
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #overscrollXDiv {
@@ -52,7 +51,15 @@ var rect = target_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
 
-const pixelsToScroll = 800;
+// SPEED_INSTANT doesn't work here because tests are timing out.
+// This could actually be a bug in how the overscroll event is computed.
+// Possible explanation on what happens is that "leftover" delta from a single
+// event doesn't cause an overscroll event, only when the next event arrives
+// and the full delta is overscroll do we dispatch the event.
+// When the speed is INSTANT we'll put the entire scrolling delta into a single
+// event so we don't generate an overscroll event in that case.
+const pixelsPerSec = 2000;
+const pixelsToScroll = 600;
 const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
   target_div, pixelsToScroll, pixelsToScroll
 );
@@ -75,14 +82,17 @@ document.getElementById('overscrollYDiv').
     addEventListener("overscroll", onOverscrollY);
 
 async function test_overscroll_event_fire(source_device,
-    precise_scrolling_delta ) {
+    precise_scrolling_delta) {
   overscrolled_x_delta = 0;
   overscrolled_y_delta = 0;
   await waitForCompositorCommit();
 
   // Scroll up on target div and wait for the element with overscroll-y to get
   // overscroll event.
-  await scrollUp(pixelsToScrollY, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollY, x, y, source_device, "up", pixelsPerSec,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return overscrolled_y_delta < 0; },
       'Expected element did not receive overscroll event after scroll up on ' +
       'target.');
@@ -90,7 +100,10 @@ async function test_overscroll_event_fire(source_device,
 
   // Scroll left on target div and wait for the element with overscroll-x to
   // get overscroll event.
-  await scrollLeft(pixelsToScrollX, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollX, x, y, source_device, "left", pixelsPerSec,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return overscrolled_x_delta < 0; },
       'Expected element did not receive overscroll event after scroll left ' +
       'on target.');

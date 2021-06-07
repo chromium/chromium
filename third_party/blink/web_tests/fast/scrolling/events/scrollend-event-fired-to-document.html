@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="resources/scroll-util.js"></script>
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #targetDiv {
@@ -49,7 +48,10 @@ async function test_scrollend_event_fire(t, source_device,
 
   // Scroll left on target div and wait for the doc to get scrollend event.
   let scrollendPromise = waitForScrollendEvent(document);
-  await scrollLeft(pixelsToScrollX, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollX, x, y, source_device, "left", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await scrollendPromise.then((event) => {
     assert_false(event.cancelable);
     // scrollend events are bubbled when the target node is document.
@@ -59,7 +61,10 @@ async function test_scrollend_event_fire(t, source_device,
 
   // Scroll up on target div and wait for the doc to get scrollend event.
   scrollendPromise = waitForScrollendEvent(document);
-  await scrollUp(pixelsToScrollY, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollY, x, y, source_device, "up", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await scrollendPromise.then((event) => {
     assert_false(event.cancelable);
     // scrollend events are bubbled when the target node is document.

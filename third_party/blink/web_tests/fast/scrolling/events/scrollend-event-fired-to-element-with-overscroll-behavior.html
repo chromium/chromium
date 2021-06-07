@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="resources/scroll-util.js"></script>
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #overscrollXDiv {
@@ -82,7 +81,10 @@ async function test_scrollend_event_fire(source_device,
 
   // Scroll left on target div and wait for the element with overscroll-x to
   // get scrollend event.
-  await scrollLeft(pixelsToScrollX, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollX, x, y, source_device, "left", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return horizontal_scrollend_arrived; },
       'Expected element did not receive scrollend event after scroll left ' +
       'on target.');
@@ -90,7 +92,10 @@ async function test_scrollend_event_fire(source_device,
 
   // Scroll up on target div and wait for the element with overscroll-y to get
   // scrollend event.
-  await scrollUp(pixelsToScrollY, source_device, precise_scrolling_delta);
+  await smoothScroll(
+    pixelsToScrollY, x, y, source_device, "up", SPEED_INSTANT,
+    precise_scrolling_delta
+  );
   await waitFor(() => { return vertical_scrollend_arrived; },
       'Expected element did not receive scrollend event after scroll up on ' +
       'target.');
