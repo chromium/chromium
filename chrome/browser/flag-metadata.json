@@ -5371,7 +5371,7 @@
   {
     "name": "wifi-sync-android",
     "owners": [ "jonmann", "cvandermerwe@google.com", "cros-system-services@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 97
   },
   {
     "name": "win-use-native-spellchecker",
