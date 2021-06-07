@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -40,8 +39,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -387,14 +384,10 @@ void WebAppInstallFinalizer::Shutdown() {
 }
 
 bool WebAppInstallFinalizer::IsFileHandlerPermissionBlocked(const GURL& scope) {
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(profile_);
-  DCHECK(permission_manager);
-
-  permissions::PermissionResult status =
-      permission_manager->GetPermissionStatus(
-          ContentSettingsType::FILE_HANDLING, scope, scope);
-  return status.content_setting == CONTENT_SETTING_BLOCK;
+  return HostContentSettingsMapFactory::GetForProfile(profile_)
+             ->GetContentSetting(scope, scope,
+                                 ContentSettingsType::FILE_HANDLING) ==
+         CONTENT_SETTING_BLOCK;
 }
 
 void WebAppInstallFinalizer::UpdateFileHandlerPermission(
@@ -694,8 +687,8 @@ FileHandlerUpdateAction WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
   // "BLOCK", the `OnContentSettingChanged()` and
   // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
   // permission change and make sure the OS and db state are in sync with the
-  // PermissionManager permission setting. Therefore, manifest update task
-  // should not update file handlers due to blocked permission state.
+  // HostContentSettingsMap setting. Therefore, manifest update task should not
+  // update file handlers due to blocked permission state.
   if (content_setting == CONTENT_SETTING_BLOCK)
     return FileHandlerUpdateAction::kNoUpdate;
 
@@ -712,28 +705,24 @@ FileHandlerUpdateAction WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
 
 ContentSetting WebAppInstallFinalizer::MaybeResetFileHandlingPermission(
     const WebApplicationInfo& web_app_info) {
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(profile_);
-  DCHECK(permission_manager);
   const GURL& url = web_app_info.scope;
-  // Note: Since a frame is not available, using GetPermissionStatus() instead
-  // of GetPermissionStatusForFrame().
-  permissions::PermissionResult status =
-      permission_manager->GetPermissionStatus(
-          ContentSettingsType::FILE_HANDLING, url, url);
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  ContentSetting status = settings_map->GetContentSetting(
+      url, url, ContentSettingsType::FILE_HANDLING);
 
   // If file handling permission is "ALLOW", downgrade to "ASK" via reset, as
   // the user may not want to allow newly added file handlers, which may include
   // more dangerous extensions.
-  if (status.content_setting == CONTENT_SETTING_ALLOW &&
+  if (status == CONTENT_SETTING_ALLOW &&
       !AreFileHandlersAlreadyRegistered(profile_, url,
                                         web_app_info.file_handlers)) {
-    permission_manager->ResetPermission(content::PermissionType::FILE_HANDLING,
-                                        url, url);
+    settings_map->SetContentSettingDefaultScope(
+        url, url, ContentSettingsType::FILE_HANDLING, CONTENT_SETTING_DEFAULT);
     return CONTENT_SETTING_ASK;
   }
 
-  return status.content_setting;
+  return status;
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
