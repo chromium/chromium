@@ -139,6 +139,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void SetArrow(BubbleBorder::Arrow arrow);
   BubbleBorder::Arrow GetArrow() const;
 
+  // Specify whether the frame should include a visible, caret-shaped arrow.
+  void SetDisplayVisibleArrow(bool display_visible_arrow);
+  bool GetDisplayVisibleArrow() const;
+
   // Set the background color of the bubble border.
   void SetBackgroundColor(SkColor color);
   SkColor GetBackgroundColor() const;

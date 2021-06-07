@@ -613,6 +613,14 @@ BubbleBorder::Arrow BubbleFrameView::GetArrow() const {
   return bubble_border_->arrow();
 }
 
+void BubbleFrameView::SetDisplayVisibleArrow(bool display_visible_arrow) {
+  bubble_border_->set_visible_arrow(display_visible_arrow);
+}
+
+bool BubbleFrameView::GetDisplayVisibleArrow() const {
+  return bubble_border_->visible_arrow();
+}
+
 void BubbleFrameView::SetBackgroundColor(SkColor color) {
   bubble_border_->set_background_color(color);
   UpdateClientViewBackground();
@@ -940,6 +948,7 @@ ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,
                       PreferredArrowAdjustment)
 ADD_PROPERTY_METADATA(int, CornerRadius)
 ADD_PROPERTY_METADATA(BubbleBorder::Arrow, Arrow)
+ADD_PROPERTY_METADATA(bool, DisplayVisibleArrow)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 END_METADATA
 
