@@ -44,6 +44,9 @@ SPURIOUS_PATTERNS = [
         r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app'
         ' icons only apply to iPad apps targeting releases of iOS prior to'
         ' 10.0.',
+        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]\[\]: notice: 76x76@1x app'
+        ' icons only apply to iPad apps targeting releases of iOS prior to'
+        ' 10.0.',
     ]
 ]
 
