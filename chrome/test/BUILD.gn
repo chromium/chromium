@@ -806,6 +806,7 @@ if (is_android) {
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
       "//chrome/browser/lens:delegate_public_impl_java",
+      "//chrome/browser/locale:delegate_public_impl_java",
       "//components/externalauth/android:google_delegate_public_impl_java",
       "//components/sync:test_support_nigori",
       "//components/sync/test/fake_server:fake_server",
