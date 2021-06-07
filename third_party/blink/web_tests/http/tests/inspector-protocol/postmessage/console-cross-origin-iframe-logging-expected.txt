@@ -1,0 +1,19 @@
+Tests that postMessage origin mismatches are logged with source url and line number if both frames are in the same process.
+Trying to access iframe's location
+DOMException
+Trying to reload iframe
+TypeError
+Trying to postMessage iframe
+{
+    callFrames : [
+        [0] : {
+            columnNumber : 33
+            functionName : 
+            lineNumber : 1
+            scriptId : <string>
+            url : 
+        }
+    ]
+}
+Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://example.test:8000') does not match the recipient window's origin ('http://other.origin.example.test:8000').
+
