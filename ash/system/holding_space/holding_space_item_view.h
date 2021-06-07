@@ -16,6 +16,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class ImageButton;
 class ImageView;
 class ToggleImageButton;
 }  // namespace views
@@ -80,19 +81,19 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
 
  protected:
   views::ImageView* AddCheckmark(views::View* parent);
-  views::ToggleImageButton* AddPin(views::View* parent);
-  virtual void OnPinVisibilityChanged(bool pin_visible) {}
+  views::View* AddPrimaryAction(views::View* parent, const gfx::Size& min_size);
+  virtual void OnPrimaryActionVisibilityChanged(bool visible) {}
   virtual void OnSelectionUiChanged();
 
   HoldingSpaceViewDelegate* delegate() { return delegate_; }
   views::ImageView* checkmark() { return checkmark_; }
-  views::ToggleImageButton* pin() { return pin_; }
+  views::View* primary_action_container() { return primary_action_container_; }
 
  private:
   void OnPaintFocus(gfx::Canvas* canvas, gfx::Size size);
   void OnPaintSelect(gfx::Canvas* canvas, gfx::Size size);
-  void OnPinPressed();
-  void UpdatePin();
+  void OnPrimaryActionPressed();
+  void UpdatePrimaryAction();
 
   // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
   // since the widget is closed asynchronously and the model is updated prior
@@ -107,7 +108,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
 
   // Owned by view hierarchy.
   views::ImageView* checkmark_ = nullptr;
-  views::ToggleImageButton* pin_ = nullptr;
+  views::View* primary_action_container_ = nullptr;
+  views::ImageButton* primary_action_cancel_ = nullptr;
+  views::ToggleImageButton* primary_action_pin_ = nullptr;
 
   // Owners for the layers used to paint focused and selected states.
   std::unique_ptr<ui::LayerOwner> selected_layer_owner_;

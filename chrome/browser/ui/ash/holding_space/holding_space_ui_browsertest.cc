@@ -1435,6 +1435,109 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
                                                   in_progress_download_id));
 }
 
+// Verifies that canceling holding space items via primary action is WAI.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
+                       CancelItemViaPrimaryAction) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Create an in-progress download.
+  auto in_progress_download =
+      CreateMockDownloadItem(download::DownloadItem::IN_PROGRESS, CreateFile(),
+                             /*percent_complete=*/0);
+  in_progress_download->NotifyObserversDownloadUpdated();
+
+  // Create a completed download.
+  // NOTE: In production, the download manager will create COMPLETE download
+  // items from previous sessions during initialization, so we ignore them. To
+  // match production behavior, create an IN_PROGRESS download item and only
+  // then update it to COMPLETE state.
+  auto completed_download =
+      CreateMockDownloadItem(download::DownloadItem::IN_PROGRESS, CreateFile(),
+                             /*percent_complete=*/0);
+  ON_CALL(*completed_download, GetState())
+      .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
+  ON_CALL(*completed_download, PercentComplete())
+      .WillByDefault(testing::Return(100));
+  completed_download->NotifyObserversDownloadUpdated();
+
+  // Show holding space UI.
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+
+  // Expect two download chips, one for each created download item.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 2u);
+
+  // Cache download chips. NOTE: Chips are displayed in reverse order of their
+  // underlying holding space item creation.
+  views::View* const completed_download_chip = download_chips.at(0);
+  views::View* const in_progress_download_chip = download_chips.at(1);
+
+  // Hover over the `completed_download_chip`. Because the underlying download
+  // is completed, the chip should contain a visible primary action for "Pin".
+  MoveMouseTo(completed_download_chip, /*count=*/10);
+  auto* primary_action_container = completed_download_chip->GetViewByID(
+      kHoldingSpaceItemPrimaryActionContainerId);
+  auto* primary_action_cancel =
+      primary_action_container->GetViewByID(kHoldingSpaceItemCancelButtonId);
+  auto* primary_action_pin =
+      primary_action_container->GetViewByID(kHoldingSpaceItemPinButtonId);
+  ViewDrawnWaiter().Wait(primary_action_container);
+  EXPECT_FALSE(primary_action_cancel->GetVisible());
+  EXPECT_TRUE(primary_action_pin->GetVisible());
+
+  // Hover over the `in_progress_download_chip`. Because the underlying download
+  // is in-progress, the chip should contain a visible primary action for
+  // "Cancel".
+  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  primary_action_container = in_progress_download_chip->GetViewByID(
+      kHoldingSpaceItemPrimaryActionContainerId);
+  primary_action_cancel =
+      primary_action_container->GetViewByID(kHoldingSpaceItemCancelButtonId);
+  primary_action_pin =
+      primary_action_container->GetViewByID(kHoldingSpaceItemPinButtonId);
+  ViewDrawnWaiter().Wait(primary_action_container);
+  EXPECT_TRUE(primary_action_cancel->GetVisible());
+  EXPECT_FALSE(primary_action_pin->GetVisible());
+
+  // Cache the holding space item IDs associated with the two download chips.
+  const std::string completed_download_id =
+      test_api().GetHoldingSpaceItemId(completed_download_chip);
+  const std::string in_progress_download_id =
+      test_api().GetHoldingSpaceItemId(in_progress_download_chip);
+
+  // Bind an observer to watch for updates to the holding space model.
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
+
+  // Press the `primary_action_container` to execute "Cancel", expecting and
+  // waiting for the in-progress download item to be removed from the holding
+  // space model.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+        ASSERT_EQ(items.size(), 1u);
+        ASSERT_EQ(items[0]->id(), in_progress_download_id);
+        run_loop.Quit();
+      });
+  Click(primary_action_container);
+  run_loop.Run();
+
+  // Verify that there is now only a single download chip.
+  download_chips = test_api().GetDownloadChips();
+  EXPECT_EQ(download_chips.size(), 1u);
+
+  // Because the in-progress download was canceled, only the completed download
+  // chip should still be present in the UI.
+  EXPECT_TRUE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                 completed_download_id));
+  EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                  in_progress_download_id));
+}
+
 // Base class for tests of the pause or resume commands, parameterized by which
 // command to use. This will either be `kPauseItem` or `kResumeItem`.
 class HoldingSpaceUiPauseOrResumeBrowserTest

@@ -104,15 +104,15 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   // Checkmark.
   AddCheckmark(/*parent=*/image_and_checkmark_container);
 
-  auto* label_and_pin_button_container =
+  auto* label_and_primary_action_container =
       AddChildView(std::make_unique<views::View>());
-  label_and_pin_button_container->SetLayoutManager(
+  label_and_primary_action_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-  layout->SetFlexForView(label_and_pin_button_container, 1);
+  layout->SetFlexForView(label_and_primary_action_container, 1);
 
   // Label.
   // NOTE: A11y events for `label_` are handled by its parent.
-  label_ = label_and_pin_button_container->AddChildView(
+  label_ = label_and_primary_action_container->AddChildView(
       std::make_unique<PaintCallbackLabel>(
           base::BindRepeating(&HoldingSpaceItemChipView::OnPaintLabelMask,
                               base::Unretained(this))));
@@ -126,20 +126,20 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   bubble_utils::ApplyStyle(label_, bubble_utils::LabelStyle::kChip);
 
-  // Pin.
-  views::View* pin_button_container =
-      label_and_pin_button_container->AddChildView(
+  // Primary action.
+  views::View* primary_action_container =
+      label_and_primary_action_container->AddChildView(
           std::make_unique<views::View>());
 
-  auto* pin_layout =
-      pin_button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  layout = primary_action_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
-  pin_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  pin_layout->set_cross_axis_alignment(
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddPin(/*parent=*/pin_button_container);
+  AddPrimaryAction(/*parent=*/primary_action_container,
+                   /*min_size=*/gfx::Size());
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
@@ -158,8 +158,9 @@ void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     label_->SetText(item->text());
 }
 
-void HoldingSpaceItemChipView::OnPinVisibilityChanged(bool pin_visible) {
-  // The `label_` must be repainted to update its mask for `pin()` visibility.
+void HoldingSpaceItemChipView::OnPrimaryActionVisibilityChanged(bool visible) {
+  // The `label_` must be repainted to update its mask for
+  // `primary_action_container()`  visibility.
   label_->SchedulePaint();
 }
 
@@ -180,17 +181,18 @@ void HoldingSpaceItemChipView::OnThemeChanged() {
 }
 
 void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
-  // When the `pin()` is not visible no masking is necessary.
-  if (!pin()->GetVisible())
+  // If the `primary_action_container()` isn't visible, masking is unnecessary.
+  if (!primary_action_container()->GetVisible())
     return;
 
-  // When the `pin()` is visible, `label_` fades out its tail to avoid overlap.
+  // If the `primary_action_container()` is visible, `label_` fades out its tail
+  // to avoid overlap.
   gfx::Point gradient_start, gradient_end;
   if (base::i18n::IsRTL()) {
-    gradient_end.set_x(pin()->width());
+    gradient_end.set_x(primary_action_container()->width());
     gradient_start.set_x(gradient_end.x() + kLabelMaskGradientWidth);
   } else {
-    gradient_end.set_x(label_->width() - pin()->width());
+    gradient_end.set_x(label_->width() - primary_action_container()->width());
     gradient_start.set_x(gradient_end.x() - kLabelMaskGradientWidth);
   }
 

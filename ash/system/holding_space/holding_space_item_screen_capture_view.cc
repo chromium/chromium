@@ -25,9 +25,9 @@
 namespace ash {
 
 // Appearance.
-constexpr gfx::Insets kCheckmarkAndPinButtonContainerPadding(4);
-constexpr gfx::Size kPinButtonSize(24, 24);
+constexpr gfx::Insets kCheckmarkAndPrimaryActionContainerPadding(4);
 constexpr gfx::Size kPlayIconSize(32, 32);
+constexpr gfx::Size kPrimaryActionSize(24, 24);
 
 HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
     HoldingSpaceViewDelegate* delegate,
@@ -50,26 +50,26 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
   if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
     AddPlayIcon();
 
-  views::View* checkmark_and_pin_button_container =
+  views::View* checkmark_and_primary_action_container =
       AddChildView(std::make_unique<views::View>());
-  auto* layout = checkmark_and_pin_button_container->SetLayoutManager(
+  auto* layout = checkmark_and_primary_action_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          kCheckmarkAndPinButtonContainerPadding));
+          kCheckmarkAndPrimaryActionContainerPadding));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   // Checkmark.
-  AddCheckmark(/*parent=*/checkmark_and_pin_button_container);
+  AddCheckmark(/*parent=*/checkmark_and_primary_action_container);
 
   // Spacer.
-  views::View* spacer = checkmark_and_pin_button_container->AddChildView(
+  views::View* spacer = checkmark_and_primary_action_container->AddChildView(
       std::make_unique<views::View>());
   layout->SetFlexForView(spacer, 1);
 
-  // Pin.
-  auto* pin = AddPin(/*parent=*/checkmark_and_pin_button_container);
-  pin->SetPreferredSize(kPinButtonSize);
+  // Primary action.
+  AddPrimaryAction(/*parent=*/checkmark_and_primary_action_container,
+                   /*min_size=*/kPrimaryActionSize);
 }
 
 HoldingSpaceItemScreenCaptureView::~HoldingSpaceItemScreenCaptureView() =
@@ -99,10 +99,11 @@ void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   // Image.
   UpdateImage();
 
-  // Pin.
-  pin()->SetBackground(holding_space_util::CreateCircleBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
+  // Primary action.
+  primary_action_container()->SetBackground(
+      holding_space_util::CreateCircleBackground(
+          AshColorProvider::Get()->GetBaseLayerColor(
+              AshColorProvider::BaseLayerType::kTransparent80)));
 
   if (!play_icon_)
     return;
