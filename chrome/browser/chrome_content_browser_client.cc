@@ -4522,6 +4522,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 #if defined(OS_ANDROID)
   std::string client_data_header;
   bool is_tab_large_enough = false;
+  bool is_custom_tab = false;
   if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     auto* web_contents = WebContents::FromFrameTreeNodeId(frame_tree_node_id);
     // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
@@ -4539,6 +4540,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
               : nullptr;
       if (delegate) {
         is_tab_large_enough = delegate->IsTabLargeEnoughForDesktopSite();
+        is_custom_tab = delegate->IsCustomTab();
       }
     }
   }
@@ -4567,8 +4569,14 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       request.destination, frame_tree_node_id));
 #endif
 
+#if defined(OS_ANDROID)
+  auto delegate = std::make_unique<signin::HeaderModificationDelegateImpl>(
+      profile, /*incognito_enabled=*/!is_custom_tab);
+#else
   auto delegate =
       std::make_unique<signin::HeaderModificationDelegateImpl>(profile);
+#endif
+
   auto signin_throttle =
       signin::URLLoaderThrottle::MaybeCreate(std::move(delegate), wc_getter);
   if (signin_throttle)

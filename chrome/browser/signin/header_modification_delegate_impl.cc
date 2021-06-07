@@ -33,9 +33,18 @@
 
 namespace signin {
 
+#if defined(OS_ANDROID)
+HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(
+    Profile* profile,
+    bool incognito_enabled)
+    : profile_(profile),
+      cookie_settings_(CookieSettingsFactory::GetForProfile(profile_)),
+      incognito_enabled_(incognito_enabled) {}
+#else
 HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(Profile* profile)
     : profile_(profile),
       cookie_settings_(CookieSettingsFactory::GetForProfile(profile_)) {}
+#endif
 
 HeaderModificationDelegateImpl::~HeaderModificationDelegateImpl() = default;
 
@@ -89,9 +98,17 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     }
   }
 
+  int incognito_mode_availability =
+      prefs->GetInteger(prefs::kIncognitoModeAvailability);
+#if defined(OS_ANDROID)
+  incognito_mode_availability = incognito_enabled_
+                                    ? incognito_mode_availability
+                                    : IncognitoModePrefs::DISABLED;
+#endif
+
   FixAccountConsistencyRequestHeader(
       request_adapter, redirect_url, profile_->IsOffTheRecord(),
-      prefs->GetInteger(prefs::kIncognitoModeAvailability),
+      incognito_mode_availability,
       AccountConsistencyModeManager::GetMethodForProfile(profile_),
       account.gaia, is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
