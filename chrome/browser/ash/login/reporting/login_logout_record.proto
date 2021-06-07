@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.reporting;
+
+message SessionAffiliatedUser {
+  optional string user_email = 1;
+}
+
+message LoginFailure {
+  optional string reason = 1;
+}
+
+message LoginEvent {
+  optional LoginFailure failure = 1;
+}
+
+message LogoutEvent {}
+
+message LoginLogoutRecord {
+  optional int64 event_timestamp = 1;
+
+  optional SessionAffiliatedUser affiliated_user = 2;
+
+  oneof event {
+    LoginEvent login_event = 3;
+    LogoutEvent logout_event = 4;
+  }
+}

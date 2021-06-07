@@ -48,6 +48,9 @@ enum Destination {
 
   // |DLP_EVENTS| events send from data leakage protection for Chrome OS
   DLP_EVENTS = 11;
+
+  // |LOGIN_LOGOUT_EVENTS| is for login/logout events.
+  LOGIN_LOGOUT_EVENTS = 12;
 }
 
 // |Priority| is used to determine when items from the queue should be rate

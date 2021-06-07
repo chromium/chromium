@@ -70,6 +70,7 @@ source_set("chromeos") {
     ":device_policy_remover_generated",
     ":dlp_policy_event_proto",
     ":key_permissions_proto",
+    ":login_logout_record_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":user_activity_event_proto",
@@ -1455,6 +1456,8 @@ source_set("chromeos") {
     "../ash/login/quick_unlock/quick_unlock_utils.h",
     "../ash/login/reauth_stats.cc",
     "../ash/login/reauth_stats.h",
+    "../ash/login/reporting/login_logout_reporter.cc",
+    "../ash/login/reporting/login_logout_reporter.h",
     "../ash/login/saml/in_session_password_change_manager.cc",
     "../ash/login/saml/in_session_password_change_manager.h",
     "../ash/login/saml/in_session_password_sync_manager.cc",
@@ -3399,6 +3402,8 @@ static_library("test_support") {
     "../ash/login/enrollment/mock_enrollment_screen.h",
     "../ash/login/mock_network_state_helper.cc",
     "../ash/login/mock_network_state_helper.h",
+    "../ash/login/reporting/login_logout_reporter_test_delegate.cc",
+    "../ash/login/reporting/login_logout_reporter_test_delegate.h",
     "../ash/login/screens/mock_error_screen.cc",
     "../ash/login/screens/mock_error_screen.h",
     "../ash/login/screens/mock_network_screen.cc",
@@ -3518,6 +3523,7 @@ static_library("test_support") {
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//components/policy/test_support",
+    "//components/reporting/client:test_support",
     "//components/session_manager/core",
     "//crypto:platform",
     "//google_apis",
@@ -3807,6 +3813,7 @@ source_set("unit_tests") {
     "../ash/login/quick_unlock/pin_storage_cryptohome_unittest.cc",
     "../ash/login/quick_unlock/pin_storage_prefs_unittest.cc",
     "../ash/login/quick_unlock/quick_unlock_storage_unittest.cc",
+    "../ash/login/reporting/login_logout_reporter_unittest.cc",
     "../ash/login/saml/in_session_password_change_manager_unittest.cc",
     "../ash/login/saml/in_session_password_sync_manager_unittest.cc",
     "../ash/login/saml/mock_lock_handler.cc",
@@ -4476,6 +4483,10 @@ proto_library("key_permissions_proto") {
 
 proto_library("print_job_info_proto") {
   sources = [ "printing/history/print_job_info.proto" ]
+}
+
+proto_library("login_logout_record_proto") {
+  sources = [ "../ash/login/reporting/login_logout_record.proto" ]
 }
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
