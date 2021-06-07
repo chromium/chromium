@@ -5180,7 +5180,7 @@
         'mixins': [
           'enable_resultdb',
           'isolate_profile_data',
-          'mac_10.15',
+          'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12d4e',
@@ -5197,7 +5197,7 @@
         'mixins': [
           'enable_resultdb',
           'isolate_profile_data',
-          'mac_10.15',
+          'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12d4e',
@@ -5213,7 +5213,7 @@
         ],
         'mixins': [
           'enable_resultdb',
-          'mac_10.15',
+          'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12d4e',
