@@ -15,6 +15,18 @@
 // TODO(https://crbug.com/930109): Add logic to show only some of the passwords
 // fields if some of the passwords were successfully scraped.
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import 'chrome://confirm-password-change/strings.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
 /** @enum{number} */
 const ValidationErrorType = {
   NO_ERROR: 0,
@@ -84,7 +96,7 @@ Polymer({
 
   /** @private */
   getInitialState_() {
-    cr.sendWithPromise('getInitialState').then((result) => {
+    sendWithPromise('getInitialState').then((result) => {
       this.showOldPasswordPrompt_ = result.showOldPasswordPrompt;
       this.showNewPasswordPrompt_ = result.showNewPasswordPrompt;
       this.showSpinner_ = result.showSpinner;
