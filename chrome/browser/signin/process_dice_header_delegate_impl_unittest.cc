@@ -50,6 +50,14 @@ class TestDiceWebSigninInterceptorDelegate
     std::move(callback).Run(SigninInterceptionResult::kDeclined);
     return nullptr;
   }
+
+  void ShowEnterpriseProfileInterceptionDialog(
+      const std::string& email,
+      base::OnceCallback<void(bool)> callback,
+      Browser* browser) override {
+    std::move(callback).Run(false);
+  }
+
   void ShowProfileCustomizationBubble(Browser* browser) override {}
 };
 

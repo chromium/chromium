@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -81,7 +82,11 @@ enum class SigninInterceptionHeuristicOutcome {
   // Signin interception is disabled by the SigninInterceptionEnabled policy.
   kAbortInterceptionDisabled = 15,
 
-  kMaxValue = kAbortInterceptionDisabled,
+  // Interception succeeded when enteprise account separation is mandatory.
+  kInterceptEnterpriseForced = 16,
+  kInterceptEnterpriseForcedProfileSwitch = 17,
+
+  kMaxValue = kInterceptEnterpriseForcedProfileSwitch,
 };
 
 // User selection in the interception bubble.
@@ -172,6 +177,14 @@ class DiceWebSigninInterceptor : public KeyedService,
         const BubbleParameters& bubble_parameters,
         base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
 
+    // Shows the enterprise profile confirmation dialog to notify the user that
+    // a managed profile will be created or that their account needs a new
+    // profile to be created.
+    virtual void ShowEnterpriseProfileInterceptionDialog(
+        const std::string& email,
+        base::OnceCallback<void(bool)> callback,
+        Browser* browser) = 0;
+
     // Shows the profile customization bubble.
     virtual void ShowProfileCustomizationBubble(Browser* browser) = 0;
   };
@@ -211,6 +224,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       content::WebContents* intercepted_contents,
       std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
           bubble_handle,
+      bool managed_account_interception,
       bool is_new_profile);
 
   // Returns the outcome of the interception heuristic.
@@ -244,7 +258,17 @@ class DiceWebSigninInterceptor : public KeyedService,
                            ShouldShowEnterpriseBubbleWithoutUPA);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowMultiUserBubble);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           ShouldEnforceEnterpriseProfileSeparation);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           ShouldEnforceEnterpriseProfileSeparationWithoutUPA);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           ShouldEnforceEnterpriseProfileSeparationReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, PersistentHash);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           EnforceManagedAccountAsPrimary);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorReauthTest,
+                           ShouldEnforceEnterpriseProfileSeparationReauth);
 
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
@@ -254,6 +278,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
       const std::string& intercepted_email,
       ProfileAttributesStorage* profile_attribute_storage) const;
+  bool ShouldEnforceEnterpriseProfileSeparation(
+      const AccountInfo& intercepted_account_info) const;
   bool ShouldShowEnterpriseBubble(
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
@@ -280,6 +306,13 @@ class DiceWebSigninInterceptor : public KeyedService,
   // nullopt if the profile is not new (loaded from disk).
   void OnNewSignedInProfileCreated(absl::optional<SkColor> profile_color,
                                    Profile* new_profile);
+
+  // Called after the user choses whether the session should continue in a new
+  // work profile or not. If the user choses not to continue in a work profile,
+  // the account is signed out.
+  void OnEnterpriseProfileCreationResult(const AccountInfo& account_info,
+                                         SkColor profile_color,
+                                         bool create);
 
   // Called when the new browser is created after interception. Passed as
   // callback to `session_startup_helper_`.
@@ -315,6 +348,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Members below are related to the interception in progress.
   bool is_interception_in_progress_ = false;
   CoreAccountId account_id_;
+  bool new_account_interception_ = false;
+  bool managed_account_interception_ = false;
+  bool intercepted_account_management_accepted_ = false;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};

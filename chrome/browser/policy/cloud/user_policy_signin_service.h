@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class AccountId;
@@ -86,6 +87,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   // cloud policy.
   void ProhibitSignoutIfNeeded();
 
+  // Called when the value of the `profile.account_management` pref changes.
+  void OnAccountManagementPrefChange();
+
   // Helper method that attempts calls |InitializeForSignedInUser| only if
   // |policy_manager| is not-nul. Expects that there is a refresh token for
   // the primary account.
@@ -96,6 +100,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
                                       PolicyRegistrationCallback callback);
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
+  PrefChangeRegistrar profile_pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
 };

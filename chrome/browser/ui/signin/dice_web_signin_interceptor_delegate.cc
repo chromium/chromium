@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 
 DiceWebSigninInterceptorDelegate::DiceWebSigninInterceptorDelegate() = default;
 
@@ -30,4 +31,25 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
 void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubble(
     Browser* browser) {
   ShowProfileCustomizationBubbleInternal(browser);
+}
+
+void DiceWebSigninInterceptorDelegate::ShowEnterpriseProfileInterceptionDialog(
+    const std::string& email,
+    base::OnceCallback<void(bool)> callback,
+    Browser* browser) {
+  // TODO (crbug/1163117): Replace this temporary solution with the spaces
+  // enterprise welcome screen inside a dialog.
+  DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
+      email, true,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             DiceTurnSyncOnHelper::SigninChoice choice) {
+            std::move(callback).Run(
+                choice == DiceTurnSyncOnHelper::SigninChoice::
+                              SIGNIN_CHOICE_CONTINUE ||
+                choice == DiceTurnSyncOnHelper::SigninChoice::
+                              SIGNIN_CHOICE_NEW_PROFILE);
+          },
+          std::move(callback)),
+      browser);
 }
