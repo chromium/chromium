@@ -8,12 +8,15 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/extensions/updater/extension_update_client_base_browsertest.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -56,6 +59,14 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
   }
 
   bool ShouldEnableContentVerification() override { return true; }
+
+  void ExpectProfileKeepAlive(bool expected) {
+    if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+      return;
+    EXPECT_EQ(expected,
+              g_browser_process->profile_manager()->HasKeepAliveForTesting(
+                  profile(), ProfileKeepAliveOrigin::kExtensionUpdater));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
@@ -215,6 +226,8 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
         return true;
       }));
 
+  ExpectProfileKeepAlive(false);
+
   const Extension* extension =
       InstallExtension(crx_path, 1, ManifestLocation::kExternalPolicyDownload);
   ASSERT_TRUE(extension);
@@ -226,6 +239,8 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
   params.ids = {kExtensionId};
   params.callback = run_loop.QuitClosure();
   extension_service()->updater()->CheckNow(std::move(params));
+
+  ExpectProfileKeepAlive(true);
 
   EXPECT_EQ(UpdateClientEvents::COMPONENT_UPDATED,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));

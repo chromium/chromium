@@ -28,6 +28,8 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -358,6 +360,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   InProgressCheck& request = requests_in_progress_[request_id];
   request.callback = std::move(params.callback);
   request.install_immediately = params.install_immediately;
+  request.profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
 
   EnsureDownloaderCreated();
 

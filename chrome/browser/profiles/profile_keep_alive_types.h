@@ -80,7 +80,10 @@ enum class ProfileKeepAliveOrigin {
   // Waiting for the provider to be ready in protocol handler web app launch.
   kWebAppProtocolHandlerLaunch = 17,
 
-  kMaxValue = kWebAppProtocolHandlerLaunch,
+  // An extension is being updated.
+  kExtensionUpdater = 18,
+
+  kMaxValue = kExtensionUpdater,
 };
 
 std::ostream& operator<<(std::ostream& out,

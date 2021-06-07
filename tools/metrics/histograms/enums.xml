@@ -65611,6 +65611,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="kDevToolsWindow"/>
   <int value="15" label="kWebAppPermissionDialogWindow"/>
   <int value="16" label="kSessionDataDeleter"/>
+  <int value="17" label="kWebAppProtocolHandlerLaunch"/>
+  <int value="18" label="kExtensionUpdater"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">
