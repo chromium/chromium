@@ -268,6 +268,9 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                 @Override
                 public void run() {
+                    // Tab was destroyed before this task ran.
+                    if (mClient.getWebContents() == null) return;
+
                     // If the launch was from an External app, Chrome came from the background and
                     // acted as an intermediate link redirector between two apps (crbug.com/487938).
                     if (mClient.wasTabLaunchedFromExternalApp()) {
