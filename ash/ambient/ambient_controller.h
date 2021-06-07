@@ -14,6 +14,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
+#include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -54,7 +55,8 @@ class ASH_EXPORT AmbientController
       public chromeos::PowerManagerClient::Observer,
       public device::mojom::FingerprintObserver,
       public ui::UserActivityObserver,
-      public ui::EventHandler {
+      public ui::EventHandler,
+      public AssistantInteractionModelObserver {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -94,6 +96,9 @@ class ASH_EXPORT AmbientController
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
+
+  // AssistantInteractionModelObserver:
+  void OnInteractionStateChanged(InteractionState interaction_state) override;
 
   void ShowUi();
   // Ui will be enabled but not shown immediately. If there is no user activity

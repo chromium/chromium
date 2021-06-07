@@ -10,8 +10,11 @@
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
+#include "ash/assistant/assistant_interaction_controller_impl.h"
+#include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
@@ -22,6 +25,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -29,6 +33,8 @@
 #include "ui/events/types/event_type.h"
 
 namespace ash {
+
+using chromeos::assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
@@ -1049,6 +1055,22 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
 
   EXPECT_FALSE(ctrl->user_activity_observer_.IsObserving());
   EXPECT_FALSE(ctrl->power_status_observer_.IsObserving());
+}
+
+TEST_F(AmbientControllerTest, ShowDismissAmbientScreenUponAssistantQuery) {
+  // Without user interaction, should show ambient mode.
+  ShowAmbientScreen();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  // Trigger Assistant interaction.
+  static_cast<AssistantInteractionControllerImpl*>(
+      AssistantInteractionController::Get())
+      ->OnInteractionStarted(AssistantInteractionMetadata());
+  base::RunLoop().RunUntilIdle();
+
+  // Ambient screen should dismiss.
+  EXPECT_TRUE(GetContainerViews().empty());
+  EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
 }  // namespace ash
