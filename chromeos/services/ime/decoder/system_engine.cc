@@ -112,7 +112,6 @@ bool SystemEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> receiver,
     mojo::PendingRemote<mojom::InputChannel> remote,
-    const std::vector<uint8_t>& extra,
     base::OnceCallback<void()> disconnect_callback) {
   if (!IsImeSupportedByDecoder(ime_spec)) {
     return false;

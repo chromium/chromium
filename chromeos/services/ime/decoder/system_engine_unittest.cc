@@ -96,7 +96,7 @@ TEST_F(SystemEngineTest, BindRequestBindsInterfaces) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   EXPECT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
 
   EXPECT_TRUE(client.is_bound());
@@ -108,7 +108,7 @@ TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
@@ -125,7 +125,7 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
 
   auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
@@ -147,7 +147,7 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/0);
@@ -163,7 +163,7 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   auto key_event = mojom::PhysicalKeyEvent::New(
       mojom::KeyEventType::kKeyDown, "KeyA", "A", mojom::ModifierState::New());
@@ -199,7 +199,7 @@ TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
   ime::Wrapper expected_proto;
@@ -217,7 +217,7 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
@@ -234,7 +234,7 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper proto;
 
@@ -259,7 +259,7 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper proto;
   proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
@@ -277,7 +277,7 @@ TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper proto;
   proto.mutable_public_message()
@@ -300,7 +300,7 @@ TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper proto;
   *proto.mutable_public_message()->mutable_finish_composition() =
@@ -319,7 +319,7 @@ TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   ime::Wrapper proto;
   proto.mutable_public_message()
@@ -345,7 +345,7 @@ TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
 
   ime::Wrapper proto;
@@ -383,7 +383,7 @@ TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
 
   ime::Wrapper expected_response_proto;
@@ -432,7 +432,7 @@ TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
 
   ime::Wrapper proto;
@@ -465,7 +465,7 @@ TEST_F(SystemEngineTest, RecordUkmSendsMessageToReceiver) {
   MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 mock_channel.CreatePendingRemote(), {},
+                                 mock_channel.CreatePendingRemote(),
                                  base::DoNothing()));
   Wrapper proto;
   proto.mutable_public_message()

@@ -99,7 +99,7 @@ void ImeService::ConnectToImeEngine(
           chromeos::features::kSystemLatinPhysicalTyping)) {
     auto system_engine = std::make_unique<SystemEngine>(this);
     bool bound = system_engine->BindRequest(
-        ime_spec, std::move(to_engine_request), std::move(from_engine), extra,
+        ime_spec, std::move(to_engine_request), std::move(from_engine),
         base::BindOnce(
             [](bool& is_decoder_receiver_connected) {
               is_decoder_receiver_connected = false;
