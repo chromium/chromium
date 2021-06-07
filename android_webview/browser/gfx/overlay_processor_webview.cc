@@ -7,7 +7,6 @@
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
@@ -91,7 +90,7 @@ class OverlayProcessorWebView::Manager
     return *parent_surface_;
   }
 
-  const CheckedPtr<gpu::SharedImageManager> shared_image_manager_;
+  gpu::SharedImageManager* const shared_image_manager_;
   std::unique_ptr<gpu::MemoryTypeTracker> memory_tracker_;
 
   // GPU Main Thread task runner.

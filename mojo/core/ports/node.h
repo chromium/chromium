@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/ports/event.h"
@@ -200,8 +199,8 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
     void EnsureSafeDelegateAccess() const {}
 #endif
 
-    const CheckedPtr<Node> node_;
-    const CheckedPtr<NodeDelegate> delegate_;
+    Node* const node_;
+    NodeDelegate* const delegate_;
 
     DISALLOW_COPY_AND_ASSIGN(DelegateHolder);
   };

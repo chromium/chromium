@@ -8,7 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -34,7 +33,7 @@ namespace {
 
 struct PageInformation {
   GURL url;
-  CheckedPtr<TabAndroid> tab = nullptr;
+  TabAndroid* tab = nullptr;
 };
 
 base::CancelableTaskTracker& TaskTracker() {

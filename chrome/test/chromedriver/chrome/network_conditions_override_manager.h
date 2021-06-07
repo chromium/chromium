@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -40,8 +39,8 @@ class NetworkConditionsOverrideManager : public DevToolsEventListener {
   Status ApplyOverrideIfNeeded();
   Status ApplyOverride(const NetworkConditions* network_conditions);
 
-  CheckedPtr<DevToolsClient> client_;
-  CheckedPtr<const NetworkConditions> overridden_network_conditions_;
+  DevToolsClient* client_;
+  const NetworkConditions* overridden_network_conditions_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkConditionsOverrideManager);
 };

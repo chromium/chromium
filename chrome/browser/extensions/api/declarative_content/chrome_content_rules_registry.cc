@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,7 +42,7 @@ class ChromeContentRulesRegistry::EvaluationScope {
   ~EvaluationScope();
 
  private:
-  const CheckedPtr<ChromeContentRulesRegistry> registry_;
+  ChromeContentRulesRegistry* const registry_;
   const EvaluationDisposition previous_disposition_;
 
   DISALLOW_COPY_AND_ASSIGN(EvaluationScope);

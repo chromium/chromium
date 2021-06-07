@@ -14,7 +14,7 @@ PageSwitcherView::~PageSwitcherView() = default;
 
 void PageSwitcherView::SwitchToPage(std::unique_ptr<views::View> page) {
   if (current_page_)
-    RemoveChildViewT(current_page_.get());
+    RemoveChildViewT(current_page_);
   current_page_ = AddChildView(std::move(page));
   PreferredSizeChanged();
 }

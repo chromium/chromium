@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
@@ -50,7 +49,7 @@ class SkiaOutputDeviceWebView : public SkiaOutputDevice {
  private:
   void InitSkiaSurface(unsigned int fbo);
 
-  const CheckedPtr<gpu::SharedContextState> context_state_;
+  gpu::SharedContextState* const context_state_;
   scoped_refptr<gl::GLSurface> gl_surface_;
 
   sk_sp<SkSurface> sk_surface_;

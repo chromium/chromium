@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +40,8 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   // Show is no-op.
   void Dismiss();
 
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<AutofillSnackbarView> autofill_snackbar_view_ = nullptr;
+  content::WebContents* web_contents_;
+  AutofillSnackbarView* autofill_snackbar_view_ = nullptr;
 };
 
 }  // namespace autofill

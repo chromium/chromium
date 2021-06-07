@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,7 +29,7 @@ class PluginVmImageDownloadClient : public download::Client {
   ~PluginVmImageDownloadClient() override;
 
  private:
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   int64_t content_length_ = -1;
   int response_code_ = -1;
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -74,9 +73,9 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   // Construct a ColumnSet with one view on the left and another on the right.
   static void BuildColumnSet(views::GridLayout* layout);
 
-  CheckedPtr<views::Label> suggestion_label_ = nullptr;
-  CheckedPtr<views::Label> password_label_ = nullptr;
-  CheckedPtr<PasswordGenerationPopupController> controller_ = nullptr;
+  views::Label* suggestion_label_ = nullptr;
+  views::Label* password_label_ = nullptr;
+  PasswordGenerationPopupController* controller_ = nullptr;
 };
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
@@ -231,7 +230,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       views::CreateEmptyBorder(kVerticalPadding, kHorizontalMargin,
                                kVerticalPadding, kHorizontalMargin));
   password_view_->Init(controller_);
-  AddChildView(password_view_.get());
+  AddChildView(password_view_);
   PasswordSelectionUpdated();
 
   help_label_ = new views::Label(controller_->HelpText(),
@@ -242,7 +241,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   help_label_->SetBorder(
       views::CreateEmptyBorder(kVerticalPadding, kHorizontalMargin,
                                kVerticalPadding, kHorizontalMargin));
-  AddChildView(help_label_.get());
+  AddChildView(help_label_);
 }
 
 void PasswordGenerationPopupViewViews::OnThemeChanged() {

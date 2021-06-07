@@ -6,7 +6,6 @@
 #define CHROME_TEST_DATA_WEBUI_HISTORY_UI_BROWSERTEST_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 
 namespace history {
@@ -26,7 +25,7 @@ class HistoryUIBrowserTest : public WebUIBrowserTest {
 
  private:
   // The HistoryService is owned by the profile.
-  CheckedPtr<history::HistoryService> history_;
+  history::HistoryService* history_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryUIBrowserTest);
 };

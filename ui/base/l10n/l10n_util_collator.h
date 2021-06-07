@@ -15,7 +15,6 @@
 
 #include "base/component_export.h"
 #include "base/i18n/string_compare.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace l10n_util {
@@ -38,7 +37,7 @@ class StringMethodComparatorWithCollator {
   }
 
  private:
-  CheckedPtr<icu::Collator> collator_;
+  icu::Collator* collator_;
   Method method_;
 };
 
@@ -101,7 +100,7 @@ class StringComparator {
   }
 
  private:
-  CheckedPtr<icu::Collator> collator_;
+  icu::Collator* collator_;
 };
 
 // Specialization of operator() method for std::u16string version.

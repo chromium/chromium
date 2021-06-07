@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
@@ -97,7 +96,7 @@ class RequestQueue {
                 std::unique_ptr<net::BackoffEntry> backoff_entry);
 
   // The backoff policy used to determine backoff delays.
-  CheckedPtr<const net::BackoffEntry::Policy> backoff_policy_;
+  const net::BackoffEntry::Policy* backoff_policy_;
 
   // Callback to call when a new request has become the active request.
   base::RepeatingClosure start_request_callback_;

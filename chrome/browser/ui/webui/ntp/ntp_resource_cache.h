@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/scoped_observation.h"
@@ -137,7 +136,7 @@ class NTPResourceCache : public ThemeServiceObserver,
 
   void SetDarkKey(base::Value* dict);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   scoped_refptr<base::RefCountedMemory> new_tab_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_guest_html_;

@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
@@ -56,7 +55,7 @@ class ReceiverSetupQuerierTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   const net::IPAddress receiver_address_;
-  CheckedPtr<network::TestURLLoaderFactory> url_loader_factory_ = nullptr;
+  network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
   std::unique_ptr<ReceiverSetupQuerier> setup_querier_;
 
   DISALLOW_COPY_AND_ASSIGN(ReceiverSetupQuerierTest);

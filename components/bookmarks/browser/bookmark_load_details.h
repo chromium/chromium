@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -93,10 +92,10 @@ class BookmarkLoadDetails {
 
  private:
   std::unique_ptr<BookmarkNode> root_node_;
-  CheckedPtr<BookmarkNode> root_node_ptr_;
-  CheckedPtr<BookmarkPermanentNode> bb_node_ = nullptr;
-  CheckedPtr<BookmarkPermanentNode> other_folder_node_ = nullptr;
-  CheckedPtr<BookmarkPermanentNode> mobile_folder_node_ = nullptr;
+  BookmarkNode* root_node_ptr_;
+  BookmarkPermanentNode* bb_node_ = nullptr;
+  BookmarkPermanentNode* other_folder_node_ = nullptr;
+  BookmarkPermanentNode* mobile_folder_node_ = nullptr;
   LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;

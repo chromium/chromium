@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 
 namespace sql {
 class Database;
@@ -49,7 +48,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabasesTable {
       std::vector<DatabaseDetails>* details);
   bool DeleteOriginIdentifier(const std::string& origin_identifier);
  private:
-  CheckedPtr<sql::Database> db_;
+  sql::Database* db_;
 };
 
 }  // namespace storage

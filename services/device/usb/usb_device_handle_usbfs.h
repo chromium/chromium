@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -99,7 +98,7 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   };
   struct EndpointInfo {
     mojom::UsbTransferType type;
-    CheckedPtr<const mojom::UsbInterfaceInfo> interface;
+    const mojom::UsbInterfaceInfo* interface;
   };
 
   void SetConfigurationComplete(int configuration_value,

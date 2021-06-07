@@ -7,7 +7,6 @@
 #include <windows.foundation.h>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -237,7 +236,7 @@ class FakeMapChangedEventHandler
  private:
   ComPtr<IObservableMap<K, V>> map_;
   EventRegistrationToken token_;
-  CheckedPtr<IObservableMap<K, V>> sender_ = nullptr;
+  IObservableMap<K, V>* sender_ = nullptr;
   CollectionChange change_ = CollectionChange_Reset;
   K key_ = 0;
 };

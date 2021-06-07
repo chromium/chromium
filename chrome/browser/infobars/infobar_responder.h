@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {
@@ -42,7 +41,7 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
  private:
   void Respond(ConfirmInfoBarDelegate* delegate);
 
-  CheckedPtr<infobars::ContentInfoBarManager> infobar_manager_;
+  infobars::ContentInfoBarManager* infobar_manager_;
   AutoResponseType response_;
 
   DISALLOW_COPY_AND_ASSIGN(InfoBarResponder);

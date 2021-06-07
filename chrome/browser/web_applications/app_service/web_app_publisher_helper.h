@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -182,15 +181,15 @@ class WebAppPublisherHelper : public content_settings::Observer {
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
-  const CheckedPtr<WebAppProvider> provider_;
+  WebAppProvider* const provider_;
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};

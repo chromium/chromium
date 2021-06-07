@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -103,18 +102,18 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   // An observer used for initializing the status of menu items added in this
   // test. This is owned by our owner and the owner is responsible for its
   // lifetime.
-  CheckedPtr<RenderViewContextMenuObserver> observer_;
+  RenderViewContextMenuObserver* observer_;
 
   // A dummy profile used in this test. Call GetPrefs() when a test needs to
   // change this profile and use PrefService methods.
   std::unique_ptr<TestingProfile> original_profile_;
 
   // Either |original_profile_| or its incognito profile.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The WebContents returned by GetWebContents(). This is owned by our owner
   // and the owner is responsible for its lifetime.
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 
   // A list of menu items added.
   std::vector<MockMenuItem> items_;

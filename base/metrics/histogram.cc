@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -729,7 +728,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  CheckedPtr<const DescriptionPair> descriptions_;
+  const DescriptionPair* descriptions_;
 
   DISALLOW_COPY_AND_ASSIGN(Factory);
 };
@@ -1112,7 +1111,7 @@ class CustomHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  CheckedPtr<const std::vector<Sample>> custom_ranges_;
+  const std::vector<Sample>* custom_ranges_;
 
   DISALLOW_COPY_AND_ASSIGN(Factory);
 };

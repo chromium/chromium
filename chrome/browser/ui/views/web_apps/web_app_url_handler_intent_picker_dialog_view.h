@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -89,8 +88,8 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   // Allow the checkbox to be enabled or disabled.
   // TODO(crbug.com/1072058): Remove when settings are implemented.
   const bool enable_remember_checkbox_ = true;
-  CheckedPtr<views::Checkbox> remember_selection_checkbox_ = nullptr;
-  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
+  views::Checkbox* remember_selection_checkbox_ = nullptr;
+  views::ScrollView* scroll_view_ = nullptr;
 
   // No default selection. Not null if selected by user.
   absl::optional<int> selected_app_tag_ = absl::nullopt;

@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 
-#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -33,8 +32,7 @@ class V8ContextTrackerHelpersTest : public GraphTestHarness {
 
   ~V8ContextTrackerHelpersTest() override = default;
 
-  const CheckedPtr<execution_context::ExecutionContextRegistry> registry =
-      nullptr;
+  execution_context::ExecutionContextRegistry* const registry = nullptr;
   MockSinglePageWithMultipleProcessesGraph mock_graph;
   mojom::IframeAttributionData fake_iframe_attribution_data;
 };

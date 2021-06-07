@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_TIMEOUT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 
 class FeaturePromoBubbleView;
@@ -28,7 +27,7 @@ class FeaturePromoBubbleTimeout {
   // Timer used to auto close the bubble.
   base::OneShotTimer timer_;
 
-  CheckedPtr<FeaturePromoBubbleView> feature_promo_bubble_view_;
+  FeaturePromoBubbleView* feature_promo_bubble_view_;
 
   const base::TimeDelta delay_default_;
   const base::TimeDelta delay_short_;

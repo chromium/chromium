@@ -8,7 +8,6 @@
 #include <queue>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/client/input/keyboard_input_strategy.h"
 
 namespace remoting {
@@ -27,7 +26,7 @@ class TextKeyboardInputStrategy : public KeyboardInputStrategy {
  private:
   base::queue<KeyEvent> ConvertDeleteEvent(uint8_t modifiers);
 
-  CheckedPtr<ClientInputInjector> input_injector_;
+  ClientInputInjector* input_injector_;
 
   DISALLOW_COPY_AND_ASSIGN(TextKeyboardInputStrategy);
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_channel.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 
 #include <utility>
@@ -172,7 +171,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       int32_t end,
       WaitForGetOffsetInRangeCallback callback) override;
 
-  CheckedPtr<IPC::Channel> ipc_channel_ = nullptr;
+  IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
   std::vector<scoped_refptr<IPC::MessageFilter>> channel_filters_;
 
@@ -183,10 +182,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   // Note that this field may be reset at any time by the owning GpuChannel's
   // thread, so it must be accessed under lock and must be tested for null
   // before dereferencing.
-  CheckedPtr<gpu::GpuChannel> gpu_channel_ GUARDED_BY(gpu_channel_lock_) =
-      nullptr;
+  gpu::GpuChannel* gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
 
-  CheckedPtr<Scheduler> scheduler_;
+  Scheduler* scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;

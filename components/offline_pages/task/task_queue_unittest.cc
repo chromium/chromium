@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/task/test_task.h"
@@ -33,7 +32,7 @@ class OfflineTaskQueueTest : public testing::Test, public TaskQueue::Delegate {
   bool on_idle_called() { return on_idle_called_; }
 
  private:
-  CheckedPtr<Task> completed_task_ = nullptr;
+  Task* completed_task_ = nullptr;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
   bool on_idle_called_ = false;

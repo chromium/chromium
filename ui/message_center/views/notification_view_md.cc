@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
@@ -139,7 +138,7 @@ class ClickActivator : public ui::EventHandler {
     }
   }
 
-  const CheckedPtr<NotificationViewMD> owner_;
+  NotificationViewMD* const owner_;
 
   DISALLOW_COPY_AND_ASSIGN(ClickActivator);
 };
@@ -368,18 +367,18 @@ NotificationInputContainerMD::NotificationInputContainerMD(
       },
       this));
 
-  AddChildView(ink_drop_container_.get());
+  AddChildView(ink_drop_container_);
 
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(kInputTextfieldPadding));
-  AddChildView(textfield_.get());
+  AddChildView(textfield_);
   layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   OnAfterUserAction(textfield_);
-  AddChildView(button_.get());
+  AddChildView(button_);
 
   views::InstallRectHighlightPathGenerator(this);
 }

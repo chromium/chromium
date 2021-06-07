@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/util/values/values_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -123,9 +122,9 @@ class AppPrefs {
 
  private:
   const GURL& origin_;
-  CheckedPtr<HostContentSettingsMap> settings_ = nullptr;
+  HostContentSettingsMap* settings_ = nullptr;
   std::unique_ptr<base::DictionaryValue> origin_dict_;
-  CheckedPtr<base::Value> dict_ = nullptr;
+  base::Value* dict_ = nullptr;
 };
 
 // Queries variations for the number of days which dismissing and ignoring the

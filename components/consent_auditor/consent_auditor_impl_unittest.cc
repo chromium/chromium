@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/hash/sha1.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -148,7 +147,7 @@ class ConsentAuditorImplTest : public testing::Test {
 
  private:
   std::unique_ptr<ConsentAuditorImpl> consent_auditor_;
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::string app_version_;

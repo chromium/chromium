@@ -4,7 +4,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -64,11 +63,11 @@ class BluetoothRemoteGattDescriptorTest :
     ResetEventCounts();
   }
 
-  CheckedPtr<BluetoothDevice> device_ = nullptr;
-  CheckedPtr<BluetoothRemoteGattService> service_ = nullptr;
-  CheckedPtr<BluetoothRemoteGattCharacteristic> characteristic_ = nullptr;
-  CheckedPtr<BluetoothRemoteGattDescriptor> descriptor1_ = nullptr;
-  CheckedPtr<BluetoothRemoteGattDescriptor> descriptor2_ = nullptr;
+  BluetoothDevice* device_ = nullptr;
+  BluetoothRemoteGattService* service_ = nullptr;
+  BluetoothRemoteGattCharacteristic* characteristic_ = nullptr;
+  BluetoothRemoteGattDescriptor* descriptor1_ = nullptr;
+  BluetoothRemoteGattDescriptor* descriptor2_ = nullptr;
 };
 
 #if defined(OS_WIN)

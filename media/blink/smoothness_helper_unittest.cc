@@ -4,7 +4,6 @@
 
 #include "media/blink/smoothness_helper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "media/blink/blink_platform_with_task_environment.h"
 #include "media/learning/common/labelled_example.h"
@@ -107,10 +106,10 @@ class SmoothnessHelperTest : public testing::Test {
   std::unique_ptr<SmoothnessHelper> helper_;
 
   // Max bad consecutive windows by frame drop LTC.
-  CheckedPtr<MockLearningTaskController> bad_ltc_;
+  MockLearningTaskController* bad_ltc_;
 
   // Max consecutive NNRs LTC.
-  CheckedPtr<MockLearningTaskController> nnr_ltc_;
+  MockLearningTaskController* nnr_ltc_;
 
   MockClient client_;
   FeatureVector features_;

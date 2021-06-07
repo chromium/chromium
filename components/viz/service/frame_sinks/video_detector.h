@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -88,7 +87,7 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   bool video_is_playing_ = false;
 
   // Provides the current time.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Calls OnVideoActivityEnded() after |kVideoTimeout|. Uses |tick_clock_| to
   // measure time.
@@ -101,7 +100,7 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   // video activity if there is at least one client.
   mojo::RemoteSet<mojom::VideoDetectorObserver> observers_;
 
-  const CheckedPtr<SurfaceManager> surface_manager_;
+  SurfaceManager* const surface_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoDetector);
 };

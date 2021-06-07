@@ -5,7 +5,6 @@
 #include "components/accuracy_tips/accuracy_service.h"
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,7 +45,7 @@ class AccuracyServiceTest : public ::testing::Test {
  private:
   base::test::ScopedFeatureList feature_list;
   std::unique_ptr<AccuracyService> service_;
-  CheckedPtr<MockAccuracyTipUI> ui_;
+  MockAccuracyTipUI* ui_;
 };
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForRandomSite) {

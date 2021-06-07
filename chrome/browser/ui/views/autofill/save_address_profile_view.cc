@@ -217,11 +217,11 @@ SaveAddressProfileView::SaveAddressProfileView(
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetTitle(controller_->GetWindowTitle());
@@ -248,7 +248,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   edit_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(
           &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_.get())),
+          base::Unretained(controller_)),
       vector_icons::kEditIcon, kIconSize));
   edit_button_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));

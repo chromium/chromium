@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -94,7 +93,7 @@ class BidderWorklet : public mojom::BidderWorklet {
   void InvokeBidCallbackOnError(
       std::vector<std::string> error_msgs = std::vector<std::string>());
 
-  const CheckedPtr<AuctionV8Helper> v8_helper_;
+  AuctionV8Helper* const v8_helper_;
 
   GURL script_source_url_;
   mojom::AuctionWorkletService::LoadBidderWorkletAndGenerateBidCallback

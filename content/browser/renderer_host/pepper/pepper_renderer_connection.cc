@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_child_process_host_impl.h"
@@ -64,8 +63,8 @@ class PendingHostCreator : public base::RefCounted<PendingHostCreator> {
   // have been added by this object.
   ~PendingHostCreator();
 
-  CheckedPtr<BrowserPpapiHostImpl> host_;
-  CheckedPtr<BrowserMessageFilter> connection_;
+  BrowserPpapiHostImpl* host_;
+  BrowserMessageFilter* connection_;
   int routing_id_;
   int sequence_id_;
   std::vector<int> pending_resource_host_ids_;

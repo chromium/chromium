@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,7 +98,7 @@ class TabGroup {
   gfx::Range ListTabs() const;
 
  private:
-  CheckedPtr<TabGroupController> controller_;
+  TabGroupController* controller_;
 
   tab_groups::TabGroupId id_;
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;

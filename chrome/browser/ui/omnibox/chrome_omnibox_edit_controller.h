@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 
 class CommandUpdater;
@@ -44,7 +43,7 @@ class ChromeOmniboxEditController : public OmniboxEditController {
   ~ChromeOmniboxEditController() override;
 
  private:
-  const CheckedPtr<CommandUpdater> command_updater_;
+  CommandUpdater* const command_updater_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxEditController);
 };

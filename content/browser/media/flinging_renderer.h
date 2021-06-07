@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_FLINGING_RENDERER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "media/base/flinging_controller.h"
 #include "media/base/media_resource.h"
@@ -80,7 +79,7 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
   // Only updated when |play_state_is_stable_| is true.
   PlayState last_play_state_received_ = PlayState::UNKNOWN;
 
-  CheckedPtr<media::RendererClient> client_;
+  media::RendererClient* client_;
 
   mojo::Remote<ClientExtension> client_extension_;
 

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -155,7 +154,7 @@ class CONTENT_EXPORT AuctionRunner {
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
     // Points to the InterestGroupAd within `bidder` that won the auction. Only
     // nullptr when `bid_result` is also nullptr.
-    CheckedPtr<blink::mojom::InterestGroupAd> bid_ad = nullptr;
+    blink::mojom::InterestGroupAd* bid_ad = nullptr;
 
     double seller_score = 0;
   };

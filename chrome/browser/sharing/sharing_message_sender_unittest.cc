@@ -5,7 +5,6 @@
 #include "chrome/browser/sharing/sharing_message_sender.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -139,7 +138,7 @@ class SharingMessageSenderTest : public testing::Test {
 
   SharingMessageSender sharing_message_sender_{
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider()};
-  CheckedPtr<MockSharingFCMSender> mock_sharing_fcm_sender_;
+  MockSharingFCMSender* mock_sharing_fcm_sender_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingMessageSenderTest);
 };

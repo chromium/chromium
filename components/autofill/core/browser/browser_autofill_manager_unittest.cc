@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
@@ -659,13 +658,13 @@ class BrowserAutofillManagerTest : public testing::Test {
   MockAutofillClient autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  CheckedPtr<TestAutofillExternalDelegate> external_delegate_;
+  TestAutofillExternalDelegate* external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
-  CheckedPtr<MockAutofillDownloadManager> download_manager_;
+  MockAutofillDownloadManager* download_manager_;
   TestPersonalDataManager personal_data_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  CheckedPtr<TestStrikeDatabase> strike_database_;
+  TestStrikeDatabase* strike_database_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {

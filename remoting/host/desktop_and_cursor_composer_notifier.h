@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_NOTIFIER_H_
 #define REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_NOTIFIER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/input_filter.h"
 
 namespace remoting {
@@ -33,7 +32,7 @@ class DesktopAndCursorComposerNotifier : public protocol::InputFilter {
  private:
   void NotifyEventHandler(bool enabled);
 
-  CheckedPtr<EventHandler> event_handler_;
+  EventHandler* event_handler_;
   bool has_triggered_ = false;
   bool is_enabled_ = false;
 

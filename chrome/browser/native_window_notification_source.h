@@ -27,7 +27,7 @@ class Source<gfx::NativeWindow> : public content::NotificationSource {
 
   gfx::NativeWindow operator->() const { return ptr(); }
   gfx::NativeWindow ptr() const {
-    return static_cast<gfx::NativeWindow>(const_cast<void*>(ptr_.get()));
+    return static_cast<gfx::NativeWindow>(const_cast<void*>(ptr_));
   }
 };
 

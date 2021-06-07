@@ -13,7 +13,7 @@ TestBackgroundPageFirstLoadObserver::TestBackgroundPageFirstLoadObserver(
     const ExtensionId& extension_id)
     : extension_id_(extension_id),
       process_manager_(ProcessManager::Get(browser_context)) {
-  process_manager_observation_.Observe(process_manager_.get());
+  process_manager_observation_.Observe(process_manager_);
   extension_host_ =
       process_manager_->GetBackgroundHostForExtension(extension_id_);
   if (extension_host_)
@@ -52,7 +52,7 @@ void TestBackgroundPageFirstLoadObserver::OnExtensionHostDidStopFirstLoad(
 }
 
 void TestBackgroundPageFirstLoadObserver::OnObtainedExtensionHost() {
-  extension_host_observation_.Observe(extension_host_.get());
+  extension_host_observation_.Observe(extension_host_);
 }
 
 }  // namespace extensions

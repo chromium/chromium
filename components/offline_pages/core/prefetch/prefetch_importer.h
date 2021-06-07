@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 
 namespace offline_pages {
@@ -43,7 +42,7 @@ class PrefetchImporter {
   void NotifyArchiveImported(int64_t offline_id, bool success);
 
  private:
-  CheckedPtr<PrefetchDispatcher> dispatcher_;
+  PrefetchDispatcher* dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchImporter);
 };

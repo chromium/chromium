@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -39,7 +38,7 @@ class BrowserSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate {
   bool ShouldSync() const override;
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserSyncedWindowDelegate);
 };

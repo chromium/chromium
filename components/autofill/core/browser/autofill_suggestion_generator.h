@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
-
 namespace base {
 class Time;
 }  // namespace base
@@ -69,10 +67,10 @@ class AutofillSuggestionGenerator {
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
-  CheckedPtr<AutofillClient> autofill_client_;
+  AutofillClient* autofill_client_;
 
   // personal_data_ should outlive the generator.
-  CheckedPtr<PersonalDataManager> personal_data_;
+  PersonalDataManager* personal_data_;
 };
 
 }  // namespace autofill

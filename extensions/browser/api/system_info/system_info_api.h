@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_SYSTEM_INFO_SYSTEM_INFO_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 
@@ -37,7 +36,7 @@ class SystemInfoAPI : public BrowserContextKeyedAPI,
   static const char* service_name() { return "SystemInfoAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemInfoAPI);
 };

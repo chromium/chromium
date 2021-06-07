@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -42,7 +41,7 @@ class SpellingBubbleModel : public ConfirmBubbleModel,
   void SetPref(bool enabled);
 
   // Unowned.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_

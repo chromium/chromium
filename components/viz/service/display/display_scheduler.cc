@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -39,7 +38,7 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
 
  private:
-  const CheckedPtr<DisplayScheduler> scheduler_;
+  DisplayScheduler* const scheduler_;
 };
 
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,

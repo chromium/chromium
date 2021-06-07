@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/android/infobar_android.h"
 
 namespace content {
@@ -38,7 +37,7 @@ class NearOomReductionInfoBar : public infobars::InfoBarAndroid {
                      const base::android::JavaParamRef<jobject>& obj) override;
   void ProcessButton(int action) override;
 
-  CheckedPtr<InterventionDelegate> delegate_;
+  InterventionDelegate* delegate_;
   DISALLOW_COPY_AND_ASSIGN(NearOomReductionInfoBar);
 };
 

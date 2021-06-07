@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/client/visibility_client.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -57,7 +56,7 @@ class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
 
  private:
   // The window to manage.
-  CheckedPtr<aura::Window> window_;
+  aura::Window* window_;
 
   // Whether the visibility animations on child windows were originally enabled.
   const bool original_enabled_;

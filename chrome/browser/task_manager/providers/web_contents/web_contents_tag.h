@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -57,7 +56,7 @@ class WebContentsTag : public base::SupportsUserData::Data {
   static void* kTagKey;
 
   // The owning WebContents.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace task_manager

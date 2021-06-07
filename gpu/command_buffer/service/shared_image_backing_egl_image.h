@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_EGL_IMAGE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_EGL_IMAGE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
@@ -94,7 +93,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   const GLuint gl_format_;
   const GLuint gl_type_;
   scoped_refptr<TextureHolder> source_texture_holder_;
-  CheckedPtr<gl::GLApi> created_on_context_;
+  gl::GLApi* created_on_context_;
 
   // This class encapsulates the EGLImage object for android.
   scoped_refptr<gles2::NativeImageBuffer> egl_image_buffer_ GUARDED_BY(lock_);
@@ -114,7 +113,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       GUARDED_BY(lock_);
   base::flat_set<const RepresentationGLShared*> active_readers_
       GUARDED_BY(lock_);
-  CheckedPtr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
+  SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
 
   const bool use_passthrough_;
 

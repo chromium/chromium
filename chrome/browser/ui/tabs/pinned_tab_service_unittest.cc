@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -47,7 +46,7 @@ class PinnedTabServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  CheckedPtr<PinnedTabService> pinned_tab_service_;
+  PinnedTabService* pinned_tab_service_;
 };
 
 // Makes sure closing a popup triggers writing pinned tabs.

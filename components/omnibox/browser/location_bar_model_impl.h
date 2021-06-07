@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
@@ -45,7 +44,7 @@ class LocationBarModelImpl : public LocationBarModel {
   std::u16string GetFormattedURL(
       url_formatter::FormatUrlTypes format_types) const;
 
-  CheckedPtr<LocationBarModelDelegate> delegate_;
+  LocationBarModelDelegate* delegate_;
   const size_t max_url_display_chars_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(LocationBarModelImpl);

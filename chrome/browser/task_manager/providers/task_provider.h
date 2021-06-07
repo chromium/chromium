@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
 namespace task_manager {
@@ -73,7 +72,7 @@ class TaskProvider {
   virtual void StopUpdating() = 0;
 
   // We support only one single obsever which will be the sampler in this case.
-  CheckedPtr<TaskProviderObserver> observer_;
+  TaskProviderObserver* observer_;
 };
 
 }  // namespace task_manager

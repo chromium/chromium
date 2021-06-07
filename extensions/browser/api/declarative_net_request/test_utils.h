@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -115,7 +114,7 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
   void OnEvaluateRequest(const WebRequestInfo& request,
                          bool is_incognito_context) override;
 
-  const CheckedPtr<RulesetManager> manager_;
+  RulesetManager* const manager_;
   size_t current_count_ = 0;
   absl::optional<size_t> expected_count_;
   std::unique_ptr<base::RunLoop> run_loop_;

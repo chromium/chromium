@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
@@ -46,7 +45,7 @@ struct NET_EXPORT HttpRequestInfo {
   HttpRequestHeaders extra_headers;
 
   // Any upload data.
-  CheckedPtr<UploadDataStream> upload_data_stream;
+  UploadDataStream* upload_data_stream;
 
   // Any load flags (see load_flags.h).
   int load_flags;

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/fake_server.h"
@@ -31,7 +30,7 @@ class FakeServerMatchStatusChecker : public StatusChangeChecker,
   FakeServer* fake_server() const;
 
  private:
-  CheckedPtr<FakeServer> fake_server_;
+  FakeServer* fake_server_;
 };
 
 }  // namespace fake_server

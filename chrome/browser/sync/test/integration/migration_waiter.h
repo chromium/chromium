@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WAITER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/model_type.h"
 
@@ -33,7 +32,7 @@ class MigrationWaiter : public StatusChangeChecker {
 
  private:
   // The MigrationWatcher we're observering.
-  const CheckedPtr<MigrationWatcher> watcher_;
+  MigrationWatcher* const watcher_;
 
   // The set of data types that are expected to eventually undergo migration.
   const syncer::ModelTypeSet expected_types_;

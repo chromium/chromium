@@ -28,7 +28,7 @@ SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
   DCHECK(identity_manager_);
   DCHECK(signin_error_controller_);
   DCHECK(profile_attributes_storage_);
-  identity_manager_observation_.Observe(identity_manager_.get());
+  identity_manager_observation_.Observe(identity_manager_);
   signin_error_controller_observation_.Observe(signin_error_controller);
 
   UpdateProfileAttributes();

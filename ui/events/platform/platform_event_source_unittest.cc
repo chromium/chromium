@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -86,7 +85,7 @@ class TestPlatformEventDispatcher : public PlatformEventDispatcher {
 
  private:
   int id_;
-  CheckedPtr<std::vector<int>> list_;
+  std::vector<int>* list_;
   uint32_t post_dispatch_action_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPlatformEventDispatcher);
@@ -112,7 +111,7 @@ class TestPlatformEventObserver : public PlatformEventObserver {
 
  private:
   int id_;
-  CheckedPtr<std::vector<int>> list_;
+  std::vector<int>* list_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPlatformEventObserver);
 };

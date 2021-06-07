@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -148,7 +147,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
    private:
     // Used by |this| to create the new states to transition to.
-    const CheckedPtr<HighlightStateFactory> state_factory_;
+    HighlightStateFactory* const state_factory_;
 
     DISALLOW_COPY_AND_ASSIGN(HighlightState);
   };
@@ -176,7 +175,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
     AutoHighlightMode highlight_mode_;
 
     // The ink drop to invoke highlight changes on.
-    CheckedPtr<InkDropImpl> ink_drop_;
+    InkDropImpl* ink_drop_;
 
     DISALLOW_COPY_AND_ASSIGN(HighlightStateFactory);
   };
@@ -259,7 +258,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // The host of the ink drop. Used to create the ripples and highlights, and to
   // add/remove the root layer to/from it.
-  const CheckedPtr<InkDropHost> ink_drop_host_;
+  InkDropHost* const ink_drop_host_;
 
   // Used by |this| to initialize the starting |highlight_state_| and by the
   // current |highlight_state_| to create the next state.

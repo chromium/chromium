@@ -26,7 +26,7 @@ PrerenderProcessor::PrerenderProcessor(
   DCHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
             initiator_render_frame_host.lifecycle_state());
 
-  observation_.Observe(registry_.get());
+  observation_.Observe(registry_);
 }
 
 PrerenderProcessor::~PrerenderProcessor() {

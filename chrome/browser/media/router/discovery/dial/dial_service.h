@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_address.h"
@@ -181,7 +180,7 @@ class DialServiceImpl : public DialService {
     bool is_reading_;
 
     // Pointer to the DialServiceImpl that owns this socket.
-    const CheckedPtr<DialServiceImpl> dial_service_;
+    DialServiceImpl* const dial_service_;
 
     DISALLOW_COPY_AND_ASSIGN(DialSocket);
   };

@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -111,7 +110,7 @@ class BASE_EXPORT ScopedCrashKeyString {
   ScopedCrashKeyString& operator=(ScopedCrashKeyString&&) = delete;
 
  private:
-  CheckedPtr<CrashKeyString> crash_key_;
+  CrashKeyString* crash_key_;
 };
 
 // Internal helpers for the SCOPED_CRASH_KEY_... helper macros defined below.

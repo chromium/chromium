@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -113,10 +112,10 @@ class InfoBarView : public infobars::InfoBar,
   void CloseButtonPressed();
 
   // The optional icon at the left edge of the InfoBar.
-  CheckedPtr<views::ImageView> icon_ = nullptr;
+  views::ImageView* icon_ = nullptr;
 
   // The close button at the right edge of the InfoBar.
-  CheckedPtr<views::ImageButton> close_button_ = nullptr;
+  views::ImageButton* close_button_ = nullptr;
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

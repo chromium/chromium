@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -85,7 +84,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   std::set<uint64_t> allowed_user_ids_;
 
   // A weak ref to the last created TestMetricsLogUploader.
-  CheckedPtr<TestMetricsLogUploader> uploader_ = nullptr;
+  TestMetricsLogUploader* uploader_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestMetricsServiceClient);
 };

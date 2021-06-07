@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -125,8 +124,8 @@ class WebUIBackgroundContextMenu : public ui::SimpleMenuModel::Delegate,
   }
 
  private:
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<const ui::AcceleratorProvider> accelerator_provider_;
+  Browser* const browser_;
+  const ui::AcceleratorProvider* const accelerator_provider_;
 };
 
 class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
@@ -162,8 +161,8 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
   }
 
  private:
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<const ui::AcceleratorProvider> accelerator_provider_;
+  Browser* const browser_;
+  const ui::AcceleratorProvider* const accelerator_provider_;
   const int tab_index_;
 };
 

@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -476,9 +475,9 @@ class TestPrintManagerHost
   uint32_t number_pages_ = 0;
   bool is_setup_scripted_print_preview_ = false;
   bool is_printed_ = false;
-  CheckedPtr<MockPrinter> printer_;
+  MockPrinter* printer_;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  CheckedPtr<FakePrintPreviewUI> preview_ui_;
+  FakePrintPreviewUI* preview_ui_;
 #endif
   base::OnceClosure quit_closure_;
   // True to simulate user clicking print. False to cancel.

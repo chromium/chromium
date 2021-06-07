@@ -5,7 +5,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/render_frame_host.h"
@@ -98,17 +97,16 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
   }
 
  private:
-  const CheckedPtr<std::vector<mojom::PageLoadTimingPtr>> updated_timings_;
-  const CheckedPtr<std::vector<mojom::PageLoadTimingPtr>>
-      updated_subframe_timings_;
-  const CheckedPtr<std::vector<mojom::PageLoadTimingPtr>> complete_timings_;
-  const CheckedPtr<std::vector<mojom::CpuTimingPtr>> updated_cpu_timings_;
-  const CheckedPtr<std::vector<ExtraRequestCompleteInfo>> loaded_resources_;
-  const CheckedPtr<std::vector<blink::UseCounterFeature>> observed_features_;
-  const CheckedPtr<std::vector<GURL>> observed_committed_urls_;
-  const CheckedPtr<std::vector<GURL>> observed_aborted_urls_;
-  CheckedPtr<absl::optional<bool>> is_first_navigation_in_web_contents_;
-  const CheckedPtr<int> count_on_enter_back_forward_cache_;
+  std::vector<mojom::PageLoadTimingPtr>* const updated_timings_;
+  std::vector<mojom::PageLoadTimingPtr>* const updated_subframe_timings_;
+  std::vector<mojom::PageLoadTimingPtr>* const complete_timings_;
+  std::vector<mojom::CpuTimingPtr>* const updated_cpu_timings_;
+  std::vector<ExtraRequestCompleteInfo>* const loaded_resources_;
+  std::vector<blink::UseCounterFeature>* const observed_features_;
+  std::vector<GURL>* const observed_committed_urls_;
+  std::vector<GURL>* const observed_aborted_urls_;
+  absl::optional<bool>* is_first_navigation_in_web_contents_;
+  int* const count_on_enter_back_forward_cache_;
 };
 
 // Test PageLoadMetricsObserver that stops observing page loads with certain
@@ -139,7 +137,7 @@ class FilteringPageLoadMetricsObserver : public PageLoadMetricsObserver {
   }
 
  private:
-  const CheckedPtr<std::vector<GURL>> completed_filtered_urls_;
+  std::vector<GURL>* const completed_filtered_urls_;
 };
 
 }  // namespace

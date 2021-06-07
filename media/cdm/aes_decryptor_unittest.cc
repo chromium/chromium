@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -501,7 +500,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
 
   StrictMock<MockCdmClient> cdm_client_;
   scoped_refptr<ContentDecryptionModule> cdm_;
-  CheckedPtr<Decryptor> decryptor_;
+  Decryptor* decryptor_;
   std::string session_id_;
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

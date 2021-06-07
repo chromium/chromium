@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SESSIONS_SESSION_DATA_DELETER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 
 class Profile;
 
@@ -31,7 +30,7 @@ class SessionDataDeleter {
                                      base::OnceClosure callback);
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_DATA_DELETER_H_

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -79,8 +78,8 @@ class SharesheetServiceDelegate : public SharesheetController {
 
   std::u16string active_action_;
   // Owned by views.
-  CheckedPtr<ash::sharesheet::SharesheetBubbleView> sharesheet_bubble_view_;
-  CheckedPtr<SharesheetService> sharesheet_service_;
+  ash::sharesheet::SharesheetBubbleView* sharesheet_bubble_view_;
+  SharesheetService* sharesheet_service_;
 };
 
 }  // namespace sharesheet

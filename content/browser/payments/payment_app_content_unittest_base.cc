@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/payments/payment_app_content_unittest_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include <stdint.h>
 
@@ -83,7 +82,7 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     }
 
    private:
-    const CheckedPtr<PaymentAppForWorkerTestHelper> worker_helper_;
+    PaymentAppForWorkerTestHelper* const worker_helper_;
 
     DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceClient);
   };
@@ -138,7 +137,7 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     }
 
    private:
-    const CheckedPtr<PaymentAppForWorkerTestHelper> worker_helper_;
+    PaymentAppForWorkerTestHelper* const worker_helper_;
 
     DISALLOW_COPY_AND_ASSIGN(ServiceWorker);
   };

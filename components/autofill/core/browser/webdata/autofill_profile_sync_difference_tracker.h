@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
@@ -83,7 +82,7 @@ class AutofillProfileSyncDifferenceTracker {
   bool InitializeLocalOnlyEntriesIfNeeded();
 
   // The table for reading local data.
-  const CheckedPtr<AutofillTable> table_;
+  AutofillTable* const table_;
 
   // This class loads local data from |table_| lazily. This field tracks if that
   // has happened or not yet.

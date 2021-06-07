@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 
@@ -102,7 +101,7 @@ class APIPermission {
       const APIPermission* rhs) const = 0;
 
  private:
-  const CheckedPtr<const APIPermissionInfo> info_;
+  const APIPermissionInfo* const info_;
 };
 
 

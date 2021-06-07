@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"
@@ -77,7 +76,7 @@ class HidConnectFunction : public ExtensionFunction {
   void OnConnectComplete(
       mojo::PendingRemote<device::mojom::HidConnection> connection);
 
-  CheckedPtr<ApiResourceManager<HidConnectionResource>> connection_manager_;
+  ApiResourceManager<HidConnectionResource>* connection_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(HidConnectFunction);
 };

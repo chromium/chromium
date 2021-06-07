@@ -7,7 +7,6 @@
 
 #include <atomic>
 
-#include "base/memory/checked_ptr.h"
 #include "components/power_scheduler/power_mode.h"
 
 namespace power_scheduler {
@@ -28,7 +27,7 @@ class TracedPowerMode {
 
  private:
   const char* name_;
-  CheckedPtr<const void> trace_id_;
+  const void* trace_id_;
   PowerMode mode_;
 };
 
