@@ -240,6 +240,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/usage_stats/EventTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/usage_stats/PageViewObserverTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/MockWebappDataStorageClockRule.java",
+  "junit/src/org/chromium/chrome/browser/webapps/WebApkIconNameUpdateDialogTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkInfoTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkShareTargetUtilTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkUpdateManagerUnitTest.java",
