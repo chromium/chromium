@@ -3112,6 +3112,8 @@ if (enable_java_templates) {
         "--generated-dir=$_rebased_generated_dir",
         "--jar-path=$_rebased_output_jar_path",
         "--java-srcjars=$_rebased_java_srcjars",
+        "--target-name",
+        get_label_info(target_name, "label_no_toolchain"),
       ]
 
       if (defined(invoker.header_jar_path)) {
@@ -3189,8 +3191,6 @@ if (enable_java_templates) {
         _rebased_errorprone_buildconfig =
             rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
         args += [
-          "--target-name",
-          get_label_info(target_name, "label_no_toolchain"),
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
         ]

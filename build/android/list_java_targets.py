@@ -36,6 +36,10 @@ _SRC_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
 from pylib import constants
 
+_AUTONINJA_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools',
+                               'autoninja')
+_NINJA_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'ninja')
+
 _VALID_TYPES = (
     'android_apk',
     'android_app_bundle',
@@ -55,7 +59,7 @@ _VALID_TYPES = (
 
 def _run_ninja(output_dir, args):
   cmd = [
-      'autoninja',
+      _AUTO_NINJA_PATH,
       '-C',
       output_dir,
   ]
@@ -66,7 +70,7 @@ def _run_ninja(output_dir, args):
 
 def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
-  cmd = ['ninja', '-C', output_dir, '-t', 'targets']
+  cmd = [_NINJA_PATH, '-C', output_dir, '-t', 'targets']
   logging.info('Running: %r', cmd)
   ninja_output = subprocess.run(cmd,
                                 check=True,

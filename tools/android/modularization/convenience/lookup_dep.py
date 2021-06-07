@@ -32,6 +32,9 @@ _SRC_DIR = pathlib.Path(__file__).parents[4].resolve()
 sys.path.append(str(_SRC_DIR / 'build' / 'android'))
 from pylib import constants
 
+# Import list_java_targets so that the dependency is found by print_python_deps.
+import list_java_targets
+
 
 def main():
   arg_parser = argparse.ArgumentParser(
@@ -282,7 +285,8 @@ class ClassLookupIndex:
     # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
     cache_path = abs_jar_path.with_suffix(abs_jar_path.suffix +
                                           '.namelist_cache')
-    if not abs_jar_path.is_relative_to(abs_build_output_dir):
+    if (not ClassLookupIndex._is_path_relative_to(abs_jar_path,
+                                                  abs_build_output_dir)):
       cache_path = (abs_build_output_dir / 'gen' /
                     cache_path.relative_to(_SRC_DIR))
     if (cache_path.exists()
@@ -300,6 +304,13 @@ class ClassLookupIndex:
     return namelist
 
   @staticmethod
+  def _is_path_relative_to(path: pathlib.Path, other: pathlib.Path) -> bool:
+    # PurePath.is_relative_to() was introduced in Python 3.9
+    resolved_path = path.resolve()
+    resolved_other = other.resolve()
+    return str(resolved_path).startswith(str(resolved_other))
+
+  @staticmethod
   def _parse_full_java_class(source_path: pathlib.Path) -> str:
     """Guess the fully qualified class name from the path to the source file."""
     if source_path.suffix != '.java':
@@ -309,6 +320,8 @@ class ClassLookupIndex:
     directory_path: pathlib.Path = source_path.parent
     package_list_reversed = []
     for part in reversed(directory_path.parts):
+      if part == 'java':
+        break
       package_list_reversed.append(part)
       if part in ('com', 'org'):
         break

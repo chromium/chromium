@@ -49,17 +49,23 @@ template("android_nocompile_test_suite") {
       deps += invoker.deps
     }
 
+    sources = []
+    if (defined(invoker.sources)) {
+      sources += invoker.sources
+    }
+
     inputs = []
     if (defined(invoker.pydeps)) {
       foreach(_pydeps_file, invoker.pydeps) {
+        _pydeps_file_lines = []
         _pydeps_file_lines = read_file(_pydeps_file, "list lines")
+        _pydeps_entries = []
         _pydeps_entries = filter_exclude(_pydeps_file_lines, [ "#*" ])
         _pydeps_file_dir = get_path_info(_pydeps_file, "dir")
         inputs += rebase_path(_pydeps_entries, ".", _pydeps_file_dir)
       }
     }
 
-    sources = []
     _json_test_configs = []
     foreach(_test_config, _tests) {
       _test = _test_config["target"]

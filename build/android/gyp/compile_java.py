@@ -4,6 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import logging
 import multiprocessing
 import optparse
@@ -14,15 +15,11 @@ import sys
 import time
 import zipfile
 
+import javac_output_processor
 from util import build_utils
 from util import md5_check
 from util import jar_info_utils
 from util import server_utils
-
-sys.path.insert(
-    0,
-    os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party', 'colorama', 'src'))
-import colorama
 
 _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
                                 'android_prebuilts', 'build_tools', 'common',
@@ -190,14 +187,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
 ]
 
 
-def ProcessJavacOutput(output):
-  fileline_prefix = r'(?P<fileline>(?P<file>[-.\w/\\]+.java):(?P<line>[0-9]+):)'
-  warning_re = re.compile(fileline_prefix +
-                          r'(?P<full_message> warning: (?P<message>.*))$')
-  error_re = re.compile(fileline_prefix +
-                        r'(?P<full_message> (?P<message>.*))$')
-  marker_re = re.compile(r'\s*(?P<marker>\^)\s*$')
-
+def ProcessJavacOutput(output, target_name):
   # These warnings cannot be suppressed even for third party code. Deprecation
   # warnings especially do not help since we must support older android version.
   deprecated_re = re.compile(
@@ -207,17 +197,6 @@ def ProcessJavacOutput(output):
   recompile_re = re.compile(r'(Note: Recompile with -Xlint:.* for details.)$')
 
   activity_re = re.compile(r'^(?P<prefix>\s*location: )class Activity$')
-
-  warning_color = ['full_message', colorama.Fore.YELLOW + colorama.Style.DIM]
-  error_color = ['full_message', colorama.Fore.MAGENTA + colorama.Style.BRIGHT]
-  marker_color = ['marker', colorama.Fore.BLUE + colorama.Style.BRIGHT]
-
-  def Colorize(line, regex, color):
-    match = regex.match(line)
-    start = match.start(color[0])
-    end = match.end(color[0])
-    return (line[:start] + color[1] + line[start:end] + colorama.Fore.RESET +
-            colorama.Style.RESET_ALL + line[end:])
 
   def ApplyFilters(line):
     return not (deprecated_re.match(line) or unchecked_re.match(line)
@@ -230,17 +209,12 @@ def ProcessJavacOutput(output):
           line, prefix, 'docs/ui/android/bytecode_rewriting.md')
     return line
 
-  def ApplyColors(line):
-    if warning_re.match(line):
-      line = Colorize(line, warning_re, warning_color)
-    elif error_re.match(line):
-      line = Colorize(line, error_re, error_color)
-    elif marker_re.match(line):
-      line = Colorize(line, marker_re, marker_color)
-    return line
-
   lines = (l for l in output.split('\n') if ApplyFilters(l))
-  lines = (ApplyColors(Elaborate(l)) for l in lines)
+  lines = (Elaborate(l) for l in lines)
+
+  output_processor = javac_output_processor.JavacOutputProcessor(target_name)
+  lines = output_processor.Process(lines)
+
   return '\n'.join(lines)
 
 
@@ -492,12 +466,15 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
         f.write(' '.join(java_files))
       cmd += ['@' + java_files_rsp_path]
 
+      process_javac_output_partial = functools.partial(
+          ProcessJavacOutput, target_name=options.target_name)
+
       logging.debug('Build command %s', cmd)
       start = time.time()
       build_utils.CheckOutput(cmd,
                               print_stdout=options.chromium_code,
-                              stdout_filter=ProcessJavacOutput,
-                              stderr_filter=ProcessJavacOutput,
+                              stdout_filter=process_javac_output_partial,
+                              stderr_filter=process_javac_output_partial,
                               fail_on_output=options.warnings_as_errors)
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
@@ -645,7 +622,6 @@ def main(argv):
                                        stamp_file=options.jar_path)):
     return
 
-  colorama.init()
   javac_cmd = []
   if options.gomacc_path:
     javac_cmd.append(options.gomacc_path)

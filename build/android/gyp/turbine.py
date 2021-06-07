@@ -5,13 +5,21 @@
 """Wraps the turbine jar and expands @FileArgs."""
 
 import argparse
+import functools
 import logging
 import os
 import shutil
 import sys
 import time
 
+import javac_output_processor
 from util import build_utils
+
+
+def ProcessJavacOutput(output, target_name):
+  output_processor = javac_output_processor.JavacOutputProcessor(target_name)
+  lines = output_processor.Process(output.split('\n'))
+  return '\n'.join(lines)
 
 
 def main(argv):
@@ -19,6 +27,7 @@ def main(argv):
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
   parser.add_argument(
       '--turbine-jar-path', required=True, help='Path to the turbine jar file.')
   parser.add_argument(
@@ -135,10 +144,16 @@ def main(argv):
   with build_utils.AtomicOutput(options.jar_path) as output_jar, \
       build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
     cmd += ['--output', output_jar.name, '--gensrc_output', generated_jar.name]
+
+    process_javac_output_partial = functools.partial(
+        ProcessJavacOutput, target_name=options.target_name)
+
     logging.debug('Command: %s', cmd)
     start = time.time()
     build_utils.CheckOutput(cmd,
                             print_stdout=True,
+                            stdout_filter=process_javac_output_partial,
+                            stderr_filter=process_javac_output_partial,
                             fail_on_output=options.warnings_as_errors)
     end = time.time() - start
     logging.info('Header compilation took %ss', end)
