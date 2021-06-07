@@ -14,10 +14,11 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
@@ -38,7 +39,8 @@ class WebFileTasksTest : public ::testing::Test {
 
     app_provider_ = web_app::TestWebAppProvider::Get(profile_.get());
 
-    auto app_registrar = std::make_unique<web_app::TestAppRegistrar>();
+    auto app_registrar =
+        std::make_unique<web_app::WebAppRegistrarMutable>(profile_.get());
     app_registrar_ = app_registrar.get();
     app_provider_->SetRegistrar(std::move(app_registrar));
 
@@ -60,8 +62,26 @@ class WebFileTasksTest : public ::testing::Test {
       const web_app::AppId& app_id,
       const GURL& install_url,
       const web_app::TestFileHandlerManager::AcceptMap& accept) {
-    app_registrar_->AddExternalApp(app_id, {install_url});
+    auto web_app = CreateWebApp(app_id, install_url);
+    RegisterApp(std::move(web_app));
     file_handler_manager_->InstallFileHandler(app_id, install_url, accept);
+  }
+
+  std::unique_ptr<web_app::WebApp> CreateWebApp(const web_app::AppId& app_id,
+                                                const GURL& app_url) {
+    auto web_app = std::make_unique<web_app::WebApp>(app_id);
+    web_app->AddSource(web_app::Source::kDefault);
+    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetName("Name");
+    web_app->SetStartUrl(app_url);
+
+    return web_app;
+  }
+
+  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+    web_app::AppId app_id = web_app->app_id();
+    app_registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
   Profile* profile() { return profile_.get(); }
@@ -73,7 +93,7 @@ class WebFileTasksTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   web_app::TestWebAppProvider* app_provider_;
-  web_app::TestAppRegistrar* app_registrar_;
+  web_app::WebAppRegistrarMutable* app_registrar_;
   web_app::TestFileHandlerManager* file_handler_manager_;
 };
 
