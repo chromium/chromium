@@ -463,10 +463,12 @@ public class PasswordSettings
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
         // by the system.
-        if (getActivity().isFinishing() && mPasswordCheck != null
-                && mManagePasswordsReferrer != ManagePasswordsReferrer.CHROME_SETTINGS) {
+        if (getActivity().isFinishing()) {
             PasswordManagerHandlerProvider.getInstance().removeObserver(this);
-            PasswordCheckFactory.destroy();
+            if (mPasswordCheck != null
+                    && mManagePasswordsReferrer != ManagePasswordsReferrer.CHROME_SETTINGS) {
+                PasswordCheckFactory.destroy();
+            }
         }
     }
 
